@@ -65,7 +65,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CalendarSync.cs" />
     <Compile Include="Daemon.cs" />
     <Compile Include="DiagnosticsTest.cs" />
     <Compile Include="EventExposers\SendGridPackagerEventHandler.cs" />
@@ -83,9 +82,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\KwasantCore\KwasantCore.csproj">
+    <ProjectReference Include="..\KwasantCore\Core.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>KwasantCore</Name>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>

@@ -9,7 +9,7 @@ namespace KwasantCore.Managers.InboundEmailHandlers
     {
         public bool TryHandle(MailMessage message)
         {
-            BookingRequest.ProcessNewBR(message);
+            //BookingRequest.ProcessNewBR(message);
             return true;
         }
     }

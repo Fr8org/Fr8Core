@@ -137,51 +137,24 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
-    <Compile Include="Controllers\BookingRequestControllerTests.cs" />
-    <Compile Include="Controllers\EventControllerTests.cs" />
-    <Compile Include="Controllers\NegotiationControllerTests.cs" />
-    <Compile Include="Controllers\NegotiationResponseControllerTests.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
-    <Compile Include="Conversations\ConversationTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
-    <Compile Include="Daemons\InboundEmailTests.cs" />
-    <Compile Include="Daemons\FreshnessMonitorTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
-    <Compile Include="Fixtures\FixtureData - Attendee.cs" />
-    <Compile Include="Fixtures\FixtureData - BookingRequest.cs" />
-    <Compile Include="Fixtures\FixtureData - Calendar.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
-    <Compile Include="Fixtures\FixtureData - Event.cs" />
-    <Compile Include="Fixtures\FixtureData - Answer.cs" />
-    <Compile Include="Fixtures\FixtureData - Question.cs" />
-    <Compile Include="Fixtures\FixtureData - RemoteCalendar.cs" />
-    <Compile Include="Fixtures\FixtureData - Negotiation.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
-    <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
-    <Compile Include="Managers\CalendarSyncManagerTest.cs" />
-    <Compile Include="Services\AnswerTests.cs" />
-    <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Entities\CustomFieldTests.cs" />
-    <Compile Include="Entities\EventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\EmailTests.cs" />
-    <Compile Include="Services\EventServiceTests.cs" />
-    <Compile Include="Services\NegotiationTests.cs" />
-    <Compile Include="Services\QuestionTests.cs" />
-    <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
-    <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
-    <Compile Include="Integration\BookingITests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -203,24 +176,23 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\KwasantCore\KwasantCore.csproj">
+    <ProjectReference Include="..\..\KwasantCore\Core.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>KwasantCore</Name>
+      <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\KwasantICS\KwasantICS.csproj">
-      <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
-      <Name>KwasantICS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\KwasantWeb.csproj">
+    <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>KwasantWeb</Name>
+      <Name>Web</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="MockedDB\" />
+    <Folder Include="Timeslots\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

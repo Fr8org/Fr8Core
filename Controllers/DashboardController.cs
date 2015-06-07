@@ -24,8 +24,8 @@ namespace KwasantWeb.Controllers
 
             if (TempData["requestInfo"] == null)
             {
-                var data = new EmailController().GetInfo(id);
-                TempData["requestInfo"] = data.Model;
+              //  var data = new EmailController().GetInfo(id);
+               // TempData["requestInfo"] = data.Model;
             }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

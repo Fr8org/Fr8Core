@@ -18,7 +18,7 @@ namespace KwasantCore.Managers
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
-                                new ConversationHandler(), 
+                                //new ConversationHandler(), 
                                 new GeneralEmailHandler()
                             };
         }

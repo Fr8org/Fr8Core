@@ -58,8 +58,8 @@ namespace KwasantWeb
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
 
-            CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
-            curCommManager.SubscribeToAlerts();
+           // CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
+          //  curCommManager.SubscribeToAlerts();
 
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);

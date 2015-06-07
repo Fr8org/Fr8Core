@@ -194,12 +194,6 @@
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleCalendarAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVModels.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClientFactory.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\GoogleCalDAVClient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
@@ -219,13 +213,11 @@
     <Compile Include="Managers\CommunicationManager.cs" />
     <Compile Include="Managers\IncidentReporter.cs" />
     <Compile Include="Interfaces\IIntakeManager.cs" />
-    <Compile Include="Managers\InboundEmailHandlers\ConversationHandler.cs" />
     <Compile Include="Managers\InboundEmailHandlers\GeneralEmailHandler.cs" />
     <Compile Include="Managers\InboundEmailHandlers\IInboundEmailHandler.cs" />
     <Compile Include="Managers\InboundEmailHandlers\InvitationResponseHandler.cs" />
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
-    <Compile Include="Managers\CalendarSyncManager.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -237,24 +229,10 @@
     <Compile Include="Security\KwasantUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
-    <Compile Include="Services\Answer.cs" />
-    <Compile Include="Services\Attendee.cs" />
-    <Compile Include="Services\Booker.cs" />
-    <Compile Include="Services\Calendar.cs" />
-    <Compile Include="Services\Conversation.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
-    <Compile Include="Services\Event.cs" />
-    <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
-    <Compile Include="Services\ExpectedResponse.cs" />
-    <Compile Include="Services\Invitation.cs" />
-    <Compile Include="Services\InvitationResponse.cs" />
-    <Compile Include="Services\IQuestion.cs" />
-    <Compile Include="Services\Negotiation.cs" />
-    <Compile Include="Services\NegotiationResponse.cs" />
     <Compile Include="Services\Notification.cs" />
-    <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
@@ -263,10 +241,6 @@
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\KwasantICS\KwasantICS.csproj">
-      <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
-      <Name>KwasantICS</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

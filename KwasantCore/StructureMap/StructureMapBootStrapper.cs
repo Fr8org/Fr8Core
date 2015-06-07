@@ -8,7 +8,6 @@ using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
-using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Managers.APIManagers.Packagers.SegmentIO;
 using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
@@ -51,7 +50,7 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-                For<IEvent>().Use<Event>();
+               
             }
         }
 
@@ -63,17 +62,10 @@ namespace KwasantCore.StructureMap
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
-                For<IBookingRequest>().Use<BookingRequest>();
-                For<IAttendee>().Use<Attendee>();
-                For<INegotiation>().Use<Negotiation>();
-                For<IQuestion>().Use<Question>();
-                For<IAnswer>().Use<Answer>();
+               
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
-                For<IExpectedResponse>().Use<ExpectedResponse>();
-                For<INegotiationResponse>().Use<NegotiationResponse>();
-
-                For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
+              
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
@@ -96,15 +88,10 @@ namespace KwasantCore.StructureMap
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
-                For<IBookingRequest>().Use<BookingRequest>();
-                For<IAttendee>().Use<Attendee>();
+               
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
-                For<IExpectedResponse>().Use<ExpectedResponse>();
-                For<INegotiationResponse>().Use<NegotiationResponse>();
-                For<INegotiation>().Use<Negotiation>();
-                For<IQuestion>().Use<Question>();
-                For<IAnswer>().Use<Answer>();
+               
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 

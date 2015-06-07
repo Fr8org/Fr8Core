@@ -235,7 +235,7 @@ namespace KwasantCore.Services
         private object ShowBookerThroughput(IUnitOfWork uow, DateRange dateRange, int start,
             int length, out int count)
         {
-            Booker _booker = new Booker();
+            //Booker _booker = new Booker();
             var incidentDO = uow.IncidentRepository.GetQuery()
                 .Where(e => e.PrimaryCategory == "BookingRequest" && e.Activity == "MarkedAsProcessed")
                 .WhereInDateRange(e => e.CreateDate, dateRange)
@@ -250,8 +250,8 @@ namespace KwasantCore.Services
                 .AsEnumerable()
                 .Select(e => new
                     {
-                        BRNameAndCount =
-                                 string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
+                       // BRNameAndCount =
+                               //  string.Format("{0} marked as processed {1} distinct BRs", _booker.GetName(uow, e.Key), e.Count()),
                     })
                 .ToList();
 

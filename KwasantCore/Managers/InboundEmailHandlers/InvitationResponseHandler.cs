@@ -20,7 +20,7 @@ namespace KwasantCore.Managers.InboundEmailHandlers
             {
                 InvitationResponseDO curInvitationResponse = Email.ConvertMailMessageToEmail(uow.InvitationResponseRepository, message);
 
-                (new InvitationResponse()).Process(uow, curInvitationResponse);
+               // (new InvitationResponse()).Process(uow, curInvitationResponse);
 
                 uow.SaveChanges();
 

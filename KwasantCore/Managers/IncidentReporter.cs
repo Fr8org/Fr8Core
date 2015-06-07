@@ -174,7 +174,7 @@ namespace KwasantCore.Managers
 
         public void ProcessBRCheckedOut(int bookingRequestId, string bookerId)
         {
-            BookingRequest _br = new BookingRequest();
+            //BookingRequest _br = new BookingRequest();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
@@ -191,11 +191,11 @@ namespace KwasantCore.Managers
                     BookerId = bookerId,
                 };
 
-                int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+               // int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
-                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+                //curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
 
-                uow.IncidentRepository.Add(curAction);
+                //uow.IncidentRepository.Add(curAction);
                 uow.SaveChanges();
             }
         }
@@ -217,10 +217,10 @@ namespace KwasantCore.Managers
                     BookerId = bookerId,
                 };
 
-                var br = ObjectFactory.GetInstance<BookingRequest>();
-                int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+               // var br = ObjectFactory.GetInstance<BookingRequest>();
+               // int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
-                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+               // curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
                 uow.IncidentRepository.Add(curAction);
                 uow.SaveChanges();
             }

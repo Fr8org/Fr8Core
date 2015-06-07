@@ -34,8 +34,8 @@ namespace Daemons
             if (configRepository == null)
                 throw new ArgumentNullException("configRepository");
             _configRepository = configRepository;
-            _br = ObjectFactory.GetInstance<IBookingRequest>();
-            _er = ObjectFactory.GetInstance<IExpectedResponse>();
+          //  _br = ObjectFactory.GetInstance<IBookingRequest>();
+         //   _er = ObjectFactory.GetInstance<IExpectedResponse>();
         }
 
         public override int WaitTimeBetweenExecution
@@ -74,7 +74,7 @@ namespace Daemons
                     x.LastUpdated < reservationTimeLimit).ToList();
             foreach (var br in timedOutBRList)
             {
-                _br.ReservationTimeout(uow, br);
+              //  _br.ReservationTimeout(uow, br);
                 LogSuccess("Booking request reservation timed out");
             }
         }

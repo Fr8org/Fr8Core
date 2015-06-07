@@ -86,7 +86,7 @@ namespace KwasantWeb.Controllers
         {
             try
             {
-                await ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
+               // await ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
                 return Json(new { success = true });
             }
             catch (Exception ex)
