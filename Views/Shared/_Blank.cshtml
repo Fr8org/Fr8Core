@@ -1,0 +1,13 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    @RenderSection("styles", required: false)
+    @RenderSection("immediateScripts", required: false)
+</head>
+    <body class="view-popup-window" style="@RenderSection("bodyStyle", required: false)">
+        <ul id="ajaxErrors" style="display:none;"></ul>
+        @RenderBody()
+        @RenderSection("scripts", required: false)
+    </body>
+</html>

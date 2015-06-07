@@ -1,0 +1,19 @@
+﻿@model KwasantWeb.ViewModels.MyAccountModel
+@{
+    ViewBag.Title = "My Account";
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+</hgroup>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+   <p>Email : @User.Identity.Name</p>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,38 @@
+﻿
+
+@section TitleContent {	AJAX Event Calendar (jQuery) }
+
+<div class="note">
+<b>Note:</b> The Calendar can be initialized using a jQuery plugin.
+</div>
+    
+<div id="dpc_jquery"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $("#dpc_jquery").daypilotCalendar({
+        backendUrl: '@Url.Content("~/Calendar/Backend")',
+        viewType: "Week",
+        showAllDayEvents: true
+    });
+});
+
+</script>            
+
+<h2>Source</h2>
+
+<pre>&lt;div id="dpc_jquery"&gt;&lt;/div&gt;
+
+&lt;script type="text/javascript"&gt;
+  $(document).ready(function() {
+    $("#dpc_jquery").daypilotCalendar({
+      backendUrl: '@@Url.Content("~/Calendar/Backend")',
+      viewType: "Week",
+      showAllDayEvents: true
+    });
+  });
+&lt;/script&gt; </pre>
+
+
+

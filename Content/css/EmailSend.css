@@ -1,0 +1,67 @@
+﻿.email-details table td {
+    padding-bottom: 5px;
+}
+.draggable {
+    border: 1px solid #eee;
+    list-style-type: none;
+    margin: 0;
+    padding: 5px 0 0 0;
+    margin-right: 10px;
+    min-height: 47px;
+    background: #FAF5E9;
+    border-color: #DFDBD3;
+}
+
+.draggable li {
+    cursor: pointer;
+    margin: 0 5px 5px 5px;
+    padding: 8px;
+    padding-left: 7px;
+    font-size: 1.2em;
+    -ms-border-radius: 15px;
+    border-radius: 15px;
+    border: 1px solid;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    float: left;
+    clear: left;
+}
+
+.addressBook {
+    width: 200px;
+    max-width: 200px;
+    min-height: 540px;
+}
+
+.addressBook li {
+    display: block;
+    float: none;
+    font-size: 12px;    
+}
+
+.addressField {
+    width: 450px;
+    max-width: 450px;
+    height: 100%;
+    float: right;
+    margin-right: 0;
+    display: inline;
+}
+
+.view-popup-window {
+    padding: 0;
+    height: 100%;
+}
+
+label.error {
+    display: block;
+    margin: auto;
+    border: solid 1px #000;
+    background: #fff;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, .7);
+    width: 160px;
+    text-align: center;
+    margin-top: 30px;
+    padding: 2px 5px;
+    color: #C84141;
+}

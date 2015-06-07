@@ -1,0 +1,129 @@
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.NegotiationVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section bodyStyle {overflow-y:scroll;}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")    
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+    <script src="/Content/js/KwasantCommon.js" type="text/javascript"></script>
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/css/NegotiationWidgets.css" />
+
+    <script src="/Content/js/Kwasant/NegotiationWidgets.js" type="text/javascript"></script>
+
+    <script>
+        var widget;
+        $(function() {
+            var settings = {
+                DisplayMode: 'review',
+
+                AllowModifyNegotiationRequest: false,
+
+                AllowAddQuestion: false,
+                AllowModifyQuestion: false,
+                AllowDeleteQuestion: false,
+
+                AllowAddAnswer: false,
+                AllowModifyAnswer: false,
+                AllowDeleteAnswer: false,
+            };
+
+            var questions = @Html.Raw(JsonConvert.SerializeObject(Model.Questions));
+            
+            for (var i = 0; i < questions.length; i++) {
+                for (var j = 0; j < questions[i].Answers.length; j++) {
+                    var a = questions[i].Answers[j];
+                    if (a.EventStartDate != null)
+                        a.EventStart = new Date(a.EventStartDate);
+                    if (a.EventEndDate != null)
+                        a.EventEnd = new Date(a.EventEndDate);
+                }
+            }
+            
+            var initialValues = {
+                Id: @(Model.Id == null? "null" : Model.Id.ToString()),
+                BookingRequestID: @Model.BookingRequestID,
+                Name: '@Model.Name',
+                Questions: questions
+            };
+
+
+            widget = $('#negotiation').NegotiationWidget(settings, initialValues);
+        });
+        
+        function submitNegotiation() {
+            var spinner = Kwasant.IFrame.DisplaySpinner();
+
+            var negotiation = widget.getValues();
+        
+            //Do checks here.
+            var validationErrors = [];
+            $.each(negotiation.Questions, function(index, obj) {
+                if (obj.Text === undefined ||
+                    obj.Text === null ||
+                    obj.Text === '') {
+                    validationErrors.push('Please provide text for every question.');
+                }
+            });
+        
+            if (validationErrors.length > 0) {
+                var errorMessage = "Please resolve the following issues before saving: \n";
+
+                $.each(validationErrors, function(index, error) {
+                    if (errorMessage.indexOf(error) < 0) //Don't do duplicate error messages...
+                        errorMessage += "\n - " + error;
+                });
+
+                alert(errorMessage);
+                spinner.hide();
+                return;
+            }
+
+           
+            SubmitNegotiationForm(
+                spinner,
+                negotiation,
+                function(negotiationID) {
+                    Kwasant.IFrame.CloseMe(negotiationID);
+                    
+                }
+                
+             );
+
+            
+        }
+    </script>
+}
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/moment")
+	@Scripts.Render("~/bundles/js/bootstraptransition")
+	@Scripts.Render("~/bundles/js/collapse")	
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/modernizr")	
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+	
+    <link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+}
+
+<form id="f" class="negotiationsidebar">
+    <h4>Negotiation</h4>
+    <div id="negotiation"></div>
+
+    <div class="space form-actions negotiation-form-actions">
+        <input id="btnSave" type="button" value="OK" class="btn small-dialog-button shadow-button pull-left" onclick="submitNegotiation()" />
+
+        <a href="javascript:close();" class="btn cancel-btn small-dialog-button shadow-button pull-left">Cancel</a>
+    </div>
+</form>

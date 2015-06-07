@@ -1,0 +1,79 @@
+﻿@model KwasantWeb.ViewModels.BookingRequestConversationVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+
+<style>
+    table, tr, td, th {
+        /*border: 1px solid black;*/
+        border-collapse: collapse;
+    }
+
+        tr.header {
+            cursor: pointer;
+            background: #F5F5F5;
+            border-bottom: solid 1px #DDDDDD;
+            height: 50px;
+        }
+
+    .header b {
+        padding: 10px;
+    }
+
+    .headerdeta {
+        background: #F5F5F5;
+    }
+
+        .headerdeta .borderdeta {
+            padding: 20px;
+            background: #fff;
+            margin: 10px;
+            border-radius: 6px;
+            border: solid 1px #DDDDDD;
+        }
+</style>
+
+<div class="cpanel" id="divConversationPanel">
+    <div class="header">
+        <table width="100%" id="tblConversationPanel">
+            @for(var i = 0;i < Model.FromAddress.Count;i++)
+                    {
+                <tr class="header">
+                    <td align="left"><b>@Html.DisplayFor(m => Model.FromAddress[i])</b></td>
+                    <td align="right">@Html.DisplayFor(m => Model.DateReceived[i]) &nbsp;</td>
+                </tr>
+            <tr class="headerdeta">
+                <td colspan="2">
+                    <div class="borderdeta" id="MessagePanel" data-messageid='@Html.Raw(Model.ConversationMembers[i])' data-visibility="Collapsed">@Html.Raw(Model.HTMLText[i])</div>
+                </td>
+            </tr>
+            }
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    $('.header').click(function () {
+        $(this).find('span').text(function (_, value) { return value == '-' ? '+' : '-' });
+        $(this).nextUntil('tr.header').slideToggle(100, function () {
+        });
+        var visibility = $(this).next().find('div.borderdeta').attr('data-visibility');
+        if (visibility == 'Collapsed')
+            $(this).next().find('div.borderdeta').attr('data-visibility', 'Expanded');
+        else
+            $(this).next().find('div.borderdeta').attr('data-visibility', 'Collapsed');
+
+    });
+
+    $(document).ready(function () {
+        $('.header').nextUntil('tr.header').slideToggle(100, function () {
+        });
+
+        $('#tblConversationPanel').find('div.borderdeta').each(function () {
+            var messageId = $(this).attr('data-messageid');
+            if ('@Model.CurEmailId' == messageId) {
+                $(this).attr('data-visibility', 'Expanded');
+                $(this).closest('tr').slideToggle(100, function () {
+                });
+            }
+        })
+    });
+
+</script>

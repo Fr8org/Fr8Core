@@ -1,0 +1,37 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {	Notify Event Model (Calendar) }
+
+<div class="note"><b>Note:</b> EventMoveHandling and EventResizeHandling properties are set to "Notify". This applies changes on the client side (without requesting a new event set from the server) and then fires the event handler.</div>
+
+<div class="left-column">
+@Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+    ShowMonths = 3,
+    SkipMonths = 3,
+    ShowWeekNumbers = true,
+    BoundDayPilot = "dpc",
+    SelectMode = NavigatorSelectMode.Week
+    })
+</div>
+
+<div class="right-column">
+    @Html.DayPilotBubble("bubble")
+
+    @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        EventMoveHandling = EventMoveHandlingType.Notify,
+        EventResizeHandling = EventResizeHandlingType.Notify,
+        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+        ShowAllDayEvents = true,
+               
+        Height = 400,
+        HeightSpec = HeightSpec.BusinessHours,
+        EventBubble = "bubble"
+    }))
+</div>

@@ -1,0 +1,62 @@
+﻿@model KwasantWeb.ViewModels.LoginVM
+
+    @{
+        ViewBag.title = "Log in";
+    }
+    <div class="login-section col-md-5">
+        <div class="wrapper">
+            <h2 class="section-title with-border">@ViewBag.title or @Html.ActionLink("Register", "Register") <span class="title-notice">if you don't have a local account</span></h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <section id="loginform">
+                        @using (Html.BeginForm("login", "account", new { returnUrl = ViewBag.returnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <!--<h4 class="with-border">Use a local account to log in.</h4>-->
+                            @Html.ValidationSummary(true)
+                            <div class="custom-form">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+                                    <div class="col-md-10">
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.Email)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+                                    <div class="col-md-10">
+                                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(m => m.Password)
+                                    </div>
+                                    
+                                </div>
+                                <div class="form-group login-fields">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <div class="pull-left">
+                                            <p class="forgot-lnk">@Html.ActionLink("Forgot Password", "ForgotPassword", "Account")</p>
+                                            <div class="checkbox">
+                                                @Html.CheckBoxFor(m => m.RememberMe)
+                                                @Html.LabelFor(m => m.RememberMe)
+                                            </div>
+                                            
+                                            <!-- <p>@Html.ActionLink("register", "register") if you don't have a local account.</p> -->
+                                        </div>
+                                        <input type="submit" value="Log in" class="btn btn-default pull-right" />
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </section>
+                </div>
+                <!--<div class="col-md-4">
+                    <section id="socialloginform">
+                        @Html.Partial("_externalloginslistpartial", new { action = "externallogin", returnurl = ViewBag.returnurl })
+                    </section>
+                </div>-->
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+}

@@ -1,0 +1,57 @@
+﻿@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")
+    @Scripts.Render("~/bundles/js/moment")
+    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+    
+}
+<div class="light-bg">
+    <form id="f" class="edit-event-form form">
+        <h3 class="with-border">Please Choose Action</h3>
+        <div>
+            This BookingRequest will be Marked As Processed unless you indicate here that you have more work to do right now on it.<br /><br />
+            <input type="radio" name="activity" id="rdoContinue"/>&nbsp;Continue Working &nbsp;&nbsp;&nbsp;
+            <input type="radio" name="activity" id="rdoMark" checked="checked"/>&nbsp;Mark As Processed
+        </div>
+        <div class="space form-actions">
+            <input id="btnOk" type="button" value="Ok" class="btn small-dialog-button shadow-button pull-left" />
+        </div>
+    </form>
+</div>
+<script>
+    $("#btnOk").click(function () {
+        if ($("#rdoMark").prop("checked")) {
+            var path = '@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = ViewBag.BookingRequestId })';
+            $.post(path, function (response) {
+                if (response.Name == 'Success')
+                    parent.window.location.href = "@Url.Action("Index", "BookingRequest")";
+                else if (response.Name == 'DifferentBooker')
+                    ShowBookerOwnershipAlert(response.Message, '@ViewBag.BookingRequestId');
+                else if (response.Name == 'error')
+                    alert(response.Message);
+                else
+                    alert('An error occured on the server. Your changes have not been saved.');
+            }, 'json');
+        }
+        else
+            Kwasant.IFrame.CloseMe(true);
+    });
+</script>

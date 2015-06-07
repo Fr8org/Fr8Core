@@ -1,0 +1,55 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent { Context Menu (Calendar) }
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week
+    })
+</div>
+
+<div class="right-column">
+    @Html.DayPilotBubble("bubble")
+
+    @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
+    {
+        Items = new DayPilot.Web.Mvc.MenuItemCollection()
+        {
+            new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"},
+            new DayPilot.Web.Mvc.MenuItem { Text = "Delete", Action = MenuItemAction.CallBack, Command = "Delete"}
+        }
+    })
+
+    @Html.DayPilotMenu("menu2", new DayPilotMenuConfig
+    {
+        Items = new DayPilot.Web.Mvc.MenuItemCollection()
+        {
+            new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
+        }
+    })
+        
+
+    @Html.DayPilotCalendar("dpc_menu", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        EventDeleteHandling = EventDeleteHandlingType.CallBack,
+        EventMoveHandling = EventMoveHandlingType.CallBack,
+        EventResizeHandling = EventResizeHandlingType.CallBack,
+        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+        ShowAllDayEvents = true,
+        Height = 400,
+        HeightSpec = HeightSpec.Parent100Pct,
+        EventBubble = "bubble",
+        ContextMenu = "menu1"
+    })
+</div>

@@ -1,0 +1,35 @@
+﻿@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+@section TitleContent { External Drag &amp; Drop (Calendar) }
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig
+    {
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week,
+    })
+</div>
+<div class="right-column">
+    @Html.DayPilotBubble("bubble")
+    @Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+        EventDeleteHandling = EventDeleteHandlingType.CallBack,
+        EventMoveHandling = EventMoveHandlingType.CallBack,
+        EventResizeHandling = EventResizeHandlingType.CallBack,
+        ShowAllDayEvents = true,
+        Height = 400,
+        EventBubble = "bubble"
+    })
+    
+    <p>Drag items from this list to the calendar:</p>
+    <ul style="font-weight: bold;">
+        <li><span onmousedown='return DayPilotCalendar.dragStart(this.parentNode, 60*30, "123", this.innerHTML);'style="cursor: move;" unselectable='on'>Item #123 (30 minutes)</span></li>
+        <li><span onmousedown='return DayPilotCalendar.dragStart(this.parentNode, 60*60, "124", this.innerHTML);'style="cursor: move;" unselectable='on'>Item #124 (60 minutes)</span></li>
+    </ul>
+</div>

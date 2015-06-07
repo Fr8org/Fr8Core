@@ -1,0 +1,62 @@
+﻿/* navigator styles */
+
+.navigator_white_main 
+{
+	border-left: 1px solid #A0A0A0;
+	border-right: 1px solid #A0A0A0;
+	border-bottom: 1px solid #A0A0A0;
+    background-color: white;
+    color: #000000;
+}
+
+.navigator_white_month {
+    font-family: Tahoma;
+    font-size: 8pt;
+    /*border: 1px solid black;*/
+}
+.navigator_white_day {
+    color: black;
+    /*background-color: white;*/
+}
+.navigator_white_weekend {
+    background-color: #f0f0f0;
+}
+.navigator_white_dayheader {
+    color: black;
+}
+
+.navigator_white_line 
+{
+	border-bottom: 1px solid #A0A0A0;
+}
+
+.navigator_white_dayother {
+    color: gray;
+}
+.navigator_white_todaybox
+{
+	border: 1px solid red;
+}
+
+.navigator_white_select 
+{
+    background-color: #FFE794;
+}
+.navigator_white_title, .navigator_white_titleleft, .navigator_white_titleright {
+    border-top: 1px solid #A0A0A0;
+
+	color: #666;
+	background: #eee;
+	background: -moz-linear-gradient(
+		top,
+		#eee 0%,
+		#ddd);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#eee),
+		to(#ddd));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#eeeeee", endColorStr="#dddddd");
+}
+.navigator_white_busy {
+	font-weight: bold;
+}

@@ -1,0 +1,48 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {
+
+	Highlighting Today (Calendar)
+
+}    
+
+<table class="today-calendar-tbl">
+	<tr>
+		<td valign="top" class="first-col">
+			@(Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+				ShowMonths = 3,
+				SkipMonths = 3,
+            
+				ShowWeekNumbers = true,
+				BoundDayPilot = "dpc",
+				SelectMode = NavigatorSelectMode.Week,            
+			}))
+			<br />
+			<br />
+			<div style="height:20px"></div>        
+		</td>
+		<td valign="top">            
+			@(Html.DayPilotBubble("bubble", new DayPilotBubbleConfig
+			{}))
+
+			@(Html.DayPilotCalendar("dpc_today", new DayPilotCalendarConfig
+			{
+			ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+			BackendUrl = Url.Content("~/Calendar/Backend"),
+			EventDeleteHandling = EventDeleteHandlingType.CallBack,
+			EventMoveHandling = EventMoveHandlingType.CallBack,
+			EventResizeHandling = EventResizeHandlingType.CallBack,
+			TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+			ShowAllDayEvents = true,
+			Height = 400,
+			EventBubble = "bubble"
+			}))            
+		</td>
+	</tr>
+</table>
+
+
+

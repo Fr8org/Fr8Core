@@ -1,0 +1,44 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {	Visible Day Range (Calendar) }
+
+
+<div class="note"><b>Note:</b> The visible day range is set to 7:00 - 20:00 using DayBeginsHour and DayEndsHour.</div>
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+        ShowMonths = 3,
+        SkipMonths = 3,
+            
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week
+        })
+</div>
+
+<div class="right-column">
+    
+    @Html.DayPilotBubble("bubble")
+
+    @Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+        {
+
+            ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+            BackendUrl = Url.Content("~/Calendar/Backend"),
+            TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+            EventDeleteHandling = EventDeleteHandlingType.CallBack,
+            EventMoveHandling = EventMoveHandlingType.CallBack,
+            ShowAllDayEvents = true,
+            Height = 400,
+            EventBubble = "bubble",
+               
+            DayBeginsHour = 7,
+            DayEndsHour = 20,
+            HeightSpec = HeightSpec.Full
+        })
+
+</div>

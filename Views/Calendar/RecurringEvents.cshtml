@@ -1,0 +1,37 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {	Recurring Events (Calendar) }
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc_recurring",
+        SelectMode = NavigatorSelectMode.Week
+        })
+</div>
+
+<div class="right-column">
+    @Html.DayPilotBubble("bubble")
+
+    @Html.DayPilotCalendar("dpc_recurring", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        EventDeleteHandling = EventDeleteHandlingType.CallBack,
+        EventMoveHandling = EventMoveHandlingType.CallBack,
+        EventResizeHandling = EventResizeHandlingType.CallBack,
+        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+        AjaxErrorJavaScript = "new DayPilot.Modal().showHtml(request.response);",
+        ShowAllDayEvents = true,
+               
+        Height = 400,
+        HeightSpec = HeightSpec.BusinessHours,
+        EventBubble = "bubble"
+    })
+</div>

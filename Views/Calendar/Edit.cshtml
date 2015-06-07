@@ -1,0 +1,65 @@
+﻿@model KwasantWeb.ViewModels.CalendarShowVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+<div id="CalendarDiv" class="col-md-5"></div>
+<script type="text/javascript">
+    $(function() {
+        @{
+            var calendarsToDisplay = new List<int>();
+            if (Model.LinkedCalendarIds != null)
+            {
+                calendarsToDisplay.AddRange(Model.LinkedCalendarIds);
+            }
+            calendarsToDisplay.Add(Model.ActiveCalendarId);
+            var calendarString = String.Join(",", calendarsToDisplay.Distinct());
+        }
+        
+        window.parent.calendar = $('#CalendarDiv').KCalendar({
+            getCalendarBackendURL: function() {
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + calendarString)';
+            },
+            getMonthBackendURL: function () {
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + calendarString)';
+            },
+            getNavigatorBackendURL: function() {
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
+            },  
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
+            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            onEventClick: function (id) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                
+                Kwasant.IFrame.Display('/Event/Edit/?eventID=' + id,
+                {
+                    horizontalAlign: 'right',
+                    callback: function(result) {
+                        if (result.saved) {
+                            calendar.refreshCalendars();
+                            displayMessage(result.message);
+                        }
+                    }
+                });
+            },
+            onEventNew: function(start, end) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                var id = $("#hdnrequestid").val();
+                Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.ActiveCalendarId + '&start=' + start + 'z&end=' + end + 'z',
+                    {
+                        horizontalAlign: 'right',
+                        callback: function(result) {
+                            if (result.saved) {
+                                refreshConversation();
+                                calendar.refreshCalendars();
+                                displayMessage(result.message);
+                            }
+                        }
+                    });
+            },
+        });
+        window.parent.storedCalendar = window.parent.calendar.getStoredCalendar();
+        window.parent.dp_navigator = window.parent.calendar.getNavigator();
+    });
+</script>

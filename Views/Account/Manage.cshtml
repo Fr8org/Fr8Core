@@ -1,0 +1,30 @@
+﻿@model KwasantWeb.ViewModels.ManageUserVM
+@{
+    ViewBag.Title = "Manage Account";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div class="row">
+    <div class="col-md-12">
+        @if (Model.HasLocalPassword)
+        {
+            @Html.Partial("_ChangePasswordPartial")
+        }
+        else
+        {
+            @Html.Partial("_SetPasswordPartial")
+        }
+
+@*
+        <section id="externalLogins">
+            @Html.Action("RemoveAccountList")
+            @Html.Partial("_ExternalLoginsListPartial", new { Action = "LinkLogin", ReturnUrl = ViewBag.ReturnUrl })
+        </section>
+*@
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+}

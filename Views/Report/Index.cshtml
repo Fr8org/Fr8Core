@@ -1,0 +1,308 @@
+﻿<h2>@ViewBag.Title</h2>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="~/Content/js/KwasantCommon.js"></script>
+<nav class="navbar navbar-default top-toolbar-section" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        @Html.Partial("TimeSpanNavigator")
+    </div>
+</nav>
+
+<table id="tblreport" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Primary Category</th>
+            <th style="width: 15%">Secondary Category</th>
+            <th style="width: 10%">Activity</th>
+            <th style="width: 45%">Data</th>
+        </tr>
+    </thead>
+</table>
+
+<table id="tblincidentreport" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 10%">Date</th>
+            <th style="width: 10%">Primary Category</th>
+            <th style="width: 15%">Secondary Category</th>
+            <th style="width: 10%">Activity</th>
+            <th style="width: 45%">Data</th>
+            <th style="width: 10%">ObjectID</th>
+        </tr>
+    </thead>
+</table>
+
+<table id="tblAllLogs" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Name</th>
+            <th style="width: 15%">Level</th>
+            <th style="width: 55%">Message</th>
+        </tr>
+    </thead>
+</table>
+
+<table id="tblshowBookerThroughput" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 100%">Booking Activity Reports</th>
+        </tr>
+    </thead>
+</table>
+
+<table id="tblshowBRResponsiveness" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 20%">ObjectID</th>
+            <th style="width: 70%">Time To Process</th>
+            <th style="width: 10%"></th>
+        </tr>
+    </thead>
+
+    <tfoot>
+        <tr>
+            <th style="text-align: right">Average Time To Process:</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>
+
+<script type="text/javascript">
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        $('#tblAllLogs').hide();
+        $('#tblreport').hide();
+        $('#tblincidentreport').hide();
+        $('#tblshowBookerThroughput').hide();
+        $('#tblshowBRResponsiveness').hide();
+        updateTables();
+    });
+
+    function updateTables() {
+
+        var queryPeriod = "all";
+        var table;
+        var columns;
+        $('a#all').addClass('current');
+        //Initializing columns defination for DataTable widget according to report type.
+        switch ("@ViewBag.type") {
+            case "incident":
+                columns = [
+                    {
+                        data: function (data) {
+                            return convertToDateString(data.create_date);
+                        }
+                    },
+                    { data: 'primary_category' },
+                    { data: 'secondary_category' },
+                    { data: 'activity' },
+                    { data: 'data' },
+                    { data: 'object_id' }
+                ];
+                break;
+            case "usage":
+                columns = [
+                    {
+                        data: function (data) {
+                            return convertToDateString(data.create_date);
+                        }
+                    },
+                    { data: 'primary_category' },
+                    { data: 'secondary_category' },
+                    { data: 'activity' },
+                    { data: 'data' }
+                ];
+                break;
+            case "alllogs":
+                columns = [
+                    {
+                        data: function (data) {
+                            return convertToDateString(data.date);
+                        }
+                    },
+                    { data: 'name' },
+                    { data: 'level' },
+                    { data: 'message' },
+                ];
+                break;
+            case "showBookerThroughput":
+                columns = [
+                    { data: 'brname_and_count' }
+                ];
+                break;
+            case "showBRResponsiveness":
+                columns = [
+                    { data: 'object_id' },
+                    { data: function(data)
+                    { return  'Time to process was ' + data.time_to_process + " minutes";  }
+                    },
+                    {
+                        data: 'time_to_process',
+                        visible:false
+                    }
+                ];
+                break;
+        }
+
+        //loadReport();
+        showRequests();
+
+        //Inserts retrieved json records into DataTable Widget
+        function showRequests() {
+            var tableToWrite;// = $('#tblreport');
+            var tableToHide;
+            if ("@ViewBag.type" == "alllogs") {
+                tableToWrite = $('#tblAllLogs');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblincidentreport');
+                tableToHide = $('#tblshowBookerThroughput');
+                tableToHide = $('#tblshowBRResponsiveness');
+            }
+            else if ("@ViewBag.type" == "incident") {
+                tableToWrite = $('#tblincidentreport');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblshowBookerThroughput');
+                tableToHide = $('#tblshowBRResponsiveness');
+            }
+            else if ("@ViewBag.type" == "showBookerThroughput") {
+                tableToWrite = $('#tblshowBookerThroughput');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblincidentreport');
+                tableToHide = $('#tblshowBRResponsiveness');
+            }
+            else if ("@ViewBag.type" == "showBRResponsiveness") {
+                tableToWrite = $('#tblshowBRResponsiveness');
+                tableToHide = $('#tblshowBookerThroughput');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblincidentreport');
+                showBRResponsiveness();
+            }
+            else {
+                tableToWrite = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblincidentreport');
+                tableToHide = $('#tblshowBookerThroughput');
+            }
+
+            if ("@ViewBag.type" != "showBRResponsiveness")
+            {
+                table = tableToWrite.DataTable({
+                    destroy: true,
+                    searching: false,
+                    ordering: false,
+                    bLengthChange: false,
+                    processing: true,
+                    serverSide: true, //Enabling server side processing
+                    //data: JSON.parse(response),
+                    order: [0, 'desc'],
+                    columns: columns,
+                    ajax:
+                         {
+                             url: "@Url.Action("ShowReport", "Report")" + "?queryPeriod=" + queryPeriod + "&type="+"@ViewBag.type",
+                    dataSrc: function (json) {
+                        var orgdata = JSON.parse(json.data);
+                        return orgdata;
+                    },
+                    type: "POST"
+                }
+                });
+        }
+        tableToHide.hide();
+        tableToWrite.show();
+
+        
+    }
+
+    //Initializing click for all filter buttons.
+    $('.top-toolbar-section a').click(function () {
+        $('.top-toolbar-section a').each(function () {
+            $(this).removeClass('current');
+        });
+        $(this).addClass('current');
+        queryPeriod = $(this).attr("id");
+        table.destroy();
+        showRequests();
+        return false;
+    });
+    
+
+    function showBRResponsiveness()
+    {
+        table = $('#tblshowBRResponsiveness').DataTable( {
+            destroy: true,
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            //data: JSON.parse(response),
+            order: [0, 'desc'],
+            columns: columns,
+            ajax:
+                 {
+                     url: "@Url.Action("ShowReport", "Report")" + "?queryPeriod=" + queryPeriod + "&type="+"@ViewBag.type",
+            dataSrc: function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+            },
+            type: "POST"
+            },
+            footerCallback: function (row, data, start, end, display) {
+                
+            var api = this.api(), data;
+            var count = data.length;      
+            
+            // Remove the formatting to get integer data for summation
+            var intVal = function (i) {
+                
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '') * 1 :
+                    typeof i === 'number' ?
+                    i : 0;
+            };
+
+            if (api.column(2).data().length){
+                // Total over all pages
+                total = api
+                    .column(2)
+                    .data()
+                    .reduce(function (a, b) {
+                      
+                        return intVal(a) + intVal(b);
+                    });
+            }
+
+                //Total over this page
+                averageTotal = api
+                    .column(2, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Update footer
+                $(api.column(1).footer()).html(
+                    '' + minutesToStr(averageTotal / count) 
+                );
+           }
+        });
+      }
+    }
+
+    
+</script>

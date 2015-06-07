@@ -1,0 +1,43 @@
+﻿@model List<KwasantWeb.ViewModels.BRSearchResultVM>
+<table id="tblbookingrequest" class="data-table table-with-action">
+    <thead>
+        <tr>
+            <th>Date Received</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Email Status</th>
+            <th>BR Status</th>
+            <th class="action-cell">Action</th>
+        </tr>
+    </thead>
+</table>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<script>
+    var response = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model, Newtonsoft.Json.Formatting.Indented));
+    var table;
+    table = $('#tblbookingrequest').DataTable({
+        stripeClasses: ['rowClass'],
+        destroy: true,
+        data: response,
+        order: [0, 'desc'],
+        columns: [
+            { data: 'DateReceived' },
+            { data: 'From' },
+            { data: 'Subject' },
+            { data: 'EmailStatus' },
+            { data: 'BookingRequestStatus' },
+            {
+                data: null,
+                defaultContent: "<a value='detail' href='#' onclick='getDetails(this)'>Details</a>"
+            }
+        ],
+    });
+
+    //Function triggered on "Details" button click in table "tblbookingrequest"
+    function getDetails(curElmt) {
+        var data = table.row($(curElmt).parents('tr')).data();
+        //loading Email Details
+        $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + data.Id);
+    }
+</script>

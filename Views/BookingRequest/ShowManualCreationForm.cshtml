@@ -1,0 +1,70 @@
+﻿<form class="" id="frmTryItOut" action="#">
+    <table>
+        <tr>
+            <td colspan="2">
+                <h2>Create Manually Booking Request </h2>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div id="notificationGroup">
+                    <div class="col-md-7" style="margin-bottom: 10px; text-align: left; padding-left: 0px; width: 100%;">
+                        <div id="notificationMessage" style="background: #f8f8f8 !important; color: #d85e17; font-size: 16px; padding-left: 10px; font-size: 16px; font-weight: bold;">
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>Email Address:
+            </td>
+            <td>
+                <input type="text" class="span12 TryItOutfield" placeholder="Enter your email address here" name="Email" id="emailIdReqBooking" style="width: 100%;">
+            </td>
+        </tr>
+        <tr>
+            <td>Subject:
+            </td>
+            <td>
+                <input type="text" class="span12 TryItOutfield" placeholder="Enter your subject address here" name="Subject" id="subject" style="width: 100%;">
+            </td>
+        </tr>
+        <tr>
+            <td>Body:
+            </td>
+            <td>
+                <textarea class="span12 TryItOutfield" placeholder='Example: "Book me for a 3pm meeting next Tuesday at 3pm at Starbucks on Jones and Laguna with Sara@sant.com"' name="MeetingInfo" rows="10" id="meetingInfo" style="width: 100%;"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn btn-large pull-right" type="button" id="btnSubmit">Submit</button>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript">
+    $("#btnSubmit").click(function () {
+        $.ajax({
+            url: "/BookingRequest/CreateViaBooker",
+            type: "POST",
+            data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val(), 'subject': $('#subject').val() },
+            success: function (response) {
+
+                displayNotification(response.Message);
+
+                if (response.Result == "Success")
+                    clearFields();
+            }
+        });
+    });
+
+    function clearFields() {
+        $('#emailIdReqBooking').val("");
+        $('#meetingInfo').val("");
+        $('#subject').val("");
+    }
+</script>

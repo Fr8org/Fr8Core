@@ -1,0 +1,380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D940EFCA-2D57-466C-8103-54DB173F1BD2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KwasantICS</RootNamespace>
+    <AssemblyName>KwasantICS</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="antlr\antlr.runtime\antlr.collections.impl\ASTArray.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.collections.impl\BitSet.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.collections\AST.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ANTLREventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\DebuggingCharScanner.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\DebuggingInputBuffer.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\DebuggingParser.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\GuessingEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ICharScannerDebugSubject.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\IDebugSubject.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\InputBufferEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\InputBufferEventSupport.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\InputBufferListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\InputBufferListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\InputBufferReporter.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\IParserDebugSubject.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\Listener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\LLkDebuggingParser.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\MessageEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\MessageListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\MessageListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\NewLineEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\NewLineListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserController.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserEventSupport.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserMatchEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserMatchListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserMatchListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserReporter.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserTokenEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserTokenListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParserTokenListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ParseTreeDebugParser.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\ScannerEventSupport.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\SemanticPredicateEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\SemanticPredicateListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\SemanticPredicateListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\SyntacticPredicateEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\SyntacticPredicateListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\SyntacticPredicateListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\TraceEventArgs.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\TraceListener.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\TraceListenerBase.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr.debug\Tracer.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ANTLRException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ANTLRPanicException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ASTFactory.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ASTNodeCreator.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ASTNULLType.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ASTPair.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ASTVisitor.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\BaseAST.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ByteBuffer.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CharBuffer.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CharQueue.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CharScanner.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CharStreamException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CharStreamIOException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CommonAST.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CommonASTWithHiddenTokens.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CommonHiddenStreamToken.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\CommonToken.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\DefaultFileLineFormatter.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\DumpASTVisitor.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\FileLineFormatter.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\IHiddenStreamToken.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\InputBuffer.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\IToken.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\LexerSharedInputState.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\LLkParser.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\MismatchedCharException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\MismatchedTokenException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\NoViableAltException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\NoViableAltForCharException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\Parser.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ParserSharedInputState.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ParseTree.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ParseTreeRule.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\ParseTreeToken.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\RecognitionException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\SemanticException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\StringUtils.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\Token.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenBuffer.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenCreator.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenQueue.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStream.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamBasicFilter.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamHiddenTokenFilter.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamIOException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamRecognitionException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamRetryException.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamRewriteEngine.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenStreamSelector.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TokenWithIndex.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TreeParser.cs" />
+    <Compile Include="antlr\antlr.runtime\antlr\TreeParserSharedInputState.cs" />
+    <Compile Include="antlr\antlr.runtime\SupportClass.cs" />
+    <Compile Include="Collections\Constants.cs" />
+    <Compile Include="Collections\Enumerators\GroupedListEnumerator.cs" />
+    <Compile Include="Collections\GroupedList.cs" />
+    <Compile Include="Collections\GroupedValueList.cs" />
+    <Compile Include="Collections\Interfaces\IGroupedCollection.cs" />
+    <Compile Include="Collections\Interfaces\IGroupedList.cs" />
+    <Compile Include="Collections\Interfaces\IGroupedObject.cs" />
+    <Compile Include="Collections\Interfaces\IGroupedValueCollection.cs" />
+    <Compile Include="Collections\Interfaces\IGroupedValueList.cs" />
+    <Compile Include="Collections\Interfaces\IMultiLinkedList.cs" />
+    <Compile Include="Collections\Interfaces\IValueObject.cs" />
+    <Compile Include="Collections\Interfaces\Proxies\IGroupedCollectionProxy.cs" />
+    <Compile Include="Collections\Interfaces\Proxies\IGroupedValueListProxy.cs" />
+    <Compile Include="Collections\MultiLinkedList.cs" />
+    <Compile Include="Collections\Proxies\GroupedCollectionProxy.cs" />
+    <Compile Include="Collections\Proxies\GroupedValueListProxy.cs" />
+    <Compile Include="DDay.iCal\Compatibility\BrowsableAttribute.cs" />
+    <Compile Include="DDay.iCal\Compatibility\DebuggerDisplayAttribute.cs" />
+    <Compile Include="DDay.iCal\Components\Alarm.cs" />
+    <Compile Include="DDay.iCal\Components\CalendarComponent.cs" />
+    <Compile Include="DDay.iCal\Components\DDayEvent.cs" />
+    <Compile Include="DDay.iCal\Components\FreeBusy.cs" />
+    <Compile Include="DDay.iCal\Components\iCalTimeZone.cs" />
+    <Compile Include="DDay.iCal\Components\iCalTimeZoneInfo.cs" />
+    <Compile Include="DDay.iCal\Components\IEvent.cs" />
+    <Compile Include="DDay.iCal\Components\Journal.cs" />
+    <Compile Include="DDay.iCal\Components\RecurringComponent.cs" />
+    <Compile Include="DDay.iCal\Components\Todo.cs" />
+    <Compile Include="DDay.iCal\Components\UniqueComponent.cs" />
+    <Compile Include="DDay.iCal\Constants.cs" />
+    <Compile Include="DDay.iCal\DataTypes\Attachment.cs" />
+    <Compile Include="DDay.iCal\DataTypes\Attendee.cs" />
+    <Compile Include="DDay.iCal\DataTypes\CalendarDataType.cs" />
+    <Compile Include="DDay.iCal\DataTypes\EncodableDataType.cs" />
+    <Compile Include="DDay.iCal\DataTypes\FreeBusyEntry.cs" />
+    <Compile Include="DDay.iCal\DataTypes\GeographicLocation.cs" />
+    <Compile Include="DDay.iCal\DataTypes\iCalDateTime.cs" />
+    <Compile Include="DDay.iCal\DataTypes\IGroupedCollection.cs" />
+    <Compile Include="DDay.iCal\DataTypes\Organizer.cs" />
+    <Compile Include="DDay.iCal\DataTypes\Period.cs" />
+    <Compile Include="DDay.iCal\DataTypes\PeriodList.cs" />
+    <Compile Include="DDay.iCal\DataTypes\RecurrencePattern.cs" />
+    <Compile Include="DDay.iCal\DataTypes\RequestStatus.cs" />
+    <Compile Include="DDay.iCal\DataTypes\StatusCode.cs" />
+    <Compile Include="DDay.iCal\DataTypes\Trigger.cs" />
+    <Compile Include="DDay.iCal\DataTypes\UTCOffset.cs" />
+    <Compile Include="DDay.iCal\DataTypes\WeekDay.cs" />
+    <Compile Include="DDay.iCal\Evaluation\Evaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\EventEvaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\PeriodListEvaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\RecurrencePatternEvaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\RecurringEvaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\TimeZoneEvaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\TimeZoneInfoEvaluator.cs" />
+    <Compile Include="DDay.iCal\Evaluation\TodoEvaluator.cs" />
+    <Compile Include="DDay.iCal\Exceptions\EvaluationEngineException.cs" />
+    <Compile Include="DDay.iCal\ExtensionMethods\CalendarObjectExtensions.cs" />
+    <Compile Include="DDay.iCal\ExtensionMethods\ListExtensions.cs" />
+    <Compile Include="DDay.iCal\Factory\UIDFactory.cs" />
+    <Compile Include="DDay.iCal\General\CalendarObject.cs" />
+    <Compile Include="DDay.iCal\General\CalendarObjectBase.cs" />
+    <Compile Include="DDay.iCal\General\CalendarObjectList.cs" />
+    <Compile Include="DDay.iCal\General\CalendarParameter.cs" />
+    <Compile Include="DDay.iCal\General\CalendarParameterList.cs" />
+    <Compile Include="DDay.iCal\General\CalendarProperty.cs" />
+    <Compile Include="DDay.iCal\General\CalendarPropertyList.cs" />
+    <Compile Include="DDay.iCal\General\Proxies\CalendarObjectListProxy.cs" />
+    <Compile Include="DDay.iCal\General\Proxies\CalendarParameterCollectionProxy.cs" />
+    <Compile Include="DDay.iCal\General\Proxies\UniqueComponentListProxy.cs" />
+    <Compile Include="DDay.iCal\General\ServiceProvider.cs" />
+    <Compile Include="DDay.iCal\iCalendar.cs" />
+    <Compile Include="DDay.iCal\iCalendarCollection.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\IAlarm.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\IAlarmContainer.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\ICalendarComponent.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\IFreeBusy.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\IJournal.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\IRecurringComponent.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\ITimeZone.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\ITimeZoneInfo.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\ITodo.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Components\IUniqueComponent.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IAttachment.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IAttendee.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\ICalendarDataType.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IDateTime.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IEncodableDataType.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IFreeBusyEntry.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IGeographicLocation.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IOrganizer.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IPeriod.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IPeriodList.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IRecurrencePattern.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IRequestStatus.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IStatusCode.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\ITrigger.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IUTCOffset.cs" />
+    <Compile Include="DDay.iCal\Interfaces\DataTypes\IWeekDay.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Evaluation\IEvaluator.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Evaluation\IGetFreeBusy.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Evaluation\IGetOccurrences.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Evaluation\IRecurrable.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarObject.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarObjectList.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarParameter.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarParameterCollection.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarParameterCollectionContainer.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarProperty.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarPropertyList.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICalendarPropertyListContainer.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ICopyable.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\IFilteredCalendarObjectList.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\ILoadable.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\IMergeable.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\IServiceProvider.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\IUniqueComponentList.cs" />
+    <Compile Include="DDay.iCal\Interfaces\General\Proxies\ICalendarParameterCollectionProxy.cs" />
+    <Compile Include="DDay.iCal\Interfaces\IICalendar.cs" />
+    <Compile Include="DDay.iCal\Interfaces\IICalendarCollection.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\Factory\ICalendarComponentFactory.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\Factory\ISerializerFactory.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\IDataTypeMapper.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\IEncodingProvider.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\IEncodingStack.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\ISerializationContext.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\ISerializationProcessor.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\ISerializationSettings.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\ISerializer.cs" />
+    <Compile Include="DDay.iCal\Interfaces\Serialization\IStringSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\DataTypeMapper.cs" />
+    <Compile Include="DDay.iCal\Serialization\EncodingProvider.cs" />
+    <Compile Include="DDay.iCal\Serialization\EncodingStack.cs" />
+    <Compile Include="DDay.iCal\Serialization\Factory\ComponentFactory.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Factory\DataTypeSerializerFactory.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Factory\SerializerFactory.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\iCalLexer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\iCalParser.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\iCalParserTokenTypes.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Processors\ComponentPropertyConsolidator.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Processors\CompositeProcessor.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\SerializationInfo.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Components\ComponentSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Components\EventSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Components\UniqueComponentSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataMapSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\AttachmentSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\AttendeeSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\DataTypeSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\DateTimeSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\EncodableDataTypeSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\FreeBusyEntrySerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\GeographicLocationSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\OrganizerSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\PeriodListSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\PeriodSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\RecurrencePatternSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\RequestStatusSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\StatusCodeSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\TriggerSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\UTCOffsetSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\WeekDaySerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\iCalendarSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Other\EnumSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Other\IntegerSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Other\StringSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Other\TimeSpanSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\Other\UriSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\ParameterSerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\PropertySerializer.cs" />
+    <Compile Include="DDay.iCal\Serialization\iCalendar\Serializers\SerializerBase.cs" />
+    <Compile Include="DDay.iCal\Serialization\SerializationContext.cs" />
+    <Compile Include="DDay.iCal\Serialization\SerializationSettings.cs" />
+    <Compile Include="DDay.iCal\Structs\AlarmOccurrence.cs" />
+    <Compile Include="DDay.iCal\Structs\Occurrence.cs" />
+    <Compile Include="DDay.iCal\Structs\TimeZoneObservance.cs" />
+    <Compile Include="DDay.iCal\Utility\DateUtil.cs" />
+    <Compile Include="DDay.iCal\Utility\KnownTypeHelper.cs" />
+    <Compile Include="DDay.iCal\Utility\RecurrenceUtil.cs" />
+    <Compile Include="DDay.iCal\Utility\SerializationUtil.cs" />
+    <Compile Include="DDay.iCal\Utility\TextUtil.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="antlr.runtime.dll" />
+    <Content Include="antlr.runtime.Silverlight.dll" />
+    <Content Include="antlr\antlr.runtime\antlr.runtime.csproj" />
+    <Content Include="antlr\antlr.runtime\antlr.runtime.Silverlight.csproj" />
+    <Content Include="DDay.iCal.dll" />
+    <Content Include="DDay.iCal\DDay.iCal.csproj" />
+    <Content Include="DDay.iCal\DDay.iCal.Silverlight.csproj" />
+    <Content Include="DDay.iCal\License.txt" />
+    <Content Include="DDay.iCal\Serialization\iCalendar\iCalParserTokenTypes.txt" />
+    <Content Include="DDay.iCal\SubWCRev.exe" />
+    <Content Include="License.txt" />
+    <Content Include="ReadMe.txt" />
+    <Content Include="Release Notes\1.0.1.txt" />
+    <Content Include="SilverlightAdapter.dll" />
+    <Content Include="TimeZones\America.ics" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="antlr\antlr.runtime\DDay.iCal.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="antlr\antlr.runtime\Makefile.in" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DDay.iCal\Properties\AssemblyInfo.cs.template" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DDay.iCal\Serialization\iCalendar\iCal.g" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sandcastle.shfb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="antlr\antlr.runtime\Properties\" />
+    <Folder Include="Collections\bin\Debug\" />
+    <Folder Include="Collections\obj\Debug\TempPE\" />
+    <Folder Include="DDay.iCal\bin\Debug\" />
+    <Folder Include="DDay.iCal\obj\Debug\TempPE\" />
+    <Folder Include="Patches\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

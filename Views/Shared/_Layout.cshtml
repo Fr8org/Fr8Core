@@ -1,0 +1,121 @@
+﻿@using Data.Infrastructure.StructureMap
+@using StructureMap
+@using Utilities
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Kwasant</title>
+	<link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />        
+    @Styles.Render("~/bundles/css/bootstrap30")    
+    @Styles.Render("~/bundles/css/backendcss")
+	@Styles.Render("~/bundles/css/colorbox")
+	
+	
+    @RenderSection("styles", required: false)     
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/cookies")
+    
+
+    <!-- 
+        This generates a script to setup polling
+        It is overridable if people redefine the polling methods in 'immediateScripts' 
+        It also includes notifiy.js
+    -->
+    @Html.Partial("~/Views/Shared/QueuePollingScript.cshtml", null) 
+
+    @RenderSection("immediateScripts", required:false)	
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="Content/js/respond.min.js"></script>
+	<![endif]-->
+
+    <script>
+        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+        window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
+        @{
+            var userID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+            if (String.IsNullOrWhiteSpace(userID))
+            {
+                userID = "";
+            }
+            var sessionID = Session.SessionID;
+            if (String.IsNullOrWhiteSpace(sessionID))
+            {
+                sessionID = "";
+            }
+        }
+        var lastUserID = '';
+        var userID = '';
+        var cookieID = $.cookie('sessionID');
+        if ('@userID' !== '') {
+            userID = '@userID';
+            if (cookieID != null) {
+                lastUserID = cookieID;
+            }
+        } else {
+            if (cookieID != null) {
+                userID = cookieID;
+            } else {
+                userID = '@sessionID';
+            }
+        }
+        $.cookie('sessionID', userID);
+        if (lastUserID !== '' && lastUserID !== userID)
+            window.analytics.alias(userID);
+        
+        window.analytics.identify(userID);
+        window.analytics.page();
+    </script>
+</head>
+<body>
+	<!--[if lt IE 7]>
+		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+	<![endif]-->
+    <ul id="ajaxErrors" style="display:none;"></ul>
+	<div id="main-container">
+		<header class="navbar navbar-static-top site-header">
+			<div class="site-header-wrap">
+				<div class="site-header-inner">
+					<div class="container">
+						<div class="navbar-header">
+							<h3 class="brand goTop">
+								<a href="@Url.Action("Dashboard", "Admin")"><img class="floating" src="@Url.Content("~/")Content/img/site/kwasant-logo.png" alt="Kwasant" title="Kwasant" /></a>
+							</h3>                      
+							<section id="login">
+								@Html.Partial("_LoginPartial")
+							</section>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="logotext text">
+				<h1>Kwasant</h1>
+				<p>We schedule your meetings for you</p>
+			</div>
+		</header>
+		<div class="container body-content">
+			@RenderBody()        
+		</div>
+		<div class="footer-clear">&nbsp;</div>
+	</div>
+	<footer class="site-footer">
+		<div class="container">
+			<p>&copy; @DateTime.Now.Year - Maginot Technologies, LLC Confidential</p>
+		</div>
+	</footer>
+
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap31")
+    @Scripts.Render("~/bundles/js/common")
+	@Scripts.Render("~/bundles/js/customjs")
+    @RenderSection("scripts", required: false)
+    
+    <script type="text/javascript">
+        registerPolling(); //Defined in QueuePollingScript.cshtml
+    </script>
+</body>
+</html>

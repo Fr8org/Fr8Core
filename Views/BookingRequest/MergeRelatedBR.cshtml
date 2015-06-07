@@ -1,0 +1,134 @@
+﻿@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")
+    @Scripts.Render("~/bundles/js/moment")
+    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+
+}
+<style>
+    .current-row
+    {
+        background-color: #aaa !important;
+    }
+</style>
+<div class="light-bg">
+    <form id="f" class="edit-event-form form">
+        <h3 class="with-border">Select the BR into which you want to merge the current BR</h3>
+        <table id="tbluserrequests">
+            <thead>
+                <tr>
+                    <th>Date Received</th>
+                    <th>Subject</th>
+                </tr>
+            </thead>
+        </table>
+        <div class="space form-actions">
+            <input id="btnOk" type="button" value="Ok" class="btn small-dialog-button shadow-button pull-left" />
+            <input id="btnCancel" type="button" value="Cancel" class="btn small-dialog-button shadow-button pull-left" onclick="Kwasant.IFrame.CloseMe(false);" />
+        </div>
+    </form>
+</div>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<script>
+    var table;
+    var currentRowData;
+    (function () {
+        //Parsing and binding the booking requests viewer
+        table = $('#tbluserrequests').DataTable({
+            stripeClasses: ['rowClass'],
+            destroy: true,
+            order: [0, 'desc'],
+            searching: true,
+            ordering: true,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            ajax:
+            {
+                //Ajax call to get all unprocessed booking request from server according to user.
+                "url": "@Url.Action("ShowByUser", "BookingRequest")" + "?bookingRequestId=" + "@ViewBag.BookingRequestId",
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                },
+                "type": "POST"
+            },
+            //Callback function for row created.
+            createdRow: function (row, data, index) {
+                if (data.id == "@ViewBag.BookingRequestId") {
+                    currentRowData = data;
+                    $(row).addClass('current-row');
+                }
+                else {
+                    $(row).removeClass('current-row');
+                }
+            },
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+        });
+    })();
+
+    //function to format datetime of Request viewer widget
+    function ConvertTODateString(dateFormat) {
+        var datevalue = new Date(dateFormat);
+        dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return dateFormat;
+    }
+
+    $('#tbluserrequests').on('click', 'tr', function () {
+        $('#tbluserrequests tr').removeClass('current-row');
+        if ($('#tbluserrequests tr').length > 2) {
+            $(this).addClass('current-row');
+        }
+        currentRowData = table.row($(this)).data();
+    });
+
+    $("#btnOk").click(function () {
+        if (currentRowData != undefined) {
+            if (currentRowData.id == "@ViewBag.BookingRequestId")
+                alert("Please select different booking request to merge.");
+            else
+            {
+                var path = "@Url.Action("Merge", "BookingRequest", new {originalBRId = ViewBag.BookingRequestId })" + "&targetBRId=" + currentRowData.id;
+                $.post(path, function (response) {
+                    if (response.Name == 'Success')
+                        parent.window.location.href = "@Url.Action("Index", "Dashboard")" + "/Index/" + currentRowData.id;
+                    else if (response.Name == 'DifferentBooker')
+                        ShowBookerOwnershipAlert(response.Message, '@ViewBag.BookingRequestId');
+                    else if (response.Name == 'error')
+                        alert(response.Message);
+                    else
+                        alert('An error occured on the server. Your changes have not been saved.');
+                });
+            }
+        }
+        else
+            alert("Please select booking request to merge.");
+    });
+
+</script>

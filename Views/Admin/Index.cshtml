@@ -1,0 +1,123 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+@*@Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
+    <p></p>
+@Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
+    <p></p>
+@Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "" })
+    <p></p>
+@Html.ActionLink("View History ", "History", "Report", new{area=""}, new { @class = "" })
+    <p></p>
+*@
+<nav class="navbar navbar-default top-toolbar-section" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown"><a id="btnBookingRequest">Booking Requests</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show Unprocessed", "Index", "BookingRequest", null, new { @class = "" })</li>
+                        <li>@Html.ActionLink("Show My CheckedOut", "ShowBRSOwnedByBooker", "BookingRequest", null, new { @class = "" })</li>
+                        <li>@Html.ActionLink("Show All CheckedOut", "ShowInProcessBRS", "BookingRequest", null, new { @class = "" })</li>
+                        <li>@Html.ActionLink("Show My Awaiting Response", "ShowAwaitingResponse", "BookingRequest", null, new { @class = "" })</li>
+                        <li>@Html.ActionLink("Find Booking Request", "FindBookingRequest", "BookingRequest", null, new { @class = "" })</li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a id="btnReports">Reports</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All Logs", "Index", "Report", new { type = "alllogs" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show Incidents", "Index", "Report", new { type = "incident" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show Usage", "Index", "Report", new { type = "usage" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show History", "History", "Report", new{area=""}, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show Booker Throughput", "Index", "Report", new { type = "showBookerThroughput" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show BR Responsiveness", "Index", "Report", new { type = "showBRResponsiveness" }, new { @class = "" }) </li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a id="btnUsers">Users</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All", "Index", "User")</li>
+                        <li>@Html.ActionLink("Find", "FindUser", "User")</li>
+                        <li>@Html.ActionLink("Add", "ShowAddUser", "User")</li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a id="btnReports">Admin</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All Booking Requests", "ShowAllBookingRequests", "BookingRequest", new { type = "alllogs" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show Emails Report", "ShowReport", "Email")</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<h2>Kwasant Admin Console</h2>
+
+<table id="tblIncident" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Primary Category</th>
+            <th style="width: 15%">Secondary Category</th>
+            <th style="width: 10%">Activity</th>
+            <th style="width: 45%">Data</th>
+        </tr>
+    </thead>
+</table>
+<a href="/">Go to kwasant.com</a>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('.navbar .dropdown').hover(function () {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
+        }, function () {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
+        });
+        //$.post("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident, 'json');
+        showIncident();
+    });
+    // show 5 most Recent Incident on datatable
+    function showIncident() {
+        var table = $('#tblIncident').DataTable({
+            destroy: true,
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            //data: JSON.parse(response),
+            order: [0, 'desc'],
+            columns: [
+                {
+                    data: function (data) {
+                        return convertToDateString(data.create_date);
+                    }
+                },
+                { data: 'primary_category' },
+                { data: 'secondary_category' },
+                { data: 'activity' },
+                { data: 'data' }
+            ],
+            ajax:
+                {
+                    url: "@Url.Action("ShowReport", "Report")" + "?queryPeriod=" + "" + "&type="+"fiveRecentIncident",
+            dataSrc: function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+                alert(orgdata);
+            },
+            type: "POST"
+          }
+        });
+    }
+
+</script>

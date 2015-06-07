@@ -1,0 +1,944 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KwasantWeb</RootNamespace>
+    <AssemblyName>KwasantWeb</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>true</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Analytics.NET">
+      <HintPath>packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=3.3.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4, Version=3.3.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
+    <Reference Include="DayPilot.Web.Mvc">
+      <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc">
+      <HintPath>packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis">
+      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth, Version=1.8.2.23763, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.8.2.23775, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.Mvc.1.8.2\lib\net40\Google.Apis.Auth.Mvc4.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.8.2.23773, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.PlatformServices">
+      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="LogentriesCore">
+      <HintPath>packages\logentries.core.2.4.4\lib\net40\LogentriesCore.dll</HintPath>
+    </Reference>
+    <Reference Include="LogentriesLog4net">
+      <HintPath>packages\logentries.log4net.2.4.2\lib\net40\LogentriesLog4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAzure.Configuration">
+      <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Http, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.1.2\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="WebGrease">
+      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Zlib.Portable, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.2.0.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.2.0.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.2.0.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NotificationQueues\UserNotificationData.cs" />
+    <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
+    <Compile Include="NotificationQueues\NotificationQueue.cs" />
+    <Compile Include="NotificationQueues\BookingRequestUpdatedQueue.cs" />
+    <Compile Include="NotificationQueues\BookingRequestReservedForUserQueue.cs" />
+    <Compile Include="NotificationQueues\HighPriorityIncidentsQueue.cs" />
+    <Compile Include="NotificationQueues\NewBookingRequestResponseQueue.cs" />
+    <Compile Include="NotificationQueues\SharedNotificationQueues.cs" />
+    <Compile Include="Api\EventResponse.aspx.cs">
+      <DependentUpon>EventResponse.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Api\EventResponse.aspx.designer.cs">
+      <DependentUpon>EventResponse.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Api\GetAttachment.ashx.cs">
+      <DependentUpon>GetAttachment.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Api\GetEmailHTML.aspx.cs">
+      <DependentUpon>GetEmailHTML.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Api\GetEmailHTML.aspx.designer.cs">
+      <DependentUpon>GetEmailHTML.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AlertingController.cs" />
+    <Compile Include="Controllers\AnswerController.cs" />
+    <Compile Include="Controllers\BookerController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
+    <Compile Include="Controllers\DiagnosticsController.cs" />
+    <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
+    <Compile Include="Controllers\External\DayPilot\Providers\IEventDataProvider.cs" />
+    <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
+    <Compile Include="Controllers\BookingRequestController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
+    <Compile Include="Controllers\NegotiationResponseController.cs" />
+    <Compile Include="Controllers\ControllerExtensions.cs" />
+    <Compile Include="Controllers\External\DayPilot\KwasantMonthControl.cs" />
+    <Compile Include="Controllers\External\DayPilot\KwasantNavigatorControl.cs" />
+    <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
+    <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MonthController.cs" />
+    <Compile Include="Controllers\NegotiationController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
+    <Compile Include="Controllers\QuestionController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\SchedulerController.cs" />
+    <Compile Include="Controllers\TokenAuthController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="KwasantHandleErrorAttribute.cs" />
+    <Compile Include="ViewModelServices\NegotiationResponse.cs" />
+    <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
+    <Compile Include="ViewModels\BookingRequestNoteVM.cs" />
+    <Compile Include="ViewModels\BookingRequestVM.cs" />
+    <Compile Include="ViewModels\BRSearchResultVM.cs" />
+    <Compile Include="ViewModels\CalendarShowVM.cs" />
+    <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
+    <Compile Include="ViewModels\DashboardShowVM.cs" />
+    <Compile Include="ViewModels\ForgotPasswordVM.cs" />
+    <Compile Include="ViewModels\HomeVM.cs" />
+    <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
+    <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
+    <Compile Include="ViewModels\CalendarVM.cs" />
+    <Compile Include="ViewModels\EventVM.cs" />
+    <Compile Include="ViewModels\MyAccountVM.cs" />
+    <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
+    <Compile Include="ViewModels\LoginVM.cs" />
+    <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\NegotiationResponseVM.cs" />
+    <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
+    <Compile Include="ViewModels\NegotiationVM.cs" />
+    <Compile Include="ViewModels\RegisterVM.cs" />
+    <Compile Include="ViewModels\RemoteCalendarVM.cs" />
+    <Compile Include="ViewModels\ProfileVM.cs" />
+    <Compile Include="ViewModels\ResetPasswordVM.cs" />
+    <Compile Include="ViewModels\SendEmailVM.cs" />
+    <Compile Include="ViewModels\UserProfilesVM.cs" />
+    <Compile Include="ViewModels\UserVM.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Api\EventResponse.aspx" />
+    <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\ContextMenu\jquery.contextMenu.css" />
+    <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
+    <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
+    <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings.png" />
+    <Content Include="Content\css\additionalcss\bootstrap30\css\bootstrap-datetimepicker.css" />
+    <Content Include="Content\css\additionalcss\bootstrap30\css\bootstrap-responsive.css" />
+    <Content Include="Content\css\additionalcss\bootstrap30\css\bootstrap3.0.css" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\css\additionalcss\colorbox\colorbox.css" />
+    <Content Include="Content\css\additionalcss\colorbox\img\controls.png" />
+    <Content Include="Content\css\additionalcss\colorbox\img\loading.gif" />
+    <Content Include="Content\css\additionalcss\font-awesome\css\font-awesome.css" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\additionalcss\select2\select2-spinner.gif" />
+    <Content Include="Content\css\additionalcss\select2\select2.css" />
+    <Content Include="Content\css\additionalcss\select2\select2.png" />
+    <Content Include="Content\css\additionalcss\select2\select2x2.png" />
+    <Content Include="Content\css\backendcss\default.css" />
+    <Content Include="Content\css\daypilot\areas.css" />
+    <Content Include="Content\css\daypilot\bubble_default.css" />
+    <Content Include="Content\css\daypilot\calendar_blue.css" />
+    <Content Include="Content\css\daypilot\calendar_g.css" />
+    <Content Include="Content\css\daypilot\calendar_green.css" />
+    <Content Include="Content\css\daypilot\calendar_traditional.css" />
+    <Content Include="Content\css\daypilot\calendar_transparent.css" />
+    <Content Include="Content\css\daypilot\calendar_white.css" />
+    <Content Include="Content\css\daypilot\menu_default.css" />
+    <Content Include="Content\css\daypilot\month_blue.css" />
+    <Content Include="Content\css\daypilot\month_g.css" />
+    <Content Include="Content\css\daypilot\month_green.css" />
+    <Content Include="Content\css\daypilot\month_traditional.css" />
+    <Content Include="Content\css\daypilot\month_transparent.css" />
+    <Content Include="Content\css\daypilot\month_white.css" />
+    <Content Include="Content\css\daypilot\navigator_8.css" />
+    <Content Include="Content\css\daypilot\navigator_blue.css" />
+    <Content Include="Content\css\daypilot\navigator_g.css" />
+    <Content Include="Content\css\daypilot\navigator_green.css" />
+    <Content Include="Content\css\daypilot\navigator_transparent.css" />
+    <Content Include="Content\css\daypilot\navigator_white.css" />
+    <Content Include="Content\css\daypilot\scheduler_8.css" />
+    <Content Include="Content\css\daypilot\scheduler_blue.css" />
+    <Content Include="Content\css\daypilot\scheduler_green.css" />
+    <Content Include="Content\css\daypilot\scheduler_traditional.css" />
+    <Content Include="Content\css\daypilot\scheduler_transparent.css" />
+    <Content Include="Content\css\daypilot\scheduler_white.css" />
+    <Content Include="Content\css\EmailSend.css" />
+    <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\jackedup.css" />
+    <Content Include="Content\css\jqtree.css" />
+    <Content Include="Content\css\jquery-ui.css" />
+    <Content Include="Content\css\jquery-ui.structure.css" />
+    <Content Include="Content\css\jquery-ui.theme.css" />
+    <Content Include="Content\css\NegotiationWidgets.css" />
+    <Content Include="Content\css\toolbar.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\images\filler.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\ColReorder\css\dataTables.colReorder.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\ColReorder\css\dataTables.colReorder.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\ColReorder\images\insert.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\ColVis\css\dataTables.colVis.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\ColVis\css\dataTables.colvis.jqueryui.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\ColVis\css\dataTables.colVis.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\FixedColumns\css\dataTables.fixedColumns.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\FixedColumns\css\dataTables.fixedColumns.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\FixedHeader\css\dataTables.fixedHeader.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\FixedHeader\css\dataTables.fixedHeader.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\KeyTable\css\dataTables.keyTable.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\KeyTable\css\dataTables.keyTable.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\Scroller\css\dataTables.scroller.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\Scroller\css\dataTables.scroller.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\Scroller\images\loading-background.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\css\dataTables.tableTools.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\css\dataTables.tableTools.min.css" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\background.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\collection.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\collection_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\copy.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\copy_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\csv.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\csv_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\pdf.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\pdf_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\print.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\print_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\xls.png" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\xls_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\media\css\jquery.dataTables.css" />
+    <Content Include="Content\DataTables-1.10.0\media\css\jquery.dataTables.min.css" />
+    <Content Include="Content\DataTables-1.10.0\media\css\jquery.dataTables_themeroller.css" />
+    <Content Include="Content\DataTables-1.10.0\media\css\jquery.dataTables_themeroller.min.css" />
+    <Content Include="Content\DataTables-1.10.0\media\images\back_disabled.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\back_enabled.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\back_enabled_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\favicon.ico" />
+    <Content Include="Content\DataTables-1.10.0\media\images\forward_disabled.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\forward_enabled.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\forward_enabled_hover.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\sort_asc.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\sort_asc_disabled.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\sort_both.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\sort_desc.png" />
+    <Content Include="Content\DataTables-1.10.0\media\images\sort_desc_disabled.png" />
+    <Content Include="Content\img\ajax-loader.gif" />
+    <Content Include="Content\img\backgrounds\background_coffee.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee_and_croissant.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffe_and_phone.jpg" />
+    <Content Include="Content\img\backgrounds\background_wood.jpg" />
+    <Content Include="Content\img\backgrounds\bg-overlay.png" />
+    <Content Include="Content\img\backgrounds\cup-and-coffe-bg.png" />
+    <Content Include="Content\img\backgrounds\ie-black-bg.png" />
+    <Content Include="Content\img\backgrounds\login-wrapper-bg.png" />
+    <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
+    <Content Include="Content\img\Cross.png" />
+    <Content Include="Content\img\EmailLogo.png" />
+    <Content Include="Content\img\favicon.ico" />
+    <Content Include="Content\img\forms\try-kwasant-btn.png" />
+    <Content Include="Content\img\googleCalendar.png" />
+    <Content Include="Content\img\icloud-logo.png" />
+    <Content Include="Content\img\icons\sort_asc.png" />
+    <Content Include="Content\img\icons\sort_asc_disabled.png" />
+    <Content Include="Content\img\icons\sort_both.png" />
+    <Content Include="Content\img\icons\sort_desc.png" />
+    <Content Include="Content\img\icons\sort_desc_disabled.png" />
+    <Content Include="Content\img\icons\watch-video-label.png" />
+    <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\MicrosoftExchangelogo.png" />
+    <Content Include="Content\img\minus.png" />
+    <Content Include="Content\img\plus.png" />
+    <Content Include="Content\img\site\alex-photo.png" />
+    <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\email-header.png" />
+    <Content Include="Content\img\site\example_using_kwasant_email.png" />
+    <Content Include="Content\img\site\from_this_to_this.png" />
+    <Content Include="Content\img\site\How_it_works_diagram.png" />
+    <Content Include="Content\img\site\kwasant-logo.png" />
+    <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
+    <Content Include="Content\img\site\kwasant-video-screen.png" />
+    <Content Include="Content\img\site\logo.png" />
+    <Content Include="Content\img\site\perfect-krawsant.jpg" />
+    <Content Include="Content\img\site\perfect-krawsant.png" />
+    <Content Include="Content\img\temp\background-test9.jpg" />
+    <Content Include="Content\img\temp\homepage89.png" />
+    <Content Include="Content\img\temp\homepagesecond.jpg" />
+    <Content Include="Content\img\temp\kwasant-video-screen.png" />
+    <Content Include="Content\img\temp\kwasant_header.png" />
+    <Content Include="Content\img\temp\old\background-match.jpg" />
+    <Content Include="Content\img\temp\old\background-test5.jpg" />
+    <Content Include="Content\img\temp\old\background-test6.jpg" />
+    <Content Include="Content\img\temp\old\background-test7.jpg" />
+    <Content Include="Content\img\temp\old\bg1.jpg" />
+    <Content Include="Content\img\temp\old\bg2.jpg" />
+    <Content Include="Content\img\temp\old\bg3.jpg" />
+    <Content Include="Content\img\temp\old\bg4.jpg" />
+    <Content Include="Content\img\temp\old\bg5.jpg" />
+    <Content Include="Content\img\temp\old\bg6.jpg" />
+    <Content Include="Content\img\temp\old\bg7.jpg" />
+    <Content Include="Content\img\temp\old\bg8.jpg" />
+    <Content Include="Content\img\temp\old\bg9.jpg" />
+    <Content Include="Content\img\temp\old\blue_tag.psd" />
+    <Content Include="Content\img\temp\old\Booking Details.png" />
+    <Content Include="Content\img\temp\old\calendar5.jpg" />
+    <Content Include="Content\img\temp\old\client-1.png" />
+    <Content Include="Content\img\temp\old\client-2.png" />
+    <Content Include="Content\img\temp\old\client-3.png" />
+    <Content Include="Content\img\temp\old\client-4.png" />
+    <Content Include="Content\img\temp\old\client-5.png" />
+    <Content Include="Content\img\temp\old\client-6.png" />
+    <Content Include="Content\img\temp\old\Database layout.pdf" />
+    <Content Include="Content\img\temp\old\Email thread .docx" />
+    <Content Include="Content\img\temp\old\homepage1.jpg" />
+    <Content Include="Content\img\temp\old\homepage2.jpg" />
+    <Content Include="Content\img\temp\old\homepage3.jpg" />
+    <Content Include="Content\img\temp\old\homepage4.jpg" />
+    <Content Include="Content\img\temp\old\homepagefirst.jpg" />
+    <Content Include="Content\img\temp\old\homepagelower3.jpg" />
+    <Content Include="Content\img\temp\old\image_1.jpg" />
+    <Content Include="Content\img\temp\old\image_2.jpg" />
+    <Content Include="Content\img\temp\old\image_3.jpg" />
+    <Content Include="Content\img\temp\old\image_4.jpg" />
+    <Content Include="Content\img\temp\old\image_5.jpg" />
+    <Content Include="Content\img\temp\old\image_6.jpg" />
+    <Content Include="Content\img\temp\old\image_7.jpg" />
+    <Content Include="Content\img\temp\old\kwasant-logo.png" />
+    <Content Include="Content\img\temp\old\largehome.jpg" />
+    <Content Include="Content\img\temp\old\largehome1.jpg" />
+    <Content Include="Content\img\temp\old\logo11.png" />
+    <Content Include="Content\img\temp\old\logo2.png" />
+    <Content Include="Content\img\temp\old\logo5.png" />
+    <Content Include="Content\img\temp\old\logo6.png" />
+    <Content Include="Content\img\temp\old\logo7.png" />
+    <Content Include="Content\img\temp\old\logo9.png" />
+    <Content Include="Content\img\temp\old\love.jpg" />
+    <Content Include="Content\img\temp\old\older-calendar.jpg" />
+    <Content Include="Content\img\temp\old\scheduler1.jpg" />
+    <Content Include="Content\img\temp\old\screen.jpg" />
+    <Content Include="Content\img\temp\old\second-home.jpg" />
+    <Content Include="Content\img\temp\old\step1.png" />
+    <Content Include="Content\img\temp\old\step1a.png" />
+    <Content Include="Content\img\temp\old\step1b.png" />
+    <Content Include="Content\img\temp\old\step1c.png" />
+    <Content Include="Content\img\temp\old\stock-photo-17850747-businessman-writing-in-a-planner.jpg" />
+    <Content Include="Content\img\temp\old\stock-photo-18215604-daily-planner.jpg" />
+    <Content Include="Content\img\temp\old\stock-photo-4316947-schedule.jpg" />
+    <Content Include="Content\img\temp\old\stone-calendar.jpg" />
+    <Content Include="Content\img\temp\old\test-background.jpg" />
+    <Content Include="Content\img\temp\old\test-background2.jpg" />
+    <Content Include="Content\img\temp\old\test-background3.jpg" />
+    <Content Include="Content\img\temp\old\test-background4.jpg" />
+    <Content Include="Content\img\temp\old\Workflow.vsdx" />
+    <Content Include="Content\img\temp\old\Workflowv2.png" />
+    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="Content\img\temp\team.jpg" />
+    <Content Include="Content\js\about-page.js" />
+    <Content Include="Content\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\js\bootstrap-transition.js" />
+    <Content Include="Content\js\bootstrap.3.1.1.min.js" />
+    <Content Include="Content\js\bootstrap.js" />
+    <Content Include="Content\js\humane.js" />
+    <Content Include="Content\js\jquery-ui.js" />
+    <Content Include="Content\js\jquery.cookie-1.4.1.min.js" />
+    <Content Include="Content\js\KwasantCalendar.js" />
+    <Content Include="Content\js\collapse.js" />
+    <Content Include="Content\js\KwasantCommon.js" />
+    <Content Include="Content\js\custom.js" />
+    <Content Include="Content\js\Daypilot\daypilot-bubble.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-calendar.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-common.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-datepicker.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-menu.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-modal.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-month.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-navigator.src.js" />
+    <Content Include="Content\js\Daypilot\daypilot-scheduler.src.js" />
+    <Content Include="Content\js\jquery.colorbox.js" />
+    <Content Include="Content\js\jquery.js" />
+    <Content Include="Content\js\jquery.validate.js" />
+    <Content Include="Content\js\Kwasant\NegotiationWidgets.js" />
+    <Content Include="Content\js\Kwasant\Popup.js" />
+    <Content Include="Content\js\Kwasant\quickcopy.js" />
+    <Content Include="Content\js\main.js" />
+    <Content Include="Content\js\modernizr.js" />
+    <Content Include="Content\js\moment.js" />
+    <Content Include="Content\js\notify.js" />
+    <Content Include="Content\js\placeholder.js" />
+    <Content Include="Content\js\select2.js" />
+    <Content Include="Content\js\toolbar.min.js" />
+    <Content Include="Content\js\tree.jquery.js" />
+    <Content Include="Content\js\waypoints.js" />
+    <Content Include="Content\templates\inline_html_template_v1.html" />
+    <Content Include="Content\templates\googletemplate1.html" />
+    <Compile Include="Controllers\External\DayPilot\Providers\EventDataProvider.cs" />
+    <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
+    <Content Include="newrelic\NewRelic.Agent.Core.dll" />
+    <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <Content Include="newrelic\newrelic.config" />
+    <Content Include="newrelic\extensions\extension.xsd">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Content\backgroundsize.min.htc" />
+    <Content Include="Content\gadegets.xml" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="packages.config" />
+    <Content Include="Api\GetAttachment.ashx" />
+    <Content Include="Content\img\.DS_Store" />
+    <Content Include="Api\GetAttachment.ashx" />
+    <Content Include="Content\DataTables-1.10.0\media\images\Sorting icons.psd" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\printer.psd" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\file_types.psd" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\copy document.psd" />
+    <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\collection.psd" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\FontAwesome.otf" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %283%29.pubxml" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy.pubxml" />
+    <None Include="Scripts\jquery-1.7-vsdoc.js" />
+    <Content Include="Scripts\ContextMenu\jquery.contextMenu.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\ColReorder\js\dataTables.colReorder.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\ColReorder\js\dataTables.colReorder.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\ColReorder\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\ColVis\js\dataTables.colVis.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\ColVis\js\dataTables.colVis.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\ColVis\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\FixedColumns\js\dataTables.fixedColumns.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\FixedColumns\js\dataTables.fixedColumns.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\FixedColumns\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\FixedHeader\js\dataTables.fixedHeader.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\FixedHeader\js\dataTables.fixedHeader.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\FixedHeader\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\KeyTable\js\dataTables.keyTable.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\KeyTable\js\dataTables.keyTable.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\KeyTable\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\Scroller\js\dataTables.scroller.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\Scroller\js\dataTables.scroller.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\Scroller\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\TableTools\js\dataTables.tableTools.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\TableTools\js\dataTables.tableTools.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\TableTools\Readme.txt" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\TableTools\swf\copy_csv_xls.swf" />
+    <Content Include="Scripts\DataTables-1.10.0\extensions\TableTools\swf\copy_csv_xls_pdf.swf" />
+    <Content Include="Scripts\DataTables-1.10.0\media\js\jquery.dataTables.js" />
+    <Content Include="Scripts\DataTables-1.10.0\media\js\jquery.dataTables.min.js" />
+    <Content Include="Scripts\DataTables-1.10.0\media\js\jquery.js" />
+    <Content Include="Scripts\jquery-1.7.js" />
+    <Content Include="Scripts\jquery-1.7.min.js" />
+    <Content Include="shortcodes.html" />
+    <Content Include="TestWidgetLibrary.html" />
+    <Content Include="Themes\areas.css" />
+    <Content Include="Themes\areas\icons.png" />
+    <Content Include="Themes\bubble_default.css" />
+    <Content Include="Themes\calendar_blue.css" />
+    <Content Include="Themes\calendar_g.css" />
+    <Content Include="Themes\calendar_green.css" />
+    <Content Include="Themes\calendar_traditional.css" />
+    <Content Include="Themes\calendar_transparent.css" />
+    <Content Include="Themes\calendar_white.css" />
+    <Content Include="Themes\legacy\calendar_bronze\delete.gif" />
+    <Content Include="Themes\legacy\calendar_bronze\down.png" />
+    <Content Include="Themes\legacy\calendar_bronze\left30.gif" />
+    <Content Include="Themes\legacy\calendar_bronze\top21.gif" />
+    <Content Include="Themes\legacy\calendar_bronze\up.png" />
+    <Content Include="Themes\legacy\calendar_silver\corner20.gif" />
+    <Content Include="Themes\legacy\calendar_silver\delete.gif" />
+    <Content Include="Themes\legacy\calendar_silver\down.png" />
+    <Content Include="Themes\legacy\calendar_silver\left45.gif" />
+    <Content Include="Themes\legacy\calendar_silver\light_line_10.png" />
+    <Content Include="Themes\legacy\calendar_silver\right17.gif" />
+    <Content Include="Themes\legacy\calendar_silver\top21.gif" />
+    <Content Include="Themes\legacy\calendar_silver\up.png" />
+    <Content Include="Themes\legacy\month_silver\event20.gif" />
+    <Content Include="Themes\legacy\month_silver\light_line_10.png" />
+    <Content Include="Themes\legacy\month_silver\top20.gif" />
+    <Content Include="Themes\legacy\navigator_silver\top21.gif" />
+    <Content Include="Themes\legacy\scheduler_silver\gradient_dps.jpg" />
+    <Content Include="Themes\legacy\scheduler_silver\left45.gif" />
+    <Content Include="Themes\legacy\scheduler_silver\light_line_10.png" />
+    <Content Include="Themes\legacy\scheduler_silver\top20.gif" />
+    <Content Include="Themes\legacy\scheduler_silver\tree_collapse.png" />
+    <Content Include="Themes\legacy\scheduler_silver\tree_expand.png" />
+    <Content Include="Themes\legacy\scheduler_silver\tree_nochildren.png" />
+    <Content Include="Themes\legacy\traditional.css" />
+    <Content Include="Themes\menu_default.css" />
+    <Content Include="Themes\month_blue.css" />
+    <Content Include="Themes\month_g.css" />
+    <Content Include="Themes\month_green.css" />
+    <Content Include="Themes\month_traditional.css" />
+    <Content Include="Themes\month_transparent.css" />
+    <Content Include="Themes\month_white.css" />
+    <Content Include="Themes\navigator_8.css" />
+    <Content Include="Themes\navigator_blue.css" />
+    <Content Include="Themes\navigator_g.css" />
+    <Content Include="Themes\navigator_green.css" />
+    <Content Include="Themes\navigator_transparent.css" />
+    <Content Include="Themes\navigator_white.css" />
+    <Content Include="Themes\scheduler_8.css" />
+    <Content Include="Themes\scheduler_blue.css" />
+    <Content Include="Themes\scheduler_green.css" />
+    <Content Include="Themes\scheduler_traditional.css" />
+    <Content Include="Themes\scheduler_transparent.css" />
+    <Content Include="Themes\scheduler_white.css" />
+    <Content Include="Themes\scheduler_white\tree_collapse.png" />
+    <Content Include="Themes\scheduler_white\tree_expand.png" />
+    <Content Include="Themes\scheduler_white\tree_nochildren.png" />
+    <Content Include="UnauthorizedRequest.html" />
+    <Compile Include="ViewModels\EventWindowVM.cs" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
+    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\User\Create.cshtml" />
+    <Content Include="Views\User\Delete.cshtml" />
+    <Content Include="Views\User\Details.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\Message\Create.cshtml" />
+    <Content Include="Views\Message\Delete.cshtml" />
+    <Content Include="Views\Message\Details.cshtml" />
+    <Content Include="Views\Message\Edit.cshtml" />
+    <Content Include="Views\Message\Index.cshtml" />
+    <Content Include="Views\Email\Create.cshtml" />
+    <Content Include="Views\Email\Delete.cshtml" />
+    <Content Include="Views\Email\Details.cshtml" />
+    <Content Include="Views\Email\Edit.cshtml" />
+    <Content Include="Views\Email\Index.cshtml" />
+    <Content Include="Views\Calendar\ActiveAreas.cshtml" />
+    <Content Include="Views\Calendar\AutoHide.cshtml" />
+    <Content Include="Views\Calendar\AutoRefresh.cshtml" />
+    <Content Include="Views\Calendar\Columns50.cshtml" />
+    <Content Include="Views\Calendar\ContextMenu.cshtml" />
+    <Content Include="Views\Calendar\Crosshair.cshtml" />
+    <Content Include="Views\Calendar\DayRange.cshtml" />
+    <Content Include="Views\Calendar\DaysResources.cshtml" />
+    <Content Include="Views\Calendar\EventArrangement.cshtml" />
+    <Content Include="Views\Calendar\EventSelecting.cshtml" />
+    <Content Include="Views\Calendar\ExternalDragDrop.cshtml" />
+    <Content Include="Views\Calendar\GoogleLike.cshtml" />
+    <Content Include="Views\Calendar\HeaderAutoFit.cshtml" />
+    <Content Include="Views\Calendar\Height100Pct.cshtml" />
+    <Content Include="Views\Calendar\JQuery.cshtml" />
+    <Content Include="Views\Calendar\Message.cshtml" />
+    <Content Include="Views\Calendar\Navigation.json" />
+    <Content Include="Views\Calendar\Notify.cshtml" />
+    <Content Include="Views\Event\Edit.cshtml" />
+    <Content Include="Views\Calendar\RecurringEvents.cshtml" />
+    <Content Include="Views\Calendar\Resources.cshtml" />
+    <Content Include="Views\Calendar\Rtl.cshtml" />
+    <Content Include="Views\Calendar\ThemeBlue.cshtml" />
+    <Content Include="Views\Calendar\ThemeGreen.cshtml" />
+    <Content Include="Views\Calendar\ThemeTraditional.cshtml" />
+    <Content Include="Views\Calendar\ThemeTransparent.cshtml" />
+    <Content Include="Views\Calendar\ThemeWhite.cshtml" />
+    <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
+    <Content Include="Views\Calendar\Today.cshtml" />
+    <Content Include="Views\Shared\_Blank.cshtml" />
+    <Content Include="Views\Event\ConfirmChanges.cshtml" />
+    <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
+    <Content Include="Views\Event\DeleteEvent.cshtml" />
+    <Content Include="Views\MandrillWebhook\Index.cshtml" />
+    <Content Include="Views\Account\Confirm.cshtml" />
+    <Content Include="Views\BookingRequest\Index.cshtml" />
+    <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
+    <Content Include="Views\User\MyAccount.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Negotiation\Edit.cshtml" />
+    <Content Include="Views\Negotiation\_Question.cshtml" />
+    <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
+    <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
+    <Content Include="Views\Negotiation\EventWindows.cshtml" />
+    <Content Include="Views\NegotiationResponse\View.cshtml" />
+    <Content Include="Views\Shared\404.cshtml" />
+    <Content Include="Views\Negotiation\Review.cshtml" />
+    <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\User\ChooseCalendars.cshtml" />
+    <Content Include="Views\User\FindUser.cshtml" />
+    <Content Include="Views\User\ShowAddUser.cshtml" />
+    <Content Include="Views\User\ShowCalendarEvents.cshtml" />
+    <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
+    <Content Include="Views\User\ShowUserDetails.cshtml" />
+    <Content Include="Views\BookingRequest\Administer.cshtml" />
+    <Content Include="Views\Calendar\Edit.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Diagnostics\Index.cshtml" />
+    <Content Include="Views\BookingRequest\ShowConversation.cshtml" />
+    <Content Include="Views\BookingRequest\ShowInProcessBRs.cshtml" />
+    <Content Include="Views\BookingRequest\ShowMyBRs.cshtml" />
+    <Content Include="Views\Email\Show.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Profile\ProfilesForUser.cshtml" />
+    <Content Include="Views\BookingRequest\ShowAllBookingRequests.cshtml" />
+    <Content Include="Views\Shared\QueuePollingScript.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\BookingRequest\ShowAwaitingResponse.cshtml" />
+    <Content Include="Views\Email\Send.cshtml" />
+    <Content Include="Views\Report\History.cshtml" />
+    <Content Include="Views\Report\_History.cshtml" />
+    <Content Include="Views\Shared\_HomeNav.cshtml" />
+    <Content Include="Views\BookingRequest\ShowManualCreationForm.cshtml" />
+    <Content Include="Views\Booker\Index.cshtml" />
+    <Content Include="Views\BookingRequest\FindBookingRequest.cshtml" />
+    <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
+    <Content Include="Views\User\ExistingUserAlert.cshtml" />
+    <Content Include="Views\User\UserRoles.cshtml" />
+    <Content Include="Views\Shared\AccessDenied.cshtml" />
+    <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
+    <Content Include="Views\BookingRequest\AddNote.cshtml" />
+    <Content Include="Views\BookingRequest\SearchResult.cshtml" />
+    <Content Include="Views\Email\ShowReport.cshtml" />
+    <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
+    <Content Include="Views\User\ShareCalendar.cshtml" />
+    <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
+    <Content Include="Views\Shared\403.cshtml" />
+    <Content Include="Views\BookingRequest\DefaultActivityPopup.cshtml" />
+    <Content Include="Views\BookingRequest\MergeRelatedBR.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="archive\" />
+    <Folder Include="Content\fonts\" />
+    <Folder Include="Views\CommunicationManager\" />
+    <Folder Include="Views\Data\" />
+    <Folder Include="Webhooks\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Configuration\Configuration.csproj">
+      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="Daemons\Daemons.csproj">
+      <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
+      <Name>Daemons</Name>
+    </ProjectReference>
+    <ProjectReference Include="Data\Data.csproj">
+      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="KwasantCore\KwasantCore.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>KwasantCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>50674</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:50617/</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://localhost:50617/</IISAppRootUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+  <Import Project="packages\AutoMapper.3.3.0-ci1027\tools\AutoMapper.targets" Condition="Exists('packages\AutoMapper.3.3.0-ci1027\tools\AutoMapper.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

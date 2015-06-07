@@ -1,0 +1,43 @@
+﻿@model List<int>
+
+@{
+    Layout = null;
+    string answerID = Model[0].ToString();
+    string answertlbID = Model[1].ToString();
+ }
+
+@using (Html.BeginForm())
+{
+   <div id="answerContainer" data-type="text" data-answerid="@answerID" data-answertbleId="@answertlbID">
+       <table>
+           <tr>
+               <td>
+                   <img src="~/Content/img/minus.png" onclick="collapseanswer(this)" />
+               </td>
+               <td>
+                   <label id="answerlbl">A-@answerID :</label>
+               </td>
+               <td>
+                   <input type="text" name="answerText" id="answerText" class="form-control col-md-1" /></td>
+               <td>
+                   <img src="~/Content/img/Cross.png" onclick="removeanswer(this)" />
+               </td>
+           </tr>
+           <tr>
+               <td>&nbsp;
+               </td>
+               <td>Status:  
+               </td>
+               <td>
+                   <select id="answerStatus" class="form-control">
+                       <option value="1">Unstarted</option>
+                       <option value="2">Proposed</option>
+                       <option value="3">Selected</option>
+                   </select>
+               </td>
+               <td>&nbsp;
+               </td>
+           </tr>
+       </table>
+   </div>
+}

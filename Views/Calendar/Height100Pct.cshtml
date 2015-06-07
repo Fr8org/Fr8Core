@@ -1,0 +1,28 @@
+﻿@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {	AJAX Event Calendar }
+
+<div class="note"><b>Note:</b> The Calendar is taking 100% height of its parent element.</div>
+            
+@Html.DayPilotBubble("bubble")
+
+<div style="height:400px">
+
+@Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        EventMoveHandling = EventMoveHandlingType.CallBack,
+        EventResizeHandling = EventResizeHandlingType.CallBack,
+        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack,
+        ShowAllDayEvents = true,
+        EventBubble = "bubble",
+        EventArrangement = ArrangementType.Full,
+        EventClickHandling = EventClickHandlingType.CallBack,
+
+        HeightSpec = HeightSpec.Parent100Pct
+    })
+            
+</div>

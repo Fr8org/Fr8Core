@@ -1,0 +1,141 @@
+﻿@model KwasantWeb.ViewModels.ManageUserVM
+@{
+    ViewBag.Title = "ShareCalendar";
+}
+
+<h2>Share Calendar</h2>
+<p>
+    <table>
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-md-12">
+                        
+                    </div>
+                </div>
+                <br />
+
+            </td>
+        </tr>
+    </table>
+
+<style>
+    .granttext a {
+        color: #fff;
+    }
+
+</style>
+
+    <table width="" cellpadding="0" cellspacing="0">
+
+        <tr>
+            <td height="80" width="186">
+                <img class="floating" src="/Content/img/googleCalendar.png" alt="Kwasant" title="Kwasant">
+            </td>
+            <td>
+<b class="custom-btn granttext" style="cursor: pointer">
+                @foreach (var remoteCalendar in Model.RemoteCalendars)
+                        {
+                            if (!remoteCalendar.AccessGranted)
+                            {
+                       
+                         @Html.ActionLink(
+                                    string.Format("Grant Access ", remoteCalendar.Provider), 
+                                    "GrantRemoteCalendarAccess", 
+                                    new { providerName = remoteCalendar.Provider })
+
+                            }
+                            else
+                            {
+                                @Html.ActionLink(
+                                    string.Format("Revoke Access ", remoteCalendar.Provider),
+                                    "RevokeRemoteCalendarAccess",
+                                    new {providerName = remoteCalendar.Provider})
+                            }
+                          
+                        }@*<b class="custom-btn" style="cursor: pointer">Grant Access  </b>*@
+</b>
+            </td>
+        </tr>
+
+        <tr>
+            <td height="80">
+                <img class="floating" src="/Content/img/MicrosoftExchangelogo.png" alt="Kwasant" title="Kwasant">
+            </td>
+            <td>
+                <b>(Coming Soon) </b>
+            </td>
+        </tr>
+
+        <tr>
+            <td height="80">
+                <img class="floating" src="/Content/img/icloud-logo.png" alt="Kwasant" title="Kwasant">
+            </td>
+
+            <td>
+                <b>(Coming Soon) </b>
+            </td>
+        </tr>
+
+
+
+
+    </table>
+</p>
+<br />
+@if (Model.RemoteCalendars.Any(c => c.AccessGranted))
+{
+<div class="row">
+    <div class="col-md-12">
+        <a href="#" class="btn btn-default" id="syncNowBtn">Synchronize Now!</a>
+        <div id="success" style="display: none" class="text-success">Calendars synchronized successfully.</div>
+        <div id="sendError" style="display: none" class="text-error"></div>
+    </div>
+</div>
+}
+
+@section scripts
+{
+    @if (Model.RemoteCalendars.Any(c => c.AccessGranted))
+    {
+        //@Scripts.Render("~/bundles/js/common")
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                var syncing = false;
+                var syncNow = function () {
+                    if (syncing)
+                        return false;
+                    syncing = true;
+                    $('#syncNowBtn').addClass('disabled');
+                    $.post('@Url.Action("SyncCalendarsNow", "User")',
+                        function (result) {
+                            if (result.success) {
+                                $('#sendError').text('').hide();
+                                $('#success').show();
+                            } else {
+                                $('#sendError').text(result.error).show();
+                            }
+                            syncing = false;
+                            $('#syncNowBtn').removeClass('disabled');
+                        },
+                        'json');
+                    return false;
+                };
+
+                $('#syncNowBtn').click(syncNow);
+
+                var provider = getURLParameter("remoteCalendarAccessGranted");
+                if (provider) {
+                    $('#permission-status').text(provider + ' Calendar hooked up successfully.');
+                    syncNow();
+                } else {
+                    provider = getURLParameter("remoteCalendarAccessForbidden");
+                    if (provider) {
+                        $('#permission-status').text(provider + ' Calendar access revoked.');
+                    }
+                }
+            });
+        </script>
+}
+}

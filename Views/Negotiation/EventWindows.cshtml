@@ -1,0 +1,121 @@
+﻿@model KwasantWeb.ViewModels.EventWindowVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@{
+	ViewBag.Title = "Event ";
+}
+@section styles{
+    @Styles.Render("~/bundles/css/backendcss")
+    @Styles.Render("~/bundles/css/daypilot")
+    
+}
+@section immediateScripts
+{
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
+}
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/modernizr")
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/common")
+}
+<style>
+    #toolbar {
+        background: none;
+        border: none;
+        margin: 10px 0px 20px 0px;
+        position: relative;
+        width: 174px;
+      }
+
+        #toolbar a {
+            background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
+            background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+            border: 1px solid #aaa;
+            font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;
+            color: #666;
+            font-size:12px;
+            display: inline-block;
+            filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+            padding: 5px;
+            text-decoration: none;
+        }
+        input[type="submit"].btn, input[type="button"].btn {
+            padding: 5px 12px;
+            font-size: 12px;
+            position: absolute;
+            right: 0;
+        }
+        .btn.shadow-button:active, .form-actions .btn.shadow-button:active {
+            position: absolute;
+            top: 1px;
+        }
+</style>
+<div id="CalendarDiv1">
+    <input type="button" value="OK" class="btn small-dialog-button btn-default shadow-button" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe({
+    action: true,
+    events: calendar.getEvents()
+})" />
+</div>
+<input type="hidden" value="21" id="hdnrequestid" name="requestid" />
+
+<script type="text/javascript">
+    var calendar;
+    $(function() {
+     @{
+         var calendarsToDisplay = new List<int>();
+         if (Model.LinkedCalendarIDs != null)
+         {
+             calendarsToDisplay.AddRange(Model.LinkedCalendarIDs);
+         }
+         calendarsToDisplay.Add(Model.ActiveCalendarID);
+         var calendarString = String.Join(",", calendarsToDisplay.Distinct());
+         var requiresConfirmation = Model.RequiresConfirmation ? "true" : "false";
+         var mergeEvents = Model.MergeEvents ? "true" : "false";
+     }
+
+        calendar = $('#CalendarDiv1').KCalendar({
+            getCalendarBackendURL: function() {
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + calendarString)';
+            },
+            getMonthBackendURL: function () {
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + calendarString)';
+            },
+            getNavigatorBackendURL: function() {
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
+            },  
+            getEditURL: function (id) {
+                @if (Model.ClickEditEnabled)
+                {
+                    @:return '/Event/Edit/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation';
+                }
+                else
+                {
+                    @:return '';
+                }
+            },
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z&requiresConfirmation=@requiresConfirmation'; },
+            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation'; },
+            onEventNew: function(start, end) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents&eventDescription=@HttpUtility.HtmlEncode(Model.DefaultEventDescription)', calendar.refreshCalendars, 'POST');
+            },
+
+            editRequiresConfirmation: @requiresConfirmation,
+            newRequiresConfirmation: @requiresConfirmation,
+            deleteRequiresConfirmation: @requiresConfirmation,
+            moveRequiresConfirmation: @requiresConfirmation,
+
+        });
+    });
+
+</script>

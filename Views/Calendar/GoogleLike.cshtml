@@ -1,0 +1,53 @@
+﻿@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Events.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@{ViewBag.Title = "Google-Like Calendar";}
+<script type="text/javascript">
+
+    function createEvent(start, end, resource) {
+        var modal = new DayPilot.Modal();
+        modal.top = 60;
+        modal.width = 300;
+        modal.opacity = 0;
+        modal.border = "1px solid #d0d0d0";
+        modal.closed = function () {
+            if (this.result == "OK") {
+                dpcg.commandCallBack('refresh');
+            }
+            dpcg.clearSelection();
+        };
+
+        modal.height = 250;
+        modal.showUrl("New?start=" + start.toStringSortable() + "&end=" + end.toStringSortable());
+    }
+
+</script>
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig
+    {
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week,
+        Theme = "navigator_g"
+    })
+</div>
+<div class="right-column">
+    @Html.DayPilotCalendar("dpcg", new DayPilotCalendarConfig
+    {
+        Theme = "calendar_g",
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        Height = 400,
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        EventMoveHandling = EventMoveHandlingType.Notify,
+        EventResizeHandling = EventResizeHandlingType.Notify,
+
+        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
+        TimeRangeSelectedJavaScript = "createEvent(start, end)",
+        ShowAllDayEvents = true,
+        EventArrangement = ArrangementType.Cascade
+    })
+</div>

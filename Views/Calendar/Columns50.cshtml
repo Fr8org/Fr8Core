@@ -1,0 +1,47 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+@using DayPilot.Web.Mvc.Events.Navigator
+
+@section TitleContent {	AJAX Event Calendar }
+
+<div class="note"><b>Note:</b> This view uses fixed column width (ColumnWidthSpec = ColWidthSpec.Fixed, ColumnWidth = 100). This enables the horizontal scrollbar.</div>
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week,
+        BackendUrl = Url.Content("~/Calendar/NavigatorBackend"),
+        VisibleRangeChangedHandling = VisibleRangeChangedHandlingType.CallBack
+    })
+</div>
+
+<div class="right-column">
+    @Html.DayPilotBubble("bubble")
+
+    @Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Days,
+        Days = 50,
+        ColumnWidthSpec = ColWidthSpec.Fixed,
+        ColumnWidth = 100,
+        Width = "100%",
+               
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        EventMoveHandling = EventMoveHandlingType.CallBack,
+        EventResizeHandling = EventResizeHandlingType.CallBack,
+        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack,
+        ShowAllDayEvents = true,
+
+        Height = 630,
+        HeightSpec = HeightSpec.BusinessHours,
+        EventBubble = "bubble",
+        EventArrangement = ArrangementType.Full,
+        EventClickHandling = EventClickHandlingType.CallBack
+    })
+</div>

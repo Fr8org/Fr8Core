@@ -1,0 +1,38 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {	Message Bar (Calendar) }
+
+<div class="tip">
+<b>Tip:</b> Click an event to see a message from the server side.
+</div>
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week
+        })
+</div>
+
+<div class="right-column">
+
+    @Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+    {
+        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+        BackendUrl = Url.Content("~/Calendar/Backend"),
+        EventDeleteHandling = EventDeleteHandlingType.CallBack,
+        EventMoveHandling = EventMoveHandlingType.CallBack,
+        EventResizeHandling = EventResizeHandlingType.CallBack,
+        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+        ShowAllDayEvents = true,
+        Height = 400,
+               
+        EventClickHandling = EventClickHandlingType.CallBack
+    })
+
+</div>

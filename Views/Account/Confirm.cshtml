@@ -1,0 +1,12 @@
+﻿@model KwasantWeb.ViewModels.RegisterVM
+@{
+    ViewBag.Title = "Confirm Email Address Sent";
+
+}
+<h2>@ViewBag.Title.</h2>
+
+<div class="row">
+    <div class="diplay-label">
+        Please check your Email Inbox, a confirm Email is Sent to  @Html.DisplayFor(model => model.Email)
+    </div>
+</div>

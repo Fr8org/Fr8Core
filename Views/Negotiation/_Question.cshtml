@@ -1,0 +1,55 @@
+﻿@model List<int>
+@{
+    Layout = null;
+    string questionID = Model[0].ToString();
+    string questionDataID = Model[1].ToString();
+ }
+
+@using (Html.BeginForm())
+{
+
+   <div id="questionContainer" data-questionid="@questionID" data-questiontbleid="@questionDataID">
+       <table>
+           <tr>
+               <td>
+                   <label id="questionlbl">Question : </label>
+               </td>
+               <td>
+                   <input type="text" id="questionText" name="Question" class="form-control col-md-1" />
+               </td>
+               <td>
+                   <img src="~/Content/img/Cross.png" onclick="removeQuestion(this)" />
+               </td>
+           </tr>
+           <tr>
+               <td>&nbsp;
+               </td>
+               <td class="test">Type: &nbsp;
+                   <input type="radio" id="QuetypeText" value="Text" name="quesType_@questionID" checked="checked" class="active"/>
+                   &nbsp; Text
+                   &nbsp;     
+                  <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="quesType_@questionID" class="active"  />&nbsp; Event Window
+               </td>
+               <td>&nbsp;
+               </td>
+           </tr>
+           <td>&nbsp;
+           </td>
+           <td>
+               <div id="answerContainerGroup">
+               </div>
+           </td>
+           <tr>
+               <td>&nbsp;
+               </td>
+               <td>@*<span class="form-group" id="divAddAnswer" onclick="getCalltextanswer(this, '@questionID')">*@
+                    <span class="form-group" id="divAddAnswer" onclick="callAppendQuestion(this)">
+                        <img src="~/Content/img/plus.png" />
+                        <label>Add Answer</label>
+                    </span></td>
+               <td>&nbsp;
+               </td>
+           </tr>
+       </table>
+   </div>
+}

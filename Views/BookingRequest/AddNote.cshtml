@@ -1,0 +1,71 @@
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.BookingRequestNoteVM
+
+@{
+Layout = "~/Views/Shared/_Blank.cshtml";
+}
+
+@{
+    ViewBag.Title = "Add Note";
+}
+
+@section immediateScripts
+{
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/jqueryvalidate")
+	<script src="/Content/js/Kwasant/Popup.js"></script>
+}
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/common")
+    <script type="text/javascript">
+        $(function () {
+            var $f = $("#submitNoteForm");
+
+            $f.submit(function(e) {
+                e.preventDefault();
+                if ($(this).valid()) {
+                    var spinner = Kwasant.IFrame.DisplaySpinner();
+                    $.post($(this).prop('action'), $(this).serialize(),
+                        function (result) {
+                            close(result);
+                        }, 'json')
+                        .always(function () {
+                            spinner.hide();
+                        });
+                }
+                return false;
+            });
+
+            $f.validate();
+		});
+    </script>
+}
+@section styles
+{
+	@Styles.Render("~/bundles/css/bootstrap30")
+	@Styles.Render("~/bundles/css/backendcss")
+	
+	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+}
+
+@using (Html.BeginForm("SubmitNote", "BookingRequest", FormMethod.Post, new { id = "submitNoteForm" })) 
+{
+    <div class="form-horizontal">
+        @Html.HiddenFor(model => model.BookingRequestId)
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="Note">Enter your note text</label>
+            <div class="col-md-10">
+                <input data-val="true" data-val-required="This is required." id="Note" name="Note" type="text" value="" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Submit" class="btn btn-default" />
+                <input type="button" value="Cancel" class="btn" onclick="javascript:Kwasant.IFrame.CloseMe(true);"/>
+            </div>
+        </div>
+    </div>
+}

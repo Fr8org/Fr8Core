@@ -1,0 +1,95 @@
+
+/* 
+
+DayPilot Month Theme 
+http://themes.daypilot.org/month/theme/p2kpho
+
+*/
+
+.month_g_main 
+{
+	border: 1px solid #dddddd;
+}
+
+.month_g_main, .month_g_main td 
+{
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+}
+
+.month_g_event { 
+}
+
+.month_g_event_inner { 
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	margin: 2px;
+	color: #1d1d1d;
+	background-color: #9a9cff;
+	padding: 2px;
+	border: 1px solid #373ad7;
+	overflow: hidden;
+}
+
+.month_g_header_inner
+{
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	border-right: 1px solid #dddddd;
+	border-bottom: 1px solid #dddddd;
+	text-align: center;
+	padding: 2px;
+	color: #555555;
+	background: #ffffff;
+}
+
+.month_g_cell 
+{
+	background-color: #ffffff;
+}
+
+.month_g_cell.month_g_cell_business
+{
+	background-color: #ffffff;
+}
+
+.month_g_cell_inner 
+{
+	border-right: 1px solid #dddddd;
+	border-bottom: 1px solid #dddddd;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;	
+}
+
+.month_g_cell_header 
+{
+	text-align: right;
+	padding-right: 2px;
+}
+
+.month_g_message 
+{
+	padding: 10px;
+	color: #1d1d1d;
+	background: #f9edbe;
+}
+
+.month_g_shadow_inner 
+{
+	background-color: #666666;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}

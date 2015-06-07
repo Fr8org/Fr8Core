@@ -1,0 +1,189 @@
+BEGIN:VCALENDAR
+PRODID:-//Xdrive//WhosOff//EN
+BEGIN:VTIMEZONE
+TZID:UTC
+BEGIN:STANDARD
+DTSTART:16011028T020000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10
+TZOFFSETFROM:+0100
+TZOFFSETTO:-0100
+END:STANDARD
+BEGIN:DAYLIGHT
+DTSTART:16010325T010000
+RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3
+TZOFFSETFROM:-0100
+TZOFFSETTO:+0100
+END:DAYLIGHT
+END:VTIMEZONE
+BEGIN:VEVENT
+UID:LR1062622
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120113
+DTEND;VALUE=DATE:20120201
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 13.Jan.2012, End 31.Jan.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Richard Flower (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1062602
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120127
+DTEND;VALUE=DATE:20120131
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 27.Jan.2012, End 30.Jan.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Jono Baker (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1117266
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120206
+DTEND;VALUE=DATE:20120207
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 6.Feb.2012, End 6.Feb.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Simon Smalley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1109701
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120213
+DTEND;VALUE=DATE:20120214
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 13.Feb.2012, End 13.Feb.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Dave Conley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1109699
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120217
+DTEND;VALUE=DATE:20120218
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 17.Feb.2012, End 17.Feb.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Jack Hicks (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1138212
+CATEGORIES:Holiday / Vacation
+DTSTART;TZID=UTC;VALUE=DATE:20120217T120000
+DTEND;TZID=UTC;VALUE=DATE:20120217T173000
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 17.Feb.2012 12:00, End 17.Feb.2012 17:30\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Michael Purdy (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1147321
+CATEGORIES:Sick Leave
+DTSTART;VALUE=DATE:20120223
+DTEND;VALUE=DATE:20120224
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 23.Feb.2012, End 23.Feb.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Dave Conley (Sick Leave)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1159960
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120302
+DTEND;VALUE=DATE:20120303
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 2.Mar.2012, End 2.Mar.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Richard Flower (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1151768
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120302
+DTEND;VALUE=DATE:20120303
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 2.Mar.2012, End 2.Mar.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Michael Purdy (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1159961
+CATEGORIES:Out of Office
+DTSTART;VALUE=DATE:20120303
+DTEND;VALUE=DATE:20120310
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 3.Mar.2012, End 9.Mar.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Richard Flower (Out of Office)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1176034
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120316
+DTEND;VALUE=DATE:20120317
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 16.Mar.2012, End 16.Mar.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Simon Smalley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1132011
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120320
+DTEND;VALUE=DATE:20120321
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 20.Mar.2012, End 20.Mar.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Simon Smalley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1214450
+CATEGORIES:Holiday / Vacation
+DTSTART;TZID=UTC;VALUE=DATE:20120404T080000
+DTEND;TZID=UTC;VALUE=DATE:20120404T120000
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 4.Apr.2012 08:00, End 4.Apr.2012 12:00\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Dave Conley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1176033
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120410
+DTEND;VALUE=DATE:20120414
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 10.Apr.2012, End 13.Apr.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Jack Hicks (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1224415
+CATEGORIES:Holiday / Vacation
+DTSTART;TZID=UTC;VALUE=DATE:20120412T080000
+DTEND;TZID=UTC;VALUE=DATE:20120412T120000
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 12.Apr.2012 08:00, End 12.Apr.2012 12:00\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Dave Conley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1109696
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120423
+DTEND;VALUE=DATE:20120428
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 23.Apr.2012, End 27.Apr.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Dave Conley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1109700
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120611
+DTEND;VALUE=DATE:20120623
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 11.Jun.2012, End 22.Jun.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Jono Baker (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1209935
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120618
+DTEND;VALUE=DATE:20120628
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 18.Jun.2012, End 27.Jun.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Simon Smalley (Holiday / Vacation)
+END:VEVENT
+BEGIN:VEVENT
+UID:LR1209934
+CATEGORIES:Holiday / Vacation
+DTSTART;VALUE=DATE:20120705
+DTEND;VALUE=DATE:20120711
+LOCATION:Development
+DESCRIPTION:GMT Based Event Times: Start 5.Jul.2012, End 10.Jul.2012\nTo login to your account\, please visit https://staff.whosoff.com
+SUMMARY:Jack Hicks (Holiday / Vacation)
+END:VEVENT
+END:VCALENDAR

@@ -1,0 +1,36 @@
+﻿
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Enums.Navigator
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@section TitleContent {	Active Areas (Calendar) }
+
+<div class="note"><b>Note:</b> Hold a cursor on an event or a column header to see the active areas.</div>
+
+<div class="left-column">
+    @Html.DayPilotNavigator("dpn", new DayPilotNavigatorConfig { 
+        ShowMonths = 3,
+        SkipMonths = 3,
+        ShowWeekNumbers = true,
+        BoundDayPilot = "dpc",
+        SelectMode = NavigatorSelectMode.Week,
+        })
+</div>
+
+<div class="right-column">
+    @Html.DayPilotCalendar("dpc_areas", new DayPilotCalendarConfig
+        {
+            ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+            BackendUrl = Url.Content("~/Calendar/Backend"),
+            EventDeleteHandling = EventDeleteHandlingType.CallBack,
+            EventMoveHandling = EventMoveHandlingType.CallBack,
+            EventResizeHandling = EventResizeHandlingType.CallBack,
+            TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+            ShowAllDayEvents = false,
+            
+            Height = 400,
+            HeightSpec = HeightSpec.BusinessHours,
+            EventHoverHandling = EventHoverHandlingType.Disabled
+        })
+</div>

@@ -1,0 +1,391 @@
+﻿@model KwasantWeb.ViewModels.BookingRequestAdminVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+
+<div id="emailInfoBox" class="col-md-7">
+    <div class="emailInfoBox">
+        <div id="divEmailViewer">
+            @Html.Partial("../Email/Show", Model)
+        </div>
+        <div class="">
+            <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" />
+            Show Other BR's  &nbsp;&nbsp;
+            <input type="radio" id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
+        </div>
+        <table id="tblRelatedItems" class="email-info-table data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+        </table>
+
+        <table id="tbluserrequests" class="email-info-table data-table">
+            <thead>
+                <tr>
+                    <th>Date Received</th>
+                    <th>Subject</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+<input type="hidden" value="@Model.BookingRequestId" id="hdnrequestid" name="requestid" />
+<script src="~/Content/js/KwasantCommon.js"></script>
+<script type="text/javascript">
+    //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
+    //called by : rows in tbluserrequests on click
+    function loadrequest(id, linkedCalendarIDs, ele) {
+        $("#tbluserrequests tr").removeClass('current-row');
+        if ($('#tbluserrequests tr').length > 2) {
+            $(ele).addClass('current-row');
+        }
+        $("#hdnrequestid").val(id);
+        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = "requestid" })".replace("requestid", id) + "')");
+
+        $("#divEmailViewer").load('@Url.Action("GetInfo", "Email")?emailId=' + id);
+
+        if (window.parent.calendar !== undefined) {
+            window.parent.calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
+        }
+    }
+
+
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        $("#hdnrequestid").val('@Model.BookingRequestId');
+
+        showRelatedItems();
+        $('#tbluserrequests').hide();
+        $('#notificationGroup').hide();
+    });
+
+
+    //This function will bind a click function on every button in table "tblbookingrequest"
+    $('#tbluserrequests').on('click', 'tr', function () {
+        var data = table.row($(this)).data();
+        loadrequest(data.id, data.linkedcalendarids, this);
+    });
+
+    function emailFrameLoaded() {
+        var iframe = $("#emailInfoFrame").get(0);
+        if (iframe) {
+            // here you can make the height, I delete it first, then I make it again
+            iframe.height = "";
+            iframe.height = (iframe.contentWindow.document.body.scrollHeight + 30) + "px";
+        }
+    }
+
+    //function to format datetime of Request viewer widget
+    function ConvertTODateString(dateFormat) {
+        var datevalue = new Date(dateFormat);
+        dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return dateFormat;
+    }
+
+    //Mark processed function will execute on click to update the Request status to "Processed".
+    function updateStatus(path) {
+        $.post(path, function (response) {
+            if (response.Name == 'Success')
+                window.location.href = "@Url.Action("Index", "BookingRequest")";
+            else if (response.Name == 'DifferentBooker')
+                ShowBookerOwnershipAlert(response.Message, '@Model.BookingRequestId');
+            else if (response.Name == 'error')
+                alert(response.Message);
+            else
+                alert('An error occured on the server. Your changes have not been saved.');
+        }, 'json');
+    }
+
+    function HistoryClick(id) {
+        if (Kwasant.IFrame.PopupsActive()) { return; }
+        Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
+            {
+                horizontalAlign: 'center',
+                width: 1160,
+                height: 800,
+                minHeight: 700,
+              
+                callback: window.parent.calendar.refreshCalendars
+            });
+    }
+
+
+    $("#rdnShowRelatedItems").click(function () {
+        showRelatedItems();
+    });
+
+    $("#rdnshowOtherBRs").click(function () {
+        showOtherBRs();
+    });
+
+    var table;
+    function showOtherBRs() {
+        $('#tbluserrequests').show();
+        $('#tblRelatedItems_wrapper').hide();
+
+        //Parsing and binding the booking requests viewer
+        table = $('#tbluserrequests').DataTable({
+            destroy: true,
+            order: [0, 'desc'],
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            ajax:
+            {
+                //Ajax call to get all unprocessed booking request from server according to user.
+                "url": "@Url.Action("ShowByUser", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                },
+                "type": "POST"
+            },
+            //Callback function for row created.
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
+                    $(row).addClass('current-row');
+                }
+                else {
+                    $(row).removeClass('current-row');
+                }
+            },
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+        });
+
+            var datenow = new Date();
+            var dp_day = window.parent.storedCalendar[0];
+            dp_day.startDate = datenow;
+            window.parent.calendar.refreshCalendars();
+            dp_navigator.select(new DayPilot.Date(datenow));
+        }
+
+
+        var table1;
+        function showRelatedItems() {
+
+            $('#tbluserrequests_wrapper').hide();
+            table1 = $('#tblRelatedItems').DataTable({
+                destroy: true,
+                order: [0, 'desc'],
+                searching: false,
+                ordering: false,
+                bLengthChange: false,
+                processing: true,
+                serverSide: true,
+                ajax:
+                {
+                    "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
+                    "dataSrc": function (json) {
+                        var orgdata = JSON.parse(json.data);
+                        return orgdata;
+                    },
+                    "type": "POST"
+                },
+
+                createdRow: function (row, data, index) {
+                    if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+                        $(row).addClass('current-row');
+                    }
+                    else {
+                        $(row).removeClass('current-row');
+                    }
+
+                    // $(row).attr("style", "cursor:pointer;");
+                },
+                columns: [
+                    {
+                        data: function (data) {
+                            return ConvertTODateString(data.date);
+                        }
+                    },
+                    { data: 'type' }
+                ]
+            });
+
+    }
+
+    $('#tblRelatedItems').on('click', 'tr', function () {
+        //$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
+        //$(this).attr("style", "background-color: #aaa;");
+        $('#tblRelatedItems tr').removeClass('current-row');
+        if ($('#tblRelatedItems tr').length > 2) {
+            $(this).addClass('current-row');
+        }
+        var data = table1.row($(this)).data();
+        var dp_day = window.parent.storedCalendar[0];
+        dp_day.startDate = data.date;
+        window.parent.calendar.refreshCalendars();
+        var datevalue = new Date(data.date);
+        dp_navigator.select(new DayPilot.Date(datevalue));
+        if (data.type == "Clarification")
+            clarificationPopUpWindow(data.id);
+    });
+
+    function clarificationPopUpWindow(id) {
+        if (Kwasant.IFrame.PopupsActive()) { return; }
+        var bookingrequest = "@Model.BookingRequestId";
+        var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
+        Kwasant.IFrame.Display(path,
+            {
+                horizontalAlign: 'left',
+            });
+    }
+
+    //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
+
+    function displayMessage(message) {
+        var notification = $('#notificationGroup');
+        $('#notificationMessage').html(message);
+        notification.fadeIn('slow');
+        setTimeout(function () {
+            notification.fadeOut('slow');
+        }, 5 * 1000);
+    }
+
+    function getCurrentNegotiationReview() {
+        getNegotiationReview(linkedNegotiationID);
+    }
+
+    function getNegotiationReview(negotiationID) {
+        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + negotiationID,
+                {
+                    horizontalAlign: 'right',
+                    minHeight: 700,
+                    minWidth: 630,
+                    callback: function (result) {
+                        if (result)
+                            displayMessage('Your negotiation was successfully updated');
+                    }
+                });
+    }
+
+
+    function getNegotiationWindow() {
+        var bookingRequestId = $("#hdnrequestid").val();
+        var url = '/Negotiation/CheckBooker';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { bookingRequestID: bookingRequestId },
+            async: false,
+            success: function (result) {
+                if (result.Name == "valid") {
+                    if (linkedNegotiationID != null) {
+                        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID + '&bookingRequestID=' + bookingRequestId,
+                        {
+                            horizontalAlign: 'right',
+                            minHeight: 700,
+                            minWidth: 630,
+                            callback: function (result) {
+                                if (result)
+                                    displayMessage(result.message);
+                            }
+                        });
+                    }
+                    else {
+                        Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestId',
+                                {
+                                    horizontalAlign: 'right',
+                                    minHeight: 700,
+                                    minWidth: 300,
+                                    callback: function (result) {
+                                        if (result) {
+                                            $('#liCreateOrEditNegotiation').html('Edit');
+                                            linkedNegotiationID = result.negotiationID;
+                                            updateCreateResolveButtons();
+                                            displayMessage(result.message);
+                                        }
+                                    }
+                                });
+                    }
+                }
+                else if (result.Name == 'DifferentBooker')
+                    ShowBookerOwnershipAlert(result.Message, '@Model.BookingRequestId');
+                else if (result.Name == 'error')
+                    alert(result.Message);
+                else
+                    alert('An error occured on the server. Your changes have not been saved.');
+            }
+        });
+    }
+
+    function resolveActiveNegotiation(negotiationID) {
+        var bookingRequestId = $("#hdnrequestid").val();
+        var url = '/Negotiation/CheckBooker';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { bookingRequestID: bookingRequestId },
+            async: false,
+            success: function (result) {
+                if (result.Name == "valid") {
+                    if (confirm("Are you sure you want to resolve this negotiation?")) {
+                        var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
+                        Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
+                            if (!data) {
+                                alert('An error occured on the server. Your changes were not saved.');
+                            } else {
+                                displayMessage('Your negotiation was successfully resolved.');
+                                linkedNegotiationID = null;
+                                $('#liCreateOrEditNegotiation').html('Create');
+                                updateCreateResolveButtons();
+                            }
+                        }, 'POST');
+                    }
+                }
+                else if (result.Name == 'DifferentBooker')
+                    ShowBookerOwnershipAlert(result.Message, bookingRequestId);
+                else if (result.Name == 'error')
+                    alert(result.Message);
+                else
+                    alert('An error occured on the server. Your changes have not been saved.');
+            }
+        });
+    }
+
+        function updateCreateResolveButtons() {
+            if (linkedNegotiationID == null) {
+                $('#liReview').hide();
+                $('#liResolveNegotiation').hide();
+            } else {
+                $('#liReview').show();
+                $('#liResolveNegotiation').show();
+            }
+        }
+
+        $(document).ready(function () {
+            updateCreateResolveButtons();
+
+            $('.navbar .dropdown').hover(function () {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
+            }, function () {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
+            });
+        });
+        
+        function getAddNoteWindow() {
+            Kwasant.IFrame.Display('@Url.Action("AddNote", "BookingRequest", new { bookingRequestID = Model.BookingRequestId })',
+                {
+                    horizontalAlign: 'right',
+                    minHeight: 200,
+                    minWidth: 200
+                });
+        }
+
+    function getOtherBRs() {
+        Kwasant.IFrame.Display('@Url.Action("ShowMergeBRView", "BookingRequest", new { bookingRequestID = Model.BookingRequestId })',
+            {
+                modal: true
+            });
+    }
+</script>

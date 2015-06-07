@@ -1,0 +1,454 @@
+﻿@using Data.Infrastructure.StructureMap
+@using StructureMap
+@using Utilities
+@model KwasantWeb.ViewModels.HomeVM
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+
+<html class="no-js">
+<!--<![endif]-->
+<!--Google Analytics code block. should probably be moved to a common js file -->
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-52048536-1', 'kwasant.com');
+    ga('send', 'pageview');
+
+</script>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Kwasant</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel='shortcut icon' type='image/x-icon' href='Content/img/favicon.ico' />
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/cookies")
+    @Scripts.Render("~/bundles/js/customjs")
+    @Styles.Render("~/bundles/css/bootstrap23")
+    @Styles.Render("~/bundles/css/bootstrap-responsive")
+    @Styles.Render("~/bundles/css/colorbox")
+    @Styles.Render("~/bundles/css/frontpage")
+    
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    <link href="/Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <script src="Content/js/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+        window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
+        @{
+            var userID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+            if (String.IsNullOrWhiteSpace(userID))
+            {
+                userID = "";
+            }
+            var sessionID = Session.SessionID;
+            if (String.IsNullOrWhiteSpace(sessionID))
+            {
+                sessionID = "";
+            }
+        }
+        var userID = '';
+        if ('@userID' !== '') {
+            userID = '@userID';
+        } else {
+            var cookieID = $.cookie('sessionID');
+            if (cookieID != null) {
+                userID = cookieID;
+            } else {
+                userID = '@sessionID';
+            }
+        }
+        $.cookie('sessionID', userID);
+        window.analytics.identify(userID);
+        window.analytics.page();
+    </script>
+
+    <script type="text/javascript">
+        //The below is vimeo's API. Since we cannot track events in an IFrame, we need to post messages to vimeo to retrieve play events.
+        $(function () {
+            $(function () {
+                
+                var player = $('#video');
+                var url = window.location.protocol + player.attr('src').split('?')[0];
+
+                // Listen for messages from the player
+                if (window.addEventListener) {
+                    window.addEventListener('message', onMessageReceived, false);
+                }
+                else {
+                    window.attachEvent('onmessage', onMessageReceived, false);
+                }
+
+                // Handle messages received from the player
+                function onMessageReceived(e) {
+                    if (e.data === 'tic!')
+                        return;
+
+                    var data = JSON.parse(e.data);
+
+                    switch (data.event) {
+                        case 'ready':
+                            onReady();
+                            break;
+
+                        case 'play':
+                            play();
+                            break;
+                    }
+                }
+
+                // Call the API when a button is pressed
+                $('button').on('click', function () {
+                    post($(this).text().toLowerCase());
+                });
+
+                // Helper function for sending a message to the player
+                function post(action, value) {
+                    var data = {
+                        method: action
+                    };
+
+                    if (value) {
+                        data.value = value;
+                    }
+
+                    var message = JSON.stringify(data);
+                    player[0].contentWindow.postMessage(data, url);
+                }
+
+                function onReady() {
+                    post('addEventListener', 'play');
+                };
+
+                function play() {
+                    analytics.track('Played video', {});
+                };                 
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <!--[if lt IE 7]>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a class="brand goTop" href="/">
+                    <img class="floating" src="Content/img/site/kwasant-logo.png" alt="Kwasant" title="Kwasant"></a>
+                <br />
+                <div class="nav-collapse">
+                    @Html.Partial("_HomeNav")
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="welcome" class="parallax top-banner home-welcome" data-section="2">
+        <div class="inner-bg">
+            <div class="landing-welcome-area">
+                <div class="landing-welcome-inner">
+                    <div class="landing-video">
+                        <div class="landing-video-wrap">
+                            <img src="Content/img/icons/watch-video-label.png" alt="Watch the video" title="Watch the video" class="watch-video-label" />
+                            <div class="video-inner">
+                                <img class="video-screen" src="Content/img/site/kwasant-video-screen-logo.png" alt="Kwasant Video" />
+                                <iframe id="video" class="video-frame" src="//player.vimeo.com/video/111799451?api=1" width="500" height="297" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div> 
+                        </div> 
+                        <div class="try-kwasant"><a href="#" title="Try Kwasant" class="try-kwasant-lnk" data-section="2">Try Kwasant</a></div>                       
+                    </div>                    
+                    <div id="logotext" class="text">
+                        <h1>Kwasant</h1>
+                        <p>Live. Personal. Assistants.</p>
+                    </div>
+                    <div class="clearfix">&nbsp;</div>
+                </div>                
+            </div>
+            
+        </div>
+        <section id="about" class="row text-block" data-section="1">
+            <div class="container">
+                <div class="row-fluid">
+                    <h2 class="text-center"><b>Wouldn't it be nice to have your own personal assistant?</b></h2> 
+                </div>
+            </div>
+        </section>
+    </div>
+
+    
+    <section id="how_to_works" class="row text-block" data-section="2">
+        <div class="light-bg">
+            <div class="container how-it-works-section">
+                <div class="col1">
+                    <div>
+                        <h2><i class="fa fa-cogs"></i>How it Works </h2>
+                        <strong>1. Include us on your emails (Kwa@sant.com)</strong>
+                        <p></p>
+                        <strong>2. One of our Bookers will get involved and schedule the event, reaching out to the attendees as necessary.</strong>
+                        <p></p>
+                        <strong>3. When the meeting is scheduled, we put it in your calendar (or send you the meeting invitation)</strong>
+                        <p></p>
+                        <strong>4. Use us to streamline your life.</strong>
+                        <p></p>
+                        <p></p>
+                        <p></p>
+                        <img class="pull-center" src="Content/img/site/example_using_kwasant_email.png" alt="Example using kwasant email" />
+                    </div>
+                </div>
+                <div class="col2 try-it-out-form">
+                    <form class="" id="frmTryItOut" action="#">
+                        <h2><i class="fa fa-key"></i>Try It Out </h2>
+                        <input type="text" class="span12 TryItOutfield" placeholder="Enter your email address here" name="Email" id="emailIdReqBooking">
+                        <textarea class="span12 TryItOutfield" placeholder='Example: "Book me for a 3pm meeting next Tuesday at 3pm at Starbucks on Jones and Laguna with Sara@sant.com"' name="MeetingInfo" rows="10" id="meetingInfo"></textarea>
+                        <button class="btn btn-large pull-right" type="button" onclick="SendMailMeetingRequest()">Schedule Me!</button>
+                        <p class="hint-message" id="spBookingRequestMsg"></p>
+                    </form>
+                </div>
+            </div>
+            <!-- this is a section that breaks up the website -->
+            <div id="services-bg" class="parallax services-section">
+                <div class="text">
+                    <blockquote>
+                        <h2>Kwasant</h2>
+                        <small>It just takes one step..</small>
+                    </blockquote>
+                </div>
+                <a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
+            </div>
+            <div class="container">
+                <section id="details" class="details-section">
+                    <div>
+                        <h2>Details</h2>
+                        <p></p>
+                        <p>
+                            Think of us as your personal assistant. We'll handle all the back and forth.
+
+                            </p>
+                    </div>
+                    <div class="row-fluid section">
+                        <div class="span12 text-center">
+                            <!-- <h3 class="with-border">Watch who we are</h3> -->
+                            <img src="Content/img/site/How_it_works_diagram.png" alt="How it works" />
+                            <!-- <div class="videoWrapper">
+                            <iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div> -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <!-- this is a section that breaks up the website -->
+            <div id="services-bg-sec" class="parallax next-thing-section">
+                <div class="text">
+                    <blockquote>
+                        <h2>Kwasant - The Next Thing You Can't Live Without</h2>
+                        <small>We use your email to build your calendar.</small>
+                    </blockquote>
+                </div>
+                <a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
+            </div>
+            <div class="text-block" data-section="3">
+                <div class="container faq-section">
+                    <!-- this is the faq section -->
+                    <section id="faq">
+                        <h1 class="text-center">FAQ</h1>
+                        <div class="row span-12 text-center">
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Just what problem are you solving here?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse">
+                                        <div class="panel-body">We help people schedule their meetings. Soon we'll do even more for them. Some people have personal assistants to help with this, but most of us don’t. Now, you can get personal assistant help when you need it.</div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">How do you make money?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div class="panel-body">Someday, we’re probably going to charge a small monthly fee for booking services above a certain level. </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">What email addresses do you use?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse">
+                                        <div class="panel-body">We send your meeting request right back to the address you sent your information from. However, you’ll soon be able to specify which address to use.</div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">What else do you do?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse">
+                                        <div class="panel-body">We're working on adding a bunch of additional ways you can save time by tapping into our web assistants.</div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Can you also send a meeting invite to the other attendees?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFive" class="panel-collapse collapse">
+                                        <div class="panel-body">Yes, they'll get one too.</div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">What if I don't give you enough detail about the meeting? Do you just guess?</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseSix" class="panel-collapse collapse">
+                                        <div class="panel-body">In general, we'll book the information we're sure about, and if necessary, email the attendees for clarification.</div>
+                                    </div>
+                                </div>
+
+                                    </div>
+                                    </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacts" class="text-block" data-section="4">
+        <div class="dark-bg">
+            <div class="container">
+                <h2><i class="fa fa-map-marker"></i>Get in touch</h2>
+                <p>Drop us a line.</p>
+                <div class="row-fluid section">
+                    <div class="span8 cform">
+                        <h3 class="with-border">Want to ask something?</h3>
+                        <form class="form clearfix" action="#">
+                            <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                            <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                            <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                            <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>
+                            <span id="spMessage" class="contact-hint"></span>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- <iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ru/?ie=UTF8&amp;ll=37.775735,-122.422543&amp;spn=0.070962,0.153122&amp;t=m&amp;z=13&amp;output=embed"></iframe> -->
+    <footer>
+        <div class="light-bg">
+            <div class="container">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <h4>Get in touch</h4>
+                        <div class="info-block">
+                            <article class="clearfix">
+                                <i class="fa fa-globe"></i>
+                                <address>2200 Sacramento St. #1603 , San Francisco, CA 94115</address>
+                            </article>
+                            <article class="clearfix">
+                                <i class="fa fa-envelope"></i>
+                                <p><a href="mailto:info@kwasant.com">info@kwasant.com</a></p>
+                            </article>
+                        </div>
+                    </div>
+                    <div class="span6">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="copyright-block dark-bg clearfix">
+            <div class="container">
+                <div>
+                    <p class="text-center">Copyright &copy; 2014 by Maginot Technologies, LLC. All Rights Reserved</p>
+                    <a href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" /></a>
+                 </div>
+            </div>
+        </div>
+    </footer>
+
+    <a class="goTop goTop-link" title="Go Top"><i class="fa fa-arrow-up"></i></a>
+
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/colorbox")
+    @Scripts.Render("~/bundles/js/waypoints")
+    @Scripts.Render("~/bundles/js/placeholder")
+    @Scripts.Render("~/bundles/js/modernizr")
+    <script src="https://secure-a.vimeocdn.com/js/froogaloop2.min.js"></script>
+    @Scripts.Render("~/bundles/js/main")
+
+    <script type="text/javascript">
+        // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
+        //and display contant result to user using alert
+        function SendMail() {
+            $.ajax({
+                url: "/Home/ProcessSubmittedEmail",
+                type: "POST",
+                async: true,
+                data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
+                success: function (result) {
+                    if (result == "success") {
+                        $('#name').val(""); $('#emailId').val(""); $('#message').val("");
+                        $('#spMessage').html("Email Submitted");
+                    }
+                    else {
+                        $('#spMessage').html(result);
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script type="text/javascript">
+        function SendMailMeetingRequest() {
+            $.ajax({
+                url: "/Home/ProcessHomePageBookingRequest",
+                type: "POST",
+                async: true,
+                data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val() },
+                success: function (result) {
+                    
+                    $('#spBookingRequestMsg').html(result.Message);
+                    if (result.UserID) {
+                        analytics.alias(result.UserID);
+                    }
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

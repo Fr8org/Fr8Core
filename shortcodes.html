@@ -1,0 +1,768 @@
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]--> 
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="Content/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <link href="Content/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
+		<link rel="stylesheet" href="Content/css/additionalcss/colorbox/colorbox.css">
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+		
+		<link rel="stylesheet" href="Content/css/frontcss/main.css">
+        <link rel="stylesheet" href="Content/css/font-awesome.min.css">
+		
+		<!--[if lt IE 9]>
+			<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+			<script src="Content/js/respond.min.js"></script>
+		<![endif]-->
+		
+        <script src="Content/js/vendor/modernizr-2.6.2.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+		
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					 <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</a>
+					<a class="brand" href="/">Griny</a>
+					<div class="nav-collapse">
+						<ul class="nav">
+							<li><a href="/#about">About Us</a></li>
+							<li><a href="/#services">Services</a></li>
+							<li><a href="/#works">Portfolio</a></li>
+							<li><a href="/#clients">Clients</a></li>
+							<li><a href="/#blog">Blog</a></li>
+							<li><a href="/#price">Price</a></li>
+							<li><a href="/#contacts">Contact</a></li>
+							<li class="active"><a href="#">Shortcodes</a></li>
+						</ul>
+					</div>	
+				</div>	
+			</div>
+		</div>
+		
+		<style>
+			.show-grid [class*="span"] {
+				background-color: #F2E9DF;
+				line-height: 50px;
+				min-height: 50px;
+				text-align: center;
+				margin-bottom: 20px;
+				color: #F2E9DF;
+				transition: all ease-in-out .5s;
+			}
+			.show-grid:hover [class*="span"]{
+				background-color: #D85E17;
+			}
+		</style>
+		
+		<div id="welcome" class="parallax" style="background-image: url(Content/img/temp/old/bg1.jpg); ">
+			<div id="logotext" class="text">
+				<h1>Griny</h1>
+				<p>Single & Multi page theme</p>
+			</div>
+		</div>
+
+		<section class="text-block">
+			<div class="light-bg">
+				<div class="container">
+					<h2 class="with-border">Get started</h2>					
+					<h3>Columns</h3>
+					<div class="section">
+						<div class="row-fluid show-grid">
+							<div class="span12">12</div>
+						</div>
+						<div class="row-fluid show-grid">
+							<div class="span6">6</div>
+							<div class="span6">6</div>
+						</div>
+						<div class="row-fluid show-grid">
+							<div class="span4">4</div>
+							<div class="span4">4</div>
+							<div class="span4">4</div>
+						</div>
+						<div class="row-fluid show-grid">
+							<div class="span3">3</div>
+							<div class="span3">3</div>
+							<div class="span3">3</div>
+							<div class="span3">3</div>
+						</div>
+						<div class="row-fluid show-grid">
+							<div class="span2">2</div>
+							<div class="span2">2</div>
+							<div class="span2">2</div>
+							<div class="span2">2</div>
+							<div class="span2">2</div>
+							<div class="span2">2</div>
+						</div>
+						<div class="row-fluid show-grid">
+							<div class="span8">8</div>
+							<div class="span4">4</div>
+						</div>
+					</div>	
+				</div>	
+			</div>	
+			
+			<div class="dark-bg">
+				<div class="container">
+					<h2 class="with-border">Color theme</h2>
+					<h3>Dark background</h3>
+					<p>Add <span class="code">.dark-bg</span> class to any element to use this (#F2E9DF) background color in the global section (or <span class="code">.light-bg</span> class to use default background color #3E3E3E)</p>
+					<div class="alert fade in alert-inverse">
+						<button class="close" data-dismiss="alert" type="button">×</button>
+						<strong>Notice!</strong>
+						If you change background color by adding <span class="code">.dark-bg</span> or <span class="code">.light-bg</span>, background of some features in this theme also will be inverse.
+					</div>
+
+				</div>
+			</div>	
+			
+			<div class="light-bg">
+				<div class="container">
+					<h2 class="with-border">Base CSS</h2>
+					<div class="section">
+						<h3>Typography</h3>
+						<div class="row-fluid">	
+							<div class="span6">
+								<h4>Simple heading:</h4>
+								<h1>h1. Heading 1</h1>
+								<h2>h2. Heading 2</h2>
+								<h3>h3. Heading 3</h3>
+								<h4>h4. Heading 4</h4>
+								<h5>h5. Heading 5</h5>
+								<h6>h6. Heading 6</h6>
+							</div>
+							<div class="span6">
+								<h4>Add <span class="code">.with-border</span> class to the heading:</h4>
+								<h1 class="with-border">h1. Heading 1</h1>
+								<h2 class="with-border">h2. Heading 2</h2>
+								<h3 class="with-border">h3. Heading 3</h3>
+								<h4 class="with-border">h4. Heading 4</h4>
+								<h5 class="with-border">h5. Heading 5</h5>
+								<h6 class="with-border">h6. Heading 6</h6>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+			<div class="dark-bg">
+				<div class="container">
+					<h3 class="with-border">Blockquotes</h3>
+					<blockquote>
+						<h2>h2. Heading 2</h2>
+						Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.
+						<small>Author name</small>
+					</blockquote>
+				</div>
+			</div>		
+			<div class="light-bg">
+				<div class="container">
+					<h3 class="with-border">Lists</h3>
+					<div class="row-fluid">	
+						<div class="span6">
+							<h4>Unordered</h4>
+							<ul>
+								<li>Lorem ipsum dolor sit amet</li>
+								<li>Consectetur adipiscing elit</li>
+								<li>Integer posuere erat a ante
+									<ul>
+										<li>Risus et vulputate mollis</li>
+										<li>Massa nulla aliquam neque et vulputate mollis</li>
+									</ul>
+								</li>
+								<li>Pellentesque ornare, risus et vulputate mollis</li>
+								<li>Massa nulla aliquam neque</li>
+							</ul>
+						</div>
+						<div class="span6">
+							<h4>Ordered</h4>
+							<ol>
+								<li>Lorem ipsum dolor sit amet</li>
+								<li>Consectetur adipiscing elit</li>
+								<li>Integer posuere erat a ante
+									<ol>
+										<li>Risus et vulputate mollis</li>
+										<li>Massa nulla aliquam neque et vulputate mollis</li>
+									</ol>
+								</li>
+								<li>Pellentesque ornare, risus et vulputate mollis</li>
+								<li>Massa nulla aliquam neque</li>
+							</ol>
+						</div>
+					</div>	
+					<div class="section">
+						<h3 class="with-border">Tables</h3>
+						<div class="row-fluid">	
+							<div class="span6">
+								<h4>Default styles</h4>
+								<p>Add <span class="code">.table</span> class to any <span class="code">&lt;table&gt;</span>.</p>
+								<table class="table">
+									<caption>Caption</caption>
+									<thead>
+										<tr>
+											<th>First Name</th>
+											<th>Last Name</th>
+											<th>Username</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Mark</td>
+											<td>Otto</td>
+											<td>@mdo</td>
+										</tr>
+										<tr>
+											<td>Jacob</td>
+											<td>Thornton</td>
+											<td>@fat</td>
+										</tr>
+										<tr>
+											<td colspan="2">Larry the Bird</td>
+											<td>@twitter</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>	
+							<div class="span6">
+								<h4>Hover styles</h4>
+								<p>Add <span class="code">.table-hover</span> to enable a hover state.</p>
+								
+								<table class="table table-hover">
+									<caption>Caption</caption>
+									<thead>
+										<tr>
+											<th>First Name</th>
+											<th>Last Name</th>
+											<th>Username</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>Mark</td>
+											<td>Otto</td>
+											<td>@mdo</td>
+										</tr>
+										<tr>
+											<td>Jacob</td>
+											<td>Thornton</td>
+											<td>@fat</td>
+										</tr>
+										<tr>
+											<td colspan="2">Larry the Bird</td>
+											<td>@twitter</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>	
+						</div>	
+					</div>					
+					<div class="row-fluid section">
+						<div class="span4">
+							<h3 class="with-border">Forms</h3>
+							<form class="form" action="">
+								<input type="text" class="span12" placeholder="Name" name="name">
+								<input type="email" class="span12" placeholder="Email" name="email">
+								<input type="text" class="span12" placeholder="Subject" name="subject">
+								<textarea class="span12" placeholder="Message" name="message" rows="5"></textarea>
+							</form>
+						</div>
+						<div class="span4">
+							<h3 class="with-border">Button colors</h3>
+							<p>
+							  <button class="btn" type="button">Default</button>
+							  <button class="btn btn-primary" type="button">Primary</button>
+							  <button class="btn btn-info" type="button">Info</button>
+							  <button class="btn btn-success" type="button">Success</button>
+							  <button class="btn btn-warning" type="button">Warning</button>
+							  <button class="btn btn-danger" type="button">Danger</button>
+							  <button class="btn btn-inverse" type="button">Inverse</button>
+							</p> 
+							<div class="section">
+								<h3 class="with-border">Disabled buttons</h3>
+								<p>
+								  <button class="btn disabled" type="button">Default</button>
+								  <button class="btn btn-primary disabled" type="button">Primary</button>
+								  <button class="btn btn-info disabled" type="button">Info</button>
+								  <button class="btn btn-success disabled" type="button">Success</button>
+								  <button class="btn btn-warning disabled" type="button">Warning</button>
+								  <button class="btn btn-danger disabled" type="button">Danger</button>
+								  <button class="btn btn-inverse disabled" type="button">Inverse</button>
+								</p> 
+							</div>	
+						</div>
+						<div class="span4">
+							<h3 class="with-border">Button sizes</h3>
+								<p>
+								  <button class="btn btn-large" type="button">Large button</button>
+								   <button class="btn btn-large btn-primary" type="button">Large button</button>
+								</p>
+								<p>
+								  <button class="btn" type="button">Default button</button>
+								  <button class="btn btn-primary" type="button">Default button</button>
+								</p>
+								<p>
+								  <button class="btn btn-small" type="button">Small button</button>
+								  <button class="btn btn-small btn-primary" type="button">Small button</button>
+								</p>
+								<p>
+								  <button class="btn btn-mini" type="button">Mini button</button>
+								  <button class="btn btn-mini btn-primary" type="button">Mini button</button>
+								</p>
+						</div>
+					</div>
+					<div class="row-fluid section">
+						<div class="span6">
+							<h3 class="with-border">Emphasis classes</h3>
+							<div class="section">
+								<p class="muted">Muted. Fusce dapibus, tellus ac cursus commodo, tortor mauris nibh.</p>
+								<p class="text-info">Text-info. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis.</p>
+								<p class="text-success">Text-success. Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+								<p class="text-warning">Text-warning. Etiam porta sem malesuada magna mollis euismod.</p>
+								<p class="text-error">Text-error. Donec ullamcorper nulla non metus auctor fringilla.</p>
+							</div>	
+						</div>
+						<div class="span6">
+							<h3 class="with-border">Labels</h3>
+							<div class="section">
+								<span class="label">Default</span>
+								<span class="label label-info">Info</span>
+								<span class="label label-success">Success</span>
+								<span class="label label-warning">Warning</span>
+								<span class="label label-important">Important</span>
+								<span class="label label-inverse">Inverse</span>
+							</div>	
+							<div class="section">
+								<h3 class="with-border section">Badges</h3>
+								<span class="badge">1</span>
+								<span class="badge badge-info">2</span>
+								<span class="badge badge-success">4</span>
+								<span class="badge badge-warning">6</span>
+								<span class="badge badge-important">8</span>
+								<span class="badge badge-inverse">10</span>
+							</div>	
+						</div>
+					</div>
+					<div class="section">
+						<h3 class="with-border">Helper classes</h3>
+						<div class="row-fluid section">
+							<div class="span6">
+								<p>
+									<span class="code">.section</span>
+									- add the top and bottom 30px margin.	
+								</p>
+								<p>
+									<span class="code">.color</span>
+									- add a <span class="color">green</span> color.
+								</p>
+								<p>
+									<span class="code">.code</span>
+									- wrap inline snippets of code.
+								</p>
+								<p>
+									<span class="code">.goTop</span>
+									- add the element to scroll top.
+								</p>
+								<p>
+									<span class="code">.parallax</span>
+									- add the element with background-image to create parallax effect.
+								</p>
+							</div>	
+							<div class="span6">
+								<p>
+									<span class="code">.black-bg</span>
+									- add to fill the area small dots.
+								</p>
+								<p>	
+									<span class="code">.text</span>
+									- add with parent <span class="code">.parallax</span> class to create text in parallax section.
+								</p>
+								<p>	
+									<span class="code">.toSection</span>
+									- add with <span class="code">data-section</span> attribute to scroll to the section you need.
+								</p>
+								<p>	
+									<span class="code">.text-block</span>
+									- need to connect the menu items with sections. Required class. 
+								</p>	
+							</div>	
+						</div>	
+					</div>	
+				</div>
+			</div>	
+			<div class="dark-bg">
+				<div class="container">	
+					<h2 class="with-border">Components</h2>
+					<div class="row-fluid">	
+						<div class="span6">
+							<h3 class="with-border">Progress bar</h3>
+
+							<div class="progress-block">
+								<div class="progress">
+									<div class="bar" style="width: 80%;"></div>
+									<p class="progress-name">Design</p>
+									<span class="value">80%</span>
+								</div>
+								<div class="progress">
+									<div class="bar " style="width: 75%;"></div>
+									<p class="progress-name">Development</p>
+									<span class="value">75%</span>
+								</div>
+								<div class="progress">
+									<div class="bar" style="width: 40%;"></div>
+									<p class="progress-name">Branding</p>
+									<span class="value">40%</span>
+								</div>	
+								<div class="progress">
+									<div class="bar" style="width: 60%;"></div>
+									<p class="progress-name">Usability</p>
+									<span class="value">60%</span>
+								</div>	
+								<div class="progress">
+									<div class="bar" style="width: 100%;"></div>
+									<p class="progress-name">Concepts</p>
+									<span class="value">100%</span>
+								</div>	
+							</div>
+						</div>
+						<div class="span6">
+							<h3 class="with-border">Responsive video</h3>
+							<div class="videoWrapper">
+								<iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+							</div>
+						</div>
+					</div>	
+					<div class="section">
+						<h3 class="with-border">Thumbnails</h3>
+						<ul class="thumbnails">
+							<div class="row">
+								<li class="span4">
+									<h4>Linked image</h4>
+									<div class="thumbnail">
+										<a href="#"><img alt="" src="/Content/img/temp/team.jpg"></a>
+									</div>	
+								</li>
+								<li class="span4">
+									<h4>Image with pop-up text (not on mobile devices)</h4>
+									<div class="thumbnail">
+										<div class="img-wrap">
+											<div class="black-bg">
+												<div class="hover-block">
+													<h4>Have a question? Write!</h4>
+													<ul class="link-block">
+														<li><a href="#"><i class="icon-linkedin-sign"></i></a></li>
+														<li><a href="#"><i class="icon-twitter-sign"></i></a></li>
+														<li><a href="#"><i class="icon-facebook-sign"></i></a></li>
+														<li><a href="#"><i class="icon-google-plus-sign"></i></a></li>
+													</ul>
+												</div>
+											</div>
+											<img alt="" src="img/team2.jpg">
+										</div>	
+									</div>	
+								</li>
+								<li class="span4">
+									<h4>Lightbox image</h4>
+									<div class="thumbnail">
+										<div class="img-wrap">
+											<a class="colorbox cboxElement" href="img/team3.jpg">
+												<div class="black-bg">
+													<i class="icon-zoom-in"></i>
+												</div>	
+												<img alt="" src="img/team3.jpg">
+											</a>
+										</div>
+									</div>	
+								</li>
+							</div>
+						</ul>	
+					</div>	
+					<div class="section">
+						<h3 class="with-border">Pricing tables</h3>
+						<div class="row-fluid">	
+							<div class="span4 price-block">
+								<h3>Single purchase</h3>
+								<div class="price-table">
+									<p>$ <span class="price">10</span> / mo</p>
+									<div class="price-features">
+										<ul>
+											<li><i class="icon-ok"></i> Single installation</li>
+											<li><i class="icon-ok"></i> Full Responsive</li>
+											<li><i class="icon-ok"></i> Parallax Effect</li>
+											<li><i class="icon-ok"></i> HTML5 & CSS3</li>
+											<li><i class="icon-ok"></i> Smooth scrolling</li>
+											<li><i class="icon-ok"></i> Unlimited Support</li>
+											<li><i class="icon-ok"></i> Bootstrap 2.3.0</li>
+										</ul>
+									</div>
+									<a class="btn btn-large" href="#">Select now</a>
+								</div>	
+							</div>
+							<div class="span4 price-block">	
+								<h3>Multiple purchase</h3>
+								<div class="price-table recommend">
+									<p>$ <span class="price">50</span> / mo</p>
+									<div class="price-features">
+										<ul>
+											<li><i class="icon-ok"></i> Multiple installation</li>
+											<li><i class="icon-ok"></i> Full Responsive</li>
+											<li><i class="icon-ok"></i> Parallax Effect</li>
+											<li><i class="icon-ok"></i> HTML5 & CSS3</li>
+											<li><i class="icon-ok"></i> Smooth scrolling</li>
+											<li><i class="icon-ok"></i> Unlimited Support</li>
+											<li><i class="icon-ok"></i> Bootstrap 2.3.0</li>
+										</ul>
+									</div>
+									<a class="btn btn-large" href="#">Buy now</a>
+								</div>	
+							</div>
+							<div class="span4 price-block">
+								<h3>Extended license</h3>
+								<div class="price-table">
+									<p>$ <span class="price">500</span> / mo</p>
+									<div class="price-features">
+										<ul>
+											<li><i class="icon-ok"></i> Unlimited installation</li>
+											<li><i class="icon-ok"></i> Full Responsive</li>
+											<li><i class="icon-ok"></i> Parallax Effect</li>
+											<li><i class="icon-ok"></i> HTML5 & CSS3</li>
+											<li><i class="icon-ok"></i> Smooth scrolling</li>
+											<li><i class="icon-ok"></i> Unlimited Support</li>
+											<li><i class="icon-ok"></i> Bootstrap 2.3.0</li>
+										</ul>
+									</div>
+									<a class="btn btn-large" href="#">Select now</a>
+								</div>	
+							</div>	
+						</div>
+					</div>
+				</div>	
+			</div>
+		</section>
+		<section class="text-block">		
+			<div class="light-bg">
+				<div class="container">
+					<h2 class="with-border">JavaScript</h2>
+					<div class="row-fluid section">
+						<div class="span4">
+							<h3 class="with-border">Tabs</h3>
+							<ul class="nav nav-tabs">
+								<li class="active"><a href="#responsive-tab" data-toggle="tab"><i class="icon-resize-full"></i></a></li>
+								<li><a href="#parallax-tab" data-toggle="tab"><i class="icon-magic"></i></a></li>
+								<li><a href="#design-tab" data-toggle="tab"><i class="icon-thumbs-up"></i></a></li>
+								<li><a href="#settings-tab" data-toggle="tab"><i class="icon-cogs"></i></a></li>
+							</ul>
+							<div class="tab-content">
+								<div class="tab-pane active fade in" id="responsive-tab">
+									<h4>Full Responsive</h4>
+									<p>Lorem ipsum dolor sit amet, nam idque tantas vidisse ex, per ea sint explicari theophrastus, dicat tantas copiosae eam id. Id primis dolores eum. Munere sententiae vis ea. Pro dicta insolens eu, duo veniam eruditi oportere an, eum molestie salutandi in. Vix in elit legere appetere, pri in erant nonumes.</p>
+								</div>
+								<div class="tab-pane fade" id="parallax-tab">
+									<h4>Parallax Effect</h4>
+									<p>Id primis dolores eum. Munere sententiae vis ea. Vix in elit legere appetere, pri in erant nonumes.</p>
+									<p>Donec in velit vel ipsum auctor pulvinar. Vesti bulum iaculis lacinia est. Proin dictum elementum velit. Fusce euismod auctor pulvinar.</p>
+								</div>
+								<div class="tab-pane fade" id="design-tab">
+									<h4>Modern Design</h4>
+									<p>Donec in velit vel ipsum auctor pulvinar. Vesti bulum iaculis lacinia est. Proin dictum elementum velit. Fusce euismod auctor pulvinar.</p>
+									<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora. </p>
+								</div>
+								<div class="tab-pane fade" id="settings-tab">
+									<h4>Easy Customizable</h4>
+									<p>Theophrastus, dicat tantas copiosae eam id. Cum maiestatis necessitatibus ad, nam ut mutat quaestio. Id primis dolores eum. Munere sententiae vis ea. Pro dicta insolens eu, duo veniam eruditi oportere an, eum molestie salutandi in. Vix in elit legere appetere, pri in erant nonumes.</p>
+								</div>
+							</div>
+						</div>
+						<div class="span4">
+							<h3 class="with-border">Accordion</h3>
+							<div id="accordion">
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+											<i class="icon-resize-full"></i> Full Responsive
+										</a>
+									</div>
+									<div id="collapseOne" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<p>Lorem ipsum dolor sit amet, nam idque tantas vidisse ex, per ea sint explicari theophrastus, dicat tantas copiosae eam id. Id primis dolores eum. Munere sententiae vis ea. Pro dicta insolens eu, duo veniam eruditi oportere an, eum molestie salutandi in. Vix in elit legere appetere, pri in erant nonumes.</p>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+											<i class="icon-magic"></i> Parallax Effect
+										</a>
+									</div>
+									<div id="collapseTwo" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<p>Id primis dolores eum. Munere sententiae vis ea. Vix in elit legere appetere, pri in erant nonumes.</p>
+											<p>Donec in velit vel ipsum auctor pulvinar. Vesti bulum iaculis lacinia est. Proin dictum elementum velit. Fusce euismod auctor pulvinar.</p>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThird">
+											<i class="icon-thumbs-up"></i> Modern Design
+										</a>
+									</div>
+									<div id="collapseThird" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<p>Donec in velit vel ipsum auctor pulvinar. Vesti bulum iaculis lacinia est. Proin dictum elementum velit. Fusce euismod auctor pulvinar.</p>
+											<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora. </p>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFourth">
+											<i class="icon-cogs"></i> Easy Customizable
+										</a>
+									</div>
+									<div id="collapseFourth" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<p>Theophrastus, dicat tantas copiosae eam id. Cum maiestatis necessitatibus ad, nam ut mutat quaestio. Id primis dolores eum. Munere sententiae vis ea. Pro dicta insolens eu, duo veniam eruditi oportere an, eum molestie salutandi in. Vix in elit legere appetere, pri in erant nonumes.</p>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseFifth">
+											<i class="icon-code"></i> HTML5 & CSS3
+										</a>
+									</div>
+									<div id="collapseFifth" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora. </p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="span4">
+							<h3 class="with-border">Modal & popover buttons</h3>
+							<a href="#myModal" role="button" class="btn btn-large" data-toggle="modal">Launch demo modal</a>
+							<a data-content="And here's some amazing content. It's very engaging. right?" title="" data-placement="top" data-toggle="popover" rel="popover" class="btn btn-large" data-original-title="Popover on top">
+								Click to toggle popover</a>
+						</div>	
+					</div>
+					<div class="row-fluid">
+						<div class="span8">
+							<h3 class="with-border">Carousel</h3>
+							<div id="Carousel" class="carousel slide">
+								<div class="carousel-inner">
+									<div class="active item">
+										<img alt="" src="Content/img/temp/old/bg4.jpg">
+										<div class="carousel-caption">
+											<h3><a href="#">External link <i class="icon-external-link"></i></a></h3>
+											<p>Cras metus elit, consectetur sed congue vel, sollicitudin eget odio. Cras lacinia laoreet libero et mattis. Cras metus elit, consectetur sed congue vel, sollicitudin eget odio. Cras lacinia laoreet libero et mattis.</p>
+										</div>
+									</div>
+									<div class="item">
+										<img alt="" src="Content/img/temp/old/bg5.jpg">
+										<div class="carousel-caption">
+											<h3>Just some title</h3>
+											<p>Cras metus elit, consectetur sed congue vel, sollicitudin eget odio. Cras lacinia laoreet libero et mattis. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora.</p>
+										</div>
+									</div>
+									<div class="item">
+										<img alt="" src="Content/img/temp/old/bg2.jpg">
+										<div class="carousel-caption">
+											<h3><a href="#">Site name <i class="icon-external-link"></i></a></h3>
+											<p>Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora. Cras metus elit, consectetur sed congue vel, sollicitudin eget odio. Cras lacinia laoreet libero et mattis.</p>
+										</div>
+									</div>
+								</div>
+								<a class="carousel-control left" href="#Carousel" data-slide="prev">&lsaquo;</a>
+								<a class="carousel-control right" href="#Carousel" data-slide="next">&rsaquo;</a>
+							</div>
+						</div>
+						<div class="span4">
+							<h3 class="with-border">Alerts</h3>	
+							<div class="alert fade in">
+								<a href="#" data-dismiss="alert" class="close">×</a>
+								<strong>Holy guacamole! </strong> Best check yo self, you're not looking too good.
+							</div>
+							<div class="alert alert-inverse fade in">
+								<a href="#" data-dismiss="alert" class="close">×</a>
+								<strong>Inverse color!</strong> Change color according to section background. 
+							</div>
+							<div class="alert alert-info fade in">
+								<a href="#" data-dismiss="alert" class="close">×</a>
+								<strong>Heads up!</strong> This alert needs your attention, but it's not super important. 
+							</div>
+							
+							<div class="alert alert-success fade in">
+								<a href="#" data-dismiss="alert" class="close">×</a>
+								<strong>Well done!</strong> You successfully read this important alert message. 
+							</div>
+							<div class="alert alert-warning fade in">
+								<a href="#" data-dismiss="alert" class="close">×</a>
+								<strong>Oh snap!</strong> Change a few things up and try submitting again. 
+							</div>
+							<div class="alert alert-block alert-error fade in">
+								<button class="close" data-dismiss="alert" type="button">×</button>
+								<h4 class="alert-heading">Oh snap! You got an error!</h4>
+								<p>Change this and that and try again.</p>
+								<p>
+									<a class="btn btn-danger" href="#">Take this action</a>
+									<a class="btn btn-danger" href="#">Or do this</a>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>	
+			</div>
+		</section>	
+		
+		<footer class="text-block">
+			<div class="dark-bg copyright-block">
+				<div class="container">
+					<div class="pull-left">
+						<p class="pull-left">Copyright &copy; 2013 by <a href="http://www.frosenka.ru" target="_blank">frosenka</a>. All Rights Reserved</p>
+					</div>	
+					<div class="pull-right">
+						<p>Thanks <a href="http://www.unsplash.com" target="_blank">ooomf</a> for the pictures</p>
+					</div>	
+				</div>
+			</div>
+		</footer>
+		
+		<a class="goTop goTop-link"><i class="icon-arrow-up"></i></a>
+		<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+				<h3 id="myModalLabel">Modal header</h3>
+			</div>
+			<div class="modal-body">
+				<p>One fine body…</p>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+				<button class="btn">Save changes</button>
+			</div>
+		</div>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="Content/js/vendor/jquery-1.10.2.min.js"><\/script>')</script>
+        <script src="Content/js/bootstrap.min.js"></script>
+        <script src="Content/js/waypoints.js"></script>
+        <script src="Content/js/plugins.js"></script>
+        <script src="Content/js/placeholder.js"></script>
+        <script src="Content/js/jquery.colorbox-min.js"></script>
+        <script src="Content/js/main.js"></script>
+    </body>
+</html>
