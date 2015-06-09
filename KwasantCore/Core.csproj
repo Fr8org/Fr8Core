@@ -194,6 +194,7 @@
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\GoogleCalendarAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Docusign\DocusignPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />

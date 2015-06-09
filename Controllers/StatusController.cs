@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using KwasantCore.Managers.APIManagers.Packagers.Docusign;
 
 
 
@@ -28,7 +29,7 @@ namespace DocusignTutorial.Controllers
 {
 	public class  StatusController : Controller
 	{
-		public  void Main ()
+		public  void Login ()
 		{
 
 
@@ -59,7 +60,9 @@ namespace DocusignTutorial.Controllers
 				
 				// parse baseUrl from response body
 				baseURL = parseDataFromResponse(response, "baseUrl");
-				
+
+			    Session["baseURL"] = baseURL;
+
 				//--- display results
 				Debug.Print("\nAPI Call Result: \n\n" + prettyPrintXml(response));
 				

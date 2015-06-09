@@ -250,6 +250,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
     <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
@@ -858,6 +859,7 @@
     <Folder Include="Content\fonts\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
+    <Folder Include="Views\Envelope\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>

@@ -27,6 +27,7 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
+using KwasantCore.Managers.APIManagers.Packagers.Docusign;
 
 namespace KwasantWeb
 {
@@ -82,6 +83,12 @@ namespace KwasantWeb
             }
 
             SetServerUrl();
+
+            Logger.GetLogger().Warn("Docutrack  starting...");
+            var docusign = new DocusignPackager();
+            string baseURL = docusign.Login();
+
+
         }
 
 
