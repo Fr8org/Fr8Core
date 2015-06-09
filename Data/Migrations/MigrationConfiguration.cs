@@ -236,10 +236,10 @@ namespace Data.Migrations
         /// <returns>True if created successfully otherwise false</returns>
         private static void AddAdmins(IUnitOfWork unitOfWork)
         {
-            CreateAdmin("alex@kwasant.com", "alex@1234", unitOfWork);
-            CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
-            CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
-            CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
+            CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
+            //CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
+            //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
+            //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
         /// <summary>

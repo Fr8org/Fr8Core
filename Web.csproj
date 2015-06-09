@@ -149,7 +149,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -250,6 +250,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
@@ -627,7 +628,6 @@
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy.pubxml" />
-    <None Include="Scripts\jquery-1.7-vsdoc.js" />
     <Content Include="Scripts\ContextMenu\jquery.contextMenu.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.min.js" />
@@ -658,8 +658,9 @@
     <Content Include="Scripts\DataTables-1.10.0\media\js\jquery.dataTables.js" />
     <Content Include="Scripts\DataTables-1.10.0\media\js\jquery.dataTables.min.js" />
     <Content Include="Scripts\DataTables-1.10.0\media\js\jquery.js" />
-    <Content Include="Scripts\jquery-1.7.js" />
-    <Content Include="Scripts\jquery-1.7.min.js" />
+    <None Include="Scripts\jquery-2.1.4.intellisense.js" />
+    <Content Include="Scripts\jquery-2.1.4.js" />
+    <Content Include="Scripts\jquery-2.1.4.min.js" />
     <Content Include="shortcodes.html" />
     <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
@@ -817,6 +818,7 @@
     <Content Include="Views\BookingRequest\Administer.cshtml" />
     <Content Include="Views\Calendar\Edit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
+    <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\BookingRequest\ShowConversation.cshtml" />
     <Content Include="Views\BookingRequest\ShowInProcessBRs.cshtml" />
@@ -852,6 +854,7 @@
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\BookingRequest\DefaultActivityPopup.cshtml" />
     <Content Include="Views\BookingRequest\MergeRelatedBR.cshtml" />
+    <Content Include="Scripts\jquery-2.1.4.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

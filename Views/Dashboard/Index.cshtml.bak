@@ -1,0 +1,229 @@
+﻿@model KwasantWeb.ViewModels.DashboardShowVM
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@{
+    ViewBag.Title = "Event ";
+}
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+    <link href="/Content/css/jackedup.css" rel="stylesheet" />
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+@Scripts.Render("~/bundles/js/kwasantcalendar")
+    <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+    <script src="/Content/js/humane.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            var popupAlreadyShowing;
+            var jacked = humane.create({ baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success', clickToClose: true, timeout: 0 });
+            getUpdateForPage('BookingRequestUpdatedQueue', @Model.BookingRequestVM.BookingRequestId, function(result) {
+                if (result.length > 0) {
+                    if (!popupAlreadyShowing) {
+                        popupAlreadyShowing = true;
+                        jacked.log("A new email relating to this booking request has arrived. Click here to refresh.", function() {
+                            popupAlreadyShowing = false;
+                            refreshConversation();
+                        });
+                    }
+                }
+            });
+        }
+        );
+        
+        function sendAnEmail() {
+            Kwasant.IFrame.Display('@Url.Action("DisplayOneOffEmailForm", "BookingRequest", new { bookingRequestID = Model.BookingRequestVM.BookingRequestId })',
+                {
+                    horizontalAlign: 'middle',
+                    height: 815,
+                    width: 815,
+                    focusElement: '#subj',
+                    modal: true,
+                    callback: function(res) {
+                        var negotiationMessage = res 
+                            ? 'Emails have been dispatched.'
+                            : 'No emails were sent.';
+                        
+                        Kwasant.IFrame.CloseMe();
+                        displayMessage(negotiationMessage);
+                    }
+                });
+        }
+    </script>
+}
+<script type="text/javascript">
+    document.body.style.overflowY = 'scroll';
+    var calendar;
+    var dp_navigator, storedCalendar;
+    var linkedNegotiationID = @Html.Raw(Model.CalendarVM.LinkedNegotiationID == null ? "null" : Model.CalendarVM.LinkedNegotiationID.ToString());
+    var pageCreateTime = new Date();
+    
+    function checkLastUpdatedTime()
+    {
+        var LastUpdated = Date.parse('@Model.BookingRequestVM.LastUpdated');
+        if(LastUpdated > pageCreateTime)
+        {
+            var confirmBox = confirm("do you want to Mark this BR as Processed?");
+            if (confirmBox == true) {
+              
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "/BookingRequest/MarkAsProcessed?curBRId=" + '@Model.BookingRequestVM.BookingRequestId',
+                    success:function(response){
+                        if (response.Name == 'Success'){
+                            return true;
+                        }
+                        else if (response.Name == 'DifferentBooker')
+                            ShowBookerOwnershipAlert(response.Message, '@Model.BookingRequestVM.BookingRequestId');
+                        else if (response.Name == 'error')
+                            alert(response.Message);
+                        else
+                            alert('An error occured on the server. Your changes have not been saved.');
+                    }
+                })
+            } 
+            else
+                return true;
+        }
+    }
+
+    $("body").on('click', 'a', function() {
+        var location = $(this).attr('id');
+        if(location == 'btnDashBoard' || location == 'btnMyAccount' || location == 'btnBookingRequestGetAll' || location == 'btnUserGetAll')
+            return checkLastUpdatedTime();
+       
+    });
+    
+    
+</script>
+
+<div class="jumbotron calendar-section jumbotron_new" style="padding: 0px 20px;">
+    <div class="row">
+        <nav class="navbar navbar-default top-toolbar-section innernav" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a id="btnBookingRequest">BookingRequest</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Get All", "Index", new { controller ="BookingRequest" }, new { id="btnBookingRequestGetAll" })</li>
+                                <li><a id="liAddNote" onclick="getAddNoteWindow();">Add Note</a></li>
+                                <li><a onclick="getOtherBRs();">Merge With Existing BR</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a id="btnUser">User</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Get All", "Index", new { controller = "User" }, new { id="btnUserGetAll" }) </li>
+                                <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a id="btnNegotiation">Negotiation</a>
+                            <ul class="dropdown-menu">
+                                <li><a id="liEmail" onclick="sendAnEmail(); " href="#">Send an email</a></li>
+                                <li><a id="liReview" onclick="getCurrentNegotiationReview(); " href="#">Review</a></li>
+                                <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
+                                <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
+                            </ul>
+                        </li>
+                        @{
+                            if (Model.ResolvedNegotiations != null && Model.ResolvedNegotiations.Any())
+                            {
+                                <li class="dropdown">
+                                    <a>Resolved negotiations</a>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var negotiation in Model.ResolvedNegotiations)
+                                        {
+
+                                            <li><a onclick="getNegotiationReview(@negotiation.Id);" href="#">@negotiation.Name</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+                        <li class="dropdown">
+                            <a id="btnReport">Reports</a>
+                            <ul class="dropdown-menu">
+                                <li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestVM.BookingRequestId);" class="btnHistory" href="#">Show History</a></li>
+                            </ul>
+                        </li>
+                        @{
+                            if (Model.BookingRequestVM.VerbalisedHistory != null && Model.BookingRequestVM.VerbalisedHistory.Any())
+                            {
+                                <li class="dropdown">
+                                    <a id="btnHistory">History</a>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var historyItem in Model.BookingRequestVM.VerbalisedHistory)
+                                        {
+                                            <li><a style="font-size:13px; cursor:default;">@historyItem</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div id="toolbar" style="margin: 0px 0px 0px 0px;"></div>
+        <div id="notificationGroup">
+            <div class="col-md-7" style="margin-top: -25px; margin-bottom: 5px; text-align: left; padding-left: 1px;">
+                <div id="notificationMessage" style="background: #f8f8f8 !important; color: #d85e17; font-size: 16px; padding-left: 15px; font-size: 16px; font-weight: bold;">
+                </div>
+            </div>
+            <div class="col-md-5">
+            </div>
+        </div>
+
+        <!-- Booking Request Info View here -->
+        @Html.Partial("../BookingRequest/Administer", Model.BookingRequestVM)
+        <!-- Calendar Partial view here -->
+        @Html.Partial("../Calendar/Edit", Model.CalendarVM)
+
+    </div>
+</div>
+<script src="~/Content/js/toolbar.min.js"></script>
+<link href="~/Content/css/toolbar.min.css" rel="stylesheet" />
+<script>
+    $(document).ready(function(){
+        $('#toolbar').w2toolbar({
+            name: 'toolbar',
+            items: [
+                { type: 'button',  id: 'markprocessed',  caption: 'Mark Processed', hint: 'Mark as processed'},
+                { type: 'button',  id: 'sendmessage',  caption: 'Send Message', hint: 'send message'},
+            ],
+            onClick: function (event) {
+                if(event.target == 'markprocessed')
+                {
+                    updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { curBRId = Model.BookingRequestVM.BookingRequestId })');
+                }
+                else if(event.target == 'sendmessage'){
+                    sendAnEmail();
+                }
+            }
+        });
+        if("@TempData["isMerged"]" == "True")
+        {
+            displayMessage("Booking Request Merger Successful.");
+        }
+    });
+</script>

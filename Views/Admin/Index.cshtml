@@ -24,14 +24,10 @@
         </div>
         <div class="collapse navbar-collapse" id="navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="dropdown"><a id="btnBookingRequest">Booking Requests</a>
+                <li class="dropdown"><a id="btnBookingRequest">Metaflows</a>
                     <ul class="dropdown-menu">
-                        <li>@Html.ActionLink("Show Unprocessed", "Index", "BookingRequest", null, new { @class = "" })</li>
-                        <li>@Html.ActionLink("Show My CheckedOut", "ShowBRSOwnedByBooker", "BookingRequest", null, new { @class = "" })</li>
-                        <li>@Html.ActionLink("Show All CheckedOut", "ShowInProcessBRS", "BookingRequest", null, new { @class = "" })</li>
-                        <li>@Html.ActionLink("Show My Awaiting Response", "ShowAwaitingResponse", "BookingRequest", null, new { @class = "" })</li>
-                        <li>@Html.ActionLink("Find Booking Request", "FindBookingRequest", "BookingRequest", null, new { @class = "" })</li>
-                    </ul>
+                        <li>@Html.ActionLink("Create", "Index", "Metaflow", null, new { @class = "" })</li>
+                         </ul>
                 </li>
                 <li class="dropdown"><a id="btnReports">Reports</a>
                     <ul class="dropdown-menu">

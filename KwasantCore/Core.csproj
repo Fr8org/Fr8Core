@@ -233,6 +233,7 @@
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\Metaflow.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\User.cs" />

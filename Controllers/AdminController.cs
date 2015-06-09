@@ -9,13 +9,14 @@ using KwasantWeb.ViewModels;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Booker")]
+    //[KwasantAuthorize(Roles = "Booker")]
     public class AdminController : Controller
     {
         //
         // GET: /Admin/
         public ActionResult Index()
         {
+            Console.WriteLine("in Admin Index");
             return View();
         }
 

@@ -6,7 +6,7 @@ namespace KwasantWeb.App_Start
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
-            filters.Add(new KwasantHandleErrorAttribute());
+           // filters.Add(new KwasantHandleErrorAttribute());
         }
     }
 }
