@@ -18,7 +18,7 @@ namespace KwasantCore.Services
            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                MetaflowDO curFlow = new MetaflowDO();
+                SlipDO curFlow = new SlipDO();
                 curFlow.Name = "Flow_" + DateTime.Now;
                 uow.SlipRepository.Add(curFlow);
                 uow.SaveChanges();

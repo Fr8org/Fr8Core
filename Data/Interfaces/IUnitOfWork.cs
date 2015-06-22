@@ -43,7 +43,7 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-
+        SlipRepository SlipRepository { get; }
         /// <summary>
         /// Call this to commit the unit of work
         /// </summary>

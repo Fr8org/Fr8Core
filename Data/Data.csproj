@@ -109,6 +109,7 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
+    <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
@@ -518,6 +519,7 @@
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
+    <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />

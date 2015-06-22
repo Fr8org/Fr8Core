@@ -64,9 +64,6 @@
     <Reference Include="Google.Apis.Core">
       <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
     </Reference>
-    <Reference Include="KwasantWeb">
-      <HintPath>..\Bin\KwasantWeb.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -233,9 +230,9 @@
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
-    <Compile Include="Services\Metaflow.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\Report.cs" />
+    <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>

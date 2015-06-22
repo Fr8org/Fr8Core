@@ -89,6 +89,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private SlipRepository _SlipRepository;
+
+        public SlipRepository SlipRepository
+        {
+            get
+            {
+                return _SlipRepository ?? (_SlipRepository = new SlipRepository(this));
+            }
+        }
+
         private RemoteCalendarProviderRepository _remoteCalendarProviderRepository;
 
         public RemoteCalendarProviderRepository RemoteCalendarProviderRepository

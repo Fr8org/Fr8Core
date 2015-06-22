@@ -21,7 +21,7 @@ namespace KwasantWeb.Controllers
         {
             
 
-                return View();
+                return View("../Admin/Index");
             
         }
     }
