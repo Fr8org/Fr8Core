@@ -235,6 +235,7 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<SlipDO>().ToTable("Slips");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");

@@ -516,6 +516,10 @@
     <Compile Include="Migrations\201412121134145_AddFieldToTrackTimezonesForUsers.Designer.cs">
       <DependentUpon>201412121134145_AddFieldToTrackTimezonesForUsers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201506222300276_slip4.cs" />
+    <Compile Include="Migrations\201506222300276_slip4.Designer.cs">
+      <DependentUpon>201506222300276_slip4.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -1488,6 +1492,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412121134145_AddFieldToTrackTimezonesForUsers.resx">
       <DependentUpon>201412121134145_AddFieldToTrackTimezonesForUsers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506222300276_slip4.resx">
+      <DependentUpon>201506222300276_slip4.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
