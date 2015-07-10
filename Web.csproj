@@ -450,6 +450,7 @@
     <Content Include="Content\img\backgrounds\background_wood.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
     <Content Include="Content\img\backgrounds\cup-and-coffe-bg.png" />
+    <Content Include="Content\img\backgrounds\dockyard_main1600.jpg" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\backgrounds\login-wrapper-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
@@ -661,7 +662,6 @@
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
     <Content Include="Scripts\jquery-2.1.4.min.js" />
-    <Content Include="shortcodes.html" />
     <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
