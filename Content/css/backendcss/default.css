@@ -400,7 +400,7 @@ html.iframe-body body {
 }
 
 .site-header {
-    background: url(/Content/img/backgrounds/background_coffee.jpg) no-repeat fixed 50% -160px;
+    background: url(/Content/img/backgrounds/dockyard_main1600.jpg) no-repeat fixed 50% -160px;
     background-size: cover;
     border-bottom: 0 none;
 }
@@ -738,7 +738,7 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
 
 
 .login-page {
-    background: url(/Content/img/backgrounds/background_coffee.jpg) no-repeat fixed 50% 0;
+    background: url(/Content/img/backgrounds/dockyard_main1600.jpg) no-repeat fixed 50% 0;
     background-size: 115%;
     border-bottom: 0 none;   
 }
