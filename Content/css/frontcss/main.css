@@ -863,7 +863,7 @@ blockquote h2 i {
 }
 
 #welcome .inner-bg {
-    background: url('/Content/img/backgrounds/cup-and-coffe-bg.png') right bottom no-repeat;
+    background: url('/Content/img/backgrounds/PLACEHOLDER.png') right bottom no-repeat;
     background-size: 85%;
     height: 100%;
     width: 85%;
@@ -1869,7 +1869,7 @@ address {
 }
 
 .top-banner {
-	background-image: url('/Content/img/backgrounds/background_wood.jpg');
+	background-image: url('/Content/img/backgrounds/dockyard_main1600.jpg');
 }
 
 .try-it-out-form p.hint-message {
@@ -1879,12 +1879,12 @@ address {
 }
 
 .services-section {
-	background-image: url('/Content/img/backgrounds/background_coffe_and_phone.jpg');
+	background-image: url('/Content/img/backgrounds/dockyard_main1600.jpg');
 	padding-top: 40px;
 }
 
 .next-thing-section {
-	background-image: url('/Content/img/backgrounds/background_coffee_and_croissant.jpg');
+	background-image: url('/Content/img/backgrounds/dockyard_main1600.jpg');
 	padding-top: 40px;
 }
 
