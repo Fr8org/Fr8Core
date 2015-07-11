@@ -10,7 +10,7 @@ namespace KwasantCore.Plugins
     {
         public string command_sqlWrite ()
         {
-             
+            return "unimplemented";
         }
     }
 }
