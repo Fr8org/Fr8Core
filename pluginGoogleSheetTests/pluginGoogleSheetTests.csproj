@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>f25e79ed-4b20-4228-bbcc-27e6fdb78c4f</ProjectGuid>
+    <ProjectGuid>{9254154B-01C6-4DFA-8852-935090A2C88C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>pluginGoogleSheetTests</RootNamespace>
@@ -50,6 +50,12 @@
   <ItemGroup>
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pluginGoogleSheet\pluginGoogleSheet.csproj">
+      <Project>{CAF180F2-B198-426F-BAAB-675C8A4C2E28}</Project>
+      <Name>pluginGoogleSheet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
