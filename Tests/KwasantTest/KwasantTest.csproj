@@ -148,6 +148,7 @@
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
+    <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
@@ -190,7 +191,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="MockedDB\" />
     <Folder Include="Timeslots\" />
   </ItemGroup>
   <Choose>
