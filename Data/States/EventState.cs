@@ -2,6 +2,8 @@
 {
     public class EventState
     {
+        //Do not use these old Kwasant states
+        //We'll delete them in the future
         public const int Booking = 1;
         public const int ReadyForDispatch = 2;
         public const int DispatchCompleted = 3;
