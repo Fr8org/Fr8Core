@@ -22,6 +22,7 @@ namespace KwasantTest.Managers
         }
 
         [Test]
+        [Ignore]
         public void CanGenetrateBRNeedsProceessingEmail()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -44,6 +45,7 @@ namespace KwasantTest.Managers
         }
 
         [Test]
+        [Ignore]
         public void FailsToGenetrateBRNeedsProceessingEmail() 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
