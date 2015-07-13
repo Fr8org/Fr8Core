@@ -1,4 +1,4 @@
-﻿namespace KwasantWeb.ViewModels.JsonConverters
+﻿namespace Web.ViewModels.JsonConverters
 {
     public class RelatedItemShowVM
     {

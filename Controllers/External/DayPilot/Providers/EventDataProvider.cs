@@ -7,7 +7,7 @@ using Data.States;
 using DayPilot.Web.Mvc.Events.Calendar;
 using StructureMap;
 
-namespace KwasantWeb.Controllers.External.DayPilot.Providers
+namespace Web.Controllers.External.DayPilot.Providers
 {
     public class EventDataProvider : IEventDataProvider
     {

@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EventResponse.aspx.cs" Inherits="KwasantWeb.Api.EventResponse" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EventResponse.aspx.cs" Inherits="Web.Api.EventResponse" %>
 
 <!DOCTYPE html>
 

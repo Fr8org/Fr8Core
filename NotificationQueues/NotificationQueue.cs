@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KwasantWeb.NotificationQueues
+namespace Web.NotificationQueues
 {
     /*
      * The following classes define queues for alerts to be displayed to users while they browse the wesbite.

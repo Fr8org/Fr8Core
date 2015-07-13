@@ -6,16 +6,16 @@ using System.Web.Mvc;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.ExternalServices;
-using KwasantCore.Managers;
-using KwasantCore.Services;
-using KwasantWeb.ViewModels;
+using Core.ExternalServices;
+using Core.Managers;
+using Core.Services;
+using Web.ViewModels;
 using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     [KwasantAuthorize(Roles = "Booker")]
     public class DiagnosticsController : Controller

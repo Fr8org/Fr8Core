@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace KwasantWeb.NotificationQueues
+namespace Web.NotificationQueues
 {
     public static class PersonalNotificationQueues
     {

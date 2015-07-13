@@ -2,7 +2,7 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Interfaces;
+using Core.Interfaces;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;

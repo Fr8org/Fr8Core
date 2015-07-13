@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetEmailHTML.aspx.cs" Inherits="KwasantWeb.Api.GetEmailHTML" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetEmailHTML.aspx.cs" Inherits="Web.Api.GetEmailHTML" %>
 
 <%@ OutputCache Location="None" VaryByParam="None" %>
 

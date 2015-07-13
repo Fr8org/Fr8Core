@@ -4,10 +4,10 @@ using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
-using KwasantWeb.Controllers.External.DayPilot.Providers;
+using Web.Controllers.External.DayPilot.Providers;
 using Utilities;
 
-namespace KwasantWeb.Controllers.External.DayPilot
+namespace Web.Controllers.External.DayPilot
 {
     public class KwasantCalendarController : DayPilotCalendar
     {

@@ -1,7 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 
-namespace KwasantWeb.App_Start
+namespace Web.App_Start
 {
     public class RouteConfig
     {

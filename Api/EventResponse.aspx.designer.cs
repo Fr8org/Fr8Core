@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KwasantWeb.Api
+namespace Web.Api
 {
 
 

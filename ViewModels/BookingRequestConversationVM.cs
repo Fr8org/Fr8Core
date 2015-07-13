@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Data.Entities;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
     public class BookingRequestConversationVM  
     {

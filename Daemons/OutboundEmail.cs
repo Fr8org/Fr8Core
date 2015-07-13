@@ -6,12 +6,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Managers.APIManagers.Packagers;
+using Core.Managers.APIManagers.Packagers;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
 using Data.Infrastructure;
-using KwasantCore.Services;
+using Core.Services;
 
 namespace Daemons
 {

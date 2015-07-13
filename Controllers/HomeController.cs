@@ -3,16 +3,16 @@ using Data.Validations;
 using FluentValidation;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantWeb.ViewModels;
+using Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using KwasantCore.Services;
+using Core.Services;
 using System.Net.Mail;
 using Utilities;
 using Utilities.Logging;
 using System;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
 
     public class HomeController : Controller

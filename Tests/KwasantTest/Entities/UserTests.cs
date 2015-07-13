@@ -2,8 +2,8 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Services;
-using KwasantCore.StructureMap;
+using Core.Services;
+using Core.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;

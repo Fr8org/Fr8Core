@@ -6,9 +6,9 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Interfaces;
-using KwasantCore.Managers;
-using KwasantCore.Services;
+using Core.Interfaces;
+using Core.Managers;
+using Core.Services;
 using StructureMap;
 using Utilities;
 

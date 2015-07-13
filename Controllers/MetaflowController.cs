@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using Data.Entities;
-using KwasantCore.Managers.APIManagers.Packagers.Docusign;
-using KwasantCore.Services;
+using Core.Managers.APIManagers.Packagers.Docusign;
+using Core.Services;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     public class MetaflowController : Controller
     {

@@ -2,7 +2,7 @@
 using Data.Interfaces;
 using StructureMap;
 
-namespace KwasantWeb.Api
+namespace Web.Api
 {
     public partial class EventResponse : System.Web.UI.Page
     {

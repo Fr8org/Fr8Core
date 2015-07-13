@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
 using Data.Infrastructure.StructureMap;
-using KwasantCore.Security;
+using Core.Security;
 using StructureMap;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     public static class ControllerExtensions
     {

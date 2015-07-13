@@ -1,7 +1,7 @@
 ﻿using Data.Infrastructure;
 using Data.States;
 
-namespace KwasantWeb.NotificationQueues
+namespace Web.NotificationQueues
 {
     public class HighPriorityIncidentsQueue : SharedNotificationQueue<HighPriorityIncidentData>
     {

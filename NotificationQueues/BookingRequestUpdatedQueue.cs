@@ -1,6 +1,6 @@
 ﻿using Data.Infrastructure;
 
-namespace KwasantWeb.NotificationQueues
+namespace Web.NotificationQueues
 {
     public class BookingRequestUpdatedQueue : PersonalNotificationQueue<BookingRequestUpdatedData>
     {

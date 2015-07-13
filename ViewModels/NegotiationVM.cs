@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
     public class NegotiationVM
     {

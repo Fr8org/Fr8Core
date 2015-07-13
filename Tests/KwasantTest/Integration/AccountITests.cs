@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using KwasantCore.Services;
+using Core.Services;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;

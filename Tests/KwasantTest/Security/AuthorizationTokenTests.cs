@@ -3,9 +3,9 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.Services;
-using KwasantCore.StructureMap;
-using KwasantWeb.Controllers;
+using Core.Services;
+using Core.StructureMap;
+using Web.Controllers;
 using NUnit.Framework;
 using StructureMap;
 
