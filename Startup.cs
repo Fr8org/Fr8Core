@@ -14,9 +14,9 @@ using Owin;
 using StructureMap;
 using Utilities.Logging;
 
-[assembly: OwinStartup(typeof(KwasantWeb.Startup))]
+[assembly: OwinStartup(typeof(Web.Startup))]
 
-namespace KwasantWeb
+namespace Web
 {
     public partial class Startup
     {

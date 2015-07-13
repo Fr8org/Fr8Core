@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 
-namespace KwasantWeb.Api
+namespace Web.Api
 {
     public partial class GetEmailHTML : Page
     {

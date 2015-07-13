@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using KwasantCore.ExternalServices;
+using Core.ExternalServices;
 
 namespace Daemons
 {
@@ -21,15 +21,15 @@ namespace Daemons
             lock (_testRunLocker)
             {
                 //Super hacky, but it gets the job done.
-                //We can't reference KwasantWeb, as Daemons are being referenced by it, which causes a circular dependency.
+                //We can't reference Web, as Daemons are being referenced by it, which causes a circular dependency.
                 //This will find the controller based on run-time reflection
-                var kwasantWebAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == "KwasantWeb, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
-                if (kwasantWebAssembly == null)
-                    throw new Exception("Could not find KwasantWeb assembly.");
+                var webAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.FullName == "Web, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
+                if (webAssembly == null)
+                    throw new Exception("Could not find Web assembly.");
                 
-                var diagControllerType = kwasantWebAssembly.GetType("KwasantWeb.Controllers.DiagnosticsController");
+                var diagControllerType = webAssembly.GetType("Web.Controllers.DiagnosticsController");
                 if (diagControllerType == null)
-                    throw new Exception("Could not find DiagnosticsController type in KwasantWeb assembly.");
+                    throw new Exception("Could not find DiagnosticsController type in Web assembly.");
 
                 _controller = Activator.CreateInstance(diagControllerType);
                 _methodMap = diagControllerType.GetMethods().ToDictionary(m => m.Name, m => m);

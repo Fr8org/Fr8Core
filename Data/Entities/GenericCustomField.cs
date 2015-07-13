@@ -10,7 +10,7 @@ using Data.States;
 namespace Data.Entities
 {
     /// <summary>
-    /// This class is used to manage CustomFields linked to Entities. See KwasantCore.Services.TrackingStatus for more information.
+    /// This class is used to manage CustomFields linked to Entities. See Core.Services.TrackingStatus for more information.
     /// It's a generic implementation, and as such, can be used with any entity in the database, so long as it has a single primary key. Composite keys are not supported.
     /// </summary>
     /// <typeparam name="TForeignEntity">The type of the linked entity (<see cref="EmailDO"></see>, for example)</typeparam>

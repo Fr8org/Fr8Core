@@ -1,9 +1,9 @@
 ﻿using System;
 using Data.Infrastructure;
 using Data.Interfaces;
-using KwasantCore.Managers;
-using KwasantCore.Services;
-using KwasantCore.StructureMap;
+using Core.Managers;
+using Core.Services;
+using Core.StructureMap;
 using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;

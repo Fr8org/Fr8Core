@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace KwasantWeb.App_Start
+namespace Web.App_Start
 {
     public class BundleConfig
     {

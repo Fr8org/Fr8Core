@@ -3,7 +3,7 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 
-namespace KwasantWeb
+namespace Web
 {
     public partial class Startup
     {

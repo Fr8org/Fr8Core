@@ -2,10 +2,10 @@
 using System.Linq.Expressions;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Events.Navigator;
-using KwasantWeb.Controllers.External.DayPilot.Providers;
+using Web.Controllers.External.DayPilot.Providers;
 using Utilities;
 
-namespace KwasantWeb.Controllers.External.DayPilot
+namespace Web.Controllers.External.DayPilot
 {
     public class KwasantNavigatorControl : DayPilotNavigator
     {        

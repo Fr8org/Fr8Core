@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KwasantWeb.Api {
+namespace Web.Api {
     
     
     public partial class GetEmailHTML {

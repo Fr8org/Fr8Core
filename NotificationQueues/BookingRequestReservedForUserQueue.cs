@@ -1,11 +1,11 @@
 ﻿using System;
 using Data.Infrastructure;
 using Data.Interfaces;
-using KwasantCore.Services;
+using Core.Services;
 using StructureMap;
 using Utilities;
 
-namespace KwasantWeb.NotificationQueues
+namespace Web.NotificationQueues
 {
     public class BookingRequestReservedForUserQueue : SharedNotificationQueue<NewBookingRequestForUserQueueData>
     {

@@ -6,19 +6,19 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Managers;
-using KwasantCore.Managers.APIManagers.Authorizers;
-using KwasantWeb.ViewModels;
+using Core.Managers;
+using Core.Managers.APIManagers.Authorizers;
+using Web.ViewModels;
 using Microsoft.Ajax.Utilities;
 using StructureMap;
 using Data.Validations;
 using System.Linq;
 using Utilities;
-using KwasantCore.Services;
+using Core.Services;
 using AutoMapper;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     [KwasantAuthorize]
     public class UserController : Controller

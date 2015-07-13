@@ -4,8 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.StructureMap;
-using KwasantWeb.App_Start;
+using Core.StructureMap;
+using Web.App_Start;
 using NUnit.Framework;
 using StructureMap;
 

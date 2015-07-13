@@ -5,11 +5,11 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Interfaces;
-using KwasantWeb.ViewModels;
+using Core.Interfaces;
+using Web.ViewModels;
 using StructureMap;
 
-namespace KwasantWeb.ViewModelServices
+namespace Web.ViewModelServices
 {
     public class NegotiationResponse
     {

@@ -7,9 +7,9 @@ namespace Data.Infrastructure.StructureMap
 {
     public class DatabaseStructureMapBootStrapper
     {
-        public class KwasantCoreRegistry : Registry
+        public class CoreRegistry : Registry
         {
-            public KwasantCoreRegistry()
+            public CoreRegistry()
             {
                 For<IAttachmentDO>().Use<AttachmentDO>();
                 For<IAttendeeDO>().Use<AttendeeDO>();
@@ -25,7 +25,7 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        public class LiveMode : KwasantCoreRegistry 
+        public class LiveMode : CoreRegistry 
         {
             public LiveMode()
             {
@@ -34,7 +34,7 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        public class TestMode : KwasantCoreRegistry
+        public class TestMode : CoreRegistry
         {
             public TestMode()
             {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Utilities;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
     public class BookingRequestAdminVM
     {

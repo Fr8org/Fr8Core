@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace KwasantWeb.App_Start
+namespace Web.App_Start
 {
     public class FilterConfig
     {
