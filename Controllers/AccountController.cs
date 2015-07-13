@@ -120,7 +120,12 @@ namespace Web.Controllers
                     else
                     {
                         // return RedirectToAction("Index", "Home");
-                        return View("RegistrationConfirmation");
+	                  return this.Login(new LoginVM
+	                  {
+		                  Email = model.Email.Trim(),
+		                  Password = model.Password.Trim(),
+		                  RememberMe = false
+	                  },string.Empty).Result;
                     }
                 }
             }
@@ -173,7 +178,7 @@ Please register first.");
                                 string getRole = _account.GetUserRole(username);
 
                                 if (getRole == "Admin")
-                                    return RedirectToAction("Index", "Admin");
+                                    return RedirectToAction("MyAccount", "User");
                                 else if (getRole == "Booker")
                                     return RedirectToAction("Index", "Booker");
 
