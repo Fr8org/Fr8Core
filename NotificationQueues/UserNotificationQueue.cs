@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Data.Infrastructure;
 
-namespace KwasantWeb.NotificationQueues
+namespace Web.NotificationQueues
 {
     public class UserNotificationQueue : SharedNotificationQueue<UserNotificationData>
     {

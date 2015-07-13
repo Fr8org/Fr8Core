@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
 using Data.Validations;
-using KwasantCore.Services;
+using Core.Services;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Web;
 using System.Web.Mvc;
 using Utilities;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     public class DataController : Controller
     {

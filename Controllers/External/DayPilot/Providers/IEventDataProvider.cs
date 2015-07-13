@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace KwasantWeb.Controllers.External.DayPilot.Providers
+namespace Web.Controllers.External.DayPilot.Providers
 {
     public interface IEventDataProvider
     {

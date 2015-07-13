@@ -5,14 +5,14 @@ using System.Web;
 using System.Web.Mvc;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.Interfaces;
-using KwasantCore.Services;
+using Core.Interfaces;
+using Core.Services;
 using Newtonsoft.Json;
 using Segment;
 using Segment.Model;
 using StructureMap;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     public class TokenAuthController : Controller
     {

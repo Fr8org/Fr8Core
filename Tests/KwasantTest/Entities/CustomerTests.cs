@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Managers;
-using KwasantCore.StructureMap;
+using Core.Managers;
+using Core.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;

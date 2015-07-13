@@ -4,14 +4,14 @@ using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
 using Data.Infrastructure;
-using KwasantCore.ExternalServices;
-using KwasantCore.Interfaces;
-using KwasantCore.Managers;
+using Core.ExternalServices;
+using Core.Interfaces;
+using Core.Managers;
 using S22.Imap;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
-using IImapClient = KwasantCore.ExternalServices.IImapClient;
+using IImapClient = Core.ExternalServices.IImapClient;
 
 namespace Daemons
 {

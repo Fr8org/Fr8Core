@@ -4,11 +4,11 @@ using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Managers;
-using KwasantWeb.ViewModels;
+using Core.Managers;
+using Web.ViewModels;
 using StructureMap;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     public class ProfileController : Controller
     {

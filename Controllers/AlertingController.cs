@@ -3,11 +3,11 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Data.Interfaces;
-using KwasantCore.Managers;
-using KwasantWeb.NotificationQueues;
+using Core.Managers;
+using Web.NotificationQueues;
 using StructureMap;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     [KwasantAuthorize]
     public class AlertingController : Controller

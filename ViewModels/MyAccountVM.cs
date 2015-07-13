@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
     public class MyAccountVM
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
-using KwasantCore.ExternalServices;
+using Core.ExternalServices;
 using Utilities.Logging;
 
 namespace Daemons

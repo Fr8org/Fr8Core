@@ -1,11 +1,11 @@
 ﻿using System.Web.Mvc;
 using Data.Interfaces;
-using KwasantCore.Managers;
-using KwasantCore.Services;
+using Core.Managers;
+using Core.Services;
 using StructureMap;
 using Utilities;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     [KwasantAuthorize(Roles = "Booker")]
     public class ReportController : Controller

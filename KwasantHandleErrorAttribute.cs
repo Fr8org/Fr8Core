@@ -7,7 +7,7 @@ using Data.Interfaces;
 using StructureMap;
 ﻿using Utilities.Logging;
 
-namespace KwasantWeb
+namespace Web
 {
     public class KwasantHandleErrorAttribute : HandleErrorAttribute
     {

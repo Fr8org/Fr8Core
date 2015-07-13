@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
-using KwasantWeb.ViewModels;
-using KwasantWeb.ViewModels.JsonConverters;
+using Web.ViewModels;
+using Web.ViewModels.JsonConverters;
 
-namespace KwasantWeb.App_Start
+namespace Web.App_Start
 {
     public class AutoMapperBootStrapper
     {

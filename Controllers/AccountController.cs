@@ -7,15 +7,15 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Managers;
-using KwasantCore.Services;
-using KwasantWeb.ViewModels;
+using Core.Managers;
+using Core.Services;
+using Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     /// <summary>
     /// Email service

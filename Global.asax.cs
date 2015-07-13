@@ -13,13 +13,13 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.ModelBinders;
-using KwasantCore.Security;
-using KwasantCore.Services;
-using KwasantCore.Managers;
-using KwasantCore.StructureMap;
-using KwasantWeb.App_Start;
-using KwasantWeb.NotificationQueues;
+using Core.ModelBinders;
+using Core.Security;
+using Core.Services;
+using Core.Managers;
+using Core.StructureMap;
+using Web.App_Start;
+using Web.NotificationQueues;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
@@ -27,9 +27,9 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
-using KwasantCore.Managers.APIManagers.Packagers.Docusign;
+using Core.Managers.APIManagers.Packagers.Docusign;
 
-namespace KwasantWeb
+namespace Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {

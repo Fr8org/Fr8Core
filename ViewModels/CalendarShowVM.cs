@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
     public class CalendarShowVM
     {

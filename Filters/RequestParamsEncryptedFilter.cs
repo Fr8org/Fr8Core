@@ -3,7 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using Utilities;
 
-namespace KwasantWeb.Filters
+namespace Web.Filters
 {
     public class RequestParamsEncryptedFilter : ActionFilterAttribute, IActionFilter
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Data.States;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
 	public class NegotiationResponseVM : NegotiationVM
 	{

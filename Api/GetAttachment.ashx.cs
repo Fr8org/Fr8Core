@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 
-namespace KwasantWeb.Api
+namespace Web.Api
 {
     /// <summary>
     /// Summary description for $codebehindclassname$

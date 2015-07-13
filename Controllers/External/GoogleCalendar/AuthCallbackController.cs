@@ -1,9 +1,9 @@
 using System.Web.Mvc;
 using Google.Apis.Auth.OAuth2.Mvc;
-using KwasantCore.Managers;
-using KwasantCore.Managers.APIManagers.Authorizers.Google;
+using Core.Managers;
+using Core.Managers.APIManagers.Authorizers.Google;
 
-namespace KwasantWeb.Controllers.External.GoogleCalendar
+namespace Web.Controllers.External.GoogleCalendar
 {
     [KwasantAuthorize]
     public class AuthCallbackController : Google.Apis.Auth.OAuth2.Mvc.Controllers.AuthCallbackController

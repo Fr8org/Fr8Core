@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 
-namespace KwasantWeb.ViewModels
+namespace Web.ViewModels
 {
     public class EventVM
     {

@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.DashboardShowVM
+﻿@model Web.ViewModels.DashboardShowVM
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
     ViewBag.Title = "Event ";

@@ -6,11 +6,11 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Managers;
-using KwasantWeb.ViewModels;
+using Core.Managers;
+using Web.ViewModels;
 using StructureMap;
 
-namespace KwasantWeb.Controllers
+namespace Web.Controllers
 {
     [KwasantAuthorize(Roles = Roles.Booker)]
     public class DashboardController : Controller
