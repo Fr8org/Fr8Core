@@ -21,8 +21,6 @@ namespace KwasantTest.Managers
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
 
-        [Ignore]
-    
-        [Ignore]
+       
     }
 }
