@@ -16,7 +16,7 @@ using Utilities;
 
 namespace Data.Infrastructure
 {
-    public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
+    public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
         //This is to ensure compile will break if the reference to sql server is removed
         private static Type m_SqlProvider = typeof(SqlProviderServices);
@@ -42,10 +42,10 @@ namespace Data.Infrastructure
         }
 
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
-        public KwasantDbContext()
-            : base("name=KwasantDB")
+        public DockyardDbContext()
+            : base("name=DockyardDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, MigrationConfiguration>()); 
         }
 
 

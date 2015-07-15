@@ -29,8 +29,8 @@ namespace Data.Infrastructure.StructureMap
         {
             public LiveMode()
             {
-                For<DbContext>().Use<KwasantDbContext>();
-                For<IDBContext>().Use<KwasantDbContext>();
+                For<DbContext>().Use<DockyardDbContext>();
+                For<IDBContext>().Use<DockyardDbContext>();
             }
         }
 

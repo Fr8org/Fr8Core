@@ -19,7 +19,7 @@ using Utilities;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
+    public sealed class MigrationConfiguration : DbMigrationsConfiguration<DockyardDbContext>
     {
         public MigrationConfiguration()
         {
@@ -27,10 +27,10 @@ namespace Data.Migrations
             AutomaticMigrationsEnabled = false;
 
             //Do not modify this, otherwise migrations will run twice!
-            ContextKey = "Data.Infrastructure.KwasantDbContext";
+            ContextKey = "Data.Infrastructure.DockyardDbContext";
         }
 
-        protected override void Seed(KwasantDbContext context)
+        protected override void Seed(DockyardDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

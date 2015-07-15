@@ -132,7 +132,7 @@
     <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
       <DependentUpon>201507140439113_Initial_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -224,7 +224,7 @@
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
-    <Compile Include="Infrastructure\KwasantDbContext.cs" />
+    <Compile Include="Infrastructure\DockyardDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
     <Compile Include="Interfaces\IEnvelopeDO.cs" />

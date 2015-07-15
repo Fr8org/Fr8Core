@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Migrations
 {
-    public abstract class KwasantDbMigration : DbMigration
+    public abstract class DockyardDbMigration : DbMigration
     {
         protected void SeedConstants<T>(string tableName, bool setIdentityInsertOn = false)
         {

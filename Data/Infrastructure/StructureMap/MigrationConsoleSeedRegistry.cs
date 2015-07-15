@@ -9,8 +9,8 @@ namespace Data.Infrastructure
     {
         public MigrationConsoleSeedRegistry()
         {
-            For<DbContext>().Use<KwasantDbContext>();
-            For<IDBContext>().Use<KwasantDbContext>();
+            For<DbContext>().Use<DockyardDbContext>();
+            For<IDBContext>().Use<DockyardDbContext>();
 
             For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
         }
