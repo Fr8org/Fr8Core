@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Core.Services;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2;
@@ -16,6 +17,7 @@ namespace Core.Managers.APIManagers.Authorizers.Google
         private readonly string _email;
         private readonly string _authCallbackUrl;
         private IAuthorizationCodeFlow _flow;
+        private AuthData _authDataService;
 
         public AppFlowMetadata(string userId, string email = null, string callbackUrl = null)
         {
@@ -23,25 +25,17 @@ namespace Core.Managers.APIManagers.Authorizers.Google
             _email = email;
 
             _authCallbackUrl = callbackUrl;
+            _authDataService = new AuthData();
         }
 
         private void SetUserGoogleAuthData(string authData)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId: _userId, providerName: "Google");
-                curUserAuthData.AuthData = authData;
-                uow.SaveChanges();
-            }
+            _authDataService.SetUserAuthData(_userId, "Google", authData);
         }
 
         private string GetUserGoogleAuthData()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId: _userId, providerName: "Google");
-                return curUserAuthData.AuthData;
-            }
+            return _authDataService.GetUserAuthData(_userId, "Google");
         }
 
         public override string GetUserId(Controller controller)
@@ -65,7 +59,8 @@ namespace Core.Managers.APIManagers.Authorizers.Google
                             ClientSecret = creds["ClientSecret"]
                         },
                         Scopes = creds["Scopes"].Split(','),
-                        DataStore = new JSONDataStore(GetUserGoogleAuthData, SetUserGoogleAuthData),
+                        DataStore = new JSONDataStore(
+                            GetUserGoogleAuthData, SetUserGoogleAuthData),
                     }, _email);
             }
         }

@@ -11,10 +11,4 @@ namespace Core.Managers.APIManagers.Authorizers
         Task RefreshTokenAsync(string userId, CancellationToken cancellationToken);
         Task<string> GetAccessTokenAsync(string userId, CancellationToken cancellationToken);
     }
-
-    public interface IOAuthAuthorizationResult
-    {
-        bool IsAuthorized { get; }
-        string RedirectUri { get; }
-    }
 }

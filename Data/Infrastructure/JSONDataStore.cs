@@ -33,7 +33,7 @@ namespace Data.Infrastructure
             _setAccessor = setAccessor;
         }
 
-        class StoreDictionary : IDictionary<string, string>
+        private class StoreDictionary : IDictionary<string, string>
         {
             private readonly JSONDataStore _store;
             private IDictionary<string, string> _dictionary;
@@ -47,9 +47,9 @@ namespace Data.Infrastructure
             {
                 var json = _store._getAccessor();
                 _dictionary = string.IsNullOrEmpty(json)
-                       ? new Dictionary<string, string>()
-                           : JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-        }
+                    ? new Dictionary<string, string>()
+                    : JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            }
 
             public static StoreDictionary GetStoreDictionary(JSONDataStore store)
             {
@@ -61,7 +61,7 @@ namespace Data.Infrastructure
             #region Implementation of IEnumerable
 
             public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-        {
+            {
                 return _dictionary.GetEnumerator();
             }
 
@@ -77,10 +77,10 @@ namespace Data.Infrastructure
             public void Add(KeyValuePair<string, string> item)
             {
                 _dictionary.Add(item);
-        }
+            }
 
             public void Clear()
-        {
+            {
                 _dictionary.Clear();
             }
 
@@ -92,15 +92,22 @@ namespace Data.Infrastructure
             public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
             {
                 _dictionary.CopyTo(array, arrayIndex);
-        }
+            }
 
             public bool Remove(KeyValuePair<string, string> item)
             {
                 return _dictionary.Remove(item);
             }
 
-            public int Count { get { return _dictionary.Count; } }
-            public bool IsReadOnly { get { return _dictionary.IsReadOnly; } }
+            public int Count
+            {
+                get { return _dictionary.Count; }
+            }
+
+            public bool IsReadOnly
+            {
+                get { return _dictionary.IsReadOnly; }
+            }
 
             #endregion
 
@@ -132,8 +139,15 @@ namespace Data.Infrastructure
                 set { _dictionary[key] = value; }
             }
 
-            public ICollection<string> Keys { get { return _dictionary.Keys; } }
-            public ICollection<string> Values { get { return _dictionary.Values; } }
+            public ICollection<string> Keys
+            {
+                get { return _dictionary.Keys; }
+            }
+
+            public ICollection<string> Values
+            {
+                get { return _dictionary.Values; }
+            }
 
             #endregion
 
@@ -144,34 +158,38 @@ namespace Data.Infrastructure
             }
         }
 
-        public async Task StoreAsync<T>(string key, T value)
+        public Task StoreAsync<T>(string key, T value)
         {
             var store = StoreDictionary.GetStoreDictionary(this);
             store[key] = JsonConvert.SerializeObject(value);
             store.Save();
+            return Task.FromResult(0);
         }
 
-        public async Task DeleteAsync<T>(string key)
+        public Task DeleteAsync<T>(string key)
         {
             var store = StoreDictionary.GetStoreDictionary(this);
             store.Remove(key);
             store.Save();
+            return Task.FromResult(0);
         }
 
-        public async Task<T> GetAsync<T>(string key)
+        public Task<T> GetAsync<T>(string key)
         {
             var store = StoreDictionary.GetStoreDictionary(this);
-                string value;
-                return store.TryGetValue(key, out value)
-                           ? JsonConvert.DeserializeObject<T>(value)
-                           : default(T);
-            }
+            string value;
+            return Task.FromResult(
+                store.TryGetValue(key, out value)
+                    ? JsonConvert.DeserializeObject<T>(value)
+                    : default(T));
+        }
 
-        public async Task ClearAsync()
+        public Task ClearAsync()
         {
             var store = StoreDictionary.GetStoreDictionary(this);
-                store.Clear();
+            store.Clear();
             store.Save();
-            }
+            return Task.FromResult(0);
         }
+    }
 }

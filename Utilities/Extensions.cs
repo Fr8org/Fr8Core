@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Web;
 
 namespace Utilities
 {
@@ -99,6 +101,32 @@ namespace Utilities
           
        
     }
+
+    public static class UriExtensions
+    {
+        public static UriBuilder AddOrUpdateQueryParams(this UriBuilder uriBuilder, object parameters)
+        {
+            var paramValues = HttpUtility.ParseQueryString(uriBuilder.Query);
+            foreach (var prop in parameters.GetType().GetProperties().Where(p => p.CanRead))
+            {
+                var value = prop.GetValue(parameters);
+                if (value != null)
+                {
+                    paramValues.Set(prop.Name, value.ToString());
+                }
+            }
+            uriBuilder.Query = paramValues.ToString();
+            return uriBuilder;
+        }
+
+        public static Uri AddOrUpdateQueryParams(this Uri uri, object parameters)
+        {
+            var uriBuilder = new UriBuilder(uri);
+            uriBuilder = uriBuilder.AddOrUpdateQueryParams(parameters);
+            return uriBuilder.Uri;
+        }
+    }
+
 
     public static class DateTimeExtensions
     {
