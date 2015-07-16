@@ -63,9 +63,9 @@
       <Project>{D019B112-55A8-4661-AFF5-329F998D9E28}</Project>
       <Name>pluginAzureSqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\KwasantTest\KwasantTest.csproj">
+    <ProjectReference Include="..\Tests\DockyardTest\DockyardTest.csproj">
       <Project>{8d38298a-9246-4ab9-80c4-9a830213346c}</Project>
-      <Name>KwasantTest</Name>
+      <Name>DockyardTest</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
