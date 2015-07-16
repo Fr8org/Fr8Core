@@ -17,6 +17,7 @@ namespace DockyardTest.Integration
     {
         [Test]
         [Category("IntegrationTests")]
+        [Ignore]
         public async void ITest_CanResetPassword()
         {
             string email;
