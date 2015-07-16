@@ -4,55 +4,51 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Core.Services;
+using Data.Entities;
 using Data.Infrastructure;
+using Data.Interfaces;
 using Newtonsoft.Json;
+using StructureMap;
 using Utilities;
 
 namespace Core.Managers.APIManagers.Authorizers.Docusign
 {
     class DocusignAuthFlow
     {
-        private const string AccessTokenStoreKey = "accessToken";
         private readonly string _userId;
-        private readonly Uri _docusignLoginFormUri;
-        private readonly AuthData _authDataService;
-        private readonly JSONDataStore _dataStore;
+        private readonly AuthorizationToken _authorizationTokenService;
 
-        public string Server { get; set; }
-        public string ApiVersion { get; set; }
+        public string Endpoint { get; set; }
         public string IntegratorKey { get; set; }
 
-        public DocusignAuthFlow(string userId, Uri docusignLoginFormUri)
+        public DocusignAuthFlow(string userId)
         {
             _userId = userId;
-            _docusignLoginFormUri = docusignLoginFormUri;
-            _authDataService = new AuthData();
-            _dataStore = new JSONDataStore(GetUserDocusignAuthData, SetUserDocusignAuthData);
+            _authorizationTokenService = new AuthorizationToken();
         }
 
-        private void SetUserDocusignAuthData(string authData)
+        private HttpClient CreateClient(string accessToken = null)
         {
-            _authDataService.SetUserAuthData(_userId, "Docusign", authData);
-        }
-
-        private string GetUserDocusignAuthData()
-        {
-            return _authDataService.GetUserAuthData(_userId, "Docusign");
+            var httpClient = new HttpClient() {BaseAddress = new Uri(Endpoint)};
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
+            }
+            return httpClient;
         }
 
         private async Task<bool> LoginAsync(string accessToken)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = CreateClient(accessToken))
             {
-                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
                 var response = await httpClient.GetAsync(
-                    string.Format("https://{0}/restapi/{1}/login_information", Server, ApiVersion),
+                    "login_information",
                     HttpCompletionOption.ResponseHeadersRead);
                 return response.IsSuccessStatusCode;
             }
         }
 
-        public async Task<IOAuthAuthorizationResult> AuthorizeAsync(string callbackUrl, string returnUrl)
+        public async Task<IOAuthAuthorizationResult> AuthorizeAsync(string callbackUrl, string currentUrl)
         {
             var accessToken = await GetTokenAsync();
             if (!string.IsNullOrEmpty(accessToken))
@@ -63,15 +59,15 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
             }
             return new OAuthAuthorizationResult(
                 isAuthorized: false,
-                redirectUri: new Uri(callbackUrl).AddOrUpdateQueryParams(new { returnUrl }).ToString());
+                redirectUri: new Uri(callbackUrl).ToString());
         }
 
         public async Task ObtainTokenAsync(string userName, string password)
         {
-            using (var httpClient = new HttpClient())
+            using (var httpClient = CreateClient())
             {
                 var response = await httpClient.PostAsync(
-                    string.Format("https://{0}/restapi/{1}/oauth2/token", Server, ApiVersion),
+                    "oauth2/token",
                     new FormUrlEncodedContent(new[]
                     {
                         new KeyValuePair<string, string>("grant_type", "password"), 
@@ -92,7 +88,7 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
                     }
                     var responseAsString = await response.Content.ReadAsStringAsync();
                     var responseObject = JsonConvert.DeserializeAnonymousType(responseAsString, new { access_token = "" });
-                    await _dataStore.StoreAsync(AccessTokenStoreKey, responseObject.access_token);
+                    _authorizationTokenService.AddOrUpdateToken(_userId, responseObject.access_token);
                 }
                 finally
                 {
@@ -106,10 +102,10 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
             var accessToken = await GetTokenAsync();
             if (string.IsNullOrEmpty(accessToken))
                 return;
-            using (var httpClient = new HttpClient())
+            using (var httpClient = CreateClient())
             {
                 var response = await httpClient.PostAsync(
-                    string.Format("https://{0}/restapi/{1}/oauth2/revoke", Server, ApiVersion),
+                    "oauth2/revoke",
                     new FormUrlEncodedContent(new[]
                     {
                         new KeyValuePair<string, string>("token", accessToken), 
@@ -126,13 +122,13 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
                 {
                     response.Dispose();
                 }
-                await _dataStore.DeleteAsync<string>(AccessTokenStoreKey);
+                _authorizationTokenService.RemoveToken(_userId);
             }
         }
 
-        public async Task<string> GetTokenAsync()
+        public Task<string> GetTokenAsync()
         {
-            return await _dataStore.GetAsync<string>(AccessTokenStoreKey);
+            return Task.FromResult(_authorizationTokenService.GetToken(_userId));
         }
     }
 }

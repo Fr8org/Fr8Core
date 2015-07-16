@@ -5,17 +5,28 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Docusign Login Form</h2>
 @using (Html.BeginForm(new { returnUrl = ViewBag.ReturnUrl }))
 {
-    Html.LabelFor(m => m.Username);
-    Html.EditorFor(m => m.Username);
-    Html.ValidationMessageFor(m => m.Username);
-    Html.LabelFor(m => m.Password);
-    Html.PasswordFor(m => m.Password);
-    Html.ValidationMessageFor(m => m.Password);
+    @Html.ValidationSummary(excludePropertyErrors: true);
+    <div>
+        <fieldset>
+            <legend>Docusign Login</legend>
+            <div>
+                @Html.LabelFor(m => m.Username)
+            </div>
+            <div>
+                @Html.TextBoxFor(m => m.Username)
+                @Html.ValidationMessageFor(m => m.Username)
+            </div>
+            <div>
+                @Html.LabelFor(m => m.Password)
+            </div>
+            <div>
+                @Html.PasswordFor(m => m.Password)
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
+        </fieldset>
 
-    Html.ValidationSummary(excludePropertyErrors: true);
-
-    <input type="submit" value="Log In"/>
+        <input type="submit" value="Log In"/>
+    </div>
 }

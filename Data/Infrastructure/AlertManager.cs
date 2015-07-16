@@ -96,6 +96,11 @@ namespace Data.Infrastructure
         public delegate void BookingRequestMergedHandler(int originalBRId, int targetBRId);
         public static event BookingRequestMergedHandler AlertBookingRequestMerged;
 
+        public delegate void OAuthEventHandler(string userId);
+        public static event OAuthEventHandler AlertTokenRequestInitiated;
+        public static event OAuthEventHandler AlertTokenObtained;
+        public static event OAuthEventHandler AlertTokenRevoked;
+
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -273,6 +278,24 @@ namespace Data.Infrastructure
         {
             BookingRequestMergedHandler handler = AlertBookingRequestMerged;
             if (handler != null) handler(originalBRId, targetBRId);
+        }
+
+        public static void TokenRequestInitiated(string userId)
+        {
+            var handler = AlertTokenRequestInitiated;
+            if (handler != null) handler(userId);
+        }
+
+        public static void TokenObtained(string userId)
+        {
+            var handler = AlertTokenObtained;
+            if (handler != null) handler(userId);
+        }
+
+        public static void TokenRevoked(string userId)
+        {
+            var handler = AlertTokenRevoked;
+            if (handler != null) handler(userId);
         }
 
         #endregion

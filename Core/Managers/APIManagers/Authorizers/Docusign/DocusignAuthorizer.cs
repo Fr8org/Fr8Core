@@ -1,42 +1,33 @@
 ﻿using System;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
+using Utilities;
 
 namespace Core.Managers.APIManagers.Authorizers.Docusign
 {
-    public class DocusignAuthorizer : IOAuthAuthorizer
+    public class DocusignAuthorizer : IDocusignAuthorizer
     {
-        private readonly Uri _docusignLoginFormUri;
+        private readonly IConfigRepository _configRepository;
 
-        public DocusignAuthorizer(Uri docusignLoginFormUri)
+        public DocusignAuthorizer(IConfigRepository configRepository)
         {
-            _docusignLoginFormUri = docusignLoginFormUri;
+            _configRepository = configRepository;
         }
 
         private DocusignAuthFlow CreateFlow(string userId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            return new DocusignAuthFlow(userId)
             {
-                var provider = uow.RemoteCalendarProviderRepository.GetByName("Docusign");
-                var creds = JsonConvert.DeserializeAnonymousType(provider.AppCreds,
-                    new
-                    {
-                        Server = "",
-                        ApiVersion = "",
-                        IntegratorKey = ""
-                    });
-                return new DocusignAuthFlow(userId, _docusignLoginFormUri)
-                {
-                    Server = creds.Server,
-                    ApiVersion = creds.ApiVersion,
-                    IntegratorKey = creds.IntegratorKey,
-                };
-            } 
+                Endpoint = _configRepository.Get("endpoint"),
+                IntegratorKey = _configRepository.Get("IntegratorKey"),
+            };
         }
 
         public async Task<IOAuthAuthorizationResult> AuthorizeAsync(string userId, string email, string callbackUrl, string currentUrl,
@@ -49,14 +40,17 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
 
         public async Task ObtainAccessTokenAsync(string userId, string userName, string password)
         {
+            AlertManager.TokenRequestInitiated(userId);
             var flow = CreateFlow(userId);
             await flow.ObtainTokenAsync(userName, password);
+            AlertManager.TokenObtained(userId);
         }
 
         public async Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken)
         {
             var flow = CreateFlow(userId);
             await flow.RevokeTokenAsync();
+            AlertManager.TokenRevoked(userId);
         }
 
         public Task RefreshTokenAsync(string userId, CancellationToken cancellationToken)

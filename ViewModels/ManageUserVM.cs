@@ -20,7 +20,7 @@ namespace Web.ViewModels
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        public RemoteCalendarVM[] RemoteCalendars { get; set; }
+        public bool HasToken { get; set; }
         public bool HasLocalPassword { get; set; }
     }
 }

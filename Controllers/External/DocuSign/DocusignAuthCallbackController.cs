@@ -32,14 +32,14 @@ namespace Web.Controllers.External.DocuSign
         {
             if (ModelState.IsValid)
             {
-                var authorizer = (DocusignAuthorizer)ObjectFactory.GetNamedInstance<IOAuthAuthorizer>("Docusign");
+                var authorizer = (IDocusignAuthorizer)ObjectFactory.GetNamedInstance<IOAuthAuthorizer>("Docusign");
                 try
                 {
                     await authorizer.ObtainAccessTokenAsync(this.GetUserId(), loginVm.Username, loginVm.Password);
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                         return Redirect(ViewBag.ReturnUrl);
                     else
-                        return RedirectToAction("MyAccount", "User");
+                        return RedirectToAction("ShareCalendar", "User");
                 }
                 catch (OAuthException ex)
                 {

@@ -44,14 +44,9 @@ namespace Web.App_Start
                 .ForMember(eventDO => eventDO.SyncStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.SyncStatusTemplate, opts => opts.Ignore());
 
-            Mapper.CreateMap<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>()
+            Mapper.CreateMap<Tuple<UserDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
-                .ForMember(mu => mu.RemoteCalendars, opts => opts.ResolveUsing(tuple => tuple.Item2
-                    .Select(p => new RemoteCalendarVM()
-                                     {
-                                         Provider = p.Name,
-                                         AccessGranted = tuple.Item1.IsRemoteCalendarAccessGranted(p.Name)
-                                     })));
+                .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
 
             Mapper.CreateMap<EventDO, RelatedItemShowVM>()
                 .ForMember(ri => ri.id, opts => opts.ResolveUsing(e => e.Id))

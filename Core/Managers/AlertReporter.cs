@@ -42,6 +42,10 @@ namespace Core.Managers
             AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+
+            AlertManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
+            AlertManager.AlertTokenObtained += OnAlertTokenObtained;
+            AlertManager.AlertTokenRevoked += OnAlertTokenRevoked;
         }
 
         public void UnsubscribeFromAlerts()
@@ -63,6 +67,10 @@ namespace Core.Managers
             AlertManager.AlertStaleBookingRequestsDetected -= ReportStaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
+
+            AlertManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
+            AlertManager.AlertTokenObtained -= OnAlertTokenObtained;
+            AlertManager.AlertTokenRevoked -= OnAlertTokenRevoked;
         }
 
         private void ReportStaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -369,6 +377,38 @@ namespace Core.Managers
                 //AddFact(uow, curAction);
                 uow.SaveChanges();
             }
+        }
+
+        private void AddFactOnToken(string userId, string activity)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO factDO = new FactDO
+                {
+                    PrimaryCategory = "DocuSign",
+                    SecondaryCategory = "Token",
+                    Activity = activity,
+                    CustomerId = userId,
+                };
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private void OnAlertTokenRequestInitiated(string userId)
+        {
+            AddFactOnToken(userId, "Requested");
+        }
+
+        private void OnAlertTokenObtained(string userId)
+        {
+            AddFactOnToken(userId, "Obtained");
+        }
+
+        private void OnAlertTokenRevoked(string userId)
+        {
+            AddFactOnToken(userId, "Revoked");
         }
     }
 }

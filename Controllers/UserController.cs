@@ -334,11 +334,11 @@ namespace Web.Controllers
                     // if we found no user then assume that this user doesn't exists any more and force log off action.
                     return RedirectToAction("LogOff", "Account");
                 }
-                var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
-                var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
+                var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
+                var tuple = new Tuple<UserDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);
 
                 var curManageUserVM =
-                    AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
+                    AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
                 return View(curManageUserVM);
             }
         }
