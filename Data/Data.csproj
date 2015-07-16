@@ -133,6 +133,7 @@
     <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
       <DependentUpon>201507140439113_Initial_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />

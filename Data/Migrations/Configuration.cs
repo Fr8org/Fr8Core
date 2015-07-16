@@ -5,14 +5,14 @@ namespace Data.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Data.Infrastructure.KwasantDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Data.Infrastructure.DockyardDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(Data.Infrastructure.KwasantDbContext context)
+        protected override void Seed(Data.Infrastructure.DockyardDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

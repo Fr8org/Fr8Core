@@ -142,6 +142,7 @@
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
+    <Compile Include="Entities\EnvelopeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />

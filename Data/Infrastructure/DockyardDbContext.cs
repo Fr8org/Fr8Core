@@ -279,11 +279,6 @@ namespace Data.Infrastructure
                 .HasForeignKey(a => a.FromID)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<EnvelopeDO>()
-                .HasRequired(e => e.EnvelopeId)
-                .WithMany()
-                .WillCascadeOnDelete(false);
-
             modelBuilder.Entity<UserDO>()
                 .Property(u => u.EmailAddressID)
                 .IsRequired()
