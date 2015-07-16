@@ -8,7 +8,6 @@ namespace Data.Entities
 		public int Id{ get; set; }
 
 		public EnvelopeState Status{ get; set; }
-		public string TransactionId{ get; set; }
 		public string EnvelopeId{ get; set; }
 
 		public enum EnvelopeState

@@ -279,7 +279,6 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
     <Compile Include="Validations\BookingRequestValidator.cs" />
-    <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />

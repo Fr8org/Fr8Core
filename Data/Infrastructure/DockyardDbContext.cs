@@ -280,9 +280,8 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<EnvelopeDO>()
-                .HasRequired(e => e.Email)
+                .HasRequired(e => e.EnvelopeId)
                 .WithMany()
-                .HasForeignKey(e => e.EmailID)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<UserDO>()

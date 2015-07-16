@@ -35,7 +35,7 @@ namespace Web.Controllers
                 emailDO.Subject = message.Subject;
                 emailDO.HTMLText = message.Body;
 
-                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+                //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
             }
         }

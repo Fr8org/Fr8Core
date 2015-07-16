@@ -48,7 +48,7 @@ namespace Core.Services
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
-            uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+           // uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
             uow.SaveChanges();
         }
 
@@ -67,7 +67,7 @@ namespace Core.Services
             curEmail.AddEmailRecipient(EmailParticipantType.To, submittedUserData.EmailAddress);
             curEmail.Subject = "User Settings Notification";
             //new Email(uow).SendTemplate(uow, "User_Settings_Notification", curEmail, null);
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
+            //uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
         }
 
         #endregion
@@ -213,7 +213,7 @@ namespace Core.Services
 
                 EmailDO curEmail = new EmailDO();
                 curEmail = GenerateBasicMessage(uow, subject, message ?? subject, fromAddress, "ops@kwasant.com");
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                //uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
         }
@@ -268,11 +268,11 @@ namespace Core.Services
             string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
             string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
             EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
-                    new Dictionary<string, object>
-                    {
-                        {"credentials_string", credentials}
-                    });
+		//uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
+		//	  new Dictionary<string, object>
+		//	  {
+		//		{"credentials_string", credentials}
+		//	  });
             uow.SaveChanges();
         }
 

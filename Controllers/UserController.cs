@@ -203,7 +203,7 @@ namespace Web.Controllers
                 }
                 if (sendConfirmation && !String.IsNullOrEmpty(userPassword))
                 {
-                    _email.SendLoginCredentials(uow, submittedUserData.EmailAddress.Address, userPassword);
+                    //_email.SendLoginCredentials(uow, submittedUserData.EmailAddress.Address, userPassword);
                 }
             }
             return Json(_jsonPackager.Pack(new { Data = displayMessage }));
