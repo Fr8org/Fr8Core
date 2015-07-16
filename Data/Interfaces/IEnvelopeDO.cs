@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Data.Interfaces
 {
-    public interface IEnvelopeDO : IBaseDO
-    {
-        int Id { get; set; }
-        string Handler { get; set; }
-        string TemplateName { get; set; }
-        IDictionary<String, Object> MergeData { get; }
-        IEmailDO Email { get; set; }
-    }
+	public interface IEnvelopeDO: IBaseDO
+	{
+		[ Key ]
+		int Id{ get; set; }
+	}
 }

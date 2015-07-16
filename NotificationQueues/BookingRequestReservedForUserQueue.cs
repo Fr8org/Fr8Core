@@ -44,7 +44,7 @@ Click <a href='{1}'>here</a> to check it out.";
                     Server.ServerUrl + "Dashboard/Index?id=" + item.BookingRequestID
                     );
                 var emailDO = em.GenerateBasicMessage(uow, "Booking request was reserved for you", formattedMessage, fromAddress, userDo.EmailAddress.Address);
-                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+                //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
             }
         }

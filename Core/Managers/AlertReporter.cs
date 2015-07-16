@@ -112,7 +112,7 @@ namespace Core.Managers
                             }
                     };
 
-                    uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                   // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                     uow.SaveChanges();
                 }
             }
@@ -216,7 +216,7 @@ namespace Core.Managers
                             }
                     };
 
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+              //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
         }

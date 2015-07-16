@@ -135,22 +135,22 @@ namespace Data.Migrations
                 })
                 .PrimaryKey(t => t.Id);
 
-            CreateTable(
-                "dbo.Envelopes",
-                c => new
-                {
-                    Id = c.Int(nullable: false, identity: true),
-                    Handler = c.String(),
-                    TemplateName = c.String(),
-                    TemplateDescription = c.String(),
-                    EmailID = c.Int(nullable: false),
-                    MergeData = c.String(),
-                    LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                    CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Emails", t => t.EmailID, cascadeDelete: true)
-                .Index(t => t.EmailID);
+	        CreateTable(
+		        "dbo.Envelopes",
+		        c => new
+		        {
+			        Id = c.Int( nullable : false, identity : true ),
+			        Handler = c.String(),
+			        TemplateName = c.String(),
+			        TemplateDescription = c.String(),
+			        EmailID = c.Int( nullable : false ),
+			        MergeData = c.String(),
+			        LastUpdated = c.DateTimeOffset( nullable : false, precision : 7 ),
+			        CreateDate = c.DateTimeOffset( nullable : false, precision : 7 ),
+		        } )
+		        .PrimaryKey( t => t.Id )
+		        .ForeignKey( "dbo.Emails", t => t.EmailID, cascadeDelete : true )
+		        .Index( t => t.EmailID );
 
             CreateTable(
                 "dbo.Events",

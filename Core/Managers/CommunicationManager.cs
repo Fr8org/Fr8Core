@@ -42,29 +42,29 @@ namespace Core.Managers
         {
             AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
-            AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
+            //AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
         }
 
-        public void BookingRequestNeedsProcessing(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                string toRecipient = _configRepository.Get("EmailAddress_BrNotify", null);
-                if (string.IsNullOrEmpty(toRecipient))
-                    throw new Exception("Atleast one recipient is required");
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (!bookingRequestDO.Subject.ToLower().Contains("test message"))
-                {
-                    var email = ObjectFactory.GetInstance<Email>();
-                    string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
-                    string subject = "BookingRequest Needs Processing";
-                    string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
-                    EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
-                    uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                    uow.SaveChanges();
-                }
-            }
-        }
+	  //public void BookingRequestNeedsProcessing(int bookingRequestId)
+	  //{
+	  //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+	  //    {
+	  //	  string toRecipient = _configRepository.Get("EmailAddress_BrNotify", null);
+	  //	  if (string.IsNullOrEmpty(toRecipient))
+	  //		throw new Exception("Atleast one recipient is required");
+	  //	  var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+	  //	  if (!bookingRequestDO.Subject.ToLower().Contains("test message"))
+	  //	  {
+	  //		var email = ObjectFactory.GetInstance<Email>();
+	  //		string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
+	  //		string subject = "BookingRequest Needs Processing";
+	  //		string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
+	  //		EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
+	  //		uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+	  //		uow.SaveChanges();
+	  //	  }
+	  //    }
+	  //}
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
         public void NewExplicitCustomerWorkflow(string curUserId)
@@ -88,7 +88,7 @@ namespace Core.Managers
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
 
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, _configRepository.Get("welcome_to_kwasant_template"), null); //welcome to kwasant v2 template
+                //uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, _configRepository.Get("welcome_to_kwasant_template"), null); //welcome to kwasant v2 template
                 uow.SaveChanges();
             }
         }
@@ -164,15 +164,15 @@ namespace Core.Managers
             // Fix an issue when coverting to UTF-8
             conversationThread = conversationThread.Replace((char)160, (char)32);
 
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
-                new Dictionary<string, object>
-                {
-                    {"RESP_URL", tokenUrls},
-                    {"bodytext", htmlText},
-                    {"questions", String.Join("<br/>", summaryQandAText)},
-                    {"conversationthread", conversationThread},
-                    {"bookername", currBookerAddress.Replace("@kwasant.com","")}
-                });
+            //uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
+		    //new Dictionary<string, object>
+		    //{
+		    //    {"RESP_URL", tokenUrls},
+		    //    {"bodytext", htmlText},
+		    //    {"questions", String.Join("<br/>", summaryQandAText)},
+		    //    {"conversationthread", conversationThread},
+		    //    {"bookername", currBookerAddress.Replace("@kwasant.com","")}
+		    //});
 
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
 
@@ -271,7 +271,7 @@ namespace Core.Managers
                 outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
                 outboundEmail.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, bookingRequest.Customer);
 
-                uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
+                //uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);
             }
         }

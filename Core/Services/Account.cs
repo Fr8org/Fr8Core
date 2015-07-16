@@ -151,9 +151,9 @@ namespace Core.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
 
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
-                                                               new Dictionary<string, object>()
-                                                                   {{"-callback_url-", callbackUrl}});
+                //uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
+                                                             //  new Dictionary<string, object>()
+                                                                  // {{"-callback_url-", callbackUrl}});
                 uow.SaveChanges();
             }
         }
