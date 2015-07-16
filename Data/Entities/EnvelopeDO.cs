@@ -8,7 +8,7 @@ namespace Data.Entities
 		public int Id{ get; set; }
 
 		public string Status{ get; set; }
-		public string EnvelopeId{ get; set; }
+		public string DocusignEnvelopeId{ get; set; }
 
 		//public enum EnvelopeState
 		//{
