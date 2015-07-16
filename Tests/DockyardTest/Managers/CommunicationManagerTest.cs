@@ -4,13 +4,13 @@ using Data.Interfaces;
 using Core.Managers;
 using Core.Services;
 using Core.StructureMap;
-using KwasantTest.Fixtures;
+using DockyardTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
 using System.Linq;
-namespace KwasantTest.Managers
+namespace DockyardTest.Managers
 {
     [TestFixture]
     public class CommunicationManagerTest : BaseTest

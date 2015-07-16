@@ -1,26 +1,24 @@
 ﻿using System;
-using Data.Infrastructure;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces;
-using Core.Managers;
 using Core.Services;
 using Core.StructureMap;
-using KwasantTest.Fixtures;
-using Moq;
+using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using Utilities;
-using System.Linq;
-namespace KwasantTest.Managers
+
+namespace DockyardTest.Services
 {
-    [TestFixture]
-    public class CommunicationManagerTest : BaseTest
+    class UserServiceTests
     {
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
-
-       
     }
 }

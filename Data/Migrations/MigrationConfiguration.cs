@@ -4,6 +4,7 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Web;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
@@ -18,7 +19,7 @@ using Utilities;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
+    public sealed class MigrationConfiguration : DbMigrationsConfiguration<DockyardDbContext>
     {
         public MigrationConfiguration()
         {
@@ -26,10 +27,10 @@ namespace Data.Migrations
             AutomaticMigrationsEnabled = false;
 
             //Do not modify this, otherwise migrations will run twice!
-            ContextKey = "Data.Infrastructure.KwasantDbContext";
+            ContextKey = "Data.Infrastructure.DockyardDbContext";
         }
 
-        protected override void Seed(KwasantDbContext context)
+        protected override void Seed(DockyardDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -40,6 +41,21 @@ namespace Data.Migrations
             //In this situation, we need to be sure to use the provided context.
 
             //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedKwasantDbContext uses it).
+
+
+            // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
+            // if (System.Diagnostics.Debugger.IsAttached == false)
+            // {
+            //     System.Diagnostics.Debugger.Launch();
+            // }
+
+            // If not running inside web application (i.e. running "Update-Database" in NuGet Package Manager Console),
+            // then register IDBContext and IUnitOfWork in StructureMap DI.
+            if (HttpContext.Current == null)
+            {
+                ObjectFactory.Initialize(x => x.AddRegistry<MigrationConsoleSeedRegistry>());
+            }
+
             var uow = new UnitOfWork(context);
             Seed(uow);
 
@@ -238,6 +254,7 @@ namespace Data.Migrations
         {
             CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
+            CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
