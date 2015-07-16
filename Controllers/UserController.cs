@@ -53,7 +53,8 @@ namespace Web.Controllers
         {
             if (String.IsNullOrEmpty(serverUrl))
                 serverUrl = Utilities.Server.ServerUrl;
-            return String.Format("{0}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""));
+            
+            return String.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
         }
 
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)

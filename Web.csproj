@@ -250,6 +250,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
@@ -291,7 +292,7 @@
     <Compile Include="Controllers\DiagnosticsController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
     <Compile Include="Controllers\External\DayPilot\Providers\IEventDataProvider.cs" />
-    <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
+    <Compile Include="Controllers\External\GoogleCalendar\GoogleAuthCallbackController.cs" />
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantMonthControl.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantNavigatorControl.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
+    <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
@@ -855,6 +857,7 @@
     <Content Include="Views\BookingRequest\DefaultActivityPopup.cshtml" />
     <Content Include="Views\BookingRequest\MergeRelatedBR.cshtml" />
     <Content Include="Scripts\jquery-2.1.4.min.map" />
+    <None Include="Views\DocusignAuthCallback\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

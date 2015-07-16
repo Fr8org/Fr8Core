@@ -187,6 +187,7 @@
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\AlertReporter.cs" />
+    <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
+    <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Docusign\DocusignPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />

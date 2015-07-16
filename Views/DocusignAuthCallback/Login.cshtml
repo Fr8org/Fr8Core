@@ -1,0 +1,21 @@
+﻿@model Web.ViewModels.DocusignLoginVM
+
+@{
+    ViewBag.Title = "Docusign Login Form";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Docusign Login Form</h2>
+@using (Html.BeginForm(new { returnUrl = ViewBag.ReturnUrl }))
+{
+    Html.LabelFor(m => m.Username);
+    Html.EditorFor(m => m.Username);
+    Html.ValidationMessageFor(m => m.Username);
+    Html.LabelFor(m => m.Password);
+    Html.PasswordFor(m => m.Password);
+    Html.ValidationMessageFor(m => m.Password);
+
+    Html.ValidationSummary(excludePropertyErrors: true);
+
+    <input type="submit" value="Log In"/>
+}

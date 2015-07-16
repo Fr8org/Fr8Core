@@ -18,6 +18,7 @@ using SendGrid;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using AutoMapper;
+using Core.Managers.APIManagers.Authorizers.Docusign;
 using Utilities;
 
 namespace Core.StructureMap
@@ -71,6 +72,7 @@ namespace Core.StructureMap
                 For<IIntakeManager>().Use<IntakeManager>();
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
@@ -98,6 +100,7 @@ namespace Core.StructureMap
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
