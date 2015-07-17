@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Text;
 
 namespace Core.Plugins.AzureSql
 {
     public class SqlClientDbProvider : IDbProvider
     {
+        public IDbConnection CreateConnection(string connectionString)
+        {
+            return new SqlConnection(connectionString);
+        }
+
         public bool TableExists(IDbTransaction tx, string schema, string table)
         {
             using (var cmd = tx.Connection.CreateCommand())
@@ -17,7 +23,7 @@ namespace Core.Plugins.AzureSql
 
                 var schemaParam = cmd.CreateParameter();
                 schemaParam.ParameterName = "@schema";
-                schemaParam.Value = schema;
+                schemaParam.Value = !string.IsNullOrEmpty(schema) ? schema : "dbo";
                 cmd.Parameters.Add(schemaParam);
 
                 var tableParam = cmd.CreateParameter();
@@ -33,7 +39,11 @@ namespace Core.Plugins.AzureSql
         public void WriteRow(IDbTransaction tx, string schema,
             string table, IEnumerable<FieldValue> values)
         {
-            EnsureValidIdentifier(schema);
+            if (!string.IsNullOrEmpty(schema))
+            {
+                EnsureValidIdentifier(schema);
+            }
+
             EnsureValidIdentifier(table);
 
             using (var cmd = tx.Connection.CreateCommand())
@@ -66,7 +76,9 @@ namespace Core.Plugins.AzureSql
                 cmd.Transaction = tx;
                 cmd.CommandText = string.Format(
                     "INSERT INTO [{0}].[{1}] ({2}) VALUES ({3})",
-                    schema, table, fieldsListBuilder.ToString(), paramsListBuilder.ToString()
+                    !string.IsNullOrEmpty(schema) ? schema : "dbo",
+                    table, fieldsListBuilder.ToString(),
+                    paramsListBuilder.ToString()
                     );
 
                 var i = 0;
@@ -76,6 +88,8 @@ namespace Core.Plugins.AzureSql
                     valueParam.ParameterName = "@param_" + i.ToString();
                     valueParam.Value = value.Value;
                     cmd.Parameters.Add(valueParam);
+
+                    ++i;
                 }
 
                 cmd.ExecuteNonQuery();

@@ -2,7 +2,7 @@
 {
     public class CommandResponse
     {
-        public static CommandResponse SuccessResponse(object data)
+        public static CommandResponse SuccessResponse(object data = null)
         {
             return new CommandResponse(true, data, null);
         }

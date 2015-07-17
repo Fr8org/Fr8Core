@@ -11,11 +11,16 @@ namespace pluginAzureSqlServerTests
 
         public IDbConnection CreateConnection()
         {
+            return new SqlConnection(GetConnectionString());
+        }
+
+        public string GetConnectionString()
+        {
             var connectionString = ConfigurationManager
                 .ConnectionStrings[ConnectionStringName]
                 .ConnectionString;
 
-            return new SqlConnection(connectionString);
+            return connectionString;
         }
 
         public void CreateCustomersTable(IDbTransaction tx)

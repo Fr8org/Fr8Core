@@ -11,6 +11,7 @@ using Core.Managers.APIManagers.Packagers;
 using Core.Managers.APIManagers.Packagers.SegmentIO;
 using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
+using Core.Plugins.AzureSql;
 using Core.Security;
 using Core.Services;
 using Moq;
@@ -77,6 +78,15 @@ namespace Core.StructureMap
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
+
+                RegisterPlugins();
+            }
+
+            private void RegisterPlugins()
+            {
+                // AzureSQL plugin components.
+                For<IAzureSqlPlugin>().Use<AzureSqlPlugin>();
+                For<IDbProvider>().Use<SqlClientDbProvider>().Named("IDbProvider.System.Data.SqlClient");
             }
         }
 
@@ -102,6 +112,15 @@ namespace Core.StructureMap
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
+
+                RegisterPlugins();
+            }
+
+            private void RegisterPlugins()
+            {
+                // AzureSQL plugin components.
+                For<IAzureSqlPlugin>().Use<AzureSqlPlugin>();
+                For<IDbProvider>().Use<SqlClientDbProvider>().Named("IDbProvider.System.Data.SqlClient");
             }
         }
 
