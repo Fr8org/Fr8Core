@@ -62,14 +62,14 @@ namespace Core.Services
                     return false;
         }
 
-        public void Create(IUnitOfWork uow, UserDO submittedUserData, string role, bool sendEmail)
-        {
-            if (sendEmail)
-            {
-                new Email().SendUserSettingsNotification(uow, submittedUserData);
-            }
-            new Account().Register(uow, submittedUserData.EmailAddress.Address, submittedUserData.FirstName, submittedUserData.LastName, "test@1234", role);
-        }
+	  //public void Create(IUnitOfWork uow, UserDO submittedUserData, string role, bool sendEmail)
+	  //{
+	  //    if (sendEmail)
+	  //    {
+	  //	  new Email().SendUserSettingsNotification(uow, submittedUserData);
+	  //    }
+	  //    new Account().Register(uow, submittedUserData.EmailAddress.Address, submittedUserData.FirstName, submittedUserData.LastName, "test@1234", role);
+	  //}
 
         //if we have a first name and last name, use them together
         //else if we have a first name only, use that

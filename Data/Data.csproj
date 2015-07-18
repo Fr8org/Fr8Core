@@ -137,6 +137,10 @@
     <Compile Include="Migrations\201507162011371_AddAuthorizationTokenDOTokenProperty.Designer.cs">
       <DependentUpon>201507162011371_AddAuthorizationTokenDOTokenProperty.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507162035026_Envelope_Migration.cs" />
+    <Compile Include="Migrations\201507162035026_Envelope_Migration.Designer.cs">
+      <DependentUpon>201507162035026_Envelope_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -283,7 +287,6 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
     <Compile Include="Validations\BookingRequestValidator.cs" />
-    <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
@@ -318,6 +321,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507162011371_AddAuthorizationTokenDOTokenProperty.resx">
       <DependentUpon>201507162011371_AddAuthorizationTokenDOTokenProperty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507162035026_Envelope_Migration.resx">
+      <DependentUpon>201507162035026_Envelope_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -109,11 +109,11 @@ namespace Core.Managers
                 uow.SaveChanges();
             }
             Email _email = ObjectFactory.GetInstance<Email>();
-            _email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
-                                  string.Format(
-                                      "EmailID: {0}\r\n" +
-                                      "Message: {1}",
-                                      emailId, message));
+		//_email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
+		//			    string.Format(
+		//				  "EmailID: {0}\r\n" +
+		//				  "Message: {1}",
+		//				  emailId, message));
         }
         private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
         {
@@ -146,7 +146,7 @@ namespace Core.Managers
             }
 
             Email email = ObjectFactory.GetInstance<Email>();
-            email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
+           // email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
         }
 
         public void ProcessSubmittedNote(int bookingRequestId, string note)

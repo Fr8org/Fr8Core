@@ -48,7 +48,7 @@ Click <a href='{1}'>here</a> to check it out.";
                     Server.ServerUrl + "Dashboard/Index?id=" + item.BookingRequestID
                     );
                 var emailDO = em.GenerateBasicMessage(uow, "A booking request has recieved a new response", formattedMessage, fromAddress, userDo.EmailAddress.Address);
-                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+               // uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
             }
         }
