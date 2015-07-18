@@ -11,23 +11,25 @@ namespace pluginAzureSqlServerTests
     {
         public const string WriteSqlUrlKey = "AzureSQLWriteCommandUrl";
 
+        private TestDbHelper _helper;
+
 
         [SetUp]
         public void Init()
         {
-            var helper = new TestDbHelper();
-            using (var dbconn = helper.CreateConnection())
+            _helper = new TestDbHelper();
+            using (var dbconn = _helper.CreateConnection())
             {
                 dbconn.Open();
 
                 using (var tx = dbconn.BeginTransaction())
                 {
-                    if (helper.CustomersTableExists(tx))
+                    if (_helper.CustomersTableExists(tx))
                     {
-                        helper.DropCustomersTable(tx);
+                        _helper.DropCustomersTable(tx);
                     }
 
-                    helper.CreateCustomersTable(tx);
+                    _helper.CreateCustomersTable(tx);
 
                     tx.Commit();
                 }
@@ -37,16 +39,15 @@ namespace pluginAzureSqlServerTests
         [TearDown]
         public void Cleanup()
         {
-            var helper = new TestDbHelper();
-            using (var dbconn = helper.CreateConnection())
+            using (var dbconn = _helper.CreateConnection())
             {
                 dbconn.Open();
 
                 using (var tx = dbconn.BeginTransaction())
                 {
-                    if (helper.CustomersTableExists(tx))
+                    if (_helper.CustomersTableExists(tx))
                     {
-                        helper.DropCustomersTable(tx);
+                        _helper.DropCustomersTable(tx);
                     }
 
                     tx.Commit();
@@ -57,18 +58,17 @@ namespace pluginAzureSqlServerTests
         [Test]
         public void CallCommandWrite()
         {
-            var helper = new TestDbHelper();
             var url = ConfigurationManager.AppSettings[WriteSqlUrlKey];
 
             var httpRequest = (HttpWebRequest)WebRequest.Create(url);
             httpRequest.ContentType = "application/json";
             httpRequest.Method = "POST";
 
-            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+            using (var writer = new StreamWriter(httpRequest.GetRequestStream()))
             {
                 string json = string.Format(
                     @"{{
-	                    ""connectionString"": ""Data Source={0}"",
+	                    ""connectionString"": ""{0}"",
 	                    ""provider"": ""System.Data.SqlClient"",
 	                    ""tables"": [ 
 		                    {{
@@ -85,17 +85,22 @@ namespace pluginAzureSqlServerTests
 		                    }}
 	                    ]
                     }}",
-                    helper.GetConnectionString().Replace("\\", "\\\\")
+                    _helper.GetConnectionString().Replace("\\", "\\\\")
                 );
 
-                streamWriter.Write(json);
-                streamWriter.Flush();
-                streamWriter.Close();
+                writer.Write(json);
+                writer.Flush();
+                writer.Close();
             }
 
-            httpRequest.GetResponse();
+            var httpResponse = httpRequest.GetResponse();
+            using (var reader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                var response = reader.ReadToEnd();
+                System.Diagnostics.Debug.WriteLine(response);
+            }
 
-            using (var dbconn = helper.CreateConnection())
+            using (var dbconn = _helper.CreateConnection())
             {
                 dbconn.Open();
 
