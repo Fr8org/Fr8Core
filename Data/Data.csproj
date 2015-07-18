@@ -141,6 +141,10 @@
     <Compile Include="Migrations\201507162035026_Envelope_Migration.Designer.cs">
       <DependentUpon>201507162035026_Envelope_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507180853106_Merge_0718.cs" />
+    <Compile Include="Migrations\201507180853106_Merge_0718.Designer.cs">
+      <DependentUpon>201507180853106_Merge_0718.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -324,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507162035026_Envelope_Migration.resx">
       <DependentUpon>201507162035026_Envelope_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507180853106_Merge_0718.resx">
+      <DependentUpon>201507180853106_Merge_0718.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
