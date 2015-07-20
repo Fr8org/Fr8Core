@@ -2,7 +2,9 @@
 using System.Configuration;
 using System.IO;
 using System.Net;
+using System.Web.Http.SelfHost;
 using NUnit.Framework;
+using pluginAzureSqlServer;
 
 namespace pluginAzureSqlServerTests
 {
@@ -10,8 +12,10 @@ namespace pluginAzureSqlServerTests
     public class CanSaveDataToSql
     {
         public const string WriteSqlUrlKey = "AzureSQLWriteCommandUrl";
+        public const string TestServerUrlKey = "TestServerUrl";
 
         private TestDbHelper _helper;
+        private HttpSelfHostServer _server;
 
 
         [SetUp]
@@ -34,6 +38,10 @@ namespace pluginAzureSqlServerTests
                     tx.Commit();
                 }
             }
+
+            var url = ConfigurationManager.AppSettings[TestServerUrlKey];
+            _server = SelfHostFactory.CreateServer(url);
+            _server.OpenAsync().Wait();
         }
 
         [TearDown]
@@ -53,6 +61,9 @@ namespace pluginAzureSqlServerTests
                     tx.Commit();
                 }
             }
+
+            _server.CloseAsync().Wait();
+            _server.Dispose();
         }
 
         [Test]
