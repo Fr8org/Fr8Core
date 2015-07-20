@@ -146,6 +146,7 @@
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
+    <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />

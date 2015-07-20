@@ -4,36 +4,45 @@ using System.IO;
 using System.Net;
 using System.Web.Http.SelfHost;
 using NUnit.Framework;
+using StructureMap;
+using Data.Interfaces;
 using pluginAzureSqlServer;
+using DockyardTest;
+using DockyardTest.Fixtures;
 
 namespace pluginAzureSqlServerTests
 {
     [TestFixture]
-    public class CanSaveDataToSql
+    public class CanSaveDataToSql : BaseTest
     {
         public const string WriteSqlUrlKey = "AzureSQLWriteCommandUrl";
         public const string TestServerUrlKey = "TestServerUrl";
 
+        private FixtureData _fixtureData;
         private TestDbHelper _helper;
         private HttpSelfHostServer _server;
 
 
         [SetUp]
-        public void Init()
+        public override void SetUp()
         {
+            base.SetUp();
+
+            _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
             _helper = new TestDbHelper();
+
             using (var dbconn = _helper.CreateConnection())
             {
                 dbconn.Open();
 
                 using (var tx = dbconn.BeginTransaction())
                 {
-                    if (_helper.CustomersTableExists(tx))
+                    if (_helper.TableExists(tx, _fixtureData.TestCustomerTable1_Schema(), _fixtureData.TestCustomerTable1_Table()))
                     {
-                        _helper.DropCustomersTable(tx);
+                        _helper.ExecuteSql(tx, _fixtureData.TestCustomerTable1_Drop());
                     }
 
-                    _helper.CreateCustomersTable(tx);
+                    _helper.ExecuteSql(tx, _fixtureData.TestCustomerTable1_Create());
 
                     tx.Commit();
                 }
@@ -53,9 +62,9 @@ namespace pluginAzureSqlServerTests
 
                 using (var tx = dbconn.BeginTransaction())
                 {
-                    if (_helper.CustomersTableExists(tx))
+                    if (_helper.TableExists(tx, _fixtureData.TestCustomerTable1_Schema(), _fixtureData.TestCustomerTable1_Table()))
                     {
-                        _helper.DropCustomersTable(tx);
+                        _helper.ExecuteSql(tx, _fixtureData.TestCustomerTable1_Drop());
                     }
 
                     tx.Commit();

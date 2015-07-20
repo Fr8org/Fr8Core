@@ -23,34 +23,18 @@ namespace pluginAzureSqlServerTests
             return connectionString;
         }
 
-        public void CreateCustomersTable(IDbTransaction tx)
+        public void ExecuteSql(IDbTransaction tx, string sql)
         {
             using (var cmd = tx.Connection.CreateCommand())
             {
                 cmd.Transaction = tx;
-                cmd.CommandText =
-                    @"CREATE TABLE [dbo].[Customers] (
-                        [FirstName] NVARCHAR(100) NOT NULL,
-                        [LastName] NVARCHAR(100) NOT NULL,
-                        PRIMARY KEY CLUSTERED ([FirstName] ASC, [LastName] ASC)
-                    )";
+                cmd.CommandText = sql;
 
                 cmd.ExecuteNonQuery();
             }
         }
 
-        public void DropCustomersTable(IDbTransaction tx)
-        {
-            using (var cmd = tx.Connection.CreateCommand())
-            {
-                cmd.Transaction = tx;
-                cmd.CommandText = @"DROP TABLE [dbo].[Customers]";
-
-                cmd.ExecuteNonQuery();
-            }
-        }
-
-        public bool CustomersTableExists(IDbTransaction tx)
+        public bool TableExists(IDbTransaction tx, string schema, string table)
         {
             using (var cmd = tx.Connection.CreateCommand())
             {

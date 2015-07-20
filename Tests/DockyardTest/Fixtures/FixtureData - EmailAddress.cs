@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace DockyardTest.Fixtures
 {
-    partial class FixtureData
+    public partial class FixtureData
     {
         public FixtureData(IUnitOfWork uow)
         {
