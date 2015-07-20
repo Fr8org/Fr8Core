@@ -110,6 +110,7 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
+    <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
@@ -145,10 +146,23 @@
     <Compile Include="Migrations\201507180853106_Merge_0718.Designer.cs">
       <DependentUpon>201507180853106_Merge_0718.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507200133405_add-process.cs" />
+    <Compile Include="Migrations\201507200133405_add-process.Designer.cs">
+      <DependentUpon>201507200133405_add-process.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507200152106_fixup.cs" />
+    <Compile Include="Migrations\201507200152106_fixup.Designer.cs">
+      <DependentUpon>201507200152106_fixup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507200156445_fixup2.cs" />
+    <Compile Include="Migrations\201507200156445_fixup2.Designer.cs">
+      <DependentUpon>201507200156445_fixup2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
+    <Compile Include="Repositories\ProcessRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -331,6 +345,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507180853106_Merge_0718.resx">
       <DependentUpon>201507180853106_Merge_0718.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507200133405_add-process.resx">
+      <DependentUpon>201507200133405_add-process.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507200152106_fixup.resx">
+      <DependentUpon>201507200152106_fixup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507200156445_fixup2.resx">
+      <DependentUpon>201507200156445_fixup2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

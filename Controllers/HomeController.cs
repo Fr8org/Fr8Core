@@ -83,25 +83,15 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
-            string result = "";
-            try
-            {
+           
+      
                 RegexUtilities.ValidateEmailAddress(emailAddress);
                 if (meetingInfo.Trim().Length < 30)
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
                 return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-            }
-            catch (ValidationException ex)
-            {
-                return Json(new { Message = "You need to provide a valid Email Address." });
-            }
-            catch (Exception ex)
-            {
-                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
-                return Json(new { Message = "Something went wrong. Sorry about that" });
-                
-            }
+            
+           
         }
 
 

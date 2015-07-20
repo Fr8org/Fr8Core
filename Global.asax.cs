@@ -28,6 +28,7 @@ using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
 using Core.Managers.APIManagers.Packagers.Docusign;
+using System.Web.Http;
 
 namespace Web
 {
@@ -37,6 +38,7 @@ namespace Web
 
         protected void Application_Start()
         {
+            GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

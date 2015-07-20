@@ -235,7 +235,7 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SlipDO>().ToTable("Slips");
+            modelBuilder.Entity<ProcessDO>().ToTable("Processes");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
@@ -352,5 +352,7 @@ namespace Data.Infrastructure
 
             base.OnModelCreating(modelBuilder);
         }
+
+        public System.Data.Entity.DbSet<Data.Entities.ProcessDO> Processes { get; set; }
     }
 }
