@@ -219,15 +219,9 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="Plugins\AzureSql\AzureSqlPlugin.cs" />
-    <Compile Include="Plugins\AzureSql\FieldValue.cs" />
-    <Compile Include="Plugins\AzureSql\IAzureSqlPlugin.cs" />
-    <Compile Include="Plugins\AzureSql\IDbProvider.cs" />
-    <Compile Include="Plugins\AzureSql\Row.cs" />
-    <Compile Include="Plugins\AzureSql\SqlClientDbProvider.cs" />
-    <Compile Include="Plugins\AzureSql\Table.cs" />
-    <Compile Include="Plugins\AzureSql\WriteCommandArgs.cs" />
-    <Compile Include="Plugins\Plugin.cs" />
+    <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
+    <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
+    <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

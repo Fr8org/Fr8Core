@@ -1,5 +1,4 @@
-﻿using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -7,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities.Logging;
 
-namespace Core.Plugins.AzureSql
+namespace pluginAzureSqlServer.Infrastructure
 {
-    public class AzureSqlPlugin : Plugin, IAzureSqlPlugin
+    public class AzureSqlPlugin : IAzureSqlPlugin
     {
         public void WriteCommand(WriteCommandArgs args)
         {
@@ -81,7 +80,14 @@ namespace Core.Plugins.AzureSql
 
         protected IDbProvider GetDbProvider(string provider)
         {
-            return ObjectFactory.GetNamedInstance<IDbProvider>("IDbProvider." + provider);
+            switch (provider)
+            {
+                case "System.Data.SqlClient":
+                    return new SqlClientDbProvider();
+
+                default:
+                    return null;
+            }
         }
     }
 }

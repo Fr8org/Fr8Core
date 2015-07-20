@@ -31,5 +31,19 @@ namespace DockyardTest.Fixtures
         {
             return @"DROP TABLE [dbo].[Customers]";
         }
+
+        public string TestCustomerTable1_Json()
+        {
+            return @"""Customers"": [
+			    {
+			    ""firstName"": ""John"",
+			    ""lastName"": ""Smith""
+			    },
+			    {
+			    ""firstName"": ""Sam"", 
+			    ""lastName"": ""Jones""
+			    },
+			]";
+        }
     }
 }

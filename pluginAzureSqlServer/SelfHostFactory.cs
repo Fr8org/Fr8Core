@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.Http;
 using System.Web.Http.SelfHost;
-using Core.StructureMap;
 
 namespace pluginAzureSqlServer
 {
@@ -9,9 +8,6 @@ namespace pluginAzureSqlServer
     {
         public static HttpSelfHostServer CreateServer(string url)
         {
-            StructureMapBootStrapper.ConfigureDependencies(
-                StructureMapBootStrapper.DependencyType.LIVE);
-
             var config = new HttpSelfHostConfiguration(url);
 
             // Web API routes

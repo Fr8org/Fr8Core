@@ -1,4 +1,4 @@
-﻿namespace Core.Plugins.AzureSql
+﻿namespace pluginAzureSqlServer.Infrastructure
 {
     public interface IAzureSqlPlugin
     {

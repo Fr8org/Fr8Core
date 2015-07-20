@@ -11,7 +11,7 @@ using Core.Managers.APIManagers.Packagers;
 using Core.Managers.APIManagers.Packagers.SegmentIO;
 using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
-using Core.Plugins.AzureSql;
+using Core.PluginRegistrations;
 using Core.Security;
 using Core.Services;
 using Moq;
@@ -79,14 +79,7 @@ namespace Core.StructureMap
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
 
-                RegisterPlugins();
-            }
-
-            private void RegisterPlugins()
-            {
-                // AzureSQL plugin components.
-                For<IAzureSqlPlugin>().Use<AzureSqlPlugin>();
-                For<IDbProvider>().Use<SqlClientDbProvider>().Named("IDbProvider.System.Data.SqlClient");
+                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
         }
 
@@ -109,18 +102,13 @@ namespace Core.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
+                For<IRestfullCall>().Use<RestfulCallWrapper>();
+
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
 
-                RegisterPlugins();
-            }
-
-            private void RegisterPlugins()
-            {
-                // AzureSQL plugin components.
-                For<IAzureSqlPlugin>().Use<AzureSqlPlugin>();
-                For<IDbProvider>().Use<SqlClientDbProvider>().Named("IDbProvider.System.Data.SqlClient");
+                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
         }
 

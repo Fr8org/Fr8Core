@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Core.Plugins.AzureSql
+namespace pluginAzureSqlServer.Infrastructure
 {
     public class WriteCommandArgs
     {

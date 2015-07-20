@@ -5,8 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json.Linq;
-using StructureMap;
-using Core.Plugins.AzureSql;
+using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Messages;
 
 namespace pluginAzureSqlServer.Controllers
@@ -111,7 +110,7 @@ namespace pluginAzureSqlServer.Controllers
 
             var writeArgs = new WriteCommandArgs(provider, connectionString, resultTables);
 
-            var azureSqlPlugin = ObjectFactory.GetInstance<IAzureSqlPlugin>();
+            var azureSqlPlugin = new AzureSqlPlugin();
             try
             {
                 azureSqlPlugin.WriteCommand(writeArgs);

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
-using Core.StructureMap;
 
 namespace pluginAzureSqlServer
 {
@@ -13,8 +12,6 @@ namespace pluginAzureSqlServer
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
         }
     }
 }
