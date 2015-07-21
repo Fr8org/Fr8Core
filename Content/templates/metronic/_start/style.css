@@ -1,0 +1,230 @@
+
+@media (min-width: 1200px){
+	.container {
+		width: 1200px;
+	}
+}
+	
+@media (min-width: 992px){
+	.container {
+		width: 1170px;
+	}
+}
+
+.col-md-4 {
+	padding-right:20px;
+	padding-left: 20px;
+	margin-bottom:40px;
+}
+
+body {
+  color: #2f353b;
+  font-family: "Roboto Condensed", sans-serif;   
+  padding: 0px !important;
+  margin: 0px !important;
+  font-size: 16px;
+  background: #ffffff;
+  font-weight: 300;
+}
+
+.jumbotron {
+	background: #f5f8f9;
+}
+
+.btn, h1, h2, h3, p, span, a {
+	font-family:"Roboto Condensed", sans-serif;
+}
+
+.title-main {
+	font-size: 28px;
+	font-weight: 600;
+	color: #E35C59;
+}
+
+.title-thin {
+	font-size: 28px;
+	font-weight: 600;
+	color: #767f89;
+}
+
+.title-normal {
+	font-size: 28px;
+	font-weight: 600;
+	color: #767f89;
+}
+
+.title-small {
+	font-size: 22px;
+	font-weight: 300;
+	color: #767f89;	
+}
+
+.title-box {
+	display: inline-block; 
+	margin-top: 10px; 
+	font-size: 18px; 
+	background: #EB6D6D; 
+	color: #fff;
+	padding: 6px 22px;
+	font-weight: 300;
+}
+
+.navbar {
+	background: #2b3643;
+	height:70px;
+}
+
+.navbar-header { 
+	width:100%;
+}
+
+.page-logo {
+	float: left;
+	display: block;
+	width: 123px;
+	height: 18px;
+	padding-top: 10px;
+}
+
+.btn-purchase {
+	margin: 0;
+	padding: 0;
+	float: right;
+	display: block;
+	border: 1px solid #eee;  
+	clear:both;
+	border-radius: 3px;
+}
+
+.btn-purchase a {
+	color: #eee !important;
+}
+
+.btn-purchase a:hover {
+	color: #fff !important;
+}
+
+.jumbotron {
+	margin-top:50px;
+}
+
+/* LAYOUT WIDGET */
+
+.widget-layout {
+	position: relative;
+	border: 1px solid #eeeeee;
+	overflow:hidden;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;	
+}
+
+.widget-badge {
+	position: absolute;
+	top:0px; 
+	right:0px;
+}
+
+.widget-title {
+	font-size: 21px;
+	color: #677c88;
+	padding-top: 15px; 
+	padding-left: 20px; 
+}
+
+.widget-screen {
+	margin-top: -5px;
+	padding-left:20px;
+}
+
+.widget-btn {
+	padding-top: 20px;
+	padding-bottom: 10px;
+}
+
+.btn-disabled {
+	color: #fff;
+	background-color: #ddd;
+	border-color: #ddd;
+}
+
+.btn-disabled:hover {
+	color: #fff;
+	background-color: #ccc;
+	border-color: #ccc;
+}
+
+
+
+
+
+/***
+Home Page Testimonals
+***/
+.arrow_box {   
+	padding: 20px;
+  font-size: 18px;
+  position: relative;
+  background: #eff4f6;
+  border: 2px solid #fafafa;
+  border-radius: 2px;
+}   
+
+.arrow_box:after, .arrow_box:before {
+  top: 100%;
+  left: 50%;
+  border: solid transparent;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.arrow_box:after {
+  border-color: rgba(136, 183, 213, 0);
+  border-top-color: #eff4f6;
+  border-width: 30px;
+  margin-left: -30px;
+}
+.arrow_box:before {
+  border-color: rgba(194, 225, 245, 0);
+  border-top-color: #fafafa;
+  border-width: 36px;
+  margin-left: -36px;
+}
+
+
+.c-main-testimonals h4 {
+	margin-top: 50px;
+	font-size: 16px;  
+}
+
+.c-main-testimonals h4 span {
+	text-transform: uppercase;
+}
+
+
+.btn.btn-default {
+	border-radius: 2px;
+	border: 1px solid #2f353b;
+	color: #2f353b;
+	font-weight: 500;
+	background: none;
+	font-size: 14px;
+	text-transform: uppercase;  
+	padding: 6px 14px;
+}
+
+.btn.btn-default:hover {
+	background: #2f353b;
+	color: #fff;
+}
+
+.btn.btn-danger.btn-lg {
+	border-radius: 2px;
+}
+
+footer {
+	padding-bottom: 5px;
+}

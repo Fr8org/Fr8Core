@@ -1,4 +1,8 @@
-  var gulp = require('gulp');
-  gulp.task('default', function() {
-      // place code for your default task here
-  });
+var gulp = require('gulp');
+var bower = require('gulp-bower');
+
+gulp.task('bower', function () {
+    return bower({ layout: "byComponent" });
+});
+
+gulp.task('default', ['bower']);
