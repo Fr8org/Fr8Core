@@ -79,6 +79,7 @@ namespace Core.StructureMap
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
+                For<IProcess>().Use<Process>();
             }
         }
 
@@ -105,6 +106,7 @@ namespace Core.StructureMap
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
+                For<IProcess>().Use<Process>();
             }
         }
 

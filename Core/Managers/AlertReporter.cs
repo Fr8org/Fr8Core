@@ -120,7 +120,7 @@ namespace Core.Managers
                             }
                     };
 
-                   // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                    // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                     uow.SaveChanges();
                 }
             }
@@ -209,12 +209,12 @@ namespace Core.Managers
                 var toRecipient = negotiationDO.BookingRequest.Booker.EmailAddress;
 
                 EmailDO curEmail = new EmailDO
-                    {
-                        Subject = subject,
-                        PlainText = message,
-                        HTMLText = message,
-                        From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-                        Recipients = new List<RecipientDO>
+                {
+                    Subject = subject,
+                    PlainText = message,
+                    HTMLText = message,
+                    From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
+                    Recipients = new List<RecipientDO>
                             {
                                 new RecipientDO
                                     {
@@ -222,9 +222,9 @@ namespace Core.Managers
                                         EmailParticipantType = EmailParticipantType.To
                                     }
                             }
-                    };
+                };
 
-              //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
         }
@@ -234,14 +234,14 @@ namespace Core.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "User",
-                        SecondaryCategory = "",
-                        Activity = "Created",
-                        CustomerId = curUserId,
-                        ObjectId = null,
-                        Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
-                    };
+                {
+                    PrimaryCategory = "User",
+                    SecondaryCategory = "",
+                    Activity = "Created",
+                    CustomerId = curUserId,
+                    ObjectId = null,
+                    Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
+                };
 
                 SaveFact(curAction);
             }
@@ -255,14 +255,14 @@ namespace Core.Managers
                 emailSubject = emailSubject.Length <= 10 ? emailSubject : (emailSubject.Substring(0, 10) + "...");
 
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "Email",
-                        SecondaryCategory = "",
-                        Activity = "Received",
-                        CustomerId = customerId,
-                        ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
-                    };
-              
+                {
+                    PrimaryCategory = "Email",
+                    SecondaryCategory = "",
+                    Activity = "Received",
+                    CustomerId = customerId,
+                    ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
+                };
+
                 curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
 
                 SaveFact(curAction);
@@ -272,25 +272,25 @@ namespace Core.Managers
         public void ReportEventBooked(int eventId, string customerId)
         {
             FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "Event",
-                    SecondaryCategory = "",
-                    Activity = "Booked",
-                    CustomerId = customerId,
-                    ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
-                };
+            {
+                PrimaryCategory = "Event",
+                SecondaryCategory = "",
+                Activity = "Booked",
+                CustomerId = customerId,
+                ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
+            };
             SaveFact(curAction);
         }
         public void ReportEmailSent(int emailId, string customerId)
         {
             FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "Email",
-                    SecondaryCategory = "",
-                    Activity = "Sent",
-                    CustomerId = customerId,
-                    ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
-                };
+            {
+                PrimaryCategory = "Email",
+                SecondaryCategory = "",
+                Activity = "Sent",
+                CustomerId = customerId,
+                ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
+            };
             SaveFact(curAction);
         }
 
@@ -304,17 +304,63 @@ namespace Core.Managers
                 ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
 
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "",
-                        Activity = "Created",
-                        CustomerId = bookingRequestDO.CustomerID,
-                        ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
-                    };
-              
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "",
+                    Activity = "Created",
+                    CustomerId = bookingRequestDO.CustomerID,
+                    ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
+                };
+
                 curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
                 SaveFact(curAction);
             }
+        }
+
+        /// <summary>
+        /// The method logs the fact of receiving a notification from DocuSign.      
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
+        public void ReportDocusignNotificationReceived(string userId, string envelopeId)
+        {
+            FactDO curAction = new FactDO
+            {
+                PrimaryCategory = null,
+                SecondaryCategory = null,
+                Activity = "Received",
+                CustomerId = userId,
+                ObjectId = null,
+                Data = string.Format("A notification is received from DocuSign. UserId: {0}, EnvelopeId: {1}.",
+                        userId,
+                        envelopeId)
+            };
+            SaveFact(curAction);
+            Logger.GetLogger().Info(curAction.Data);
+        }
+
+        /// <summary>
+        /// The method logs the fact of processing of a notification from DocuSign
+        /// by an individual Process.
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
+        public void AlertProcessProcessing(string userId, string envelopeId, int processId)
+        {
+            FactDO curAction = new FactDO
+            {
+                PrimaryCategory = null,
+                SecondaryCategory = null,
+                Activity = "Processed",
+                CustomerId = userId,
+                ObjectId = null,
+                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ProcessDO id: {2}.",
+                        userId,
+                        envelopeId,
+                        processId)
+            };
+            SaveFact(curAction);
+            Logger.GetLogger().Info(curAction.Data);
         }
 
         private void SaveFact(FactDO curAction)
@@ -331,20 +377,19 @@ namespace Core.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curFactDO = new FactDO
-                    {
-                        PrimaryCategory = "User",
-                        SecondaryCategory = "",
-                        Activity = "Registered",
-                        CustomerId = curUser.Id,
-                        ObjectId = null,
-                        Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
-                        //Data = "User registrated with " + curUser.EmailAddress.Address
-                    };
+                {
+                    PrimaryCategory = "User",
+                    SecondaryCategory = "",
+                    Activity = "Registered",
+                    CustomerId = curUser.Id,
+                    ObjectId = null,
+                    Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
+                    //Data = "User registrated with " + curUser.EmailAddress.Address
+                };
                 Logger.GetLogger().Info(curFactDO.Data);
                 uow.FactRepository.Add(curFactDO);
                 uow.SaveChanges();
             }
-
         }
 
         //Do we need/use both this and the immediately preceding event? 
@@ -360,19 +405,19 @@ namespace Core.Managers
                     throw new EntityNotFoundException<UserDO>(bookerId);
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Ownership",
-                        Activity = "Change",
-                        CustomerId = bookingRequestDO.Customer.Id,
-                        ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                        BookerId = bookerId,
-                        Status = status,
-                        Data = string.Format(
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Change",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
+                    BookerId = bookerId,
+                    Status = status,
+                    Data = string.Format(
                             "BookingRequest ID :{0}, Booker EmailAddress: {1}",
                             bookingRequestDO.Id,
                             bookerDO.EmailAddress.Address)
-                    };
+                };
 
                 //AddFact(uow, curAction);
                 uow.SaveChanges();
