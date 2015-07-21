@@ -7,7 +7,7 @@ namespace DockyardTest.Fixtures
 {
     partial class FixtureData
     {
-        private static string _xmlPayLoadLocation = "Content\\DocusignXmlPayload.xml";
+        private static string _xmlPayLoadLocation = "DockyardTest\\Content\\DocusignXmlPayload.xml";
 
         public static IList<ProcessDO> GetProcesses()
         {
