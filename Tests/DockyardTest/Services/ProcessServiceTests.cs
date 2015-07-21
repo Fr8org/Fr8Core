@@ -23,19 +23,23 @@ namespace DockyardTest.Services
     {
         private IProcess _processService;
         private string _testUserId = "testuser";
+        private string _xmlPayloadFullPath;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
             _processService = ObjectFactory.GetInstance<IProcess>();
+            _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
+            if (_xmlPayloadFullPath == string.Empty)
+                throw new Exception("XML payload file for testing DocuSign notification is not found.");
+
         }
 
         [Test]
         public void ProcessService_CanExtractEnvelopeData()
         {
-            string xmlPayLoadLocation = "../../Content/DocusignXmlPayload.xml";
-            string envelopeId = _processService.GetEnvelopeIdFromXml(File.ReadAllText(xmlPayLoadLocation));
+            string envelopeId = _processService.GetEnvelopeIdFromXml(File.ReadAllText(_xmlPayloadFullPath));
             Assert.AreEqual("0aa561b8-b4d9-47e0-a615-2367971f876b", envelopeId);
         }
 
@@ -43,20 +47,14 @@ namespace DockyardTest.Services
         [ExpectedException(typeof(ArgumentException))]
         public void ProcessService_ThrowsIfXmlInvalid()
         {
-            string xmlPayloadLocation = "../../Content/DocusignXmlPayload_invalid.xml";
-            _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(xmlPayloadLocation));
+            _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(_xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
         }
 
         [Test]
         public void ProcessService_NotificationReceivedAlertCreated()
         {
-            //Arrange 
-            string xmlPayloadLocation = "../../Content/DocusignXmlPayload.xml";
+            _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
 
-            //Act
-            _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(xmlPayloadLocation));
-
-            //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();
@@ -96,10 +94,9 @@ namespace DockyardTest.Services
                 }
                 uow.SaveChanges();
             }
-            string xmlPayloadLocation = "../../Content/DocusignXmlPayload.xml";
 
             //Act
-            _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(xmlPayloadLocation));
+            _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -1,6 +1,5 @@
 ﻿using System;
 using NUnit.Framework;
-using Microsoft.Owin.Hosting;
 using System.Net.Http;
 using System.IO;
 using System.Text;
@@ -9,37 +8,24 @@ using Web.Controllers;
 using StructureMap;
 using Moq;
 using Core.Interfaces;
+using DockyardTest.Fixtures;
 
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    public class NotificationControllerTests : BaseTest
+    public class NotificationControllerTests : BaseTest 
     {
+        private string _xmlPayloadFullPath;
 
-        string _baseAddress = "http://localhost:9124";
         string _testUserId = "testuser";
 
         [SetUp]
         public override void SetUp()
         {
-            WebApp.Start<WebServer>(url: _baseAddress);
+            _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
+            if (_xmlPayloadFullPath == string.Empty)
+                throw new Exception("XML payload file for testing DocuSign notification is not found.");
             base.SetUp();
-        }
-
-        [Test]
-        [Category("Api")]
-        public void NotificationController_HandleDocusignNotification_MustReturnHttpStatus200()
-        {
-            string xmlPayLoadLocation = "../../Content/DocusignXmlPayload.xml";
-            string address = _baseAddress + "/Notification?userID=" + _testUserId;
-
-            HttpResponseMessage response = MakeRequest(
-                address, 
-                File.ReadAllText(xmlPayLoadLocation), 
-                "text/xml", 
-                HttpMethod.Post);
-            string text = response.Content.ReadAsStringAsync().Result;
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Test]
@@ -50,9 +36,8 @@ namespace DockyardTest.Controllers
             var moqProcess = new Mock<IProcess>();
             moqProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
             NotificationController notificationController = new NotificationController(moqProcess.Object);
-            string xmlPayloadLocation = "../../Content/DocusignXmlPayload.xml";
-            string xmlPayload = File.ReadAllText(xmlPayloadLocation);
-            var request = new HttpRequestMessage(HttpMethod.Post, _baseAddress);
+            string xmlPayload = File.ReadAllText(_xmlPayloadFullPath);
+            var request = new HttpRequestMessage(HttpMethod.Post, "localhost");
             request.Content = new StringContent(xmlPayload, Encoding.UTF8, "text/xml");
             notificationController.Request = request;
 
