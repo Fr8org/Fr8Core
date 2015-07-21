@@ -9,7 +9,7 @@ using Web.App_Start;
 using NUnit.Framework;
 using StructureMap;
 
-namespace DockyardTest
+namespace TestCommons
 {
     [TestFixture]
     public class BaseTest

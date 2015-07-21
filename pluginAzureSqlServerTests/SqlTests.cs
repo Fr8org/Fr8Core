@@ -5,11 +5,11 @@ using System.Net;
 using System.Web.Http.SelfHost;
 using NUnit.Framework;
 using StructureMap;
-using pluginAzureSqlServer;
-using Data.Interfaces;
-using DockyardTest;
-using DockyardTest.Fixtures;
 using Core.ExternalServices.REST;
+using Data.Interfaces;
+using TestCommons;
+using pluginAzureSqlServer;
+using pluginAzureSqlServerTests.Fixtures;
 
 namespace pluginAzureSqlServerTests
 {
@@ -30,7 +30,7 @@ namespace pluginAzureSqlServerTests
         {
             base.SetUp();
 
-            _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
+            _fixtureData = new FixtureData();
             _helper = new TestDbHelper();
 
             // Check if table exists, then drop the test table.

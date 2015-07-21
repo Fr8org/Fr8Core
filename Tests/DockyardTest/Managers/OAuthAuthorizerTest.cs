@@ -14,6 +14,7 @@ using DockyardTest.Fixtures;
 using Web.Controllers;
 using NUnit.Framework;
 using StructureMap;
+using TestCommons;
 using Utilities;
 
 namespace DockyardTest.Managers

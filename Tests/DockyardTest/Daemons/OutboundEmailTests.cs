@@ -14,6 +14,7 @@ using DockyardTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using TestCommons;
 
 namespace DockyardTest.Daemons
 {

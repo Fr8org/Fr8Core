@@ -5,6 +5,7 @@ using Data.Interfaces;
 using Core.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using TestCommons;
 using Utilities;
 
 namespace DockyardTest.Entities

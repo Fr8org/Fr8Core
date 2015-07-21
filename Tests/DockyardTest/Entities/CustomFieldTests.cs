@@ -8,6 +8,7 @@ using Data.States;
 using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using TestCommons;
 
 namespace DockyardTest.Entities
 {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DockyardTest.Fixtures
+namespace pluginAzureSqlServerTests.Fixtures
 {
     partial class FixtureData
     {

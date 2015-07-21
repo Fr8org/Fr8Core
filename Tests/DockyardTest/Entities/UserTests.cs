@@ -7,6 +7,7 @@ using Core.StructureMap;
 using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using TestCommons;
 
 namespace DockyardTest.Entities
 {

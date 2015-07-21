@@ -5,6 +5,7 @@ using Core.Managers;
 using Core.StructureMap;
 using DockyardTest.Fixtures;
 using NUnit.Framework;
+using TestCommons;
 using StructureMap;
 
 namespace DockyardTest.Models
