@@ -13,7 +13,10 @@ using DockyardTest.Fixtures;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    public class NotificationControllerTests : BaseTest 
+    [Ignore]
+    [Category("Api")]
+
+    public class NotificationControllerTests : BaseTest
     {
         private string _xmlPayloadFullPath;
 
@@ -28,8 +31,6 @@ namespace DockyardTest.Controllers
             base.SetUp();
         }
 
-        [Ignore]
-        [Category("Api")]
         public void NotificationController_CanHandleNotification()
         {
             //Arrange 

@@ -19,6 +19,7 @@ namespace DockyardTest.Services
 {
     [TestFixture]
     [Category("ProcessService")]
+    [Ignore]
     public class ProcessServiceTests : BaseTest
     {
         private IProcess _processService;
@@ -37,7 +38,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [Ignore]
         public void ProcessService_CanExtractEnvelopeData()
         {
             string envelopeId = _processService.GetEnvelopeIdFromXml(File.ReadAllText(_xmlPayloadFullPath));
@@ -45,7 +45,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [Ignore]
         [ExpectedException(typeof(ArgumentException))]
         public void ProcessService_ThrowsIfXmlInvalid()
         {
@@ -53,7 +52,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [Ignore]
         public void ProcessService_NotificationReceivedAlertCreated()
         {
             _processService.HandleDocusignNotification(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
@@ -86,7 +84,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [Ignore]
         public void ProcessService_CanCreateProcessProcessingAlert()
         {
             //Arrange 
