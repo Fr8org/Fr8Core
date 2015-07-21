@@ -24,7 +24,7 @@ namespace DockyardTest.Controllers
         {
             _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
             if (_xmlPayloadFullPath == string.Empty)
-                throw new Exception("XML payload file for testing DocuSign notification is not found.");
+                throw new Exception("XML payload file for testing DocuSign notification is not found. Env path: " + Environment.CurrentDirectory);
             base.SetUp();
         }
 
