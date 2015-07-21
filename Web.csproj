@@ -1608,6 +1608,8 @@
     <Content Include="Views\Calendar\Edit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Scripts\version.json" />
+    <Content Include="Views\Action\ShowAllActionLists.cshtml" />
+    <Content Include="Views\Action\ShowAllActions.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\BookingRequest\ShowConversation.cshtml" />
