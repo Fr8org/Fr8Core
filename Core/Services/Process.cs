@@ -69,7 +69,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.ProcessRepository.GetQuery().Where
-                    (r => r.ProcessState == ProcessState.Unstarted
+                    (r => r.ProcessState == ProcessState.Processing
                         & r.UserId == userId).ToList();
             }
         }

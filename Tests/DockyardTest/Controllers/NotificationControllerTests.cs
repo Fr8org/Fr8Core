@@ -28,7 +28,7 @@ namespace DockyardTest.Controllers
             base.SetUp();
         }
 
-        [Test]
+        [Ignore]
         [Category("Api")]
         public void NotificationController_CanHandleNotification()
         {
@@ -46,22 +46,6 @@ namespace DockyardTest.Controllers
 
             //Assert
             moqProcess.Verify(e => e.HandleDocusignNotification(_testUserId, xmlPayload));
-        }
-
-
-        private HttpResponseMessage MakeRequest(string url, string data, string mimeType, HttpMethod method)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                using (HttpRequestMessage request = new HttpRequestMessage(method, url))
-                {
-                    if (data != null)
-                    {
-                        request.Content = new StringContent(data, Encoding.UTF8, mimeType);
-                    }
-                    return client.SendAsync(request).Result;
-                }
-            }
         }
     }
 }

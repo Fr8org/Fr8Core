@@ -18,7 +18,7 @@ namespace DockyardTest.Fixtures
                 Name = "Process 1",
                 UserId = "testuser",
                 Description = "Process 1 Description",
-                ProcessState = ProcessState.Unstarted
+                ProcessState = ProcessState.Processing
             });
 
             processList.Add(new ProcessDO()
