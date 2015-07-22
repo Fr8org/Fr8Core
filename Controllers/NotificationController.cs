@@ -65,5 +65,10 @@ namespace Web.Controllers
             }
             return Ok();               
         }
+
+        public void Get()
+        {
+            throw new Exception();
+        }
     }
 }

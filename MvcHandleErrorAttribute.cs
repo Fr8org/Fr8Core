@@ -9,7 +9,7 @@ using StructureMap;
 
 namespace Web
 {
-    public class KwasantHandleErrorAttribute : HandleErrorAttribute
+    public class MvcHandleErrorAttribute : HandleErrorAttribute
     {
         public override void OnException(ExceptionContext filterContext)
         {

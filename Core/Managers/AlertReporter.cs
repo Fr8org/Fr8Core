@@ -28,18 +28,18 @@ namespace Core.Managers
             AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
             AlertManager.AlertEntityStateChanged += EntityStateChanged;
             AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived += ReportEmailReceived;
-            AlertManager.AlertEventBooked += ReportEventBooked;
-            AlertManager.AlertEmailSent += ReportEmailSent;
-            AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
-            AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
+            AlertManager.AlertEmailReceived += EmailReceived;
+            AlertManager.AlertEventBooked += EventBooked;
+            AlertManager.AlertEmailSent += EmailSent;
+            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
+            AlertManager.AlertExplicitCustomerCreated += CustomerCreated;
 
-            AlertManager.AlertUserRegistration += ReportUserRegistered;
+            AlertManager.AlertUserRegistration += UserRegistered;
 
-            AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
-            AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
-            AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
-            AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
+            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChanged;
+            AlertManager.AlertBookingRequestReserved += BookingRequestReserved;
+            AlertManager.AlertBookingRequestReservationTimeout += BookingRequestReservationTimeOut;
+            AlertManager.AlertStaleBookingRequestsDetected += StaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
 
@@ -53,18 +53,18 @@ namespace Core.Managers
             AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
             AlertManager.AlertEntityStateChanged -= EntityStateChanged;
             AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived -= ReportEmailReceived;
-            AlertManager.AlertEventBooked -= ReportEventBooked;
-            AlertManager.AlertEmailSent -= ReportEmailSent;
-            AlertManager.AlertBookingRequestCreated -= ReportBookingRequestCreated;
-            AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
+            AlertManager.AlertEmailReceived -= EmailReceived;
+            AlertManager.AlertEventBooked -= EventBooked;
+            AlertManager.AlertEmailSent -= EmailSent;
+            AlertManager.AlertBookingRequestCreated -= BookingRequestCreated;
+            AlertManager.AlertExplicitCustomerCreated -= CustomerCreated;
 
-            AlertManager.AlertUserRegistration -= ReportUserRegistered;
+            AlertManager.AlertUserRegistration -= UserRegistered;
 
-            AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
-            AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
-            AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
-            AlertManager.AlertStaleBookingRequestsDetected -= ReportStaleBookingRequestsDetected;
+            AlertManager.AlertBookingRequestOwnershipChange -= BookingRequestOwnershipChanged;
+            AlertManager.AlertBookingRequestReserved -= BookingRequestReserved;
+            AlertManager.AlertBookingRequestReservationTimeout -= BookingRequestReservationTimeOut;
+            AlertManager.AlertStaleBookingRequestsDetected -= StaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
 
@@ -73,14 +73,14 @@ namespace Core.Managers
             AlertManager.AlertTokenRevoked -= OnAlertTokenRevoked;
         }
 
-        private void ReportStaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
+        private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
         {
             string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
             var tw = ObjectFactory.GetInstance<ISMSPackager>();
             tw.SendSMS(toNumber, oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
         }
 
-        private void ReportBookingRequestReserved(int bookingRequestId, string bookerId)
+        private void BookingRequestReserved(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -127,7 +127,7 @@ namespace Core.Managers
             Logger.GetLogger().Info(string.Format("Reserved. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         }
 
-        private void ReportBookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
+        private void BookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
         {
 
             Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
@@ -229,7 +229,7 @@ namespace Core.Managers
             }
         }
 
-        private void ReportCustomerCreated(string curUserId)
+        private void CustomerCreated(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -247,7 +247,7 @@ namespace Core.Managers
             }
         }
 
-        public void ReportEmailReceived(int emailId, string customerId)
+        public void EmailReceived(int emailId, string customerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -269,7 +269,7 @@ namespace Core.Managers
             }
         }
 
-        public void ReportEventBooked(int eventId, string customerId)
+        public void EventBooked(int eventId, string customerId)
         {
             FactDO curAction = new FactDO
             {
@@ -281,7 +281,7 @@ namespace Core.Managers
             };
             SaveFact(curAction);
         }
-        public void ReportEmailSent(int emailId, string customerId)
+        public void EmailSent(int emailId, string customerId)
         {
             FactDO curAction = new FactDO
             {
@@ -294,7 +294,7 @@ namespace Core.Managers
             SaveFact(curAction);
         }
 
-        public void ReportBookingRequestCreated(int bookingRequestId)
+        public void BookingRequestCreated(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -345,7 +345,7 @@ namespace Core.Managers
         /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
         public void ImproperDocusignNotificationReceived(string message)
         {
-            var incidentDO = new IncidentDO
+            var fact = new IncidentDO
             {
                 PrimaryCategory = "Notification",
                 Activity = "Received",
@@ -354,11 +354,40 @@ namespace Core.Managers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.IncidentRepository.Add(incidentDO);
+                uow.IncidentRepository.Add(fact);
                 uow.SaveChanges();
             }
+            LogFactInformation(fact, "ImproperDocusignNotificationReceived", EventType.Warning);
+        }
 
-            Logger.GetLogger().Info(incidentDO.Data);
+        /// <summary>
+        /// The method records information about unhandled exceptions. 
+        /// </summary>
+        /// <param name="message"></param>
+        public void UnhandledErrorCaught(string message)
+        {
+            var incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Error",
+                SecondaryCategory = "ApplicationException",
+                Activity = "Received",
+                Data = message
+            };
+
+            Logger.GetLogger().Error(message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+
+                //The error may be connected to the fact that DB is unavailable, 
+                //we need to be prepared to that. 
+                try
+                {
+                    uow.SaveChanges();
+                }
+                catch { }
+            }
         }
 
         /// <summary>
@@ -394,7 +423,7 @@ namespace Core.Managers
             }
         }
 
-        public void ReportUserRegistered(UserDO curUser)
+        public void UserRegistered(UserDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -415,7 +444,7 @@ namespace Core.Managers
         }
 
         //Do we need/use both this and the immediately preceding event? 
-        public void ReportBookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
+        public void BookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -468,7 +497,8 @@ namespace Core.Managers
         /// </summary>
         /// <param name="fact">An instance of FactDO class.</param>
         /// <param name="eventName">Name of the event.</param>
-        private void LogFactInformation(FactDO fact, string eventName)
+        /// <param name="eventType">Event type.</param>
+        private void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
         {
             string message = string.Format(
                 "Event {0} generated with CustomerId = {1}, ObjectId = {2} and Data = {3}.",
@@ -476,7 +506,18 @@ namespace Core.Managers
                 fact.CustomerId,
                 fact.ObjectId,
                 fact.Data);
-                Logger.GetLogger().Info(message);
+
+            switch (eventType) {
+                case EventType.Info:
+                    Logger.GetLogger().Info(message);
+                    break;
+                case EventType.Error:
+                    Logger.GetLogger().Error(message);
+                    break;
+                case EventType.Warning:
+                    Logger.GetLogger().Warn(message);
+                    break;
+            }
         }
 
         private void OnAlertTokenRequestInitiated(string userId)
@@ -492,6 +533,13 @@ namespace Core.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
+        }
+
+        private enum EventType
+        {
+            Info,
+            Error,
+            Warning
         }
     }
 }
