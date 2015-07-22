@@ -19,10 +19,11 @@ namespace DockyardTest.Services
 {
     [TestFixture]
     [Category("ProcessService")]
-    [Ignore]
     public class ProcessServiceTests : BaseTest
     {
-        private IProcess _processService;
+        private IProcessService _processService;
+        private User _userService;
+        private IDocusignXml _docusignXml;
         private string _testUserId = "testuser";
         private string _xmlPayloadFullPath;
 
@@ -30,17 +31,19 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
-            _processService = ObjectFactory.GetInstance<IProcess>();
+            _processService = ObjectFactory.GetInstance<IProcessService>();
+            _userService = ObjectFactory.GetInstance<User>();
+            _docusignXml = ObjectFactory.GetInstance<IDocusignXml>(); 
+
             _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
             if (_xmlPayloadFullPath == string.Empty)
                 throw new Exception("XML payload file for testing DocuSign notification is not found.");
-
         }
 
         [Test]
         public void ProcessService_CanExtractEnvelopeData()
         {
-            string envelopeId = _processService.GetEnvelopeIdFromXml(File.ReadAllText(_xmlPayloadFullPath));
+            string envelopeId = _docusignXml.GetEnvelopeIdFromXml(File.ReadAllText(_xmlPayloadFullPath));
             Assert.AreEqual("0aa561b8-b4d9-47e0-a615-2367971f876b", envelopeId);
         }
 
@@ -77,7 +80,7 @@ namespace DockyardTest.Services
             }
 
             //Act
-            var processList = _processService.GetProcessListForUser(_testUserId);
+            var processList = _userService.GetProcessList(_testUserId);
 
             //Assert
             Assert.AreEqual(2, processList.Count());

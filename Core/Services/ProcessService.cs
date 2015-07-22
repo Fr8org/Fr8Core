@@ -14,13 +14,17 @@ using Utilities.Logging;
 
 namespace Core.Services
 {
-    public class Process : IProcess
+    public class ProcessService : IProcessService
     {
         AlertReporter _alertReporter;
+        User _userService;
+        IDocusignXml _docusignXml;
 
-        public Process(AlertReporter alertReporter)
+        public ProcessService(AlertReporter alertReporter, User userService, IDocusignXml docusignXml)
         {
             _alertReporter = alertReporter;
+            _userService = userService;
+            _docusignXml = docusignXml;
         }
 
         /// <summary>
@@ -40,37 +44,21 @@ namespace Core.Services
 
             try
             {
-                envelopeId = GetEnvelopeIdFromXml(xmlPayload);
+                envelopeId = _docusignXml.GetEnvelopeIdFromXml(xmlPayload);
             }
             catch (ArgumentException)
             {
                 string message = "Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}";
-                Logger.GetLogger().WarnFormat(
-                    message,
-                    userId,
-                    xmlPayload);
+                _alertReporter.ImproperDocusignNotificationReceived(message);
                 throw new ArgumentException();
             }
 
-            _alertReporter.ReportDocusignNotificationReceived(userId, xmlPayload);
+            _alertReporter.DocusignNotificationReceived(userId, xmlPayload);
 
-            IEnumerable<ProcessDO> processList = GetProcessListForUser(userId);
+            IEnumerable<ProcessDO> processList = _userService.GetProcessList(userId);
             foreach (ProcessDO process in processList)
             {
                 HandleIncomingNotification(userId, envelopeId, process);
-            }
-        }
-
-        /// <summary>
-        /// Returns the list of all processes to run for the specified user.
-        /// </summary>
-        public IEnumerable<ProcessDO> GetProcessListForUser(string userId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return uow.ProcessRepository.GetQuery().Where
-                    (r => r.ProcessState == ProcessState.Processing
-                        & r.UserId == userId).ToList();
             }
         }
 
@@ -86,29 +74,5 @@ namespace Core.Services
             //TODO: all notification processing logic.
         }
 
-        /// <summary>
-        /// Extracts envelopeId from DocuSign XML message.
-        /// </summary>
-        /// <returns>envelopeId.</returns>
-        public string GetEnvelopeIdFromXml(string xmlPayload)
-        {
-            if (string.IsNullOrEmpty(xmlPayload))
-                throw new ArgumentNullException("xmlPayload");
-
-            string xPath = @"/a:DocuSignEnvelopeInformation/a:EnvelopeStatus/a:EnvelopeID[1]/text()";
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.LoadXml(xmlPayload);
-
-            //Handle default namespace in XML with XmlNamespaceManager. 
-            //Without this trick xPath will not find the needed element. 
-            XmlNamespaceManager nsManager = new XmlNamespaceManager(xmlDoc.NameTable);
-            nsManager.AddNamespace("a", "http://www.docusign.net/API/3.0");
-            var node = xmlDoc.SelectSingleNode(xPath, nsManager);
-
-            if (node != null)
-                return node.Value;
-            else
-                throw new ArgumentException("EnvelopeId is not found in XML payload.");
-        }
     }
 }

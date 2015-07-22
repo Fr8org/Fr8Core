@@ -7,6 +7,7 @@ using Data.States;
 using StructureMap;
 using Data.Infrastructure;
 using Utilities;
+using System.Collections.Generic;
 
 namespace Core.Services
 {
@@ -149,6 +150,19 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.UserRepository.GetOrCreateUser(emailAddress).Id;
+            }
+        }
+
+        /// <summary>
+        /// Returns the list of all processes to run for the specified user.
+        /// </summary>
+        public IEnumerable<ProcessDO> GetProcessList(string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ProcessRepository.GetQuery().Where
+                    (r => r.ProcessState == ProcessState.Processing
+                        & r.UserId == userId).ToList();
             }
         }
     }

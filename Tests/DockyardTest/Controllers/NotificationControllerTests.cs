@@ -13,7 +13,6 @@ using DockyardTest.Fixtures;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    [Ignore]
     [Category("Api")]
 
     public class NotificationControllerTests : BaseTest
@@ -31,12 +30,14 @@ namespace DockyardTest.Controllers
             base.SetUp();
         }
 
+        [Test]
         public void NotificationController_CanHandleNotification()
         {
             //Arrange 
-            var moqProcess = new Mock<IProcess>();
-            moqProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
-            NotificationController notificationController = new NotificationController(moqProcess.Object);
+            var mockProcess = new Mock<IProcessService>();
+            mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
+
+            NotificationController notificationController =new NotificationController(mockProcess.Object);
             string xmlPayload = File.ReadAllText(_xmlPayloadFullPath);
             var request = new HttpRequestMessage(HttpMethod.Post, "localhost");
             request.Content = new StringContent(xmlPayload, Encoding.UTF8, "text/xml");
@@ -46,7 +47,7 @@ namespace DockyardTest.Controllers
             notificationController.HandleDocusignNotification(_testUserId).Wait();
 
             //Assert
-            moqProcess.Verify(e => e.HandleDocusignNotification(_testUserId, xmlPayload));
+            mockProcess.Verify(e => e.HandleDocusignNotification(_testUserId, xmlPayload));
         }
     }
 }

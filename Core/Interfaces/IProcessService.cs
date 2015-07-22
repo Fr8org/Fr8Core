@@ -7,10 +7,8 @@ using Data.Entities;
 
 namespace Core.Interfaces
 {
-    public interface IProcess
+    public interface IProcessService
     {
-        string GetEnvelopeIdFromXml(string xmlPayload);
-        IEnumerable<ProcessDO> GetProcessListForUser(string userId);
         void HandleDocusignNotification(string userId, string xmlPayload);
     }
 }

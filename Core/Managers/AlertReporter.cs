@@ -322,21 +322,43 @@ namespace Core.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void ReportDocusignNotificationReceived(string userId, string envelopeId)
+        public void DocusignNotificationReceived(string userId, string envelopeId)
         {
-            FactDO curAction = new FactDO
+            FactDO fact = new FactDO
             {
-                PrimaryCategory = null,
+                PrimaryCategory = "Notification",
                 SecondaryCategory = null,
                 Activity = "Received",
                 CustomerId = userId,
                 ObjectId = null,
-                Data = string.Format("A notification is received from DocuSign. UserId: {0}, EnvelopeId: {1}.",
-                        userId,
+                Data = string.Format("EnvelopeId: {0}.",
                         envelopeId)
             };
-            SaveFact(curAction);
-            Logger.GetLogger().Info(curAction.Data);
+            LogFactInformation(fact, "DocusignNotificationReceived");
+            SaveFact(fact);
+        }
+
+        /// <summary>
+        /// The method logs the fact of receiving a notification from DocuSign.      
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
+        public void ImproperDocusignNotificationReceived(string message)
+        {
+            var incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Notification",
+                Activity = "Received",
+                Data = message
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+
+            Logger.GetLogger().Info(incidentDO.Data);
         }
 
         /// <summary>
@@ -347,9 +369,9 @@ namespace Core.Managers
         /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
         public void AlertProcessProcessing(string userId, string envelopeId, int processId)
         {
-            FactDO curAction = new FactDO
+            FactDO fact = new FactDO
             {
-                PrimaryCategory = null,
+                PrimaryCategory = "Notification",
                 SecondaryCategory = null,
                 Activity = "Processed",
                 CustomerId = userId,
@@ -359,8 +381,8 @@ namespace Core.Managers
                         envelopeId,
                         processId)
             };
-            SaveFact(curAction);
-            Logger.GetLogger().Info(curAction.Data);
+            LogFactInformation(fact, "ProcessProcessing");
+            SaveFact(fact);
         }
 
         private void SaveFact(FactDO curAction)
@@ -439,6 +461,22 @@ namespace Core.Managers
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
+        }
+
+        /// <summary>
+        /// Logs fact information using the standard log mechanisms.
+        /// </summary>
+        /// <param name="fact">An instance of FactDO class.</param>
+        /// <param name="eventName">Name of the event.</param>
+        private void LogFactInformation(FactDO fact, string eventName)
+        {
+            string message = string.Format(
+                "Event {0} generated with CustomerId = {1}, ObjectId = {2} and Data = {3}.",
+                eventName,
+                fact.CustomerId,
+                fact.ObjectId,
+                fact.Data);
+                Logger.GetLogger().Info(message);
         }
 
         private void OnAlertTokenRequestInitiated(string userId)

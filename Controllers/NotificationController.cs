@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Core.Interfaces;
+using Core.Managers;
 using Core.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -14,26 +15,25 @@ namespace Web.Controllers
 {
     public class NotificationController : ApiController
     {
-        IProcess _processService;
+        IProcessService _processService;
+        AlertReporter _alertReporter;
 
         public NotificationController()
         {
-            _processService = ObjectFactory.GetInstance<IProcess>();
+            _processService = ObjectFactory.GetInstance<IProcessService>();
+            _alertReporter = ObjectFactory.GetInstance<AlertReporter>();
         }
 
-        /// <summary>
-        /// This constructor is intended for unit testing since it allows injecting 
-        /// a dynamically mocked service.
-        /// </summary>
-        public NotificationController(IProcess processService)
+        public NotificationController(IProcessService processService)
         {
             _processService = processService;
+            _alertReporter = ObjectFactory.GetInstance<AlertReporter>();
         }
         /// <summary>
         /// Processes incoming DocuSign notifications.
         /// </summary>
         /// <returns>HTTP 200 if notification is successfully processed, 
-        /// HTTP 401 if request does not contain all expected data or malformed.</returns>
+        /// HTTP 400 if request does not contain all expected data or malformed.</returns>
         [HttpPost]
         public async Task<IHttpActionResult> HandleDocusignNotification([FromUri] string userId)
         {
@@ -41,8 +41,8 @@ namespace Web.Controllers
 
             if (string.IsNullOrEmpty(userId))
             {
-                string message = String.Format("Cannot userId in DocuSign notification.");
-                Logger.GetLogger().Warn(message);
+                string message = "Cannot find userId in DocuSign notification. XML payload";
+                _alertReporter.ImproperDocusignNotificationReceived(message);
                 return BadRequest(message);
             }
 
@@ -50,7 +50,7 @@ namespace Web.Controllers
             {
                 string message = String.Format("Cannot find XML payload in DocuSign notification: UserId {0}.",
                     userId);
-                Logger.GetLogger().Warn(message);
+                _alertReporter.ImproperDocusignNotificationReceived(message);
                 return BadRequest(message);
             }
 
@@ -58,7 +58,7 @@ namespace Web.Controllers
             {
                 _processService.HandleDocusignNotification(userId, xmlPayload);
             }
-            catch (InvalidOperationException)
+            catch (ArgumentException)
             {
                 //The event is already logged.
                 return BadRequest("Cannot find envelopeId in XML payload.");
