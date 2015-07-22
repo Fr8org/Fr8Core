@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts
+{
+    <script type="text/javascript" src="@Url.Content("~/Scripts/fabric.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
+}
+
+<div id="pbArea" style="width: 800px; height: 600px;">
+</div>
+
+<div id="pbLog" style="z-index: 1000; position: fixed; right: 30px; top: 30px; width: 400px; height: 400px; background-color: white; border: 5px solid #cacaca; padding: 5px; overflow: auto; box-shadow: 1px 1px 3px 0px #525252;">
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var _log = function (text) {
+            var date = new Date();
+            $('#pbLog').append('<div>[' + date.toLocaleDateString() + ', ' + date.toLocaleTimeString() + '] ' + text + '</div>')
+
+            var scrollHeight = $('#pbLog')[0].scrollHeight;
+            $('#pbLog').scrollTop(scrollHeight);
+        };
+
+        _log('ProcessBuilder log panel');
+
+
+        var pb = Core.create(ProcessBuilder.Widget, '#pbArea', 800, 600);
+
+        pb.on('startNode:click', function () {
+            _log('StartNode:click event.');
+        });
+
+        pb.on('addCriteriaNode:click', function () {
+            _log('addCriteriaNode:click event.');
+        });
+    });
+</script>

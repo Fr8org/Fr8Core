@@ -145,6 +145,7 @@ namespace Web.App_Start
             bundles.Add(new StyleBundle("~/bundles/css/select2").Include(
 			   "~/Content/css/additionalcss/select2/select2.css", new CssRewriteUrlTransform()
                ));
+
             //bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
             //   "~/Content/css/temp/temp.css", new CssRewriteUrlTransform()
             //   ));         
