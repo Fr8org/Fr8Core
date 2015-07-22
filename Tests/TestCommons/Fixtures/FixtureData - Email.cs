@@ -2,7 +2,7 @@
 using Data.Entities;
 using Data.States;
 
-namespace DockyardTest.Fixtures
+namespace TestCommons.Fixtures
 {
     partial class FixtureData
     {

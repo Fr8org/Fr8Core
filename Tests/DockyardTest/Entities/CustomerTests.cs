@@ -3,7 +3,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Core.Managers;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
+using TestCommons.Fixtures;
 using NUnit.Framework;
 using TestCommons;
 using StructureMap;

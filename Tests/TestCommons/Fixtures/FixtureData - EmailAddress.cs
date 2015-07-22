@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
 
-namespace DockyardTest.Fixtures
+namespace TestCommons.Fixtures
 {
     public partial class FixtureData
     {

@@ -5,11 +5,11 @@ using Data.Interfaces;
 using Core.Managers;
 using Core.Services;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using TestCommons;
+using TestCommons.Fixtures;
 using Utilities;
 
 namespace DockyardTest.Managers

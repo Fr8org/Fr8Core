@@ -2,14 +2,14 @@
 using System.Configuration;
 using System.IO;
 using System.Net;
-using System.Web.Http.SelfHost;
 using NUnit.Framework;
 using StructureMap;
 using Core.ExternalServices.REST;
 using Data.Interfaces;
 using TestCommons;
+using TestCommons.Fixtures;
 using pluginAzureSqlServer;
-using pluginAzureSqlServerTests.Fixtures;
+
 
 namespace pluginAzureSqlServerTests
 {
@@ -22,7 +22,7 @@ namespace pluginAzureSqlServerTests
 
         private FixtureData _fixtureData;
         private TestDbHelper _helper;
-        private HttpSelfHostServer _server;
+        private IDisposable _server;
 
 
         [SetUp]
@@ -30,7 +30,7 @@ namespace pluginAzureSqlServerTests
         {
             base.SetUp();
 
-            _fixtureData = new FixtureData();
+            _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
             _helper = new TestDbHelper();
 
             // Check if table exists, then drop the test table.
@@ -54,7 +54,6 @@ namespace pluginAzureSqlServerTests
 
             var url = ConfigurationManager.AppSettings[TestServerUrlKey];
             _server = SelfHostFactory.CreateServer(url);
-            _server.OpenAsync().Wait();
         }
 
         [TearDown]
@@ -76,7 +75,6 @@ namespace pluginAzureSqlServerTests
                 }
             }
 
-            _server.CloseAsync().Wait();
             _server.Dispose();
         }
 

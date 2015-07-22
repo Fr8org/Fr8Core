@@ -1,24 +1,33 @@
 ﻿using System;
 using System.Web.Http;
-using System.Web.Http.SelfHost;
+using Microsoft.Owin.Hosting;
+using Owin;
 
 namespace pluginAzureSqlServer
 {
     public class SelfHostFactory
     {
-        public static HttpSelfHostServer CreateServer(string url)
+        public class SelfHostStartup
         {
-            var config = new HttpSelfHostConfiguration(url);
+            public void Configuration(IAppBuilder app)
+            {
+                var config = new HttpConfiguration();
 
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+                // Web API routes
+                config.MapHttpAttributeRoutes();
 
-            config.Routes.MapHttpRoute(
-                "API Default", "api/{controller}/{id}",
-                new { id = RouteParameter.Optional }
-                );
+                config.Routes.MapHttpRoute(
+                    "API Default", "api/{controller}/{id}",
+                    new { id = RouteParameter.Optional }
+                    );
 
-            return new HttpSelfHostServer(config);
+                app.UseWebApi(config);
+            }
+        }
+
+        public static IDisposable CreateServer(string url)
+        {
+            return WebApp.Start<SelfHostFactory.SelfHostStartup>(url: url);
         }
     }
 }

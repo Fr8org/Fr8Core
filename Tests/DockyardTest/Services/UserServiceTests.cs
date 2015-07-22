@@ -7,9 +7,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Core.Services;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using TestCommons.Fixtures;
 
 namespace DockyardTest.Services
 {

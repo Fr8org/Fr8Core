@@ -142,10 +142,6 @@
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
-    <Compile Include="Fixtures\FixtureData - Email.cs" />
-    <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
-    <Compile Include="Fixtures\FixtureData - Role.cs" />
-    <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
