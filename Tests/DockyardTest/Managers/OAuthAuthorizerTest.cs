@@ -13,8 +13,8 @@ using Core.Managers.APIManagers.Authorizers;
 using Web.Controllers;
 using NUnit.Framework;
 using StructureMap;
-using TestCommons;
-using TestCommons.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 using Utilities;
 
 namespace DockyardTest.Managers

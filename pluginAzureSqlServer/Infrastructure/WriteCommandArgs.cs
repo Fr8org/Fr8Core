@@ -4,22 +4,22 @@ namespace pluginAzureSqlServer.Infrastructure
 {
     public class WriteCommandArgs
     {
-        public WriteCommandArgs(string provider,
+        public WriteCommandArgs(string providerName,
             string connectionString, IEnumerable<Table> tables)
         {
-            _provider = provider;
+            _providerName = providerName;
             _connectionString = connectionString;
             _tables = tables;
         }
 
-        public string Provider { get { return _provider; } }
+        public string ProviderName { get { return _providerName; } }
 
         public string ConnectionString { get { return _connectionString; } }
 
         public IEnumerable<Table> Tables { get { return _tables; } }
 
 
-        private readonly string _provider;
+        private readonly string _providerName;
         private readonly string _connectionString;
         private readonly IEnumerable<Table> _tables;
     }

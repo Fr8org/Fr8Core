@@ -4,22 +4,22 @@ namespace pluginAzureSqlServer.Infrastructure
 {
     public class Table
     {
-        public Table(string schema, string table, IEnumerable<Row> rows)
+        public Table(string schemaName, string tableName, IEnumerable<Row> rows)
         {
-            _schema = schema;
-            _table = table;
+            _schemaName = schemaName;
+            _tableName = tableName;
             _rows = rows;
         }
 
-        public string Schema { get { return _schema; } }
+        public string SchemaName { get { return _schemaName; } }
 
-        public string TableName { get { return _table; } }
+        public string TableName { get { return _tableName; } }
 
         public IEnumerable<Row> Rows { get { return _rows; } }
 
 
-        private readonly string _schema;
-        private readonly string _table;
+        private readonly string _schemaName;
+        private readonly string _tableName;
         private readonly IEnumerable<Row> _rows;
     }
 }

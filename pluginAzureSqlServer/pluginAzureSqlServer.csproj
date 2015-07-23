@@ -138,10 +138,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\AzureSqlPlugin.cs" />
+    <Compile Include="Services\DbService.cs" />
     <Compile Include="Infrastructure\FieldValue.cs" />
-    <Compile Include="Infrastructure\IAzureSqlPlugin.cs" />
+    <Compile Include="Services\IDbService.cs" />
     <Compile Include="Infrastructure\IDbProvider.cs" />
+    <Compile Include="Infrastructure\JsonExtractionHelper.cs" />
     <Compile Include="Infrastructure\Row.cs" />
     <Compile Include="Infrastructure\SqlClientDbProvider.cs" />
     <Compile Include="Infrastructure\Table.cs" />

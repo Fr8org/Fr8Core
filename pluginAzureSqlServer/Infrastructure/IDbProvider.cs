@@ -13,7 +13,7 @@ namespace pluginAzureSqlServer.Infrastructure
         /// <summary>
         /// Check if table exists.
         /// </summary>
-        bool TableExists(IDbTransaction tx, string schema, string table);
+        bool IsTableExisting(IDbTransaction tx, string schema, string table);
 
         /// <summary>
         /// Write data row to table.

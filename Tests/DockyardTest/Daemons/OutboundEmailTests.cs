@@ -13,8 +13,8 @@ using Core.StructureMap;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using TestCommons;
-using TestCommons.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Daemons
 {

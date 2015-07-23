@@ -6,8 +6,8 @@ using Data.Interfaces;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using TestCommons;
 using Utilities;
+using UtilitiesTesting;
 
 namespace DockyardTest.MockedDB
 {

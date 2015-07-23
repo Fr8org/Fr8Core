@@ -6,8 +6,8 @@ using NUnit.Framework;
 using StructureMap;
 using Core.ExternalServices.REST;
 using Data.Interfaces;
-using TestCommons;
-using TestCommons.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 using pluginAzureSqlServer;
 
 

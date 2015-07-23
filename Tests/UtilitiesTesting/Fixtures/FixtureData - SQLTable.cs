@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TestCommons.Fixtures
+namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {

@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
 
-namespace TestCommons.Fixtures
+namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {

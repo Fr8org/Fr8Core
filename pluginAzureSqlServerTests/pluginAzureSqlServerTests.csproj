@@ -136,9 +136,9 @@
       <Project>{D019B112-55A8-4661-AFF5-329F998D9E28}</Project>
       <Name>pluginAzureSqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tests\TestCommons\TestCommons.csproj">
+    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>
-      <Name>TestCommons</Name>
+      <Name>UtilitiesTesting</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

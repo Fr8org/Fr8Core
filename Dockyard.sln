@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginAzureSqlServer", "plu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginAzureSqlServerTests", "pluginAzureSqlServerTests\pluginAzureSqlServerTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCommons", "Tests\TestCommons\TestCommons.csproj", "{B2C4526E-DE57-495D-8599-D61ABC54C21F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\UtilitiesTesting\UtilitiesTesting.csproj", "{B2C4526E-DE57-495D-8599-D61ABC54C21F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

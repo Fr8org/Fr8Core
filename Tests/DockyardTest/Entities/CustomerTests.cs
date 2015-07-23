@@ -3,9 +3,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Core.Managers;
 using Core.StructureMap;
-using TestCommons.Fixtures;
 using NUnit.Framework;
-using TestCommons;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 using StructureMap;
 
 namespace DockyardTest.Models

@@ -13,7 +13,7 @@ namespace pluginAzureSqlServer.Infrastructure
             return new SqlConnection(connectionString);
         }
 
-        public bool TableExists(IDbTransaction tx, string schema, string table)
+        public bool IsTableExisting(IDbTransaction tx, string schema, string table)
         {
             using (var cmd = tx.Connection.CreateCommand())
             {

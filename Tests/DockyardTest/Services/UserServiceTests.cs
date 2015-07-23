@@ -9,7 +9,7 @@ using Core.Services;
 using Core.StructureMap;
 using NUnit.Framework;
 using StructureMap;
-using TestCommons.Fixtures;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {

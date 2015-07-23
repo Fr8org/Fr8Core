@@ -2,7 +2,7 @@
 using Data.Entities;
 using Data.States;
 
-namespace TestCommons.Fixtures
+namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
