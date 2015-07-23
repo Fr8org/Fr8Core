@@ -356,8 +356,6 @@
     <Content Include="angboard.html" />
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
-    <Content Include="app\app.module.js" />
-    <Content Include="app\main.js" />
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap-csp.css" />
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap-tpls.js" />
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap-tpls.min.js" />
