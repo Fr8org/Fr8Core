@@ -80,6 +80,9 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO { Address = e.EmailAddress }))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore())
                 .ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
+
+            Mapper.CreateMap<ProcessTemplateVM, ProcessTemplateDO>();
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateVM>();
         }
     }
 }

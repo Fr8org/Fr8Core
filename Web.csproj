@@ -346,6 +346,7 @@
     <Compile Include="ViewModels\NegotiationResponseVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\NegotiationVM.cs" />
+    <Compile Include="ViewModels\ProcessTemplateVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />

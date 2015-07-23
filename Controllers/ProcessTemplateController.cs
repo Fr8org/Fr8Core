@@ -3,15 +3,39 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Data.Entities;
+using Web.ViewModels;
+using AutoMapper;
+using StructureMap;
+using Data.Interfaces;
+using Data.States;
+using Core.Managers;
+using Core.Exceptions;
 
 namespace Web.Controllers
 {
+    [Authorize]
     public class ProcessTemplateController : Controller
     {
+        string generalErrorMessage = "Unfortunately, we're unable to save your changes at this moment. Please try again in a few minutes.";
+
         // GET: ProcessTemplate
         public ActionResult Index()
         {
-            return View();
+            IEnumerable<ProcessTemplateDO> ptdoCollection;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ptdoCollection = uow.ProcessTemplateRepository.GetForUser(User.Identity.Name);
+            }
+
+            if (ptdoCollection == null)
+            {
+                ModelState.AddModelError("", "Process Template with the specified ID is not found. Please make sure that it exists.");
+                return RedirectToAction("Index");
+            }
+            
+            return View(ptdoCollection.Select(ptdo => Mapper.Map<ProcessTemplateVM>(ptdo)));
         }
 
         // GET: ProcessTemplate/Details/5
@@ -28,16 +52,49 @@ namespace Web.Controllers
 
         // POST: ProcessTemplate/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(ProcessTemplateVM vm)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
             try
             {
-                // TODO: Add insert logic here
-
+                CreateOrUpdate(vm);
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception)
             {
+                ModelState.AddModelError("", generalErrorMessage);
+                return View();
+            }
+        }
+
+        // POST: ProcessTemplate/Edit/5
+        [HttpPost]
+        public ActionResult Edit(ProcessTemplateVM vm)
+        {
+            AlertReporter alertReporter = ObjectFactory.GetInstance<AlertReporter>();
+            if (!ModelState.IsValid)
+            {
+                return View(vm);
+            }
+
+            try
+            {
+                CreateOrUpdate(vm);
+                return RedirectToAction("Index");
+            }
+            catch (EntityNotFoundException)
+            {
+                ModelState.AddModelError("", "We're unable to save your changes. Please make sure that Process Template exists.");
+                return View();
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", generalErrorMessage);
                 return View();
             }
         }
@@ -45,44 +102,76 @@ namespace Web.Controllers
         // GET: ProcessTemplate/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
-        }
-
-        // POST: ProcessTemplate/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
+            ProcessTemplateDO ptdo;
+            if (id == 0)
             {
-                // TODO: Add update logic here
-
+                ModelState.AddModelError("", "Please specify ID of the record to edit.");
                 return RedirectToAction("Index");
             }
-            catch
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return View();
+                ptdo = uow.ProcessTemplateRepository.GetForUser(id, User.Identity.Name);
             }
+
+            if (ptdo == null)
+            {
+                ModelState.AddModelError("", "Process Template with the specified ID is not found. Please make sure that it exists.");
+                return RedirectToAction("Index");
+            }
+
+            var ptvm = Mapper.Map<ProcessTemplateVM>(ptdo);
+
+            return View(ptvm);
         }
 
         // GET: ProcessTemplate/Delete/5
         public ActionResult Delete(int id)
         {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var ptdo = uow.ProcessTemplateRepository.GetForUser(id, User.Identity.Name);
+                if (ptdo == null)
+                {
+                    ModelState.AddModelError("", "Process Template with the specified ID is not found. Please make sure that it exists.");
+                    return RedirectToAction("Index");
+                }
+                uow.ProcessTemplateRepository.Remove(ptdo);
+                uow.SaveChanges();
+            }
+
             return View();
         }
 
-        // POST: ProcessTemplate/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
+        private void CreateOrUpdate(ProcessTemplateVM viewModel)
         {
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // TODO: Add delete logic here
+                Mapper.CreateMap<ProcessTemplateVM, ProcessTemplateDO>()
+                   .ConstructUsing((ProcessTemplateVM vm) =>
+                   {
+                       ProcessTemplateDO entity;
+                       if (vm.Id == 0)
+                       {
+                           entity = new ProcessTemplateDO();
+                           entity.UserId = User.Identity.Name;
+                           entity.ProcessState = ProcessTemplateState.Active;
+                           uow.ProcessTemplateRepository.Add(entity);
+                           return entity;
+                       }
+                       entity = uow.ProcessTemplateRepository.GetForUser(vm.Id, User.Identity.Name);
 
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
+                       if (entity == null)
+                       {
+                           throw new EntityNotFoundException();
+                       }
+                       else
+                       {
+                           return entity;
+                       }
+                   });
+                Mapper.Map<ProcessTemplateVM, ProcessTemplateDO>(viewModel);
+                uow.SaveChanges();
             }
         }
     }

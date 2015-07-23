@@ -111,6 +111,7 @@
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
+    <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
@@ -162,9 +163,14 @@
     <Compile Include="Migrations\201507222138309_ProcessDO.Designer.cs">
       <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507232048129_ProcessTemplate.cs" />
+    <Compile Include="Migrations\201507232048129_ProcessTemplate.Designer.cs">
+      <DependentUpon>201507232048129_ProcessTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
+    <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -191,6 +197,7 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
     <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
@@ -214,6 +221,7 @@
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
     <Compile Include="States\Templates\_ParticipationStatusTemplate.cs" />
+    <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventStatusTemplate.cs" />
@@ -363,6 +371,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507222138309_ProcessDO.resx">
       <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507232048129_ProcessTemplate.resx">
+      <DependentUpon>201507232048129_ProcessTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
