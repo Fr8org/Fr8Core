@@ -5,11 +5,11 @@ using Web.ViewModels;
 
 namespace Web.Controllers
 {
-	public class ActionsController: ApiController
+	public class ActionController: ApiController
 	{
 		private readonly IActionsService _service;
 
-		private ActionsController()
+		private ActionController()
 		{
 			this._service = new ActionsService();
 		}

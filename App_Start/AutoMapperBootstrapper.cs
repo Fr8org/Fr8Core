@@ -85,6 +85,10 @@ namespace Web.App_Start
 		      .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
 		      .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
 
+	        Mapper.CreateMap< ActionListDO, ActionListVM >()
+		        .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
+		        .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
+
         }
     }
 }

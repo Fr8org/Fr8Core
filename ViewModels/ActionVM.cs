@@ -1,8 +1,6 @@
 ﻿namespace Web.ViewModels
 {
-	public class ActionVM
+	public class ActionVM: ActionVMBase
 	{
-		public int Id{ get; set; }
-		public string Name{ get; set; }
 	}
 }
