@@ -1,4 +1,4 @@
-/*! FixedColumns 3.0.1
+﻿/*! FixedColumns 3.0.1
  * ©2010-2014 SpryMedia Ltd - datatables.net/license
  */
 
@@ -426,7 +426,7 @@ FixedColumns.prototype = /** @lends FixedColumns.prototype */{
 
 	/**
 	 * Initialisation for FixedColumns
-	 *  @param   {Object} oInit User settings for initialisation
+	 *  @param   {Object} oInit DockYardAccount settings for initialisation
 	 *  @returns {void}
 	 *  @private
 	 */

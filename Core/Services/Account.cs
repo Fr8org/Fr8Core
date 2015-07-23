@@ -28,7 +28,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 RegistrationStatus curRegStatus;
-                UserDO newUserDO = null;
+                DockyardAccountDO newDockyardAccountDO = null;
                 //check if we know this email address
 
                 EmailAddressDO existingEmailAddressDO = uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
@@ -39,8 +39,8 @@ namespace Core.Services
                     {
                         if (existingUserDO.PasswordHash == null)
                         {
-                            //this is an existing implicit user, who sent in a request in the past, had a UserDO created, and now is registering. Add the password
-                            new User().UpdatePassword(uow, existingUserDO, password);
+                            //this is an existing implicit user, who sent in a request in the past, had a DockyardAccountDO created, and now is registering. Add the password
+                            new DockyardAccount().UpdatePassword(uow, existingUserDO, password);
                             curRegStatus = RegistrationStatus.Successful;
                         }
                         else
@@ -51,22 +51,22 @@ namespace Core.Services
                     }
                     else
                     {
-                        newUserDO = Register(uow, email, email, email, password, Roles.Customer);
+                        newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer);
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    newUserDO = Register(uow, email, email, email, password, Roles.Customer);
+                    newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer);
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
                 uow.SaveChanges();
 
-                if (newUserDO != null)
+                if (newDockyardAccountDO != null)
                 {
-                    //AlertManager.CustomerCreated(newUserDO);
-                    AlertManager.UserRegistration(newUserDO);
+                    //AlertManager.CustomerCreated(newDockyardAccountDO);
+                    AlertManager.UserRegistration(newDockyardAccountDO);
                 }
                
                 return curRegStatus;
@@ -79,16 +79,16 @@ namespace Core.Services
             {
                 LoginStatus curLoginStatus;
 
-                UserDO userDO = uow.UserRepository.FindOne(x => x.UserName == username);
-                if (userDO != null)
+                DockyardAccountDO dockyardAccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
+                if (dockyardAccountDO != null)
                 {
-                    if (string.IsNullOrEmpty(userDO.PasswordHash))
+                    if (string.IsNullOrEmpty(dockyardAccountDO.PasswordHash))
                     {
                         curLoginStatus = LoginStatus.ImplicitUser;
                     }
                     else
                     {
-                        curLoginStatus = Login(uow, userDO, password, isPersistent);
+                        curLoginStatus = Login(uow, dockyardAccountDO, password, isPersistent);
                     }
                 }
                 else
@@ -100,7 +100,7 @@ namespace Core.Services
             }
         }
 
-        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string roleID)
+        public DockyardAccountDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string roleID)
         {
             var userDO = uow.UserRepository.GetOrCreateUser(userName);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
@@ -108,16 +108,16 @@ namespace Core.Services
             return userDO;
         }
 
-        public LoginStatus Login(IUnitOfWork uow, UserDO userDO, string password, bool isPersistent)
+        public LoginStatus Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
 
             var passwordHasher = new PasswordHasher();
-            if (passwordHasher.VerifyHashedPassword(userDO.PasswordHash, password) == PasswordVerificationResult.Success)
+            if (passwordHasher.VerifyHashedPassword(dockyardAccountDO.PasswordHash, password) == PasswordVerificationResult.Success)
             {
                 var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
                 securityServices.Logout();
-                securityServices.Login(uow, userDO);
+                securityServices.Login(uow, dockyardAccountDO);
             }
             else
             {

@@ -121,14 +121,14 @@
 
 
             $.ajax({
-                url: '@Url.Action("ProcessAddUser", "User")',
+                url: '@Url.Action("ProcessAddUser", "DockYardAccount")',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify(dataObj),
                 success: function (response) {
                     var resp = JSON.parse(response);
                     displayNotification(resp.data);
-                    if(resp.data == "User already exists.")
+                    if(resp.data == "DockYardAccount already exists.")
                         existingUserAlert(resp.user_id);
                     else if(dataObj.Id != '')
                         toggleFields(true);
@@ -153,7 +153,7 @@
     {
         if(confirm("Are you sure?")){
             $.ajax({
-                url: '@Url.Action("UpdateStatus", "User")',
+                url: '@Url.Action("UpdateStatus", "DockYardAccount")',
                 type: 'GET',
                 contentType: 'application/json',
                 data: { userId: '@Model.Id', status: status },
@@ -185,7 +185,7 @@
     //popup to display when user already exists.
     function existingUserAlert(userId)
     {
-        Kwasant.IFrame.Display('ExistingUserAlert?UserId='+userId,
+        Kwasant.IFrame.Display('ExistingDockYardAccountAlert?DockYardAccountId='+userId,
 	            {
 	                modal: true,
 	                callback: function (result) {

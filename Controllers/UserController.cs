@@ -24,7 +24,7 @@ namespace Web.Controllers
     public class UserController : Controller
     {
         private readonly JsonPackager _jsonPackager;
-        private readonly User _user;
+        private readonly DockyardAccount _dockyardAccount;
         private readonly IMappingEngine _mappingEngine;
         private readonly Email _email;
 
@@ -32,7 +32,7 @@ namespace Web.Controllers
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
             _jsonPackager = new JsonPackager();
-            _user = new User();
+            _dockyardAccount = new DockyardAccount();
             _email = new Email();
         }
 
@@ -41,7 +41,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<UserDO> userList = uow.UserRepository.GetAll().ToList();
+                List<DockyardAccountDO> userList = uow.UserRepository.GetAll().ToList();
 
                 var userVMList = userList.Select(u => CreateUserVM(u, uow)).ToList();
 
@@ -173,34 +173,34 @@ namespace Web.Controllers
         [KwasantAuthorize(Roles = Roles.Admin)]
         public ActionResult ProcessAddUser(UserVM curCreateUserVM)
         {
-            UserDO submittedUserData = _mappingEngine.Map<UserDO>(curCreateUserVM);
+            DockyardAccountDO submittedDockyardAccountData = _mappingEngine.Map<DockyardAccountDO>(curCreateUserVM);
             string userPassword = curCreateUserVM.NewPassword;
             bool sendConfirmation = curCreateUserVM.SendMail;
             string displayMessage;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                UserDO existingUser = _user.GetExisting(uow, submittedUserData.EmailAddress.Address);
+                DockyardAccountDO existingDockyardAccount = _dockyardAccount.GetExisting(uow, submittedDockyardAccountData.EmailAddress.Address);
 
-                if (existingUser != null && String.IsNullOrEmpty(submittedUserData.Id))
+                if (existingDockyardAccount != null && String.IsNullOrEmpty(submittedDockyardAccountData.Id))
                 {
-                    var jsonSuccessResult = Json(_jsonPackager.Pack(new { Data = "User already exists.", UserId = existingUser.Id }));
+                    var jsonSuccessResult = Json(_jsonPackager.Pack(new { Data = "DockYardAccount already exists.", UserId = existingDockyardAccount.Id }));
                     return jsonSuccessResult;
                 }
-                ConvertRoleStringToRoles(curCreateUserVM.Role).Each(e => submittedUserData.Roles.Add(e));
-                if (existingUser != null)
+                ConvertRoleStringToRoles(curCreateUserVM.Role).Each(e => submittedDockyardAccountData.Roles.Add(e));
+                if (existingDockyardAccount != null)
                 {
-                    _user.Update(uow, submittedUserData, existingUser);
-                    displayMessage = "User updated successfully.";
+                    _dockyardAccount.Update(uow, submittedDockyardAccountData, existingDockyardAccount);
+                    displayMessage = "DockYardAccount updated successfully.";
                 }
                 else
                 {
-                    _user.Create(uow, submittedUserData);
-                    displayMessage = "User created successfully.";
+                    _dockyardAccount.Create(uow, submittedDockyardAccountData);
+                    displayMessage = "DockYardAccount created successfully.";
                 }
                 if (!String.IsNullOrEmpty(userPassword))
                 {
-                    _user.UpdatePassword(uow, submittedUserData, userPassword);
+                    _dockyardAccount.UpdatePassword(uow, submittedDockyardAccountData, userPassword);
                 }
                 if (sendConfirmation && !String.IsNullOrEmpty(userPassword))
                 {
@@ -280,7 +280,7 @@ namespace Web.Controllers
             }
         }
 
-        private UserVM CreateUserVM(UserDO u, IUnitOfWork uow)
+        private UserVM CreateUserVM(DockyardAccountDO u, IUnitOfWork uow)
         {
             return new UserVM
             {
@@ -296,16 +296,16 @@ namespace Web.Controllers
             };
         }
 
-        //Update User Status from user details view valid states are "Active" and "Deleted"
+        //Update DockYardAccount Status from user details view valid states are "Active" and "Deleted"
         public void UpdateStatus(string userId, int status)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                UserDO curUser = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
+                DockyardAccountDO curDockyardAccount = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
 
-                if (curUser != null)
+                if (curDockyardAccount != null)
                 {
-                    curUser.State = status;
+                    curDockyardAccount.State = status;
                     uow.SaveChanges();
                 }
             }
@@ -335,10 +335,10 @@ namespace Web.Controllers
                     return RedirectToAction("LogOff", "Account");
                 }
                 var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
-                var tuple = new Tuple<UserDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);
+                var tuple = new Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);
 
                 var curManageUserVM =
-                    AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
+                    AutoMapper.Mapper.Map<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
                 return View(curManageUserVM);
             }
         }

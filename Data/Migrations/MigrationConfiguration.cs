@@ -356,14 +356,14 @@ namespace Data.Migrations
 
         private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
         {
-            UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
+            DockyardAccountDO curDockyardAccount = uow.UserRepository.GetOrCreateUser(curUserEmail);
             var curCalendar = new CalendarDO
             {
                 Name = calendarName,
-                Owner = curUser,
-                OwnerID = curUser.Id
+                Owner = curDockyardAccount,
+                OwnerID = curDockyardAccount.Id
             };
-            curUser.Calendars.Add(curCalendar);
+            curDockyardAccount.Calendars.Add(curCalendar);
         }
 
         private static void AddEvents(IUnitOfWork uow)
@@ -379,12 +379,12 @@ namespace Data.Migrations
         private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
         {
             uow.SaveChanges();
-            UserDO curUser = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
-            if (curUser == null)
-                curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
+            DockyardAccountDO curDockyardAccount = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
+            if (curDockyardAccount == null)
+                curDockyardAccount = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
 
-            var bookingRequestID = curUser.UserBookingRequests.First().Id;
-            var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
+            var bookingRequestID = curDockyardAccount.UserBookingRequests.First().Id;
+            var calendarID = curDockyardAccount.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
 
             for (int eventNumber = 1; eventNumber < 11; eventNumber++)
             {
@@ -398,8 +398,8 @@ namespace Data.Migrations
                 createdEvent.Description = "Test Event " + eventNumber.ToString();
                 createdEvent.Summary = "Test Event " + eventNumber.ToString();
                 createdEvent.IsAllDay = false;
-                createdEvent.CreatedBy = curUser;
-                createdEvent.CreatedByID = curUser.Id;
+                createdEvent.CreatedBy = curDockyardAccount;
+                createdEvent.CreatedByID = curDockyardAccount.Id;
                 createdEvent.EventStatus = EventState.Booking;
                 uow.EventRepository.Add(createdEvent);
             }

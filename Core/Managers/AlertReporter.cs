@@ -89,7 +89,7 @@ namespace Core.Managers
                     throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
                 var curBooker = uow.UserRepository.GetByKey(bookerId);
                 if (curBooker == null)
-                    throw new EntityNotFoundException<UserDO>(bookerId);
+                    throw new EntityNotFoundException<DockyardAccountDO>(bookerId);
 
                 if (!curBooker.Available.GetValueOrDefault())
                 {
@@ -235,12 +235,12 @@ namespace Core.Managers
             {
                 FactDO curAction = new FactDO
                     {
-                        PrimaryCategory = "User",
+                        PrimaryCategory = "DockYardAccount",
                         SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = curUserId,
                         ObjectId = null,
-                        Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
+                        Data = string.Format("DockYardAccount with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                     };
 
                 SaveFact(curAction);
@@ -326,19 +326,19 @@ namespace Core.Managers
             }
         }
 
-        public void ReportUserRegistered(UserDO curUser)
+        public void ReportUserRegistered(DockyardAccountDO curDockyardAccount)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curFactDO = new FactDO
                     {
-                        PrimaryCategory = "User",
+                        PrimaryCategory = "DockYardAccount",
                         SecondaryCategory = "",
                         Activity = "Registered",
-                        CustomerId = curUser.Id,
+                        CustomerId = curDockyardAccount.Id,
                         ObjectId = null,
-                        Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
-                        //Data = "User registrated with " + curUser.EmailAddress.Address
+                        Data = string.Format("DockYardAccount registrated with :{0},", curDockyardAccount.EmailAddress.Address)
+                        //Data = "DockYardAccount registrated with " + curDockyardAccount.EmailAddress.Address
                     };
                 Logger.GetLogger().Info(curFactDO.Data);
                 uow.FactRepository.Add(curFactDO);
@@ -357,7 +357,7 @@ namespace Core.Managers
                     throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
                 var bookerDO = uow.UserRepository.GetByKey(bookerId);
                 if (bookerDO == null)
-                    throw new EntityNotFoundException<UserDO>(bookerId);
+                    throw new EntityNotFoundException<DockyardAccountDO>(bookerId);
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
                     {

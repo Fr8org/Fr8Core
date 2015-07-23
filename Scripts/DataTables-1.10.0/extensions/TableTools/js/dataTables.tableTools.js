@@ -1615,7 +1615,7 @@ TableTools.prototype = {
 			}
 		}
 
-		// User defined pre-selection function
+		// DockYardAccount defined pre-selection function
 		if ( this.s.select.preRowSelect !== null && !this.s.select.preRowSelect.call(this, e, anSelected, true) )
 		{
 			return;
@@ -1664,7 +1664,7 @@ TableTools.prototype = {
 			}
 		}
 
-		// User defined pre-selection function
+		// DockYardAccount defined pre-selection function
 		if ( this.s.select.preRowSelect !== null && !this.s.select.preRowSelect.call(this, e, anDeselectedTrs, false) )
 		{
 			return;

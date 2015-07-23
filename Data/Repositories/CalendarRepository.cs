@@ -22,20 +22,20 @@ namespace Data.Repositories
             base.Add(entity);
         }
 
-        public void CheckUserHasCalendar(UserDO curUser)
+        public void CheckUserHasCalendar(DockyardAccountDO curDockyardAccount)
         {
-            if (curUser == null)
-                throw new ArgumentNullException("curUser");
+            if (curDockyardAccount == null)
+                throw new ArgumentNullException("curDockyardAccount");
 
-            if (curUser.Calendars.Count() == 0)
+            if (curDockyardAccount.Calendars.Count() == 0)
             {
                 var curCalendar = new CalendarDO
                 {
                     Name = "Default Calendar",
-                    Owner = curUser,
-                    OwnerID = curUser.Id
+                    Owner = curDockyardAccount,
+                    OwnerID = curDockyardAccount.Id
                 };
-                curUser.Calendars.Add(curCalendar);
+                curDockyardAccount.Calendars.Add(curCalendar);
                 Add(curCalendar);
             }
         }

@@ -50,17 +50,17 @@ namespace Web.ViewModelServices
             }
         }
 
-        public void UpdateAnswerData(IUnitOfWork uow, NegotiationVM curNegotiationVM,  UserDO curUserDO, Dictionary<QuestionDO, AnswerDO> questionAnswer )
+        public void UpdateAnswerData(IUnitOfWork uow, NegotiationVM curNegotiationVM,  DockyardAccountDO curDockyardAccountDO, Dictionary<QuestionDO, AnswerDO> questionAnswer )
         {
             //Here we add/update questions based on our proposed negotiation
             foreach (var submittedQuestion in curNegotiationVM.Questions)
             {
-                var currentSelectedAnswers = ExtractSelectedAnswers(uow, submittedQuestion, curUserDO, questionAnswer);
+                var currentSelectedAnswers = ExtractSelectedAnswers(uow, submittedQuestion, curDockyardAccountDO, questionAnswer);
 
                 var previousQResponses = uow.QuestionResponseRepository.GetQuery()
                     .Where(qr =>
                         qr.Answer.QuestionID == submittedQuestion.Id &&
-                        qr.UserID == curUserDO.Id).ToList();
+                        qr.UserID == curDockyardAccountDO.Id).ToList();
 
                 var currentSelectedAnswerIDs = submittedQuestion.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
 
@@ -84,7 +84,7 @@ namespace Web.ViewModelServices
                     var newAnswer = new QuestionResponseDO
                     {
                         Answer = currentSelectedAnswer,
-                        UserID = curUserDO.Id
+                        UserID = curDockyardAccountDO.Id
                     };
                     uow.QuestionResponseRepository.Add(newAnswer);
                 }
@@ -92,7 +92,7 @@ namespace Web.ViewModelServices
         }
 
 
-        public List<AnswerDO> ExtractSelectedAnswers(IUnitOfWork uow, NegotiationQuestionVM submittedQuestionData, UserDO curUserDO,
+        public List<AnswerDO> ExtractSelectedAnswers(IUnitOfWork uow, NegotiationQuestionVM submittedQuestionData, DockyardAccountDO curDockyardAccountDO,
             Dictionary<QuestionDO, AnswerDO> questionAnswer)
         {
             if (submittedQuestionData.Id == 0)
@@ -119,7 +119,7 @@ namespace Web.ViewModelServices
 
                         answerDO.Text = submittedAnswerData.Text;
                         answerDO.EventID = submittedAnswerData.EventID;
-                        answerDO.UserID = curUserDO.Id;
+                        answerDO.UserID = curDockyardAccountDO.Id;
                     }
                     else
                     {

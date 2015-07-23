@@ -60,12 +60,12 @@ namespace Core.Services
             Send(uow, curEmail);
         }
 
-        public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
+        public void SendUserSettingsNotification(IUnitOfWork uow, DockyardAccountDO submittedDockyardAccountData) 
         {
             EmailDO curEmail = new EmailDO();
-            curEmail.From = submittedUserData.EmailAddress;
-            curEmail.AddEmailRecipient(EmailParticipantType.To, submittedUserData.EmailAddress);
-            curEmail.Subject = "User Settings Notification";
+            curEmail.From = submittedDockyardAccountData.EmailAddress;
+            curEmail.AddEmailRecipient(EmailParticipantType.To, submittedDockyardAccountData.EmailAddress);
+            curEmail.Subject = "DockYardAccount Settings Notification";
             //new Email(uow).SendTemplate(uow, "User_Settings_Notification", curEmail, null);
             //uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
         }

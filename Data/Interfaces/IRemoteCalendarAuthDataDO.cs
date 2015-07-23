@@ -8,7 +8,7 @@ namespace Data.Interfaces
         IRemoteCalendarProviderDO Provider { get; set; }
 
         string UserID { get; set; }
-        IUserDO User { get; set; }
+        IDockyardAccountDO User { get; set; }
         
         string AuthData { get; set; }
         bool HasAccessToken();

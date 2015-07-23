@@ -76,13 +76,13 @@ namespace Core.Services
         }
 
 
-        public EmailAddressDO GetFromEmailAddress(IUnitOfWork uow, EmailAddressDO curRecipientAddress, UserDO originator)
+        public EmailAddressDO GetFromEmailAddress(IUnitOfWork uow, EmailAddressDO curRecipientAddress, DockyardAccountDO originator)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
             if (curRecipientAddress == null)
                 throw new ArgumentNullException("curRecipientAddress");
-            var user = new User();
+            var user = new DockyardAccount();
             var curRecipient = uow.UserRepository.GetOrCreateUser(curRecipientAddress);
             if (curRecipient != null)
             {
@@ -97,7 +97,7 @@ namespace Core.Services
                         return uow.EmailAddressRepository.GetOrCreateEmailAddress(
                             _configRepository.Get("EmailFromAddress_DelegateMode"),
                             String.Format(_configRepository.Get("EmailFromName_DelegateMode"),
-                                User.GetDisplayName(originator)));
+                                DockyardAccount.GetDisplayName(originator)));
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -106,7 +106,7 @@ namespace Core.Services
             {
                 return uow.EmailAddressRepository.GetOrCreateEmailAddress(
                     _configRepository.Get("EmailFromAddress_DelegateMode"),
-                    String.Format(_configRepository.Get("EmailFromName_DelegateMode"), User.GetDisplayName(originator)));
+                    String.Format(_configRepository.Get("EmailFromName_DelegateMode"), DockyardAccount.GetDisplayName(originator)));
             }
         }
     }

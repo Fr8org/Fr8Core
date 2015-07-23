@@ -7,7 +7,7 @@ namespace Data.Validations
     {
       public BookingRequestValidator()
       {
-          RuleFor(curBR => curBR.Customer).NotNull().WithMessage("BR's must be associated with a valid UserDO");
+          RuleFor(curBR => curBR.Customer).NotNull().WithMessage("BR's must be associated with a valid DockyardAccountDO");
          
        }
     }

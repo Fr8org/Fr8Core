@@ -41,11 +41,11 @@ namespace DockyardTest.Managers
         public void CanOAuthRedirectToCallbackUrl()
         {
             // SETUP
-            UserDO user;
+            DockyardAccountDO dockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixtureData = new FixtureData(uow);
-                user = fixtureData.TestUser1();
+                dockyardAccount = fixtureData.TestUser1();
                 uow.SaveChanges();
             }
 
@@ -58,8 +58,8 @@ namespace DockyardTest.Managers
                 {
                     var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(provider.Name);
                     var result = authorizer.AuthorizeAsync(
-                        user.Id,
-                        user.EmailAddress.Address,
+                        dockyardAccount.Id,
+                        dockyardAccount.EmailAddress.Address,
                         UserController.GetCallbackUrl(provider.Name, "https://www.kwasant.com/"),
                         "https://www.kwasant.com/",
                         CancellationToken.None).Result;

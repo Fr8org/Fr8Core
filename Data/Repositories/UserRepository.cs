@@ -7,50 +7,50 @@ using Microsoft.AspNet.Identity;
 
 namespace Data.Repositories
 {
-    public class UserRepository : GenericRepository<UserDO>, IUserRepository
+    public class UserRepository : GenericRepository<DockyardAccountDO>, IUserRepository
     {
         internal UserRepository(IUnitOfWork uow)
             : base(uow)
         {
 
         }
-        public override void Add(UserDO entity)
+        public override void Add(DockyardAccountDO entity)
         {
             base.Add(entity);
             AddDefaultCalendar(entity);
             AddDefaultProfile(entity);
         }
 
-        public UserDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
+        public DockyardAccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
         {
             return UpdateUserCredentials(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress), userName, password);
         }
 
-        public UserDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null)
+        public DockyardAccountDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null)
         {
             return UpdateUserCredentials(UnitOfWork.UserRepository.GetOrCreateUser(emailAddressDO), userName, password);
         }
 
-        public UserDO UpdateUserCredentials(UserDO userDO, String userName = null, String password = null)
+        public DockyardAccountDO UpdateUserCredentials(DockyardAccountDO dockyardAccountDO, String userName = null, String password = null)
         {
             if (userName != null)
-                userDO.UserName = userName;
+                dockyardAccountDO.UserName = userName;
             if (password != null)
             {
                 var passwordHasher = new PasswordHasher();
-                userDO.PasswordHash = passwordHasher.HashPassword(password);       
+                dockyardAccountDO.PasswordHash = passwordHasher.HashPassword(password);       
             }
             
-            return userDO;
+            return dockyardAccountDO;
         }
 
 
-        public UserDO GetOrCreateUser(String emailAddress)
+        public DockyardAccountDO GetOrCreateUser(String emailAddress)
         {
             return GetOrCreateUser(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress));
         }
 
-        public UserDO GetOrCreateUser(EmailAddressDO emailAddressDO)
+        public DockyardAccountDO GetOrCreateUser(EmailAddressDO emailAddressDO)
         {
             var matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
             if (matchingUser == null)
@@ -59,7 +59,7 @@ namespace Data.Repositories
             if (matchingUser == null)
             {
                 matchingUser =
-                    new UserDO
+                    new DockyardAccountDO
                     {
                         EmailAddress = emailAddressDO,
                         UserName = emailAddressDO.Address,
@@ -76,36 +76,36 @@ namespace Data.Repositories
         }
 
 
-        public void AddDefaultCalendar(UserDO curUser)
+        public void AddDefaultCalendar(DockyardAccountDO curDockyardAccount)
         {
-            if (curUser == null)
-                throw new ArgumentNullException("curUser");
+            if (curDockyardAccount == null)
+                throw new ArgumentNullException("curDockyardAccount");
 
-            if (!curUser.Calendars.Any())
+            if (!curDockyardAccount.Calendars.Any())
             {
                 var curCalendar = new CalendarDO
                 {
                     Name = "Default Calendar",
-                    Owner = curUser,
-                    OwnerID = curUser.Id
+                    Owner = curDockyardAccount,
+                    OwnerID = curDockyardAccount.Id
                 };
-                curUser.Calendars.Add(curCalendar);
+                curDockyardAccount.Calendars.Add(curCalendar);
             }
         }
 
 
-        public void AddDefaultProfile(UserDO curUser)
+        public void AddDefaultProfile(DockyardAccountDO curDockyardAccount)
         {
-            if (curUser == null)
-                throw new ArgumentNullException("curUser");
+            if (curDockyardAccount == null)
+                throw new ArgumentNullException("curDockyardAccount");
 
-            if (!curUser.Profiles.Any())
+            if (!curDockyardAccount.Profiles.Any())
             {
-                var defaultProfile = new ProfileDO() {Name = "Default Profile", User = curUser};
+                var defaultProfile = new ProfileDO() {Name = "Default Profile", User = curDockyardAccount};
                 defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Communications", Profile = defaultProfile, ProfileID = defaultProfile.Id});
                 defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Locations", Profile = defaultProfile, ProfileID = defaultProfile.Id });
                 defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Travel", Profile = defaultProfile, ProfileID = defaultProfile.Id });
-                curUser.Profiles.Add(defaultProfile);
+                curDockyardAccount.Profiles.Add(defaultProfile);
             }
         }
     }

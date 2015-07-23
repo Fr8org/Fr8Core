@@ -244,7 +244,7 @@
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Slip.cs" />
-    <Compile Include="Services\User.cs" />
+    <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>

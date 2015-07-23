@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * jQuery JavaScript Library v2.1.1
  * http://jquery.com/
  *
@@ -25936,7 +25936,7 @@ function $SceDelegateProvider() {
  * Here's an example of a binding in a privileged context:
  *
  * ```
- * <input ng-model="userHtml" aria-label="User input">
+ * <input ng-model="userHtml" aria-label="DockYardAccount input">
  * <div ng-bind-html="userHtml"></div>
  * ```
  *
@@ -26094,7 +26094,7 @@ function $SceDelegateProvider() {
  * <file name="index.html">
  *   <div ng-controller="AppController as myCtrl">
  *     <i ng-bind-html="myCtrl.explicitlyTrustedHtml" id="explicitlyTrustedHtml"></i><br><br>
- *     <b>User comments</b><br>
+ *     <b>DockYardAccount comments</b><br>
  *     By default, HTML that isn't explicitly trusted (e.g. Alice's comment) is sanitized when
  *     $sanitize is available.  If $sanitize isn't available, this results in an error instead of an
  *     exploit.
@@ -31099,7 +31099,7 @@ function checkboxInputType(scope, element, attr, ctrl, $sniffer, $browser, $filt
        <div ng-controller="ExampleController">
          <form name="myForm">
            <label>
-              User name:
+              DockYardAccount name:
               <input type="text" name="userName" ng-model="user.name" required>
            </label>
            <div role="alert">
@@ -39510,7 +39510,7 @@ angular.scenario.matcher('toBeGreaterThan', function(expected) {
 });
 
 /**
- * User Interface for the Scenario Runner.
+ * DockYardAccount Interface for the Scenario Runner.
  *
  * TODO(esprehn): This should be refactored now that ObjectModel exists
  *  to use angular bindings for the UI.

@@ -16,7 +16,7 @@ namespace Data.Infrastructure.StructureMap
                 //For<IBookingRequestDO>().Use<BookingRequestDO>();
                 For<IEmailDO>().Use<EmailDO>();
                 For<IEmailAddressDO>().Use<EmailAddressDO>();
-                For<IUserDO>().Use<UserDO>();
+                For<IDockyardAccountDO>().Use<DockyardAccountDO>();
                 For<ICalendarDO>().Use<CalendarDO>();
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();

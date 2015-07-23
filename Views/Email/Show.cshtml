@@ -163,7 +163,7 @@
         timezoneSelect.change(updateTimezoneIcons);
 
         btnSaveTimezone.click(function() {
-            Kwasant.IFrame.DispatchPostRequest('@Url.Action("UpdateUserTimezone", "User")', { userID: '@Model.FromUserID',  timezoneID: timezoneSelect.val() }, function(result) {
+            Kwasant.IFrame.DispatchPostRequest('@Url.Action("UpdateUserTimezone", "DockYardAccount")', { userID: '@Model.FromUserID',  timezoneID: timezoneSelect.val() }, function(result) {
                 timezoneOk.show();
                 timezoneNotSaved.hide();
                 timezoneGuessed.hide();

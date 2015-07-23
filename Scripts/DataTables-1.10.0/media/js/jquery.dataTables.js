@@ -1,4 +1,4 @@
-/*! DataTables 1.10.0
+﻿/*! DataTables 1.10.0
  * ©2008-2014 SpryMedia Ltd - datatables.net/license
  */
 
@@ -597,7 +597,7 @@
 			}
 		}
 	
-		/* User specified column options */
+		/* DockYardAccount specified column options */
 		if ( oOptions !== undefined && oOptions !== null )
 		{
 			// Backwards compatibility

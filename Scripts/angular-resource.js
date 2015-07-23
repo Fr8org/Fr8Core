@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @license AngularJS v1.4.3
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
@@ -191,8 +191,8 @@ function shallowClearAndCopy(src, dst) {
  *   as  methods with the `$` prefix. This allows you to easily perform CRUD operations (create,
  *   read, update, delete) on server-side data like this:
  *   ```js
- *   var User = $resource('/user/:userId', {userId:'@id'});
- *   var user = User.get({userId:123}, function() {
+ *   var DockYardAccount = $resource('/user/:userId', {userId:'@id'});
+ *   var user = DockYardAccount.get({userId:123}, function() {
  *     user.abc = true;
  *     user.$save();
  *   });
@@ -290,8 +290,8 @@ function shallowClearAndCopy(src, dst) {
  * operations (create, read, update, delete) on server-side data.
 
    ```js
-     var User = $resource('/user/:userId', {userId:'@id'});
-     User.get({userId:123}, function(user) {
+     var DockYardAccount = $resource('/user/:userId', {userId:'@id'});
+     DockYardAccount.get({userId:123}, function(user) {
        user.abc = true;
        user.$save();
      });
@@ -302,8 +302,8 @@ function shallowClearAndCopy(src, dst) {
  * could rewrite the above example and get access to http headers as:
  *
    ```js
-     var User = $resource('/user/:userId', {userId:'@id'});
-     User.get({userId:123}, function(u, getResponseHeaders){
+     var DockYardAccount = $resource('/user/:userId', {userId:'@id'});
+     DockYardAccount.get({userId:123}, function(u, getResponseHeaders){
        u.abc = true;
        u.$save(function(u, putResponseHeaders) {
          //u => saved user object
@@ -315,8 +315,8 @@ function shallowClearAndCopy(src, dst) {
  * You can also access the raw `$http` promise via the `$promise` property on the object returned
  *
    ```
-     var User = $resource('/user/:userId', {userId:'@id'});
-     User.get({userId:123})
+     var DockYardAccount = $resource('/user/:userId', {userId:'@id'});
+     DockYardAccount.get({userId:123})
          .$promise.then(function(user) {
            $scope.user = user;
          });

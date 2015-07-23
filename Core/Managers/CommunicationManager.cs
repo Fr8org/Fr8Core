@@ -20,7 +20,7 @@ namespace Core.Managers
     {
         private readonly IConfigRepository _configRepository;
         private readonly EmailAddress _emailAddress;
-        private readonly User _user;
+        private readonly DockyardAccount _dockyardAccount;
         private readonly INegotiation _negotiation;
         private readonly IBookingRequest _br;
 
@@ -32,7 +32,7 @@ namespace Core.Managers
                 throw new ArgumentNullException("emailAddress");
             _configRepository = configRepository;
             _emailAddress = emailAddress;
-            _user = ObjectFactory.GetInstance<User>(); //can this be mocked? we would want an interface...
+            _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>(); //can this be mocked? we would want an interface...
             _negotiation = ObjectFactory.GetInstance<INegotiation>();
             _br = ObjectFactory.GetInstance<IBookingRequest>(); 
         }
@@ -73,9 +73,9 @@ namespace Core.Managers
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(UserDO userDO)
+        public void NewCustomerWorkflow(DockyardAccountDO dockyardAccountDO)
         {
-            ObjectFactory.GetInstance<ITracker>().Identify(userDO);
+            ObjectFactory.GetInstance<ITracker>().Identify(dockyardAccountDO);
         }
 
         public void GenerateWelcomeEmail(string curUserId)
@@ -122,7 +122,7 @@ namespace Core.Managers
             emailDO.TagEmailToBookingRequest(negotiationDO.BookingRequest);
 
             var customer = negotiationDO.BookingRequest.Customer;
-            var mode = _user.GetMode(customer);
+            var mode = _dockyardAccount.GetMode(customer);
             if (mode == CommunicationMode.Direct)
             {
                 var directEmailAddress = _configRepository.Get("EmailFromAddress_DirectMode");
@@ -193,11 +193,11 @@ namespace Core.Managers
             }
         }
 
-        public string GetCRTemplate(UserDO curUserDO)
+        public string GetCRTemplate(DockyardAccountDO curDockyardAccountDO)
         {
             string templateName;
-            // Max Kostyrkin: currently User#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
-            switch (_user.GetMode(curUserDO))
+            // Max Kostyrkin: currently DockYardAccount#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
+            switch (_dockyardAccount.GetMode(curDockyardAccountDO))
             {
                 case CommunicationMode.Direct:
                     templateName = _configRepository.Get("CR_template_for_creator");

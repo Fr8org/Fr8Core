@@ -44,7 +44,7 @@ namespace Web.App_Start
                 .ForMember(eventDO => eventDO.SyncStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.SyncStatusTemplate, opts => opts.Ignore());
 
-            Mapper.CreateMap<Tuple<UserDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>()
+            Mapper.CreateMap<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
                 .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
 
@@ -72,7 +72,7 @@ namespace Web.App_Start
                 .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived))
                 .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
 
-            Mapper.CreateMap<UserVM, UserDO>()
+            Mapper.CreateMap<UserVM, DockyardAccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
                 .ForMember(userDO => userDO.LastName, opts => opts.ResolveUsing(e => e.LastName))
