@@ -81,6 +81,15 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore())
                 .ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
 
+	      Mapper.CreateMap< ActionDO, ActionVM >()
+		      .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
+		      .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
+
+	        Mapper.CreateMap< ActionListDO, ActionListVM >()
+		        .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
+		        .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
+
+
             Mapper.CreateMap<ProcessTemplateVM, ProcessTemplateDO>();
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateVM>();
         }

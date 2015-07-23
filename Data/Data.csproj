@@ -35,6 +35,9 @@
     <Reference Include="Analytics.NET">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
     </Reference>
+    <Reference Include="DocuSign.Integration.Client">
+      <HintPath>..\packages\DocuSign.Integration.Client.dll.1.5.1\lib\DocuSign.Integration.Client.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -78,7 +81,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -105,6 +108,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ActionDO.cs" />
+    <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -113,6 +118,7 @@
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
+    <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
@@ -163,12 +169,22 @@
     <Compile Include="Migrations\201507222138309_ProcessDO.Designer.cs">
       <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507211417084_Actions_Migration.cs" />
+    <Compile Include="Migrations\201507211417084_Actions_Migration.Designer.cs">
+      <DependentUpon>201507211417084_Actions_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507231732158_mergefix.cs" />
+    <Compile Include="Migrations\201507231732158_mergefix.Designer.cs">
+      <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201507232048129_ProcessTemplate.cs" />
     <Compile Include="Migrations\201507232048129_ProcessTemplate.Designer.cs">
       <DependentUpon>201507232048129_ProcessTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
+    <Compile Include="Repositories\ActionListRepository.cs" />
+    <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -374,6 +390,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507232048129_ProcessTemplate.resx">
       <DependentUpon>201507232048129_ProcessTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507211417084_Actions_Migration.resx">
+      <DependentUpon>201507211417084_Actions_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507231732158_mergefix.resx">
+      <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

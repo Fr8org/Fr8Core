@@ -46,7 +46,10 @@ namespace Data.Interfaces
         ExpectedResponseRepository ExpectedResponseRepository { get; }
         ProcessTemplateRepository ProcessTemplateRepository { get; }
         SlipRepository SlipRepository { get; }
-        /// <summary>
+	  ActionRepository ActionRepository{ get; }
+	  ActionListRepository ActionListRepository{ get; }
+
+	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

@@ -13,8 +13,8 @@ namespace DockyardTest.Entities
 		[ Category( "Envelope" ) ]
 		public void Envelope_Change_Status()
 		{
-			const string newStatus = "Created";
-			const string updatedStatus = "Updated";
+			const EnvelopeDO.EnvelopeState newStatus = EnvelopeDO.EnvelopeState.Created;
+			const EnvelopeDO.EnvelopeState updatedStatus = EnvelopeDO.EnvelopeState.Delivered;
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
 				uow.EnvelopeRepository.Add( new EnvelopeDO { Id = 1, Status = newStatus, DocusignEnvelopeId = "23" } );
