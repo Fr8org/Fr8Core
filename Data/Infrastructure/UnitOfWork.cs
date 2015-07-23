@@ -150,6 +150,15 @@ namespace Data.Infrastructure
             }
         }
 
+        private IProcessRepository _processRepository;
+
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                return _processRepository ?? (_processRepository = new ProcessRepository(this));
+            }
+        }
         private EmailStatusRepository _emailStatusRepository;
 
         public EmailStatusRepository EmailStatusRepository

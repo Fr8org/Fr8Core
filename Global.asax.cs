@@ -44,6 +44,9 @@ namespace Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            //Register global Exception Filter for WebAPI 
+            GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
+
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
                 //set to either "test" or "live"
