@@ -158,6 +158,10 @@
     <Compile Include="Migrations\201507200156445_fixup2.Designer.cs">
       <DependentUpon>201507200156445_fixup2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507222138309_ProcessDO.cs" />
+    <Compile Include="Migrations\201507222138309_ProcessDO.Designer.cs">
+      <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -176,6 +180,7 @@
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
+    <Compile Include="States\ProcessState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
@@ -187,6 +192,7 @@
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\Roles.cs" />
+    <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
     <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -354,6 +360,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507200156445_fixup2.resx">
       <DependentUpon>201507200156445_fixup2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507222138309_ProcessDO.resx">
+      <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

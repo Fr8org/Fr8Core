@@ -265,6 +265,7 @@
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
@@ -316,7 +317,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="KwasantHandleErrorAttribute.cs" />
+    <Compile Include="MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModelServices\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\BookingRequestNoteVM.cs" />
@@ -352,6 +353,7 @@
     <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
+    <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="angboard.html" />
