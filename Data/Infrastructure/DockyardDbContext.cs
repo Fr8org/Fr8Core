@@ -272,6 +272,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<NegotiationAnswerEmailDO>().ToTable("NegotiationAnswerEmails");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
+	      modelBuilder.Entity< ActionDO >().ToTable( "Actions" );
+		modelBuilder.Entity< ActionListDO >().ToTable( "ActionLists" );
+		modelBuilder.Entity< TemplateDO >().ToTable( "Templates" );
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

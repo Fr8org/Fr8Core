@@ -440,6 +440,24 @@ namespace Data.Infrastructure
             }
         }
 
+	  private ActionRepository _actionRepository;
+	  public ActionRepository ActionRepository
+        {
+            get
+            {
+                return _actionRepository ?? (_actionRepository = new ActionRepository(this));
+            }
+        }
+
+	  private ActionListRepository _actionListRepository;
+	  public ActionListRepository ActionListRepository
+        {
+            get
+            {
+                return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();
