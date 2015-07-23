@@ -45,7 +45,10 @@ namespace Data.Interfaces
         NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
         SlipRepository SlipRepository { get; }
-        /// <summary>
+	  ActionRepository ActionRepository{ get; }
+	  ActionListRepository ActionListRepository{ get; }
+
+	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

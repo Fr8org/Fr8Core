@@ -400,7 +400,7 @@ namespace Data.Migrations
                 createdEvent.IsAllDay = false;
                 createdEvent.CreatedBy = curUser;
                 createdEvent.CreatedByID = curUser.Id;
-                createdEvent.EventStatus = EventState.Booking;
+                createdEvent.EventStatus = EventState.EnvelopeSent;
                 uow.EventRepository.Add(createdEvent);
             }
         }

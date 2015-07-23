@@ -7,20 +7,20 @@ namespace Data.Entities
 		[ Key ]
 		public int Id{ get; set; }
 
-		public string Status{ get; set; }
+		public EnvelopeState Status{ get; set; }
 		public string DocusignEnvelopeId{ get; set; }
 
-		//public enum EnvelopeState
-		//{
-		//	Any,
-		//	Created,
-		//	Sent,
-		//	Delivered,
-		//	Signed,
-		//	Completed,
-		//	Declined,
-		//	Voided,
-		//	Deleted
-		//};
+		public enum EnvelopeState
+		{
+			Any,
+			Created,
+			Sent,
+			Delivered,
+			Signed,
+			Completed,
+			Declined,
+			Voided,
+			Deleted
+		};
 	}
 }
