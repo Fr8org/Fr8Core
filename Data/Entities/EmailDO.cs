@@ -98,8 +98,8 @@ namespace Data.Entities
         public String PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
         
-        [ForeignKey("Conversation")]
-        public int? ConversationId { get; set; }
+        //[ForeignKey("Conversation")]
+        //public int? ConversationId { get; set; }
         //public virtual BookingRequestDO Conversation { get; set; }
 
         [ForeignKey("EmailStatusTemplate")]

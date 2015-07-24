@@ -280,7 +280,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Convert.ToString(uow.EmailRepository.GetByKey(emailId).ConversationId);
+                return Convert.ToString(uow.EmailRepository.GetByKey(emailId).Id);
             }
         }
 
@@ -300,7 +300,7 @@ namespace Core.Services
                     Date = e.CreateDate.ToString(DateStandardFormat),
                     EmailStatus = FilterUtility.GetState(new EmailState().GetType(), (e.EmailStatus.HasValue ? e.EmailStatus.Value : 0)),
                     //EmailStatus = "",
-                    ConversationId = e.ConversationId
+                    ConversationId = e.Id
                 }).ToList();
 
             

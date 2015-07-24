@@ -11,7 +11,7 @@ namespace Data.Interfaces
         EmailAddressRepository EmailAddressRepository { get; }
         RecipientRepository RecipientRepository { get; }
         //BookingRequestRepository BookingRequestRepository { get; }
-        BookingRequestStatusRepository BookingRequestStatusRepository { get; }
+        //BookingRequestStatusRepository BookingRequestStatusRepository { get; }
         //CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }

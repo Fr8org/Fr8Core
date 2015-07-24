@@ -171,6 +171,10 @@
     <Compile Include="Migrations\201507231732158_mergefix.Designer.cs">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.cs" />
+    <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.Designer.cs">
+      <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -200,25 +204,18 @@
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
-    <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
     <Compile Include="States\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
-    <Compile Include="States\Templates\_BookingRequestStateTemplate.cs" />
     <Compile Include="Entities\ConceptDO.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ConfirmationStatusTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventSyncStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
     <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
-    <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
-    <Compile Include="States\Templates\_ParticipationStatusTemplate.cs" />
-    <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
@@ -266,7 +263,6 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
     <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
     <Compile Include="Repositories\RemoteCalendarProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
@@ -352,6 +348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507231732158_mergefix.resx">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507242025144_RemoveUnwantedTables.resx">
+      <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
