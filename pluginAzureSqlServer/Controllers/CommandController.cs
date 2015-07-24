@@ -23,8 +23,8 @@ namespace pluginAzureSqlServer.Controllers
             try
             {
                 // Creating ExtrationHelper and parsing WriteCommandArgs.
-                var extractionHelper = new JsonExtractionHelper();
-                var writeArgs = extractionHelper.ExtractWriteCommandArgs(data);
+                var parser = new DbServiceJsonParser();
+                var writeArgs = parser.ExtractWriteCommandArgs(data);
 
                 // Creating DbService and running WriteCommand logic.
                 var dbService = new DbService();

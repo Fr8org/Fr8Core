@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Newtonsoft.Json.Linq;
+using PluginUtilities.Infrastructure;
 
 namespace pluginAzureSqlServer.Infrastructure
 {
-    public class JsonExtractionHelper
+    public class DbServiceJsonParser
     {
         /// <summary>
         /// Extract WriteCommandArgs instance from raw JSON data.
@@ -34,7 +35,7 @@ namespace pluginAzureSqlServer.Infrastructure
 	        //     ]
             // }
 
-            var provider = ExctractProviderName(data);
+            var provider = ExtractProviderName(data);
             var connectionString = ExtractConnectionString(data);
             var tables = ExtractTables(data);
 
@@ -45,18 +46,11 @@ namespace pluginAzureSqlServer.Infrastructure
 
         /// <summary>
         /// Extract providerName from JSON object.
+        /// Each Table should correspond to a SQL table name in the target database.
         /// </summary>
-        private string ExctractProviderName(JObject data)
+        private string ExtractProviderName(JObject data)
         {
-            var providerToken = data.GetValue("provider");
-            if (providerToken == null
-                || string.IsNullOrEmpty(providerToken.ToObject<string>()))
-            {
-                throw new Exception("\"provider\" attribute is not specified");
-            }
-
-            var provider = providerToken.ToObject<string>();
-
+            var provider = data.ExtractPropertyValue<string>("provider");
             return provider;
         }
 
@@ -65,15 +59,7 @@ namespace pluginAzureSqlServer.Infrastructure
         /// </summary>
         private string ExtractConnectionString(JObject data)
         {
-            var connectionStringToken = data.GetValue("connectionString");
-            if (connectionStringToken == null
-                || string.IsNullOrEmpty(connectionStringToken.ToObject<string>()))
-            {
-                throw new Exception("\"connectionsString\" attribute is not specified");
-            }
-
-            var connectionString = connectionStringToken.ToObject<string>();
-
+            var connectionString = data.ExtractPropertyValue<string>("connectionString");
             return connectionString;
         }
 
@@ -84,25 +70,18 @@ namespace pluginAzureSqlServer.Infrastructure
         {
             // Try to get "tables" property as js array.
             // Validate that "tables" array is not empty.
-            var tablesToken = data.GetValue("tables");
-            if (tablesToken == null
-                || tablesToken.ToObject<JArray>() == null
-                || tablesToken.ToObject<JArray>().Count == 0)
+            var tablesArray = data.ExtractPropertyValue<JArray>("tables");
+            if (tablesArray.Count == 0)
             {
-                throw new Exception("\"tables\" array is not specified");
+                throw new Exception("\"tables\" array is empty");
             }
 
-            var tablesArray = tablesToken.ToObject<JArray>();
             var tables = new List<Table>();
 
             // Iterate "tables" array, extract each table and put it into result list.
             foreach (var tableToken in tablesArray)
             {
                 var table = ExtractTable(tableToken);
-                // If table is empty (i.e. contains no properties), 
-                // then we assume that table definition is corrupted and we skip it.
-                if (table == null) { continue; }
-
                 tables.Add(table);
             }
 
@@ -119,7 +98,10 @@ namespace pluginAzureSqlServer.Infrastructure
             // Get the first property of table object, first property will be the name of the table (see JSON sample above).
             var prop = tableObj.Properties().FirstOrDefault();
             // If table object contains no properties, then return null.
-            if (prop == null) { return null; }
+            if (prop == null)
+            {
+                throw new Exception("Invalid table definition.");
+            }
 
             // Full table name formatted as <schemaName>.<tableName> or <tableName>
             var fullTableName = prop.Name;

@@ -142,7 +142,7 @@
     <Compile Include="Infrastructure\FieldValue.cs" />
     <Compile Include="Services\IDbService.cs" />
     <Compile Include="Infrastructure\IDbProvider.cs" />
-    <Compile Include="Infrastructure\JsonExtractionHelper.cs" />
+    <Compile Include="Infrastructure\DbServiceJsonParser.cs" />
     <Compile Include="Infrastructure\Row.cs" />
     <Compile Include="Infrastructure\SqlClientDbProvider.cs" />
     <Compile Include="Infrastructure\Table.cs" />
@@ -166,6 +166,10 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PluginUtilities\PluginUtilities.csproj">
+      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
+      <Name>PluginUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
