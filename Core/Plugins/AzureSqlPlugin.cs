@@ -11,7 +11,6 @@ namespace Core.Plugins
         public string command_sqlWrite ()
         {
             return "unimplemented";
-
         }
     }
 }
