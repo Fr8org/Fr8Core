@@ -11,7 +11,6 @@ using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Migrations;
 using Utilities;
 
 namespace Data.Infrastructure
@@ -45,7 +44,7 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base("name=DockyardDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>()); 
         }
 
 
@@ -272,6 +271,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<NegotiationAnswerEmailDO>().ToTable("NegotiationAnswerEmails");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
+	      modelBuilder.Entity< ActionDO >().ToTable( "Actions" );
+		modelBuilder.Entity< ActionListDO >().ToTable( "ActionLists" );
+		modelBuilder.Entity< TemplateDO >().ToTable( "Templates" );
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

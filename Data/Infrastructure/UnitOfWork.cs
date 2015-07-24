@@ -150,6 +150,15 @@ namespace Data.Infrastructure
             }
         }
 
+        private IProcessRepository _processRepository;
+
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                return _processRepository ?? (_processRepository = new ProcessRepository(this));
+            }
+        }
         private EmailStatusRepository _emailStatusRepository;
 
         public EmailStatusRepository EmailStatusRepository
@@ -437,6 +446,24 @@ namespace Data.Infrastructure
             get
             {
                 return _expectedResponseRepository ?? (_expectedResponseRepository = new ExpectedResponseRepository(this));
+            }
+        }
+
+	  private ActionRepository _actionRepository;
+	  public ActionRepository ActionRepository
+        {
+            get
+            {
+                return _actionRepository ?? (_actionRepository = new ActionRepository(this));
+            }
+        }
+
+	  private ActionListRepository _actionListRepository;
+	  public ActionListRepository ActionListRepository
+        {
+            get
+            {
+                return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
             }
         }
 

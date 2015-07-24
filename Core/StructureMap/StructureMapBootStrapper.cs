@@ -20,6 +20,8 @@ using StructureMap.Configuration.DSL;
 using AutoMapper;
 using Core.Managers.APIManagers.Authorizers.Docusign;
 using Utilities;
+using System;
+using Core.Utilities;
 
 namespace Core.StructureMap
 {
@@ -79,6 +81,8 @@ namespace Core.StructureMap
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
+                For<IProcessService>().Use<ProcessService>();
+                For<IDocusignXml>().Use<DocusignXml>();
             }
         }
 
@@ -105,6 +109,12 @@ namespace Core.StructureMap
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
+                For<IProcessService>().Use<ProcessService>();
+                For<IDocusignXml>().Use<DocusignXml>();
+                //var mockProcess = new Mock<IProcessService>();
+                //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
+                //For<IProcessService>().Use(mockProcess.Object);
+                //For<Mock<IProcessService>>().Use(mockProcess);
             }
         }
 

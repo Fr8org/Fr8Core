@@ -28,18 +28,18 @@ namespace Core.Managers
             AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
             AlertManager.AlertEntityStateChanged += EntityStateChanged;
             AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived += ReportEmailReceived;
-            AlertManager.AlertEventBooked += ReportEventBooked;
-            AlertManager.AlertEmailSent += ReportEmailSent;
-            AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
-            AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
+            AlertManager.AlertEmailReceived += EmailReceived;
+            AlertManager.AlertEventBooked += EventBooked;
+            AlertManager.AlertEmailSent += EmailSent;
+            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
+            AlertManager.AlertExplicitCustomerCreated += CustomerCreated;
 
-            AlertManager.AlertUserRegistration += ReportUserRegistered;
+            AlertManager.AlertUserRegistration += UserRegistered;
 
-            AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
-            AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
-            AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
-            AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
+            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChanged;
+            AlertManager.AlertBookingRequestReserved += BookingRequestReserved;
+            AlertManager.AlertBookingRequestReservationTimeout += BookingRequestReservationTimeOut;
+            AlertManager.AlertStaleBookingRequestsDetected += StaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
 
@@ -53,18 +53,18 @@ namespace Core.Managers
             AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
             AlertManager.AlertEntityStateChanged -= EntityStateChanged;
             AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived -= ReportEmailReceived;
-            AlertManager.AlertEventBooked -= ReportEventBooked;
-            AlertManager.AlertEmailSent -= ReportEmailSent;
-            AlertManager.AlertBookingRequestCreated -= ReportBookingRequestCreated;
-            AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
+            AlertManager.AlertEmailReceived -= EmailReceived;
+            AlertManager.AlertEventBooked -= EventBooked;
+            AlertManager.AlertEmailSent -= EmailSent;
+            AlertManager.AlertBookingRequestCreated -= BookingRequestCreated;
+            AlertManager.AlertExplicitCustomerCreated -= CustomerCreated;
 
-            AlertManager.AlertUserRegistration -= ReportUserRegistered;
+            AlertManager.AlertUserRegistration -= UserRegistered;
 
-            AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
-            AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
-            AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
-            AlertManager.AlertStaleBookingRequestsDetected -= ReportStaleBookingRequestsDetected;
+            AlertManager.AlertBookingRequestOwnershipChange -= BookingRequestOwnershipChanged;
+            AlertManager.AlertBookingRequestReserved -= BookingRequestReserved;
+            AlertManager.AlertBookingRequestReservationTimeout -= BookingRequestReservationTimeOut;
+            AlertManager.AlertStaleBookingRequestsDetected -= StaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
 
@@ -73,14 +73,14 @@ namespace Core.Managers
             AlertManager.AlertTokenRevoked -= OnAlertTokenRevoked;
         }
 
-        private void ReportStaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
+        private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
         {
             string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
             var tw = ObjectFactory.GetInstance<ISMSPackager>();
             tw.SendSMS(toNumber, oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
         }
 
-        private void ReportBookingRequestReserved(int bookingRequestId, string bookerId)
+        private void BookingRequestReserved(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -120,14 +120,14 @@ namespace Core.Managers
                             }
                     };
 
-                   // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                    // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                     uow.SaveChanges();
                 }
             }
             Logger.GetLogger().Info(string.Format("Reserved. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         }
 
-        private void ReportBookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
+        private void BookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
         {
 
             Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
@@ -209,12 +209,12 @@ namespace Core.Managers
                 var toRecipient = negotiationDO.BookingRequest.Booker.EmailAddress;
 
                 EmailDO curEmail = new EmailDO
-                    {
-                        Subject = subject,
-                        PlainText = message,
-                        HTMLText = message,
-                        From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-                        Recipients = new List<RecipientDO>
+                {
+                    Subject = subject,
+                    PlainText = message,
+                    HTMLText = message,
+                    From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
+                    Recipients = new List<RecipientDO>
                             {
                                 new RecipientDO
                                     {
@@ -222,32 +222,32 @@ namespace Core.Managers
                                         EmailParticipantType = EmailParticipantType.To
                                     }
                             }
-                    };
+                };
 
-              //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
         }
 
-        private void ReportCustomerCreated(string curUserId)
+        private void CustomerCreated(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "User",
-                        SecondaryCategory = "",
-                        Activity = "Created",
-                        CustomerId = curUserId,
-                        ObjectId = null,
-                        Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
-                    };
+                {
+                    PrimaryCategory = "User",
+                    SecondaryCategory = "",
+                    Activity = "Created",
+                    CustomerId = curUserId,
+                    ObjectId = null,
+                    Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
+                };
 
                 SaveFact(curAction);
             }
         }
 
-        public void ReportEmailReceived(int emailId, string customerId)
+        public void EmailReceived(int emailId, string customerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -255,46 +255,46 @@ namespace Core.Managers
                 emailSubject = emailSubject.Length <= 10 ? emailSubject : (emailSubject.Substring(0, 10) + "...");
 
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "Email",
-                        SecondaryCategory = "",
-                        Activity = "Received",
-                        CustomerId = customerId,
-                        ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
-                    };
-              
+                {
+                    PrimaryCategory = "Email",
+                    SecondaryCategory = "",
+                    Activity = "Received",
+                    CustomerId = customerId,
+                    ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
+                };
+
                 curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
 
                 SaveFact(curAction);
             }
         }
 
-        public void ReportEventBooked(int eventId, string customerId)
+        public void EventBooked(int eventId, string customerId)
         {
             FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "Event",
-                    SecondaryCategory = "",
-                    Activity = "Booked",
-                    CustomerId = customerId,
-                    ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
-                };
+            {
+                PrimaryCategory = "Event",
+                SecondaryCategory = "",
+                Activity = "Booked",
+                CustomerId = customerId,
+                ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
+            };
             SaveFact(curAction);
         }
-        public void ReportEmailSent(int emailId, string customerId)
+        public void EmailSent(int emailId, string customerId)
         {
             FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "Email",
-                    SecondaryCategory = "",
-                    Activity = "Sent",
-                    CustomerId = customerId,
-                    ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
-                };
+            {
+                PrimaryCategory = "Email",
+                SecondaryCategory = "",
+                Activity = "Sent",
+                CustomerId = customerId,
+                ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
+            };
             SaveFact(curAction);
         }
 
-        public void ReportBookingRequestCreated(int bookingRequestId)
+        public void BookingRequestCreated(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -304,17 +304,114 @@ namespace Core.Managers
                 ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
 
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "",
-                        Activity = "Created",
-                        CustomerId = bookingRequestDO.CustomerID,
-                        ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
-                    };
-              
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "",
+                    Activity = "Created",
+                    CustomerId = bookingRequestDO.CustomerID,
+                    ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
+                };
+
                 curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
                 SaveFact(curAction);
             }
+        }
+
+        /// <summary>
+        /// The method logs the fact of receiving a notification from DocuSign.      
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
+        public void DocusignNotificationReceived(string userId, string envelopeId)
+        {
+            FactDO fact = new FactDO
+            {
+                PrimaryCategory = "Notification",
+                SecondaryCategory = null,
+                Activity = "Received",
+                CustomerId = userId,
+                ObjectId = null,
+                Data = string.Format("EnvelopeId: {0}.",
+                        envelopeId)
+            };
+            LogFactInformation(fact, "DocusignNotificationReceived");
+            SaveFact(fact);
+        }
+
+        /// <summary>
+        /// The method logs the fact of receiving a notification from DocuSign.      
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
+        public void ImproperDocusignNotificationReceived(string message)
+        {
+            var fact = new IncidentDO
+            {
+                PrimaryCategory = "Notification",
+                Activity = "Received",
+                Data = message
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(fact);
+                uow.SaveChanges();
+            }
+            LogFactInformation(fact, "ImproperDocusignNotificationReceived", EventType.Warning);
+        }
+
+        /// <summary>
+        /// The method records information about unhandled exceptions. 
+        /// </summary>
+        /// <param name="message"></param>
+        public void UnhandledErrorCaught(string message)
+        {
+            var incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Error",
+                SecondaryCategory = "ApplicationException",
+                Activity = "Received",
+                Data = message
+            };
+
+            Logger.GetLogger().Error(message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+
+                //The error may be connected to the fact that DB is unavailable, 
+                //we need to be prepared to that. 
+                try
+                {
+                    uow.SaveChanges();
+                }
+                catch { }
+            }
+        }
+
+        /// <summary>
+        /// The method logs the fact of processing of a notification from DocuSign
+        /// by an individual Process.
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
+        public void AlertProcessProcessing(string userId, string envelopeId, int processId)
+        {
+            FactDO fact = new FactDO
+            {
+                PrimaryCategory = "Notification",
+                SecondaryCategory = null,
+                Activity = "Processed",
+                CustomerId = userId,
+                ObjectId = null,
+                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ProcessDO id: {2}.",
+                        userId,
+                        envelopeId,
+                        processId)
+            };
+            LogFactInformation(fact, "ProcessProcessing");
+            SaveFact(fact);
         }
 
         private void SaveFact(FactDO curAction)
@@ -326,29 +423,28 @@ namespace Core.Managers
             }
         }
 
-        public void ReportUserRegistered(UserDO curUser)
+        public void UserRegistered(UserDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curFactDO = new FactDO
-                    {
-                        PrimaryCategory = "User",
-                        SecondaryCategory = "",
-                        Activity = "Registered",
-                        CustomerId = curUser.Id,
-                        ObjectId = null,
-                        Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
-                        //Data = "User registrated with " + curUser.EmailAddress.Address
-                    };
+                {
+                    PrimaryCategory = "User",
+                    SecondaryCategory = "",
+                    Activity = "Registered",
+                    CustomerId = curUser.Id,
+                    ObjectId = null,
+                    Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
+                    //Data = "User registrated with " + curUser.EmailAddress.Address
+                };
                 Logger.GetLogger().Info(curFactDO.Data);
                 uow.FactRepository.Add(curFactDO);
                 uow.SaveChanges();
             }
-
         }
 
         //Do we need/use both this and the immediately preceding event? 
-        public void ReportBookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
+        public void BookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -360,19 +456,19 @@ namespace Core.Managers
                     throw new EntityNotFoundException<UserDO>(bookerId);
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Ownership",
-                        Activity = "Change",
-                        CustomerId = bookingRequestDO.Customer.Id,
-                        ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                        BookerId = bookerId,
-                        Status = status,
-                        Data = string.Format(
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Change",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
+                    BookerId = bookerId,
+                    Status = status,
+                    Data = string.Format(
                             "BookingRequest ID :{0}, Booker EmailAddress: {1}",
                             bookingRequestDO.Id,
                             bookerDO.EmailAddress.Address)
-                    };
+                };
 
                 //AddFact(uow, curAction);
                 uow.SaveChanges();
@@ -396,6 +492,34 @@ namespace Core.Managers
             }
         }
 
+        /// <summary>
+        /// Logs fact information using the standard log mechanisms.
+        /// </summary>
+        /// <param name="fact">An instance of FactDO class.</param>
+        /// <param name="eventName">Name of the event.</param>
+        /// <param name="eventType">Event type.</param>
+        private void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
+        {
+            string message = string.Format(
+                "Event {0} generated with CustomerId = {1}, ObjectId = {2} and Data = {3}.",
+                eventName,
+                fact.CustomerId,
+                fact.ObjectId,
+                fact.Data);
+
+            switch (eventType) {
+                case EventType.Info:
+                    Logger.GetLogger().Info(message);
+                    break;
+                case EventType.Error:
+                    Logger.GetLogger().Error(message);
+                    break;
+                case EventType.Warning:
+                    Logger.GetLogger().Warn(message);
+                    break;
+            }
+        }
+
         private void OnAlertTokenRequestInitiated(string userId)
         {
             AddFactOnToken(userId, "Requested");
@@ -409,6 +533,13 @@ namespace Core.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
+        }
+
+        private enum EventType
+        {
+            Info,
+            Error,
+            Warning
         }
     }
 }

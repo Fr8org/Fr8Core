@@ -175,6 +175,7 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\INegotiation.cs" />
+    <Compile Include="Interfaces\IProcessService.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -244,10 +245,13 @@
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Notification.cs" />
+    <Compile Include="Services\ProcessService.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
+    <Compile Include="Utilities\DocusignXml.cs" />
+    <Compile Include="Interfaces\IDocusignXml.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

@@ -15,6 +15,7 @@ namespace Data.Interfaces
         CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
+        IProcessRepository ProcessRepository { get; }
         EmailStatusRepository EmailStatusRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }
         EventRepository EventRepository { get; }
@@ -44,7 +45,10 @@ namespace Data.Interfaces
         NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
         SlipRepository SlipRepository { get; }
-        /// <summary>
+	  ActionRepository ActionRepository{ get; }
+	  ActionListRepository ActionListRepository{ get; }
+
+	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();
