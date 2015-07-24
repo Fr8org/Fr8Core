@@ -15,15 +15,15 @@ namespace Core.Managers
         public void SubscribeToAlerts()
         {
             AlertManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
-            AlertManager.AlertBookingRequestProcessingTimeout += ProcessBRTimeout;
-            AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
+            //AlertManager.AlertBookingRequestProcessingTimeout += ProcessBRTimeout;
+            //AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
             AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
-            AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
+            //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
-            AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
-            AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
+            //AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
+            //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             AlertManager.AlertUserRegistrationError += ReportUserRegistrationError;
-            AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
+            //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -76,23 +76,23 @@ namespace Core.Managers
             }
         }
 
-        public void ProcessBRTimeout(int bookingRequestId, string bookerId)
-        {
+        //public void ProcessBRTimeout(int bookingRequestId, string bookerId)
+        //{
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = null;
-                incidentDO.Activity = "Timeout";
-                incidentDO.ObjectId = bookingRequestId.ToString();
-                incidentDO.CustomerId = bookingRequestDO.CustomerID;
-                incidentDO.BookerId = bookingRequestDO.BookerID;
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-        }
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //        IncidentDO incidentDO = new IncidentDO();
+        //        incidentDO.PrimaryCategory = "BookingRequest";
+        //        incidentDO.SecondaryCategory = null;
+        //        incidentDO.Activity = "Timeout";
+        //        incidentDO.ObjectId = bookingRequestId.ToString();
+        //        incidentDO.CustomerId = bookingRequestDO.CustomerID;
+        //        incidentDO.BookerId = bookingRequestDO.BookerID;
+        //        uow.IncidentRepository.Add(incidentDO);
+        //        uow.SaveChanges();
+        //    }
+        //}
 
 
         private void ProcessEmailSendFailure(int emailId, string message)
@@ -115,116 +115,116 @@ namespace Core.Managers
 		//				  "Message: {1}",
 		//				  emailId, message));
         }
-        private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Calendar";
-                incidentDO.SecondaryCategory = "Failure";
-                incidentDO.Activity = "Synchronization";
-                incidentDO.ObjectId = authData.Id.ToString();
-                incidentDO.CustomerId = authData.UserID;
-                if (calendarLink != null)
-                {
-                    incidentDO.Data = string.Format("Link #{0}: {1}", calendarLink.Id, calendarLink.LastSynchronizationResult);
-                }
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
+        //private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        IncidentDO incidentDO = new IncidentDO();
+        //        incidentDO.PrimaryCategory = "Calendar";
+        //        incidentDO.SecondaryCategory = "Failure";
+        //        incidentDO.Activity = "Synchronization";
+        //        incidentDO.ObjectId = authData.Id.ToString();
+        //        incidentDO.CustomerId = authData.UserID;
+        //        if (calendarLink != null)
+        //        {
+        //            incidentDO.Data = string.Format("Link #{0}: {1}", calendarLink.Id, calendarLink.LastSynchronizationResult);
+        //        }
+        //        uow.IncidentRepository.Add(incidentDO);
+        //        uow.SaveChanges();
+        //    }
 
-            var emailBodyBuilder = new StringBuilder();
-            emailBodyBuilder.AppendFormat("CalendarSync failure for calendar auth data #{0} ({1}):\r\n", authData.Id,
-                                          authData.Provider.Name);
-            emailBodyBuilder.AppendFormat("Customer id: {0}\r\n", authData.UserID);
-            if (calendarLink != null)
-            {
-                emailBodyBuilder.AppendFormat("Calendar link id: {0}\r\n", calendarLink.Id);
-                emailBodyBuilder.AppendFormat("Local calendar id: {0}\r\n", calendarLink.LocalCalendarID);
-                emailBodyBuilder.AppendFormat("Remote calendar url: {0}\r\n", calendarLink.RemoteCalendarHref);
-                emailBodyBuilder.AppendFormat("{0}\r\n", calendarLink.LastSynchronizationResult);
-            }
+        //    var emailBodyBuilder = new StringBuilder();
+        //    emailBodyBuilder.AppendFormat("CalendarSync failure for calendar auth data #{0} ({1}):\r\n", authData.Id,
+        //                                  authData.Provider.Name);
+        //    emailBodyBuilder.AppendFormat("Customer id: {0}\r\n", authData.UserID);
+        //    if (calendarLink != null)
+        //    {
+        //        emailBodyBuilder.AppendFormat("Calendar link id: {0}\r\n", calendarLink.Id);
+        //        emailBodyBuilder.AppendFormat("Local calendar id: {0}\r\n", calendarLink.LocalCalendarID);
+        //        emailBodyBuilder.AppendFormat("Remote calendar url: {0}\r\n", calendarLink.RemoteCalendarHref);
+        //        emailBodyBuilder.AppendFormat("{0}\r\n", calendarLink.LastSynchronizationResult);
+        //    }
 
-            Email email = ObjectFactory.GetInstance<Email>();
-           // email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
-        }
+        //    Email email = ObjectFactory.GetInstance<Email>();
+        //   // email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
+        //}
 
-        public void ProcessSubmittedNote(int bookingRequestId, string note)
-        {
-            if (String.IsNullOrEmpty(note))
-                throw new ArgumentException("Empty note.", "note");
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (curBookingRequest == null)
-                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-                var incidentDO = new IncidentDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Note",
-                        Activity = "Created",
-                        BookerId = curBookingRequest.BookerID,
-                        ObjectId = bookingRequestId.ToString(),
-                        Data = note
-                    };
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-        }
+        //public void ProcessSubmittedNote(int bookingRequestId, string note)
+        //{
+        //    if (String.IsNullOrEmpty(note))
+        //        throw new ArgumentException("Empty note.", "note");
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //        if (curBookingRequest == null)
+        //            throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+        //        var incidentDO = new IncidentDO
+        //            {
+        //                PrimaryCategory = "BookingRequest",
+        //                SecondaryCategory = "Note",
+        //                Activity = "Created",
+        //                BookerId = curBookingRequest.BookerID,
+        //                ObjectId = bookingRequestId.ToString(),
+        //                Data = note
+        //            };
+        //        uow.IncidentRepository.Add(incidentDO);
+        //        uow.SaveChanges();
+        //    }
+        //}
 
-        public void ProcessBRCheckedOut(int bookingRequestId, string bookerId)
-        {
-            //BookingRequest _br = new BookingRequest();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                IncidentDO curAction = new IncidentDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = null,
-                    Activity = "Checkout",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestId.ToString(),
-                    BookerId = bookerId,
-                };
+        //public void ProcessBRCheckedOut(int bookingRequestId, string bookerId)
+        //{
+        //    //BookingRequest _br = new BookingRequest();
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //        if (bookingRequestDO == null)
+        //            throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+        //        string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+        //        IncidentDO curAction = new IncidentDO()
+        //        {
+        //            PrimaryCategory = "BookingRequest",
+        //            SecondaryCategory = null,
+        //            Activity = "Checkout",
+        //            CustomerId = bookingRequestDO.Customer.Id,
+        //            ObjectId = bookingRequestId.ToString(),
+        //            BookerId = bookerId,
+        //        };
 
-               // int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+        //       // int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
-                //curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+        //        //curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
 
-                //uow.IncidentRepository.Add(curAction);
-                uow.SaveChanges();
-            }
-        }
+        //        //uow.IncidentRepository.Add(curAction);
+        //        uow.SaveChanges();
+        //    }
+        //}
 
-        private void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                IncidentDO curAction = new IncidentDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "BookerAction",
-                    Activity = "MarkedAsProcessed",
-                    CustomerId = bookingRequestDO.CustomerID,
-                    ObjectId = bookingRequestId.ToString(),
-                    BookerId = bookerId,
-                };
+        //private void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //        if (bookingRequestDO == null)
+        //            throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+        //        IncidentDO curAction = new IncidentDO()
+        //        {
+        //            PrimaryCategory = "BookingRequest",
+        //            SecondaryCategory = "BookerAction",
+        //            Activity = "MarkedAsProcessed",
+        //            CustomerId = bookingRequestDO.CustomerID,
+        //            ObjectId = bookingRequestId.ToString(),
+        //            BookerId = bookerId,
+        //        };
 
-               // var br = ObjectFactory.GetInstance<BookingRequest>();
-               // int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+        //       // var br = ObjectFactory.GetInstance<BookingRequest>();
+        //       // int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
-               // curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
-                uow.IncidentRepository.Add(curAction);
-                uow.SaveChanges();
-            }
-        }
+        //       // curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+        //        uow.IncidentRepository.Add(curAction);
+        //        uow.SaveChanges();
+        //    }
+        //}
 
         public void ReportUserRegistrationError(Exception ex)
         {

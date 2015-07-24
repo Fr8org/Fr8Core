@@ -7,22 +7,22 @@ namespace Data.Interfaces
     {
 
         AttachmentRepository AttachmentRepository { get; }
-        AttendeeRepository AttendeeRepository { get; }
+        //AttendeeRepository AttendeeRepository { get; }
         EmailAddressRepository EmailAddressRepository { get; }
         RecipientRepository RecipientRepository { get; }
-        BookingRequestRepository BookingRequestRepository { get; }
+        //BookingRequestRepository BookingRequestRepository { get; }
         BookingRequestStatusRepository BookingRequestStatusRepository { get; }
-        CalendarRepository CalendarRepository { get; }
+        //CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
         IProcessRepository ProcessRepository { get; }
         EmailStatusRepository EmailStatusRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }
-        EventRepository EventRepository { get; }
+        //EventRepository EventRepository { get; }
         EventStatusRepository EventStatusRepository { get; }
         InstructionRepository InstructionRepository { get; }
         InvitationRepository InvitationRepository { get; }
-        InvitationResponseRepository InvitationResponseRepository { get; }
+        //InvitationResponseRepository InvitationResponseRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
         UserAgentInfoRepository UserAgentInfoRepository { get; }
@@ -30,19 +30,19 @@ namespace Data.Interfaces
         AspNetUserRolesRepository AspNetUserRolesRepository { get; }
         AspNetRolesRepository AspNetRolesRepository { get; }
         IncidentRepository IncidentRepository { get; }
-        NegotiationsRepository NegotiationsRepository { get; }
-        QuestionsRepository QuestionsRepository { get; }
+        //NegotiationsRepository NegotiationsRepository { get; }
+        //QuestionsRepository QuestionsRepository { get; }
         FactRepository FactRepository { get; }
-        QuestionRepository QuestionRepository { get; }
-        AnswerRepository AnswerRepository { get; }
-        QuestionResponseRepository QuestionResponseRepository { get; }
+        //QuestionRepository QuestionRepository { get; }
+        //AnswerRepository AnswerRepository { get; }
+        //QuestionResponseRepository QuestionResponseRepository { get; }
         AuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
         ProfileNodeRepository ProfileNodeRepository { get; }
         ProfileItemRepository ProfileItemRepository { get; }
         ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
-        NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
+        //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
         SlipRepository SlipRepository { get; }
 	  ActionRepository ActionRepository{ get; }
@@ -60,7 +60,7 @@ namespace Data.Interfaces
 
         RemoteCalendarProviderRepository RemoteCalendarProviderRepository { get; }
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
-        RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
+        //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
 
         /// <summary>

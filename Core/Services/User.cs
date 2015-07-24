@@ -29,8 +29,8 @@ namespace Core.Services
         /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
         public CommunicationMode GetMode(UserDO userDO)
         {
-            if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
-                return CommunicationMode.Direct;
+            //if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
+            //    return CommunicationMode.Direct;
             if(!String.IsNullOrEmpty(userDO.PasswordHash))
                 return CommunicationMode.Direct;
             return CommunicationMode.Delegate;

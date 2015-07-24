@@ -24,9 +24,9 @@ namespace Data.Entities
 
         public UserDO()
         {
-            UserBookingRequests = new List<BookingRequestDO>();
-            BookerBookingRequests = new List<BookingRequestDO>();
-            Calendars = new List<CalendarDO>();
+            //UserBookingRequests = new List<BookingRequestDO>();
+            //BookerBookingRequests = new List<BookingRequestDO>();
+            //Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
             Profiles = new List<ProfileDO>();
             SecurityStamp = Guid.NewGuid().ToString();
@@ -47,14 +47,14 @@ namespace Data.Entities
         public int? State { get; set; }
         public virtual _UserStateTemplate UserStateTemplate { get; set; }
         
-        [InverseProperty("Customer")]
-        public virtual IList<BookingRequestDO> UserBookingRequests { get; set; }
+        //[InverseProperty("Customer")]
+        //public virtual IList<BookingRequestDO> UserBookingRequests { get; set; }
 
-        [InverseProperty("Booker")]
-        public virtual IList<BookingRequestDO> BookerBookingRequests { get; set; }
+        //[InverseProperty("Booker")]
+        //public virtual IList<BookingRequestDO> BookerBookingRequests { get; set; }
 
-        [InverseProperty("Owner")]
-        public virtual IList<CalendarDO> Calendars { get; set; }
+        //[InverseProperty("Owner")]
+        //public virtual IList<CalendarDO> Calendars { get; set; }
 
         [InverseProperty("User")]
         public virtual IList<ProfileDO> Profiles { get; set; }
@@ -81,13 +81,13 @@ namespace Data.Entities
         {
             //we only want to treat explicit customers, who have sent us a BR, a welcome message
             //if there exists a booking request with this user as its created by...
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (uow.BookingRequestRepository.FindOne(br => br.Customer.Id == Id) != null)
-                    AlertManager.ExplicitCustomerCreated(Id);
-            }
+            //using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //{
+            //    if (uow.BookingRequestRepository.FindOne(br => br.Customer.Id == Id) != null)
+            //        AlertManager.ExplicitCustomerCreated(Id);
+            //}
 
-            AlertManager.CustomerCreated(this);
+            //AlertManager.CustomerCreated(this);
         }
 
         public void BeforeSave()

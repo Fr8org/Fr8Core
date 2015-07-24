@@ -17,7 +17,7 @@ namespace Data.Entities
         {
             Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
-            Events = new List<EventDO>();
+            //Events = new List<EventDO>();
             DateReceived = DateTimeOffset.UtcNow;
             //Envelopes = new List<EnvelopeDO>();
 
@@ -26,13 +26,13 @@ namespace Data.Entities
         }
 
 
-        public void TagEmailToBookingRequest(BookingRequestDO bookingRequestDO, bool linkToConversation = true)
-        {
-            SetReplyTo(bookingRequestDO.Id);
-            AddReference(bookingRequestDO.MessageID);
-            if (linkToConversation)
-                ConversationId = bookingRequestDO.Id;
-        }
+        //public void TagEmailToBookingRequest(BookingRequestDO bookingRequestDO, bool linkToConversation = true)
+        //{
+        //    SetReplyTo(bookingRequestDO.Id);
+        //    AddReference(bookingRequestDO.MessageID);
+        //    if (linkToConversation)
+        //        ConversationId = bookingRequestDO.Id;
+        //}
 
         private void SetReplyTo(int bookingRequestID)
         {
@@ -100,7 +100,7 @@ namespace Data.Entities
         
         [ForeignKey("Conversation")]
         public int? ConversationId { get; set; }
-        public virtual BookingRequestDO Conversation { get; set; }
+        //public virtual BookingRequestDO Conversation { get; set; }
 
         [ForeignKey("EmailStatusTemplate")]
         public int? EmailStatus { get; set; }
@@ -135,8 +135,8 @@ namespace Data.Entities
         [InverseProperty("Email")]
         public virtual List<AttachmentDO> Attachments { get; set; }
 
-        [InverseProperty("Emails")]
-        public virtual List<EventDO> Events { get; set; }
+        //[InverseProperty("Emails")]
+        //public virtual List<EventDO> Events { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {

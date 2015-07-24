@@ -166,14 +166,8 @@
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
-    <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
-    <Compile Include="Interfaces\IAnswer.cs" />
-    <Compile Include="Interfaces\IAttendee.cs" />
-    <Compile Include="Interfaces\IBookingRequest.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IEvent.cs" />
-    <Compile Include="Interfaces\INegotiation.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />

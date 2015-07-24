@@ -27,21 +27,21 @@ namespace Core.Managers
         {
             AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
             AlertManager.AlertEntityStateChanged += EntityStateChanged;
-            AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
+            //AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += EmailReceived;
             AlertManager.AlertEventBooked += EventBooked;
             AlertManager.AlertEmailSent += EmailSent;
-            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
+            //AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
             AlertManager.AlertExplicitCustomerCreated += CustomerCreated;
 
             AlertManager.AlertUserRegistration += UserRegistered;
 
-            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChanged;
-            AlertManager.AlertBookingRequestReserved += BookingRequestReserved;
-            AlertManager.AlertBookingRequestReservationTimeout += BookingRequestReservationTimeOut;
-            AlertManager.AlertStaleBookingRequestsDetected += StaleBookingRequestsDetected;
+            //AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChanged;
+            //AlertManager.AlertBookingRequestReserved += BookingRequestReserved;
+            //AlertManager.AlertBookingRequestReservationTimeout += BookingRequestReservationTimeOut;
+            //AlertManager.AlertStaleBookingRequestsDetected += StaleBookingRequestsDetected;
 
-            AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+            //AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
 
             AlertManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
             AlertManager.AlertTokenObtained += OnAlertTokenObtained;
@@ -52,86 +52,86 @@ namespace Core.Managers
         {
             AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
             AlertManager.AlertEntityStateChanged -= EntityStateChanged;
-            AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
+            //AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived -= EmailReceived;
             AlertManager.AlertEventBooked -= EventBooked;
             AlertManager.AlertEmailSent -= EmailSent;
-            AlertManager.AlertBookingRequestCreated -= BookingRequestCreated;
+            //AlertManager.AlertBookingRequestCreated -= BookingRequestCreated;
             AlertManager.AlertExplicitCustomerCreated -= CustomerCreated;
 
             AlertManager.AlertUserRegistration -= UserRegistered;
 
-            AlertManager.AlertBookingRequestOwnershipChange -= BookingRequestOwnershipChanged;
-            AlertManager.AlertBookingRequestReserved -= BookingRequestReserved;
-            AlertManager.AlertBookingRequestReservationTimeout -= BookingRequestReservationTimeOut;
-            AlertManager.AlertStaleBookingRequestsDetected -= StaleBookingRequestsDetected;
+            //AlertManager.AlertBookingRequestOwnershipChange -= BookingRequestOwnershipChanged;
+            //AlertManager.AlertBookingRequestReserved -= BookingRequestReserved;
+            //AlertManager.AlertBookingRequestReservationTimeout -= BookingRequestReservationTimeOut;
+            //AlertManager.AlertStaleBookingRequestsDetected -= StaleBookingRequestsDetected;
 
-            AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
+            //AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
 
             AlertManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             AlertManager.AlertTokenObtained -= OnAlertTokenObtained;
             AlertManager.AlertTokenRevoked -= OnAlertTokenRevoked;
         }
 
-        private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
-        {
-            string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
-            var tw = ObjectFactory.GetInstance<ISMSPackager>();
-            tw.SendSMS(toNumber, oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
-        }
+        //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
+        //{
+        //    string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
+        //    var tw = ObjectFactory.GetInstance<ISMSPackager>();
+        //    tw.SendSMS(toNumber, oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
+        //}
 
-        private void BookingRequestReserved(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (curBookingRequest == null)
-                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-                var curBooker = uow.UserRepository.GetByKey(bookerId);
-                if (curBooker == null)
-                    throw new EntityNotFoundException<UserDO>(bookerId);
+        //private void BookingRequestReserved(int bookingRequestId, string bookerId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //        if (curBookingRequest == null)
+        //            throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+        //        var curBooker = uow.UserRepository.GetByKey(bookerId);
+        //        if (curBooker == null)
+        //            throw new EntityNotFoundException<UserDO>(bookerId);
 
-                if (!curBooker.Available.GetValueOrDefault())
-                {
-                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+        //        if (!curBooker.Available.GetValueOrDefault())
+        //        {
+        //            IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+        //            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                    const string subject = "A booking request has been reserved for you";
-                    const string messageTemplate = "A booking request has been reserved for you ({0}). Click {1} to view the booking request.";
+        //            const string subject = "A booking request has been reserved for you";
+        //            const string messageTemplate = "A booking request has been reserved for you ({0}). Click {1} to view the booking request.";
 
-                    var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, curBookingRequest.Id);
-                    var message = String.Format(messageTemplate, curBookingRequest.Subject, "<a href='" + bookingRequestURL + "'>here</a>");
+        //            var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, curBookingRequest.Id);
+        //            var message = String.Format(messageTemplate, curBookingRequest.Subject, "<a href='" + bookingRequestURL + "'>here</a>");
 
-                    var toRecipient = curBooker.EmailAddress;
+        //            var toRecipient = curBooker.EmailAddress;
 
-                    EmailDO curEmail = new EmailDO
-                    {
-                        Subject = subject,
-                        PlainText = message,
-                        HTMLText = message,
-                        From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-                        Recipients = new List<RecipientDO>
-                            {
-                                new RecipientDO
-                                    {
-                                        EmailAddress = toRecipient,
-                                        EmailParticipantType = EmailParticipantType.To
-                                    }
-                            }
-                    };
+        //            EmailDO curEmail = new EmailDO
+        //            {
+        //                Subject = subject,
+        //                PlainText = message,
+        //                HTMLText = message,
+        //                From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
+        //                Recipients = new List<RecipientDO>
+        //                    {
+        //                        new RecipientDO
+        //                            {
+        //                                EmailAddress = toRecipient,
+        //                                EmailParticipantType = EmailParticipantType.To
+        //                            }
+        //                    }
+        //            };
 
-                    // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                    uow.SaveChanges();
-                }
-            }
-            Logger.GetLogger().Info(string.Format("Reserved. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
-        }
+        //            // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+        //            uow.SaveChanges();
+        //        }
+        //    }
+        //    Logger.GetLogger().Info(string.Format("Reserved. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
+        //}
 
-        private void BookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
-        {
+        //private void BookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
+        //{
 
-            Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
-        }
+        //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
+        //}
 
         private static void TrackablePropertyUpdated(string entityName, string propertyName, object id,
             object value)
@@ -170,64 +170,64 @@ namespace Core.Managers
             }
         }
 
-        private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
-        {
-            const string logMessageFormat = "Inbound Email ID {0} with subject '{1}' was matched to BR ID {2}";
-            var logMessage = String.Format(logMessageFormat, emailID, subject, bookingRequestID);
+        //private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
+        //{
+        //    const string logMessageFormat = "Inbound Email ID {0} with subject '{1}' was matched to BR ID {2}";
+        //    var logMessage = String.Format(logMessageFormat, emailID, subject, bookingRequestID);
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var incidentDO = new IncidentDO
-                {
-                    ObjectId = emailID.ToString(),
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Conversation",
-                    Data = logMessage
-                };
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var incidentDO = new IncidentDO
+        //        {
+        //            ObjectId = emailID.ToString(),
+        //            PrimaryCategory = "BookingRequest",
+        //            SecondaryCategory = "Conversation",
+        //            Data = logMessage
+        //        };
+        //        uow.IncidentRepository.Add(incidentDO);
+        //        uow.SaveChanges();
+        //    }
 
-            Logger.GetLogger().Info(logMessage);
-        }
+        //    Logger.GetLogger().Info(logMessage);
+        //}
 
-        private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationId);
+        //private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationId);
 
-                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+        //        IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+        //        string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                const string subject = "New response to resolved negotiation request";
-                const string messageTemplate = "A customer has submitted a new response to an already-resolved negotiation request ({0}). Click {1} to view the booking request.";
+        //        const string subject = "New response to resolved negotiation request";
+        //        const string messageTemplate = "A customer has submitted a new response to an already-resolved negotiation request ({0}). Click {1} to view the booking request.";
 
-                var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, negotiationDO.BookingRequestID);
-                var message = String.Format(messageTemplate, negotiationDO.Name, "<a href='" + bookingRequestURL + "'>here</a>");
+        //        var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, negotiationDO.BookingRequestID);
+        //        var message = String.Format(messageTemplate, negotiationDO.Name, "<a href='" + bookingRequestURL + "'>here</a>");
 
-                var toRecipient = negotiationDO.BookingRequest.Booker.EmailAddress;
+        //        var toRecipient = negotiationDO.BookingRequest.Booker.EmailAddress;
 
-                EmailDO curEmail = new EmailDO
-                {
-                    Subject = subject,
-                    PlainText = message,
-                    HTMLText = message,
-                    From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-                    Recipients = new List<RecipientDO>
-                            {
-                                new RecipientDO
-                                    {
-                                        EmailAddress = toRecipient,
-                                        EmailParticipantType = EmailParticipantType.To
-                                    }
-                            }
-                };
+        //        EmailDO curEmail = new EmailDO
+        //        {
+        //            Subject = subject,
+        //            PlainText = message,
+        //            HTMLText = message,
+        //            From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
+        //            Recipients = new List<RecipientDO>
+        //                    {
+        //                        new RecipientDO
+        //                            {
+        //                                EmailAddress = toRecipient,
+        //                                EmailParticipantType = EmailParticipantType.To
+        //                            }
+        //                    }
+        //        };
 
-                //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                uow.SaveChanges();
-            }
-        }
+        //        //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+        //        uow.SaveChanges();
+        //    }
+        //}
 
         private void CustomerCreated(string curUserId)
         {
@@ -294,28 +294,28 @@ namespace Core.Managers
             SaveFact(curAction);
         }
 
-        public void BookingRequestCreated(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //public void BookingRequestCreated(int bookingRequestId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
 
 
-                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
+        //        ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
 
-                FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "",
-                    Activity = "Created",
-                    CustomerId = bookingRequestDO.CustomerID,
-                    ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
-                };
+        //        FactDO curAction = new FactDO
+        //        {
+        //            PrimaryCategory = "BookingRequest",
+        //            SecondaryCategory = "",
+        //            Activity = "Created",
+        //            CustomerId = bookingRequestDO.CustomerID,
+        //            ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
+        //        };
 
-                curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
-                SaveFact(curAction);
-            }
-        }
+        //        curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
+        //        SaveFact(curAction);
+        //    }
+        //}
 
         /// <summary>
         /// The method logs the fact of receiving a notification from DocuSign.      
@@ -444,36 +444,36 @@ namespace Core.Managers
         }
 
         //Do we need/use both this and the immediately preceding event? 
-        public void BookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-                var bookerDO = uow.UserRepository.GetByKey(bookerId);
-                if (bookerDO == null)
-                    throw new EntityNotFoundException<UserDO>(bookerId);
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Ownership",
-                    Activity = "Change",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                    BookerId = bookerId,
-                    Status = status,
-                    Data = string.Format(
-                            "BookingRequest ID :{0}, Booker EmailAddress: {1}",
-                            bookingRequestDO.Id,
-                            bookerDO.EmailAddress.Address)
-                };
+        //public void BookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+        //        if (bookingRequestDO == null)
+        //            throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+        //        var bookerDO = uow.UserRepository.GetByKey(bookerId);
+        //        if (bookerDO == null)
+        //            throw new EntityNotFoundException<UserDO>(bookerId);
+        //        string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+        //        FactDO curAction = new FactDO
+        //        {
+        //            PrimaryCategory = "BookingRequest",
+        //            SecondaryCategory = "Ownership",
+        //            Activity = "Change",
+        //            CustomerId = bookingRequestDO.Customer.Id,
+        //            ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
+        //            BookerId = bookerId,
+        //            Status = status,
+        //            Data = string.Format(
+        //                    "BookingRequest ID :{0}, Booker EmailAddress: {1}",
+        //                    bookingRequestDO.Id,
+        //                    bookerDO.EmailAddress.Address)
+        //        };
 
-                //AddFact(uow, curAction);
-                uow.SaveChanges();
-            }
-        }
+        //        //AddFact(uow, curAction);
+        //        uow.SaveChanges();
+        //    }
+        //}
 
         private void AddFactOnToken(string userId, string activity)
         {
