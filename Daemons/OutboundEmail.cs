@@ -64,7 +64,7 @@ namespace Daemons
                         uow.SaveChanges();
                     }
 
-                    AlertManager.Error_EmailSendFailure(emailID, message);
+                    EventManager.Error_EmailSendFailure(emailID, message);
                 });
 
             AddTest("OutboundEmailDaemon_Test", "Test");

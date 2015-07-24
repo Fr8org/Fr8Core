@@ -111,7 +111,7 @@ namespace Core.Services
             submittedUserData.Roles.Clear();
             uow.UserRepository.Add(submittedUserData);
             uow.SaveChanges();
-            AlertManager.ExplicitCustomerCreated(submittedUserData.Id);
+            EventManager.ExplicitCustomerCreated(submittedUserData.Id);
         }
 
         public UserDO GetExisting(IUnitOfWork uow, string emailAddress)

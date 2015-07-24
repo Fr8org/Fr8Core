@@ -20,21 +20,21 @@ using Utilities.Logging;
 
 namespace Core.Managers
 {
-    public class AlertReporter
+    public class EventReporter
     {
         //Register for interesting events
         public void SubscribeToAlerts()
         {
-            AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
-            AlertManager.AlertEntityStateChanged += EntityStateChanged;
+            EventManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
+            EventManager.AlertEntityStateChanged += EntityStateChanged;
             //AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived += EmailReceived;
-            AlertManager.AlertEventBooked += EventBooked;
-            AlertManager.AlertEmailSent += EmailSent;
+            EventManager.AlertEmailReceived += EmailReceived;
+            EventManager.AlertEventBooked += EventBooked;
+            EventManager.AlertEmailSent += EmailSent;
             //AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
-            AlertManager.AlertExplicitCustomerCreated += CustomerCreated;
+            EventManager.AlertExplicitCustomerCreated += CustomerCreated;
 
-            AlertManager.AlertUserRegistration += UserRegistered;
+            EventManager.AlertUserRegistration += UserRegistered;
 
             //AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChanged;
             //AlertManager.AlertBookingRequestReserved += BookingRequestReserved;
@@ -43,23 +43,23 @@ namespace Core.Managers
 
             //AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
 
-            AlertManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
-            AlertManager.AlertTokenObtained += OnAlertTokenObtained;
-            AlertManager.AlertTokenRevoked += OnAlertTokenRevoked;
+            EventManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
+            EventManager.AlertTokenObtained += OnAlertTokenObtained;
+            EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
         }
 
         public void UnsubscribeFromAlerts()
         {
-            AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
-            AlertManager.AlertEntityStateChanged -= EntityStateChanged;
+            EventManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
+            EventManager.AlertEntityStateChanged -= EntityStateChanged;
             //AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived -= EmailReceived;
-            AlertManager.AlertEventBooked -= EventBooked;
-            AlertManager.AlertEmailSent -= EmailSent;
+            EventManager.AlertEmailReceived -= EmailReceived;
+            EventManager.AlertEventBooked -= EventBooked;
+            EventManager.AlertEmailSent -= EmailSent;
             //AlertManager.AlertBookingRequestCreated -= BookingRequestCreated;
-            AlertManager.AlertExplicitCustomerCreated -= CustomerCreated;
+            EventManager.AlertExplicitCustomerCreated -= CustomerCreated;
 
-            AlertManager.AlertUserRegistration -= UserRegistered;
+            EventManager.AlertUserRegistration -= UserRegistered;
 
             //AlertManager.AlertBookingRequestOwnershipChange -= BookingRequestOwnershipChanged;
             //AlertManager.AlertBookingRequestReserved -= BookingRequestReserved;
@@ -68,9 +68,9 @@ namespace Core.Managers
 
             //AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
 
-            AlertManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
-            AlertManager.AlertTokenObtained -= OnAlertTokenObtained;
-            AlertManager.AlertTokenRevoked -= OnAlertTokenRevoked;
+            EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
+            EventManager.AlertTokenObtained -= OnAlertTokenObtained;
+            EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)

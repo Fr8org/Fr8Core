@@ -7,7 +7,7 @@ namespace Web.NotificationQueues
     {
         public HighPriorityIncidentsQueue()
         {
-            AlertManager.AlertHighPriorityIncidentCreated += id => AppendUpdate(new HighPriorityIncidentData(id));
+            EventManager.AlertHighPriorityIncidentCreated += id => AppendUpdate(new HighPriorityIncidentData(id));
         }
     }
 

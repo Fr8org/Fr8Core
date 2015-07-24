@@ -40,8 +40,8 @@ namespace Core.Managers
         //Register for interesting events
         public void SubscribeToAlerts()
         {
-            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
-            AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
+            EventManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
+            EventManager.AlertCustomerCreated += NewCustomerWorkflow;
             //AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
         }
 

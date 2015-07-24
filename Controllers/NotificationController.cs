@@ -16,18 +16,18 @@ namespace Web.Controllers
     public class NotificationController : ApiController
     {
         IProcessService _processService;
-        AlertReporter _alertReporter;
+        EventReporter _alertReporter;
 
         public NotificationController()
         {
             _processService = ObjectFactory.GetInstance<IProcessService>();
-            _alertReporter = ObjectFactory.GetInstance<AlertReporter>();
+            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
         }
 
         public NotificationController(IProcessService processService)
         {
             _processService = processService;
-            _alertReporter = ObjectFactory.GetInstance<AlertReporter>();
+            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
         }
         /// <summary>
         /// Processes incoming DocuSign notifications.

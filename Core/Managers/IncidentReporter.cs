@@ -14,15 +14,15 @@ namespace Core.Managers
     {
         public void SubscribeToAlerts()
         {
-            AlertManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
+            EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
             //AlertManager.AlertBookingRequestProcessingTimeout += ProcessBRTimeout;
             //AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
-            AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
+            EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
-            AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
+            EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             //AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
             //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
-            AlertManager.AlertUserRegistrationError += ReportUserRegistrationError;
+            EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
         }
 

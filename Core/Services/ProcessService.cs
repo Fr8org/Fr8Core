@@ -16,11 +16,11 @@ namespace Core.Services
 {
     public class ProcessService : IProcessService
     {
-        AlertReporter _alertReporter;
+        EventReporter _alertReporter;
         User _userService;
         IDocusignXml _docusignXml;
 
-        public ProcessService(AlertReporter alertReporter, User userService, IDocusignXml docusignXml)
+        public ProcessService(EventReporter alertReporter, User userService, IDocusignXml docusignXml)
         {
             _alertReporter = alertReporter;
             _userService = userService;

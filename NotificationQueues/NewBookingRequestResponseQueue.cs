@@ -11,7 +11,7 @@ namespace Web.NotificationQueues
     {
         public NewBookingRequestResponseQueue()
         {
-            AlertManager.AlertResponseReceived +=
+            EventManager.AlertResponseReceived +=
                 (bookingRequestID, bookerID, customerID) =>
                 {
                     if (!String.IsNullOrWhiteSpace(bookerID))
