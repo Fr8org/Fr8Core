@@ -125,3 +125,4 @@ ClientBin/
 /NUnit.Runners.2.6.3
 /TestResult.xml
 Web.config.local
+node_modules/bower/node_modules/inquirer/node_modules
