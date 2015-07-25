@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using Core.Services;
-
+﻿using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using NUnit.Framework;
@@ -36,25 +32,5 @@ namespace DockyardTest.Entities
 				Assert.AreEqual( updatedStatus, updatedEnvelope.Status );
 			}
 		}
-
-        [Test]
-        [Category("Envelope")]
-        public void Envelope_Can_Normalize_EnvelopeData()
-	    {
-            //TODO orkan:
-            /*
-             * a) programmatically create an Envelope in DocuSign in the developer sandbox account
-             * b) populate it with some Tabs with values. Example "Amount" is a text field with value "45".
-             * c) call Envelope#GetEnvelopeData
-             * d) Verify that the returned List matches expectations.
-             */
-
-            const EnvelopeDO.EnvelopeState newStatus = EnvelopeDO.EnvelopeState.Created;
-            EnvelopeDO envelopeDo = new EnvelopeDO {Id = 1, Status = newStatus, DocusignEnvelopeId = "23"};
-
-            List<EnvelopeData> envelopeDatas = Envelope.GetEnvelopeData(envelopeDo);
-            Assert.IsNotNull(envelopeDatas);
-            Assert.IsTrue(envelopeDatas.Count > 0);
-	    }
 	}
 }
