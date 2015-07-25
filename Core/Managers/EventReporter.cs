@@ -423,7 +423,7 @@ namespace Core.Managers
             }
         }
 
-        public void UserRegistered(UserDO curUser)
+        public void UserRegistered(DockyardAccountDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
