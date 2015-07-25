@@ -177,6 +177,10 @@
     <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.Designer.cs">
       <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507252017207_AddDocksignAccount.cs" />
+    <Compile Include="Migrations\201507252017207_AddDocksignAccount.Designer.cs">
+      <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -353,6 +357,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507242025144_RemoveUnwantedTables.resx">
       <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507252017207_AddDocksignAccount.resx">
+      <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
