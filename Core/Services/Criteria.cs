@@ -10,7 +10,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestSharp;
 
 namespace Core.Services
 {
@@ -18,29 +20,29 @@ namespace Core.Services
     {
         public bool Evaluate(string criteria, int processId, string envelopeId, IEnumerable<EnvelopeDataDO> envelopeData)
         {
-            return Filter(criteria, processId, envelopeId, envelopeData).Any();
+            return Filter(criteria, processId, envelopeId, envelopeData.AsQueryable()).Any();
         }
 
-        public IEnumerable<EnvelopeDataDO> Filter(string criteria, int processId, string envelopeId,
-            IEnumerable<EnvelopeDataDO> envelopeData)
+        public IQueryable<EnvelopeDataDO> Filter(string criteria, int processId, string envelopeId,
+            IQueryable<EnvelopeDataDO> envelopeData)
         {
-            var filterExpression = ParseCriteriaExpression(criteria);
+            var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
             IQueryable<EnvelopeDataDO> results =
-                envelopeData.AsQueryable().Provider.CreateQuery<EnvelopeDataDO>(filterExpression);
+                envelopeData.Provider.CreateQuery<EnvelopeDataDO>(filterExpression);
             return results;
         }
 
-        private Expression ParseCriteriaExpression(string criteria)
+        private Expression ParseCriteriaExpression<T>(string criteria, IQueryable<T> queryableData)
         {
             Expression criteriaExpression = null;
-            ParameterExpression pe = Expression.Parameter(typeof(string), "p");
+            ParameterExpression pe = Expression.Parameter(typeof(T), "p");
             JObject jCriteria = JObject.Parse(criteria);
             JArray jCriterions = (JArray)jCriteria.Property("criteria").Value;
             foreach (var jCriterion in jCriterions.OfType<JObject>())
             {
-                var propName = jCriterion.Property("field").Value<string>();
-                var op = jCriterion.Property("operator").Value<string>();
-                var value = jCriterion.Property("value").Value<string>();
+                var propName = (string)jCriterion.Property("field").Value;
+                var op = (string)jCriterion.Property("operator").Value;
+                var value = (string)jCriterion.Property("value").Value;
                 Expression left = Expression.Property(pe, propName);
                 Expression right = Expression.Constant(value);
                 Expression criterionExpression;
@@ -70,7 +72,17 @@ namespace Core.Services
                 else
                     criteriaExpression = Expression.AndAlso(criteriaExpression, criterionExpression);
             }
-            return criteriaExpression;
+
+            if (criteriaExpression == null)
+                criteriaExpression = Expression.Constant(true);
+
+            var whereCallExpression = Expression.Call(
+                typeof(Queryable),
+                "Where",
+                new[] { typeof(T) },
+                queryableData.Expression,
+                Expression.Lambda<Func<T, bool>>(criteriaExpression, new[] { pe }));
+            return whereCallExpression;
         }
     }
 }

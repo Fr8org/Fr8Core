@@ -197,6 +197,7 @@
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Entities\CustomFieldTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
