@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ProcessTemplate : IMigrationMetadata
+    public sealed partial class ProcessTemplateDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ProcessTemplate));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ProcessTemplateDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201507232048129_ProcessTemplate"; }
+            get { return "201507240005258_ProcessTemplateDO"; }
         }
         
         string IMigrationMetadata.Source

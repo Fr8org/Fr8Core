@@ -177,9 +177,13 @@
     <Compile Include="Migrations\201507231732158_mergefix.Designer.cs">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201507232048129_ProcessTemplate.cs" />
-    <Compile Include="Migrations\201507232048129_ProcessTemplate.Designer.cs">
-      <DependentUpon>201507232048129_ProcessTemplate.cs</DependentUpon>
+    <Compile Include="Migrations\201507232256511_ActionList.cs" />
+    <Compile Include="Migrations\201507232256511_ActionList.Designer.cs">
+      <DependentUpon>201507232256511_ActionList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507240005258_ProcessTemplateDO.cs" />
+    <Compile Include="Migrations\201507240005258_ProcessTemplateDO.Designer.cs">
+      <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
@@ -388,14 +392,17 @@
     <EmbeddedResource Include="Migrations\201507222138309_ProcessDO.resx">
       <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507232048129_ProcessTemplate.resx">
-      <DependentUpon>201507232048129_ProcessTemplate.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507211417084_Actions_Migration.resx">
       <DependentUpon>201507211417084_Actions_Migration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507231732158_mergefix.resx">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507232256511_ActionList.resx">
+      <DependentUpon>201507232256511_ActionList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507240005258_ProcessTemplateDO.resx">
+      <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -28,7 +28,7 @@ namespace Data.Infrastructure
 
             public override string ToString()
             {
-                
+
                 const string displayChange = "[{0}]: [{1}] -> [{2}]";
                 return String.Format(displayChange, PropertyName, OriginalValue, NewValue);
             }
@@ -44,7 +44,7 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base("name=DockyardDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
 
@@ -57,7 +57,7 @@ namespace Data.Infrastructure
         private List<PropertyChangeInformation> GetEntityModifications<T>(DbEntityEntry<T> entity)
             where T : class
         {
-            return GetEntityModifications((DbEntityEntry) entity);
+            return GetEntityModifications((DbEntityEntry)entity);
         }
 
         public void DetectChanges()
@@ -116,7 +116,7 @@ namespace Data.Infrastructure
             var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
             foreach (DbEntityEntry<ICreateHook> entity in addHooks)
             {
-               createdEntityList.Add(entity);
+                createdEntityList.Add(entity);
             }
 
             FixForeignKeyIDs(adds);
@@ -132,7 +132,7 @@ namespace Data.Infrastructure
             {
                 createdEntity.Entity.AfterCreate();
             }
-            
+
             return saveResult;
         }
 
@@ -171,7 +171,7 @@ namespace Data.Infrastructure
                 foreach (var prop in propsWithForeignKeyNotation)
                 {
                     var attr = prop.GetCustomAttribute<ForeignKeyAttribute>(true);
-                    
+
                     //Now.. find out which way it goes..
                     var linkedName = attr.Name;
                     var linkedProp = propType.GetProperties().FirstOrDefault(n => n.Name == linkedName);
@@ -272,9 +272,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<NegotiationAnswerEmailDO>().ToTable("NegotiationAnswerEmails");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
-	      modelBuilder.Entity< ActionDO >().ToTable( "Actions" );
-		modelBuilder.Entity< ActionListDO >().ToTable( "ActionLists" );
-		modelBuilder.Entity< TemplateDO >().ToTable( "Templates" );
+            modelBuilder.Entity<ActionDO>().ToTable("Actions");
+            modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
+            modelBuilder.Entity<TemplateDO>().ToTable("Templates");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
@@ -322,7 +322,7 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
 
-         
+
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
@@ -337,14 +337,14 @@ namespace Data.Infrastructure
                 .HasMany(e => e.Attendees)
                 .WithOptional(a => a.Negotiation)
                 .WillCascadeOnDelete(true);
-            
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
                     ts.Id,
                     ts.ForeignTableName
                 });
-            
+
             modelBuilder.Entity<AnswerDO>()
                 .HasOptional(a => a.Event).WithMany().WillCascadeOnDelete();
 

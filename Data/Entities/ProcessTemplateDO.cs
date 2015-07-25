@@ -12,6 +12,7 @@ namespace Data.Entities
 {
     public class ProcessTemplateDO : BaseDO 
     {
+        [Key]
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
