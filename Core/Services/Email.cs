@@ -20,7 +20,7 @@ namespace Core.Services
     public class Email
     {
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
-        private EventValidator _curEventValidator;
+        //private EventValidator _curEventValidator;
         private readonly EmailAddress _emailAddress;
 
         #region Constructor
@@ -37,7 +37,7 @@ namespace Core.Services
         public Email(EmailAddress emailAddress)
         {
             _emailAddress = emailAddress;
-            _curEventValidator = new EventValidator();
+            //_curEventValidator = new EventValidator();
         }
 
         #endregion
@@ -280,7 +280,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Convert.ToString(uow.EmailRepository.GetByKey(emailId).ConversationId);
+                return Convert.ToString(uow.EmailRepository.GetByKey(emailId).Id);
             }
         }
 
@@ -300,7 +300,7 @@ namespace Core.Services
                     Date = e.CreateDate.ToString(DateStandardFormat),
                     EmailStatus = FilterUtility.GetState(new EmailState().GetType(), (e.EmailStatus.HasValue ? e.EmailStatus.Value : 0)),
                     //EmailStatus = "",
-                    ConversationId = e.ConversationId
+                    ConversationId = e.Id
                 }).ToList();
 
             

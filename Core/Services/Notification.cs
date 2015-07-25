@@ -32,7 +32,7 @@ namespace Core.Services
 
         public void Generate(string userId, string message, TimeSpan expiresIn = default(TimeSpan))
         {
-            AlertManager.UserNotification(userId, message, expiresIn);
+            EventManager.UserNotification(userId, message, expiresIn);
         }
     }
 }

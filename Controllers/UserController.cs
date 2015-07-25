@@ -290,7 +290,7 @@ namespace Web.Controllers
                 UserName = u.UserName,
                 EmailAddress = u.EmailAddress.Address,
                 Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToArray()),
-                Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
+                //Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
                 EmailAddressID = u.EmailAddressID.Value,
                 Status = u.State.Value
             };

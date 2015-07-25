@@ -17,7 +17,7 @@ namespace Data.Repositories
         public override void Add(DockyardAccountDO entity)
         {
             base.Add(entity);
-            AddDefaultCalendar(entity);
+            //AddDefaultCalendar(entity);
             AddDefaultProfile(entity);
         }
 
@@ -76,22 +76,22 @@ namespace Data.Repositories
         }
 
 
-        public void AddDefaultCalendar(DockyardAccountDO curDockyardAccount)
-        {
-            if (curDockyardAccount == null)
-                throw new ArgumentNullException("curDockyardAccount");
+        //public void AddDefaultCalendar(UserDO curUser)
+        //{
+        //    if (curUser == null)
+        //        throw new ArgumentNullException("curUser");
 
-            if (!curDockyardAccount.Calendars.Any())
-            {
-                var curCalendar = new CalendarDO
-                {
-                    Name = "Default Calendar",
-                    Owner = curDockyardAccount,
-                    OwnerID = curDockyardAccount.Id
-                };
-                curDockyardAccount.Calendars.Add(curCalendar);
-            }
-        }
+        //    if (!curUser.Calendars.Any())
+        //    {
+        //        var curCalendar = new CalendarDO
+        //        {
+        //            Name = "Default Calendar",
+        //            Owner = curUser,
+        //            OwnerID = curUser.Id
+        //        };
+        //        curUser.Calendars.Add(curCalendar);
+        //    }
+        //}
 
 
         public void AddDefaultProfile(DockyardAccountDO curDockyardAccount)

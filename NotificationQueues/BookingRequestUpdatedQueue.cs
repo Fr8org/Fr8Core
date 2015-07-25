@@ -6,14 +6,14 @@ namespace Web.NotificationQueues
     {
         public BookingRequestUpdatedQueue() 
         {
-            AlertManager.AlertConversationMemberAdded += id =>
-            {
-                if (ObjectID == id)
-                    AppendUpdate(new BookingRequestUpdatedData()
-                        {
-                            BookingRequestId = id
-                        });
-            };
+            //AlertManager.AlertConversationMemberAdded += id =>
+            //{
+            //    if (ObjectID == id)
+            //        AppendUpdate(new BookingRequestUpdatedData()
+            //            {
+            //                BookingRequestId = id
+            //            });
+            //};
         }
     }
 

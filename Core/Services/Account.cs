@@ -66,7 +66,7 @@ namespace Core.Services
                 if (newDockyardAccountDO != null)
                 {
                     //AlertManager.CustomerCreated(newDockyardAccountDO);
-                    AlertManager.UserRegistration(newDockyardAccountDO);
+                    EventManager.UserRegistration(newDockyardAccountDO);
                 }
                
                 return curRegStatus;

@@ -30,15 +30,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private AttendeeRepository _attendeeRepository;
+        //private AttendeeRepository _attendeeRepository;
 
-        public AttendeeRepository AttendeeRepository
-        {
-            get
-            {
-                return _attendeeRepository ?? (_attendeeRepository = new AttendeeRepository(this));
-            }
-        }
+        //public AttendeeRepository AttendeeRepository
+        //{
+        //    get
+        //    {
+        //        return _attendeeRepository ?? (_attendeeRepository = new AttendeeRepository(this));
+        //    }
+        //}
 
         private EmailAddressRepository _emailAddressRepository;
 
@@ -59,35 +59,35 @@ namespace Data.Infrastructure
             }
         }
 
-        private BookingRequestRepository _bookingRequestRepository;
+        //private BookingRequestRepository _bookingRequestRepository;
 
-        public BookingRequestRepository BookingRequestRepository
-        {
-            get
-            {
-                return _bookingRequestRepository ?? (_bookingRequestRepository = new BookingRequestRepository(this));
-            }
-        }
+        //public BookingRequestRepository BookingRequestRepository
+        //{
+        //    get
+        //    {
+        //        return _bookingRequestRepository ?? (_bookingRequestRepository = new BookingRequestRepository(this));
+        //    }
+        //}
 
-        private BookingRequestStatusRepository _bookingRequestStatusRepository;
+        //private BookingRequestStatusRepository _bookingRequestStatusRepository;
 
-        public BookingRequestStatusRepository BookingRequestStatusRepository
-        {
-            get
-            {
-                return _bookingRequestStatusRepository ?? (_bookingRequestStatusRepository = new BookingRequestStatusRepository(this));
-            }
-        }
+        //public BookingRequestStatusRepository BookingRequestStatusRepository
+        //{
+        //    get
+        //    {
+        //        return _bookingRequestStatusRepository ?? (_bookingRequestStatusRepository = new BookingRequestStatusRepository(this));
+        //    }
+        //}
 
-        private CalendarRepository _calendarRepository;
+        //private CalendarRepository _calendarRepository;
 
-        public CalendarRepository CalendarRepository
-        {
-            get
-            {
-                return _calendarRepository ?? (_calendarRepository = new CalendarRepository(this));
-            }
-        }
+        //public CalendarRepository CalendarRepository
+        //{
+        //    get
+        //    {
+        //        return _calendarRepository ?? (_calendarRepository = new CalendarRepository(this));
+        //    }
+        //}
 
         private SlipRepository _SlipRepository;
 
@@ -119,15 +119,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private RemoteCalendarLinkRepository _remoteCalendarLinkRepository;
+        //private RemoteCalendarLinkRepository _remoteCalendarLinkRepository;
 
-        public RemoteCalendarLinkRepository RemoteCalendarLinkRepository
-        {
-            get
-            {
-                return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
-            }
-        }
+        //public RemoteCalendarLinkRepository RemoteCalendarLinkRepository
+        //{
+        //    get
+        //    {
+        //        return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
+        //    }
+        //}
         
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
@@ -150,6 +150,15 @@ namespace Data.Infrastructure
             }
         }
 
+        private IProcessRepository _processRepository;
+
+        public IProcessRepository ProcessRepository
+        {
+            get
+            {
+                return _processRepository ?? (_processRepository = new ProcessRepository(this));
+            }
+        }
         private EmailStatusRepository _emailStatusRepository;
 
         public EmailStatusRepository EmailStatusRepository
@@ -170,15 +179,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private EventRepository _eventRepository;
+        //private EventRepository _eventRepository;
 
-        public EventRepository EventRepository
-        {
-            get
-            {
-                return _eventRepository ?? (_eventRepository = new EventRepository(this));
-            }
-        }
+        //public EventRepository EventRepository
+        //{
+        //    get
+        //    {
+        //        return _eventRepository ?? (_eventRepository = new EventRepository(this));
+        //    }
+        //}
 
         private EventStatusRepository _eventStatusRepository;
 
@@ -210,15 +219,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private InvitationResponseRepository _invitationResponseRepository;
+        //private InvitationResponseRepository _invitationResponseRepository;
 
-        public InvitationResponseRepository InvitationResponseRepository
-        {
-            get
-            {
-                return _invitationResponseRepository ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
-            }
-        }
+        //public InvitationResponseRepository InvitationResponseRepository
+        //{
+        //    get
+        //    {
+        //        return _invitationResponseRepository ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
+        //    }
+        //}
 
         private StoredFileRepository _storedFileRepository;
 
@@ -280,15 +289,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private NegotiationAnswerEmailRepository _negotiationAnswerEmailRepository;
+        //private NegotiationAnswerEmailRepository _negotiationAnswerEmailRepository;
 
-        public NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository
-        {
-            get
-            {
-                return _negotiationAnswerEmailRepository ?? (_negotiationAnswerEmailRepository = new NegotiationAnswerEmailRepository(this));
-            }
-        }
+        //public NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository
+        //{
+        //    get
+        //    {
+        //        return _negotiationAnswerEmailRepository ?? (_negotiationAnswerEmailRepository = new NegotiationAnswerEmailRepository(this));
+        //    }
+        //}
 
         private UserAgentInfoRepository _userAgentInfoRepository;
 
@@ -330,56 +339,56 @@ namespace Data.Infrastructure
             }
         }
 
-        private QuestionRepository _questionRepository;
+        //private QuestionRepository _questionRepository;
 
-        public QuestionRepository QuestionRepository
-        {
-            get
-            {
-                return _questionRepository ?? (_questionRepository = new QuestionRepository(this));
-            }
-        }
+        //public QuestionRepository QuestionRepository
+        //{
+        //    get
+        //    {
+        //        return _questionRepository ?? (_questionRepository = new QuestionRepository(this));
+        //    }
+        //}
 
-        private AnswerRepository _answerRepository;
+        //private AnswerRepository _answerRepository;
 
-        public AnswerRepository AnswerRepository
-        {
-            get
-            {
-                return _answerRepository ?? (_answerRepository = new AnswerRepository(this));
-            }
-        }
+        //public AnswerRepository AnswerRepository
+        //{
+        //    get
+        //    {
+        //        return _answerRepository ?? (_answerRepository = new AnswerRepository(this));
+        //    }
+        //}
 
-        private QuestionResponseRepository _questionResponseRepository;
+        //private QuestionResponseRepository _questionResponseRepository;
 
-        public QuestionResponseRepository QuestionResponseRepository
-        {
-            get
-            {
-                return _questionResponseRepository ?? (_questionResponseRepository = new QuestionResponseRepository(this));
-            }
-        }
+        //public QuestionResponseRepository QuestionResponseRepository
+        //{
+        //    get
+        //    {
+        //        return _questionResponseRepository ?? (_questionResponseRepository = new QuestionResponseRepository(this));
+        //    }
+        //}
 
 
-        private NegotiationsRepository _negotiationsRepository;
+        //private NegotiationsRepository _negotiationsRepository;
 
-        public NegotiationsRepository NegotiationsRepository
-        {
-            get
-            {
-                return _negotiationsRepository ?? (_negotiationsRepository = new NegotiationsRepository(this));
-            }
-        }
+        //public NegotiationsRepository NegotiationsRepository
+        //{
+        //    get
+        //    {
+        //        return _negotiationsRepository ?? (_negotiationsRepository = new NegotiationsRepository(this));
+        //    }
+        //}
 
-        private QuestionsRepository _questionsRepository;
+        //private QuestionsRepository _questionsRepository;
 
-        public QuestionsRepository QuestionsRepository
-        {
-            get
-            {
-                return _questionsRepository ?? (_questionsRepository = new QuestionsRepository(this));
-            }
-        }
+        //public QuestionsRepository QuestionsRepository
+        //{
+        //    get
+        //    {
+        //        return _questionsRepository ?? (_questionsRepository = new QuestionsRepository(this));
+        //    }
+        //}
 
         private AuthorizationTokenRepository _authorizationTokenRepository;
 
@@ -437,6 +446,24 @@ namespace Data.Infrastructure
             get
             {
                 return _expectedResponseRepository ?? (_expectedResponseRepository = new ExpectedResponseRepository(this));
+            }
+        }
+
+	  private ActionRepository _actionRepository;
+	  public ActionRepository ActionRepository
+        {
+            get
+            {
+                return _actionRepository ?? (_actionRepository = new ActionRepository(this));
+            }
+        }
+
+	  private ActionListRepository _actionListRepository;
+	  public ActionListRepository ActionListRepository
+        {
+            get
+            {
+                return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
             }
         }
 

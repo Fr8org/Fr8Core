@@ -7,6 +7,7 @@ using Data.States;
 using StructureMap;
 using Data.Infrastructure;
 using Utilities;
+using System.Collections.Generic;
 
 namespace Core.Services
 {
@@ -28,8 +29,8 @@ namespace Core.Services
         /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
         public CommunicationMode GetMode(DockyardAccountDO dockyardAccountDO)
         {
-            if (dockyardAccountDO.UserBookingRequests != null && dockyardAccountDO.UserBookingRequests.Any())
-                return CommunicationMode.Direct;
+            //if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
+            //    return CommunicationMode.Direct;
             if(!String.IsNullOrEmpty(dockyardAccountDO.PasswordHash))
                 return CommunicationMode.Direct;
             return CommunicationMode.Delegate;
@@ -110,7 +111,7 @@ namespace Core.Services
             submittedDockyardAccountData.Roles.Clear();
             uow.UserRepository.Add(submittedDockyardAccountData);
             uow.SaveChanges();
-            AlertManager.ExplicitCustomerCreated(submittedDockyardAccountData.Id);
+            EventManager.ExplicitCustomerCreated(submittedDockyardAccountData.Id);
         }
 
         public DockyardAccountDO GetExisting(IUnitOfWork uow, string emailAddress)
@@ -149,6 +150,19 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.UserRepository.GetOrCreateUser(emailAddress).Id;
+            }
+        }
+
+        /// <summary>
+        /// Returns the list of all processes to run for the specified user.
+        /// </summary>
+        public IEnumerable<ProcessDO> GetProcessList(string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ProcessRepository.GetQuery().Where
+                    (r => r.ProcessState == ProcessState.Processing
+                        & r.UserId == userId).ToList();
             }
         }
     }

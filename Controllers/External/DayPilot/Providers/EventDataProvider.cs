@@ -56,12 +56,12 @@ namespace Web.Controllers.External.DayPilot.Providers
                     //providedCalendars = providedCalendars.Union(uow.CalendarRepository.GetQuery().Where(c => linkedUserIDs.Contains(c.OwnerID)));
                 }
 
-                return providedCalendars.SelectMany(c => c.Events.Where(e => e.EventStatus != EventState.Deleted)).ToList().Select(e =>
+                return providedCalendars.SelectMany(c => c.Events.Where(e => e.EventStatus != EventState.EnvelopeDeclined)).ToList().Select(e =>
                 new DayPilotTimeslotInfo
                 {
                     StartDate = e.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
                     EndDate = e.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
-                    Text = e.EventStatus != Data.States.EventState.Draft ?
+                    Text = e.EventStatus != EventState.EnvelopeVoided ?
                             (e.Summary != null ? e.Summary.Replace("DRAFT:", "") : e.Summary) :
                             e.Summary,
                     Id = e.Id,

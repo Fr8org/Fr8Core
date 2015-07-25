@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DocuSignEnvelopeInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.docusign.net/API/3.0">
+  <EnvelopeStatus>
+    <RecipientStatuses>
+      <RecipientStatus>
+        <Type>Signer</Type>
+        <Email>user.email@address.com</Email>
+        <UserName>User Name</UserName>
+        <RoutingOrder>1</RoutingOrder>
+        <Sent>2010-06-26T09:19:18.883</Sent>
+        <Delivered>2010-06-26T09:19:40.723</Delivered>
+        <DeclineReason xsi:nil="true" />
+        <Status>Delivered</Status>
+        <RecipientIPAddress>::1</RecipientIPAddress>
+        <CustomFields />
+        <TabStatuses>
+          <TabStatus>
+            <TabType>Custom</TabType>
+            <Status>Active</Status>
+            <XPosition>364</XPosition>
+            <YPosition>52</YPosition>
+            <TabLabel>Radio</TabLabel>
+            <TabName>Two</TabName>
+            <TabValue />
+            <DocumentID>1</DocumentID>
+            <PageNumber>2</PageNumber>
+            <OriginalValue />
+            <ValidationPattern />
+            <RoleName>TestRole</RoleName>
+          </TabStatus>
+        </TabStatuses>
+        <AccountStatus>Active</AccountStatus>
+        <RecipientId>fb89d2ee-2876-4290-b530-ff1833d5d0d2</RecipientId>
+      </RecipientStatus>
+    </RecipientStatuses><TimeGenerated>2010-06-26T09:19:45.771206-07:00</TimeGenerated>
+    <EnvelopeID>0aa561b8-b4d9-47e0-a615-2367971f876b</EnvelopeID>
+    <Subject>CreateEnvelopeFromTemplates Test</Subject>
+    <UserName>User Name</UserName>
+    <Email>user.email@address.com </Email>
+    <Status>Delivered</Status>
+    <Created>2010-06-26T09:16:21.27</Created>
+    <Sent>2010-06-26T09:19:19.01</Sent>
+    <Delivered>2010-06-26T09:19:40.747</Delivered>
+    <ACStatus>Original</ACStatus>
+    <ACStatusDate>2010-06-26T09:16:21.27</ACStatusDate>
+    <ACHolder>ACHolder Name</ACHolder>
+    <ACHolderEmail>ACHolder.email@address.com</ACHolderEmail>
+    <ACHolderLocation>ACHolder Location</ACHolderLocation>
+    <SigningLocation>Online</SigningLocation><SenderIPAddress>::1            </SenderIPAddress><EnvelopePDFHash /><CustomFields>
+      <CustomField>
+        <Name>Envelope Field 1</Name>
+        <Show>False</Show>
+        <Required>False</Required>
+        <Value />
+      </CustomField>
+      <CustomField>
+        <Name>Envelope Field 2</Name>
+        <Show>False</Show>
+        <Required>False</Required>
+        <Value />
+      </CustomField>
+    </CustomFields><AutoNavigation>true</AutoNavigation><EnvelopeIdStamping>true</EnvelopeIdStamping><AuthoritativeCopy>false</AuthoritativeCopy><DocumentStatuses>
+      <DocumentStatus>
+        <ID>1</ID>
+        <Name>Document_Name</Name>
+        <TemplateName>radio parents</TemplateName>
+        <Sequence>1</Sequence>
+      </DocumentStatus>
+    </DocumentStatuses>
+  </EnvelopeStatus>
+  <DocumentPDFs>
+    <DocumentPDF>
+      <Name>DocumentPDF_Name</Name>
+      <PDFBytes>PDFBytes_Information</PDFBytes>
+    </DocumentPDF>
+  </DocumentPDFs>
+</DocuSignEnvelopeInformation>

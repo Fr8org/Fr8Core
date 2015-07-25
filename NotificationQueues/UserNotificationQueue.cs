@@ -10,7 +10,7 @@ namespace Web.NotificationQueues
     {
         public UserNotificationQueue()
         {
-            AlertManager.AlertUserNotification +=
+            EventManager.AlertUserNotification +=
                 (id, message, expiresIn) => AppendUpdate(new UserNotificationData(id, message), expiresIn);
         }
     }
