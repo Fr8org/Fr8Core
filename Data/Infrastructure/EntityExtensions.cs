@@ -53,7 +53,7 @@ namespace Data.Infrastructure
                                              var stateValue = stateKey != null
                                                                   ? stateType.GetFields().Single(f => Equals(f.GetValue(entity), stateKey)).Name
                                                                   : null;
-                                             AlertManager.EntityStateChanged(entityName, idValue, stateName, stateValue);
+                                             EventManager.EntityStateChanged(entityName, idValue, stateName, stateValue);
                                          });
             }
         }
@@ -80,7 +80,7 @@ namespace Data.Infrastructure
             {
                 updateCallback =
                     (entityName, idValue, property) =>
-                    AlertManager.TrackablePropertyUpdated(entityName, property.Name, idValue, currentValues[property.Name]);
+                    EventManager.TrackablePropertyUpdated(entityName, property.Name, idValue, currentValues[property.Name]);
             }
             var type = entity.GetType();
             var idProperty = type.GetProperty("Id");

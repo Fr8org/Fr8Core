@@ -25,14 +25,15 @@ namespace Web.Api
 
         private void LoadEmailRow(int emailID)
         {
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            m_EmailRow = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-            string bookerId = uow.BookingRequestRepository.GetByKey(emailID).BookerID;
-            if (bookerId != null)
-            {
-                booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
-            }
-            else { booker = "none"; }
+            //var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            //m_EmailRow = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+            //string bookerId = uow.BookingRequestRepository.GetByKey(emailID).BookerID;
+            //if (bookerId != null)
+            //{
+            //    booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
+            //}
+            //else { booker = "none"; }
+            booker = "none";
         }
 
         protected String GetBooker()

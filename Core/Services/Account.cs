@@ -66,7 +66,7 @@ namespace Core.Services
                 if (newUserDO != null)
                 {
                     //AlertManager.CustomerCreated(newUserDO);
-                    AlertManager.UserRegistration(newUserDO);
+                    EventManager.UserRegistration(newUserDO);
                 }
                
                 return curRegStatus;
