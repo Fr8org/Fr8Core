@@ -21,7 +21,7 @@ namespace Daemons
     public class FreshnessMonitor : Daemon<FreshnessMonitor>
     {
         private readonly IConfigRepository _configRepository;
-        private readonly IBookingRequest _br;
+        //private readonly IBookingRequest _br;
         private readonly IExpectedResponse _er;
 
         public FreshnessMonitor()
@@ -47,11 +47,11 @@ namespace Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {  
-                TimeOutStaleCheckouts(uow);
+                //TimeOutStaleCheckouts(uow);
 
-                TimeOutStaleReserved(uow);
+                //TimeOutStaleReserved(uow);
 
-                MonitorStaleBRs(uow);
+                //MonitorStaleBRs(uow);
 
                 DetectStaleExpectedResponses(uow);
 
@@ -59,76 +59,76 @@ namespace Daemons
             }
         }
 
-        private void TimeOutStaleReserved(IUnitOfWork uow)
-        {
-            //Event: A reserved BR has timed out
-            //Action: make BR available to other bookers than preferred one
-            double maxBRReservationPeriodMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRReservationPeriod"));
+        //private void TimeOutStaleReserved(IUnitOfWork uow)
+        //{
+        //    //Event: A reserved BR has timed out
+        //    //Action: make BR available to other bookers than preferred one
+        //    double maxBRReservationPeriodMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRReservationPeriod"));
 
-            DateTimeOffset reservationTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRReservationPeriodMinutes));
-            List<BookingRequestDO> timedOutBRList = uow.BookingRequestRepository.GetQuery()
-                .Where(x => x.State == BookingRequestState.NeedsBooking &&
-                    x.Availability != BookingRequestAvailability.ReservedPB &&
-                    x.BookerID == null &&
-                    x.PreferredBookerID != null &&
-                    x.LastUpdated < reservationTimeLimit).ToList();
-            foreach (var br in timedOutBRList)
-            {
-              //  _br.ReservationTimeout(uow, br);
-                LogSuccess("Booking request reservation timed out");
-            }
-        }
+        //    DateTimeOffset reservationTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRReservationPeriodMinutes));
+        //    List<BookingRequestDO> timedOutBRList = uow.BookingRequestRepository.GetQuery()
+        //        .Where(x => x.State == BookingRequestState.NeedsBooking &&
+        //            x.Availability != BookingRequestAvailability.ReservedPB &&
+        //            x.BookerID == null &&
+        //            x.PreferredBookerID != null &&
+        //            x.LastUpdated < reservationTimeLimit).ToList();
+        //    foreach (var br in timedOutBRList)
+        //    {
+        //      //  _br.ReservationTimeout(uow, br);
+        //        LogSuccess("Booking request reservation timed out");
+        //    }
+        //}
 
-        private void TimeOutStaleCheckouts(IUnitOfWork uow)
-        {
-            //Event: A checkedout BR has timed out
-            //Action: change BR status "CheckedOut" to "Unprocessed"
-            double maxBRIdleMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRIdle"));
+        //private void TimeOutStaleCheckouts(IUnitOfWork uow)
+        //{
+        //    //Event: A checkedout BR has timed out
+        //    //Action: change BR status "CheckedOut" to "Unprocessed"
+        //    double maxBRIdleMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRIdle"));
 
            
-            DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
-            IEnumerable<BookingRequestDO> staleBRList = uow.BookingRequestRepository.GetQuery().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated < idleTimeLimit);
-            foreach (var br in staleBRList)
-            {
-                _br.Timeout(uow, br);
-                LogSuccess("Booking request timed out");
-            }
-        }
+        //    DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
+        //    IEnumerable<BookingRequestDO> staleBRList = uow.BookingRequestRepository.GetQuery().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated < idleTimeLimit);
+        //    foreach (var br in staleBRList)
+        //    {
+        //        _br.Timeout(uow, br);
+        //        LogSuccess("Booking request timed out");
+        //    }
+        //}
 
-        private void MonitorStaleBRs(IUnitOfWork uow)
-        {
-            //Event: BR's are Not getting Processed
-            //Action: Alert specified targets via SMS
-            var currentTime = DateTimeOffset.Now;
-            var smsIntervalMin = _configRepository.Get("MonitorStaleBRPeriod", 60);
-            if ((int)currentTime.TimeOfDay.TotalMinutes % smsIntervalMin < TimeSpan.FromMilliseconds(WaitTimeBetweenExecution).TotalMinutes)
-            {
-                var notification = ObjectFactory.GetInstance<INotification>();
-                if (notification.IsInNotificationWindow("ThroughputCheckingStartTime", "ThroughputCheckingEndTime"))
-                {
-                    //The current time is in the specified time range (currently daytime, PST)....
-                    //We have to compare with a datetime - EF doesn't support operations like subtracts of datetimes, checking by ticks, etc.
-                    //The below creates a datetime which represents thirty minutes ago. Anything 'less' than this time is older than 30 minutes.
-                    var thirtyMinutesAgo = currentTime.Subtract(new TimeSpan(0, 0, 30, 0));
+        //private void MonitorStaleBRs(IUnitOfWork uow)
+        //{
+        //    //Event: BR's are Not getting Processed
+        //    //Action: Alert specified targets via SMS
+        //    var currentTime = DateTimeOffset.Now;
+        //    var smsIntervalMin = _configRepository.Get("MonitorStaleBRPeriod", 60);
+        //    if ((int)currentTime.TimeOfDay.TotalMinutes % smsIntervalMin < TimeSpan.FromMilliseconds(WaitTimeBetweenExecution).TotalMinutes)
+        //    {
+        //        var notification = ObjectFactory.GetInstance<INotification>();
+        //        if (notification.IsInNotificationWindow("ThroughputCheckingStartTime", "ThroughputCheckingEndTime"))
+        //        {
+        //            //The current time is in the specified time range (currently daytime, PST)....
+        //            //We have to compare with a datetime - EF doesn't support operations like subtracts of datetimes, checking by ticks, etc.
+        //            //The below creates a datetime which represents thirty minutes ago. Anything 'less' than this time is older than 30 minutes.
+        //            var thirtyMinutesAgo = currentTime.Subtract(new TimeSpan(0, 0, 30, 0));
 
-                    //Per Wiki: https://maginot.atlassian.net/wiki/display/SH/Processing+Delay+Alerts
-                    //Once every hour, the monitor should query for BookingRequests that have status Unprocessed or CheckOut and are at least 30 minutes old, as measured by comparing the current time to the DateCreated time.
-                    var oldBookingRequests =
-                        uow.BookingRequestRepository.GetQuery()
-                            .Where(
-                                br =>
-                                (br.State == BookingRequestState.NeedsBooking || br.State == BookingRequestState.Booking) &&
-                                br.CreateDate <= thirtyMinutesAgo)
-                            .ToArray();
+        //            //Per Wiki: https://maginot.atlassian.net/wiki/display/SH/Processing+Delay+Alerts
+        //            //Once every hour, the monitor should query for BookingRequests that have status Unprocessed or CheckOut and are at least 30 minutes old, as measured by comparing the current time to the DateCreated time.
+        //            var oldBookingRequests =
+        //                uow.BookingRequestRepository.GetQuery()
+        //                    .Where(
+        //                        br =>
+        //                        (br.State == BookingRequestState.NeedsBooking || br.State == BookingRequestState.Booking) &&
+        //                        br.CreateDate <= thirtyMinutesAgo)
+        //                    .ToArray();
 
-                    if (oldBookingRequests.Any())
-                    {
-                        AlertManager.StaleBookingRequestsDetected(oldBookingRequests);
-                        LogSuccess(oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
-                    }
-                }
-            }
-        }
+        //            if (oldBookingRequests.Any())
+        //            {
+        //                AlertManager.StaleBookingRequestsDetected(oldBookingRequests);
+        //                LogSuccess(oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
+        //            }
+        //        }
+        //    }
+        //}
 
         private void DetectStaleExpectedResponses(IUnitOfWork uow)
         {

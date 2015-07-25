@@ -70,7 +70,7 @@ namespace Web
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
 
-            AlertReporter curReporter = new AlertReporter();
+            EventReporter curReporter = new EventReporter();
             curReporter.SubscribeToAlerts();
 
             IncidentReporter incidentReporter = new IncidentReporter();

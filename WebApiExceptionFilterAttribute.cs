@@ -19,7 +19,7 @@ namespace Web
         public override void OnException(HttpActionExecutedContext context)
         {
             string errorMessage = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";
-            var alertManager = ObjectFactory.GetInstance<AlertReporter>();
+            var alertManager = ObjectFactory.GetInstance<EventReporter>();
             var ex = context.Exception;
 
             alertManager.UnhandledErrorCaught(
