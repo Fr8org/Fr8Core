@@ -184,6 +184,7 @@
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
+    <Compile Include="Fixtures\FixtureData - EnvelopeData.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
@@ -196,6 +197,7 @@
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Entities\CustomFieldTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
