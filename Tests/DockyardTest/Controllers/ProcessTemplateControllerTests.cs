@@ -12,7 +12,6 @@ using NUnit.Framework;
 using StructureMap;
 using Web.Controllers;
 using Web.ViewModels;
-using System.Linq;
 using Data.States;
 
 namespace DockyardTest.Controllers
