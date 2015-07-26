@@ -21,7 +21,7 @@ namespace Web.Controllers.Api
 
         public ProcessTemplateController()
         {
-            _eventReporter = ObjectFactory.GetInstance<EventReporter>();
+            _eventReporter = ObjectFactory.GetInstance<EventReporter>();  
         }
 
         // GET api/<controller>
