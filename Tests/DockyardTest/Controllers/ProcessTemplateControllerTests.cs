@@ -18,6 +18,7 @@ using Data.States;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
+    [Ignore]
     [Category("Controllers.ProcessTemplate")]
     public class ProcessTemplateControllerTests : BaseTest
     {
