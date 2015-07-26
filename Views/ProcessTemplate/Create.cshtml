@@ -37,6 +37,16 @@
 
         pb.on('addCriteriaNode:click', function () {
             pb.addCriteria({ id: ++criteriaIdSeq });
+            _log('AddCriteriaNode:click event.');
+        });
+
+        pb.on('criteriaNode:click', function (e, id) {
+            pb.removeCriteria(id);
+            _log('CriteriaNode:click event; criteria.id = ' + id.toString());
+        });
+
+        pb.on('addActionNode:click', function (e, id) {
+            _log('AddActionNode:click event; criteria.id = ' + id.toString());
         });
     });
 </script>
