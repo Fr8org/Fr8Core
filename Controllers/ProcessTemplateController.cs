@@ -80,7 +80,7 @@ namespace Web.Controllers
         [HttpPost]
         public ActionResult Edit(ProcessTemplateVM vm)
         {
-            AlertReporter alertReporter = ObjectFactory.GetInstance<AlertReporter>();
+            EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
             if (!ModelState.IsValid)
             {
                 return View(vm);

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using AutoMapper;
 using Core.Exceptions;
+using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -16,6 +17,13 @@ namespace Web.Controllers.Api
 {
     public class ProcessTemplateController : ApiController
     {
+        EventReporter _eventReporter = new EventReporter();
+
+        public ProcessTemplateController()
+        {
+            _eventReporter = ObjectFactory.GetInstance<EventReporter>();
+        }
+
         // GET api/<controller>
         public IEnumerable<ProcessTemplateVM> Get()
         {
@@ -49,6 +57,13 @@ namespace Web.Controllers.Api
 
         public IHttpActionResult Post(ProcessTemplateVM ptvm)
         {
+            bool creating = ptvm.Id == 0;
+
+            if (string.IsNullOrEmpty(ptvm.Name))
+            {
+                ModelState.AddModelError("Name", "Name cannot be null");
+            }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest("Not all data in the request are valid");
@@ -57,18 +72,43 @@ namespace Web.Controllers.Api
             try
             {
                 CreateOrUpdate(ptvm);
+                if (creating)
+                {
+                    //TODO: Uncomment when error with EventReporter is fixed.
+                    //_eventReporter.ProcessTemplateCreated(User.Identity.Name, ptvm.Name);
+                }
                 return Ok();
             }
             catch (EntityNotFoundException)
             {
                 return NotFound();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return InternalServerError();
             }
         }
 
+        public IHttpActionResult Delete(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var ptdo = uow.ProcessTemplateRepository.GetForUser(id, User.Identity.Name);
+                if (ptdo == null)
+                {
+                    return NotFound();
+                }
+                uow.ProcessTemplateRepository.Remove(ptdo);
+                uow.SaveChanges();
+            }
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// The procedure either creates or updates an existing Process Template
+        /// depending on there Id is present on ProcessTemplateVM object.
+        /// </summary>
         private void CreateOrUpdate(ProcessTemplateVM viewModel)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -99,22 +139,6 @@ namespace Web.Controllers.Api
                 Mapper.Map<ProcessTemplateVM, ProcessTemplateDO>(viewModel);
                 uow.SaveChanges();
             }
-        }
-
-        public IHttpActionResult Delete(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var ptdo = uow.ProcessTemplateRepository.GetForUser(id, User.Identity.Name);
-                if (ptdo == null)
-                {
-                    return NotFound();
-                }
-                uow.ProcessTemplateRepository.Remove(ptdo);
-                uow.SaveChanges();
-            }
-
-            return Ok();
         }
     }
 }

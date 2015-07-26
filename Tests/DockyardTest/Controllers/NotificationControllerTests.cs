@@ -14,7 +14,7 @@ namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Ignore("Tests do not pass on CI.")]
-    [Category("Api")]
+    [Category("Controllers.Api.Notification")]
 
     public class NotificationControllerTests : BaseTest
     {

@@ -189,6 +189,10 @@
     <Compile Include="Migrations\201507240005258_ProcessTemplateDO.Designer.cs">
       <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507261559104_ProcessTemplate.cs" />
+    <Compile Include="Migrations\201507261559104_ProcessTemplate.Designer.cs">
+      <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -378,6 +382,9 @@
     <EmbeddedResource Include="Migrations\201507252017207_AddDocksignAccount.resx">
       <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507261559104_ProcessTemplate.resx">
+      <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
@@ -393,4 +400,3 @@
   </Target>
   -->
 </Project>
-

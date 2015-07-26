@@ -337,6 +337,27 @@ namespace Core.Managers
             LogFactInformation(fact, "DocusignNotificationReceived");
             SaveFact(fact);
         }
+        
+        /// <summary>
+        /// The method logs the fact of Process Template creation.      
+        /// </summary>
+        /// <param name="userId">UserId received from DocuSign.</param>
+        /// <param name="processTemplateId">EnvelopeId received from DocuSign.</param>
+        public void ProcessTemplateCreated(string userId, string processTemplateName)
+        {
+            FactDO fact = new FactDO
+            {
+                PrimaryCategory = "ProcessTemplate",
+                SecondaryCategory = null,
+                Activity = "Created",
+                CustomerId = userId,
+                ObjectId = null,
+                Data = string.Format("ProcessTemplate Name: {0}.",
+                        processTemplateName)
+            };
+            LogFactInformation(fact, "ProcessTemplateCreated");
+            SaveFact(fact);
+        }
 
         /// <summary>
         /// The method logs the fact of receiving a notification from DocuSign.      
