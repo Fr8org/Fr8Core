@@ -18,7 +18,6 @@ using System.Web.Http.Controllers;
 using System.Security.Principal;
 using System.Web.Http;
 using System.Web.Http.Results;
-using AutoMapper;
 
 namespace DockyardTest.Controllers.Api
 {

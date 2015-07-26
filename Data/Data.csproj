@@ -114,6 +114,7 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
+    <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessTemplateDO.cs" />
