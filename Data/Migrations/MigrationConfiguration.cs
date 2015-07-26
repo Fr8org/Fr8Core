@@ -62,12 +62,12 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddCustomers(uow);
-            AddBookingRequest(uow);
+            //AddBookingRequest(uow);
 
-            AddCalendars(uow);
+            //AddCalendars(uow);
 
             AddProfiles(uow);
-            AddEvents(uow);
+            //AddEvents(uow);
             AddProcessTemplates(uow);
         }
 
@@ -134,7 +134,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-
+            
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -194,8 +194,8 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
+                let name = constant.Name
+                let value = constant.GetValue(null)
                                      select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
@@ -257,9 +257,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                              let name = constant.Name
-                              let value = constant.GetValue(null)
-                              select creatorFunc((string)value, name)).ToList();
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
+                                     select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -268,7 +268,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-                }
+            }
             }
             foreach (var row in rolesToAdd)
             {
@@ -336,49 +336,49 @@ namespace Data.Migrations
             user.TestAccount = true;
         }
 
-        private static void AddBookingRequest(IUnitOfWork unitOfWork)
-        {
-            if (!unitOfWork.BookingRequestRepository.GetQuery().Any())
-            {
-                CreateBookingRequest("alexlucre1@gmail.com", "First Booking request subject", "First Booking request text", unitOfWork);
-                CreateBookingRequest("alexlucre1@gmail.com", "Second Booking request subject", "Second Booking request text", unitOfWork);
-            }
-        }
+        //private static void AddBookingRequest(IUnitOfWork unitOfWork)
+        //{
+        //    if (!unitOfWork.BookingRequestRepository.GetQuery().Any())
+        //    {
+        //        CreateBookingRequest("alexlucre1@gmail.com", "First Booking request subject", "First Booking request text", unitOfWork);
+        //        CreateBookingRequest("alexlucre1@gmail.com", "Second Booking request subject", "Second Booking request text", unitOfWork);
+        //    }
+        //}
 
-        private static void CreateBookingRequest(string curUserName, string subject, string htmlText, IUnitOfWork uow)
-        {
-            var userDO = uow.UserRepository.DBSet.Local.FirstOrDefault(u => u.UserName == curUserName);
-            if (userDO == null)
-                userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
+        //private static void CreateBookingRequest(string curUserName, string subject, string htmlText, IUnitOfWork uow)
+        //{
+        //    var userDO = uow.UserRepository.DBSet.Local.FirstOrDefault(u => u.UserName == curUserName);
+        //    if (userDO == null)
+        //        userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
 
-            var fromUser = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName);
+        //    var fromUser = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName);
 
-            var curBookingRequestDO = new BookingRequestDO
-            {
-                From = fromUser,
-                FromID = fromUser.Id,
-                Subject = subject,
-                HTMLText = htmlText,
-                EmailStatus = EmailState.Unprocessed,
-                DateReceived = DateTimeOffset.UtcNow,
-                State = BookingRequestState.NeedsBooking,
-                Customer = userDO
-            };
-            userDO.UserBookingRequests.Add(curBookingRequestDO);
+        //    var curBookingRequestDO = new BookingRequestDO
+        //    {
+        //        From = fromUser,
+        //        FromID = fromUser.Id,
+        //        Subject = subject,
+        //        HTMLText = htmlText,
+        //        EmailStatus = EmailState.Unprocessed,
+        //        DateReceived = DateTimeOffset.UtcNow,
+        //        State = BookingRequestState.NeedsBooking,
+        //        Customer = userDO
+        //    };
+        //    userDO.UserBookingRequests.Add(curBookingRequestDO);
 
-            foreach (var calendar in curBookingRequestDO.Customer.Calendars)
-                curBookingRequestDO.Calendars.Add(calendar);
-            uow.BookingRequestRepository.Add(curBookingRequestDO);
-        }
+        //    foreach (var calendar in curBookingRequestDO.Customer.Calendars)
+        //        curBookingRequestDO.Calendars.Add(calendar);
+        //    uow.BookingRequestRepository.Add(curBookingRequestDO);
+        //}
 
-        private static void AddCalendars(IUnitOfWork uow)
-        {
-            if (uow.CalendarRepository.GetAll().All(e => e.Name != "Test Calendar 1"))
-            {
-                CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
-                CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
-            }
-        }
+        //private static void AddCalendars(IUnitOfWork uow)
+        //{
+        //    if (uow.CalendarRepository.GetAll().All(e => e.Name != "Test Calendar 1"))
+        //    {
+        //        CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
+        //        CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
+        //    }
+        //}
 
         private void AddProfiles(IUnitOfWork uow)
         {
@@ -387,56 +387,56 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow)
-        {
-            UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
-            var curCalendar = new CalendarDO
-            {
-                Name = calendarName,
-                Owner = curUser,
-                OwnerID = curUser.Id
-            };
-            curUser.Calendars.Add(curCalendar);
-        }
+        //private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
+        //{
+        //    UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
+        //    var curCalendar = new CalendarDO
+        //    {
+        //        Name = calendarName,
+        //        Owner = curUser,
+        //        OwnerID = curUser.Id
+        //    };
+        //    curUser.Calendars.Add(curCalendar);
+        //}
 
-        private static void AddEvents(IUnitOfWork uow)
-        {
-            if (uow.EventRepository.GetAll().All(e => e.Description != "Test Event 1"))
-            {
-                CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 1");
-                CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 2");
-            }
-        }
-
+        //private static void AddEvents(IUnitOfWork uow)
+        //{
+        //    if (uow.EventRepository.GetAll().All(e => e.Description != "Test Event 1"))
+        //    {
+        //        CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 1");
+        //        CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 2");
+        //    }
+        //}
+        
         //Creating 10 events for each calendar
-        private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
-        {
-            uow.SaveChanges();
-            UserDO curUser = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
-            if (curUser == null)
-                curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
+        //private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
+        //{
+        //    uow.SaveChanges();
+        //    UserDO curUser = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
+        //    if (curUser == null)
+        //        curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
 
-            var bookingRequestID = curUser.UserBookingRequests.First().Id;
-            var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
+        //    var bookingRequestID = curUser.UserBookingRequests.First().Id;
+        //    var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
 
-            for (int eventNumber = 1; eventNumber < 11; eventNumber++)
-            {
-                DateTimeOffset start = GetRandomEventStartTime();
-                DateTimeOffset end = start.AddMinutes(new Random().Next(30, 120));
-                EventDO createdEvent = new EventDO();
-                createdEvent.BookingRequestID = bookingRequestID;
-                createdEvent.CalendarID = calendarID;
-                createdEvent.StartDate = start;
-                createdEvent.EndDate = end;
-                createdEvent.Description = "Test Event " + eventNumber.ToString();
-                createdEvent.Summary = "Test Event " + eventNumber.ToString();
-                createdEvent.IsAllDay = false;
-                createdEvent.CreatedBy = curUser;
-                createdEvent.CreatedByID = curUser.Id;
-                createdEvent.EventStatus = EventState.EnvelopeSent;
-                uow.EventRepository.Add(createdEvent);
-            }
-        }
+        //    for (int eventNumber = 1; eventNumber < 11; eventNumber++)
+        //    {
+        //        DateTimeOffset start = GetRandomEventStartTime();
+        //        DateTimeOffset end = start.AddMinutes(new Random().Next(30, 120));
+        //        EventDO createdEvent = new EventDO();
+        //        createdEvent.BookingRequestID = bookingRequestID;
+        //        createdEvent.CalendarID = calendarID;
+        //        createdEvent.StartDate = start;
+        //        createdEvent.EndDate = end;
+        //        createdEvent.Description = "Test Event " + eventNumber.ToString();
+        //        createdEvent.Summary = "Test Event " + eventNumber.ToString();
+        //        createdEvent.IsAllDay = false;
+        //        createdEvent.CreatedBy = curUser;
+        //        createdEvent.CreatedByID = curUser.Id;
+        //        createdEvent.EventStatus = EventState.EnvelopeSent;
+        //        uow.EventRepository.Add(createdEvent);
+        //    }
+        //}
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()

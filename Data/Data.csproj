@@ -12,7 +12,6 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -80,8 +79,8 @@
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -114,6 +113,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
+    <Compile Include="Entities\DocusignAccountDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessTemplateDO.cs" />
@@ -123,19 +123,15 @@
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
-    <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
-    <Compile Include="Entities\NegotiationAnswerEmailDO.cs" />
     <Compile Include="Entities\ProfileDO.cs" />
     <Compile Include="Entities\ProfileItemDO.cs" />
     <Compile Include="Entities\ProfileNodeDO.cs" />
-    <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
-    <Compile Include="Interfaces\IAttendeeDO.cs" />
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
+    <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
-    <Compile Include="Interfaces\IInvitationResponseDO.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
@@ -177,6 +173,14 @@
     <Compile Include="Migrations\201507231732158_mergefix.Designer.cs">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.cs" />
+    <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.Designer.cs">
+      <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507252017207_AddDocksignAccount.cs" />
+    <Compile Include="Migrations\201507252017207_AddDocksignAccount.Designer.cs">
+      <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201507232256511_ActionList.cs" />
     <Compile Include="Migrations\201507232256511_ActionList.Designer.cs">
       <DependentUpon>201507232256511_ActionList.cs</DependentUpon>
@@ -194,17 +198,13 @@
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
-    <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
-    <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
-    <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
-    <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\ProcessState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
@@ -220,43 +220,29 @@
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
-    <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
-    <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
     <Compile Include="States\ServiceAuthorizationType.cs" />
-    <Compile Include="Entities\AnswerDO.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
-    <Compile Include="States\Templates\_BookingRequestStateTemplate.cs" />
-    <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\ConceptDO.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ConfirmationStatusTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventSyncStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
     <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
-    <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
-    <Compile Include="States\Templates\_ParticipationStatusTemplate.cs" />
     <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
-    <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
-    <Compile Include="Entities\NegotiationDO.cs" />
-    <Compile Include="Interfaces\IRemoteCalendarLinkDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthDataDO.cs" />
     <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
-    <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
     <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
     <Compile Include="Interfaces\IRemoteCalendarProviderDO.cs" />
-    <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
@@ -273,15 +259,12 @@
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
-    <Compile Include="Infrastructure\AlertManager.cs" />
+    <Compile Include="Infrastructure\EventManager.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
-    <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\IAspNetRolesDO.cs" />
     <Compile Include="Interfaces\IAspNetUserRolesDO.cs" />
-    <Compile Include="Interfaces\ICalendarDO.cs" />
-    <Compile Include="Interfaces\IQuestionDO.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
@@ -297,11 +280,6 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\AttendeeRepository.cs" />
-    <Compile Include="Repositories\BookingRequestRepository.cs" />
-    <Compile Include="Repositories\CalendarRepository.cs" />
-    <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
-    <Compile Include="Repositories\RemoteCalendarLinkRepository.cs" />
     <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
     <Compile Include="Repositories\RemoteCalendarProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
@@ -315,37 +293,27 @@
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
-    <Compile Include="Repositories\EventRepository.cs" />
-    <Compile Include="Repositories\QuestionRepository.cs" />
-    <Compile Include="Repositories\NegotiationsRepository.cs" />
-    <Compile Include="Repositories\QuestionsRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
     <Compile Include="Interfaces\IEmailAddressDO.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="Entities\AttachmentDO.cs" />
-    <Compile Include="Entities\AttendeeDO.cs" />
-    <Compile Include="Entities\BookingRequestDO.cs" />
     <Compile Include="Entities\EmailDO.cs" />
     <Compile Include="Entities\EmailAddressDO.cs" />
     <Compile Include="Interfaces\IAttachmentDO.cs" />
-    <Compile Include="Entities\EventDO.cs" />
-    <Compile Include="Interfaces\IUserDO.cs" />
+    <Compile Include="Interfaces\IDockyardAccountDO.cs" />
     <Compile Include="Entities\InstructionDO.cs" />
     <Compile Include="Entities\StoredFileDO.cs" />
-    <Compile Include="Entities\UserDO.cs" />
+    <Compile Include="Entities\DockyardAccountDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Validations\BookingRequestValidator.cs" />
-    <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
-    <Compile Include="Validations\CalendarValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -404,15 +372,14 @@
     <EmbeddedResource Include="Migrations\201507240005258_ProcessTemplateDO.resx">
       <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507242025144_RemoveUnwantedTables.resx">
+      <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507252017207_AddDocksignAccount.resx">
+      <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-  </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
@@ -426,3 +393,4 @@
   </Target>
   -->
 </Project>
+

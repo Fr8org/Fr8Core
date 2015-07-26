@@ -136,7 +136,7 @@
             ajax:
             {
                 //Ajax call to get all unprocessed booking request from server according to user.
-                "url": "@Url.Action("ShowByUser", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
+                "url": "@Url.Action("ShowByDockYardAccount", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
                 "dataSrc": function (json) {
                     var orgdata = JSON.parse(json.data);
                     return orgdata;

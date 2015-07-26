@@ -211,10 +211,10 @@ Please register first.");
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    UserDO curUserDO = uow.UserRepository.FindOne(u => u.Id == userId);
-                    if (curUserDO != null)
+                    DockyardAccountDO curDockyardAccountDO = uow.UserRepository.FindOne(u => u.Id == userId);
+                    if (curDockyardAccountDO != null)
                     {
-                        curUserDO.EmailConfirmed = true;
+                        curDockyardAccountDO.EmailConfirmed = true;
                         uow.SaveChanges();
                     }
                 }

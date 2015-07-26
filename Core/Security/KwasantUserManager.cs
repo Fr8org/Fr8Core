@@ -6,17 +6,17 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Core.Security
 {
-    public class KwasantUserManager : UserManager<UserDO>
+    public class KwasantUserManager : UserManager<DockyardAccountDO>
     {
         public KwasantUserManager(IUnitOfWork unitOfWork)
             : this(new KwasantUserStore(unitOfWork))
         {
         }
 
-        public KwasantUserManager(IUserStore<UserDO> store)
+        public KwasantUserManager(IUserStore<DockyardAccountDO> store)
             : base(store)
         {
-            UserTokenProvider = new EmailTokenProvider<UserDO>();
+            UserTokenProvider = new EmailTokenProvider<DockyardAccountDO>();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Data.Interfaces
 
         IEnumerable<EmailAddressDO> To { get; }
        
-        List<EventDO> Events { get; set; }
+        //List<EventDO> Events { get; set; }
         int? EmailStatus { get; set; }
     }
 }

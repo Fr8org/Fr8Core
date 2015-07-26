@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class LinkAnswersToQuasiEmail : IMigrationMetadata
+    public sealed partial class AddDocksignAccount : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(LinkAnswersToQuasiEmail));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddDocksignAccount));
         
         string IMigrationMetadata.Id
         {
-            get { return "201411081044035_LinkAnswersToQuasiEmail"; }
+            get { return "201507252017207_AddDocksignAccount"; }
         }
         
         string IMigrationMetadata.Source

@@ -12,7 +12,7 @@ namespace Data.Interfaces
 
         String Name { get; set; }
 
-        UserDO Owner { get; set; }
+        DockyardAccountDO Owner { get; set; }
 
         List<EventDO> Events { get; set; }
     }

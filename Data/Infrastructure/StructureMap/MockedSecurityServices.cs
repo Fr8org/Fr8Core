@@ -10,30 +10,30 @@ namespace Data.Infrastructure.StructureMap
     public class MockedSecurityServices : ISecurityServices
     {
         private readonly object _locker = new object();
-        private UserDO _currentLoggedInUser;
-        public void Login(IUnitOfWork uow, UserDO userDO)
+        private DockyardAccountDO _currentLoggedInDockyardAccount;
+        public void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
         {
             lock (_locker)
-                _currentLoggedInUser = userDO;
+                _currentLoggedInDockyardAccount = dockyardAccountDO;
         }
 
         public String GetCurrentUser()
         {
             lock (_locker)
-                return _currentLoggedInUser == null ? String.Empty : _currentLoggedInUser.Id;
+                return _currentLoggedInDockyardAccount == null ? String.Empty : _currentLoggedInDockyardAccount.Id;
         }
 
         public string GetUserName()
         {
             lock (_locker)
-                return _currentLoggedInUser == null ? String.Empty : (_currentLoggedInUser.FirstName + " " + _currentLoggedInUser.LastName);
+                return _currentLoggedInDockyardAccount == null ? String.Empty : (_currentLoggedInDockyardAccount.FirstName + " " + _currentLoggedInDockyardAccount.LastName);
         }
 
         public String[] GetRoleNames()
         {
             lock (_locker)
             {
-                var roleIds = _currentLoggedInUser == null ? Enumerable.Empty<string>() : _currentLoggedInUser.Roles.Select(r => r.RoleId);
+                var roleIds = _currentLoggedInDockyardAccount == null ? Enumerable.Empty<string>() : _currentLoggedInDockyardAccount.Roles.Select(r => r.RoleId);
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     return roleIds.Select(id => uow.AspNetRolesRepository.GetByKey(id).Name).ToArray();
@@ -50,7 +50,7 @@ namespace Data.Infrastructure.StructureMap
         public void Logout()
         {
             lock (_locker)
-                _currentLoggedInUser = null;
+                _currentLoggedInDockyardAccount = null;
         }
     }
 }

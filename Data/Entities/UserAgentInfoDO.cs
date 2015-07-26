@@ -27,6 +27,6 @@ namespace Data.Entities
 
         [ForeignKey("User")]
         public String UserID { get; set; }
-        public UserDO User { get; set; }
+        public DockyardAccountDO User { get; set; }
     }
 }
