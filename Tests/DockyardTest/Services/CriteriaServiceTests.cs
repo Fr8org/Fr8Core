@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
+using DockyardTest.Fixtures;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
@@ -27,17 +28,17 @@ namespace DockyardTest.Services
         [Test]
         public void CriteriaService_CanApplyEqualCriterion()
         {
-            const string value = "test value 1";
-            var envelopeDataList = new List<EnvelopeDataDO>()
+            var envelopeDataList = FixtureData.CreateEnvelopeDataList();
+            var results = new bool[2];
+            var values = new string[] {envelopeDataList.First().Value, "__non-existing-value__"};
+            for (var i = 0; i < 2; i++)
             {
-                new EnvelopeDataDO() { Name = "test 1", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = value },
-                new EnvelopeDataDO() { Name = "test 2", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 2" },
-                new EnvelopeDataDO() { Name = "test 3", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 3" },
-            };
-            var criteriaObject = new {criteria = new[] {new {field = "Value", @operator = "Equals", value = value}}};
-            var criteriaString = JsonConvert.SerializeObject(criteriaObject);
-            var exists = _criteria.Evaluate(criteriaString, 0, "1", envelopeDataList);
-            Assert.IsTrue(exists, "Criteria#Evaluate returned incorrect value.");
+                var criteriaObject = new { criteria = new[] { new { field = "Value", @operator = "Equals", value = values[i] } } };
+                var criteriaString = JsonConvert.SerializeObject(criteriaObject);
+                results[i] = _criteria.Evaluate(criteriaString, 0, "1", envelopeDataList);
+            }
+            Assert.IsTrue(results[0], "Criteria#Evaluate returned incorrect value.");
+            Assert.IsFalse(results[1], "Criteria#Evaluate returned incorrect value.");
         }
     }
 }
