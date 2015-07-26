@@ -39,9 +39,13 @@ namespace Web.Controllers
         }
 
         // GET: ProcessTemplate/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Details(int Id)
         {
-            return View();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var ptdo = uow.ProcessTemplateRepository.GetForUser(Id, User.Identity.Name);
+                return View(Mapper.Map<ProcessTemplateVM>(ptdo));
+            }
         }
 
         // GET: ProcessTemplate/Create
