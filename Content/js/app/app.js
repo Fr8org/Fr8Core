@@ -156,7 +156,7 @@ MetronicApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProv
         .state('processTemplate', {
             url: "/processes/{id}",
             templateUrl: "/Template/ProcessTemplate",
-            data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template here' },
+            data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
 }]);
 

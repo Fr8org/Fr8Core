@@ -351,7 +351,7 @@ namespace Core.Managers
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
-                ObjectId = null,
+                ObjectId = "0",
                 Data = string.Format("ProcessTemplate Name: {0}.",
                         processTemplateName)
             };

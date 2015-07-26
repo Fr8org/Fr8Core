@@ -74,8 +74,7 @@ namespace Web.Controllers.Api
                 CreateOrUpdate(ptvm);
                 if (creating)
                 {
-                    //TODO: Uncomment when error with EventReporter is fixed.
-                    //_eventReporter.ProcessTemplateCreated(User.Identity.Name, ptvm.Name);
+                    _eventReporter.ProcessTemplateCreated(User.Identity.Name, ptvm.Name);
                 }
                 return Ok();
             }
