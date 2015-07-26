@@ -25,11 +25,11 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
 //The basic work is now done - to add more tracking, we just need to add more analytics.track('someEvent') - the rest of the identify and aliasing should be done automatically.
 //Server side, we have the following methods:
 //void Identify(String userID);
-//void Identify(UserDO userDO);
-//void Track(UserDO userDO, String eventName, String action, Dictionary<String, object> properties = null);
-//void Track(UserDO userDO, String eventName, Dictionary<String, object> properties = null);
+//void Identify(DockyardAccountDO DockyardAccountDO);
+//void Track(DockyardAccountDO DockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null);
+//void Track(DockyardAccountDO DockyardAccountDO, String eventName, Dictionary<String, object> properties = null);
 //Example:
-//ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> "BookingRequestId", bookingRequestDO.Id);
+//ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequestDO.DockYardAccount, "BookingRequest", "Submit", new Dictionary<string, object> "BookingRequestId", bookingRequestDO.Id);
 //They also help to push changes to a user (ie, name change, email change, etc, etc). Already setup to be mockable if needed
 //namespace Core.Managers.APIManagers.Packagers.SegmentIO
 {
@@ -43,42 +43,42 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
             }
         }
 
-        private Dictionary<String, object> GetProperties(UserDO userDO)
+        private Dictionary<String, object> GetProperties(DockyardAccountDO dockyardAccountDO)
         {
-            var user = new User();
+            var user = new DockyardAccount();
 
             return new Dictionary<string, object>
             {
-                {"First Name", userDO.FirstName},
-                {"Last Name", userDO.LastName},
-                {"Username", userDO.UserName},
-                {"Email", userDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(userDO) == CommunicationMode.Delegate }
+                {"First Name", dockyardAccountDO.FirstName},
+                {"Last Name", dockyardAccountDO.LastName},
+                {"Username", dockyardAccountDO.UserName},
+                {"Email", dockyardAccountDO.EmailAddress.Address},
+                {"Delegate Account", user.GetMode(dockyardAccountDO) == CommunicationMode.Delegate }
             };
         }
 
-        public void Identify(UserDO userDO)
+        public void Identify(DockyardAccountDO dockyardAccountDO)
         {
             var props = new Traits();
-            foreach (var prop in GetProperties(userDO))
+            foreach (var prop in GetProperties(dockyardAccountDO))
                 props.Add(prop.Key, prop.Value);
             
-            Analytics.Client.Identify(userDO.Id, props);
+            Analytics.Client.Identify(dockyardAccountDO.Id, props);
         }
 
-        public void Track(UserDO userDO, String eventName, String action, Dictionary<String, object> properties = null)
+        public void Track(DockyardAccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null)
         {
             if (properties == null)
                 properties = new Dictionary<string, object>();
             properties["Action"] = action;
 
-            Track(userDO, eventName, properties);
+            Track(dockyardAccountDO, eventName, properties);
         }
 
-        public void Track(UserDO userDO, String eventName, Dictionary<String, object> properties = null)
+        public void Track(DockyardAccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null)
         {
             var props = new Segment.Model.Properties();
-            foreach (var prop in GetProperties(userDO))
+            foreach (var prop in GetProperties(dockyardAccountDO))
                 props.Add(prop.Key, prop.Value);
 
             if (properties != null)
@@ -87,7 +87,7 @@ namespace Core.Managers.APIManagers.Packagers.SegmentIO
                     props[prop.Key] = prop.Value;
             }
 
-            Analytics.Client.Track(userDO.Id, eventName, props);
+            Analytics.Client.Track(dockyardAccountDO.Id, eventName, props);
         }
     }
 }

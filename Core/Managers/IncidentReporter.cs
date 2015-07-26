@@ -231,7 +231,7 @@ namespace Core.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "User";
+                incidentDO.PrimaryCategory = "DockYardAccount";
                 incidentDO.SecondaryCategory = "Error";
                 incidentDO.Activity = "Registration";
                 incidentDO.Data = ex.Message;

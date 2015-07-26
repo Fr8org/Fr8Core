@@ -92,7 +92,7 @@ namespace Web.ViewModelServices
         //}
 
 
-        public List<AnswerDO> ExtractSelectedAnswers(IUnitOfWork uow, NegotiationQuestionVM submittedQuestionData, UserDO curUserDO,
+        public List<AnswerDO> ExtractSelectedAnswers(IUnitOfWork uow, NegotiationQuestionVM submittedQuestionData, DockyardAccountDO curDockyardAccountDO,
             Dictionary<QuestionDO, AnswerDO> questionAnswer)
         {
             if (submittedQuestionData.Id == 0)
@@ -119,7 +119,7 @@ namespace Web.ViewModelServices
 
                         answerDO.Text = submittedAnswerData.Text;
                         answerDO.EventID = submittedAnswerData.EventID;
-                        answerDO.UserID = curUserDO.Id;
+                        answerDO.UserID = curDockyardAccountDO.Id;
                     }
                     else
                     {

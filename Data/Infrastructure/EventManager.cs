@@ -36,7 +36,7 @@ namespace Data.Infrastructure
         //public delegate void PostResolutionNegotiationResponseReceivedHandler(int negotiationId);
         //public static event PostResolutionNegotiationResponseReceivedHandler AlertPostResolutionNegotiationResponseReceived;
 
-        public delegate void CustomerCreatedHandler(UserDO user);
+        public delegate void CustomerCreatedHandler(DockyardAccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
         //public delegate void BookingRequestCreatedHandler(int bookingRequestId);
@@ -66,7 +66,7 @@ namespace Data.Infrastructure
         //public delegate void StaleBookingRequestsDetectedHandler(BookingRequestDO[] oldBookingRequests);
         //public static event StaleBookingRequestsDetectedHandler AlertStaleBookingRequestsDetected;
 
-        public delegate void UserRegistrationHandler(UserDO curUser);
+        public delegate void UserRegistrationHandler(DockyardAccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
         public delegate void UserRegistrationErrorHandler(Exception ex);
@@ -160,7 +160,7 @@ namespace Data.Infrastructure
         //        AlertPostResolutionNegotiationResponseReceived(negotiationDO);
         //}
 
-        public static void CustomerCreated(UserDO user)
+        public static void CustomerCreated(DockyardAccountDO user)
         {
             if (AlertCustomerCreated != null)
                 AlertCustomerCreated(user);
@@ -218,7 +218,7 @@ namespace Data.Infrastructure
         //    if (handler != null) handler(oldbookingrequests);
         //}
 
-        public static void UserRegistration(UserDO curUser)
+        public static void UserRegistration(DockyardAccountDO curUser)
         {
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);

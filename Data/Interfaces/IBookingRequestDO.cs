@@ -6,7 +6,7 @@ namespace Data.Interfaces
     public interface IBookingRequestDO : IEmailDO
     {
         [Required]
-        UserDO User { get; set; }
+        DockyardAccountDO User { get; set; }
 
       
     }

@@ -20,13 +20,13 @@ namespace Core.Interfaces
         void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO);
         void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO);
         object GetAllBookingRequests(IUnitOfWork uow);
-        UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO);
+        DockyardAccountDO GetPreferredBooker(BookingRequestDO bookingRequestDO);
         String GetConversationThread(BookingRequestDO bookingRequestDO);
      
         void CheckOut(int bookingRequestId, string bookerId);
         void ReleaseBooker(int bookingRequestId);
         void Reactivate(IUnitOfWork uow, BookingRequestDO bookingRequestDO);
-        void Reserve(IUnitOfWork uow, BookingRequestDO bookingRequestDO, UserDO booker);
+        void Reserve(IUnitOfWork uow, BookingRequestDO bookingRequestDO, DockyardAccountDO booker);
         void ReservationTimeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO);
     }
 

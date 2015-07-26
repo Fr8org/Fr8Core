@@ -1,6 +1,6 @@
 ﻿@model Web.ViewModels.UserVM
 @{
-    ViewBag.Title = "Add User";
+    ViewBag.Title = "Add DockYardAccount";
 }
 @section styles{
     @Styles.Render("~/bundles/css/daypilot")
@@ -18,7 +18,7 @@
     @Scripts.Render("~/bundles/js/bootstrap")
     @Scripts.Render("~/bundles/js/common")
 }
-<h2>Add User</h2>
+<h2>Add DockYardAccount</h2>
 <div id="notificationGroup">
     <div class="col-md-7" style="margin-top: 0; margin-bottom: 5px; text-align: left; padding-left: 1px;">
         <div id="notificationMessage" style="background: #f8f8f8 !important; color: #d85e17; font-size: 16px; padding-left: 15px; font-size: 16px; font-weight: bold;">
@@ -33,7 +33,7 @@
             @Html.Partial("ShowUserDetails", Model)
         </td>
         <td width="55%" style="vertical-align: top;">
-            @*@Html.Partial("ShowUserCreationSettings")*@
+            @*@Html.Partial("ShowDockYardAccountCreationSettings")*@
             &nbsp;
         </td>
     </tr>

@@ -140,11 +140,11 @@ namespace DockyardTest.Daemons
                     }
                 };
                 uow.AspNetRolesRepository.Add(fixture.TestRole());
-                var u = new UserDO();
-                var user = new User();
-                UserDO currUserDO = new UserDO();
-                currUserDO.EmailAddress = emailAddress;
-                uow.UserRepository.Add(currUserDO);
+                var u = new DockyardAccountDO();
+                var user = new DockyardAccount();
+                DockyardAccountDO currDockyardAccountDO = new DockyardAccountDO();
+                currDockyardAccountDO.EmailAddress = emailAddress;
+                uow.UserRepository.Add(currDockyardAccountDO);
             }
         }
     }

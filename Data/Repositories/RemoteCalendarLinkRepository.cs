@@ -27,7 +27,7 @@ namespace Data.Repositories
                                     new CalendarDO()
                                         {
                                             Name = string.Format("{0}:{1}", authData.Provider.Name, href),
-                                            Owner = (UserDO) authData.User,
+                                            Owner = (DockyardAccountDO) authData.User,
                                             OwnerID = authData.User.Id
                                         }; 
 

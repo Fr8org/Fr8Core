@@ -11,33 +11,33 @@ using System.Collections.Generic;
 
 namespace Core.Services
 {
-    public class User
+    public class DockyardAccount
     {
                
-        public void UpdatePassword(IUnitOfWork uow, UserDO userDO, string password)
+        public void UpdatePassword(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO, string password)
         {
-            if (userDO != null)
+            if (dockyardAccountDO != null)
             {
-                uow.UserRepository.UpdateUserCredentials(userDO, password: password);
+                uow.UserRepository.UpdateUserCredentials(dockyardAccountDO, password: password);
             }
         }
 
         /// <summary>
         /// Determines <see cref="CommunicationMode">communication mode</see> for user
         /// </summary>
-        /// <param name="userDO">User</param>
+        /// <param name="dockyardAccountDO">DockYardAccount</param>
         /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
-        public CommunicationMode GetMode(UserDO userDO)
+        public CommunicationMode GetMode(DockyardAccountDO dockyardAccountDO)
         {
             //if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
             //    return CommunicationMode.Direct;
-            if(!String.IsNullOrEmpty(userDO.PasswordHash))
+            if(!String.IsNullOrEmpty(dockyardAccountDO.PasswordHash))
                 return CommunicationMode.Direct;
             return CommunicationMode.Delegate;
         }
 
         //
-        //get roles for this User
+        //get roles for this DockYardAccount
         //if at least one role meets or exceeds the provided level, return true, else false
         public bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow)
         {
@@ -76,10 +76,10 @@ namespace Core.Services
         //else if we have a first name only, use that
         //else if we have just an email address, use the portion preceding the @ unless there's a name
         //else throw
-        public static string GetDisplayName(UserDO curUser)
+        public static string GetDisplayName(DockyardAccountDO curDockyardAccount)
         {
-            string firstName = curUser.FirstName;
-            string lastName = curUser.LastName;
+            string firstName = curDockyardAccount.FirstName;
+            string lastName = curDockyardAccount.LastName;
             if (firstName != null)
             {
                 if (lastName == null)
@@ -88,7 +88,7 @@ namespace Core.Services
                 return firstName + " " + lastName;
             }
 
-            EmailAddressDO curEmailAddress = curUser.EmailAddress;
+            EmailAddressDO curEmailAddress = curDockyardAccount.EmailAddress;
             if (curEmailAddress.Name != null)
                 return curEmailAddress.Name;
 
@@ -96,50 +96,50 @@ namespace Core.Services
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
-        public void Create(IUnitOfWork uow, UserDO submittedUserData)
+        public void Create(IUnitOfWork uow, DockyardAccountDO submittedDockyardAccountData)
         {
-            submittedUserData.State = UserState.Active;
-            submittedUserData.Id = Guid.NewGuid().ToString();
-            submittedUserData.UserName = submittedUserData.FirstName;
-            submittedUserData.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(submittedUserData.EmailAddress.Address);
-            submittedUserData.Roles.ToList().ForEach(e =>
+            submittedDockyardAccountData.State = UserState.Active;
+            submittedDockyardAccountData.Id = Guid.NewGuid().ToString();
+            submittedDockyardAccountData.UserName = submittedDockyardAccountData.FirstName;
+            submittedDockyardAccountData.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(submittedDockyardAccountData.EmailAddress.Address);
+            submittedDockyardAccountData.Roles.ToList().ForEach(e =>
                 uow.AspNetUserRolesRepository.Add(new AspNetUserRolesDO
                 {
                     RoleId = e.RoleId,
-                    UserId = submittedUserData.Id
+                    UserId = submittedDockyardAccountData.Id
                 }));
-            submittedUserData.Roles.Clear();
-            uow.UserRepository.Add(submittedUserData);
+            submittedDockyardAccountData.Roles.Clear();
+            uow.UserRepository.Add(submittedDockyardAccountData);
             uow.SaveChanges();
-            EventManager.ExplicitCustomerCreated(submittedUserData.Id);
+            EventManager.ExplicitCustomerCreated(submittedDockyardAccountData.Id);
         }
 
-        public UserDO GetExisting(IUnitOfWork uow, string emailAddress)
+        public DockyardAccountDO GetExisting(IUnitOfWork uow, string emailAddress)
         {
-            UserDO existingUser = uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
-            return existingUser;
+            DockyardAccountDO existingDockyardAccount = uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
+            return existingDockyardAccount;
         }
 
-        public void Update(IUnitOfWork uow, UserDO submittedUserData, UserDO existingUser)
+        public void Update(IUnitOfWork uow, DockyardAccountDO submittedDockyardAccountData, DockyardAccountDO existingDockyardAccount)
         {
-            existingUser.FirstName = submittedUserData.FirstName;
-            existingUser.LastName = submittedUserData.LastName;
+            existingDockyardAccount.FirstName = submittedDockyardAccountData.FirstName;
+            existingDockyardAccount.LastName = submittedDockyardAccountData.LastName;
 
             //Remove old roles
-            foreach (var existingRole in existingUser.Roles.ToList())
+            foreach (var existingRole in existingDockyardAccount.Roles.ToList())
             {
-                if (!submittedUserData.Roles.Select(role => role.RoleId).Contains(existingRole.RoleId))
-                    uow.AspNetUserRolesRepository.Remove(uow.AspNetUserRolesRepository.FindOne(e => e.RoleId == existingRole.RoleId && e.UserId == existingUser.Id));
+                if (!submittedDockyardAccountData.Roles.Select(role => role.RoleId).Contains(existingRole.RoleId))
+                    uow.AspNetUserRolesRepository.Remove(uow.AspNetUserRolesRepository.FindOne(e => e.RoleId == existingRole.RoleId && e.UserId == existingDockyardAccount.Id));
             }
 
             //Add new roles
-            foreach (var newRole in submittedUserData.Roles)
+            foreach (var newRole in submittedDockyardAccountData.Roles)
             {
-                if (!existingUser.Roles.Select(role => role.RoleId).Contains(newRole.RoleId))
+                if (!existingDockyardAccount.Roles.Select(role => role.RoleId).Contains(newRole.RoleId))
                     uow.AspNetUserRolesRepository.Add(new AspNetUserRolesDO
                     {
                         RoleId = newRole.RoleId,
-                        UserId = submittedUserData.Id
+                        UserId = submittedDockyardAccountData.Id
                     });
             }
             uow.SaveChanges();

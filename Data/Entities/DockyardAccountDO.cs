@@ -14,15 +14,15 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUserDO, ICreateHook, ISaveHook, IModifyHook
+    public class DockyardAccountDO : IdentityUser, IDockyardAccountDO, ICreateHook, ISaveHook, IModifyHook
     {
         [NotMapped]
-        IEmailAddressDO IUserDO.EmailAddress
+        IEmailAddressDO IDockyardAccountDO.EmailAddress
         {
             get { return EmailAddress; }
         }
 
-        public UserDO()
+        public DockyardAccountDO()
         {
             //UserBookingRequests = new List<BookingRequestDO>();
             //BookerBookingRequests = new List<BookingRequestDO>();
@@ -42,6 +42,10 @@ namespace Data.Entities
         [ForeignKey("EmailAddress")]
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
+
+        [ForeignKey("DocusignAccount")]
+        public int? DocusignAccountId { get; set; }
+        public virtual DocusignAccountDO DocusignAccount { get; set; }
 
         [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]
         public int? State { get; set; }

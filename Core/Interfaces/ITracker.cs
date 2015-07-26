@@ -7,8 +7,8 @@ namespace Core.Interfaces
     public interface ITracker
     {
         void Identify(String userID);
-        void Identify(UserDO userDO);
-        void Track(UserDO userDO, String eventName, String action, Dictionary<String, object> properties = null);
-        void Track(UserDO userDO, String eventName, Dictionary<String, object> properties = null);
+        void Identify(DockyardAccountDO dockyardAccountDO);
+        void Track(DockyardAccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null);
+        void Track(DockyardAccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null);
     }
 }
