@@ -264,6 +264,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\Api\ProcessTemplateController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
@@ -372,6 +373,9 @@
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap-tpls.min.js" />
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap.js" />
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap.min.js" />
+    <Content Include="bower_components\angular-resource\angular-resource.js" />
+    <Content Include="bower_components\angular-resource\angular-resource.min.js" />
+    <Content Include="bower_components\angular-resource\index.js" />
     <Content Include="bower_components\angular-sanitize\angular-sanitize.js" />
     <Content Include="bower_components\angular-sanitize\angular-sanitize.min.js" />
     <Content Include="bower_components\angular-sanitize\index.js" />
@@ -711,6 +715,7 @@
     <Content Include="Content\css\daypilot\scheduler_traditional.css" />
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
+    <Content Include="Content\css\dockyard.css" />
     <Content Include="Content\css\EmailSend.css" />
     <Content Include="Content\css\frontcss\main.css" />
     <Content Include="Content\css\jackedup.css" />
@@ -883,8 +888,11 @@
     <Content Include="Content\img\temp\team.jpg" />
     <Content Include="Content\js\about-page.js" />
     <Content Include="Content\js\app\app.js" />
-    <Content Include="Content\js\app\controllers\ProcessTemplatesController.js" />
+    <Content Include="Content\js\app\filters\ProcessTemplateState.js" />
+    <Content Include="Content\js\app\controllers\ProcessTemplateController.js" />
     <Content Include="Content\js\app\directives.js" />
+    <Content Include="Content\js\app\services\StringService.js" />
+    <Content Include="Content\js\app\services\ProcessTemplateService.js" />
     <Content Include="Content\js\humane.js" />
     <Content Include="Content\js\jquery-ui.js" />
     <Content Include="Content\js\jquery.cookie-1.4.1.min.js" />
@@ -976,6 +984,16 @@
     <Content Include="Content\templates\metronic\assets\admin\pages\css\login2.css" />
     <Content Include="Content\templates\metronic\assets\admin\pages\css\login3.css" />
     <Content Include="Content\templates\metronic\assets\admin\pages\css\news.css" />
+    <Content Include="Content\templates\metronic\tpl\footer.html" />
+    <Content Include="Content\templates\metronic\tpl\header.html" />
+    <Content Include="Content\templates\metronic\tpl\page-head.html" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.directive.js" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.factory.js" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.instances.js" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.js" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.options.js" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.renderer.js" />
+    <Content Include="Scripts\Angular-DataTables\js\angular-datatables.util.js" />
     <Content Include="Scripts\DataTables-1.10.7\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Scripts\DataTables-1.10.7\extensions\AutoFill\css\dataTables.autoFill.min.css" />
     <Content Include="Scripts\DataTables-1.10.7\extensions\AutoFill\examples\columns.html" />
@@ -4339,6 +4357,11 @@
     <Content Include="bower_components\bootstrap-hover-dropdown\LICENSE" />
     <Content Include="bower_components\bootstrap-hover-dropdown\package.json" />
     <Content Include="bower_components\bootstrap-hover-dropdown\README.md" />
+    <Content Include="bower_components\angular-resource\.bower.json" />
+    <Content Include="bower_components\angular-resource\angular-resource.min.js.map" />
+    <Content Include="bower_components\angular-resource\bower.json" />
+    <Content Include="bower_components\angular-resource\package.json" />
+    <Content Include="bower_components\angular-resource\README.md" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
@@ -5179,6 +5202,7 @@
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="Views\Process\process_builder.html" />
+    <Content Include="Views\Template\ProcessTemplate.cshtml" />
     <None Include="Views\Template\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -5327,6 +5351,7 @@
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="Scripts\Angular-DataTables\js\plugins\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Email\Envelope\" />

@@ -27,5 +27,9 @@ namespace Web.Controllers
         {
             return View();
         }
+        public ActionResult ProcessTemplate()
+        {
+            return View();
+        }
     }
 }

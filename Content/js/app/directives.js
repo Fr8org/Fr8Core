@@ -2,6 +2,17 @@
 GLobal Directives
 ***/
 
+MetronicApp.directive('autoFocus', function ($timeout) {
+    return {
+        restrict: 'AC',
+        link: function (_scope, _element) {
+            $timeout(function () {
+                _element[0].focus();
+            }, 0);
+        }
+    };
+});
+
 // Route State Load Spinner(used on page or content load)
 MetronicApp.directive('ngSpinnerBar', ['$rootScope',
     function($rootScope) {

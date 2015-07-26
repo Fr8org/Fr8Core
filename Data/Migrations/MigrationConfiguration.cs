@@ -68,7 +68,39 @@ namespace Data.Migrations
 
             AddProfiles(uow);
             AddEvents(uow);
+            AddProcessTemplates(uow);
         }
+
+        private void AddProcessTemplates(IUnitOfWork uow)
+        {
+            var ptdo = uow.ProcessTemplateRepository.GetAll().ToList();
+            if (ptdo.Count == 0)
+            {
+                uow.ProcessTemplateRepository.Add(new Entities.ProcessTemplateDO()
+                {
+                    CreateDate = DateTime.UtcNow,
+                    Name = "ProcessTemplate #1",
+                    Description = "ProcessTemplate Description #1",
+                    ProcessState = 1
+                });
+                uow.ProcessTemplateRepository.Add(new Entities.ProcessTemplateDO()
+                {
+                    CreateDate = DateTime.UtcNow,
+                    Name = "ProcessTemplate #2",
+                    Description = "ProcessTemplate Description #2",
+                    ProcessState = 1
+                });
+                uow.ProcessTemplateRepository.Add(new Entities.ProcessTemplateDO()
+                {
+                    CreateDate = DateTime.UtcNow,
+                    Name = "ProcessTemplate #3",
+                    Description = "ProcessTemplate Description #3",
+                    ProcessState = 1
+                });
+                uow.SaveChanges();
+            }
+        }
+
 
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork uow)
@@ -102,7 +134,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-            
+
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -162,9 +194,9 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                let name = constant.Name
-                let value = constant.GetValue(null)
-                select creatorFunc((int) value, name)).ToList();
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
+                                     select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
@@ -225,9 +257,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((string)value, name)).ToList();
+                              let name = constant.Name
+                              let value = constant.GetValue(null)
+                              select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -236,7 +268,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-            }
+                }
             }
             foreach (var row in rolesToAdd)
             {
@@ -355,7 +387,7 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
-        private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
+        private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow)
         {
             UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
             var curCalendar = new CalendarDO
@@ -375,7 +407,7 @@ namespace Data.Migrations
                 CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 2");
             }
         }
-        
+
         //Creating 10 events for each calendar
         private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
         {

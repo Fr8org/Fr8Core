@@ -1,3 +1,5 @@
+/// <reference path="C:\Projects\Dockyard\src\dockyard\Scripts/DataTables-1.10.7/media/js/jquery.dataTables.min.js" />
+/// <reference path="C:\Projects\Dockyard\src\dockyard\Scripts/DataTables-1.10.7/media/js/jquery.dataTables.min.js" />
 /***
 Metronic AngularJS App Main Script
 ***/
@@ -7,7 +9,9 @@ var MetronicApp = angular.module("MetronicApp", [
     "ui.router",
     "ui.bootstrap",
     "oc.lazyLoad",
-    "ngSanitize"
+    "ngSanitize",
+    'ngResource',
+    'ui.bootstrap'
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -121,59 +125,38 @@ MetronicApp.controller('FooterController', ['$scope', function ($scope) {
 MetronicApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
     // Redirect any unmatched url
-    $urlRouterProvider.otherwise("/ShowAll");
+    $urlRouterProvider.otherwise("/processes");
 
     $stateProvider
 
-        // Dashboard
+        // Process Template list
         .state('processTemplates', {
-            url: "/ShowAll",
+            url: "/processes",
             templateUrl: "/Template/ProcessTemplates",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' },
-            controller: "ProcessTemplatesController",
-            resolve: {
+            resolve: {  
                 deps: ['$ocLazyLoad', function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
                         name: 'MetronicApp',
                         insertBefore: '#ng_load_plugins_before', // load the above css files before '#ng_load_plugins_before'
                         files: [
                             '/Content/templates/metronic/assets/global/plugins/morris/morris.css',
-                            '/Content/templates/metronic/assets/admin/pages/css/tasks.css',
-
                             '/Content/templates/metronic/assets/global/plugins/morris/morris.min.js',
                             '/Content/templates/metronic/assets/global/plugins/morris/raphael-min.js',
+                            '/Content/templates/metronic/assets/admin/pages/scripts/tasks.js',
                             '/Content/templates/metronic/assets/global/plugins/jquery.sparkline.min.js',
-
-                            '/Content/templates/metronic/assets/admin/pages/scripts/index3.js',
-
-                            '/Content/js/app/controllers/ProcessTemplatesController.js'
+                            '/Content/templates/metronic/assets/admin/pages/scripts/index3.js'
                         ]
                     });
                 }]
             }
         })
 
-        // AngularJS plugins
-        .state('fileupload', {
-            url: "/file_upload.html",
-            templateUrl: "views/file_upload.html",
-            data: { pageTitle: 'AngularJS File Upload', pageSubTitle: 'angularjs file upload' },
-            controller: "GeneralPageController",
-            resolve: {
-                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
-                    return $ocLazyLoad.load([{
-                        name: 'angularFileUpload',
-                        files: [
-                            '/Content/templates/metronic/assets/global/plugins/angularjs/plugins/angular-file-upload/angular-file-upload.min.js',
-                        ]
-                    }, {
-                        name: 'MetronicApp',
-                        files: [
-                            '/Content/templates/metronic/js/controllers/GeneralPageController.js'
-                        ]
-                    }]);
-                }]
-            }
+        // Process Template form
+        .state('processTemplate', {
+            url: "/processes/{id}",
+            templateUrl: "/Template/ProcessTemplate",
+            data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template here' },
         })
 }]);
 
