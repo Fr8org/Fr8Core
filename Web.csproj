@@ -2949,7 +2949,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-regular.svg" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\normalize.css" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\index.html" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\custom.js" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\custom.min.js" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\jquery.js" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\zepto.js" />
@@ -11369,7 +11368,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\gritter\README.markdown" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\bower.json" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\CHANGELOG.md" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\custom.styl" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-bold.eot" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-bold.ttf" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-bold.woff" />
@@ -12474,8 +12472,8 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
- <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" /> 
-   <!--commenting this out because errors are showing up saying that this one and the one below it are in conflict 
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <!--commenting this out because errors are showing up saying that this one and the one below it are in conflict 
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\WebApplications\Microsoft.WebApplication.targets" /> -->
   <ProjectExtensions>
     <VisualStudio>
