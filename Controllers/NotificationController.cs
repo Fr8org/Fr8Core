@@ -15,6 +15,7 @@ namespace Web.Controllers
 {
     public class NotificationController : ApiController
     {
+
         IProcessService _processService;
         EventReporter _alertReporter;
 

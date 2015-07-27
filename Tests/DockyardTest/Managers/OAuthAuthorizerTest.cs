@@ -10,10 +10,11 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Core.Managers.APIManagers.Authorizers;
-using DockyardTest.Fixtures;
 using Web.Controllers;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 using Utilities;
 
 namespace DockyardTest.Managers

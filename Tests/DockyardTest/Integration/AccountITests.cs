@@ -6,9 +6,10 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Interfaces;
 using Core.Services;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Integration
 {

@@ -6,9 +6,10 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.MockedDB
 {

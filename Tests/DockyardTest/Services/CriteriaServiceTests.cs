@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
-using DockyardTest.Fixtures;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {
