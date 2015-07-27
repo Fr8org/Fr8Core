@@ -859,7 +859,6 @@
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
-    <Content Include="Content\img\temp\team.jpg" />
     <Content Include="Content\js\about-page.js" />
     <Content Include="Content\js\humane.js" />
     <Content Include="Content\js\jquery-ui.js" />
