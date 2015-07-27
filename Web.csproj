@@ -345,7 +345,6 @@
     <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="angboard.html" />
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="bower_components\angular-bootstrap\ui-bootstrap-csp.css" />
@@ -861,7 +860,6 @@
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
-    <Content Include="Content\img\temp\team.jpg" />
     <Content Include="Content\js\about-page.js" />
     <Content Include="Content\js\humane.js" />
     <Content Include="Content\js\jquery-ui.js" />
@@ -3842,7 +3840,6 @@
     <Content Include="Content\templates\metronic\views\ui_select.html" />
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
-    <Content Include="dashboard.html" />
     <Content Include="gulpfile.js" />
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
