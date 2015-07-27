@@ -3,6 +3,7 @@ using Data.Entities;
 using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
 
 namespace DockyardTest.Entities
 {

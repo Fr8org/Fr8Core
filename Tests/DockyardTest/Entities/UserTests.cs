@@ -4,9 +4,10 @@ using Data.Interfaces;
 using Data.States;
 using Core.Services;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Entities
 {

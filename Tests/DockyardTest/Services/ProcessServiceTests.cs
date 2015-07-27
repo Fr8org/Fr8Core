@@ -13,7 +13,8 @@ using Moq;
 using Data.Interfaces;
 using Data.Entities;
 using Data.States;
-using DockyardTest.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {

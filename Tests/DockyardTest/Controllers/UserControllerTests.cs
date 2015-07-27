@@ -10,6 +10,7 @@ using Web.Controllers;
 using Web.ViewModels;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
 
 namespace DockyardTest.Controllers
 {
