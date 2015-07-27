@@ -59,8 +59,6 @@ namespace Web
             //AutoMapper create map configuration
             AutoMapperBootStrapper.ConfigureAutoMapper();
 
-            Logger.GetLogger().Info("Kwasant web starting...");
-
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
             Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
 
@@ -89,7 +87,7 @@ namespace Web
 
             SetServerUrl();
 
-            Logger.GetLogger().Warn("Docutrack  starting...");
+            Logger.GetLogger().Warn("Dockyard starting...");
             var docusign = new DocusignPackager();
             string baseURL = docusign.Login();
 
