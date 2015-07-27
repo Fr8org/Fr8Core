@@ -3539,7 +3539,8 @@
     <Content Include="Global.asax" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />    <Content Include="packages.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="packages.config" />
     <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\img\.DS_Store" />
     <Content Include="Api\GetAttachment.ashx" />
@@ -3552,7 +3553,8 @@
     <Content Include="Content\css\additionalcss\font-awesome\fonts\FontAwesome.otf" />
     <Content Include="package.json" />
     <Content Include="PreBuild.bat" />
-    <Content Include="bower.json" />    <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-cookies.min.js.map" />
+    <Content Include="bower.json" />
+    <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-cookies.min.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-sanitize.min.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular-touch.min.js.map" />
     <Content Include="Content\templates\metronic\assets\global\plugins\angularjs\angular.min.js.map" />
@@ -3802,7 +3804,8 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\typeahead\LICENSE" />
     <Content Include="Content\templates\metronic\assets\global\plugins\typeahead\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\uniform\css\uniform.default.scss" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\uniform\README.md" />    <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
+    <Content Include="Content\templates\metronic\assets\global\plugins\uniform\README.md" />
+    <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %282%29.pubxml" />
@@ -4612,7 +4615,6 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\Process\process_builder.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -4714,6 +4716,7 @@
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Envelope\" />
+    <Folder Include="Views\Process\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
