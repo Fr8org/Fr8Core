@@ -34,6 +34,9 @@
         actionsNodeStroke: 'red',
         actionNodePadding: 5,
         actionNodeHeight: 30,
+        actionNodeTextSize: 15,
+        actionNodeTextFill: 'black',
+        actionNodeTextFont: 'Tahoma',
         addActionNodePadding: 5,
         addActionNodeHeight: 30,
         addActionNodeTextSize: 15,
@@ -91,10 +94,8 @@
                 criteriaNode: null,
                 criteriaArrow: null,
                 actionsNode: null,
-                addActionNode: null,
                 actionsArrow: null,
-                bottomNodePoint: 0,
-                bottomSectionPoint: 0
+                addActionNode: null
             };
 
             criteriaDescr.criteriaNode = this._createCriteriaNode(
@@ -128,15 +129,20 @@
         },
 
         removeCriteria: function (id) {
-            var i;
+            var i, j;
             for (i = 0; i < this._criteria.length; ++i) {
                 if (this._criteria[i].id === id) {
                     this._fabric.remove(this._criteria[i].addActionNode);
                     this._fabric.remove(this._criteria[i].actionsNode);
+                    this._fabric.remove(this._criteria[i].actionsArrow);
                     this._fabric.remove(this._criteria[i].criteriaNode);
 
                     if (this._criteria[i].criteriaArrow) {
                         this._fabric.remove(this._criteria[i].criteriaArrow);
+                    }
+
+                    for (j = 0; j < this._criteria[i].actions.length; ++j) {
+                        this._fabric.remove(this._criteria[i].actions[j].actionNode);
                     }
 
                     this._criteria.splice(i, 1);
@@ -148,11 +154,7 @@
             this.redraw();
         },
 
-        addAction: function (criteriaId, action) {
-            if (!action || !action.id) {
-                throw 'Action must contain "id" property.';
-            }
-
+        _findCriteria: function (criteriaId) {
             var criteria = null;
             var i;
             for (i = 0; i < this._criteria.length; ++i) {
@@ -162,21 +164,56 @@
                 }
             }
 
+            return criteria;
+        },
+
+        addAction: function (criteriaId, action) {
+            if (!action || !action.id) {
+                throw 'Action must contain "id" property.';
+            }
+
+            var criteria = this._findCriteria(criteriaId);
             if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
 
             var actionDescr = {
                 id: action.id,
                 data: action,
-                actionNode: null,
-                bottomNodePoint: 0
+                actionNode: null
             };
 
-            // TODO: finish this method.
+            
+            actionDescr.actionNode = this._createActionNode(
+                action.name || ('Action #' + action.id.toString())
+            );
+
+            actionDescr.actionNode.on(
+                'mousedown',
+                Core.delegate(function (e) {
+                    this.fire('actionNode:click', e, criteria.id, action.id);
+                }, this)
+            );
+
+
+            this._fabric.add(actionDescr.actionNode);
+            criteria.actions.push(actionDescr);
+
             this.redraw();
         },
 
         removeAction: function (criteriaId, actionId) {
-            // TODO: finish this method.
+            var criteria = this._findCriteria(criteriaId);
+            if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
+
+            var i;
+            for (i = 0; i < criteria.actions.length; ++i) {
+                if (criteria.actions[i].id === actionId) {
+                    this._fabric.remove(criteria.actions[i].actionNode);
+                    criteria.actions.splice(i, 1);
+
+                    break;
+                }
+            }
+
             this.redraw();
         },
 
@@ -196,13 +233,26 @@
 
                 prevAction = null;
                 for (j = 0; j < this._criteria[i].actions.length; ++j) {
-                    this._placeActionNode(this._criteria[i].actions[j], prevAction);
+                    this._placeActionNode(this._criteria[i], this._criteria[i].actions[j], prevAction);
                     prevAction = this._criteria[i].actions[j];
                 }
+
+                this._criteria[i].actionArrow = this._replaceArrow(
+                    this._criteria[i].actionArrow,
+                    ns.WidgetConsts.rightMode,
+                    this._getCriteriaNodeTopPoint(this._criteria[i])
+                        + Math.floor(this._getCriteriaNodeHeight(this._criteria[i]) / 2)
+                        - ns.WidgetConsts.arrowSize,
+                    ns.WidgetConsts.canvasPadding + ns.WidgetConsts.defaultSize,
+                    ns.WidgetConsts.canvasPadding + ns.WidgetConsts.defaultSize + ns.WidgetConsts.minSpaceBetweenObjects
+                );
 
                 this._criteria[i].criteriaArrow = this._replaceArrow(
                     this._criteria[i].criteriaArrow,
                     ns.WidgetConsts.downMode,
+                    ns.WidgetConsts.canvasPadding
+                        + Math.floor(ns.WidgetConsts.defaultSize / 2)
+                        - ns.WidgetConsts.arrowSize,
                     prevBottomPoint,
                     this._getCriteriaNodeTopPoint(this._criteria[i])
                 );
@@ -219,6 +269,7 @@
             this._addCriteriaArrow = this._replaceArrow(
                 this._addCriteriaArrow,
                 ns.WidgetConsts.downMode,
+                ns.WidgetConsts.canvasPadding + Math.floor(ns.WidgetConsts.defaultSize / 2) - ns.WidgetConsts.arrowSize,
                 prevBottomPoint,
                 this._getAddCriteriaNodeTopPoint()
             );
@@ -364,26 +415,44 @@
 
         // ---------- region: Arrows routines. ----------
 
-        _replaceArrow: function (arrow, mode, from, to) {
+        _replaceArrow: function (arrow, mode, pos, from, to) {
             if (arrow !== null) {
                 this._fabric.remove(arrow);
             }
 
-            var height = (to - from) - ns.WidgetConsts.arrowPadding * 2;
+            var length = (to - from) - ns.WidgetConsts.arrowPadding * 2;
 
-            var left = ns.WidgetConsts.canvasPadding
-                + ns.WidgetConsts.defaultSize / 2
-                - ns.WidgetConsts.arrowSize;
-            var top = from + ns.WidgetConsts.arrowPadding;
+            var left, top;
+            if (mode === ns.WidgetConsts.downMode) {
+                left = pos;
+                top = from + ns.WidgetConsts.arrowPadding;
+            }
+            else {
+                left = from + ns.WidgetConsts.arrowPadding;
+                top = pos;
+            }
 
-            var path = [
-                ['M', 0, 0],
-                ['L', 0, height],
-                ['M', 0, height],
-                ['L', -ns.WidgetConsts.arrowSize, height - ns.WidgetConsts.arrowSize],
-                ['M', 0, height],
-                ['L', ns.WidgetConsts.arrowSize, height - ns.WidgetConsts.arrowSize]
-            ];
+            var path;
+            if (mode === ns.WidgetConsts.downMode) {
+                path = [
+                    ['M', 0, 0],
+                    ['L', 0, length],
+                    ['M', 0, length],
+                    ['L', -ns.WidgetConsts.arrowSize, length - ns.WidgetConsts.arrowSize],
+                    ['M', 0, length],
+                    ['L', ns.WidgetConsts.arrowSize, length - ns.WidgetConsts.arrowSize]
+                ];
+            }
+            else {
+                path = [
+                    ['M', 0, 0],
+                    ['L', length, 0],
+                    ['M', length, 0],
+                    ['L', length - ns.WidgetConsts.arrowSize, -ns.WidgetConsts.arrowSize],
+                    ['M', length, 0],
+                    ['L', length - ns.WidgetConsts.arrowSize, ns.WidgetConsts.arrowSize]
+                ];
+            }
 
             arrow = new fabric.Path(path, {
                 stroke: ns.WidgetConsts.arrowStroke,
@@ -409,7 +478,7 @@
         _placeCriteriaNode: function (criteria, prevCriteria) {
             var topOffset;
             if (prevCriteria) {
-                topOffset = this._getCriteriaNodeBottomPoint(prevCriteria);
+                topOffset = this._getCriteriaSectionBottomPoint(prevCriteria);
             }
             else {
                 topOffset = this._getStartNodeBottomPoint();
@@ -422,8 +491,6 @@
             criteria.criteriaNode.set('top', top);
 
             criteria.criteriaNode.setCoords();
-
-            criteria.bottomNodePoint = top + ns.WidgetConsts.defaultSize;
         },
 
         _createCriteriaNode: function (criteriaName) {
@@ -462,7 +529,25 @@
         },
 
         _getCriteriaNodeBottomPoint: function (criteria) {
-            return criteria.bottomNodePoint;
+            return criteria.criteriaNode.get('top')
+                + criteria.criteriaNode.get('height');
+        },
+
+        _getCriteriaNodeHeight: function (criteria) {
+            return criteria.criteriaNode.get('height');
+        },
+
+        _getCriteriaSectionBottomPoint: function (criteria) {
+            var actionsNodeHeight = this._getActionsNodeHeight(criteria);
+            var criteriaTopPoint = this._getCriteriaNodeTopPoint(criteria);
+            var criteriaBottomPoint = this._getCriteriaNodeBottomPoint(criteria);
+
+            if ((criteriaTopPoint + actionsNodeHeight) > criteriaBottomPoint) {
+                return criteriaTopPoint + actionsNodeHeight;
+            }
+            else {
+                return criteriaBottomPoint;
+            }
         },
 
         // ---------- endregion: CriteriaNode routines. ----------
@@ -494,12 +579,25 @@
             var height = ns.WidgetConsts.addActionNodeHeight
                 + criteria.actions.length * ns.WidgetConsts.actionNodeHeight;
 
+            var criteriaHeight = this._getCriteriaNodeHeight(criteria);
+            if (height < criteriaHeight) {
+                top += Math.floor((criteriaHeight - height) / 2);
+            }
+
             criteria.actionsNode.set('left', left);
             criteria.actionsNode.set('top', top);
             criteria.actionsNode.set('width', width);
             criteria.actionsNode.set('height', height);
 
             criteria.actionsNode.setCoords();
+        },
+
+        _getActionsNodeTopPoint: function (criteria) {
+            return criteria.actionsNode.get('top');
+        },
+
+        _getActionsNodeHeight: function (criteria) {
+            return criteria.actionsNode.get('height');
         },
 
         _createAddActionNode: function () {
@@ -519,13 +617,53 @@
                 + ns.WidgetConsts.minSpaceBetweenObjects
                 + ns.WidgetConsts.addActionNodePadding;
 
-            var top = this._getCriteriaNodeTopPoint(criteria)
+            var top = this._getActionsNodeTopPoint(criteria)
                 + ns.WidgetConsts.addActionNodePadding;
 
             criteria.addActionNode.set('left', left);
             criteria.addActionNode.set('top', top);
 
             criteria.addActionNode.setCoords();
+        },
+
+        _getAddActionNodeBottomPoint: function (criteria) {
+            return criteria.addActionNode.get('top')
+                + ns.WidgetConsts.addActionNodeHeight
+                - ns.WidgetConsts.addActionNodePadding;
+        },
+
+        _createActionNode: function (name) {
+            var label = new fabric.Text(name, {
+                fontSize: ns.WidgetConsts.actionNodeTextSize,
+                fontFamily: ns.WidgetConsts.actionNodeTextFont,
+                fill: ns.WidgetConsts.actionNodeTextFill,
+                selectable: false
+            });
+
+            return label;
+        },
+
+        _placeActionNode: function (criteria, action, prevAction) {
+            var topOffset;
+            if (!prevAction) {
+                topOffset = this._getAddActionNodeBottomPoint(criteria);
+            }
+            else {
+                topOffset = this._getActionNodeBottomPoint(prevAction);
+            }
+
+            topOffset += ns.WidgetConsts.actionNodePadding;
+
+            action.actionNode.set('left', criteria.addActionNode.get('left'));
+            action.actionNode.set('top', topOffset);
+
+            action.actionNode.setCoords();
+        },
+
+        _getActionNodeBottomPoint: function (action) {
+            return action.actionNode.get('top')
+                + ns.WidgetConsts.actionNodeHeight
+                - ns.WidgetConsts.actionNodePadding;
         }
 
         // ---------- endregion: ActionsNode routines. ----------
