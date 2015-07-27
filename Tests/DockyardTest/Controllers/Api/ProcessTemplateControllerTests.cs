@@ -18,12 +18,14 @@ using System.Web.Http.Controllers;
 using System.Security.Principal;
 using System.Web.Http;
 using System.Web.Http.Results;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Controllers.Api
 {
     [TestFixture]
     [Category("Controllers.Api.ProcessTemplate")]
-    public class ProcessTemplateControllerTests : BaseTest
+    public class ProcessTemplateControllerTests : BaseTest 
     {
         [SetUp]
         public override void SetUp()

@@ -13,6 +13,8 @@ using StructureMap;
 using Web.Controllers;
 using Web.ViewModels;
 using Data.States;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Controllers
 {
