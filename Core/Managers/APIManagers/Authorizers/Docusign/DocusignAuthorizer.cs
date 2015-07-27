@@ -40,17 +40,17 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
 
         public async Task ObtainAccessTokenAsync(string userId, string userName, string password)
         {
-            AlertManager.TokenRequestInitiated(userId);
+            EventManager.TokenRequestInitiated(userId);
             var flow = CreateFlow(userId);
             await flow.ObtainTokenAsync(userName, password);
-            AlertManager.TokenObtained(userId);
+            EventManager.TokenObtained(userId);
         }
 
         public async Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken)
         {
             var flow = CreateFlow(userId);
             await flow.RevokeTokenAsync();
-            AlertManager.TokenRevoked(userId);
+            EventManager.TokenRevoked(userId);
         }
 
         public Task RefreshTokenAsync(string userId, CancellationToken cancellationToken)

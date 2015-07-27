@@ -1,8 +1,8 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
-<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<script src="~/Scripts/DataTables-1.10.7/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet" />
 @*@Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
     <p></p>
 @Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
@@ -39,12 +39,18 @@
                         <li>@Html.ActionLink("Show BR Responsiveness", "Index", "Report", new { type = "showBRResponsiveness" }, new { @class = "" }) </li>
                     </ul>
                 </li>
-                <li class="dropdown"><a id="btnUsers">Users</a>
+                <li class="dropdown"><a id="btnUsers">DockYardAccounts</a>
                     <ul class="dropdown-menu">
                         <li>@Html.ActionLink("Show All", "Index", "User")</li>
                         <li>@Html.ActionLink("Find", "FindUser", "User")</li>
                         <li>@Html.ActionLink("Add", "ShowAddUser", "User")</li>
                     </ul>
+                </li>
+			<li class="dropdown"><a id="btnActions">Actions</a>
+                    <ul class="dropdown-menu">
+	                  <li><a href="@this.Url.Content("../Views/Action/ShowAllActions.html")">Show All Actions</a></li>
+			  	<li><a href="@this.Url.Content("../Views/Action/ShowAllActionLists.html")">Show All Action Lists</a></li>
+	              </ul>
                 </li>
                 <li class="dropdown"><a id="btnReports">Admin</a>
                     <ul class="dropdown-menu">

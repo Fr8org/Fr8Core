@@ -11,7 +11,6 @@ using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Migrations;
 using Utilities;
 
 namespace Data.Infrastructure
@@ -45,7 +44,7 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base("name=DockyardDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>()); 
         }
 
 
@@ -237,32 +236,33 @@ namespace Data.Infrastructure
         {
             modelBuilder.Entity<ProcessDO>().ToTable("Processes");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
-            modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
-            modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
-            modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
-            modelBuilder.Entity<QuestionDO>().ToTable("Questions");
+            //modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
+            //modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            //modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
+            //modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
-            modelBuilder.Entity<EventDO>().ToTable("Events");
+            //modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<InvitationDO>().ToTable("Invitations");
-            modelBuilder.Entity<InvitationResponseDO>().ToTable("InvitationResponses");
+            //modelBuilder.Entity<InvitationResponseDO>().ToTable("InvitationResponses");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
-            modelBuilder.Entity<UserDO>().ToTable("Users");
+            modelBuilder.Entity<DockyardAccountDO>().ToTable("Users");
+            modelBuilder.Entity<DocusignAccountDO>().ToTable("DocusignAccounts");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
-            modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
-            modelBuilder.Entity<AnswerDO>().ToTable("Answers");
+            //modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
+            //modelBuilder.Entity<AnswerDO>().ToTable("Answers");
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
             modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
-            modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
-            modelBuilder.Entity<QuestionResponseDO>().ToTable("QuestionResponses");
+            //modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
+            //modelBuilder.Entity<QuestionResponseDO>().ToTable("QuestionResponses");
             modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
             modelBuilder.Entity<LogDO>().ToTable("Logs");
             modelBuilder.Entity<ProfileDO>().ToTable("Profiles");
@@ -270,8 +270,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileItemDO>().ToTable("ProfileItems");
             modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
-            modelBuilder.Entity<NegotiationAnswerEmailDO>().ToTable("NegotiationAnswerEmails");
+            //modelBuilder.Entity<NegotiationAnswerEmailDO>().ToTable("NegotiationAnswerEmails");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
+	      modelBuilder.Entity< ActionDO >().ToTable( "Actions" );
+		modelBuilder.Entity< ActionListDO >().ToTable( "ActionLists" );
+		modelBuilder.Entity< TemplateDO >().ToTable( "Templates" );
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
@@ -279,7 +282,7 @@ namespace Data.Infrastructure
                 .HasForeignKey(a => a.FromID)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<UserDO>()
+            modelBuilder.Entity<DockyardAccountDO>()
                 .Property(u => u.EmailAddressID)
                 .IsRequired()
                 .HasColumnAnnotation(
@@ -293,31 +296,31 @@ namespace Data.Infrastructure
                     "Index",
                     new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) { IsUnique = true }));
 
-            modelBuilder.Entity<EventDO>()
-                .HasMany(ev => ev.Emails)
-                .WithMany(e => e.Events)
-                .Map(
-                    mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
-                );
+            //modelBuilder.Entity<EventDO>()
+            //    .HasMany(ev => ev.Emails)
+            //    .WithMany(e => e.Events)
+            //    .Map(
+            //        mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
+            //    );
 
-            modelBuilder.Entity<EventDO>()
-                .HasMany(ev => ev.Attendees)
-                .WithOptional(a => a.Event)
-                .WillCascadeOnDelete(true);
+            //modelBuilder.Entity<EventDO>()
+            //    .HasMany(ev => ev.Attendees)
+            //    .WithOptional(a => a.Event)
+            //    .WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<CalendarDO>()
-                .HasMany(ev => ev.BookingRequests)
-                .WithMany(e => e.Calendars)
-                .Map(
-                    mapping => mapping.MapLeftKey("CalendarID").MapRightKey("BookingRequestID").ToTable("BookingRequestCalendar")
-                );
+            //modelBuilder.Entity<CalendarDO>()
+            //    .HasMany(ev => ev.BookingRequests)
+            //    .WithMany(e => e.Calendars)
+            //    .Map(
+            //        mapping => mapping.MapLeftKey("CalendarID").MapRightKey("BookingRequestID").ToTable("BookingRequestCalendar")
+            //    );
 
-            modelBuilder.Entity<BookingRequestDO>()
-                .HasMany(ev => ev.Instructions)
-                .WithMany()
-                .Map(
-                    mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
-                );
+            //modelBuilder.Entity<BookingRequestDO>()
+            //    .HasMany(ev => ev.Instructions)
+            //    .WithMany()
+            //    .Map(
+            //        mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
+            //    );
 
          
             modelBuilder.Entity<AttachmentDO>()
@@ -325,15 +328,15 @@ namespace Data.Infrastructure
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
-            modelBuilder.Entity<NegotiationDO>()
-                .HasMany(e => e.Questions)
-                .WithRequired(a => a.Negotiation)
-                .WillCascadeOnDelete(true);
+            //modelBuilder.Entity<NegotiationDO>()
+            //    .HasMany(e => e.Questions)
+            //    .WithRequired(a => a.Negotiation)
+            //    .WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<NegotiationDO>()
-                .HasMany(e => e.Attendees)
-                .WithOptional(a => a.Negotiation)
-                .WillCascadeOnDelete(true);
+            //modelBuilder.Entity<NegotiationDO>()
+            //    .HasMany(e => e.Attendees)
+            //    .WithOptional(a => a.Negotiation)
+            //    .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
@@ -342,13 +345,13 @@ namespace Data.Infrastructure
                     ts.ForeignTableName
                 });
             
-            modelBuilder.Entity<AnswerDO>()
-                .HasOptional(a => a.Event).WithMany().WillCascadeOnDelete();
+            //modelBuilder.Entity<AnswerDO>()
+            //    .HasOptional(a => a.Event).WithMany().WillCascadeOnDelete();
 
-            modelBuilder.Entity<QuestionDO>()
-                .HasMany(e => e.Answers)
-                .WithRequired(a => a.Question)
-                .WillCascadeOnDelete(true);
+            //modelBuilder.Entity<QuestionDO>()
+            //    .HasMany(e => e.Answers)
+            //    .WithRequired(a => a.Question)
+            //    .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
         }

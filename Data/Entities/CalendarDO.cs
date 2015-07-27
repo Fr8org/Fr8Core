@@ -23,7 +23,7 @@ namespace Data.Entities
 
         [ForeignKey("Owner")]
         public string OwnerID { get; set; }
-        public virtual UserDO Owner { get; set; }
+        public virtual DockyardAccountDO Owner { get; set; }
 
         [ForeignKey("Negotiation")]
         public int? NegotiationID { get; set; }

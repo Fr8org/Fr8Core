@@ -21,7 +21,7 @@
    
 
             <ul class="nav navbar-nav navbar-right">
-                <li>@*@Html.ActionLink("My Account", "MyAccount", "User", new {id="btnMyAccount"})*@
+                <li>@*@Html.ActionLink("My Account", "MyAccount", "DockYardAccount", new {id="btnMyAccount"})*@
                   @Html.ActionLink("My Account", "MyAccount", new { controller = "User"},new {id = "btnMyAccount" })
                 </li>
                 @if (User.IsInRole("Admin")){ 

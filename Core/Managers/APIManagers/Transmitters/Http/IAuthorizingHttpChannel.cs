@@ -13,7 +13,7 @@ namespace Core.Managers.APIManagers.Transmitters.Http
         /// Http request may be sent several times in the scope of this method but some .NET http clients don't support sending the same request instance twice.
         /// </summary>
         /// <param name="requestFactoryMethod"></param>
-        /// <param name="userId">User ID for authorization</param>
+        /// <param name="userId">DockYardAccount ID for authorization</param>
         /// <returns></returns>
         Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> requestFactoryMethod, string userId);
     }

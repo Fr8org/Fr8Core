@@ -64,7 +64,7 @@ namespace Daemons
                         uow.SaveChanges();
                     }
 
-                    AlertManager.Error_EmailSendFailure(emailID, message);
+                    EventManager.Error_EmailSendFailure(emailID, message);
                 });
 
             AddTest("OutboundEmailDaemon_Test", "Test");
@@ -163,9 +163,9 @@ namespace Daemons
             
             foreach (RecipientDO recipient in recipientList)
             {
-                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
+                DockyardAccountDO dockyardAccount = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
 
-                if (user != null && !uow.AspNetUserRolesRepository.UserHasRole(Roles.Admin, user.Id) && !user.TestAccount)
+                if (dockyardAccount != null && !uow.AspNetUserRolesRepository.UserHasRole(Roles.Admin, dockyardAccount.Id) && !dockyardAccount.TestAccount)
                 {
                     recipientsRemoved.Add(recipient.EmailAddress.Address);
                     uow.RecipientRepository.Remove(recipient);

@@ -12,7 +12,6 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -165,15 +164,11 @@
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
-    <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
-    <Compile Include="Interfaces\IAnswer.cs" />
-    <Compile Include="Interfaces\IAttendee.cs" />
-    <Compile Include="Interfaces\IBookingRequest.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IEvent.cs" />
-    <Compile Include="Interfaces\INegotiation.cs" />
+    <Compile Include="Interfaces\IProcessService.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -187,7 +182,7 @@
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
-    <Compile Include="Managers\AlertReporter.cs" />
+    <Compile Include="Managers\EventReporter.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Docusign\IDocusignAuthorizer.cs" />
@@ -238,14 +233,18 @@
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
+    <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Notification.cs" />
+    <Compile Include="Services\ProcessService.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Slip.cs" />
-    <Compile Include="Services\User.cs" />
+    <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
+    <Compile Include="Utilities\DocusignXml.cs" />
+    <Compile Include="Interfaces\IDocusignXml.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
@@ -275,12 +274,6 @@
     <Folder Include="UserAlerting\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-  </Target>
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
@@ -294,3 +287,4 @@
   </Target>
   -->
 </Project>
+

@@ -31,7 +31,7 @@ namespace Data.Entities
             if (!MiscUtils.AreEqual(originalValues[priorityPropertyName], currentValues[priorityPropertyName])
                 && IsHighPriority)
             {
-                AlertManager.HighPriorityIncidentCreated(Id);
+                EventManager.HighPriorityIncidentCreated(Id);
             }
         }
 
@@ -41,7 +41,7 @@ namespace Data.Entities
 
             if (IsHighPriority)
             {
-                AlertManager.HighPriorityIncidentCreated(Id);
+                EventManager.HighPriorityIncidentCreated(Id);
             }
         }
     }

@@ -15,6 +15,6 @@ namespace Data.Entities
 
         [ForeignKey("User"), Required]
         public String UserID { get; set; }
-        public virtual UserDO User { get; set; }
+        public virtual DockyardAccountDO User { get; set; }
     }
 }

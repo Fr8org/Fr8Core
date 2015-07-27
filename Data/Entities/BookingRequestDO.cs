@@ -23,7 +23,7 @@ namespace Data.Entities
 
         [Required, ForeignKey("Customer")]
         public string CustomerID { get; set; }        
-        public virtual UserDO Customer { get; set; }
+        public virtual DockyardAccountDO Customer { get; set; }
 
         [Required, ForeignKey("BookingRequestStateTemplate")]
         public int? State { get; set; }
@@ -31,11 +31,11 @@ namespace Data.Entities
 
         [ForeignKey("Booker")]
         public string BookerID { get; set; }
-        public virtual UserDO Booker { get; set; }
+        public virtual DockyardAccountDO Booker { get; set; }
 
         [ForeignKey("PreferredBooker")]
         public string PreferredBookerID { get; set; }
-        public virtual UserDO PreferredBooker { get; set; }
+        public virtual DockyardAccountDO PreferredBooker { get; set; }
 
         [ForeignKey("BookingRequestAvailabilityTemplate")]
         public int? Availability { get; set; }

@@ -44,6 +44,9 @@ namespace Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            //Register global Exception Filter for WebAPI 
+            GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
+
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
                 //set to either "test" or "live"
@@ -67,7 +70,7 @@ namespace Web
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
 
-            AlertReporter curReporter = new AlertReporter();
+            EventReporter curReporter = new EventReporter();
             curReporter.SubscribeToAlerts();
 
             IncidentReporter incidentReporter = new IncidentReporter();

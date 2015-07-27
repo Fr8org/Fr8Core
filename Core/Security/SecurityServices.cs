@@ -19,14 +19,14 @@ namespace Core.Security
 {
     class SecurityServices : ISecurityServices
     {
-        public void Login(IUnitOfWork uow, UserDO userDO)
+        public void Login(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
         {
-            ClaimsIdentity identity = GetIdentity(uow, userDO);
+            ClaimsIdentity identity = GetIdentity(uow, dockyardAccountDO);
             HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties
             {
                 IsPersistent = true
             }, identity);
-            ObjectFactory.GetInstance<ITracker>().Identify(userDO);
+            ObjectFactory.GetInstance<ITracker>().Identify(dockyardAccountDO);
         }
 
         public String GetCurrentUser()
@@ -57,11 +57,11 @@ namespace Core.Security
             HttpContext.Current.GetOwinContext().Authentication.SignOut();
         }
 
-        public ClaimsIdentity GetIdentity(IUnitOfWork uow, UserDO userDO)
+        public ClaimsIdentity GetIdentity(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
         {
             var um = new KwasantUserManager(uow);
-            var identity = um.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
-            foreach (var roleId in userDO.Roles.Select(r => r.RoleId))
+            var identity = um.CreateIdentity(dockyardAccountDO, DefaultAuthenticationTypes.ApplicationCookie);
+            foreach (var roleId in dockyardAccountDO.Roles.Select(r => r.RoleId))
             {
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
