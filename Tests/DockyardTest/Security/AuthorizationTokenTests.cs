@@ -8,6 +8,7 @@ using Core.StructureMap;
 using Web.Controllers;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
 
 namespace DockyardTest.Security
 {

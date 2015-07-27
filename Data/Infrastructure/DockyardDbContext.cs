@@ -57,7 +57,7 @@ namespace Data.Infrastructure
         private List<PropertyChangeInformation> GetEntityModifications<T>(DbEntityEntry<T> entity)
             where T : class
         {
-            return GetEntityModifications((DbEntityEntry)entity);
+            return GetEntityModifications((DbEntityEntry) entity);
         }
 
         public void DetectChanges()

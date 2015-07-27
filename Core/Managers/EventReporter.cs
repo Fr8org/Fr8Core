@@ -337,7 +337,7 @@ namespace Core.Managers
             LogFactInformation(fact, "DocusignNotificationReceived");
             SaveFact(fact);
         }
-        
+
         /// <summary>
         /// The method logs the fact of Process Template creation.      
         /// </summary>
