@@ -5,16 +5,22 @@ namespace Core.Services
 {
 	public class ProcessNodeService
 	{
-		public void Create( UnitOfWork uow, ProcessDO parentProcess )
+		/// <summary>
+		/// Creates ProcessNode Object
+		/// </summary>
+		/// <returns>New ProcessNodeDO instance</returns>
+		public ProcessNodeDO Create( UnitOfWork uow, ProcessDO parentProcess )
 		{
-			var node = new ProcessNodeDO
+			var processNode = new ProcessNodeDO
 			{
 				State = ProcessNodeDO.ProcessNodeState.Unstarted,
 				ProcessStateTemplate = parentProcess.ProcessStateTemplate,
 				ProcessID = parentProcess.Id
 			};
 
-			uow.ProcessNodeRepository.Add( node );
+			uow.ProcessNodeRepository.Add( processNode );
+
+			return processNode;
 		}
 
 		public void CreateTruthTransition( ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode )
