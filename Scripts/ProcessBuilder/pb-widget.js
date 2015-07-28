@@ -1,6 +1,18 @@
 ﻿(function (ns) {
 
+    // ProcessBuilder widget class.
+    // Fires events:
+    //     'startNode:click' - when StartNode is clicked; function (mouseEvent) { ... }
+    //     'addCriteriaNode:click' - when AddCriteriaNode is clicked; function (mouseEvent) { ... }
+    //     'criteriaNode:click' - when CriteriaNode (criteria created by user) is clicked; function (mouseEvent, criteriaId) { ... }
+    //     'addActionNode:click' - when AddActionNode (add action button) is clicked; function (mouseEvent, criteriaId) { ... }
+    //     'actionNode:click' - when ActionNode (add created by user) is clicked; function (mouseEvent, criteriaId, actionId) { ... }
     ns.Widget = Core.class(Core.CoreObject, {
+        // Parameters:
+        //     element - div element on HTML page, which serves as container for canvas element.
+        //     factory - ProcessBuilder.BaseFactory instance.
+        //     initPixelWidth - initial canvas width (in pixels).
+        //     initPixelHeight - initial canvas height (in pixels).
         constructor: function (element, factory, initPixelWidth, initPixelHeight) {
             ns.Widget.super.constructor.call(this);
 
@@ -19,6 +31,7 @@
             this._criteria = [];
         },
 
+        // Creating canvas element, and populating canvas with predefined elements.
         init: function () {
             var canvas = $('<canvas width="' + this._pxWidth.toString() + '" height="' + this._pxHeight.toString() + '"></canvas>');
 
@@ -30,6 +43,9 @@
             this.relayout();
         },
 
+        // Add criteria to ProcessBuilder canvas.
+        // Parameters:
+        //     criteria - object to define criteria; minimum required set of properties: { id: 'someId' }
         addCriteria: function (criteria) {
             if (!criteria || !criteria.id) {
                 throw 'Criteria must contain "id" property.';
@@ -76,6 +92,9 @@
             this.relayout();
         },
 
+        // Remove criteria from ProcessBuilder canvas.
+        // Parameters:
+        //     id - criteriaId
         removeCriteria: function (id) {
             var i, j;
             for (i = 0; i < this._criteria.length; ++i) {
@@ -190,9 +209,8 @@
                     prevAction = this._criteria[i].actions[j];
                 }
 
-                this._criteria[i].actionsArrow = this._replaceArrow(
+                this._criteria[i].actionsArrow = this._replaceRightArrow(
                     this._criteria[i].actionsArrow,
-                    ns.WidgetConsts.rightMode,
                     this._getCriteriaNodeTopPoint(this._criteria[i])
                         + Math.floor(this._getCriteriaNodeHeight(this._criteria[i]) / 2)
                         - ns.WidgetConsts.arrowSize,
@@ -200,9 +218,8 @@
                     ns.WidgetConsts.canvasPadding + ns.WidgetConsts.defaultSize + ns.WidgetConsts.minSpaceBetweenObjects
                 );
 
-                this._criteria[i].criteriaArrow = this._replaceArrow(
+                this._criteria[i].criteriaArrow = this._replaceDownArrow(
                     this._criteria[i].criteriaArrow,
-                    ns.WidgetConsts.downMode,
                     ns.WidgetConsts.canvasPadding
                         + Math.floor(ns.WidgetConsts.defaultSize / 2)
                         - ns.WidgetConsts.arrowSize,
@@ -225,9 +242,8 @@
             }
 
             this._placeAddCriteriaNode();
-            this._addCriteriaArrow = this._replaceArrow(
+            this._addCriteriaArrow = this._replaceDownArrow(
                 this._addCriteriaArrow,
-                ns.WidgetConsts.downMode,
                 ns.WidgetConsts.canvasPadding + Math.floor(ns.WidgetConsts.defaultSize / 2) - ns.WidgetConsts.arrowSize,
                 prevBottomPoint,
                 this._getAddCriteriaNodeTopPoint()
@@ -323,27 +339,26 @@
 
         // ---------- region: Arrows routines. ----------
 
-        _replaceArrow: function (arrow, mode, pos, from, to) {
-            if (arrow !== null) {
-                this._canvas.remove(arrow);
-            }
+        _replaceDownArrow: function (arrow, left, from, to) {
+            if (arrow !== null) { this._canvas.remove(arrow); }
         
             var length = (to - from) - ns.WidgetConsts.arrowPadding * 2;
+            
+            var top = from + ns.WidgetConsts.arrowPadding;
+            var arrow = this._factory.createDownArrow(left, top, length);
         
-            var left, top, arrow;
-            if (mode === ns.WidgetConsts.downMode) {
-                left = pos;
-                top = from + ns.WidgetConsts.arrowPadding;
+            this._canvas.add(arrow);
+            return arrow;
+        },
 
-                arrow = this._factory.createDownArrow(left, top, length);
-            }
-            else {
-                left = from + ns.WidgetConsts.arrowPadding;
-                top = pos;
+        _replaceRightArrow: function (arrow, top, from, to) {
+            if (arrow !== null) { this._canvas.remove(arrow); }
 
-                arrow = this._factory.createRightArrow(left, top, length);
-            }
-        
+            var length = (to - from) - ns.WidgetConsts.arrowPadding * 2;
+
+            var left = from + ns.WidgetConsts.arrowPadding;
+            var arrow = this._factory.createRightArrow(left, top, length);
+
             this._canvas.add(arrow);
             return arrow;
         },

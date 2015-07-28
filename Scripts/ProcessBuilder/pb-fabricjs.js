@@ -1,5 +1,7 @@
-﻿(function (ns) {
+﻿// Implementation of drawing abstraction with FabricJS.
+(function (ns) {
 
+    // FabricJS-related factory.
     ns.FabricJsFactory = Core.class(ns.BaseFactory, {
         constructor: function () {
             ns.FabricJsFactory.super.constructor.call(this);
@@ -43,6 +45,7 @@
     });
 
 
+    // FabricJS-related canvas.
     ns.FabricJsCanvas = Core.class(ns.BaseCanvas, {
         constructor: function (canvas) {
             ns.FabricJsCanvas.super.constructor.call(this, canvas);
@@ -50,6 +53,7 @@
         },
 
         init: function () {
+            // Initializing FabricJS canvas and disable multiple object selection.
             this._fabric = new fabric.Canvas(this.getCanvas());
             this._fabric.selection = false;
         },
@@ -82,11 +86,13 @@
     });
 
 
+    // Base rectangle-bounded FabricJS-related canvas node.
     ns.BaseFabricJsObject = Core.class(ns.BaseCanvasObject, {
         constructor: function () {
             ns.BaseFabricJsObject.super.constructor.call(this);
         },
 
+        // Get underlying FabricJS object.
         getFabricObject: function () {
             throw 'Not implemented';
         },
@@ -129,6 +135,7 @@
     });
 
 
+    // FabricJS implementation of StartNode.
     ns.FabricJsStartNode = Core.class(ns.BaseFabricJsObject, {
         constructor: function () {
             ns.BaseFabricJsObject.super.constructor.call(this);
@@ -175,6 +182,7 @@
     });
 
 
+    // FabricJS implementation of AddCriteriaNode.
     ns.FabricJsAddCriteriaNode = Core.class(ns.BaseFabricJsObject, {
         constructor: function () {
             ns.BaseFabricJsObject.super.constructor.call(this);
@@ -221,6 +229,7 @@
     });
 
 
+    // FabricJS implementation of CriteriaNode (criteria created by user).
     ns.FabricJsCriteriaNode = Core.class(ns.BaseFabricJsObject, {
         constructor: function (criteriaName) {
             ns.FabricJsCriteriaNode.super.constructor.call(this);
@@ -268,6 +277,7 @@
     });
 
 
+    // FabricJS implementation of ActionsNode (actions panel).
     ns.FabricJsActionsNode = Core.class(ns.BaseFabricJsObject, {
         constructor: function () {
             ns.FabricJsActionsNode.super.constructor.call(this);
@@ -294,6 +304,7 @@
     });
 
 
+    // FabricJS implementation of AddActionNode (add action button).
     ns.FabricJsAddActionNode = Core.class(ns.BaseFabricJsObject, {
         constructor: function () {
             ns.FabricJsAddActionNode.super.constructor.call(this);
@@ -320,6 +331,7 @@
     });
 
 
+    // FabricJS implementation of ActionNode (action created by user).
     ns.FabricJsActionNode = Core.class(ns.BaseFabricJsObject, {
         constructor: function (actionName) {
             ns.FabricJsActionNode.super.constructor.call(this);
@@ -347,6 +359,7 @@
     });
 
 
+    // Right-directed FabricJS arrow.
     ns.FabricJsRightArrow = Core.class(ns.BaseFabricJsObject, {
         constructor: function (left, top, length) {
             ns.BaseFabricJsObject.super.constructor.call(this);
@@ -387,6 +400,7 @@
     });
 
 
+    // Down-directed FabricJS arrow.
     ns.FabricJsDownArrow = Core.class(ns.BaseFabricJsObject, {
         constructor: function (left, top, length) {
             ns.BaseFabricJsObject.super.constructor.call(this);
