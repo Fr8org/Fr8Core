@@ -1,17 +1,21 @@
 'use strict';
 
-MetronicApp.filter('ProcessTemplateState', function() {
+/*
+    The filter converts numeric value to state name
+*/
+MetronicApp.filter('ProcessTemplateState', ['ConstantsService', function (ConstantsService) {
+
     return function(input) {
         switch (input)
         {
-            case 1:
+            case ConstantsService.ProcessTemplateState.Active:
                 return "Active";
                 break;
-            case 0:
+            case ConstantsService.ProcessTemplateState.Inactive:
                 return "Inactive";
                 break;
             default:
                 return "Inactive";
         }
     };
-})
+}])

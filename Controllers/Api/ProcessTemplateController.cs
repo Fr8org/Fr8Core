@@ -6,7 +6,9 @@ using System.Net.Http;
 using System.Web.Http;
 using AutoMapper;
 using Core.Exceptions;
+using Core.Interfaces;
 using Core.Managers;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -15,13 +17,14 @@ using Web.ViewModels;
 
 namespace Web.Controllers.Api
 {
+    [Authorize]
     public class ProcessTemplateController : ApiController
     {
-        EventReporter _eventReporter = new EventReporter();
+        IProcessTemplate _processTemplateService;
 
         public ProcessTemplateController()
         {
-            _eventReporter = ObjectFactory.GetInstance<EventReporter>();  
+            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         // GET api/<controller>
@@ -32,9 +35,7 @@ namespace Web.Controllers.Api
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ptdoCollection = uow.ProcessTemplateRepository.GetForUser(User.Identity.Name);
-
                 var ptdos = ptdoCollection.ToList();
-
                 return ptdos.Select(ptdo => Mapper.Map<ProcessTemplateVM>(ptdo));
             }
         }
@@ -57,7 +58,6 @@ namespace Web.Controllers.Api
 
         public IHttpActionResult Post(ProcessTemplateVM ptvm)
         {
-            bool creating = ptvm.Id == 0;
 
             if (string.IsNullOrEmpty(ptvm.Name))
             {
@@ -69,75 +69,63 @@ namespace Web.Controllers.Api
                 return BadRequest("Not all data in the request are valid");
             }
 
+            var ptdo = Mapper.Map<ProcessTemplateVM, ProcessTemplateDO>(ptvm);
+            ptdo.UserId = User.Identity.Name;
+
             try
             {
-                CreateOrUpdate(ptvm);
-                if (creating)
-                {
-                    _eventReporter.ProcessTemplateCreated(User.Identity.Name, ptvm.Name);
-                }
+                _processTemplateService.CreateOrUpdate(ptdo);
                 return Ok();
             }
             catch (EntityNotFoundException)
             {
                 return NotFound();
             }
-            catch (Exception ex)
-            {
-                return InternalServerError();
-            }
         }
 
         public IHttpActionResult Delete(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                var ptdo = uow.ProcessTemplateRepository.GetForUser(id, User.Identity.Name);
-                if (ptdo == null)
-                {
-                    return NotFound();
-                }
-                uow.ProcessTemplateRepository.Remove(ptdo);
-                uow.SaveChanges();
+                _processTemplateService.Delete(id, User.Identity.Name);
+                return Ok();
             }
-
-            return Ok();
-        }
-
-        /// <summary>
-        /// The procedure either creates or updates an existing Process Template
-        /// depending on there Id is present on ProcessTemplateVM object.
-        /// </summary>
-        private void CreateOrUpdate(ProcessTemplateVM viewModel)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            catch (EntityNotFoundException)
             {
-                Mapper.CreateMap<ProcessTemplateVM, ProcessTemplateDO>()
-                   .ConstructUsing((ProcessTemplateVM vm) =>
-                   {
-                       ProcessTemplateDO entity;
-                       if (vm.Id == 0)
-                       {
-                           entity = new ProcessTemplateDO();
-                           entity.UserId = User.Identity.Name;
-                           entity.ProcessState = ProcessTemplateState.Active;
-                           uow.ProcessTemplateRepository.Add(entity);
-                           return entity;
-                       }
-                       entity = uow.ProcessTemplateRepository.GetForUser(vm.Id, User.Identity.Name);
-
-                       if (entity == null)
-                       {
-                           throw new EntityNotFoundException();
-                       }
-                       else
-                       {
-                           return entity;
-                       }
-                   });
-                Mapper.Map<ProcessTemplateVM, ProcessTemplateDO>(viewModel);
-                uow.SaveChanges();
+                return NotFound();
             }
         }
+
+        //private void CreateOrUpdate(ProcessTemplateVM viewModel)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        Mapper.CreateMap<ProcessTemplateVM, ProcessTemplateDO>()
+        //           .ConstructUsing((ProcessTemplateVM vm) =>
+        //           {
+        //               ProcessTemplateDO entity;
+        //               if (vm.Id == 0)
+        //               {
+        //                   entity = new ProcessTemplateDO();
+        //                   entity.UserId = User.Identity.Name;
+        //                   entity.ProcessState = ProcessTemplateState.Active;
+        //                   uow.ProcessTemplateRepository.Add(entity);
+        //                   return entity;
+        //               }
+        //               entity = uow.ProcessTemplateRepository.GetForUser(vm.Id, User.Identity.Name);
+
+        //               if (entity == null)
+        //               {
+        //                   throw new EntityNotFoundException();
+        //               }
+        //               else
+        //               {
+        //                   return entity;
+        //               }
+        //           });
+        //        Mapper.Map<ProcessTemplateVM, ProcessTemplateDO>(viewModel);
+        //        uow.SaveChanges();
+        //    }
+        //}
     }
 }

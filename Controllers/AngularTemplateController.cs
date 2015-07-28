@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace Web.Controllers
 {
-    public class TemplateController : Controller
+    public class AngularTemplateController : Controller
     {
         public ActionResult Footer()
         {

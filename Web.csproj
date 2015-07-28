@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -255,10 +255,10 @@
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
-    <Compile Include="Controllers\Services\ActionsService.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
+    <Compile Include="Controllers\Services\ActionsService.cs" />
     <Compile Include="Controllers\StatusController.cs" />
-    <Compile Include="Controllers\TemplateController.cs" />
+    <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
     <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
     <Compile Include="NotificationQueues\NotificationQueue.cs" />
@@ -556,6 +556,7 @@
     <Content Include="Content\js\app\filters\ProcessTemplateState.js" />
     <Content Include="Content\js\app\controllers\ProcessTemplateController.js" />
     <Content Include="Content\js\app\directives.js" />
+    <Content Include="Content\js\app\services\ConstantsService.js" />
     <Content Include="Content\js\app\services\StringService.js" />
     <Content Include="Content\js\app\services\ProcessTemplateService.js" />
     <Content Include="Content\js\humane.js" />
@@ -4645,8 +4646,8 @@
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="Views\Process\process_builder.html" />
-    <Content Include="Views\Template\ProcessTemplate.cshtml" />
-    <None Include="Views\Template\ProcessTemplates.cshtml" />
+    <Content Include="Views\AngularTemplate\ProcessTemplate.cshtml" />
+    <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -4735,9 +4736,9 @@
     <Content Include="Views\Shared\403.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <Content Include="Views\ProcessTemplate\Index.cshtml" />
-    <Content Include="Views\Template\Footer.cshtml" />
-    <Content Include="Views\Template\Header.cshtml" />
-    <Content Include="Views\Template\PageHead.cshtml" />
+    <Content Include="Views\AngularTemplate\Footer.cshtml" />
+    <Content Include="Views\AngularTemplate\Header.cshtml" />
+    <Content Include="Views\AngularTemplate\PageHead.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -4747,14 +4748,13 @@
     <Folder Include="Content\DataTables-1.10.0\media\images\" />
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
+    <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
     <Folder Include="Scripts\Angular-DataTables\js\plugins\" />
-    <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Envelope\" />
-    <Folder Include="Views\Process\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
@@ -4824,7 +4824,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50674</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:50617/</IISUrl>
+          <IISUrl>http://localhost:8081</IISUrl>
           <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
           <IISAppRootUrl>http://localhost:50617/</IISAppRootUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

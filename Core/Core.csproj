@@ -171,6 +171,7 @@
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
+    <Compile Include="Interfaces\IProcessTemplateService.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -242,6 +243,7 @@
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessService.cs" />
+    <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />

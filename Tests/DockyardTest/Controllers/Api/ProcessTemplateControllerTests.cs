@@ -12,14 +12,12 @@ using NUnit.Framework;
 using StructureMap;
 using Web.Controllers.Api;
 using Web.ViewModels;
-using System.Linq;
 using Data.States;
 using System.Web.Http.Controllers;
 using System.Security.Principal;
 using System.Web.Http;
 using System.Web.Http.Results;
 using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Controllers.Api
 {
@@ -40,6 +38,7 @@ namespace DockyardTest.Controllers.Api
             string testUserId = "testuser";
             var ptvm = new ProcessTemplateVM();
             ptvm.Name = "processtemplate1";
+            ptvm.ProcessState = 1;
             ptvm.Description = "Description for test process template";
 
             //Act
@@ -63,6 +62,7 @@ namespace DockyardTest.Controllers.Api
             string testUserId = "testuser";
             var ptvm = new ProcessTemplateVM();
             ptvm.Description = "Description for test process template";
+            ptvm.ProcessState = 1;
 
             //Act
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
@@ -82,6 +82,7 @@ namespace DockyardTest.Controllers.Api
             var ptvm = new ProcessTemplateVM();
             ptvm.Description = "Description for test process template";
             ptvm.Name = "processtemplate1";
+            ptvm.ProcessState = 1;
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
             ptc.Post(ptvm);
 
@@ -125,6 +126,7 @@ namespace DockyardTest.Controllers.Api
             var ptvm = new ProcessTemplateVM();
             ptvm.Description = "Description for test process template";
             ptvm.Name = "processtemplate1";
+            ptvm.ProcessState = 1;
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
             ptc.Post(ptvm);
 

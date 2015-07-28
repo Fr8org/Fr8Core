@@ -83,6 +83,7 @@ namespace Core.StructureMap
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcessService>().Use<ProcessService>();
+                For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
 
@@ -116,6 +117,7 @@ namespace Core.StructureMap
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcessService>().Use<ProcessService>();
+                For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
                 //var mockProcess = new Mock<IProcessService>();

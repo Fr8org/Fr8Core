@@ -21,44 +21,6 @@ MetronicApp.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
     });
 }]);
 
-/********************************************
- BEGIN: BREAKING CHANGE in AngularJS v1.3.x:
-*********************************************/
-/**
-`$controller` will no longer look for controllers on `window`.
-The old behavior of looking on `window` for controllers was originally intended
-for use in examples, demos, and toy apps. We found that allowing global controller
-functions encouraged poor practices, so we resolved to disable this behavior by
-default.
-
-To migrate, register your controllers with modules rather than exposing them
-as globals:
-
-Before:
-
-```javascript
-function MyController() {
-  // ...
-}
-```
-
-After:
-
-```javascript
-angular.module('myApp', []).controller('MyController', [function() {
-  // ...
-}]);
-
-Although it's not recommended, you can re-enable the old behavior like this:
-
-```javascript
-angular.module('myModule').config(['$controllerProvider', function($controllerProvider) {
-  // this option might be handy for migrating old apps, but please don't use it
-  // in new ones!
-  $controllerProvider.allowGlobals();
-}]);
-**/
-
 //AngularJS v1.3.x workaround for old style controller declarition in HTML
 MetronicApp.config(['$controllerProvider', function ($controllerProvider) {
     // this option might be handy for migrating old apps, but please don't use it
@@ -132,7 +94,7 @@ MetronicApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProv
         // Process Template list
         .state('processTemplates', {
             url: "/processes",
-            templateUrl: "/Template/ProcessTemplates",
+            templateUrl: "/AngularTemplate/ProcessTemplates",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' },
             resolve: {  
                 deps: ['$ocLazyLoad', function ($ocLazyLoad) {
@@ -155,7 +117,7 @@ MetronicApp.config(['$stateProvider', '$urlRouterProvider', function ($stateProv
         // Process Template form
         .state('processTemplate', {
             url: "/processes/{id}",
-            templateUrl: "/Template/ProcessTemplate",
+            templateUrl: "/AngularTemplate/ProcessTemplate",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
 }]);

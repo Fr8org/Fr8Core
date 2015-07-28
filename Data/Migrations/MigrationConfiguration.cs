@@ -68,37 +68,6 @@ namespace Data.Migrations
 
             AddProfiles(uow);
             //AddEvents(uow);
-            AddProcessTemplates(uow);
-        }
-
-        private void AddProcessTemplates(IUnitOfWork uow)
-        {
-            var ptdo = uow.ProcessTemplateRepository.GetAll().ToList();
-            if (ptdo.Count == 0)
-            {
-                uow.ProcessTemplateRepository.Add(new Entities.ProcessTemplateDO()
-                {
-                    CreateDate = DateTime.UtcNow,
-                    Name = "ProcessTemplate #1",
-                    Description = "ProcessTemplate Description #1",
-                    ProcessState = 1
-                });
-                uow.ProcessTemplateRepository.Add(new Entities.ProcessTemplateDO()
-                {
-                    CreateDate = DateTime.UtcNow,
-                    Name = "ProcessTemplate #2",
-                    Description = "ProcessTemplate Description #2",
-                    ProcessState = 1
-                });
-                uow.ProcessTemplateRepository.Add(new Entities.ProcessTemplateDO()
-                {
-                    CreateDate = DateTime.UtcNow,
-                    Name = "ProcessTemplate #3",
-                    Description = "ProcessTemplate Description #3",
-                    ProcessState = 1
-                });
-                uow.SaveChanges();
-            }
         }
 
 
