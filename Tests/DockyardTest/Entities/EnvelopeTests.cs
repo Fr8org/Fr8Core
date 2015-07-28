@@ -54,6 +54,7 @@ namespace DockyardTest.Entities
         {
             Account account = LoginDocusign();
             Envelope envelope = CreateAndFillEnvelope(account);
+            Assert.IsTrue(envelope.RestError == null);
 
             IEnvelope envelopeService = new Core.Services.Envelope();
             List<EnvelopeData> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
@@ -65,6 +66,7 @@ namespace DockyardTest.Entities
         #region private methods.
         /// <summary>
         /// Programmatically create an Envelope in DocuSign in the developer sandbox account.
+        /// ( Please watch your firewall. It's actualy going to demo docusign server. )
         /// </summary>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
         private static Account LoginDocusign()
