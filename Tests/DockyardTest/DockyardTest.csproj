@@ -241,6 +241,9 @@
     <Folder Include="Timeslots\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\docusign_examplephoto.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\DocusignXmlPayload_invalid.xml">
       <SubType>Designer</SubType>
     </Content>
