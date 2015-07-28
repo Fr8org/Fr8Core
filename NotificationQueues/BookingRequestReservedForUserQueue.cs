@@ -11,13 +11,13 @@ namespace Web.NotificationQueues
     {
         public BookingRequestReservedForUserQueue() 
         {
-            AlertManager.AlertBookingRequestReserved +=
-                (bookingRequestID, bookerID) =>
-                    AppendUpdate(new NewBookingRequestForUserQueueData
-                    {
-                        BookingRequestID = bookingRequestID,
-                        UserID = bookerID,
-                    });
+            //AlertManager.AlertBookingRequestReserved +=
+            //    (bookingRequestID, bookerID) =>
+            //        AppendUpdate(new NewBookingRequestForUserQueueData
+            //        {
+            //            BookingRequestID = bookingRequestID,
+            //            UserID = bookerID,
+            //        });
         }
 
         protected override TimeSpan ExpireUpdateAfter

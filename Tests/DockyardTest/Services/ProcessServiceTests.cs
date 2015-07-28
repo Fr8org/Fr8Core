@@ -13,7 +13,8 @@ using Moq;
 using Data.Interfaces;
 using Data.Entities;
 using Data.States;
-using DockyardTest.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {
@@ -23,7 +24,7 @@ namespace DockyardTest.Services
     public class ProcessServiceTests : BaseTest
     {
         private IProcessService _processService;
-        private User _userService;
+        private DockyardAccount _userService;
         private IDocusignXml _docusignXml;
         private string _testUserId = "testuser";
         private string _xmlPayloadFullPath;
@@ -33,7 +34,7 @@ namespace DockyardTest.Services
         {
             base.SetUp();
             _processService = ObjectFactory.GetInstance<IProcessService>();
-            _userService = ObjectFactory.GetInstance<User>();
+            _userService = ObjectFactory.GetInstance<DockyardAccount>();
             _docusignXml = ObjectFactory.GetInstance<IDocusignXml>(); 
 
             _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
@@ -112,3 +113,4 @@ namespace DockyardTest.Services
         }
     }
 }
+

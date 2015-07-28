@@ -50,7 +50,7 @@ namespace Data.Entities
 
         [ForeignKey("CreatedBy"), Required]
         public string CreatedByID { get; set; }
-        public virtual UserDO CreatedBy { get; set; }
+        public virtual DockyardAccountDO CreatedBy { get; set; }
 
         [ForeignKey("Calendar"), Required]
         public int? CalendarID { get; set; }

@@ -3,8 +3,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Core.Managers;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 using StructureMap;
 
 namespace DockyardTest.Models
@@ -21,17 +22,17 @@ namespace DockyardTest.Models
                 var fixture = new FixtureData(uow);
                 //SETUP
                 //create a customer from fixture data
-                UserDO curUserDO = fixture.TestUser1();
+                DockyardAccountDO curDockyardAccountDO = fixture.TestUser1();
 
                 //EXECUTE
-                uow.UserRepository.Add(curUserDO);
+                uow.UserRepository.Add(curDockyardAccountDO);
                 uow.SaveChanges();
 
                 //VERIFY
                 //check that it was saved to the db
-                UserDO savedUserDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == curUserDO.Id);
-                Assert.AreEqual(curUserDO.FirstName, savedUserDO.FirstName);
-                Assert.AreEqual(curUserDO.EmailAddress, savedUserDO.EmailAddress);
+                DockyardAccountDO savedDockyardAccountDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == curDockyardAccountDO.Id);
+                Assert.AreEqual(curDockyardAccountDO.FirstName, savedDockyardAccountDO.FirstName);
+                Assert.AreEqual(curDockyardAccountDO.EmailAddress, savedDockyardAccountDO.EmailAddress);
 
             }
 

@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Find User";
+    ViewBag.Title = "Find DockYardAccount";
 }
 @section styles{
     @Styles.Render("~/bundles/css/daypilot")
@@ -26,7 +26,7 @@
                 var emailAddress = $('<td>').html(row.EmailAddress);
 
                 var link = $('<a>');
-                link.attr('href', '/User/Details?userID=' + row.Id);
+                link.attr('href', '/DockYardAccount/Details?userID=' + row.Id);
                 link.html('view');
                 var viewLink = $('<td>').append(link);
 
@@ -74,7 +74,7 @@
                 var dataStr = JSON.stringify(dataObj);
 
                 $.ajax({
-                    url: '@Url.Action("Search", "User")',
+                    url: '@Url.Action("Search", "DockYardAccount")',
                     type: 'POST',
                     contentType: 'application/json',
                     data: dataStr,
@@ -104,7 +104,7 @@
         });
     </script>
 }
-<h2>Find User</h2>
+<h2>Find DockYardAccount</h2>
 <div style="padding-right: 40px;">
     <fieldset id="searchInfoForm">
         <table>

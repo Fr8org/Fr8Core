@@ -18,10 +18,10 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        IUserDO IRemoteCalendarAuthDataDO.User
+        IDockyardAccountDO IRemoteCalendarAuthDataDO.User
         {
             get { return User; }
-            set { User = (UserDO)value; }
+            set { User = (DockyardAccountDO)value; }
         }
 
         [Key]
@@ -34,7 +34,7 @@ namespace Data.Entities
         
         [Required, ForeignKey("User")]
         public string UserID { get; set; }
-        public virtual UserDO User { get; set; }        
+        public virtual DockyardAccountDO User { get; set; }        
         
         public bool HasAccessToken()
         {

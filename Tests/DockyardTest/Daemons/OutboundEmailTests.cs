@@ -10,10 +10,11 @@ using Data.States;
 using Core.Managers.APIManagers.Packagers;
 using Core.Services;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Daemons
 {
@@ -140,11 +141,11 @@ namespace DockyardTest.Daemons
                     }
                 };
                 uow.AspNetRolesRepository.Add(fixture.TestRole());
-                var u = new UserDO();
-                var user = new User();
-                UserDO currUserDO = new UserDO();
-                currUserDO.EmailAddress = emailAddress;
-                uow.UserRepository.Add(currUserDO);
+                var u = new DockyardAccountDO();
+                var user = new DockyardAccount();
+                DockyardAccountDO currDockyardAccountDO = new DockyardAccountDO();
+                currDockyardAccountDO.EmailAddress = emailAddress;
+                uow.UserRepository.Add(currDockyardAccountDO);
             }
         }
     }

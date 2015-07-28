@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Data.Validations
 {
-  public class UserValidator: AbstractValidator<UserDO>
+  public class UserValidator: AbstractValidator<DockyardAccountDO>
     {
       public UserValidator()
       {

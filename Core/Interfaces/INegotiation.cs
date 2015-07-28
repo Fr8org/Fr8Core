@@ -7,9 +7,9 @@ namespace Core.Interfaces
     public interface INegotiation
     {
         List<int> GetAnswerIDs(NegotiationDO curNegotiationDO);
-        IList<int?> GetAnswerIDsByUser(NegotiationDO curNegotiationDO, UserDO curUserDO, IUnitOfWork uow);
+        IList<int?> GetAnswerIDsByUser(NegotiationDO curNegotiationDO, DockyardAccountDO curDockyardAccountDO, IUnitOfWork uow);
 
-        void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, UserDO curUserDO,
+        void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, DockyardAccountDO curDockyardAccountDO,
             Dictionary<QuestionDO, AnswerDO> currentAnswers);
 
         IEnumerable<string> GetSummaryText(NegotiationDO curNegotiationDO);

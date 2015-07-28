@@ -11,6 +11,7 @@ using Core.Managers.APIManagers.Packagers;
 using Core.Managers.APIManagers.Packagers.SegmentIO;
 using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
+using Core.PluginRegistrations;
 using Core.Security;
 using Core.Services;
 using Moq;
@@ -83,6 +84,9 @@ namespace Core.StructureMap
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcessService>().Use<ProcessService>();
                 For<IDocusignXml>().Use<DocusignXml>();
+                For<ICriteria>().Use<Criteria>();
+
+                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
         }
 
@@ -106,15 +110,20 @@ namespace Core.StructureMap
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
+                For<IRestfullCall>().Use<RestfulCallWrapper>();
+
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcessService>().Use<ProcessService>();
                 For<IDocusignXml>().Use<DocusignXml>();
+                For<ICriteria>().Use<Criteria>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
+
+                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
         }
 

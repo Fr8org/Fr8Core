@@ -19,7 +19,7 @@ namespace Data.Entities
 
         [ForeignKey("User")]
         public String UserID { get; set; }
-        public virtual UserDO User { get; set; }
+        public virtual DockyardAccountDO User { get; set; }
 
         [InverseProperty("Profile")]
         public virtual IList<ProfileNodeDO> ProfileNodes { get; set; }

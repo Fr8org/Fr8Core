@@ -10,6 +10,7 @@ using Web.Controllers;
 using Web.ViewModels;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
 
 namespace DockyardTest.Controllers
 {
@@ -202,17 +203,17 @@ namespace DockyardTest.Controllers
         [Test]
         public void TestDetail()
         {
-            UserDO userDO;
+            DockyardAccountDO dockyardAccountDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Create a user
-                userDO = uow.UserRepository.GetOrCreateUser("rjrudman@gmail.com");
+                dockyardAccountDO = uow.UserRepository.GetOrCreateUser("rjrudman@gmail.com");
                 uow.SaveChanges();
             }
 
             var controller = new UserController();
             //Check we get a view back
-            var res = controller.Details(userDO.Id) as ViewResult;
+            var res = controller.Details(dockyardAccountDO.Id) as ViewResult;
             Assert.NotNull(res);
         }
 
@@ -238,7 +239,7 @@ namespace DockyardTest.Controllers
             return model;
         }
 
-        private static UserDO CreateUser(String emailAddress)
+        private static DockyardAccountDO CreateUser(String emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -266,13 +267,13 @@ namespace DockyardTest.Controllers
             }
         }
 
-        private static void AssignRoleToUser(UserDO userDO, String roleID, String roleName = null)
+        private static void AssignRoleToUser(DockyardAccountDO dockyardAccountDO, String roleID, String roleName = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 CreateRole(roleID, roleName);
                 //Assign user to role
-                uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, dockyardAccountDO.Id);
                 uow.SaveChanges();
             }
         }
@@ -280,24 +281,24 @@ namespace DockyardTest.Controllers
         [Test]
         public void TestCanDeleteAndChangeUserStatus()
         {
-            UserDO userDO;
+            DockyardAccountDO dockyardAccountDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //SETUP
                 //Create a active user
-                userDO = uow.UserRepository.GetOrCreateUser("test.user@gmail.com");
-                userDO.State = UserState.Active;
+                dockyardAccountDO = uow.UserRepository.GetOrCreateUser("test.user@gmail.com");
+                dockyardAccountDO.State = UserState.Active;
                 uow.SaveChanges();
                 var controller = new UserController();
 
                 //EXECUTE
                 //Calling controller action
-                controller.UpdateStatus(userDO.Id, UserState.Deleted);
+                controller.UpdateStatus(dockyardAccountDO.Id, UserState.Deleted);
                 
                 //VERIFY
                 Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Deleted).Count());
                 
-                controller.UpdateStatus(userDO.Id, UserState.Suspended);
+                controller.UpdateStatus(dockyardAccountDO.Id, UserState.Suspended);
                 Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Suspended).Count());
             }
         }

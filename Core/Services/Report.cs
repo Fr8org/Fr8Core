@@ -12,13 +12,13 @@ namespace Core.Services
     public class Report
     {
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
-        private readonly User _user;
+        private readonly DockyardAccount _dockyardAccount;
         private readonly Email _email;
         private Dictionary<string, string> _dataUrlMappings;
 
         public Report() 
         {
-            _user = new User();
+            _dockyardAccount = new DockyardAccount();
             _email = new Email();
         }
 
@@ -78,7 +78,7 @@ namespace Core.Services
             _dataUrlMappings = new Dictionary<string, string>();
             _dataUrlMappings.Add("BookingRequest", "/Dashboard/Index/");
             _dataUrlMappings.Add("Email", "/Dashboard/Index/");
-            _dataUrlMappings.Add("User", "/User/Details?userID=");
+            _dataUrlMappings.Add("DockYardAccount", "/DockYardAccount/Details?userID=");
 
 
             var factDO = uow.FactRepository.GetQuery().WhereInDateRange(e => e.CreateDate, dateRange);
@@ -224,9 +224,9 @@ namespace Core.Services
                 if (bookingRequestId != null)
                     return string.Format("<a style='padding-left:3px' target='_blank' href='{0}{1}'>{2}</a>", _dataUrlMappings[objectType], bookingRequestId, objectId);
             }
-            if (objectType == "User")
+            if (objectType == "DockYardAccount")
             {
-                string userId = _user.GetUserId(objectId);
+                string userId = _dockyardAccount.GetUserId(objectId);
                 return string.Format("<a style='padding-left:3px' target='_blank' href='{0}{1}'>{2}</a>", _dataUrlMappings[objectType], userId, objectId);
             }
             return string.Format("<a style='padding-left:3px' target='_blank' href='{0}{1}'>{2}</a>", _dataUrlMappings[objectType], objectId, objectId);

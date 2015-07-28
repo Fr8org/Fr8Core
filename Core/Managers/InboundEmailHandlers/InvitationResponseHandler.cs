@@ -18,13 +18,13 @@ namespace Core.Managers.InboundEmailHandlers
                 return false;
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                InvitationResponseDO curInvitationResponse = Email.ConvertMailMessageToEmail(uow.InvitationResponseRepository, message);
+                //InvitationResponseDO curInvitationResponse = Email.ConvertMailMessageToEmail(uow.InvitationResponseRepository, message);
 
                // (new InvitationResponse()).Process(uow, curInvitationResponse);
 
-                uow.SaveChanges();
+                //uow.SaveChanges();
 
-                AlertManager.EmailReceived(curInvitationResponse.Id, uow.UserRepository.GetOrCreateUser(curInvitationResponse.From).Id);
+                //AlertManager.EmailReceived(curInvitationResponse.Id, uow.UserRepository.GetOrCreateUser(curInvitationResponse.From).Id);
             }
             return true;
         }

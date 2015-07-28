@@ -19,7 +19,7 @@ namespace Data.Entities
 
         [ForeignKey("UserDO")]
         public String UserID { get; set; }
-        public virtual UserDO UserDO { get; set; }
+        public virtual DockyardAccountDO UserDO { get; set; }
 
     }
 }

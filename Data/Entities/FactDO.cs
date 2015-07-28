@@ -17,6 +17,6 @@ namespace Data.Entities
 
         [ForeignKey("CreatedBy")]
         public string CreatedByID { get; set; }
-        public virtual UserDO CreatedBy { get; set; }
+        public virtual DockyardAccountDO CreatedBy { get; set; }
     }
 }

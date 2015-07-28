@@ -13,6 +13,7 @@ using DocuSign.Integrations.Client;
 using NUnit.Framework;
 
 using StructureMap;
+using UtilitiesTesting;
 
 using Utilities;
 

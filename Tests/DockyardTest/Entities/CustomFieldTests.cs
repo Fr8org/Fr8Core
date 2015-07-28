@@ -5,9 +5,10 @@ using System.Linq.Expressions;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Entities
 {

@@ -5,11 +5,6 @@ namespace Web.ViewModels
 {
     public class UserVM
     {
-        public UserVM()
-        {
-            Calendars = new List<UserCalendarVM>();
-        }
-
         public String Id { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
@@ -21,7 +16,6 @@ namespace Web.ViewModels
         public bool SendMail { get; set; }
 
         public String Role { get; set; }
-        public List<UserCalendarVM> Calendars { get; set; }
     }
 
     public class UserCalendarVM
