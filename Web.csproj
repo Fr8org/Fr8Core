@@ -24,6 +24,7 @@
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.0</TypeScriptToolsVersion>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -860,7 +861,6 @@
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
-    <Content Include="Content\img\temp\team.jpg" />
     <Content Include="Content\js\about-page.js" />
     <Content Include="Content\js\humane.js" />
     <Content Include="Content\js\jquery-ui.js" />
@@ -2950,7 +2950,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-regular.svg" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\normalize.css" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\index.html" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\custom.js" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\custom.min.js" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\jquery.js" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\js\zepto.js" />
@@ -11370,7 +11369,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\gritter\README.markdown" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\bower.json" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\CHANGELOG.md" />
-    <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\custom.styl" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-bold.eot" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-bold.ttf" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\demo\css\montserrat-bold.woff" />
@@ -12495,7 +12493,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <!--commenting this out because errors are showing up saying that this one and the one below it are in conflict 
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v12.0\WebApplications\Microsoft.WebApplication.targets" /> -->
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
@@ -12534,5 +12533,12 @@
   </Target> -->
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
     <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
 </Project>

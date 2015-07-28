@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using Utilities;
+using UtilitiesTesting;
 
 namespace DockyardTest.Utilities
 {

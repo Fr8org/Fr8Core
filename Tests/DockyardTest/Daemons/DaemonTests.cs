@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using Daemons;
 using NUnit.Framework;
+using UtilitiesTesting;
 
 namespace DockyardTest.Daemons
 {

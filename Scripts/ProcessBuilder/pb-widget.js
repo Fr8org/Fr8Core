@@ -237,8 +237,8 @@
                     prevAction = this._criteria[i].actions[j];
                 }
 
-                this._criteria[i].actionArrow = this._replaceArrow(
-                    this._criteria[i].actionArrow,
+                this._criteria[i].actionsArrow = this._replaceArrow(
+                    this._criteria[i].actionsArrow,
                     ns.WidgetConsts.rightMode,
                     this._getCriteriaNodeTopPoint(this._criteria[i])
                         + Math.floor(this._getCriteriaNodeHeight(this._criteria[i]) / 2)
@@ -274,7 +274,9 @@
                 this._getAddCriteriaNodeTopPoint()
             );
 
-            this._fabric.renderAll();
+            var addCriteriaBottom = this._getAddCriteriaNodeBottomPoint();
+            this._fabric.setHeight(addCriteriaBottom);
+            this._fabric.calcOffset();
         },
 
         _predefinedObjects: function () {
@@ -392,7 +394,7 @@
         _placeAddCriteriaNode: function () {
             var topOffset;
             if (this._criteria.length) {
-                topOffset = this._getCriteriaNodeBottomPoint(this._criteria[this._criteria.length - 1]);
+                topOffset = this._getCriteriaSectionBottomPoint(this._criteria[this._criteria.length - 1]);
             }
             else {
                 topOffset = this._getStartNodeBottomPoint();
@@ -409,6 +411,11 @@
 
         _getAddCriteriaNodeTopPoint: function () {
             return this._addCriteriaNode.get('top');
+        },
+
+        _getAddCriteriaNodeBottomPoint: function () {
+            return this._addCriteriaNode.get('top')
+                + this._addCriteriaNode.get('height');
         },
 
         // ---------- endregion: AddCriteriaNode routines. ----------

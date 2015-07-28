@@ -10,10 +10,11 @@ using Data.States;
 using Core.Managers.APIManagers.Packagers;
 using Core.Services;
 using Core.StructureMap;
-using DockyardTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Daemons
 {

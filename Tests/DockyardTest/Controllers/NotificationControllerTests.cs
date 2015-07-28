@@ -8,7 +8,8 @@ using Web.Controllers;
 using StructureMap;
 using Moq;
 using Core.Interfaces;
-using DockyardTest.Fixtures;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Controllers
 {

@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 
-namespace DockyardTest.Fixtures
+namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {

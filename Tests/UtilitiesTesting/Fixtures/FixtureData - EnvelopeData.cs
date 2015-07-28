@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 
-namespace DockyardTest.Fixtures
+namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {

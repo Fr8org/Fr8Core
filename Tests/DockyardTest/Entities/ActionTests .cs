@@ -1,8 +1,9 @@
 ﻿using System.Linq;
 using Data.Interfaces;
-using DockyardTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Entities
 {
