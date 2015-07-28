@@ -29,7 +29,19 @@ namespace Data.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-                Data = string.Format("{0} ID :{1}, EmailAddress: {2} ", PrimaryCategory, ObjectId, (CustomerId == null ? "" : uow.UserRepository.GetByKey(CustomerId).EmailAddress.Address)) + Data;
+                string customerAddress;
+
+                DockyardAccountDO acct = uow.UserRepository.GetByKey(CustomerId);
+                if(acct != null && acct.EmailAddress != null)
+                {
+                    customerAddress = acct.EmailAddress.Address;
+                }
+                else
+                {
+                    customerAddress = "<unknown>";
+                }
+              
+                Data = string.Format("{0} ID :{1}, EmailAddress: {2} ", PrimaryCategory, ObjectId, (CustomerId == null ? "" : customerAddress)) + Data;
 
                 if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                     Logger.GetLogger().Info(Data);

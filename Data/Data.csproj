@@ -118,6 +118,7 @@
     <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
+    <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
@@ -182,11 +183,21 @@
     <Compile Include="Migrations\201507252017207_AddDocksignAccount.Designer.cs">
       <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
     </Compile>
+
+    <Compile Include="Migrations\201507240005258_ProcessTemplateDO.cs" />
+    <Compile Include="Migrations\201507240005258_ProcessTemplateDO.Designer.cs">
+      <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507261559104_ProcessTemplate.cs" />
+    <Compile Include="Migrations\201507261559104_ProcessTemplate.Designer.cs">
+      <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
+    <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -209,6 +220,7 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -223,6 +235,7 @@
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
     <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
@@ -356,11 +369,18 @@
     <EmbeddedResource Include="Migrations\201507231732158_mergefix.resx">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
     </EmbeddedResource>
+
+    <EmbeddedResource Include="Migrations\201507240005258_ProcessTemplateDO.resx">
+      <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507242025144_RemoveUnwantedTables.resx">
       <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507252017207_AddDocksignAccount.resx">
       <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507261559104_ProcessTemplate.resx">
+      <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -70,6 +70,7 @@ namespace Data.Migrations
             //AddEvents(uow);
         }
 
+
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork uow)
         {
@@ -164,7 +165,7 @@ namespace Data.Migrations
             var instructionsToAdd = (from constant in constants
                 let name = constant.Name
                 let value = constant.GetValue(null)
-                select creatorFunc((int) value, name)).ToList();
+                                     select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
@@ -255,6 +256,7 @@ namespace Data.Migrations
             CreateAdmin("alex@edelstein.org", "foobar", unitOfWork);
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }

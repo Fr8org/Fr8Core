@@ -23,8 +23,6 @@ namespace Web.Controllers
             return db.Processes;
         }
 
-        
-
         // GET: api/Process/5
         [ResponseType(typeof(ProcessDO))]
         public IHttpActionResult GetProcess(int id)

@@ -467,6 +467,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private ProcessTemplateRepository _processTemplateRepository;
+
+        public ProcessTemplateRepository ProcessTemplateRepository
+        {
+            get
+            {
+                return _processTemplateRepository ?? (_processTemplateRepository = new ProcessTemplateRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

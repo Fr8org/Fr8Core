@@ -1,0 +1,12 @@
+﻿.table-linkrows > tbody > tr {
+    cursor: pointer;
+}
+.table-process-templates td button {
+    float: right;
+}
+
+/* 
+    This one is for Angular Bootstrap.
+    More info: https://angular-ui.github.io/bootstrap/
+*/
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
