@@ -6,6 +6,9 @@
 {
     <script type="text/javascript" src="@Url.Content("~/Scripts/fabric.min.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs.js")"></script>
     <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
 }
 
@@ -31,7 +34,8 @@
         var criteriaIdSeq = 0;
         var actionIdSeq = 0;
 
-        var pb = Core.create(ProcessBuilder.Widget, '#pbArea', 800, 600);
+        var factory = new ProcessBuilder.FabricJsFactory();
+        var pb = Core.create(ProcessBuilder.Widget, '#pbArea', factory, 800, 600);
 
         pb.on('startNode:click', function () {
             _log('StartNode:click event.');

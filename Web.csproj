@@ -3050,6 +3050,9 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\grey.css" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\grey.png" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\orange%402x.png" />
+    <Content Include="Scripts\ProcessBuilder\pb-consts.js" />
+    <Content Include="Scripts\ProcessBuilder\pb-fabricjs.js" />
+    <Content Include="Scripts\ProcessBuilder\pb-interfaces.js" />
     <Content Include="Views\Action\ShowAllActionLists.html" />
     <Content Include="Views\Action\ShowAllActions.html" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\orange.css" />

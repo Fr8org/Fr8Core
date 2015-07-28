@@ -1,67 +1,17 @@
 ﻿(function (ns) {
 
-    ns.WidgetConsts = {
-        downMode: 1,
-        rightMode: 2,
-
-        canvasPadding: 10,
-        minSpaceBetweenObjects: 40,
-        defaultSize: 130,
-        strokeWidth: 1,
-
-        startNodeHeight: 30,
-        startNodeStroke: 'coral',
-        startNodeFill: 'lightsalmon',
-        startNodeTextSize: 15,
-        startNodeTextFill: 'white',
-        startNodeTextFont: 'Tahoma',
-        startNodeTextOffsetY: 3,
-
-        addCriteriaNodeStroke: '#FFCC00',
-        addCriteriaNodeFill: '#FFFF99',
-        addCriteriaNodeTextSize: 15,
-        addCriteriaNodeTextFill: '#303030',
-        addCriteriaNodeTextFont: 'Tahoma',
-        addCriteriaNodeTextOffsetY: 3,
-
-        criteriaNodeStroke: '#99FF00',
-        criteriaNodeFill: '#CCFF99',
-        criteriaNodeTextSize: 15,
-        criteriaNodeTextFill: 'black',
-        criteriaNodeTextFont: 'Tahoma',
-
-        actionsNodeFill: 'white',
-        actionsNodeStroke: 'red',
-        actionNodePadding: 5,
-        actionNodeHeight: 30,
-        actionNodeTextSize: 15,
-        actionNodeTextFill: 'black',
-        actionNodeTextFont: 'Tahoma',
-        addActionNodePadding: 5,
-        addActionNodeHeight: 30,
-        addActionNodeTextSize: 15,
-        addActionNodeTextFill: 'black',
-        addActionNodeTextFont: 'Tahoma',
-
-        arrowStroke: '#303030',
-        arrowStrokeWidth: 1,
-        arrowSize: 4,
-        arrowPadding: 4
-    };
-
-
     ns.Widget = Core.class(Core.CoreObject, {
-        constructor: function (element, initPixelWidth, initPixelHeight) {
+        constructor: function (element, factory, initPixelWidth, initPixelHeight) {
             ns.Widget.super.constructor.call(this);
 
             this._el = Core.element(element);
             this._jqEl = $(this._el);
-            this._canvas = null;
 
             this._pxWidth = initPixelWidth;
             this._pxHeight = initPixelHeight;
 
-            this._fabric = null;
+            this._factory = factory;
+            this._canvas = null;
 
             this._startNode = null;
             this._addCriteriaNode = null;
@@ -72,14 +22,12 @@
         init: function () {
             var canvas = $('<canvas width="' + this._pxWidth.toString() + '" height="' + this._pxHeight.toString() + '"></canvas>');
 
-            this._canvas = canvas;
             this._jqEl.append(canvas);
 
-            this._fabric = new fabric.Canvas(canvas[0]);
-            this._fabric.selection = false;
+            this._canvas = this._factory.createCanvas(canvas[0]);
 
             this._predefinedObjects();
-            this.redraw();
+            this.relayout();
         },
 
         addCriteria: function (criteria) {
@@ -98,21 +46,21 @@
                 addActionNode: null
             };
 
-            criteriaDescr.criteriaNode = this._createCriteriaNode(
+            criteriaDescr.criteriaNode = this._factory.createCriteriaNode(
                 criteria.name || ('Criteria #' + criteria.id.toString())
             );
             criteriaDescr.criteriaNode.on(
-                'mousedown',
+                'click',
                 Core.delegate(function (e) {
                     this.fire('criteriaNode:click', e, criteria.id);
                 }, this)
             );
 
-            criteriaDescr.actionsNode = this._createActionsNode();
+            criteriaDescr.actionsNode = this._factory.createActionsNode();
 
-            criteriaDescr.addActionNode = this._createAddActionNode();
+            criteriaDescr.addActionNode = this._factory.createAddActionNode();
             criteriaDescr.addActionNode.on(
-                'mousedown',
+                'click',
                 Core.delegate(function (e) {
                     this.fire('addActionNode:click', e, criteria.id);
                 }, this)
@@ -121,28 +69,31 @@
 
             this._criteria.push(criteriaDescr);
 
-            this._fabric.add(criteriaDescr.criteriaNode);
-            this._fabric.add(criteriaDescr.actionsNode);
-            this._fabric.add(criteriaDescr.addActionNode);
+            this._canvas.add(criteriaDescr.criteriaNode);
+            this._canvas.add(criteriaDescr.actionsNode);
+            this._canvas.add(criteriaDescr.addActionNode);
 
-            this.redraw();
+            this.relayout();
         },
 
         removeCriteria: function (id) {
             var i, j;
             for (i = 0; i < this._criteria.length; ++i) {
                 if (this._criteria[i].id === id) {
-                    this._fabric.remove(this._criteria[i].addActionNode);
-                    this._fabric.remove(this._criteria[i].actionsNode);
-                    this._fabric.remove(this._criteria[i].actionsArrow);
-                    this._fabric.remove(this._criteria[i].criteriaNode);
+                    this._canvas.remove(this._criteria[i].addActionNode);
+                    this._canvas.remove(this._criteria[i].actionsNode);
+                    this._canvas.remove(this._criteria[i].criteriaNode);
 
                     if (this._criteria[i].criteriaArrow) {
-                        this._fabric.remove(this._criteria[i].criteriaArrow);
+                        this._canvas.remove(this._criteria[i].criteriaArrow);
+                    }
+
+                    if (this._criteria[i].actionsArrow) {
+                        this._canvas.remove(this._criteria[i].actionsArrow);
                     }
 
                     for (j = 0; j < this._criteria[i].actions.length; ++j) {
-                        this._fabric.remove(this._criteria[i].actions[j].actionNode);
+                        this._canvas.remove(this._criteria[i].actions[j].actionNode);
                     }
 
                     this._criteria.splice(i, 1);
@@ -151,7 +102,7 @@
                 }
             }
 
-            this.redraw();
+            this.relayout();
         },
 
         _findCriteria: function (criteriaId) {
@@ -182,22 +133,22 @@
             };
 
             
-            actionDescr.actionNode = this._createActionNode(
+            actionDescr.actionNode = this._factory.createActionNode(
                 action.name || ('Action #' + action.id.toString())
             );
 
             actionDescr.actionNode.on(
-                'mousedown',
+                'click',
                 Core.delegate(function (e) {
                     this.fire('actionNode:click', e, criteria.id, action.id);
                 }, this)
             );
 
 
-            this._fabric.add(actionDescr.actionNode);
+            this._canvas.add(actionDescr.actionNode);
             criteria.actions.push(actionDescr);
 
-            this.redraw();
+            this.relayout();
         },
 
         removeAction: function (criteriaId, actionId) {
@@ -207,21 +158,23 @@
             var i;
             for (i = 0; i < criteria.actions.length; ++i) {
                 if (criteria.actions[i].id === actionId) {
-                    this._fabric.remove(criteria.actions[i].actionNode);
+                    this._canvas.remove(criteria.actions[i].actionNode);
                     criteria.actions.splice(i, 1);
 
                     break;
                 }
             }
 
-            this.redraw();
+            this.relayout();
         },
 
-        redraw: function () {
+        _relayoutStartNode: function () {
+            this._placeStartNode();
+        },
+
+        _relayoutCriteria: function () {
             var i, prevCriteria;
             var j, prevAction;
-
-            this._placeStartNode();
 
             var prevBottomPoint = this._getStartNodeBottomPoint();
 
@@ -260,9 +213,15 @@
                 prevBottomPoint = this._getCriteriaNodeBottomPoint(this._criteria[i]);
                 prevCriteria = this._criteria[i];
             }
+        },
 
+        _relayoutAddCriteriaNode: function () {
+            var prevBottomPoint;
             if (this._criteria.length > 0) {
                 prevBottomPoint = this._getCriteriaNodeBottomPoint(this._criteria[this._criteria.length - 1]);
+            }
+            else {
+                prevBottomPoint = this._getStartNodeBottomPoint();
             }
 
             this._placeAddCriteriaNode();
@@ -273,10 +232,18 @@
                 prevBottomPoint,
                 this._getAddCriteriaNodeTopPoint()
             );
+        },
 
+        _resizeCanvas: function () {
             var addCriteriaBottom = this._getAddCriteriaNodeBottomPoint();
-            this._fabric.setHeight(addCriteriaBottom);
-            this._fabric.calcOffset();
+            this._canvas.resize(this._canvas.getWidth(), addCriteriaBottom);
+        },
+
+        relayout: function () {
+            this._relayoutStartNode();
+            this._relayoutCriteria();
+            this._relayoutAddCriteriaNode();
+            this._resizeCanvas();
         },
 
         _predefinedObjects: function () {
@@ -286,60 +253,27 @@
 
         // ---------- region: StartNode routines. ----------
 
-        _predefineStartNode: function() {
-            var startNode = this._createStartNode();
-
+        _predefineStartNode: function () {
+            var startNode = this._factory.createStartNode();
             startNode.on(
-                'mousedown',
+                'click',
                 Core.delegate(function (e) { this.fire('startNode:click', e); }, this)
             );
 
-            this._fabric.add(startNode);
-
+            this._canvas.add(startNode);
             this._startNode = startNode;
         },
 
-        _createStartNode: function () {
-            var rect = new fabric.Rect({
-                rx: 10,
-                ry: 10,
-                fill: ns.WidgetConsts.startNodeFill,
-                stroke: ns.WidgetConsts.startNodeStroke,
-                strokeWidth: ns.WidgetConsts.strokeWidth,
-                selectable: false,
-                originX: 'center',
-                originY: 'center',
-                width: ns.WidgetConsts.defaultSize,
-                height: ns.WidgetConsts.startNodeHeight
-            });
-
-            var label = new fabric.Text('Start', {
-                fontSize: ns.WidgetConsts.startNodeTextSize,
-                fontFamily: ns.WidgetConsts.startNodeTextFont,
-                fill: ns.WidgetConsts.startNodeTextFill,
-                selectable: false,
-                originX: 'center',
-                originY: 'center',
-                top: ns.WidgetConsts.startNodeTextOffsetY
-            });
-
-            var group = new fabric.Group([rect, label], {
-                selectable: false
-            });
-
-            return group;
-        },
-
         _placeStartNode: function () {
-            this._startNode.set('left', ns.WidgetConsts.canvasPadding);
-            this._startNode.set('top', ns.WidgetConsts.canvasPadding);
+            this._startNode.setLeft(ns.WidgetConsts.canvasPadding);
+            this._startNode.setTop(ns.WidgetConsts.canvasPadding);
 
-            this._startNode.setCoords();
+            this._startNode.relayout();
         },
 
         _getStartNodeBottomPoint: function () {
-            return this._startNode.get('top')
-                + this._startNode.get('height');
+            return this._startNode.getTop()
+                + this._startNode.getHeight();
         },
 
         // ---------- endregion: StartNode routines. ----------
@@ -348,47 +282,14 @@
         // ---------- region: AddCriteriaNode routines. ----------
 
         _predefineAddCriteriaNode: function () {
-            var addCriteriaNode = this._createAddCriteriaNode();
-
+            var addCriteriaNode = this._factory.createAddCriteriaNode();
             addCriteriaNode.on(
-                'mousedown',
+                'click',
                 Core.delegate(function (e) { this.fire('addCriteriaNode:click', e); }, this)
             );
 
-            this._fabric.add(addCriteriaNode);
-
+            this._canvas.add(addCriteriaNode);
             this._addCriteriaNode = addCriteriaNode;
-        },
-
-        _createAddCriteriaNode: function () {
-            var size = Math.floor(Math.sqrt(ns.WidgetConsts.defaultSize * ns.WidgetConsts.defaultSize / 2));
-
-            var rect = new fabric.Rect({
-                fill: ns.WidgetConsts.addCriteriaNodeFill,
-                stroke: ns.WidgetConsts.addCriteriaNodeStroke,
-                strokeWidth: ns.WidgetConsts.strokeWidth,
-                angle: 45,
-                selectable: false,
-                width: size,
-                height: size,
-                originX: 'center',
-                originY: 'center'
-            });
-
-            var label = new fabric.Text('Add criteria...', {
-                fontSize: ns.WidgetConsts.addCriteriaNodeTextSize,
-                fontFamily: ns.WidgetConsts.addCriteriaNodeTextFont,
-                fill: ns.WidgetConsts.addCriteriaNodeTextFill,
-                selectable: false,
-                originX: 'center',
-                originY: 'center'
-            });
-
-            var group = new fabric.Group([rect, label], {
-                selectable: false
-            });
-
-            return group;
         },
 
         _placeAddCriteriaNode: function () {
@@ -403,19 +304,19 @@
             var left = ns.WidgetConsts.canvasPadding;
             var top = topOffset + ns.WidgetConsts.minSpaceBetweenObjects;
 
-            this._addCriteriaNode.set('left', left);
-            this._addCriteriaNode.set('top', top);
+            this._addCriteriaNode.setLeft(left);
+            this._addCriteriaNode.setTop(top);
 
-            this._addCriteriaNode.setCoords();
+            this._addCriteriaNode.relayout();
         },
 
         _getAddCriteriaNodeTopPoint: function () {
-            return this._addCriteriaNode.get('top');
+            return this._addCriteriaNode.getTop();
         },
 
         _getAddCriteriaNodeBottomPoint: function () {
-            return this._addCriteriaNode.get('top')
-                + this._addCriteriaNode.get('height');
+            return this._addCriteriaNode.getTop()
+                + this._addCriteriaNode.getHeight();
         },
 
         // ---------- endregion: AddCriteriaNode routines. ----------
@@ -424,56 +325,26 @@
 
         _replaceArrow: function (arrow, mode, pos, from, to) {
             if (arrow !== null) {
-                this._fabric.remove(arrow);
+                this._canvas.remove(arrow);
             }
-
+        
             var length = (to - from) - ns.WidgetConsts.arrowPadding * 2;
-
-            var left, top;
+        
+            var left, top, arrow;
             if (mode === ns.WidgetConsts.downMode) {
                 left = pos;
                 top = from + ns.WidgetConsts.arrowPadding;
+
+                arrow = this._factory.createDownArrow(left, top, length);
             }
             else {
                 left = from + ns.WidgetConsts.arrowPadding;
                 top = pos;
+
+                arrow = this._factory.createRightArrow(left, top, length);
             }
-
-            var path;
-            if (mode === ns.WidgetConsts.downMode) {
-                path = [
-                    ['M', 0, 0],
-                    ['L', 0, length],
-                    ['M', 0, length],
-                    ['L', -ns.WidgetConsts.arrowSize, length - ns.WidgetConsts.arrowSize],
-                    ['M', 0, length],
-                    ['L', ns.WidgetConsts.arrowSize, length - ns.WidgetConsts.arrowSize]
-                ];
-            }
-            else {
-                path = [
-                    ['M', 0, 0],
-                    ['L', length, 0],
-                    ['M', length, 0],
-                    ['L', length - ns.WidgetConsts.arrowSize, -ns.WidgetConsts.arrowSize],
-                    ['M', length, 0],
-                    ['L', length - ns.WidgetConsts.arrowSize, ns.WidgetConsts.arrowSize]
-                ];
-            }
-
-            arrow = new fabric.Path(path, {
-                stroke: ns.WidgetConsts.arrowStroke,
-                strokeWidth: ns.WidgetConsts.arrowStrokeWidth,
-                fill: false,
-                selectable: false,
-                originX: 'left',
-                originY: 'top',
-                left: left,
-                top: top
-            });
-
-            this._fabric.add(arrow);
-
+        
+            this._canvas.add(arrow);
             return arrow;
         },
 
@@ -494,54 +365,22 @@
             var left = ns.WidgetConsts.canvasPadding;
             var top = topOffset + ns.WidgetConsts.minSpaceBetweenObjects;
 
-            criteria.criteriaNode.set('left', left);
-            criteria.criteriaNode.set('top', top);
-
-            criteria.criteriaNode.setCoords();
-        },
-
-        _createCriteriaNode: function (criteriaName) {
-            var size = Math.floor(Math.sqrt(ns.WidgetConsts.defaultSize * ns.WidgetConsts.defaultSize / 2));
-
-            var rect = new fabric.Rect({
-                fill: ns.WidgetConsts.criteriaNodeFill,
-                stroke: ns.WidgetConsts.criteriaNodeStroke,
-                strokeWidth: ns.WidgetConsts.strokeWidth,
-                angle: 45,
-                selectable: false,
-                width: size,
-                height: size,
-                originX: 'center',
-                originY: 'center'
-            });
-
-            var label = new fabric.Text(criteriaName, {
-                fontSize: ns.WidgetConsts.criteriaNodeTextSize,
-                fontFamily: ns.WidgetConsts.criteriaNodeTextFont,
-                fill: ns.WidgetConsts.criteriaNodeTextFill,
-                selectable: false,
-                originX: 'center',
-                originY: 'center'
-            });
-
-            var group = new fabric.Group([rect, label], {
-                selectable: false
-            });
-
-            return group;
+            criteria.criteriaNode.setLeft(left);
+            criteria.criteriaNode.setTop(top);
+            criteria.criteriaNode.relayout();
         },
 
         _getCriteriaNodeTopPoint: function (criteria) {
-            return criteria.criteriaNode.get('top');
+            return criteria.criteriaNode.getTop();
         },
 
         _getCriteriaNodeBottomPoint: function (criteria) {
-            return criteria.criteriaNode.get('top')
-                + criteria.criteriaNode.get('height');
+            return criteria.criteriaNode.getTop()
+                + criteria.criteriaNode.getHeight();
         },
 
         _getCriteriaNodeHeight: function (criteria) {
-            return criteria.criteriaNode.get('height');
+            return criteria.criteriaNode.getHeight();
         },
 
         _getCriteriaSectionBottomPoint: function (criteria) {
@@ -562,19 +401,6 @@
 
         // ---------- region: ActionsNode routines. ----------
 
-        _createActionsNode: function () {
-            var rect = new fabric.Rect({
-                rx: 10,
-                ry: 10,
-                fill: ns.WidgetConsts.actionsNodeFill,
-                stroke: ns.WidgetConsts.actionsNodeStroke,
-                strokeWidth: ns.WidgetConsts.strokeWidth,
-                selectable: false
-            });
-
-            return rect;
-        },
-
         _placeActionsNode: function (criteria) {
             var left = ns.WidgetConsts.canvasPadding
                 + ns.WidgetConsts.defaultSize
@@ -591,31 +417,19 @@
                 top += Math.floor((criteriaHeight - height) / 2);
             }
 
-            criteria.actionsNode.set('left', left);
-            criteria.actionsNode.set('top', top);
-            criteria.actionsNode.set('width', width);
-            criteria.actionsNode.set('height', height);
-
-            criteria.actionsNode.setCoords();
+            criteria.actionsNode.setLeft(left);
+            criteria.actionsNode.setTop(top);
+            criteria.actionsNode.setWidth(width);
+            criteria.actionsNode.setHeight(height);
+            criteria.actionsNode.relayout();
         },
 
         _getActionsNodeTopPoint: function (criteria) {
-            return criteria.actionsNode.get('top');
+            return criteria.actionsNode.getTop();
         },
 
         _getActionsNodeHeight: function (criteria) {
-            return criteria.actionsNode.get('height');
-        },
-
-        _createAddActionNode: function () {
-            var label = new fabric.Text('Add action...', {
-                fontSize: ns.WidgetConsts.addActionNodeTextSize,
-                fontFamily: ns.WidgetConsts.addActionNodeTextFont,
-                fill: ns.WidgetConsts.addActionNodeTextFill,
-                selectable: false
-            });
-
-            return label;
+            return criteria.actionsNode.getHeight();
         },
 
         _placeAddActionNode: function (criteria) {
@@ -627,27 +441,15 @@
             var top = this._getActionsNodeTopPoint(criteria)
                 + ns.WidgetConsts.addActionNodePadding;
 
-            criteria.addActionNode.set('left', left);
-            criteria.addActionNode.set('top', top);
-
-            criteria.addActionNode.setCoords();
+            criteria.addActionNode.setLeft(left);
+            criteria.addActionNode.setTop(top);
+            criteria.addActionNode.relayout();
         },
 
         _getAddActionNodeBottomPoint: function (criteria) {
-            return criteria.addActionNode.get('top')
+            return criteria.addActionNode.getTop()
                 + ns.WidgetConsts.addActionNodeHeight
                 - ns.WidgetConsts.addActionNodePadding;
-        },
-
-        _createActionNode: function (name) {
-            var label = new fabric.Text(name, {
-                fontSize: ns.WidgetConsts.actionNodeTextSize,
-                fontFamily: ns.WidgetConsts.actionNodeTextFont,
-                fill: ns.WidgetConsts.actionNodeTextFill,
-                selectable: false
-            });
-
-            return label;
         },
 
         _placeActionNode: function (criteria, action, prevAction) {
@@ -661,14 +463,13 @@
 
             topOffset += ns.WidgetConsts.actionNodePadding;
 
-            action.actionNode.set('left', criteria.addActionNode.get('left'));
-            action.actionNode.set('top', topOffset);
-
-            action.actionNode.setCoords();
+            action.actionNode.setLeft(criteria.addActionNode.getLeft());
+            action.actionNode.setTop(topOffset);
+            action.actionNode.relayout();
         },
 
         _getActionNodeBottomPoint: function (action) {
-            return action.actionNode.get('top')
+            return action.actionNode.getTop()
                 + ns.WidgetConsts.actionNodeHeight
                 - ns.WidgetConsts.actionNodePadding;
         }
