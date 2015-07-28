@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
-using Data.Infrastructure;
+using Data.Interfaces;
 
 namespace Core.Services
 {
@@ -13,13 +13,13 @@ namespace Core.Services
 		/// Creates ProcessNode Object
 		/// </summary>
 		/// <returns>New ProcessNodeDO instance</returns>
-		public ProcessNodeDO Create( UnitOfWork uow, ProcessDO parentProcess )
+		public ProcessNodeDO Create( IUnitOfWork uow, ProcessDO parentProcess )
 		{
 			var processNode = new ProcessNodeDO
 			{
 				State = ProcessNodeDO.ProcessNodeState.Unstarted,
 				ProcessNodeTemplate = parentProcess.StartingProcessNodeTemplate,
-				ParentProcess = parentProcess
+				ProcessID = parentProcess.Id
 			};
 
 			uow.ProcessNodeRepository.Add( processNode );
@@ -27,6 +27,11 @@ namespace Core.Services
 			return processNode;
 		}
 
+		/// <summary>
+		/// Replaces the part of the TransitionKey's sourcePNode by the value of the targetPNode
+		/// </summary>
+		/// <param name="sourcePNode">ProcessNodeDO</param>
+		/// <param name="targetPNode">ProcessNodeDO</param>
 		public void CreateTruthTransition( ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode )
 		{
 			var sourceKeys = sourcePNode.ProcessNodeTemplate.TransitionKey.Split( ',' );

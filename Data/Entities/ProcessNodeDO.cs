@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
@@ -9,7 +10,10 @@ namespace Data.Entities
 
 		public string Name{ get; set; }
 
-		public ProcessDO ParentProcess{ get; set; }
+		[ ForeignKey( "Process" ) ]
+		public int ProcessID{ get; set; }
+
+		public virtual ProcessDO Process{ get; set; }
 
 		public ProcessNodeState State{ get; set; }
 

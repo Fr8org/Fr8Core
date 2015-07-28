@@ -12,7 +12,12 @@ namespace Data.Entities
 		public string Name{ get; set; }
 		public string Description{ get; set; }
 		public string UserId{ get; set; }
+		public string EnvelopeId{ get; set; }
 		public ProcessNodeTemplateDO StartingProcessNodeTemplate{ get; set; }
+
+		[Required, ForeignKey( "ProcessNode" ) ]
+		public int ProcessNodeID{ get; set; }
+		public virtual ProcessNodeDO ProcessNode{ get; set; }
 
 		[ Required ]
 		[ ForeignKey( "ProcessStateTemplate" ) ]

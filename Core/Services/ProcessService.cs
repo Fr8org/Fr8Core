@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Linq;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
+using Data.Interfaces;
+using Data.States;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -10,12 +14,14 @@ namespace Core.Services
 		private readonly EventReporter _alertReporter;
 		private readonly DockyardAccount _userService;
 		private readonly IDocusignXml _docusignXml;
+		private readonly IProcessNodeService _processNodeService;
 
 		public ProcessService( EventReporter alertReporter, DockyardAccount userService, IDocusignXml docusignXml )
 		{
 			this._alertReporter = alertReporter;
 			this._userService = userService;
 			this._docusignXml = docusignXml;
+			this._processNodeService = ObjectFactory.GetInstance< IProcessNodeService >();
 		}
 
 		/// <summary>
@@ -26,7 +32,24 @@ namespace Core.Services
 		/// <returns></returns>
 		public ProcessDO Create( string processTemplateId, string envelopeId )
 		{
-			return null;
+			var process = new ProcessDO();
+			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
+			{
+				var template = uow.ProcessTemplateRepository.GetQuery().FirstOrDefault( p => p.Id.ToString() == processTemplateId );
+
+				if( template != null )
+					process.Name = template.Name;
+
+				process.ProcessState = ProcessState.Processing;
+				process.EnvelopeId = envelopeId;
+
+				var processNode = this._processNodeService.Create( uow, process );
+				uow.SaveChanges();
+
+				process.ProcessNodeID = processNode.Id;
+				uow.SaveChanges();
+			}
+			return process;
 		}
 
 		/// <summary>
