@@ -176,6 +176,7 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
+    <Compile Include="Interfaces\ISubscriptionService.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Services\Signer.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\SubscriptionService.cs" />
     <Compile Include="Services\Tab.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocusignXml.cs" />

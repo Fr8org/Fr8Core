@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
@@ -13,12 +14,20 @@ namespace Web.Controllers.Services
 	{
 		IEnumerable< ActionVM > GetAllActions();
 		IEnumerable< ActionListVM > GetAllActionLists();
+	    IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount);
 	    bool SaveOrUpdateAction(ActionVM action);
 	}
 
 	public class ActionsService: IActionsService
 	{
-		public IEnumerable< ActionVM > GetAllActions()
+	    private readonly ISubscriptionService _subscriptionService;
+
+	    public ActionsService(ISubscriptionService subscriptionService)
+	    {
+	        _subscriptionService = subscriptionService;
+	    }
+
+	    public IEnumerable< ActionVM > GetAllActions()
 		{
 			var items = new List< ActionVM >();
 
@@ -44,6 +53,11 @@ namespace Web.Controllers.Services
 			return items;
 		}
 
+	    public IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount)
+	    {
+	        var plugins = _subscriptionService.GetAuthorizedPlugins(curAccount);
+	        return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s, StringComparer.OrdinalIgnoreCase);
+	    }
 	    public bool SaveOrUpdateAction(ActionVM submittedAction)
 	    {
 	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
