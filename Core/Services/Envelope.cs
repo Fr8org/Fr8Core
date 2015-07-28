@@ -28,6 +28,7 @@ namespace Core.Services
             List<EnvelopeData> envelopeDatas = new List<EnvelopeData>();
 
             //Each EnvelopeData row is essentially a specific DocuSign "Tab".
+            //TODO orkan asking: there is no method line docusignEnvelope.GetTabs etc. How can I reiceve tabs and generate them to List of EnvelopeData ?
 
             return envelopeDatas;
         }

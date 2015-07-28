@@ -77,13 +77,18 @@ namespace DockyardTest.Entities
             // credentials for sending account
             Account account = new Account
                               {
-                                  Email = "5c07c74c-688e-436b-abe4-39b0493f7cb6",
-                                  Password = "q.12345R"
+                                  Email = "hello@orkan.com",
+                                  Password = "q.12345R",
+                                  AccountIdGuid = Guid.Parse("06e1493c-75be-428a-806e-7480ccff823a"),
+                                  AccountId = "1124624",
+                                  UserName = "ORKAN ARIKAN"
                               };
 
             // make the Login API call
             bool result = account.Login();
+
             Assert.IsTrue(result, "We login to docusign. If this is false, check your credential info and integrator key.");
+
             return account;
         }
 
@@ -100,36 +105,28 @@ namespace DockyardTest.Entities
                                     // assign account info from above
                                     Login = account,
                                     // "sent" to send immediately, "created" to save envelope as draft
-                                    Status = "sent"
+                                    Status = "created",
+                                    Created = DateTime.UtcNow
                                 };
 
             string fullPathToExampleDocument = Path.Combine(Environment.CurrentDirectory, "App_Data", "docusign_examplephoto.png");
 
-            // create a new DocuSign envelope (i.e. server side)
+            // create a new DocuSign envelope...
             envelope.Create(fullPathToExampleDocument);
 
-            envelope.AddRecipients(new Recipients
-                                   {
-                                       carbonCopies = new[]
-	                                                  {
-	                                                      new Signer
-	                                                      {
-	                                                          email = "hello@orkan.com",
-	                                                          name = "Orkan ARIKAN"
-	                                                      }
-	                                                  }
-                                   });
-
             List<TextTab> textTabs = new List<TextTab>
-	                                 {
-	                                     new TextTab
-	                                     {
-	                                         xPosition = 200,
-	                                         yPosition = 200,
-	                                         name = "Amount",
-	                                         value = "40"
-	                                     }
-	                                 };
+                                     {
+                                         new TextTab
+                                         {
+                                             required = false,
+                                             height = 200,
+                                             width = 200,
+                                             xPosition = 200,
+                                             yPosition = 200,
+                                             name = "Amount",
+                                             value = "40"
+                                         }
+                                     };
 
             //populate it with some Tabs with values. Example "Amount" is a text field with value "45".
             envelope.AddTabs(new TabCollection
