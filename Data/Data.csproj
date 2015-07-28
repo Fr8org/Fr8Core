@@ -192,9 +192,9 @@
     <Compile Include="Migrations\201507261559104_ProcessTemplate.Designer.cs">
       <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201507281451213_ProcessNode_Migration.cs" />
-    <Compile Include="Migrations\201507281451213_ProcessNode_Migration.Designer.cs">
-      <DependentUpon>201507281451213_ProcessNode_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201507281801505_ProcessNode_Migration.cs" />
+    <Compile Include="Migrations\201507281801505_ProcessNode_Migration.Designer.cs">
+      <DependentUpon>201507281801505_ProcessNode_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
@@ -227,7 +227,7 @@
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
-    <Compile Include="States\Templates\_ProcessNodeTemplate.cs" />
+    <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -387,8 +387,8 @@
     <EmbeddedResource Include="Migrations\201507261559104_ProcessTemplate.resx">
       <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507281451213_ProcessNode_Migration.resx">
-      <DependentUpon>201507281451213_ProcessNode_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201507281801505_ProcessNode_Migration.resx">
+      <DependentUpon>201507281801505_ProcessNode_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

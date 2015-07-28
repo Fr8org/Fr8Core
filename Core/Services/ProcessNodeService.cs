@@ -14,8 +14,8 @@ namespace Core.Services
 			var processNode = new ProcessNodeDO
 			{
 				State = ProcessNodeDO.ProcessNodeState.Unstarted,
-				ProcessStateTemplate = parentProcess.ProcessStateTemplate,
-				ProcessID = parentProcess.Id
+				ProcessNodeTemplate = parentProcess.StartingProcessNodeTemplate,
+				ParentProcess = parentProcess
 			};
 
 			uow.ProcessNodeRepository.Add( processNode );

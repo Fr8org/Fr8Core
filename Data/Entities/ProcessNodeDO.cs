@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -11,18 +9,11 @@ namespace Data.Entities
 
 		public string Name{ get; set; }
 
-		[ ForeignKey( "Process" ) ]
-		public int? ProcessID{ get; set; }
-
-		public virtual ProcessDO Process{ get; set; }
+		public ProcessDO ParentProcess{ get; set; }
 
 		public ProcessNodeState State{ get; set; }
 
-		[ Required ]
-		[ ForeignKey( "ProcessStateTemplate" ) ]
-		public int ProcessStateId{ get; set; }
-
-		public virtual _ProcessStateTemplate ProcessStateTemplate{ get; set; }
+		public ProcessNodeTemplateDO ProcessNodeTemplate{ get; set; }
 
 		public enum ProcessNodeState
 		{

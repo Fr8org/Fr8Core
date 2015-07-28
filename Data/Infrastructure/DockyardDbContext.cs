@@ -277,6 +277,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
             modelBuilder.Entity<TemplateDO>().ToTable("Templates");
 	      modelBuilder.Entity< ProcessNodeDO >().ToTable( "ProcessNodes" );
+		modelBuilder.Entity< ProcessNodeTemplateDO >().ToTable( "ProcessNodeTemplates" );
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

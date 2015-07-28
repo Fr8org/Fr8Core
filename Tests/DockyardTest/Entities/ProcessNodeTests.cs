@@ -21,9 +21,7 @@ namespace DockyardTest.Entities
 				uow.ProcessNodeRepository.Add( new ProcessNodeDO
 				{
 					Id = 1,
-					State = newSate,
-					ProcessID = 1,
-					ProcessStateId = 1
+					State = newSate
 				} );
 				uow.SaveChanges();
 
