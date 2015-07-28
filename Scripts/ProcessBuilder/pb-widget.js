@@ -124,6 +124,11 @@
             this.relayout();
         },
 
+        // Search criteria by id.
+        // Parameters:
+        //     criteriaId - criteria id.
+        // Returns:
+        //     criteria descriptor or null if no criteria found.
         _findCriteria: function (criteriaId) {
             var criteria = null;
             var i;
@@ -137,6 +142,10 @@
             return criteria;
         },
 
+        // Add action to action list to specified criteria.
+        // Parameters:
+        //     criteriaId - id of criteria
+        //     action - object to define action; minimum required set of properties: { id: 'someId' }
         addAction: function (criteriaId, action) {
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
@@ -170,6 +179,10 @@
             this.relayout();
         },
 
+        // Remove action from specified criteria.
+        // Parameters:
+        //     criteriaId - id of criteria.
+        //     actionId - id of action.
         removeAction: function (criteriaId, actionId) {
             var criteria = this._findCriteria(criteriaId);
             if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
@@ -187,10 +200,12 @@
             this.relayout();
         },
 
+        // Relayout StartNode.
         _relayoutStartNode: function () {
             this._placeStartNode();
         },
 
+        // Relayout user defined criteria and criteria's action panel.
         _relayoutCriteria: function () {
             var i, prevCriteria;
             var j, prevAction;
@@ -232,6 +247,7 @@
             }
         },
 
+        // Relayout button to add new criteria.
         _relayoutAddCriteriaNode: function () {
             var prevBottomPoint;
             if (this._criteria.length > 0) {
@@ -250,11 +266,13 @@
             );
         },
 
+        // Resize canvas according to actual workflow size.
         _resizeCanvas: function () {
             var addCriteriaBottom = this._getAddCriteriaNodeBottomPoint();
             this._canvas.resize(this._canvas.getWidth(), addCriteriaBottom);
         },
 
+        // Relayout whole canvas.
         relayout: function () {
             this._relayoutStartNode();
             this._relayoutCriteria();
@@ -262,6 +280,7 @@
             this._resizeCanvas();
         },
 
+        // Create predefined objects.
         _predefinedObjects: function () {
             this._predefineStartNode();
             this._predefineAddCriteriaNode();
@@ -269,6 +288,7 @@
 
         // ---------- region: StartNode routines. ----------
 
+        // Create StartNode.
         _predefineStartNode: function () {
             var startNode = this._factory.createStartNode();
             startNode.on(
@@ -280,6 +300,7 @@
             this._startNode = startNode;
         },
 
+        // Set position on StartNode.
         _placeStartNode: function () {
             this._startNode.setLeft(ns.WidgetConsts.canvasPadding);
             this._startNode.setTop(ns.WidgetConsts.canvasPadding);
@@ -287,6 +308,7 @@
             this._startNode.relayout();
         },
 
+        // Get bottom Y point of StartNode.
         _getStartNodeBottomPoint: function () {
             return this._startNode.getTop()
                 + this._startNode.getHeight();
@@ -297,6 +319,7 @@
 
         // ---------- region: AddCriteriaNode routines. ----------
 
+        // Create AddCriteriaNode.
         _predefineAddCriteriaNode: function () {
             var addCriteriaNode = this._factory.createAddCriteriaNode();
             addCriteriaNode.on(
@@ -308,6 +331,7 @@
             this._addCriteriaNode = addCriteriaNode;
         },
 
+        // Set position on AddCriteriaNode.
         _placeAddCriteriaNode: function () {
             var topOffset;
             if (this._criteria.length) {
@@ -326,10 +350,12 @@
             this._addCriteriaNode.relayout();
         },
 
+        // Get top Y point of AddCriteriaNode.
         _getAddCriteriaNodeTopPoint: function () {
             return this._addCriteriaNode.getTop();
         },
 
+        // Get bottom Y point of AddCriteriaNode.
         _getAddCriteriaNodeBottomPoint: function () {
             return this._addCriteriaNode.getTop()
                 + this._addCriteriaNode.getHeight();
@@ -339,6 +365,7 @@
 
         // ---------- region: Arrows routines. ----------
 
+        // Create or replace down-directed arrow.
         _replaceDownArrow: function (arrow, left, from, to) {
             if (arrow !== null) { this._canvas.remove(arrow); }
         
@@ -351,6 +378,7 @@
             return arrow;
         },
 
+        // Create or replace right-directed arrow.
         _replaceRightArrow: function (arrow, top, from, to) {
             if (arrow !== null) { this._canvas.remove(arrow); }
 
@@ -368,6 +396,7 @@
 
         // ---------- region: CriteriaNode routines. ----------
 
+        // Set position of user defined criteria node.
         _placeCriteriaNode: function (criteria, prevCriteria) {
             var topOffset;
             if (prevCriteria) {
@@ -385,19 +414,23 @@
             criteria.criteriaNode.relayout();
         },
 
+        // Get top Y point of user defined criteria node.
         _getCriteriaNodeTopPoint: function (criteria) {
             return criteria.criteriaNode.getTop();
         },
 
+        // Get bottom Y point of user defined criteria node.
         _getCriteriaNodeBottomPoint: function (criteria) {
             return criteria.criteriaNode.getTop()
                 + criteria.criteriaNode.getHeight();
         },
 
+        // Get height of user defined criteria node.
         _getCriteriaNodeHeight: function (criteria) {
             return criteria.criteriaNode.getHeight();
         },
 
+        // Get height of user defined criteria node including height of criteria action panel.
         _getCriteriaSectionBottomPoint: function (criteria) {
             var actionsNodeHeight = this._getActionsNodeHeight(criteria);
             var criteriaTopPoint = this._getCriteriaNodeTopPoint(criteria);
@@ -416,6 +449,7 @@
 
         // ---------- region: ActionsNode routines. ----------
 
+        // Set position of actions panel for specified criteria.
         _placeActionsNode: function (criteria) {
             var left = ns.WidgetConsts.canvasPadding
                 + ns.WidgetConsts.defaultSize
@@ -439,14 +473,17 @@
             criteria.actionsNode.relayout();
         },
 
+        // Get actions panel top Y point.
         _getActionsNodeTopPoint: function (criteria) {
             return criteria.actionsNode.getTop();
         },
 
+        // Get height of actions panel.
         _getActionsNodeHeight: function (criteria) {
             return criteria.actionsNode.getHeight();
         },
 
+        // Set position of add action button for specified criteria.
         _placeAddActionNode: function (criteria) {
             var left = ns.WidgetConsts.canvasPadding
                 + ns.WidgetConsts.defaultSize
@@ -461,12 +498,14 @@
             criteria.addActionNode.relayout();
         },
 
+        // Get bottom Y point of add action button for specified criteria.
         _getAddActionNodeBottomPoint: function (criteria) {
             return criteria.addActionNode.getTop()
                 + ns.WidgetConsts.addActionNodeHeight
                 - ns.WidgetConsts.addActionNodePadding;
         },
 
+        // Set position of user defined action.
         _placeActionNode: function (criteria, action, prevAction) {
             var topOffset;
             if (!prevAction) {
@@ -483,6 +522,7 @@
             action.actionNode.relayout();
         },
 
+        // Get bottom Y point of user defined action.
         _getActionNodeBottomPoint: function (action) {
             return action.actionNode.getTop()
                 + ns.WidgetConsts.actionNodeHeight
