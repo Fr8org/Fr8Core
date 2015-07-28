@@ -181,6 +181,7 @@
     <Compile Include="Entities\ActionTests .cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />
+    <Compile Include="Entities\ProcessNodeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />

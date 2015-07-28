@@ -118,6 +118,7 @@
     <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
+    <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\TemplateDO.cs" />
@@ -183,7 +184,6 @@
     <Compile Include="Migrations\201507252017207_AddDocksignAccount.Designer.cs">
       <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Migrations\201507240005258_ProcessTemplateDO.cs" />
     <Compile Include="Migrations\201507240005258_ProcessTemplateDO.Designer.cs">
       <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
@@ -197,6 +197,7 @@
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
+    <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
@@ -222,6 +223,7 @@
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
+    <Compile Include="States\Templates\_ProcessNodeTemplate.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -369,7 +371,6 @@
     <EmbeddedResource Include="Migrations\201507231732158_mergefix.resx">
       <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
     </EmbeddedResource>
-
     <EmbeddedResource Include="Migrations\201507240005258_ProcessTemplateDO.resx">
       <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
     </EmbeddedResource>

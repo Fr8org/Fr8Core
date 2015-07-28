@@ -242,6 +242,7 @@
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Notification.cs" />
+    <Compile Include="Services\ProcessNodeService.cs" />
     <Compile Include="Services\ProcessService.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />

@@ -13,13 +13,6 @@ namespace Data.Repositories
 		{
 			base.Add( entity );
 		}
-
-		public void Update( EnvelopeDO entity )
-		{
-			var envelope = this.GetByKey( entity );
-			envelope.Status = entity.Status;
-			envelope.DocusignEnvelopeId = entity.DocusignEnvelopeId;
-		}
 	}
 
 	public interface IEnvelopeRepository: IGenericRepository< EnvelopeDO >
