@@ -6,18 +6,13 @@ namespace Data.Entities
 {
 	public class ProcessDO: BaseDO
 	{
-		public ProcessDO()
-		{
-
-			//Notes = "No additional notes";
-		}
-
 		[ Key ]
 		public int Id{ get; set; }
 
 		public string Name{ get; set; }
 		public string Description{ get; set; }
 		public string UserId{ get; set; }
+		public ProcessNodeTemplateDO StartingProcessNodeTemplate{ get; set; }
 
 		[ Required ]
 		[ ForeignKey( "ProcessStateTemplate" ) ]

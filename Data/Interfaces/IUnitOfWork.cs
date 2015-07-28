@@ -48,6 +48,7 @@ namespace Data.Interfaces
         SlipRepository SlipRepository { get; }
 	  ActionRepository ActionRepository{ get; }
 	  ActionListRepository ActionListRepository{ get; }
+	  ProcessNodeRepository ProcessNodeRepository{ get; }
 
 	    /// <summary>
         /// Call this to commit the unit of work

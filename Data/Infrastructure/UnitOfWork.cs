@@ -477,7 +477,14 @@ namespace Data.Infrastructure
             }
         }
 
-        public void Save()
+		private ProcessNodeRepository _proeProcessNodeRepository;
+
+	    public ProcessNodeRepository ProcessNodeRepository
+	    {
+		    get { return this._proeProcessNodeRepository ?? ( this._proeProcessNodeRepository = new ProcessNodeRepository( this ) ); }
+	    }
+
+	    public void Save()
         {
             _context.SaveChanges();
         }
