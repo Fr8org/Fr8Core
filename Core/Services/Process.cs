@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
@@ -9,19 +8,19 @@ using StructureMap;
 
 namespace Core.Services
 {
-	public class ProcessService: IProcessService
+	public class Process: IProcess
 	{
 		private readonly EventReporter _alertReporter;
-		private readonly DockyardAccount _userService;
+		private readonly DockyardAccount _user;
 		private readonly IDocusignXml _docusignXml;
-		private readonly IProcessNodeService _processNodeService;
+		private readonly IProcessNodeService _processNode;
 
-		public ProcessService( EventReporter alertReporter, DockyardAccount userService, IDocusignXml docusignXml )
+		public Process( EventReporter alertReporter, DockyardAccount userService, IDocusignXml docusignXml )
 		{
 			this._alertReporter = alertReporter;
-			this._userService = userService;
+			this._user = userService;
 			this._docusignXml = docusignXml;
-			this._processNodeService = ObjectFactory.GetInstance< IProcessNodeService >();
+			this._processNode = ObjectFactory.GetInstance< IProcessNodeService >();
 		}
 
 		/// <summary>
@@ -30,26 +29,32 @@ namespace Core.Services
 		/// <param name="processTemplateId"></param>
 		/// <param name="envelopeId"></param>
 		/// <returns></returns>
-		public ProcessDO Create( string processTemplateId, string envelopeId )
+		public ProcessDO Create( int processTemplateId, int envelopeId )
 		{
-			var process = new ProcessDO();
+			var curProcess = new ProcessDO();
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
-				var template = uow.ProcessTemplateRepository.GetQuery().FirstOrDefault( p => p.Id.ToString() == processTemplateId );
+				var template = uow.ProcessTemplateRepository.GetByKey( processTemplateId );
+				var envelope = uow.EnvelopeRepository.GetByKey( envelopeId );
 
-				if( template != null )
-					process.Name = template.Name;
+				if( template == null )
+					throw new ArgumentNullException( "processTemplateId" );
+				if( envelope == null )
+					throw new ArgumentNullException( "envelopeId" );
 
-				process.ProcessState = ProcessState.Processing;
-				process.EnvelopeId = envelopeId;
+				curProcess.Name = template.Name;
+				curProcess.ProcessState = ProcessState.Processing;
+				curProcess.EnvelopeId = envelopeId.ToString();
 
-				var processNode = this._processNodeService.Create( uow, process );
+				var processNode = this._processNode.Create( uow, curProcess );
 				uow.SaveChanges();
 
-				process.ProcessNodeID = processNode.Id;
+				curProcess.CurrentProcessNodeId = processNode.Id;
+
+				uow.ProcessRepository.Add( curProcess );
 				uow.SaveChanges();
 			}
-			return process;
+			return curProcess;
 		}
 
 		/// <summary>
@@ -80,7 +85,7 @@ namespace Core.Services
 
 			this._alertReporter.DocusignNotificationReceived( userId, xmlPayload );
 
-			var processList = this._userService.GetProcessList( userId );
+			var processList = this._user.GetProcessList( userId );
 			foreach( var process in processList )
 			{
 				this.HandleIncomingNotification( userId, envelopeId, process );

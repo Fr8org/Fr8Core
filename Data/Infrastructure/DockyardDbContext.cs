@@ -285,16 +285,10 @@ namespace Data.Infrastructure
                 .HasForeignKey(a => a.FromID)
                 .WillCascadeOnDelete(false);
 
-	        modelBuilder.Entity< ProcessDO >()
-		        .HasRequired( p => p.ProcessNode )
-		        .WithMany()
-		        .HasForeignKey( p => p.ProcessNodeID )
-		        .WillCascadeOnDelete( false );
-
   	        modelBuilder.Entity< ProcessNodeDO >()
 		        .HasRequired( p => p.Process )
 		        .WithMany()
-		        .HasForeignKey( p => p.ProcessID )
+		        .HasForeignKey( p => p.ParentProcessId )
 		        .WillCascadeOnDelete( false );
 
             modelBuilder.Entity<DockyardAccountDO>()

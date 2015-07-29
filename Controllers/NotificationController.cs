@@ -16,16 +16,16 @@ namespace Web.Controllers
     public class NotificationController : ApiController
     {
 
-        IProcessService _processService;
+        IProcess _processService;
         EventReporter _alertReporter;
 
         public NotificationController()
         {
-            _processService = ObjectFactory.GetInstance<IProcessService>();
+            _processService = ObjectFactory.GetInstance<IProcess>();
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
         }
 
-        public NotificationController(IProcessService processService)
+        public NotificationController(IProcess processService)
         {
             _processService = processService;
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();

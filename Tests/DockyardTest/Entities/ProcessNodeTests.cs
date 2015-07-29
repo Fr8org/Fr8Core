@@ -1,9 +1,10 @@
 ﻿using System.Linq;
-using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Entities
 {
@@ -12,29 +13,27 @@ namespace DockyardTest.Entities
 	{
 		[ Test ]
 		[ Category( "ProcessNode" ) ]
-		public void ProcessNode_Change_Status()
+		public void ProcessNode_CanCreateUpdateChangeStatus()
 		{
-			const ProcessNodeDO.ProcessNodeState newSate = ProcessNodeDO.ProcessNodeState.Unstarted;
-			const ProcessNodeDO.ProcessNodeState updatedState = ProcessNodeDO.ProcessNodeState.Complete;
+			const int newStatus = ProcessNodeState.Unstarted;
+			const int updatedStatus = ProcessNodeState.Complete;
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
-				uow.ProcessNodeRepository.Add( new ProcessNodeDO
-				{
-					Id = 1,
-					State = newSate
-				} );
+				var fixture = new FixtureData( uow );
+
+				uow.ProcessNodeRepository.Add( fixture.TestProcessNode() );
 				uow.SaveChanges();
 
 				var createdNode = uow.ProcessNodeRepository.GetQuery().FirstOrDefault();
 				Assert.NotNull( createdNode );
-				Assert.AreEqual( newSate, createdNode.State );
+				Assert.AreEqual( newStatus, createdNode.ProcessNodeState );
 
-				createdNode.State = updatedState;
+				createdNode.ProcessNodeState = updatedStatus;
 				uow.SaveChanges();
 
 				var updatedNode = uow.ProcessNodeRepository.GetQuery().FirstOrDefault();
 				Assert.NotNull( updatedNode );
-				Assert.AreEqual( updatedState, updatedNode.State );
+				Assert.AreEqual( updatedStatus, updatedNode.ProcessNodeState );
 			}
 		}
 	}

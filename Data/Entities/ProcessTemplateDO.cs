@@ -13,12 +13,11 @@ namespace Data.Entities
 		public string Name{ get; set; }
 
 		public string Description{ get; set; }
-		public string UserId{ get; set; }
 
 		[ Required ]
 		[ ForeignKey( "ProcessTemplateStateTemplate" ) ]
-		public int ProcessState{ get; set; }
+		public int ProcessTemplateState  { get; set; }
 
-		public _ProcessTemplateStateTemplate ProcessTemplateStateTemplate{ get; set; }
+		public virtual _ProcessTemplateStateTemplate ProcessTemplateStateTemplate{ get; set; }
 	}
 }

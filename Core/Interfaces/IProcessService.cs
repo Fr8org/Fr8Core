@@ -2,9 +2,9 @@
 
 namespace Core.Interfaces
 {
-	public interface IProcessService
+	public interface IProcess
 	{
 		void HandleDocusignNotification( string userId, string xmlPayload );
-		ProcessDO Create( string processTemplateId, string envelopeId );
+		ProcessDO Create( int processTemplateId, int envelopeId );
 	}
 }

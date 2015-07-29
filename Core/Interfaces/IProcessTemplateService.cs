@@ -2,9 +2,9 @@
 
 namespace Core.Interfaces
 {
-    public interface IProcessTemplate
-    {
-        void CreateOrUpdate(ProcessTemplateDO ptdo);
-        void Delete(int id, string userId);
-    }
+	public interface IProcessTemplate
+	{
+		void CreateOrUpdate( ProcessTemplateDO ptdo );
+		void Delete( int id );
+	}
 }

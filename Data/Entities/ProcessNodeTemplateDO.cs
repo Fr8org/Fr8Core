@@ -20,9 +20,14 @@ namespace Data.Entities
 		public string Name{ get; set; }
 
 		[ ForeignKey( "ProcessTemplate" ) ]
-		public int? ProcessTemplateID{ get; set; }
+		public int? ParentTemplateId{ get; set; }
+
 		public virtual ProcessTemplateDO ProcessTemplate{ get; set; }
 
+		/// <summary>
+		/// this is a JSON structure that is a array of key-value pairs that represent possible transitions. Example:
+		///[{'Flag':'true','Id':'234kljdf'},{'Flag':'false','Id':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.
+		/// </summary>
 		public string TransitionKey{ get; set; }
 
 		public List< ActionListDO > ActionLists{ get; set; }

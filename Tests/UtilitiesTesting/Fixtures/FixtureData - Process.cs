@@ -16,8 +16,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Process 1",
-                UserId = "testuser",
-                Description = "Process 1 Description",
+                DockyardAccountId = "testuser",
                 ProcessState = ProcessState.Processing
             });
 
@@ -25,8 +24,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 Name = "Process 2",
-                UserId = "testuser",
-                Description = "Process 2 Description",
+                DockyardAccountId = "testuser",
                 ProcessState = ProcessState.Processing
             });
 
@@ -34,8 +32,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 3,
                 Name = "Process 3",
-                UserId = "testuser",
-                Description = "Process 3 Description",
+                DockyardAccountId = "testuser",
                 ProcessState = ProcessState.Unstarted
             });
 
@@ -43,8 +40,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 4,
                 Name = "Process 4",
-                UserId = "anotheruser",
-                Description = "Process 4 Description",
+                DockyardAccountId = "anotheruser",
                 ProcessState = ProcessState.Unstarted
             });
 

@@ -10,13 +10,10 @@ namespace Data.Entities
 		public int Id{ get; set; }
 
 		public string Name{ get; set; }
-		public string Description{ get; set; }
-		public string UserId{ get; set; }
+		public string DockyardAccountId{ get; set; }
 		public string EnvelopeId{ get; set; }
-		public ProcessNodeTemplateDO StartingProcessNodeTemplate{ get; set; }
+		public int CurrentProcessNodeId{ get; set; }
 
-		[Required, ForeignKey( "ProcessNode" ) ]
-		public int ProcessNodeID{ get; set; }
 		public virtual ProcessNodeDO ProcessNode{ get; set; }
 
 		[ Required ]

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {
@@ -21,14 +24,25 @@ namespace DockyardTest.Services
 		}
 
 		[ Test ]
+		public void ProcessService_Can_CreateProcessNode()
+		{
+			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
+			{
+				var process = FixtureData.GetProcesses().First();
+				var processNode = this._service.Create( uow, process );
+
+				Assert.AreEqual( processNode.ParentProcessId, process.Id );
+			}
+		}
+
+		[ Test ]
 		public void ProcessNodeService_Can_CreateTruthTransition()
 		{
-			const string sourceIds = "[\"false\":\"234kljdf\", \"false\":\"dfgkjfg\", \"false\":\"xcvbvc\"]";
-			const string targetIds = "[\"true\":\"234kljdf\", \"false\":\"dfgkjfg\", \"true\":\"dfgkjfg\"]";
-			const string correctlyChangedIds = "[\"true\":\"234kljdf\", \"true\":\"dfgkjfg\", \"false\":\"xcvbvc\"]";
+			const string sourceIds = "[{\"Flag\":\"true\",\"Id\":\"234kljdf\"},{\"Flag\":\"false\",\"Id\":\"dfgkjfg\"}]";
+			const string correctlyChangedIds = "[{\"Flag\":\"true\",\"Id\":\"234kljdf\"},{\"Flag\":\"false\",\"Id\":\"223\"}]";
 
 			var sourceNode = new ProcessNodeDO { ProcessNodeTemplate = new ProcessNodeTemplateDO { TransitionKey = sourceIds } };
-			var targetNode = new ProcessNodeDO { ProcessNodeTemplate = new ProcessNodeTemplateDO { TransitionKey = targetIds } };
+			var targetNode = new ProcessNodeDO { Id = 223 };
 
 			this._service.CreateTruthTransition( sourceNode, targetNode );
 

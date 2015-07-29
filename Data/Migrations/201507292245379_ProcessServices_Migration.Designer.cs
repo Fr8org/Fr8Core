@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ProcessService_Create : IMigrationMetadata
+    public sealed partial class ProcessServices_Migration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ProcessService_Create));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ProcessServices_Migration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201507282031033_ProcessService_Create"; }
+            get { return "201507292245379_ProcessServices_Migration"; }
         }
         
         string IMigrationMetadata.Source
