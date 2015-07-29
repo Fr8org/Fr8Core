@@ -54,8 +54,10 @@
 
         init: function () {
             // Initializing FabricJS canvas and disable multiple object selection.
-            this._fabric = new fabric.Canvas(this.getCanvas());
-            this._fabric.selection = false;
+            this._fabric = new fabric.Canvas(this.getCanvas(), {
+                backgroundColor: ns.WidgetConsts.canvasBgFill,
+                selection: false
+            });
         },
 
         add: function (fabricCanvasObject) {
@@ -145,8 +147,8 @@
 
         init: function () {
             var rect = new fabric.Rect({
-                rx: 10,
-                ry: 10,
+                rx: ns.WidgetConsts.startNodeCornerRadius,
+                ry: ns.WidgetConsts.startNodeCornerRadius,
                 fill: ns.WidgetConsts.startNodeFill,
                 stroke: ns.WidgetConsts.startNodeStroke,
                 strokeWidth: ns.WidgetConsts.strokeWidth,
@@ -157,7 +159,7 @@
                 height: ns.WidgetConsts.startNodeHeight
             });
             
-            var label = new fabric.Text('Start', {
+            var label = new fabric.Text('START', {
                 fontSize: ns.WidgetConsts.startNodeTextSize,
                 fontFamily: ns.WidgetConsts.startNodeTextFont,
                 fill: ns.WidgetConsts.startNodeTextFill,
@@ -205,7 +207,7 @@
                 originY: 'center'
             });
 
-            var label = new fabric.Text('Add criteria...', {
+            var label = new fabric.Text('Add criteria', {
                 fontSize: ns.WidgetConsts.addCriteriaNodeTextSize,
                 fontFamily: ns.WidgetConsts.addCriteriaNodeTextFont,
                 fill: ns.WidgetConsts.addCriteriaNodeTextFill,
@@ -287,8 +289,8 @@
 
         init: function () {
             var rect = new fabric.Rect({
-                rx: 10,
-                ry: 10,
+                rx: ns.WidgetConsts.actionsNodeCornerRadius,
+                ry: ns.WidgetConsts.actionsNodeCornerRadius,
                 fill: ns.WidgetConsts.actionsNodeFill,
                 stroke: ns.WidgetConsts.actionsNodeStroke,
                 strokeWidth: ns.WidgetConsts.strokeWidth,
@@ -313,7 +315,7 @@
         },
 
         init: function () {
-            var label = new fabric.Text('Add action...', {
+            var label = new fabric.Text('Add action', {
                 fontSize: ns.WidgetConsts.addActionNodeTextSize,
                 fontFamily: ns.WidgetConsts.addActionNodeTextFont,
                 fill: ns.WidgetConsts.addActionNodeTextFill,
