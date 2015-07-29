@@ -1,9 +1,3 @@
-/// <reference path="C:\Projects\Dockyard\src\dockyard\Scripts/DataTables-1.10.7/media/js/jquery.dataTables.min.js" />
-/// <reference path="C:\Projects\Dockyard\src\dockyard\Scripts/DataTables-1.10.7/media/js/jquery.dataTables.min.js" />
-/***
-Metronic AngularJS App Main Script
-***/
-
 /* Metronic App */
 var MetronicApp = angular.module("MetronicApp", [
     "ui.router",

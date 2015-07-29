@@ -1,0 +1,36 @@
+{
+  "name": "w2ui",
+  "version": "1.4.3",
+  "homepage": "http://w2ui.com",
+  "main": [
+    "w2ui-1.4.3.min.js",
+    "w2ui-1.4.3.min.css"
+  ],
+  "ignore": [
+    "bower.json"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  },
+  "author": {
+    "name": "Vitali Malinouski",
+    "url": "http://w2ui.com",
+    "email": "vitmalina@gmail.com"
+  },
+  "scripts": [
+    "w2ui-1.4.3.min.js"
+  ],
+  "styles": [
+    "w2ui-1.4.3.min.css"
+  ],
+  "_release": "1.4.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.4.3",
+    "commit": "5df79149d9fb7d7650b65371feb3ff540b111716"
+  },
+  "_source": "git://github.com/vitmalina/w2ui-dist.git",
+  "_target": "~1.4.3",
+  "_originalSource": "w2ui",
+  "_direct": true
+}
