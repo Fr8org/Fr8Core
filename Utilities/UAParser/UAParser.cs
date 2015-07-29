@@ -17,7 +17,7 @@
 //
 #endregion
 
-namespace UAParser
+namespace Utilities.UAParser
 {
     #region Imports
 

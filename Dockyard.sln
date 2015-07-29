@@ -27,8 +27,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6CF6EAFB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockyardTest", "Tests\DockyardTest\DockyardTest.csproj", "{8D38298A-9246-4AB9-80C4-9A830213346C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UAParser", "UAParser\UAParser.csproj", "{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginGoogleSheet", "pluginGoogleSheet\pluginGoogleSheet.csproj", "{CAF180F2-B198-426F-BAAB-675C8A4C2E28}"
@@ -114,15 +112,6 @@ Global
 		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|x86.ActiveCfg = Release|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.alexlocal|Any CPU.Build.0 = Release|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.alexlocal|x86.ActiveCfg = Release|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83C63BEA-1859-4DD5-AE08-9A0FEC269B17}.Release|x86.ActiveCfg = Release|Any CPU
 		{CAF180F2-B198-426F-BAAB-675C8A4C2E28}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
 		{CAF180F2-B198-426F-BAAB-675C8A4C2E28}.alexlocal|Any CPU.Build.0 = Release|Any CPU
 		{CAF180F2-B198-426F-BAAB-675C8A4C2E28}.alexlocal|x86.ActiveCfg = Release|Any CPU

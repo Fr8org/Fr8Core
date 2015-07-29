@@ -336,10 +336,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\UAParser\UAParser.csproj">
-      <Project>{83c63bea-1859-4dd5-ae08-9a0fec269b17}</Project>
-      <Name>UAParser</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>
