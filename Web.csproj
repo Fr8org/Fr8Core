@@ -3995,7 +3995,7 @@
     <Content Include="Views\Shared\403.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <Content Include="Views\ProcessTemplate\Index.cshtml" />
-    <Content Include="Views\ProcessTemplate\Create.cshtml" />
+    <Content Include="Views\ProcessTemplate\ProcessBuilderExample.cshtml" />
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />

@@ -20,6 +20,7 @@
 
 <script type="text/javascript">
     $(function () {
+        // Logging routine.
         var _log = function (text) {
             var date = new Date();
             $('#pbLog').append('<div>[' + date.toLocaleDateString() + ', ' + date.toLocaleTimeString() + '] ' + text + '</div>')
@@ -34,9 +35,13 @@
         var criteriaIdSeq = 0;
         var actionIdSeq = 0;
 
+        // ProcessBuilder canvas factory.
         var factory = new ProcessBuilder.FabricJsFactory();
+
+        // ProcessBuilder instance.
         var pb = Core.create(ProcessBuilder.Widget, '#pbArea', factory, 800, 600);
 
+        // Listening to ProcessBuilder events and logging them to log panel.
         pb.on('startNode:click', function () {
             _log('StartNode:click event.');
         });

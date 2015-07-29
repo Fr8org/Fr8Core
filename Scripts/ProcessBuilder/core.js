@@ -1,7 +1,15 @@
-﻿var Core = { };
+﻿// Core object oriented helper functions for JS.
+var Core = {};
 
 (function (ns) {
 
+    // Get DOM element.
+    // Parameters:
+    //     arg: - following arguments are valid:
+    //         1. '#elementId'
+    //         2. jQuery object
+    //         3. DOM element
+    //         4. any object that contains getElement() method.
     ns.element = function (arg) {
         if (typeof arg !== 'undefined') {
             if (typeof arg === 'string') {
@@ -26,12 +34,19 @@
         throw 'Invalid argument';
     };
 
+    // Create wrapper over function to be called from other 'this' context.
+    // Parameters:
+    //     func - function to be wrapped
+    //     context - another context
     ns.delegate = function (func, context) {
         return function () {
             return func.apply(context, arguments);
         };
     };
 
+    // Create 'namespace' object.
+    // Parameters:
+    //     path - dot-separated namespace path.
     ns.ns = function (path) {
         var tokens = path.split('.');
         var i;
@@ -47,6 +62,15 @@
         return obj;
     };
 
+    // Define class.
+    // Overloads:
+    //     Core.class(methods):
+    //         Parameters:
+    //             methods - object that defines class methods.
+    //     Core.class(baseClass, methods):
+    //         Parameters:
+    //             baseClass - base class to derive from
+    //             methods - object that defines class methods.
     ns.class = function () {
         if (arguments.length === 0) {
             throw new Error('PlatformUI.class(<methods>) or PlatformUI.class(<parent>, <methods>)');
@@ -66,6 +90,11 @@
         return constructorFn;
     };
 
+    // Inherit one class from another.
+    // Parameters:
+    //     parent - base class constructor function.
+    //     child - derived class constructor function.
+    //     methods - object that defines class methods.
     ns.inherit = function (parent, child, methods) {
         var construct = function () { };
         construct.prototype = parent.prototype;
@@ -78,6 +107,10 @@
         }
     };
 
+    // Extend object prototype with defined set of methods.
+    // Parameters:
+    //     obj - object to extend.
+    //     methods - object that defines class methods.
     ns.extend = function (obj, methods) {
         var propName;
         for (propName in methods) {
@@ -87,6 +120,10 @@
         }
     };
 
+    // Extend object with properties.
+    // Parameters:
+    //     target - object to extend
+    //     source - object that contains extension properties.
     ns.apply = function (target, source) {
         var propName;
         for (propName in source) {
@@ -96,10 +133,15 @@
         }
     };
 
+    // Check value is undefined.
     ns.undefined = function (value) {
         return (typeof value === 'undefined');
     };
 
+    // Get object value or nested value.
+    // Parameters:
+    //     item - object that contains properties or nested propertes.
+    //     path - dot-separated property name.
     ns.value = function (item, path) {
         var tokens = path.split('.');
         var i;
@@ -111,6 +153,11 @@
         return item;
     };
 
+    // Set object value or nested value.
+    // Parameters:
+    //     item - object that contains properties or nested properties.
+    //     path - dot-separated property name.
+    //     value - value to set.
     ns.setValue = function (item, path, value) {
         var tokens = path.split('.');
         var i;
@@ -129,7 +176,12 @@
     };
 
 
-
+    // Create instance of CoreObject derived class.
+    // Equals to var o = new CoreObject(); o.init();
+    // Overloads:
+    //     Core.create(ctorFn, params...):
+    //         ctorFn - constructor function of class.
+    //         params - parameters for constructor.
     ns.create = function () {
         if (arguments.length === 0) {
             throw new Error('PlatformUI.create(<ctorFn>, <arg0>, ..., <argN>)');
@@ -144,34 +196,23 @@
         return obj;
     };
 
-    ns.createAsync = function () {
-        if (arguments.length === 0) {
-            throw new Error('PlatformUI.createAsync(<ctorFn>, <arg0>, ..., <argN>)');
-        }
 
-        var ctorFn = arguments[0];
-
-        var boundFn = ctorFn.bind.apply(ctorFn, arguments);
-        var obj = new boundFn();
-
-        var result = $.Deferred();
-        obj.initAsync().done(function () { result.resolve(obj); });
-
-        return result;
-    };
-
+    // CoreObject class.
+    // Implements publisher/subscriber pattern.
+    // Allows other objects and functions to subscribe to certain events.
     ns.CoreObject = ns.class({
         constructor: function () {
             this._events = {};
         },
 
+        // Init method, allows to properly initialize wigdets when inheriting widgets one from another.
         init: function () {
         },
 
-        initAsync: function () {
-            return false;
-        },
-
+        // Subscribe to event.
+        // Parameters:
+        //     event - event name.
+        //     handler - event handler function.
         on: function (event, handler) {
             if (!this._events[event]) {
                 this._events[event] = [];
@@ -180,6 +221,10 @@
             this._events[event].push(handler);
         },
 
+        // Unsubscribe from event.
+        // Parameters:
+        //     event - event name.
+        //     handler - event handler function.
         un: function (event, handler) {
             if (!this._events[event]) {
                 return;
@@ -194,6 +239,11 @@
             }
         },
 
+        // Fire event.
+        // Overloads:
+        //     fire(eventName, params...):
+        //         eventName - name of the event to fire.
+        //         params - parameters to pass to event handler functions.
         fire: function () {
             var event = arguments[0];
 

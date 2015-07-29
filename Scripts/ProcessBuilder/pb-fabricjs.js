@@ -7,38 +7,47 @@
             ns.FabricJsFactory.super.constructor.call(this);
         },
 
+        // Create FabricJsCanvas object.
         createCanvas: function (canvas) {
             return Core.create(ns.FabricJsCanvas, canvas);
         },
 
+        // Create FabricJsStartNode for StartNode.
         createStartNode: function () {
             return Core.create(ns.FabricJsStartNode);
         },
 
+        // Create FabricJsAddCriteriaNode for AddCriteriaNode.
         createAddCriteriaNode: function () {
             return Core.create(ns.FabricJsAddCriteriaNode);
         },
 
+        // Create FabricJsCriteriaNode for CriteriaNode.
         createCriteriaNode: function (criteriaName) {
             return Core.create(ns.FabricJsCriteriaNode, criteriaName);
         },
 
+        // Create FabricJsActionsNode for ActionsNode.
         createActionsNode: function () {
             return Core.create(ns.FabricJsActionsNode);
         },
 
+        // Create FabricJsAddActionNode for AddActionNode.
         createAddActionNode: function () {
             return Core.create(ns.FabricJsAddActionNode);
         },
 
+        // Create FabricJsActionNode for ActionNode.
         createActionNode: function (actionName) {
             return Core.create(ns.FabricJsActionNode, actionName);
         },
 
+        // Create FabricJsRightArrow for right-directed arrow.
         createRightArrow: function (left, top, length) {
             return Core.create(ns.FabricJsRightArrow, left, top, length);
         },
 
+        // Create FabricJsDownArrow for down-directed arrow.
         createDownArrow: function (left, top, length) {
             return Core.create(ns.FabricJsDownArrow, left, top, length);
         }

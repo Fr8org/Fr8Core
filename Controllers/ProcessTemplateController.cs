@@ -24,7 +24,7 @@ namespace Web.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Create()
+        public ActionResult ProcessBuilderExample()
         {
             return View();
         }
