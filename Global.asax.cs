@@ -87,10 +87,9 @@ namespace Web
 
             SetServerUrl();
 
-            Logger.GetLogger().Warn("Dockyard starting...");
+            Logger.GetLogger().Warn("Dockyard  starting...");
             var docusign = new DocusignPackager();
             string baseURL = docusign.Login();
-
 
         }
 
