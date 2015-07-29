@@ -3845,8 +3845,6 @@
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - Web Deploy.pubxml" />
     <Content Include="Scripts\ContextMenu\jquery.contextMenu.js" />
-    <Content Include="Scripts\fabric.js" />
-    <Content Include="Scripts\fabric.min.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="TestWidgetLibrary.html" />
@@ -3908,7 +3906,6 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\Process\process_builder.html" />
     <Content Include="Views\AngularTemplate\ProcessTemplate.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
@@ -4018,6 +4015,7 @@
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
     <Folder Include="Views\Envelope\" />
+    <Folder Include="Views\Process\" />
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
