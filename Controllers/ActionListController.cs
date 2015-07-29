@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
+using Core.Interfaces;
+using StructureMap;
 using Web.Controllers.Services;
 using Web.ViewModels;
 
@@ -11,7 +13,7 @@ namespace Web.Controllers
 
 		private ActionListController()
 		{
-			this._service = new ActionsService();
+			this._service = new ActionsService(ObjectFactory.GetInstance<ISubscriptionService>());
 		}
 
 		public IEnumerable< ActionListVM > Get()

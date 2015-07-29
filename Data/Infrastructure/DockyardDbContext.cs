@@ -257,6 +257,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<DocusignAccountDO>().ToTable("DocusignAccounts");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
+            modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
+            modelBuilder.Entity<PluginRegistrationDO>().ToTable("PluginRegistrations");
             //modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
             //modelBuilder.Entity<AnswerDO>().ToTable("Answers");
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");

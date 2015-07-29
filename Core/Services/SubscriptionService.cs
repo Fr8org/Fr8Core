@@ -7,6 +7,8 @@ using Core.Interfaces;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -14,7 +16,13 @@ namespace Core.Services
     {
         public IEnumerable<IPluginRegistration> GetAuthorizedPlugins(IDockyardAccountDO account)
         {
-            throw new NotImplementedException();
+            if (account == null)
+                throw new ArgumentNullException("account");
+            return account.Subscriptions
+                .Where(s => s.AccessLevel == AccessLevel.User || s.AccessLevel == AccessLevel.Admin)
+                .Select(s => ObjectFactory.GetNamedInstance<IPluginRegistration>(s.PluginRegistration.Name))
+                .Where(pr => pr != null)
+                .ToList();
         }
     }
 }

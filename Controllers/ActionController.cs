@@ -27,6 +27,7 @@ namespace Web.Controllers
         */
 
         [KwasantAuthorize]
+        [Route("api/action/available")]
         public IEnumerable<string> GetAvailableActions()
         {
             var userId = this.User.Identity.GetUserId();

@@ -16,12 +16,6 @@ namespace Data.Entities
 {
     public class DockyardAccountDO : IdentityUser, IDockyardAccountDO, ICreateHook, ISaveHook, IModifyHook
     {
-        [NotMapped]
-        IEmailAddressDO IDockyardAccountDO.EmailAddress
-        {
-            get { return EmailAddress; }
-        }
-
         public DockyardAccountDO()
         {
             //UserBookingRequests = new List<BookingRequestDO>();
@@ -62,6 +56,9 @@ namespace Data.Entities
 
         [InverseProperty("User")]
         public virtual IList<ProfileDO> Profiles { get; set; }
+
+        [InverseProperty("Account")]
+        public virtual IList<SubscriptionDO> Subscriptions { get; set; }
 
         [InverseProperty("User")]
         public virtual IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }
@@ -143,6 +140,20 @@ namespace Data.Entities
             var potentialTimeZones = TimeZoneInfo.GetSystemTimeZones().Where(tzi => tzi.GetUtcOffset(DateTime.Now) == mostUsedOffset.Value);
             return potentialTimeZones.FirstOrDefault();
         }
+
+        [NotMapped]
+        IEmailAddressDO IDockyardAccountDO.EmailAddress
+        {
+            get { return EmailAddress; }
+        }
+
+        [NotMapped]
+        IList<ISubscriptionDO> IDockyardAccountDO.Subscriptions
+        {
+            get { return Subscriptions.Cast<ISubscriptionDO>().ToList(); }
+            set { Subscriptions = value.Cast<SubscriptionDO>().ToList(); }
+        }
+
     }
 }
 
