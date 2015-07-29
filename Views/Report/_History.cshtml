@@ -80,6 +80,10 @@
         }
     }
 
-
+    function ConvertToDateString(dateFormat) {
+        var datevalue = new Date(dateFormat);
+        dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return dateFormat;
+    }
 
 </script>

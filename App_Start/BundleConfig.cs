@@ -17,7 +17,7 @@ namespace Web.App_Start
                 ));
 
 			bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                "~/bower_components/bootstrap/js/bootstrap.min.js"
+                "~/bower_components/bootstrap/dist/js/bootstrap.min.js"
 				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap31").Include(
@@ -37,7 +37,7 @@ namespace Web.App_Start
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/placeholder").Include(
-                "~/bower_components/jquery-placeholder/jquery-placeholder.min.js"
+                "~/bower_components/jquery-placeholder/jquery.placeholder.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/main").Include(
@@ -53,7 +53,7 @@ namespace Web.App_Start
 				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/select2").Include(
-                "~/bower_components/select2/select2.min.js"
+                "~/bower_components/select2/select2.min.js" 
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-datetimepicker").Include(

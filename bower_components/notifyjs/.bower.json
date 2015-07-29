@@ -1,6 +1,6 @@
 {
   "name": "notifyjs",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "http://notifyjs.com/",
   "authors": [
     "Jaime Pillora <dev@jpillora.com>"
@@ -11,14 +11,13 @@
     "notification"
   ],
   "license": "MIT",
-  "_release": "0.3.1",
+  "_release": "0.3.2",
   "_resolution": {
     "type": "version",
-    "tag": "0.3.1",
-    "commit": "a59c6e20506fc4f3ca3b1ddbb6a8abd9d647dc8f"
+    "tag": "0.3.2",
+    "commit": "4534e2caa621610719dd6375d805581f32a9fd22"
   },
   "_source": "git://github.com/jpillora/notifyjs.git",
-  "_target": "0.3.1",
-  "_originalSource": "notifyjs",
-  "_direct": true
+  "_target": "~0.3.1",
+  "_originalSource": "notifyjs"
 }

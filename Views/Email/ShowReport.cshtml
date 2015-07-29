@@ -1,6 +1,6 @@
 ﻿<style>
     .col-md-7-fix {
-        width: 54%!important;
+        width: 54% !important;
     }
 
     .col-md-4-fix {
@@ -11,7 +11,6 @@
 <h2>Email Report</h2>
 <script src="~/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
 <link href="~/bower_components/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
-<script src="~/Content/js/KwasantCommon.js"></script>
 <nav class="navbar navbar-default top-toolbar-section" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -53,75 +52,79 @@
 </div>
 
 <script type="text/javascript">
-(function($){
-    var queryPeriod = "all";
-    var table;
-    //Document ready function, will run after page is ready and all elements are loaded.
-    $(document).ready(function () {
-        $('a#all').addClass('current');
-        showReport();
-    });
+    (function ($) {
+        var queryPeriod = "all";
+        var table;
+        //Document ready function, will run after page is ready and all elements are loaded.
+        $(document).ready(function () {
+            $('a#all').addClass('current');
+            showReport();
+        });
 
-    function showReport()
-    {
+        function showReport() {
             table = $('#tblemails').DataTable({
-            destroy: true,
-            searching: false,
-            ordering: false,
-            bLengthChange: false,
-            processing: true,
-            bServerSide: true, //Enabling server side processing
-            aaSorting: [ [2,"desc" ]],
-            order: [2, 'desc'],
-            columns: [
-                        { data: 'from' },
-                        { data: 'subject' },
-                        {
-                            data: function (data) {
-                                return convertToDateString(data.date);
-                            }
-                        },
-                        { data: 'email_status' },
-                        { data: 'conversation_id' },
-                        {
-                            data: null,
-                            defaultContent: "<button value='detail' class='custom-btn glyphicon glyphicon-folder-open'>Details</button>"
-                        },
-            ],
-            ajax:
-                 {
-                     url: "@Url.Action("ShowEmails", "Email")" + "?queryPeriod=" + queryPeriod + "&type="+"@ViewBag.type",
-            dataSrc: function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            },
-            type: "POST"
-        }
-        });
-   
-    //Initializing click for all filter buttons.
-    $('.top-toolbar-section a').click(function () {
-        $('.top-toolbar-section a').each(function () {
-            $(this).removeClass('current');
-        });
-        $(this).addClass('current');
-        queryPeriod = $(this).attr("id");
-        //table.destroy();
-        showReport();
-        return false;
-    });
+                destroy: true,
+                searching: false,
+                ordering: false,
+                bLengthChange: false,
+                processing: true,
+                bServerSide: true, //Enabling server side processing
+                aaSorting: [[2, "desc"]],
+                order: [2, 'desc'],
+                columns: [
+                            { data: 'from' },
+                            { data: 'subject' },
+                            {
+                                data: function (data) {
+                                    return convertToDateString(data.date);
+                                }
+                            },
+                            { data: 'email_status' },
+                            { data: 'conversation_id' },
+                            {
+                                data: null,
+                                defaultContent: "<button value='detail' class='custom-btn glyphicon glyphicon-folder-open'>Details</button>"
+                            },
+                ],
+                ajax:
+                     {
+                         url: "@Url.Action("ShowEmails", "Email")" + "?queryPeriod=" + queryPeriod + "&type=" + "@ViewBag.type",
+                         dataSrc: function (json) {
+                             var orgdata = JSON.parse(json.data);
+                             return orgdata;
+                         },
+                         type: "POST"
+                     }
+            });
 
-    //This function will bind a click function on every button in table "tblemails"
-    $('#tblemails').on('click', 'button', function () {
-        var data = table.row($(this).parents('tr')).data();
-        var parentcontrol = this;
-        //checking clicked button value for appropriate action this will be "detail" 
-        if($(this).val() == "detail")
-        {
-            $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + data.id);
-            $('#divEmailViewer').show();
+            function ConvertToDateString(dateFormat) {
+                var datevalue = new Date(dateFormat);
+                dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+                return dateFormat;
+            }
+
+            //Initializing click for all filter buttons.
+            $('.top-toolbar-section a').click(function () {
+                $('.top-toolbar-section a').each(function () {
+                    $(this).removeClass('current');
+                });
+                $(this).addClass('current');
+                queryPeriod = $(this).attr("id");
+                //table.destroy();
+                showReport();
+                return false;
+            });
+
+            //This function will bind a click function on every button in table "tblemails"
+            $('#tblemails').on('click', 'button', function () {
+                var data = table.row($(this).parents('tr')).data();
+                var parentcontrol = this;
+                //checking clicked button value for appropriate action this will be "detail"
+                if ($(this).val() == "detail") {
+                    $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + data.id);
+                    $('#divEmailViewer').show();
+                }
+            });
         }
-    });
-  }
-}(jQuery));
+    }(jQuery));
 </script>
