@@ -1,0 +1,70 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section scripts
+{
+    <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
+}
+
+<div id="pbArea">
+</div>
+
+<div id="pbLog" style="z-index: 1000; position: fixed; right: 30px; top: 30px; width: 400px; height: 400px; background-color: white; border: 5px solid #cacaca; padding: 5px; overflow: auto; box-shadow: 1px 1px 3px 0px #525252;">
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        // Logging routine.
+        var _log = function (text) {
+            var date = new Date();
+            $('#pbLog').append('<div>[' + date.toLocaleDateString() + ', ' + date.toLocaleTimeString() + '] ' + text + '</div>')
+
+            var scrollHeight = $('#pbLog')[0].scrollHeight;
+            $('#pbLog').scrollTop(scrollHeight);
+        };
+
+        _log('ProcessBuilder log panel');
+
+
+        var criteriaIdSeq = 0;
+        var actionIdSeq = 0;
+
+        // ProcessBuilder canvas factory.
+        var factory = new ProcessBuilder.FabricJsFactory();
+
+        // ProcessBuilder instance.
+        var pb = Core.create(ProcessBuilder.Widget, '#pbArea', factory, 800, 600);
+
+        // Listening to ProcessBuilder events and logging them to log panel.
+        pb.on('startNode:click', function () {
+            _log('StartNode:click event.');
+        });
+
+        pb.on('addCriteriaNode:click', function () {
+            pb.addCriteria({ id: ++criteriaIdSeq });
+            _log('AddCriteriaNode:click event.');
+        });
+
+        pb.on('criteriaNode:click', function (e, id) {
+            pb.removeCriteria(id);
+            _log('CriteriaNode:click event; criteria.id = ' + id.toString());
+        });
+
+        pb.on('addActionNode:click', function (e, criteriaId) {
+            pb.addAction(criteriaId, { id: ++actionIdSeq });
+            _log('AddActionNode:click event; criteria.id = ' + criteriaId.toString());
+        });
+
+        pb.on('actionNode:click', function (e, criteriaId, actionId) {
+            pb.removeAction(criteriaId, actionId);
+            _log('ActionNode:click event; criteria.id = '
+                + criteriaId.toString() + '; action.id = ' + actionId.toString());
+        });
+    });
+</script>
