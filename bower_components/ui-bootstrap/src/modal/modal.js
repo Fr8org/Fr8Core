@@ -57,7 +57,9 @@ angular.module('ui.bootstrap.modal', [])
 /**
  * A helper directive for the $modal service. It creates a backdrop element.
  */
-  .directive('modalBackdrop', ['$timeout', function ($timeout) {
+  .directive('modalBackdrop', [
+           '$animate', '$modalStack',
+  function ($animate ,  $modalStack) {
     return {
       restrict: 'EA',
       replace: true,
@@ -69,21 +71,24 @@ angular.module('ui.bootstrap.modal', [])
     };
 
     function linkFn(scope, element, attrs) {
-      scope.animate = false;
+      if (attrs.modalInClass) {
+        $animate.addClass(element, attrs.modalInClass);
 
-      //trigger CSS transitions
-      $timeout(function () {
-        scope.animate = true;
-      });
+        scope.$on($modalStack.NOW_CLOSING_EVENT, function (e, setIsAsync) {
+          var done = setIsAsync();
+          $animate.removeClass(element, attrs.modalInClass).then(done);
+        });
+      }
     }
   }])
 
-  .directive('modalWindow', ['$modalStack', '$q', function ($modalStack, $q) {
+  .directive('modalWindow', [
+           '$modalStack', '$q', '$animate',
+  function ($modalStack ,  $q ,  $animate) {
     return {
       restrict: 'EA',
       scope: {
-        index: '@',
-        animate: '='
+        index: '@'
       },
       replace: true,
       transclude: true,
@@ -119,8 +124,14 @@ angular.module('ui.bootstrap.modal', [])
         });
 
         modalRenderDeferObj.promise.then(function () {
-          // trigger CSS transitions
-          scope.animate = true;
+          if (attrs.modalInClass) {
+            $animate.addClass(element, attrs.modalInClass);
+
+            scope.$on($modalStack.NOW_CLOSING_EVENT, function (e, setIsAsync) {
+              var done = setIsAsync();
+              $animate.removeClass(element, attrs.modalInClass).then(done);
+            });
+          }
 
           var inputsWithAutofocus = element[0].querySelectorAll('[autofocus]');
           /**
@@ -169,14 +180,21 @@ angular.module('ui.bootstrap.modal', [])
     };
   })
 
-  .factory('$modalStack', ['$animate', '$timeout', '$document', '$compile', '$rootScope', '$$stackedMap',
-    function ($animate, $timeout, $document, $compile, $rootScope, $$stackedMap) {
+  .factory('$modalStack', [
+             '$animate', '$timeout', '$document', '$compile', '$rootScope',
+             '$q',
+             '$$stackedMap',
+    function ($animate ,  $timeout ,  $document ,  $compile ,  $rootScope ,
+              $q,
+              $$stackedMap) {
 
       var OPENED_MODAL_CLASS = 'modal-open';
 
       var backdropDomEl, backdropScope;
       var openedWindows = $$stackedMap.createNew();
-      var $modalStack = {};
+      var $modalStack = {
+        NOW_CLOSING_EVENT: 'modal.stack.now-closing'
+      };
 
       function backdropIndex() {
         var topBackdropIndex = -1;
@@ -195,7 +213,7 @@ angular.module('ui.bootstrap.modal', [])
         }
       });
 
-      function removeModalWindow(modalInstance) {
+      function removeModalWindow(modalInstance, elementToReceiveFocus) {
 
         var body = $document.find('body').eq(0);
         var modalWindow = openedWindows.get(modalInstance).value;
@@ -203,11 +221,17 @@ angular.module('ui.bootstrap.modal', [])
         //clean up the stack
         openedWindows.remove(modalInstance);
 
-        //remove window DOM element
         removeAfterAnimate(modalWindow.modalDomEl, modalWindow.modalScope, function() {
           body.toggleClass(OPENED_MODAL_CLASS, openedWindows.length() > 0);
           checkRemoveBackdrop();
         });
+
+        //move focus to specified element if available, or else to body
+        if (elementToReceiveFocus && elementToReceiveFocus.focus) {
+          elementToReceiveFocus.focus();
+        } else {
+          body.focus();
+        }
       }
 
       function checkRemoveBackdrop() {
@@ -223,18 +247,24 @@ angular.module('ui.bootstrap.modal', [])
       }
 
       function removeAfterAnimate(domEl, scope, done) {
-        // Closing animation
-        scope.animate = false;
+        var asyncDeferred;
+        var asyncPromise = null;
+        var setIsAsync = function () {
+          if (!asyncDeferred) {
+            asyncDeferred = $q.defer();
+            asyncPromise = asyncDeferred.promise;
+          }
 
-        if (domEl.attr('modal-animation') && $animate.enabled()) {
-          // transition out
-          domEl.one('$animate:close', function closeFn() {
-            $rootScope.$evalAsync(afterAnimating);
-          });
-        } else {
-          // Ensure this call is async
-          $timeout(afterAnimating);
-        }
+          return function asyncDone() {
+            asyncDeferred.resolve();
+          };
+        };
+        scope.$broadcast($modalStack.NOW_CLOSING_EVENT, setIsAsync);
+
+        // Note that it's intentional that asyncPromise might be null.
+        // That's when setIsAsync has not been called during the
+        // NOW_CLOSING_EVENT broadcast.
+        return $q.when(asyncPromise).then(afterAnimating);
 
         function afterAnimating() {
           if (afterAnimating.done) {
@@ -318,8 +348,7 @@ angular.module('ui.bootstrap.modal', [])
         var modalWindow = openedWindows.get(modalInstance);
         if (modalWindow && broadcastClosing(modalWindow, result, true)) {
           modalWindow.value.deferred.resolve(result);
-          removeModalWindow(modalInstance);
-          modalWindow.value.modalOpener.focus();
+          removeModalWindow(modalInstance, modalWindow.value.modalOpener);
           return true;
         }
         return !modalWindow;
@@ -329,8 +358,7 @@ angular.module('ui.bootstrap.modal', [])
         var modalWindow = openedWindows.get(modalInstance);
         if (modalWindow && broadcastClosing(modalWindow, reason, false)) {
           modalWindow.value.deferred.reject(reason);
-          removeModalWindow(modalInstance);
-          modalWindow.value.modalOpener.focus();
+          removeModalWindow(modalInstance, modalWindow.value.modalOpener);
           return true;
         }
         return !modalWindow;
@@ -436,7 +464,11 @@ angular.module('ui.bootstrap.modal', [])
 
                 ctrlInstance = $controller(modalOptions.controller, ctrlLocals);
                 if (modalOptions.controllerAs) {
-                  modalScope[modalOptions.controllerAs] = ctrlInstance;
+                  if (modalOptions.bindToController) {
+                    angular.extend(modalScope, ctrlInstance);
+                  } else {
+                    modalScope[modalOptions.controllerAs] = ctrlInstance;
+                  }
                 }
               }
 

@@ -5,7 +5,10 @@
         regInvokes = {},
         regConfigs = [],
         modulesToLoad = [],
-        recordDeclarations = [],
+        // modules to load from angular.module or other sources
+    realModules = [],
+        // real modules called from angular.module
+    recordDeclarations = [],
         broadcast = angular.noop,
         runBlocks = {},
         justLoaded = [];
@@ -167,13 +170,13 @@
                     if (!angular.isString(moduleName)) {
                         moduleName = getModuleName(moduleName);
                     }
-                    if (!moduleName || justLoaded.indexOf(moduleName) !== -1) {
+                    if (!moduleName || justLoaded.indexOf(moduleName) !== -1 || modules[moduleName] && realModules.indexOf(moduleName) === -1) {
                         continue;
                     }
+                    // new if not registered
                     var newModule = regModules.indexOf(moduleName) === -1;
                     moduleFn = ngModuleFct(moduleName);
                     if (newModule) {
-                        // new module
                         regModules.push(moduleName);
                         _register(providers, moduleFn.requires, params);
                     }
@@ -281,10 +284,10 @@
                     } else {
                         // config block
                         var callInvoke = function callInvoke(fct) {
-                            var invoked = regConfigs.indexOf('' + moduleName + '-' + fct);
+                            var invoked = regConfigs.indexOf(moduleName + '-' + fct);
                             if (invoked === -1 || reconfig) {
                                 if (invoked === -1) {
-                                    regConfigs.push('' + moduleName + '-' + fct);
+                                    regConfigs.push(moduleName + '-' + fct);
                                 }
                                 if (angular.isDefined(provider)) {
                                     provider[args[1]].apply(provider, args[2]);
@@ -519,6 +522,8 @@
                                 return;
                             }
                             requireEntry = config;
+                            // ignore the name because it's probably not a real module name
+                            config.name = undefined;
                         }
 
                         // Check if this dependency has been loaded previously
@@ -544,9 +549,21 @@
                             }
                             return;
                         } else if (angular.isArray(requireEntry)) {
-                            requireEntry = {
-                                files: requireEntry
-                            };
+                            var files = [];
+                            angular.forEach(requireEntry, function (entry) {
+                                // let's check if the entry is a file name or a config name
+                                var config = self.getModuleConfig(entry);
+                                if (config === null) {
+                                    files.push(entry);
+                                } else if (config.files) {
+                                    files = files.concat(config.files);
+                                }
+                            });
+                            if (files.length > 0) {
+                                requireEntry = {
+                                    files: files
+                                };
+                            }
                         } else if (angular.isObject(requireEntry)) {
                             if (requireEntry.hasOwnProperty('name') && requireEntry['name']) {
                                 // The dependency doesn't exist in the module cache and is a new configuration, so store and push it.
@@ -578,7 +595,7 @@
                  * @param localParams
                  */
                 inject: function inject(moduleName) {
-                    var localParams = arguments[1] === undefined ? {} : arguments[1];
+                    var localParams = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
                     var self = this,
                         deferred = $q.defer();
@@ -610,8 +627,8 @@
                                 if (modulesToLoad.length > 0) {
                                     loadNext(modulesToLoad.shift()); // load the next in list
                                 } else {
-                                    deferred.resolve(res); // everything has been loaded, resolve
-                                }
+                                        deferred.resolve(res); // everything has been loaded, resolve
+                                    }
                             }, function error(err) {
                                 deferred.reject(err);
                             });
@@ -685,20 +702,23 @@
     angular.bootstrap = function (element, modules, config) {
         // we use slice to make a clean copy
         angular.forEach(modules.slice(), function (module) {
-            _addToLoadList(module, true);
+            _addToLoadList(module, true, true);
         });
         return bootstrapFct(element, modules, config);
     };
 
-    var _addToLoadList = function _addToLoadList(name, force) {
+    var _addToLoadList = function _addToLoadList(name, force, real) {
         if ((recordDeclarations.length > 0 || force) && angular.isString(name) && modulesToLoad.indexOf(name) === -1) {
             modulesToLoad.push(name);
+            if (real) {
+                realModules.push(name);
+            }
         }
     };
 
     var ngModuleFct = angular.module;
     angular.module = function (name, requires, configFn) {
-        _addToLoadList(name);
+        _addToLoadList(name, false, true);
         return ngModuleFct(name, requires, configFn);
     };
 

@@ -7,9 +7,11 @@
 *
 */
 angular.module('ui.bootstrap.carousel', [])
-.controller('CarouselController', ['$scope', '$interval', '$animate', function ($scope, $interval, $animate) {
+.controller('CarouselController', ['$scope', '$element', '$interval', '$animate', function ($scope, $element, $interval, $animate) {
   var self = this,
     slides = self.slides = $scope.slides = [],
+    NO_TRANSITION = 'uib-noTransition',
+    SLIDE_DIRECTION = 'uib-slideDirection',
     currentIndex = -1,
     currentInterval, isPlaying;
   self.currentSlide = null;
@@ -22,28 +24,34 @@ angular.module('ui.bootstrap.carousel', [])
     if (direction === undefined) {
       direction = nextIndex > self.getCurrentIndex() ? 'next' : 'prev';
     }
-    if (nextSlide && nextSlide !== self.currentSlide) {
-      goNext();
-    }
-    function goNext() {
-      // Scope has been destroyed, stop here.
-      if (destroyed) { return; }
-
-      angular.extend(nextSlide, {direction: direction, active: true});
-      angular.extend(self.currentSlide || {}, {direction: direction, active: false});
-      if ($animate.enabled() && !$scope.noTransition && nextSlide.$element) {
-        $scope.$currentTransition = true;
-        nextSlide.$element.one('$animate:close', function closeFn() {
-          $scope.$currentTransition = null;
-        });
-      }
-
-      self.currentSlide = nextSlide;
-      currentIndex = nextIndex;
-      //every time you change slides, reset the timer
-      restartTimer();
+    //Prevent this user-triggered transition from occurring if there is already one in progress
+    if (nextSlide && nextSlide !== self.currentSlide && !$scope.$currentTransition) {
+      goNext(nextSlide, nextIndex, direction);
     }
   };
+
+  function goNext(slide, index, direction) {
+    // Scope has been destroyed, stop here.
+    if (destroyed) { return; }
+
+    angular.extend(slide, {direction: direction, active: true});
+    angular.extend(self.currentSlide || {}, {direction: direction, active: false});
+    if ($animate.enabled() && !$scope.noTransition && !$scope.$currentTransition &&
+      slide.$element) {
+      slide.$element.data(SLIDE_DIRECTION, slide.direction);
+      $scope.$currentTransition = true;
+      slide.$element.one('$animate:close', function closeFn() {
+        $scope.$currentTransition = null;
+      });
+    }
+
+    self.currentSlide = slide;
+    currentIndex = index;
+
+    //every time you change slides, reset the timer
+    restartTimer();
+  }
+
   $scope.$on('$destroy', function () {
     destroyed = true;
   });
@@ -75,19 +83,23 @@ angular.module('ui.bootstrap.carousel', [])
   $scope.next = function() {
     var newIndex = (self.getCurrentIndex() + 1) % slides.length;
 
-    //Prevent this user-triggered transition from occurring if there is already one in progress
-    if (!$scope.$currentTransition) {
-      return self.select(getSlideByIndex(newIndex), 'next');
+    if (newIndex === 0 && $scope.noWrap()) {
+      $scope.pause();
+      return;
     }
+
+    return self.select(getSlideByIndex(newIndex), 'next');
   };
 
   $scope.prev = function() {
     var newIndex = self.getCurrentIndex() - 1 < 0 ? slides.length - 1 : self.getCurrentIndex() - 1;
 
-    //Prevent this user-triggered transition from occurring if there is already one in progress
-    if (!$scope.$currentTransition) {
-      return self.select(getSlideByIndex(newIndex), 'prev');
+    if ($scope.noWrap() && newIndex === slides.length - 1){
+      $scope.pause();
+      return;
     }
+
+    return self.select(getSlideByIndex(newIndex), 'prev');
   };
 
   $scope.isActive = function(slide) {
@@ -114,7 +126,7 @@ angular.module('ui.bootstrap.carousel', [])
 
   function timerFn() {
     var interval = +$scope.interval;
-    if (isPlaying && !isNaN(interval) && interval > 0) {
+    if (isPlaying && !isNaN(interval) && interval > 0 && slides.length) {
       $scope.next();
     } else {
       $scope.pause();
@@ -168,6 +180,10 @@ angular.module('ui.bootstrap.carousel', [])
     }
   };
 
+  $scope.$watch('noTransition', function(noTransition) {
+    $element.data(NO_TRANSITION, noTransition);
+  });
+
 }])
 
 /**
@@ -219,7 +235,8 @@ angular.module('ui.bootstrap.carousel', [])
     scope: {
       interval: '=',
       noTransition: '=',
-      noPause: '='
+      noPause: '=',
+      noWrap: '&'
     }
   };
 }])
@@ -296,13 +313,16 @@ function CarouselDemoCtrl($scope) {
 .animation('.item', [
          '$animate',
 function ($animate) {
+  var NO_TRANSITION = 'uib-noTransition',
+    SLIDE_DIRECTION = 'uib-slideDirection';
+
   return {
     beforeAddClass: function (element, className, done) {
       // Due to transclusion, noTransition property is on parent's scope
       if (className == 'active' && element.parent() &&
-          !element.parent().scope().noTransition) {
+          !element.parent().data(NO_TRANSITION)) {
         var stopped = false;
-        var direction = element.isolateScope().direction;
+        var direction = element.data(SLIDE_DIRECTION);
         var directionClass = direction == 'next' ? 'left' : 'right';
         element.addClass(direction);
         $animate.addClass(element, directionClass).then(function () {
@@ -321,9 +341,9 @@ function ($animate) {
     beforeRemoveClass: function (element, className, done) {
       // Due to transclusion, noTransition property is on parent's scope
       if (className == 'active' && element.parent() &&
-          !element.parent().scope().noTransition) {
+          !element.parent().data(NO_TRANSITION)) {
         var stopped = false;
-        var direction = element.isolateScope().direction;
+        var direction = element.data(SLIDE_DIRECTION);
         var directionClass = direction == 'next' ? 'left' : 'right';
         $animate.addClass(element, directionClass).then(function () {
           if (!stopped) {

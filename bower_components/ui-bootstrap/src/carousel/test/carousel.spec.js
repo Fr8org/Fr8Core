@@ -73,6 +73,51 @@ describe('carousel', function() {
       expect(indicators.length).toBe(3);
     });
 
+    it('should stop cycling slides forward when noWrap is truthy', function () {
+      elm = $compile(
+          '<carousel interval="interval" no-wrap="noWrap">' +
+            '<slide ng-repeat="slide in slides" active="slide.active">' +
+              '{{slide.content}}' +
+            '</slide>' +
+          '</carousel>'
+        )(scope);
+
+      scope.noWrap = true;
+      scope.$apply();
+
+      scope = elm.isolateScope();
+      spyOn(scope, 'pause');
+
+      for (var i = 0; i < scope.slides.length - 1; ++i) {
+        scope.next();
+      }
+      testSlideActive(scope.slides.length - 1);
+      scope.next();
+      testSlideActive(scope.slides.length - 1);
+      expect(scope.pause).toHaveBeenCalled();
+    });
+
+    it('should stop cycling slides backward when noWrap is truthy', function () {
+      elm = $compile(
+          '<carousel interval="interval" no-wrap="noWrap">' +
+            '<slide ng-repeat="slide in slides" active="slide.active">' +
+              '{{slide.content}}' +
+            '</slide>' +
+          '</carousel>'
+        )(scope);
+
+      scope.noWrap = true;
+      scope.$apply();
+
+      scope = elm.isolateScope();
+      spyOn(scope, 'pause');
+
+      testSlideActive(0);
+      scope.prev();
+      testSlideActive(0);
+      expect(scope.pause).toHaveBeenCalled();
+    });
+
     it('should hide navigation when only one slide', function () {
       scope.slides=[{active:false,content:'one'}];
       scope.$apply();
@@ -146,7 +191,7 @@ describe('carousel', function() {
       testSlideActive(1);
     });
 
-    it('shouldnt go forward if interval is NaN or negative', function() {
+    it('shouldnt go forward if interval is NaN or negative or has no slides', function() {
       testSlideActive(0);
       var previousInterval = scope.interval;
       scope.$apply('interval = -1');
@@ -159,6 +204,9 @@ describe('carousel', function() {
       $interval.flush(1000);
       testSlideActive(1);
       scope.$apply('interval = 1000');
+      $interval.flush(1000);
+      testSlideActive(2);
+      scope.$apply('slides = []');
       $interval.flush(1000);
       testSlideActive(2);
     });
@@ -346,7 +394,7 @@ describe('carousel', function() {
 
     beforeEach(function() {
       scope = $rootScope.$new();
-      ctrl = $controller('CarouselController', {$scope: scope, $element: null});
+      ctrl = $controller('CarouselController', {$scope: scope, $element: angular.element('<div></div>')});
       for(var i = 0;i < slides.length;i++){
         ctrl.addSlide(slides[i]);
       }

@@ -1,7 +1,6 @@
 ﻿<h2>@ViewBag.Title</h2>
-<script src="~/Scripts/DataTables-1.10.7/media/js/jquery.dataTables.js"></script>
-<link href="~/Content/DataTables-1.10.7/media/css/jquery.dataTables.css" rel="stylesheet" />
-<script src="~/Content/js/KwasantCommon.js"></script>
+<script src="~/bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
+<link href="~/bower_components/DataTables/media/css/jquery.dataTables.min.css" rel="stylesheet" />
 <nav class="navbar navbar-default top-toolbar-section" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -158,6 +157,8 @@
         //loadReport();
         showRequests();
 
+
+
         //Inserts retrieved json records into DataTable Widget
         function showRequests() {
             var tableToWrite;// = $('#tblreport');
@@ -239,6 +240,11 @@
         return false;
     });
     
+    function convertToDateString(dateFormat) {
+        var datevalue = new Date(dateFormat);
+        dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return dateFormat;
+    }
 
     function showBRResponsiveness()
     {
@@ -304,5 +310,21 @@
       }
     }
 
+    function leftPad(number) {
+        return ((number < 10 && number >= 0) ? '0' : '') + number;
+    }
+
+    function minutesToStr(minutes) {
+        var sign = '';
+        if (minutes < 0) {
+            sign = '-';
+        }
+
+        var hours = leftPad(Math.floor(Math.abs(minutes) / 60));
+        var minutes = leftPad(Math.abs(minutes) % 60);
+
+        return sign + hours + 'hrs ' + minutes + 'min';
+
+    }
     
 </script>
