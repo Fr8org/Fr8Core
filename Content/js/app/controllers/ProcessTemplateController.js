@@ -40,7 +40,30 @@ MetronicApp.controller('ProcessTemplateController',
                         }
                     });
             }
-        }
+        };
+
+        // BEGIN ProcessBuilder event handlers.
+
+        var criteriaIdSeq = 0;
+        var actionIdSeq = 0;
+
+        $scope.pbAddCriteriaClick = function () {
+            $scope.processBuilder.addCriteria({ id: ++criteriaIdSeq })
+        };
+
+        $scope.pbCriteriaClick = function (criteriaId) {
+            $scope.processBuilder.removeCriteria(criteriaId);
+        };
+
+        $scope.pbAddActionClick = function (criteriaId) {
+            $scope.processBuilder.addAction(criteriaId, { id: ++actionIdSeq });
+        };
+
+        $scope.pbActionClick = function (criteriaId, actionId) {
+            $scope.processBuilder.removeAction(criteriaId, actionId);
+        };
+
+        // END ProcessBuilder event handlers.
     }]);
 
 /*

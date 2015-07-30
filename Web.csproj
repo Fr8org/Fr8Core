@@ -553,6 +553,7 @@
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="Content\js\about-page.js" />
     <Content Include="Content\js\app\app.js" />
+    <Content Include="Content\js\app\directives\ProcessBuilderDirective.js" />
     <Content Include="Content\js\app\filters\ProcessTemplateState.js" />
     <Content Include="Content\js\app\controllers\ProcessTemplateController.js" />
     <Content Include="Content\js\app\directives.js" />
