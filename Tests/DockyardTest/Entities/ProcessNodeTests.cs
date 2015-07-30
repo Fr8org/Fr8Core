@@ -11,6 +11,16 @@ namespace DockyardTest.Entities
 	[ TestFixture ]
 	public class ProcessNodeTests: BaseTest
 	{
+		private FixtureData _fixture;
+		private IUnitOfWork _uow;
+
+		[ SetUp ]
+		public void Setup()
+		{
+			this._uow = ObjectFactory.GetInstance< IUnitOfWork >();
+			this._fixture = new FixtureData( this._uow );
+		}
+
 		[ Test ]
 		[ Category( "ProcessNode" ) ]
 		public void ProcessNode_CanCreateUpdateChangeStatus()
@@ -19,9 +29,7 @@ namespace DockyardTest.Entities
 			const int updatedStatus = ProcessNodeState.Complete;
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
-				var fixture = new FixtureData( uow );
-
-				uow.ProcessNodeRepository.Add( fixture.TestProcessNode() );
+				uow.ProcessNodeRepository.Add( this._fixture.TestProcessNode() );
 				uow.SaveChanges();
 
 				var createdNode = uow.ProcessNodeRepository.GetQuery().FirstOrDefault();

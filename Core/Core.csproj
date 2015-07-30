@@ -173,7 +173,7 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNodeService.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
-    <Compile Include="Interfaces\IProcessTemplateService.cs" />
+    <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />

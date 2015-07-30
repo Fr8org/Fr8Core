@@ -48,5 +48,17 @@ namespace DockyardTest.Services
 
 			Assert.IsTrue( sourceNode.ProcessNodeTemplate.TransitionKey.Equals( correctlyChangedIds, StringComparison.OrdinalIgnoreCase ) );
 		}
+
+		[ Test ]
+		[ ExpectedException( typeof( ArgumentException ) ) ]
+		public void ProcessNodeService_CanNot_CreateTruthTransition()
+		{
+			const string sourceIds = "[{\"Flag\":\"false\",\"Id\":\"234kljdf\"},{\"Flag\":\"false\",\"Id\":\"dfgkjfg\"}]";
+
+			var sourceNode = new ProcessNodeDO { ProcessNodeTemplate = new ProcessNodeTemplateDO { TransitionKey = sourceIds } };
+			var targetNode = new ProcessNodeDO { Id = 223 };
+
+			this._service.CreateTruthTransition( sourceNode, targetNode );
+		}
 	}
 }

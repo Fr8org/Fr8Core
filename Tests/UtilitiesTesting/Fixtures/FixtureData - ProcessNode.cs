@@ -7,23 +7,22 @@ namespace UtilitiesTesting.Fixtures
 	{
 		public ProcessNodeDO TestProcessNode()
 		{
-			return new ProcessNodeDO
-			{
-				Id = 50,
-				ParentProcessId = 49,
-				Process = new ProcessDO
-				{
-					Id = 49, 
-					CurrentProcessNodeId = 50, 
-					ProcessState = 1, 
-					ProcessNode = new ProcessNodeDO
-					{
-						Id = 50, 
-						ParentProcessId = 49
-					}
-				},
-				ProcessNodeState = ProcessNodeState.Unstarted
-			};
+			var processNode = new ProcessNodeDO();
+			processNode.Id = 50;
+			processNode.ParentProcessId = 49;
+			processNode.ProcessNodeState = ProcessNodeState.Unstarted;
+			processNode.Process = TestProcess1();
+
+			return processNode;
+		}
+
+		public static ProcessNodeDO TestProcessNode1()
+		{
+			var processNode = new ProcessNodeDO();
+			processNode.Id = 50;
+			processNode.ParentProcessId = 49;
+
+			return processNode;
 		}
 	}
 }
