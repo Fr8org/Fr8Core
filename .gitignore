@@ -125,3 +125,4 @@ ClientBin/
 /NUnit.Runners.2.6.3
 /TestResult.xml
 Web.config.local
+/bower_components
