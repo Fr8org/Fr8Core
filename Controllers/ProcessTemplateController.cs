@@ -22,5 +22,11 @@ namespace Web.Controllers
         {
             return View();
         }
+
+        [AllowAnonymous]
+        public ActionResult ProcessBuilderExample()
+        {
+            return View();
+        }
     }
 }
