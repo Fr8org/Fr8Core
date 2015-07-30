@@ -269,7 +269,10 @@
         // Resize canvas according to actual workflow size.
         _resizeCanvas: function () {
             var addCriteriaBottom = this._getAddCriteriaNodeBottomPoint();
-            this._canvas.resize(this._canvas.getWidth(), addCriteriaBottom);
+            this._canvas.resize(
+                this._canvas.getWidth(),
+                addCriteriaBottom + ns.WidgetConsts.canvasPadding
+            );
         },
 
         // Relayout whole canvas.
