@@ -17,6 +17,8 @@ using UtilitiesTesting;
 
 using Utilities;
 
+using UtilitiesTesting.Fixtures;
+
 using Account = DocuSign.Integrations.Client.Account;
 using Envelope = DocuSign.Integrations.Client.Envelope;
 
@@ -53,7 +55,7 @@ namespace DockyardTest.Entities
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData()
         {
-            Account account = LoginDocusign();
+            Account account = DocusignAccount.LoginDocusign();
             Envelope envelope = CreateAndFillEnvelope(account);
             Assert.IsTrue(envelope.RestError == null);
 
@@ -65,35 +67,7 @@ namespace DockyardTest.Entities
         }
 
         #region private methods.
-        /// <summary>
-        /// Programmatically create an Envelope in DocuSign in the developer sandbox account.
-        /// ( Please watch your firewall. It's actualy going to demo docusign server. )
-        /// </summary>
-        /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        private static Account LoginDocusign()
-        {
-            // configure application's integrator key and webservice url
-            RestSettings.Instance.IntegratorKey = "TEST-34d0ac9c-89e7-4acc-bc1d-24d6cfb867f2";
-            RestSettings.Instance.DocuSignAddress = "http://demo.docusign.net";
-            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
 
-            // credentials for sending account
-            Account account = new Account
-                              {
-                                  Email = "hello@orkan.com",
-                                  Password = "q.12345R",
-                                  AccountIdGuid = Guid.Parse("06e1493c-75be-428a-806e-7480ccff823a"),
-                                  AccountId = "1124624",
-                                  UserName = "ORKAN ARIKAN"
-                              };
-
-            // make the Login API call
-            bool result = account.Login();
-
-            Assert.IsTrue(result, "We login to docusign. If this is false, check your credential info and integrator key.");
-
-            return account;
-        }
 
         /// <summary>
         /// Create envelope with current account info and fill envelope with some gibberish data, and return it back.
