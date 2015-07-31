@@ -17,6 +17,7 @@ using UtilitiesTesting;
 
 using Utilities;
 
+using UtilitiesTesting.DocusignTools;
 using UtilitiesTesting.Fixtures;
 
 using Account = DocuSign.Integrations.Client.Account;
@@ -55,7 +56,8 @@ namespace DockyardTest.Entities
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData()
         {
-            Account account = DocusignAccount.LoginDocusign();
+            Account account = DocusignApi.LoginDocusign(DocusignAccount.GetStubAccount());
+
             Envelope envelope = CreateAndFillEnvelope(account);
             Assert.IsTrue(envelope.RestError == null);
 
