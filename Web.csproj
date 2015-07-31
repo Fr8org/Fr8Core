@@ -385,6 +385,12 @@
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
+    <Content Include="Content\img\ProcessBuilder\actions-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\actions-node-bottom.png" />
+    <Content Include="Content\img\ProcessBuilder\actions-node-top.png" />
+    <Content Include="Content\img\ProcessBuilder\add-criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
@@ -470,6 +476,10 @@
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="Scripts\app\directives\ProcessBuilderDirective.js" />
     <Content Include="Scripts\app\MetronicApp.js" />
+    <Content Include="Scripts\ProcessBuilder\core.js" />
+    <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
+    <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
+    <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <Content Include="Scripts\app\app.js" />
     <Content Include="Scripts\app\filters\ProcessTemplateState.js" />

@@ -15,34 +15,52 @@
         canvasBgFill: '#E5ECF6',
 
         // StartNode parameters.
-        startNodeHeight: 30,
+        startNodeWidth: 170,
+        startNodeHeight: 72,
         startNodeStroke: '#34495E',
         startNodeFill: 'white',
         startNodeTextSize: 15,
-        startNodeTextFill: '#34495E',
+        startNodeTextFill: 'white',
         startNodeTextFont: 'Tahoma',
+        startNodeTextWeight: 'bold',
         startNodeTextOffsetY: 2,
         startNodeCornerRadius: 5,
+        startNodeBgImage: '/Content/img/ProcessBuilder/start-node-bg.png',
 
         // AddCriteriaNode (predefined diamond, which is used to create new criteria) parameters.
+        addCriteriaNodeWidth: 150,
+        addCriteriaNodeHeight: 128,
         addCriteriaNodeStroke: '#CACACA',
         addCriteriaNodeFill: 'white',
         addCriteriaNodeTextSize: 15,
         addCriteriaNodeTextFill: '#ACACAC',
         addCriteriaNodeTextFont: 'Tahoma',
-        addCriteriaNodeTextOffsetY: 3,
+        addCriteriaNodeTextOffsetX: 6,
+        addCriteriaNodeTextOffsetY: 1,
+        addCriteriaNodeBgImage: '/Content/img/ProcessBuilder/add-criteria-node-bg.png',
 
         // CriteriaNode (criteria diamon that was added by user) parameters.
+        criteriaNodeWidth: 146,
+        criteriaNodeHeight: 124,
         criteriaNodeStroke: '#1A83C5',
         criteriaNodeFill: '#2B94D6',
         criteriaNodeTextSize: 15,
         criteriaNodeTextFill: 'white',
         criteriaNodeTextFont: 'Tahoma',
+        criteriaNodeTextOffsetX: 0,
+        criteriaNodeTextOffsetY: 2,
+        criteriaNodeBgImage: '/Content/img/ProcessBuilder/criteria-node-bg.png',
 
         // ActionsNode (actions panel on the right from criteria diamond) parameters.
         actionsNodeFill: 'white',
         actionsNodeStroke: '#34495E',
         actionsNodeCornerRadius: 5,
+        actionsNodeWidth: 227,
+        actionsNodeTopHeight: 35,
+        actionsNodeBottomHeight: 8,
+        actionsNodeTopImage: '/Content/img/ProcessBuilder/actions-node-top.png',
+        actionsNodeBottomImage: '/Content/img/ProcessBuilder/actions-node-bottom.png',
+        actionsNodeBgImage: '/Content/img/ProcessBuilder/actions-node-bg.png',
 
         // AddActionNode (add new action button) parameters.
         addActionNodePadding: 8,

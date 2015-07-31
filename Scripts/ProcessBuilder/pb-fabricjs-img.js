@@ -71,9 +71,13 @@
 
         add: function (fabricCanvasObject) {
             this._fabric.add(fabricCanvasObject.getFabricObject());
+            fabricCanvasObject.setCanvas(this._fabric);
+            fabricCanvasObject.afterAdd();
         },
 
         remove: function (fabricCanvasObject) {
+            fabricCanvasObject.beforeRemove();
+            fabricCanvasObject.setCanvas(null);
             this._fabric.remove(fabricCanvasObject.getFabricObject());
         },
 
@@ -93,6 +97,7 @@
 
         redraw: function () {
             this._fabric.renderAll();
+            this._fabric.discardActiveGroup();
         }
     });
 
@@ -101,11 +106,30 @@
     ns.BaseFabricJsObject = Core.class(ns.BaseCanvasObject, {
         constructor: function () {
             ns.BaseFabricJsObject.super.constructor.call(this);
+
+            this._canvas = null;
         },
 
         // Get underlying FabricJS object.
         getFabricObject: function () {
             throw 'Not implemented';
+        },
+
+        // Set canvas that object belongs to.
+        setCanvas: function (canvas) {
+            this._canvas = canvas;
+        },
+
+        // Callback after object was added to canvas.
+        afterAdd: function () {
+        },
+
+        // Callback before object gets removed to canvas.
+        beforeRemove: function () {
+        },
+
+        getCanvas: function () {
+            return this._canvas;
         },
 
         setLeft: function (left) {
@@ -155,22 +179,20 @@
         },
 
         init: function () {
-            var rect = new fabric.Rect({
-                rx: ns.WidgetConsts.startNodeCornerRadius,
-                ry: ns.WidgetConsts.startNodeCornerRadius,
-                fill: ns.WidgetConsts.startNodeFill,
-                stroke: ns.WidgetConsts.startNodeStroke,
-                strokeWidth: ns.WidgetConsts.strokeWidth,
-                selectable: false,
-                originX: 'center',
-                originY: 'center',
-                width: ns.WidgetConsts.startNodeWidth,
-                height: ns.WidgetConsts.startNodeHeight
-            });
+            var image = new fabric.Image(
+                ns.ImageLoader.instance.getImage(ns.WidgetConsts.startNodeBgImage),
+                {
+                    selectable: false,
+                    originX: 'center',
+                    originY: 'center',
+                    width: ns.WidgetConsts.startNodeWidth,
+                    height: ns.WidgetConsts.startNodeHeight
+                });
             
             var label = new fabric.Text('START', {
                 fontSize: ns.WidgetConsts.startNodeTextSize,
                 fontFamily: ns.WidgetConsts.startNodeTextFont,
+                fontWeight: ns.WidgetConsts.startNodeTextWeight,
                 fill: ns.WidgetConsts.startNodeTextFill,
                 selectable: false,
                 originX: 'center',
@@ -178,7 +200,7 @@
                 top: ns.WidgetConsts.startNodeTextOffsetY
             });
             
-            var group = new fabric.Group([rect, label], {
+            var group = new fabric.Group([image, label], {
                 selectable: false
             });
 
@@ -205,18 +227,13 @@
             var halfWidth = Math.floor(ns.WidgetConsts.addCriteriaNodeWidth / 2);
             var halfHeight = Math.floor(ns.WidgetConsts.addCriteriaNodeHeight / 2);
 
-            var diamond = new fabric.Path([
-                    [ 'M', 0, -halfHeight ],
-                    [ 'L', halfWidth, 0 ],
-                    ['L', 0, halfHeight],
-                    [ 'L', -halfWidth, 0 ]
-                ],
+            var diamond = new fabric.Image(
+                ns.ImageLoader.instance.getImage(ns.WidgetConsts.addCriteriaNodeBgImage),
                 {
-                    fill: ns.WidgetConsts.addCriteriaNodeFill,
-                    stroke: ns.WidgetConsts.addCriteriaStroke,
-                    strokeWidth: ns.WidgetConsts.strokeWidth,
                     originX: 'center',
-                    originY: 'center'
+                    originY: 'center',
+                    width: ns.WidgetConsts.addCriteriaNodeWidth,
+                    height: ns.WidgetConsts.addCriteriaNodeHeight
                 });
 
             var label = new fabric.Text('Add criteria', {
@@ -225,7 +242,9 @@
                 fill: ns.WidgetConsts.addCriteriaNodeTextFill,
                 selectable: false,
                 originX: 'center',
-                originY: 'center'
+                originY: 'center',
+                left: ns.WidgetConsts.addCriteriaNodeTextOffsetX,
+                top: ns.WidgetConsts.addCriteriaNodeTextOffsetY
             });
 
             var group = new fabric.Group([diamond, label], {
@@ -256,18 +275,13 @@
             var halfWidth = Math.floor(ns.WidgetConsts.criteriaNodeWidth / 2);
             var halfHeight = Math.floor(ns.WidgetConsts.criteriaNodeHeight / 2);
 
-            var diamond = new fabric.Path([
-                    ['M', 0, -halfHeight],
-                    ['L', halfWidth, 0],
-                    ['L', 0, halfHeight],
-                    ['L', -halfWidth, 0]
-                ],
+            var diamond = new fabric.Image(
+                ns.ImageLoader.instance.getImage(ns.WidgetConsts.criteriaNodeBgImage),
                 {
-                    fill: ns.WidgetConsts.criteriaNodeFill,
-                    stroke: ns.WidgetConsts.criteriaNodeStroke,
-                    strokeWidth: ns.WidgetConsts.strokeWidth,
                     originX: 'center',
-                    originY: 'center'
+                    originY: 'center',
+                    width: ns.WidgetConsts.criteriaNodeWidth,
+                    height: ns.WidgetConsts.criteriaNodeHeight
                 });
 
             var label = new fabric.Text(this._criteriaName, {
@@ -276,7 +290,9 @@
                 fill: ns.WidgetConsts.criteriaNodeTextFill,
                 selectable: false,
                 originX: 'center',
-                originY: 'center'
+                originY: 'center',
+                left: ns.WidgetConsts.criteriaNodeTextOffsetX,
+                top: ns.WidgetConsts.criteriaNodeTextOffsetY
             });
 
             var group = new fabric.Group([diamond, label], {
@@ -299,20 +315,119 @@
         constructor: function () {
             ns.FabricJsActionsNode.super.constructor.call(this);
 
-            this._object = this;
+            this._top = null;
+            this._bg = null;
+            this._object = null;
         },
 
         init: function () {
-            var rect = new fabric.Rect({
-                rx: ns.WidgetConsts.actionsNodeCornerRadius,
-                ry: ns.WidgetConsts.actionsNodeCornerRadius,
-                fill: ns.WidgetConsts.actionsNodeFill,
-                stroke: ns.WidgetConsts.actionsNodeStroke,
-                strokeWidth: ns.WidgetConsts.strokeWidth,
+            this._top = new fabric.Image(
+                ns.ImageLoader.instance.getImage(ns.WidgetConsts.actionsNodeTopImage),
+                {
+                    originX: 'left',
+                    originY: 'top',
+                    width: ns.WidgetConsts.actionsNodeWidth,
+                    height: ns.WidgetConsts.actionsNodeTopHeight,
+                    left: 0,
+                    top: 0,
+                    selectable: false
+                });
+            
+            this._bg = new fabric.Image(
+                ns.ImageLoader.instance.getImage(ns.WidgetConsts.actionsNodeBgImage),
+                {
+                    originX: 'left',
+                    originY: 'top',
+                    width: ns.WidgetConsts.actionsNodeWidth,
+                    height: 1,
+                    left: 0,
+                    top: ns.WidgetConsts.actionsNodeTopHeight,
+                    selectable: false
+                });
+
+            this._bottom = new fabric.Image(
+                ns.ImageLoader.instance.getImage(ns.WidgetConsts.actionsNodeBottomImage),
+                {
+                    originX: 'left',
+                    originY: 'top',
+                    width: ns.WidgetConsts.actionsNodeWidth,
+                    height: ns.WidgetConsts.actionsNodeBottomHeight,
+                    left: 0,
+                    top: 1 + ns.WidgetConsts.actionsNodeTopHeight,
+                    selectable: false
+                });
+
+            this._object = new fabric.Rect({
+                fill: 'white',
+                opacity: 0,
                 selectable: false
             });
+        },
 
-            this._object = rect;
+        afterAdd: function () {
+            this.getCanvas().add(this._top);
+            this.getCanvas().add(this._bg);
+            this.getCanvas().add(this._bottom);
+        },
+
+        beforeRemove: function () {
+            this.getCanvas().remove(this._bottom);
+            this.getCanvas().remove(this._bg);
+            this.getCanvas().remove(this._top);
+        },
+
+        setLeft: function (left) {
+            ns.FabricJsActionsNode.super.setLeft.call(this, left);
+
+            this._top.set('left', left);
+            this._top.setCoords();
+
+            this._bg.set('left', left);
+            this._bg.setCoords();
+
+            this._bottom.set('left', left);
+            this._bottom.setCoords();
+        },
+
+        setTop: function (top) {
+            ns.FabricJsActionsNode.super.setTop.call(this, top);
+
+            this._top.set('top', this._object.get('top'));
+            this._top.setCoords();
+
+            this._bg.set('top', this._object.get('top') + ns.WidgetConsts.actionsNodeTopHeight);
+            this._bg.setCoords();
+
+            this._bottom.set('top', this._object.get('top')
+                + ns.WidgetConsts.actionsNodeTopHeight + this._bg.get('height'));
+            this._bottom.setCoords();
+        },
+
+        setWidth: function (width) {
+            ns.FabricJsActionsNode.super.setWidth.call(this, width);
+
+            this._top.set('width', width);
+            this._top.setCoords();
+
+            this._bg.set('width', width);
+            this._bg.setCoords();
+
+            this._bottom.set('width', width);
+            this._bottom.setCoords();
+        },
+
+        setHeight: function (height) {
+            ns.FabricJsActionsNode.super.setHeight.call(this, height);
+
+            var innerHeight = height
+                - ns.WidgetConsts.actionsNodeTopHeight
+                - ns.WidgetConsts.actionsNodeBottomHeight;
+
+            this._bg.set('height', innerHeight);
+            this._bg.setCoords();
+
+            this._bottom.set('top', this._object.get('top') + ns.WidgetConsts.actionsNodeTopHeight + innerHeight);
+            this._bottom.setCoords();
         },
 
         getFabricObject: function () {

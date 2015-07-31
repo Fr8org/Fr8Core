@@ -13,10 +13,6 @@ app.directive('processBuilder', function () {
 
         widget.on('addCriteriaNode:click', function () {
             if (!attrs.addCriteriaClickCallback) { return; }
-
-            console.log(attrs.addCriteriaClickCallback);
-            console.log(scope);
-
             scope[attrs.addCriteriaClickCallback].call(this);
         });
 
