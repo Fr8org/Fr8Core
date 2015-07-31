@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace Core.Services
 {
-    class SubscriptionService : ISubscriptionService
+    class Subscription : ISubscription
     {
         public IEnumerable<IPluginRegistration> GetAuthorizedPlugins(IDockyardAccountDO account)
         {

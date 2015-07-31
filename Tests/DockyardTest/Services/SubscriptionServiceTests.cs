@@ -18,12 +18,12 @@ namespace DockyardTest.Services
     [Category("SubscriptionService")]
     public class SubscriptionServiceTests : BaseTest
     {
-        private ISubscriptionService _subscriptionService;
+        private ISubscription _subscription;
 
         public override void SetUp()
         {
             base.SetUp();
-            _subscriptionService = ObjectFactory.GetInstance<ISubscriptionService>();
+            _subscription = ObjectFactory.GetInstance<ISubscription>();
         }
 
         [Test]
@@ -48,21 +48,21 @@ namespace DockyardTest.Services
                     new SubscriptionDO()
                     {
                         AccessLevel = AccessLevel.None,
-                        PluginRegistration = new PluginRegistrationDO() {Name = noAccessPluginName}
+                        Plugin = new PluginDO() {Name = noAccessPluginName}
                     },
                     new SubscriptionDO()
                     {
                         AccessLevel = AccessLevel.User,
-                        PluginRegistration = new PluginRegistrationDO() {Name = userAccessPluginName}
+                        Plugin = new PluginDO() {Name = userAccessPluginName}
                     },
                     new SubscriptionDO()
                     {
                         AccessLevel = AccessLevel.Admin,
-                        PluginRegistration = new PluginRegistrationDO() {Name = adminAccessPluginName}
+                        Plugin = new PluginDO() {Name = adminAccessPluginName}
                     },
                 }
             };
-            var result = _subscriptionService.GetAuthorizedPlugins(account).ToList();
+            var result = _subscription.GetAuthorizedPlugins(account).ToList();
             Assert.That(result.Contains(userAccessPluginRegistration.Object), "Plugin with User access level didn't return");
             Assert.That(result.Contains(adminAccessPluginRegistration.Object), "Plugin with Admin access level didn't return");
             Assert.That(!result.Contains(noAccessPluginRegistration.Object), "Plugin with None access level returned");

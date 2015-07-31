@@ -5,7 +5,7 @@ using Data.Interfaces;
 
 namespace Core.Interfaces
 {
-    public interface ISubscriptionService
+    public interface ISubscription
     {
         IEnumerable<IPluginRegistration> GetAuthorizedPlugins(IDockyardAccountDO account);
     }

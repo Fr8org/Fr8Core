@@ -3,9 +3,9 @@ using System.Web.Mvc;
 
 namespace Core.Managers
 {
-    public class KwasantAuthorizeAttribute : AuthorizeAttribute
+    public class DockyardAuthorizeAttribute : AuthorizeAttribute
     {
-        public KwasantAuthorizeAttribute(params string[] roles)
+        public DockyardAuthorizeAttribute(params string[] roles)
         {
             Roles = String.Join(",", roles);
         }

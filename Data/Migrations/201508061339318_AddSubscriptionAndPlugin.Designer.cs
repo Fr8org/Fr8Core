@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddSubscriptionAndPluginRegistration : IMigrationMetadata
+    public sealed partial class AddSubscriptionAndPlugin : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddSubscriptionAndPluginRegistration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddSubscriptionAndPlugin));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508061234281_AddSubscriptionAndPluginRegistration"; }
+            get { return "201508061339318_AddSubscriptionAndPlugin"; }
         }
         
         string IMigrationMetadata.Source

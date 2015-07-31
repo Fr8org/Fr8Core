@@ -3,7 +3,7 @@
     public interface ISubscriptionDO : IBaseDO
     {
         int Id { get; set; }
-        string AccountId { get; set; }
+        string DockyardAccountId { get; set; }
         IPluginRegistrationDO PluginRegistration { get; set; }
         int AccessLevel { get; set; }
     }

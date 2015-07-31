@@ -9,7 +9,7 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [KwasantAuthorize]
+    [DockyardAuthorize]
     public class AlertingController : Controller
     {
         [HttpPost]

@@ -15,13 +15,13 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Account")]
-        public string AccountId { get; set; }
-        public virtual DockyardAccountDO Account { get; set; }
+        [ForeignKey("DockyardAccount")]
+        public string DockyardAccountId { get; set; }
+        public virtual DockyardAccountDO DockyardAccount { get; set; }
 
-        [ForeignKey("PluginRegistration")]
-        public int PluginRegistrationId { get; set; }
-        public virtual PluginRegistrationDO PluginRegistration { get; set; }
+        [ForeignKey("Plugin")]
+        public int PluginId { get; set; }
+        public virtual PluginDO Plugin { get; set; }
 
         [ForeignKey("AccessLevelTemplate")]
         public int AccessLevel { get; set; }
@@ -30,8 +30,8 @@ namespace Data.Entities
         [NotMapped]
         IPluginRegistrationDO ISubscriptionDO.PluginRegistration
         {
-            get { return PluginRegistration; }
-            set { PluginRegistration = (PluginRegistrationDO) value; }
+            get { return Plugin; }
+            set { Plugin = (PluginDO) value; }
         }
     }
 }

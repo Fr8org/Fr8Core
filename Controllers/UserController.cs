@@ -20,7 +20,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Web.Controllers
 {
-    [KwasantAuthorize]
+    [DockyardAuthorize]
     public class UserController : Controller
     {
         private readonly JsonPackager _jsonPackager;
@@ -36,7 +36,7 @@ namespace Web.Controllers
             _email = new Email();
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -118,7 +118,7 @@ namespace Web.Controllers
             return View(new UserVM());
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         public ActionResult Details(String userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -170,7 +170,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        [KwasantAuthorize(Roles = Roles.Admin)]
+        [DockyardAuthorize(Roles = Roles.Admin)]
         public ActionResult ProcessAddUser(UserVM curCreateUserVM)
         {
             DockyardAccountDO submittedDockyardAccountData = _mappingEngine.Map<DockyardAccountDO>(curCreateUserVM);
