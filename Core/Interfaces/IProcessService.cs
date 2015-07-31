@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities;
+﻿using Data.Entities;
 
 namespace Core.Interfaces
 {
-    public interface IProcessService
-    {
-        void HandleDocusignNotification(string userId, string xmlPayload);
-    }
+	public interface IProcess
+	{
+		void HandleDocusignNotification( string userId, string xmlPayload );
+		ProcessDO Create( int processTemplateId, int envelopeId );
+	}
 }

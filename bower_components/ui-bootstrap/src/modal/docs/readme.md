@@ -8,6 +8,7 @@ The `$modal` service has only one method: `open(options)` where available option
 * `scope` - a scope instance to be used for the modal's content (actually the `$modal` service is going to create a child scope of a provided scope). Defaults to `$rootScope`
 * `controller` - a controller for a modal instance - it can initialize scope used by modal. Accepts the "controller-as" syntax in the form 'SomeCtrl as myctrl'; can be injected with `$modalInstance`
 * `controllerAs` - an alternative to the controller-as syntax, matching the API of directive definitions. Requires the `controller` option to be provided as well
+* `bindToController` - when used with `controllerAs` & set to `true`, it will bind the controller properties onto the `$scope` directly
 * `resolve` - members that will be resolved and passed to the controller as locals; it is equivalent of the `resolve` property for AngularJS routes
 * `animation` - set to false to disable animations on new modal/backdrop. Does not toggle animations for modals/backdrops that are already displayed.
 * `backdrop` - controls presence of a backdrop. Allowed values: true (default), false (no backdrop), `'static'` - backdrop is present but modal window is not closed when clicking outside of the modal window.
@@ -17,13 +18,15 @@ The `$modal` service has only one method: `open(options)` where available option
 * `windowTemplateUrl` - a path to a template overriding modal's window template
 * `size` - optional suffix of modal window class. The value used is appended to the `modal-` class, i.e. a value of `sm` gives `modal-sm`
 
+Global defaults may be set for `$modal` via `$modalProvider.options`.
+
 The `open` method returns a modal instance, an object with the following properties:
 
 * `close(result)` - a method that can be used to close a modal, passing a result
 * `dismiss(reason)` - a method that can be used to dismiss a modal, passing a reason
 * `result` - a promise that is resolved when a modal is closed and rejected when a modal is dismissed
 * `opened` - a promise that is resolved when a modal gets opened after downloading content's template and resolving all variables
-* 'rendered' - a promise that is resolved when a modal is rendered. 
+* `rendered` - a promise that is resolved when a modal is rendered. 
 
 In addition the scope associated with modal's content is augmented with 2 methods:
 

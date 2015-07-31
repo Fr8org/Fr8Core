@@ -608,7 +608,7 @@ var Metronic = function() {
         },
 
         //main function to initiate core javascript after ajax complete
-        initAjax: function() {
+        initAjax: function () {
             handleUniform(); // handles custom radio & checkboxes     
             handleiCheck(); // handles custom icheck radio and checkboxes
             handleBootstrapSwitch(); // handle bootstrap switch plugin

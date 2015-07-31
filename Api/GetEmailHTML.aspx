@@ -12,9 +12,8 @@
     <%=System.Web.Optimization.Styles.Render("~/bundles/css/colorbox")%>
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
-    <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
-    <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
-
+    <script src="/bower_components/jQuery-contextMenu/src/jquery.contextMenu.js"></script>
+    <link href="/bower_components/jQuery-contextMenu/src/jquery.contextMenu.css" rel="stylesheet" />
 </head>
 <body class="email-info-section">
     <%--style="wkeyValueth: 400px;"--%>
