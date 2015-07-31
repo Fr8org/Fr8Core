@@ -1,4 +1,4 @@
-# UI Bootstrap - [AngularJS](http://angularjs.org/) directives specific to [Bootstrap](http://getbootstrap.com)
+### UI Bootstrap - [AngularJS](http://angularjs.org/) directives specific to [Bootstrap](http://getbootstrap.com)
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/angular-ui/bootstrap?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://secure.travis-ci.org/angular-ui/bootstrap.svg)](http://travis-ci.org/angular-ui/bootstrap)
@@ -7,6 +7,7 @@
 ### Quick links
 - [Demo](#demo)
 - [Installation](#installation)
+    - [NPM](#install-with-npm)
     - [Bower](#install-with-bower)
     - [NuGet](#install-with-nuget)
     - [Custom](#custom-build)
@@ -27,6 +28,15 @@ Do you want to see directives in action? Visit http://angular-ui.github.io/boots
 # Installation
 
 Installation is easy as UI Bootstrap has minimal dependencies - only the AngularJS and Twitter Bootstrap's CSS are required.
+Note: Since version 0.13.0, UI Bootstrap depends on [ngAnimate](https://docs.angularjs.org/api/ngAnimate) for transitions and animations, such as the accordion, carousel, etc. Include `ngAnimate` in the module dependencies for your app in order to enable animation.
+
+#### Install with NPM
+
+```sh
+$ npm install angular-ui-bootstrap
+```
+
+This will install AngularJS and Bootstrap NPM packages.
 
 #### Install with Bower
 ```sh
@@ -58,6 +68,14 @@ When you are done downloading all the dependencies and project files the only re
 
 ```js
 angular.module('myModule', ['ui.bootstrap']);
+```
+
+If you're a Browserify or Webpack user, you can do:
+
+```js
+var uibs = require('angular-ui-bootstrap');
+
+angular.module('myModule', [uibs]);
 ```
 
 # Support

@@ -384,6 +384,32 @@ describe('typeahead tests', function () {
       expect(element).toBeClosed();
     });
 
+    it('should not select any match on blur without \'select-on-blur=true\' option', function () {
+
+      var element = prepareInputEl('<div><input ng-model="result" typeahead="item for item in source | filter:$viewValue"></div>');
+      var inputEl = findInput(element);
+
+      changeInputValueTo(element, 'b');
+      inputEl.blur(); // input loses focus
+
+      // no change
+      expect($scope.result).toEqual('b');
+      expect(inputEl.val()).toEqual('b');
+    });
+
+    it('should select a match on blur with \'select-on-blur=true\' option', function () {
+
+      var element = prepareInputEl('<div><input ng-model="result" typeahead="item for item in source | filter:$viewValue" typeahead-select-on-blur="true"></div>');
+      var inputEl = findInput(element);
+
+      changeInputValueTo(element, 'b');
+      inputEl.blur(); // input loses focus
+
+      // first element should be selected
+      expect($scope.result).toEqual('bar');
+      expect(inputEl.val()).toEqual('bar');
+    });
+
     it('should select match on click', function () {
 
       var element = prepareInputEl('<div><input ng-model="result" typeahead="item for item in source | filter:$viewValue"></div>');
@@ -752,6 +778,30 @@ describe('typeahead tests', function () {
       changeInputValueTo(element, 'ba');
       expect(findDropDown($document.find('body')).length).toEqual(0);
     });
+
+    it('should have right position after scroll', function() {
+      var element = prepareInputEl('<div><input ng-model="result" typeahead="item for item in source | filter:$viewValue" typeahead-append-to-body="true"></div>');
+      var dropdown = findDropDown($document.find('body'));
+      var body = angular.element(document.body);
+
+      // Set body height to allow scrolling
+      body.css({height:'10000px'});
+
+      // Scroll top
+      window.scroll(0, 1000);
+
+      // Set input value to show dropdown
+      changeInputValueTo(element, 'ba');
+
+      // Init position of dropdown must be 1000px
+      expect(dropdown.css('top') ).toEqual('1000px');
+
+      // After scroll, must have new position
+      window.scroll(0, 500);
+      body.triggerHandler('scroll');
+      $timeout.flush();
+      expect(dropdown.css('top') ).toEqual('500px');
+    });
   });
 
   describe('focus first', function () {
@@ -813,7 +863,7 @@ describe('typeahead tests', function () {
     });
   });
 
-  it('should not capture enter or tab until an item is focused', function () {
+  it('should not capture enter or tab when an item is not focused', function () {
     $scope.select_count = 0;
     $scope.onSelect = function ($item, $model, $label) {
       $scope.select_count = $scope.select_count + 1;
@@ -826,10 +876,20 @@ describe('typeahead tests', function () {
     expect($scope.keyDownEvent.isDefaultPrevented()).toBeFalsy();
     expect($scope.select_count).toEqual(0);
 
-    // tab key should not be captured when nothing is focused
+    // tab key should close the dropdown when nothing is focused
     triggerKeyDown(element, 9);
     expect($scope.keyDownEvent.isDefaultPrevented()).toBeFalsy();
     expect($scope.select_count).toEqual(0);
+    expect(element).toBeClosed();
+  });
+
+  it('should capture enter or tab when an item is focused', function () {
+    $scope.select_count = 0;
+    $scope.onSelect = function ($item, $model, $label) {
+      $scope.select_count = $scope.select_count + 1;
+    };
+    var element = prepareInputEl('<div><input ng-model="result" ng-keydown="keyDownEvent = $event" typeahead="item for item in source | filter:$viewValue" typeahead-on-select="onSelect($item, $model, $label)" typeahead-focus-first="false"></div>');
+    changeInputValueTo(element, 'b');
 
     // down key should be captured and focus first element
     triggerKeyDown(element, 40);
@@ -840,6 +900,15 @@ describe('typeahead tests', function () {
     triggerKeyDown(element, 13);
     expect($scope.keyDownEvent.isDefaultPrevented()).toBeTruthy();
     expect($scope.select_count).toEqual(1);
+  });
+
+  describe('minLength set to 0', function () {
+    it('should open typeahead if input is changed to empty string if defined threshold is 0', function () {
+      var element = prepareInputEl('<div><input ng-model="result" typeahead="item for item in source | filter:$viewValue" typeahead-min-length="0"></div>');
+      changeInputValueTo(element, '');
+
+      expect(element).toBeOpenWithActive(3, 0);
+    });
   });
 
 });
