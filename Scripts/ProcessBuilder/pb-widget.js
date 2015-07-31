@@ -33,14 +33,21 @@
 
         // Creating canvas element, and populating canvas with predefined elements.
         init: function () {
-            var canvas = $('<canvas width="' + this._pxWidth.toString() + '" height="' + this._pxHeight.toString() + '"></canvas>');
+            ns.ImageLoader.instance.loadImages(
+                Core.delegate(
+                    function () {
+                        var canvas = $('<canvas width="' + this._pxWidth.toString() + '" height="' + this._pxHeight.toString() + '"></canvas>');
 
-            this._jqEl.append(canvas);
+                        this._jqEl.append(canvas);
 
-            this._canvas = this._factory.createCanvas(canvas[0]);
+                        this._canvas = this._factory.createCanvas(canvas[0]);
 
-            this._predefinedObjects();
-            this.relayout();
+                        this._predefinedObjects();
+                        this.relayout();
+                    },
+                    this
+                )
+            );
         },
 
         // Add criteria to ProcessBuilder canvas.
@@ -207,6 +214,9 @@
 
         // Relayout user defined criteria and criteria's action panel.
         _relayoutCriteria: function () {
+            var arrowLeft = ns.WidgetConsts.canvasPadding
+                + Math.floor(this._getVerticalSectionMaxWidth() / 2);
+
             var i, prevCriteria;
             var j, prevAction;
 
@@ -227,17 +237,14 @@
                 this._criteria[i].actionsArrow = this._replaceRightArrow(
                     this._criteria[i].actionsArrow,
                     this._getCriteriaNodeTopPoint(this._criteria[i])
-                        + Math.floor(this._getCriteriaNodeHeight(this._criteria[i]) / 2)
-                        - ns.WidgetConsts.arrowSize,
-                    ns.WidgetConsts.canvasPadding + ns.WidgetConsts.defaultSize,
-                    ns.WidgetConsts.canvasPadding + ns.WidgetConsts.defaultSize + ns.WidgetConsts.minSpaceBetweenObjects
+                        + Math.floor(this._getCriteriaNodeHeight(this._criteria[i]) / 2),
+                    this._getCriteriaNodeRightPoint(this._criteria[i]),
+                    this._getActionsNodeLeftPoint(this._criteria[i])
                 );
 
                 this._criteria[i].criteriaArrow = this._replaceDownArrow(
                     this._criteria[i].criteriaArrow,
-                    ns.WidgetConsts.canvasPadding
-                        + Math.floor(ns.WidgetConsts.defaultSize / 2)
-                        - ns.WidgetConsts.arrowSize,
+                    arrowLeft,
                     prevBottomPoint,
                     this._getCriteriaNodeTopPoint(this._criteria[i])
                 );
@@ -249,6 +256,9 @@
 
         // Relayout button to add new criteria.
         _relayoutAddCriteriaNode: function () {
+            var arrowLeft = ns.WidgetConsts.canvasPadding
+                + Math.floor(this._getVerticalSectionMaxWidth() / 2);
+
             var prevBottomPoint;
             if (this._criteria.length > 0) {
                 prevBottomPoint = this._getCriteriaNodeBottomPoint(this._criteria[this._criteria.length - 1]);
@@ -260,7 +270,7 @@
             this._placeAddCriteriaNode();
             this._addCriteriaArrow = this._replaceDownArrow(
                 this._addCriteriaArrow,
-                ns.WidgetConsts.canvasPadding + Math.floor(ns.WidgetConsts.defaultSize / 2) - ns.WidgetConsts.arrowSize,
+                arrowLeft,
                 prevBottomPoint,
                 this._getAddCriteriaNodeTopPoint()
             );
@@ -289,6 +299,13 @@
             this._predefineAddCriteriaNode();
         },
 
+        // Get maximum width among StartNode, AddCriteriaNode, CriteriaNode.
+        _getVerticalSectionMaxWidth: function () {
+            return Math.max(ns.WidgetConsts.startNodeWidth,
+                ns.WidgetConsts.addCriteriaNodeWidth,
+                ns.WidgetConsts.criteriaNodeWidth);
+        },
+
         // ---------- region: StartNode routines. ----------
 
         // Create StartNode.
@@ -305,7 +322,9 @@
 
         // Set position on StartNode.
         _placeStartNode: function () {
-            this._startNode.setLeft(ns.WidgetConsts.canvasPadding);
+            var left = Math.floor((this._getVerticalSectionMaxWidth() - ns.WidgetConsts.startNodeWidth) / 2);
+
+            this._startNode.setLeft(ns.WidgetConsts.canvasPadding + left);
             this._startNode.setTop(ns.WidgetConsts.canvasPadding);
 
             this._startNode.relayout();
@@ -344,7 +363,7 @@
                 topOffset = this._getStartNodeBottomPoint();
             }
 
-            var left = ns.WidgetConsts.canvasPadding;
+            var left = ns.WidgetConsts.canvasPadding + Math.floor((this._getVerticalSectionMaxWidth() - ns.WidgetConsts.addCriteriaNodeWidth) / 2);
             var top = topOffset + ns.WidgetConsts.minSpaceBetweenObjects;
 
             this._addCriteriaNode.setLeft(left);
@@ -409,7 +428,7 @@
                 topOffset = this._getStartNodeBottomPoint();
             }
 
-            var left = ns.WidgetConsts.canvasPadding;
+            var left = ns.WidgetConsts.canvasPadding + Math.floor((this._getVerticalSectionMaxWidth() - ns.WidgetConsts.criteriaNodeWidth) / 2);
             var top = topOffset + ns.WidgetConsts.minSpaceBetweenObjects;
 
             criteria.criteriaNode.setLeft(left);
@@ -426,6 +445,12 @@
         _getCriteriaNodeBottomPoint: function (criteria) {
             return criteria.criteriaNode.getTop()
                 + criteria.criteriaNode.getHeight();
+        },
+
+        // Get right X point of user defined criteria node.
+        _getCriteriaNodeRightPoint: function (criteria) {
+            return criteria.criteriaNode.getLeft()
+                + criteria.criteriaNode.getWidth();
         },
 
         // Get height of user defined criteria node.
@@ -454,15 +479,16 @@
 
         // Set position of actions panel for specified criteria.
         _placeActionsNode: function (criteria) {
-            var left = ns.WidgetConsts.canvasPadding
-                + ns.WidgetConsts.defaultSize
+            var left = this._getVerticalSectionMaxWidth()
                 + ns.WidgetConsts.minSpaceBetweenObjects;
 
             var top = this._getCriteriaNodeTopPoint(criteria);
 
-            var width = ns.WidgetConsts.defaultSize;
-            var height = ns.WidgetConsts.addActionNodeHeight
-                + criteria.actions.length * ns.WidgetConsts.actionNodeHeight;
+            var width = ns.WidgetConsts.actionsNodeWidth;
+            var height = ns.WidgetConsts.actionsNodeTopHeight
+                + ns.WidgetConsts.addActionNodeHeight
+                + criteria.actions.length * ns.WidgetConsts.actionNodeHeight
+                + ns.WidgetConsts.actionsNodeBottomHeight;
 
             var criteriaHeight = this._getCriteriaNodeHeight(criteria);
             if (height < criteriaHeight) {
@@ -481,6 +507,11 @@
             return criteria.actionsNode.getTop();
         },
 
+        // Get actions panel left X point.
+        _getActionsNodeLeftPoint: function (criteria) {
+            return criteria.actionsNode.getLeft();
+        },
+
         // Get height of actions panel.
         _getActionsNodeHeight: function (criteria) {
             return criteria.actionsNode.getHeight();
@@ -488,12 +519,11 @@
 
         // Set position of add action button for specified criteria.
         _placeAddActionNode: function (criteria) {
-            var left = ns.WidgetConsts.canvasPadding
-                + ns.WidgetConsts.defaultSize
-                + ns.WidgetConsts.minSpaceBetweenObjects
+            var left = this._getActionsNodeLeftPoint(criteria)
                 + ns.WidgetConsts.addActionNodePadding;
 
             var top = this._getActionsNodeTopPoint(criteria)
+                + ns.WidgetConsts.actionsNodeTopHeight
                 + ns.WidgetConsts.addActionNodePadding;
 
             criteria.addActionNode.setLeft(left);
