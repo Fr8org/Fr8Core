@@ -36,7 +36,7 @@ namespace DockyardTest.Controllers
         public void NotificationController_CanHandleNotification()
         {
             //Arrange 
-            var mockProcess = new Mock<IProcessService>();
+            var mockProcess = new Mock<IProcess>();
             mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
 
             NotificationController notificationController =new NotificationController(mockProcess.Object);

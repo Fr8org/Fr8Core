@@ -162,7 +162,7 @@ namespace Core.Services
             {
                 return uow.ProcessRepository.GetQuery().Where
                     (r => r.ProcessState == ProcessState.Processing
-                        & r.UserId == userId).ToList();
+                        & r.DockyardAccountId == userId).ToList();
             }
         }
     }
