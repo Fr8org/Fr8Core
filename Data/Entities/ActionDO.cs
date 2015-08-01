@@ -10,6 +10,12 @@ namespace Data.Entities
 
 		public string Name{ get; set; }
 
+        public string ConfigurationSettings { get; set; }
+
+        public string FieldMappingSettings { get; set; }
+
+        public string ParentPluginRegistration { get; set; }
+
 		[ ForeignKey( "ActionList" ) ]
 		public int? ActionListID{ get; set; }
 		public virtual ActionListDO ActionList{ get; set; }
