@@ -20,7 +20,7 @@ namespace DocusignApiWrapper
             basicRestSettings = new BasicRestSettings
                                 {
                                     IntegratorKey = ConfigurationManager.AppSettings["Docusign_IntegratorKey"],
-                                    DocuSignAddress = ConfigurationManager.AppSettings["DocuSignAddress"],
+                                    DocuSignAddress = ConfigurationManager.AppSettings["Docusign_DocuSignAddress"],
                                     WebServiceUrlRestVersionPart = ConfigurationManager.AppSettings["Docusign_WebServiceUrlRestVersionPart"]
                                 };
         }
