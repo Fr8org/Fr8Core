@@ -19,9 +19,13 @@ namespace DocusignApiWrapper
         {
             basicRestSettings = new BasicRestSettings
                                 {
-                                    IntegratorKey = ConfigurationManager.AppSettings["Docusign_IntegratorKey"],
-                                    DocuSignAddress = ConfigurationManager.AppSettings["Docusign_DocuSignAddress"],
-                                    WebServiceUrlRestVersionPart = ConfigurationManager.AppSettings["Docusign_WebServiceUrlRestVersionPart"]
+                                    //TODO move rest settings to config.
+                                    //IntegratorKey = ConfigurationManager.AppSettings["Docusign_IntegratorKey"],
+                                    //DocuSignAddress = ConfigurationManager.AppSettings["Docusign_DocuSignAddress"],
+                                    //WebServiceUrlRestVersionPart = ConfigurationManager.AppSettings["Docusign_WebServiceUrlRestVersionPart"]
+                                    IntegratorKey = "TEST-34d0ac9c-89e7-4acc-bc1d-24d6cfb867f2",
+                                    DocuSignAddress = "http://demo.docusign.net",
+                                    WebServiceUrlRestVersionPart = RestSettings.Instance.DocuSignAddress + "/restapi/v2"
                                 };
         }
 
