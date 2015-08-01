@@ -102,9 +102,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <Content Include="App_Data\small_pdf_file.pdf.xml">
+    <None Include="Items\small_pdf_file.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
