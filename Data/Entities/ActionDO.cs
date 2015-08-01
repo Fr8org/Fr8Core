@@ -10,6 +10,9 @@ namespace Data.Entities
 
 		public string Name{ get; set; }
 
+        [NotMapped]
+	    public string ActionType { get; set; }
+
         public string ConfigurationSettings { get; set; }
 
         public string FieldMappingSettings { get; set; }
