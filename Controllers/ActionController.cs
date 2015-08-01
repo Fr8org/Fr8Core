@@ -9,7 +9,7 @@ namespace Web.Controllers
 	{
 		private readonly IActionsService _service;
 
-		private ActionController()
+		public ActionController()
 		{
 			this._service = new ActionsService();
 		}
