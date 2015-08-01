@@ -30,7 +30,12 @@ namespace UtilitiesTesting.Fixtures
 
 	    public static string FullFilePathToDocument()
 	    {
-            return Path.Combine(Environment.CurrentDirectory, "App_Data", "small_pdf_file.png");
+            //note: renamed pdf file to xml for checking pdf to github.
+            string tempPdf = Path.Combine(Environment.CurrentDirectory, "App_Data", "small_pdf_file.png.xml");
+            string actualPdf = Path.Combine(Environment.CurrentDirectory, "App_Data", "small_pdf_file.png");
+	        
+            File.Copy(tempPdf, actualPdf);
+	        return actualPdf;
 	    }
 
 	    public static TabCollection GetTabCollection()
