@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -38,6 +38,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\UtilitiesTesting\UtilitiesTesting.csproj", "{B2C4526E-DE57-495D-8599-D61ABC54C21F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginUtilities", "PluginUtilities\PluginUtilities.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{84CD00BB-E271-4573-8032-77FB434673A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocusignApiWrapper", "Tools\DocusignApiWrapper\DocusignApiWrapper.csproj", "{F0A732A2-D57E-46D3-B7BB-34050E3641C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -157,6 +161,15 @@ Global
 		{D6A0A493-E926-439A-9CE2-E093E75132CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6A0A493-E926-439A-9CE2-E093E75132CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6A0A493-E926-439A-9CE2-E093E75132CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -168,5 +181,6 @@ Global
 		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{B2C4526E-DE57-495D-8599-D61ABC54C21F} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{D6A0A493-E926-439A-9CE2-E093E75132CD} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
+		{F0A732A2-D57E-46D3-B7BB-34050E3641C4} = {84CD00BB-E271-4573-8032-77FB434673A7}
 	EndGlobalSection
 EndGlobal
