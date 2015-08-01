@@ -39,7 +39,7 @@ namespace DocusignApiWrapper
             // configure application's integrator key and webservice url
             RestSettings.Instance.IntegratorKey = basicRestSettings.IntegratorKey;
             RestSettings.Instance.DocuSignAddress = basicRestSettings.DocuSignAddress;
-            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + basicRestSettings.WebServiceUrlRestVersionPart;
+            RestSettings.Instance.WebServiceUrl = basicRestSettings.WebServiceUrlRestVersionPart;
 
             // make the Login API call
             bool result = account.Login();
