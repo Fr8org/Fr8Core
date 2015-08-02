@@ -9,7 +9,7 @@ namespace UtilitiesTesting.Fixtures
 			var curActionDO = new ActionDO
 			{
 				Id = 1,
-				Name = "Action 1"
+				UserLabel = "Action 1"
 			};
 			return curActionDO;
 		}
@@ -19,7 +19,7 @@ namespace UtilitiesTesting.Fixtures
 			var curActionDO = new ActionDO
 			{
 				Id = 2,
-				Name = "Action 2"
+				UserLabel = "Action 2"
 			};
 			return curActionDO;
 		}
@@ -47,15 +47,15 @@ namespace UtilitiesTesting.Fixtures
 			var curActionDO = new ActionDO
 			{
 				Id = 1,
-				Name = "Action 1",
-				ActionListID = 1
+				UserLabel = "Action 1",
+				ActionListId = 1
 			};
 
 			var curActionDO2 = new ActionDO
 			{
 				Id = 2,
-				Name = "Action 2",
-				ActionListID = 1
+				UserLabel = "Action 2",
+				ActionListId = 1
 			};
 
 			curActionListDO.ActionOrdering.Add( curActionDO );
