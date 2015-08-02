@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -13,6 +14,16 @@ namespace UtilitiesTesting.Fixtures
 			};
 			return curActionDO;
 		}
+
+	    public TemplateDO TestTemplate1()
+	    {
+	        var curTemplateDO = new TemplateDO(new Template())
+	        {
+	            Id = 1
+	        };
+
+	        return curTemplateDO;
+	    }
 
 		public ActionDO TestAction2()
 		{

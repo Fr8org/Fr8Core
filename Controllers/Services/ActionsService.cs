@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
@@ -47,14 +48,33 @@ namespace Web.Controllers.Services
 	    {
 	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 	        {
-	            //check whether the given action is already present
-                //if present update
-                //else create new one.
+                var actionDo = Mapper.Map<ActionDO>(action);
+	            var existingAction = uow.ActionRepository.GetByKey(action.Id);
+	            if (existingAction != null)
+	            {
+                    existingAction.ActionList = actionDo.ActionList;
+                    existingAction.ActionListId = actionDo.ActionListId;
+                    existingAction.ActionType = actionDo.ActionType;
+                    existingAction.ConfigurationSettings = actionDo.ConfigurationSettings;
+                    existingAction.FieldMappingSettings = actionDo.FieldMappingSettings;
+                    existingAction.ParentPluginRegistration = actionDo.ParentPluginRegistration;
+                    existingAction.UserLabel = actionDo.UserLabel;
+	            }
+	            else
+	            {
+                    uow.ActionRepository.Add(actionDo);
+	            }
 
-                return true;
+	            try
+	            {
+                    uow.SaveChanges();
+                    return true;
+	            }
+	            catch (Exception)
+	            {
+	                return false;
+	            }
 	        }
-
-	        return false;
 	    }
 	}
 }

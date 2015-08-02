@@ -1,5 +1,7 @@
 ﻿
+using System;
 using System.Linq;
+using Data.Entities;
 using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
@@ -11,31 +13,143 @@ using Web.ViewModels;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    [Category("Controllers.ActionController")]
     public class ActionControllerTest : BaseTest
     {
+        public override void SetUp()
+        {
+            base.SetUp();
+            CreateEmptyActionList();
+        }
+
         [Test]
-        public void ActionController_Save_NewActionDo()
+        [Category("Controllers.ActionController.Save")]
+        public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Arrange is done as the action repository does not have any Action
-                var controller = new ActionController();
-
+                //Arrange is done with empty action list
+                
                 //Act
-                controller.Save(new ActionVM()
+                var actualAction = new ActionVM()
                 {
                     Id = 1,
-                    Name = "AzureSqlAction",
-                    ActionType = "AzureSql",
+                    UserLabel = "AzureSqlAction",
+                    ActionType = "WriteToAzureSql",
+                    ActionListId = 1,
                     ConfigurationSettings = "JSON Config Settings",
                     FieldMappingSettings = "JSON Field Mapping Settings",
                     ParentPluginRegistration = "AzureSql"
-                });
+                };
+
+                var controller = new ActionController();
+                controller.Save(actualAction);
 
                 //Assert
                 Assert.IsNotNull(uow.ActionRepository);
-                Assert.IsTrue(uow.ActionRepository.GetAll().Count() > 1);
+                Assert.IsTrue(uow.ActionRepository.GetAll().Count() == 1);
+
+                var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
+                Assert.IsNotNull(expectedAction);
+                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+            }
+        }
+
+        [Test]
+        [Category("Controllers.ActionController.Save")]
+        public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //Add one test action
+                var action = new FixtureData(uow).TestAction1();
+                uow.ActionRepository.Add(action);
+                uow.SaveChanges();
+
+                //Act
+                var actualAction = new ActionVM()
+                {
+                    Id = 2,
+                    UserLabel = "AzureSqlAction",
+                    ActionType = "WriteToAzureSql",
+                    ActionListId = 1,
+                    ConfigurationSettings = "JSON Config Settings",
+                    FieldMappingSettings = "JSON Field Mapping Settings",
+                    ParentPluginRegistration = "AzureSql"
+                };
+
+                var controller = new ActionController();
+                controller.Save(actualAction);
+
+                //Assert
+                Assert.IsNotNull(uow.ActionRepository);
+                Assert.IsTrue(uow.ActionRepository.GetAll().Count() == 2);
+
+                //Still there is only one action as the update happened.
+                var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
+                Assert.IsNotNull(expectedAction);
+                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+            }
+        }
+
+        [Test]
+        [Category("Controllers.ActionController.Save")]
+        public void ActionController_Save_WithActionExists_ExistingActionShouldBeUpdated()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //Add one test action
+                var action = new FixtureData(uow).TestAction1();
+                uow.ActionRepository.Add(action);
+                uow.SaveChanges();
+                
+                //Act
+                var actualAction = new ActionVM()
+                {
+                    Id = 1,
+                    UserLabel = "AzureSqlAction",
+                    ActionType = "WriteToAzureSql",
+                    ActionListId = 1,
+                    ConfigurationSettings = "JSON Config Settings",
+                    FieldMappingSettings = "JSON Field Mapping Settings",
+                    ParentPluginRegistration = "AzureSql"
+                };
+
+                var controller = new ActionController();
+                controller.Save(actualAction);
+
+                //Assert
+                Assert.IsNotNull(uow.ActionRepository);
+                Assert.IsTrue(uow.ActionRepository.GetAll().Count() == 1);
+
+                //Still there is only one action as the update happened.
+                var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
+                Assert.IsNotNull(expectedAction);
+                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+            }
+        }
+
+        /// <summary>
+        /// Creates one empty action list
+        /// </summary>
+        private void CreateEmptyActionList()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+
+                //Add a template
+                var template = fixture.TestTemplate1();
+                var templates = uow.Db.Set<TemplateDO>();
+                templates.Add(template);
+                uow.Db.SaveChanges();
+
+                var actionList = new FixtureData(uow).TestEmptyActionList();
+                actionList.Id = 1;
+
+                uow.ActionListRepository.Add(actionList);
+                uow.SaveChanges();
             }
         }
     }
