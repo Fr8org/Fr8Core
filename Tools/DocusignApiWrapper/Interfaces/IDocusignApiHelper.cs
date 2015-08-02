@@ -8,9 +8,10 @@ namespace DocusignApiWrapper.Interfaces
         /// Programmatically login to DocuSign with Docusign account.
         /// ( Please watch your firewall. It's actualy going to docusign server. )
         /// </summary>
+        /// <param name="account">Docusign account.</param>
+        /// <param name="restSettings">Docusign restsettings instance.</param>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        Account LoginDocusign(Account account);
-
+        Account LoginDocusign(Account account, RestSettings restSettings);
 
         /// <summary>
         /// Create envelope with fill it with data, and return it back.

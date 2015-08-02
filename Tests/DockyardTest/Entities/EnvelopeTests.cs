@@ -61,13 +61,15 @@ namespace DockyardTest.Entities
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData()
         {
-            Account account = docusignApiHelper.LoginDocusign(DocusignAccount.GetStubAccount());
+            Account account = docusignApiHelper.LoginDocusign(DocusignAccount.GetStubAccount(),
+                                                              FixtureData.GetTestRestSettings());
+
             Envelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
                                                                         FixtureData.CreateEnvelope(account),
                                                                         FixtureData.FullFilePathToDocument(),
                                                                         FixtureData.GetTabCollection());
 
-            Assert.IsTrue(envelope.RestError == null);
+            Assert.IsTrue(envelope.RestError == null, "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
             IEnvelope envelopeService = new Core.Services.Envelope();
             List<EnvelopeData> envelopeDatas = envelopeService.GetEnvelopeData(envelope);

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Configuration;
 
-using DocusignApiWrapper.Domains;
 using DocusignApiWrapper.Interfaces;
 
 using DocuSign.Integrations.Client;
@@ -13,34 +11,15 @@ namespace DocusignApiWrapper
     /// </summary>
     public class DocusignApiHelper : IDocusignApiHelper
     {
-        private readonly BasicRestSettings basicRestSettings;
-
-        public DocusignApiHelper()
-        {
-            basicRestSettings = new BasicRestSettings
-                                {
-                                    //TODO move rest settings to config.
-                                    //IntegratorKey = ConfigurationManager.AppSettings["Docusign_IntegratorKey"],
-                                    //DocuSignAddress = ConfigurationManager.AppSettings["Docusign_DocuSignAddress"],
-                                    //WebServiceUrlRestVersionPart = ConfigurationManager.AppSettings["Docusign_WebServiceUrlRestVersionPart"]
-                                    IntegratorKey = "TEST-34d0ac9c-89e7-4acc-bc1d-24d6cfb867f2",
-                                    DocuSignAddress = "http://demo.docusign.net",
-                                    WebServiceUrlRestVersionPart = RestSettings.Instance.DocuSignAddress + "/restapi/v2"
-                                };
-        }
-
         /// <summary>
         /// Programmatically login to DocuSign with Docusign account.
         /// ( Please watch your firewall. It's actualy going to docusign server. )
         /// </summary>
+        /// <param name="account">Docusign account.</param>
+        /// <param name="restSettings">Docusign restsettings instance.</param>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        public Account LoginDocusign(Account account)
+        public Account LoginDocusign(Account account, RestSettings restSettings)
         {
-            // configure application's integrator key and webservice url
-            RestSettings.Instance.IntegratorKey = basicRestSettings.IntegratorKey;
-            RestSettings.Instance.DocuSignAddress = basicRestSettings.DocuSignAddress;
-            RestSettings.Instance.WebServiceUrl = basicRestSettings.WebServiceUrlRestVersionPart;
-
             // make the Login API call
             bool result = account.Login();
 

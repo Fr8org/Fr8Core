@@ -49,14 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DocusignApiHelper.cs" />
-    <Compile Include="Domains\BasicRestSettings.cs" />
     <Compile Include="Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
