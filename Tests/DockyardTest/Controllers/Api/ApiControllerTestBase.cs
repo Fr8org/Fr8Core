@@ -10,18 +10,27 @@ using UtilitiesTesting;
 
 namespace DockyardTest.Controllers.Api
 {
-    [TestFixture]
+    /// <summary>
+    /// A base class for Api controllers unit testing
+    /// </summary>
     public abstract class ApiControllerTestBase : BaseTest
     {
+        /// <summary>
+        /// Creates an API controller with optional authorization context
+        /// </summary>
+        /// <typeparam name="TController">API controller type</typeparam>
+        /// <param name="userId">User ID. Null or empty if no authorization context needed.</param>
+        /// <param name="userRoles">User roles</param>
+        /// <returns></returns>
         protected static TController CreateController<TController>(string userId = null, string[] userRoles = null)
             where TController : ApiController, new()
         {
-            var ptc = new TController();
+            var controller = new TController();
             if (!string.IsNullOrEmpty(userId))
             {
-                ptc.User = new GenericPrincipal(new GenericIdentity(userId, "Forms"), userRoles);
+                controller.User = new GenericPrincipal(new GenericIdentity(userId, "Forms"), userRoles);
             }
-            return ptc;
+            return controller;
         }
     }
 }
