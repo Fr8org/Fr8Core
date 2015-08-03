@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using Data.Entities;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.Security.Principal;
+using System.Web.Http.Results;
 using Data.Interfaces;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
-using Web.Controllers.Api;
-using Web.ViewModels;
-using Data.States;
-using System.Web.Http.Controllers;
-using System.Security.Principal;
-using System.Web.Http;
-using System.Web.Http.Results;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
+using Web.Controllers;
+using Web.ViewModels;
 
-namespace DockyardTest.Controllers.Api
+namespace DockyardTest.Controllers
 {
     [TestFixture]
     [Category("Controllers.Api.ProcessTemplate")]
@@ -32,27 +24,73 @@ namespace DockyardTest.Controllers.Api
         }
 
         [Test]
-        public void ProcessController_CanAddNewProcessTemplate()
+        public void ProcessTemplateController_CanAddNewProcessTemplate()
         {
             //Arrange 
             string testUserId = "testuser";
-            var ptvm = new ProcessTemplateVM();
-            ptvm.Name = "processtemplate1";
-            ptvm.ProcessState = 1;
-            ptvm.Description = "Description for test process template";
+            var ptvm = new ProcessTemplateVM
+            {
+                Name = "processtemplate1",
+                Description = "Description for test process template",
+                ProcessTemplateState = 1
+            };
+            
 
             //Act
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
-            //ptc.Post(ptvm);
+            var response=ptc.Post(ptvm);
 
             //Assert
+            var okResult = response as OkNegotiatedContentResult<ProcessTemplateVM>;
+            Assert.NotNull(okResult);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                //var ptdo = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.UserId == testUserId && pt.Name == ptvm.Name).SingleOrDefault();
-               // Assert.IsNotNull(ptdo);
-               // Assert.AreEqual(ptvm.Description, ptdo.Description);
+                var ptdo = uow.ProcessTemplateRepository.GetQuery().SingleOrDefault(pt => pt.UserId == testUserId && pt.Name == ptvm.Name);
+                Assert.IsNotNull(ptdo);
+                Assert.AreEqual(ptvm.Description, ptdo.Description);
             }
+        }
+
+        [Test]
+        public void ProcessTemplateController_will_Return_BadResult_if_name_is_empty()
+        {
+            //Arrange 
+            string testUserId = "testuser";
+            var ptvm = new ProcessTemplateVM
+            {
+                Name = "",
+                Description = "Description for test process template",
+                ProcessTemplateState = 1
+            };
+
+
+            //Act
+            ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
+            var response = ptc.Post(ptvm);
+
+            //Assert
+            var badResult = response as BadRequestErrorMessageResult;
+            Assert.NotNull(badResult);
+           
+        }
+
+        [Test]
+        public void ProcessTemplateController_Will_Return_NotFound_If_No_ProcessTemplate_Found()
+        {
+            //Arrange 
+            string testUserId = "testuser";
+         
+
+
+            //Act
+            ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
+            var response = ptc.Get(55);
+
+            //Assert
+            var badResult = response as NotFoundResult;
+            Assert.NotNull(badResult);
+
         }
 
 	  //[Test]
@@ -126,7 +164,7 @@ namespace DockyardTest.Controllers.Api
             var ptvm = new ProcessTemplateVM();
             ptvm.Description = "Description for test process template";
             ptvm.Name = "processtemplate1";
-            ptvm.ProcessState = 1;
+            ptvm.ProcessTemplateState = 1;
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
             //ptc.Post(ptvm);
 
