@@ -47,24 +47,23 @@ app.controller('ProcessTemplateController',
         var criteriaIdSeq = 0;
         var actionIdSeq = 0;
 
-        $scope.pbAddCriteriaClick = function () {
-            $scope.processBuilder.addCriteria({ id: ++criteriaIdSeq })
-        };
+        $scope.$on('addCriteriaNode:click', function (event, args) {
+            $scope.$broadcast('addCriteria', { criteriaId: ++criteriaIdSeq });
+        });
 
-        $scope.pbCriteriaClick = function (criteriaId) {
-            $scope.processBuilder.removeCriteria(criteriaId);
-        };
+        $scope.$on('criteriaNode:click', function (event, args) {
+            $scope.$broadcast('removeCriteria', { criteriaId: args.criteriaId });
+        });
 
-        $scope.pbAddActionClick = function (criteriaId) {
-            $scope.processBuilder.addAction(criteriaId, { id: ++actionIdSeq });
-        };
+        $scope.$on('addActionNode:click', function (event, args) {
+            $scope.$broadcast('addAction', { criteriaId: args.criteriaId, actionId: ++actionIdSeq });
+        });
 
-        $scope.pbActionClick = function (criteriaId, actionId) {
-            $scope.processBuilder.removeAction(criteriaId, actionId);
-        };
+        $scope.$on('actionNode:click', function (event, args) {
+            $scope.$broadcast('removeAction', { criteriaId: args.criteriaId, actionId: args.actionId });
+        });
 
         // END ProcessBuilder event handlers.
-
     }]);
 
 /*

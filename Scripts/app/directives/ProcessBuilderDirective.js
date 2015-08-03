@@ -6,32 +6,55 @@ app.directive('processBuilder', function () {
         var widget = Core.create(ProcessBuilder.Widget,
             element, factory, attrs.width, attrs.height);
 
+        scope.$on('addCriteria', function (event, args) {
+            widget.addCriteria({ id: args.criteriaId });
+        });
+
+        scope.$on('removeCriteria', function (event, args) {
+            widget.removeCriteria({ id: args.criteriaId });
+        });
+
+        scope.$on('addAction', function (event, args) {
+            widget.addAction(args.criteriaId, { id: args.actionId });
+        });
+
+        scope.$on('removeAction', function (event, args) {
+            widget.removeAction(args.criteriaId, args.actionId);
+        });
+
         widget.on('startNode:click', function () {
-            if (!attrs.startClickCallback) { return; }
-            scope[attrs.startClickCallback].call(this);
+            scope.$emit('startNode:click', {
+                directiveId: attrs.id
+            });
         });
 
         widget.on('addCriteriaNode:click', function () {
-            if (!attrs.addCriteriaClickCallback) { return; }
-            scope[attrs.addCriteriaClickCallback].call(this);
+            scope.$emit('addCriteriaNode:click', {
+                directiveId: attrs.id
+            });
         });
 
         widget.on('criteriaNode:click', function (e, criteriaId) {
-            if (!attrs.criteriaClickCallback) { return; }
-            scope[attrs.criteriaClickCallback].call(this, criteriaId);
+            scope.$emit('criteriaNode:click', {
+                directiveId: attrs.id,
+                criteriaId: criteriaId
+            });
         });
 
         widget.on('addActionNode:click', function (e, criteriaId) {
-            if (!attrs.addActionClickCallback) { return; }
-            scope[attrs.addActionClickCallback].call(this, criteriaId);
+            scope.$emit('addActionNode:click', {
+                directiveId: attrs.id,
+                criteriaId: criteriaId
+            });
         });
 
         widget.on('actionNode:click', function (e, criteriaId, actionId) {
-            if (!attrs.actionClickCallback) { return; }
-            scope[attrs.actionClickCallback].call(this, criteriaId, actionId);
+            scope.$emit('actionNode:click', {
+                directiveId: attrs.id,
+                criteriaId: criteriaId,
+                actionId: actionId
+            });
         });
-
-        scope[attrs.id] = widget;
     };
 
     return {
