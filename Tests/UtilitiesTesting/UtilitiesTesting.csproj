@@ -86,6 +86,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
+    <Compile Include="DocusignTools\DocusignApiHelper.cs" />
+    <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignAccount.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
@@ -102,7 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Items\small_pdf_file.pdf">
+    <None Include="Tools\TestFiles\small_pdf_file.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

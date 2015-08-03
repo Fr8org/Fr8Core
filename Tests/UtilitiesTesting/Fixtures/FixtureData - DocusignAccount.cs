@@ -4,9 +4,9 @@ using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
-    public static class DocusignAccount
+    public partial class FixtureData
     {
-        public static Account GetStubAccount()
+        public static Account TestAccount1()
         {
             // credentials for sending account
             return new Account

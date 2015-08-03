@@ -8,14 +8,14 @@ using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
-	public partial class FixtureData
+    public partial class FixtureData
 	{
-		public static EnvelopeDO CreateEnvelope()
+		public static EnvelopeDO TestEnvelope1()
 		{
 			return new EnvelopeDO { DocusignEnvelopeId = "21", Status = EnvelopeDO.EnvelopeState.Any};
 		}
 
-        public static Envelope CreateEnvelope(Account account)
+        public static Envelope TestEnvelope1WithGivenAccount(Account account)
         {
             // create envelope object and assign login info
             return new Envelope
@@ -41,12 +41,12 @@ namespace UtilitiesTesting.Fixtures
                    };
         }
 
-	    public static string FullFilePathToDocument()
+	    public static string TestRealPdfFile1()
 	    {
-            return Path.Combine(Environment.CurrentDirectory, "Items", "small_pdf_file.pdf");
+            return Path.Combine(Environment.CurrentDirectory, "Tools\\TestFiles", "small_pdf_file.pdf");
 	    }
 
-	    public static TabCollection GetTabCollection()
+	    public static TabCollection TestTabCollection1()
 	    {
 	        return new TabCollection
 	               {
@@ -70,7 +70,7 @@ namespace UtilitiesTesting.Fixtures
         /// This is test RestSettins for unit tests.
         /// </summary>
         /// <returns></returns>
-	    public static RestSettings GetTestRestSettings()
+	    public static RestSettings TestRestSettings1()
 	    {
             // configure application's integrator key and webservice url
             RestSettings.Instance.IntegratorKey = "TEST-34d0ac9c-89e7-4acc-bc1d-24d6cfb867f2";
