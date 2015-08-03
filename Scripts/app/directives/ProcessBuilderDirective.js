@@ -11,7 +11,6 @@ app.directive('processBuilder', function () {
         });
 
         scope.$on('removeCriteria', function (event, args) {
-            debugger;
             widget.removeCriteria(args.criteriaId);
         });
 
@@ -36,8 +35,6 @@ app.directive('processBuilder', function () {
         });
 
         widget.on('criteriaNode:click', function (e, criteriaId) {
-            debugger;
-
             scope.$emit('criteriaNode:click', {
                 directiveId: attrs.id,
                 criteriaId: criteriaId

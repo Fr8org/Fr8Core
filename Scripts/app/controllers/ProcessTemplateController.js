@@ -52,7 +52,6 @@ app.controller('ProcessTemplateController',
         });
 
         $scope.$on('criteriaNode:click', function (event, args) {
-            debugger;
             $scope.$broadcast('removeCriteria', { criteriaId: args.criteriaId });
         });
 
