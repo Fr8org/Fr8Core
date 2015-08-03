@@ -164,7 +164,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
@@ -173,7 +172,6 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNodeService.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
-    <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -246,7 +244,6 @@
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Process.cs" />
-    <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />

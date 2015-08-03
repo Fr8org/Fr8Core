@@ -29,6 +29,7 @@ using Utilities;
 using Logger = Utilities.Logging.Logger;
 using Core.Managers.APIManagers.Packagers.Docusign;
 using System.Web.Http;
+using FluentValidation.WebApi;
 
 namespace Web
 {
@@ -90,7 +91,13 @@ namespace Web
             Logger.GetLogger().Warn("Dockyard  starting...");
             var docusign = new DocusignPackager();
             string baseURL = docusign.Login();
+            //ConfigureValidationEngine();
 
+        }
+
+        private void ConfigureValidationEngine()
+        {
+            FluentValidationModelValidatorProvider.Configure(GlobalConfiguration.Configuration);
         }
 
 

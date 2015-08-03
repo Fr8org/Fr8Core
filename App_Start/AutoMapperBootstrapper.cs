@@ -90,8 +90,8 @@ namespace Web.App_Start
 		        .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
 
 
-            Mapper.CreateMap<ProcessTemplateVM, ProcessTemplateDO>();
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateVM>();
+            Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
         }
     }
 }

@@ -7,7 +7,6 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Core.Exceptions;
 using Core.Managers.APIManagers.Packagers;
 using Core.Interfaces;
 using Core.Services;
@@ -347,12 +346,12 @@ namespace Core.Managers
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "ProcessTemplate",
+                PrimaryCategory = "ProcessTemplateService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("ProcessTemplate Name: {0}.",
+                Data = string.Format("ProcessTemplateService Name: {0}.",
                         processTemplateName)
             };
             LogFactInformation(fact, "ProcessTemplateCreated");

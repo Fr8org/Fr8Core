@@ -14,7 +14,7 @@ using Web.ViewModels;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    [Category("Controllers.Api.ProcessTemplate")]
+    [Category("Controllers.Api.ProcessTemplateService")]
     public class ProcessTemplateControllerTests : BaseTest 
     {
         [SetUp]
@@ -28,7 +28,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            var ptvm = new ProcessTemplateVM
+            var ptvm = new ProcessTemplateDTO
             {
                 Name = "processtemplate1",
                 Description = "Description for test process template",
@@ -41,12 +41,13 @@ namespace DockyardTest.Controllers
             var response=ptc.Post(ptvm);
 
             //Assert
-            var okResult = response as OkNegotiatedContentResult<ProcessTemplateVM>;
+            var okResult = response as OkNegotiatedContentResult<ProcessTemplateDTO>;
             Assert.NotNull(okResult);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.ProcessTemplateRepository.GetQuery().SingleOrDefault(pt => pt.UserId == testUserId && pt.Name == ptvm.Name);
+                var ptdo = uow.ProcessTemplateRepository.
+                    GetQuery().SingleOrDefault(pt => pt.UserId == testUserId && pt.Name == ptvm.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(ptvm.Description, ptdo.Description);
             }
@@ -57,7 +58,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            var ptvm = new ProcessTemplateVM
+            var ptvm = new ProcessTemplateDTO
             {
                 Name = "",
                 Description = "Description for test process template",
@@ -85,11 +86,17 @@ namespace DockyardTest.Controllers
 
             //Act
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
-            var response = ptc.Get(55);
-
+            
+            
             //Assert
-            var badResult = response as NotFoundResult;
-            Assert.NotNull(badResult);
+
+            Assert.Throws<ApplicationException>(() =>
+            {
+                ptc.Get(55);
+
+            }, "Process Template not found for id 55");
+
+
 
         }
 
@@ -98,7 +105,7 @@ namespace DockyardTest.Controllers
 	  //{
 	  //    //Arrange 
 	  //    string testUserId = "testuser";
-	  //    var ptvm = new ProcessTemplateVM();
+	  //    var ptvm = new ProcessTemplateDTO();
 	  //    ptvm.Description = "Description for test process template";
 	  //    ptvm.ProcessState = 1;
 
@@ -117,7 +124,7 @@ namespace DockyardTest.Controllers
 	  //    IHttpActionResult result;
 	  //    string testUserId = "testuser2";
 	  //    int id = 2;
-	  //    var ptvm = new ProcessTemplateVM();
+	  //    var ptvm = new ProcessTemplateDTO();
 	  //    ptvm.Description = "Description for test process template";
 	  //    ptvm.Name = "processtemplate1";
 	  //    ptvm.ProcessState = 1;
@@ -138,7 +145,7 @@ namespace DockyardTest.Controllers
 
 	  //    //Act
 	  //   // result = ptc.Get(id) as IHttpActionResult; // get view model for id 
-	  //    //ptvm = (result as OkNegotiatedContentResult<ProcessTemplateVM>).Content;
+	  //    //ptvm = (result as OkNegotiatedContentResult<ProcessTemplateDTO>).Content;
 	  //    ptvm.Name = "processtemplate_edited";
 	  //    ptvm.Description = "Description for test process template edited";
 
@@ -161,7 +168,7 @@ namespace DockyardTest.Controllers
             //Arrange 
             string testUserId = "testuser3";
             int id = 3;
-            var ptvm = new ProcessTemplateVM();
+            var ptvm = new ProcessTemplateDTO();
             ptvm.Description = "Description for test process template";
             ptvm.Name = "processtemplate1";
             ptvm.ProcessTemplateState = 1;
