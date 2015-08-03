@@ -475,6 +475,7 @@
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="Scripts\app\directives\ProcessBuilderDirective.js" />
+    <Content Include="Scripts\app\directives\QueryBuilderDirective.js" />
     <Content Include="Scripts\app\MetronicApp.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />

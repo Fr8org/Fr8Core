@@ -52,6 +52,7 @@ app.controller('ProcessTemplateController',
         });
 
         $scope.$on('criteriaNode:click', function (event, args) {
+            debugger;
             $scope.$broadcast('removeCriteria', { criteriaId: args.criteriaId });
         });
 
@@ -64,6 +65,15 @@ app.controller('ProcessTemplateController',
         });
 
         // END ProcessBuilder event handlers.
+
+        // BEGIN QueryBuilder routines.
+
+        $scope.queryBuilderFields = [
+            { key: 'envelope.name', name: '[Envelope].Name' },
+            { key: 'envelope.date', name: '[Envelope].Date' }
+        ];
+
+        // END QueryBuilder routines.
     }]);
 
 /*
