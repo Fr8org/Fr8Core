@@ -30,16 +30,7 @@ namespace DockyardTest.Controllers
                 //Arrange is done with empty action list
                 
                 //Act
-                var actualAction = new ActionVM()
-                {
-                    Id = 1,
-                    UserLabel = "AzureSqlAction",
-                    ActionType = "WriteToAzureSql",
-                    ActionListId = 1,
-                    ConfigurationSettings = "JSON Config Settings",
-                    FieldMappingSettings = "JSON Field Mapping Settings",
-                    ParentPluginRegistration = "AzureSql"
-                };
+                var actualAction = CreateActionWithId(1);
 
                 var controller = new ActionController();
                 controller.Save(actualAction);
@@ -67,16 +58,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
 
                 //Act
-                var actualAction = new ActionVM()
-                {
-                    Id = 2,
-                    UserLabel = "AzureSqlAction",
-                    ActionType = "WriteToAzureSql",
-                    ActionListId = 1,
-                    ConfigurationSettings = "JSON Config Settings",
-                    FieldMappingSettings = "JSON Field Mapping Settings",
-                    ParentPluginRegistration = "AzureSql"
-                };
+                var actualAction = CreateActionWithId(2);
 
                 var controller = new ActionController();
                 controller.Save(actualAction);
@@ -105,16 +87,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
                 
                 //Act
-                var actualAction = new ActionVM()
-                {
-                    Id = 1,
-                    UserLabel = "AzureSqlAction",
-                    ActionType = "WriteToAzureSql",
-                    ActionListId = 1,
-                    ConfigurationSettings = "JSON Config Settings",
-                    FieldMappingSettings = "JSON Field Mapping Settings",
-                    ParentPluginRegistration = "AzureSql"
-                };
+                var actualAction = CreateActionWithId(1);
 
                 var controller = new ActionController();
                 controller.Save(actualAction);
@@ -151,6 +124,23 @@ namespace DockyardTest.Controllers
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();
             }
+        }
+
+        /// <summary>
+        /// Creates a new Action with the given actiond ID
+        /// </summary>
+        private ActionVM CreateActionWithId(int actionId)
+        {
+            return new ActionVM
+            {
+                Id = actionId,
+                UserLabel = "AzureSqlAction",
+                ActionType = "WriteToAzureSql",
+                ActionListId = 1,
+                ConfigurationSettings = "JSON Config Settings",
+                FieldMappingSettings = "JSON Field Mapping Settings",
+                ParentPluginRegistration = "AzureSql"
+            };
         }
     }
 }

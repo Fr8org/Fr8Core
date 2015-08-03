@@ -44,25 +44,25 @@ namespace Web.Controllers.Services
 			return items;
 		}
 
-	    public bool SaveOrUpdateAction(ActionVM action)
+	    public bool SaveOrUpdateAction(ActionVM submittedAction)
 	    {
 	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 	        {
-                var actionDo = Mapper.Map<ActionDO>(action);
-	            var existingAction = uow.ActionRepository.GetByKey(action.Id);
-	            if (existingAction != null)
+                var currentActionDo = Mapper.Map<ActionDO>(submittedAction);
+	            var existingActionDo = uow.ActionRepository.GetByKey(submittedAction.Id);
+	            if (existingActionDo != null)
 	            {
-                    existingAction.ActionList = actionDo.ActionList;
-                    existingAction.ActionListId = actionDo.ActionListId;
-                    existingAction.ActionType = actionDo.ActionType;
-                    existingAction.ConfigurationSettings = actionDo.ConfigurationSettings;
-                    existingAction.FieldMappingSettings = actionDo.FieldMappingSettings;
-                    existingAction.ParentPluginRegistration = actionDo.ParentPluginRegistration;
-                    existingAction.UserLabel = actionDo.UserLabel;
+                    existingActionDo.ActionList = currentActionDo.ActionList;
+                    existingActionDo.ActionListId = currentActionDo.ActionListId;
+                    existingActionDo.ActionType = currentActionDo.ActionType;
+                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
+                    existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
+                    existingActionDo.UserLabel = currentActionDo.UserLabel;
 	            }
 	            else
 	            {
-                    uow.ActionRepository.Add(actionDo);
+                    uow.ActionRepository.Add(currentActionDo);
 	            }
 
 	            try
