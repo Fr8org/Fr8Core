@@ -484,6 +484,13 @@ namespace Data.Infrastructure
 		    get { return this._proeProcessNodeRepository ?? ( this._proeProcessNodeRepository = new ProcessNodeRepository( this ) ); }
 	    }
 
+	    private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
+
+	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
+	    {
+		    get { return this._externalEventRegistrationRepository ?? ( this._externalEventRegistrationRepository = new ExternalEventRegistrationRepository( this ) ); }
+	    }
+
 	    public void Save()
         {
             _context.SaveChanges();

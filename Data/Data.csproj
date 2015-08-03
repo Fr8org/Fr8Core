@@ -225,7 +225,7 @@
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
-    <Compile Include="States\EventState.cs" />
+    <Compile Include="States\ExternalEventType.cs" />
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />

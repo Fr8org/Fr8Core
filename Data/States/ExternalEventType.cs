@@ -1,6 +1,6 @@
 ﻿namespace Data.States
 {
-	public class EventState
+	public class ExternalEventType
 	{
 		public const int EnvelopeSent = 1;
 		public const int EnvelopeDelivered = 2;

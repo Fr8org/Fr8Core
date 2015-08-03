@@ -1,75 +1,70 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Core.Interfaces;
 using Core.Managers;
-using Core.Services;
 using StructureMap;
-using Utilities.Logging;
 
 namespace Web.Controllers
 {
-    public class NotificationController : ApiController
-    {
+	public class NotificationController: ApiController
+	{
+		private readonly IProcessTemplate _processTemplateService;
+		private readonly EventReporter _alertReporter;
 
-        IProcess _processService;
-        EventReporter _alertReporter;
+		public NotificationController()
+		{
+			this._processTemplateService = ObjectFactory.GetInstance< IProcessTemplate >();
+			this._alertReporter = ObjectFactory.GetInstance< EventReporter >();
+		}
 
-        public NotificationController()
-        {
-            _processService = ObjectFactory.GetInstance<IProcess>();
-            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-        }
+		public NotificationController( IProcessTemplate processTemplateService )
+		{
+			this._processTemplateService = processTemplateService;
+			this._alertReporter = ObjectFactory.GetInstance< EventReporter >();
+		}
 
-        public NotificationController(IProcess processService)
-        {
-            _processService = processService;
-            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
-        }
-        /// <summary>
-        /// Processes incoming DocuSign notifications.
-        /// </summary>
-        /// <returns>HTTP 200 if notification is successfully processed, 
-        /// HTTP 400 if request does not contain all expected data or malformed.</returns>
-        [HttpPost]
-        public async Task<IHttpActionResult> HandleDocusignNotification([FromUri] string userId)
-        {
-            var xmlPayload = await this.Request.Content.ReadAsStringAsync();
+		/// <summary>
+		/// Processes incoming DocuSign notifications.
+		/// </summary>
+		/// <returns>HTTP 200 if notification is successfully processed, 
+		/// HTTP 400 if request does not contain all expected data or malformed.</returns>
+		[ HttpPost ]
+		public async Task< IHttpActionResult > HandleDocuSignNotification( [ FromUri ] string userId )
+		{
+			var xmlPayload = await this.Request.Content.ReadAsStringAsync();
 
-            if (string.IsNullOrEmpty(userId))
-            {
-                string message = "Cannot find userId in DocuSign notification. XML payload";
-                _alertReporter.ImproperDocusignNotificationReceived(message);
-                return BadRequest(message);
-            }
+			if( string.IsNullOrEmpty( userId ) )
+			{
+				var message = "Cannot find userId in DocuSign notification. XML payload";
+				this._alertReporter.ImproperDocusignNotificationReceived( message );
+				return this.BadRequest( message );
+			}
 
-            if (string.IsNullOrEmpty(xmlPayload))
-            {
-                string message = String.Format("Cannot find XML payload in DocuSign notification: UserId {0}.",
-                    userId);
-                _alertReporter.ImproperDocusignNotificationReceived(message);
-                return BadRequest(message);
-            }
+			if( string.IsNullOrEmpty( xmlPayload ) )
+			{
+				var message = String.Format( "Cannot find XML payload in DocuSign notification: UserId {0}.",
+					userId );
+				this._alertReporter.ImproperDocusignNotificationReceived( message );
+				return this.BadRequest( message );
+			}
 
-            try
-            {
-                _processService.HandleDocusignNotification(userId, xmlPayload);
-            }
-            catch (ArgumentException)
-            {
-                //The event is already logged.
-                return BadRequest("Cannot find envelopeId in XML payload.");
-            }
-            return Ok();               
-        }
+			try
+			{
+				//this._processTemplateService.
+				//this._processService.HandleDocusignNotification( userId, xmlPayload );
+			}
+			catch( ArgumentException )
+			{
+				//The event is already logged.
+				return this.BadRequest( "Cannot find envelopeId in XML payload." );
+			}
+			return this.Ok();
+		}
 
-        public void Get()
-        {
-            throw new Exception();
-        }
-    }
+		public void Get()
+		{
+			throw new Exception();
+		}
+	}
 }

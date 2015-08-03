@@ -6,5 +6,6 @@ namespace Core.Interfaces
 	{
 		void HandleDocusignNotification( string userId, string xmlPayload );
 		ProcessDO Create( int processTemplateId, int envelopeId );
+		void Execute( ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope );	
 	}
 }

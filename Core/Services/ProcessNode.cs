@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Core.Services
 {
-	public class ProcessNode: IProcessNodeService
+	public class ProcessNode: IProcessNode
 	{
 		/// <summary>
 		/// Creates ProcessNode Object
@@ -46,6 +46,11 @@ namespace Core.Services
 			key.Id = targetPNode.Id.ToString();
 
 			sourcePNode.ProcessNodeTemplate.TransitionKey = JsonConvert.SerializeObject( keys, Formatting.None );
+		}
+
+		public void Execute( ProcessDO parentProcess, EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode )
+		{
+			//TODO: implement
 		}
 
 		/// <summary>

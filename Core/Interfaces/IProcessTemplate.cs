@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.States;
 
 namespace Core.Interfaces
 {
@@ -6,5 +7,6 @@ namespace Core.Interfaces
 	{
 		void CreateOrUpdate( ProcessTemplateDO ptdo );
 		void Delete( int id );
+		void HandleExternalEvent( ExternalEventType curEventType );
 	}
 }
