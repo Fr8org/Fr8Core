@@ -6,24 +6,6 @@ app.directive('processBuilder', function () {
         var widget = Core.create(ProcessBuilder.Widget,
             element, factory, attrs.width, attrs.height);
 
-        // scope.$on('addCriteria', function (event, args) {
-        //     widget.addCriteria({ id: args.criteriaId });
-        // });
-        // 
-        // scope.$on('removeCriteria', function (event, args) {
-        //     widget.removeCriteria(args.criteriaId);
-        // });
-        // 
-        // scope.$on('addAction', function (event, args) {
-        //     widget.addAction(args.criteriaId, { id: args.actionId });
-        // });
-        // 
-        // scope.$on('removeAction', function (event, args) {
-        //     widget.removeAction(args.criteriaId, args.actionId);
-        // });
-
-        //scope.widget = widget;
-
         widget.on('addCriteriaNode:click', function () {
             scope.$apply(function () {
                 scope.addCriteria();
@@ -31,72 +13,92 @@ app.directive('processBuilder', function () {
         });
 
         widget.on('criteriaNode:click', function (e, criteriaId) {
-            // scope.$emit('processBuilder:criteriaNode', {
-            //     directiveId: attrs.id,
-            //     criteriaId: criteriaId
-            // });
-
             scope.$apply(function () {
                 scope.selectCriteria({ criteriaId: criteriaId });
             });
         });
 
         widget.on('addActionNode:click', function (e, criteriaId) {
-            scope.$emit('processBuilder:addActionNode', {
-                directiveId: attrs.id,
-                criteriaId: criteriaId
+            scope.$apply(function () {
+                scope.addAction({ criteriaId: criteriaId });
             });
         });
 
         widget.on('actionNode:click', function (e, criteriaId, actionId) {
-            scope.$emit('processBuilder:actionNode', {
-                directiveId: attrs.id,
-                criteriaId: criteriaId,
-                actionId: actionId
+            scope.$apply(function () {
+                scope.selectAction({ criteriaId: criteriaId, actionId: actionId });
             });
         });
 
+        var collectMissing = function (original, missing) {
+            var result = [];
+            var i, j, found;
 
-        scope.$watchCollection('criteriaList',
-            function (newList, oldList) {
-                var collect = function (original, missing) {
-                    var result = [];
-                    var i, j, found;
-
-                    for (i = 0; i < original.length; ++i) {
-                        found = false;
-                        for (j = 0; j < missing.length; ++j) {
-                            if (missing[j].id === original[i].id) {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found) {
-                            result.push(original[i]);
-                        }
+            for (i = 0; i < original.length; ++i) {
+                found = false;
+                for (j = 0; j < missing.length; ++j) {
+                    if (missing[j].id === original[i].id) {
+                        found = true;
+                        break;
                     }
+                }
 
-                    return result;
-                };
+                if (!found) {
+                    result.push(original[i]);
+                }
+            }
 
+            return result;
+        };
+
+        var forEachSameCriteria = function (first, second, callback) {
+            var i, j;
+
+            for (i = 0; i < first.length; ++i) {
+                for (j = 0; j < second.length; ++j) {
+                    if (first[i].id === second[j].id) {
+                        callback(first[i], second[i]);
+                        break;
+                    }
+                }
+            }
+        };
+
+        scope.$watch('criteriaList',
+            function (newList, oldList) {
                 newList = newList || [];
                 oldList = oldList || [];
 
                 // Collecting added criteria.
-                var addedCriteria = collect(newList, oldList);
-
+                var addedCriteria = collectMissing(newList, oldList);
                 addedCriteria.forEach(function (it) {
                     widget.addCriteria(it);
                 });
 
                 // Collecting removed criteria.
-                var removedCriteria = collect(oldList, newList);
-
+                var removedCriteria = collectMissing(oldList, newList);
                 removedCriteria.forEach(function (it) {
                     widget.removeCriteria(it.id);
                 });
-            }
+
+                // Add or remove actions.
+                forEachSameCriteria(newList, oldList,
+                    function (newCriteria, oldCriteria) {
+                        var newActions = newCriteria.actions || [];
+                        var oldActions = oldCriteria.actions || [];
+
+                        var addedActions = collectMissing(newActions, oldActions);
+                        addedActions.forEach(function (it) {
+                            widget.addAction(newCriteria.id, it);
+                        });
+
+                        var removedActions = collectMissing(oldActions, newActions);
+                        removedActions.forEach(function (it) {
+                            widget.removeAction(newCriteria.id, it.id);
+                        });
+                    });
+            },
+            true
         );
     };
 
@@ -107,7 +109,9 @@ app.directive('processBuilder', function () {
         scope: {
             'criteriaList': '=',
             'addCriteria': '&onAddCriteria',
-            'selectCriteria': '&onSelectCriteria'
+            'selectCriteria': '&onSelectCriteria',
+            'addAction': '&onAddAction',
+            'selectAction': '&onSelectAction'
         }
     };
 });

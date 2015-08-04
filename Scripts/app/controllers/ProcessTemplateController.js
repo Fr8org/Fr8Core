@@ -66,6 +66,7 @@ app.controller('ProcessTemplateController',
             $scope.criteria.push({
                 id: id,
                 name: 'New criteria #' + id.toString(),
+                actions: [],
                 conditions: [
                     {
                         field: 'envelope.name',
@@ -95,6 +96,37 @@ app.controller('ProcessTemplateController',
                 if ($scope.criteria[i].id === $scope.selectedCriteria.id) {
                     $scope.criteria.splice(i, 1);
                     $scope.selectedCriteria = null;
+                    break;
+                }
+            }
+        };
+
+        $scope.addAction = function (criteriaId) {
+            var id = ++actionIdSeq;
+
+            var i;
+            for (i = 0; i < $scope.criteria.length; ++i) {
+                if ($scope.criteria[i].id === criteriaId) {
+                    $scope.criteria[i].actions.push({
+                        id: id,
+                        name: 'Action #' + id.toString()
+                    });
+                    break;
+                }
+            }
+        };
+
+        $scope.selectAction = function (criteriaId, actionId) {
+            var i, j;
+            for (i = 0; i < $scope.criteria.length; ++i) {
+                if ($scope.criteria[i].id === criteriaId) {
+                    for (j = 0; j < $scope.criteria[i].actions.length; ++j) {
+                        if ($scope.criteria[i].actions[j].id === actionId) {
+                            $scope.criteria[i].actions.splice(j, 1);
+                            break;
+                        }
+                    }
+
                     break;
                 }
             }

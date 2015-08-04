@@ -60,14 +60,6 @@ app.directive('queryBuilder', function () {
     };
 
     var controller = function ($scope) {
-        // if ($scope.rows === null
-        //     || typeof $scope.rows === 'undefined'
-        //     || !($scope.rows instanceof Array)) {
-        // 
-        //     debugger;
-        //     throw 'QueryBuilder directive requires \'rows\' array to be specified.';
-        // }
-
         if (!$scope.operators) {
             $scope.operators = [
                 { text: 'Greater than', value: 'gt' },
