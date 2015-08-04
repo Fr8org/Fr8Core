@@ -12,7 +12,11 @@ namespace UtilitiesTesting.Fixtures
 	{
 		public static EnvelopeDO TestEnvelope1()
 		{
-			return new EnvelopeDO { DocusignEnvelopeId = "21", Status = EnvelopeDO.EnvelopeState.Any};
+		    return new EnvelopeDO
+		           {
+		               DocusignEnvelopeId = "21",
+		               Status = EnvelopeDO.EnvelopeState.Any
+		           };
 		}
 
         public static Envelope TestEnvelope1WithGivenAccount(Account account)
@@ -25,23 +29,33 @@ namespace UtilitiesTesting.Fixtures
                        // "sent" to send immediately, "created" to save envelope as draft
                        Status = "created",
                        Created = DateTime.UtcNow,
-                       Recipients = new Recipients
-                                    {
-                                        recipientCount = "1",
-                                        signers = new[]
-                                                  {
-                                                      new Signer
-                                                      {
-                                                          recipientId = Guid.NewGuid().ToString(),
-                                                          name = "Orkan ARI",
-                                                          email = "hello@orkan.com",
-                                                      }
-                                                  }
-                                    }
+                       Recipients = TestRecipients1()
                    };
         }
 
-	    public static string TestRealPdfFile1()
+        private static Recipients TestRecipients1()
+        {
+            return new Recipients
+                   {
+                       recipientCount = "1",
+                       signers = new[]
+                                 {
+                                     TestSigner1()
+                                 }
+                   };
+        }
+
+        private static Signer TestSigner1()
+        {
+            return new Signer
+                   {
+                       recipientId = Guid.NewGuid().ToString(),
+                       name = "Orkan ARI",
+                       email = "hello@orkan.com",
+                   };
+        }
+
+        public static string TestRealPdfFile1()
 	    {
             return Path.Combine(Environment.CurrentDirectory, "Tools\\TestFiles", "small_pdf_file.pdf");
 	    }
@@ -52,19 +66,24 @@ namespace UtilitiesTesting.Fixtures
 	               {
 	                   textTabs = new List<TextTab>
 	                              {
-	                                  new TextTab
-	                                  {
-	                                      required = false,
-	                                      height = 200,
-	                                      width = 200,
-	                                      xPosition = 200,
-	                                      yPosition = 200,
-	                                      name = "Amount",
-	                                      value = "40"
-	                                  }
+	                                  TestTab1()
 	                              }
 	               };
 	    }
+
+        private static TextTab TestTab1()
+        {
+            return new TextTab
+                   {
+                       required = false,
+                       height = 200,
+                       width = 200,
+                       xPosition = 200,
+                       yPosition = 200,
+                       name = "Amount",
+                       value = "40"
+                   };
+        }
 
         /// <summary>
         /// This is test RestSettins for unit tests.
