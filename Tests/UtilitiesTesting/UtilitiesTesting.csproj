@@ -100,11 +100,13 @@
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
+    <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
+    <Compile Include="Fixtures\FixtureData - TestFiles.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Tools\TestFiles\small_pdf_file.pdf">
+    <None Include="Tools\FileTools\TestFiles\small_pdf_file.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

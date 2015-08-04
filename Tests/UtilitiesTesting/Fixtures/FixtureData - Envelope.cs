@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 using Data.Entities;
 
@@ -55,11 +54,6 @@ namespace UtilitiesTesting.Fixtures
                    };
         }
 
-        public static string TestRealPdfFile1()
-	    {
-            return Path.Combine(Environment.CurrentDirectory, "Tools\\TestFiles", "small_pdf_file.pdf");
-	    }
-
 	    public static TabCollection TestTabCollection1()
 	    {
 	        return new TabCollection
@@ -84,19 +78,5 @@ namespace UtilitiesTesting.Fixtures
                        value = "40"
                    };
         }
-
-        /// <summary>
-        /// This is test RestSettins for unit tests.
-        /// </summary>
-        /// <returns></returns>
-	    public static RestSettings TestRestSettings1()
-	    {
-            // configure application's integrator key and webservice url
-            RestSettings.Instance.IntegratorKey = "TEST-34d0ac9c-89e7-4acc-bc1d-24d6cfb867f2";
-            RestSettings.Instance.DocuSignAddress = "http://demo.docusign.net";
-            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
-
-	        return RestSettings.Instance;
-	    }
 	}
 }

@@ -15,6 +15,6 @@
 
         public string Value { get; set; }
 
-        public string DocumentName { get; set; }
+        public int DocumentId { get; set; }
     }
 }

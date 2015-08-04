@@ -59,7 +59,7 @@ namespace Core.Services
                                                    {
                                                        RecipientId = curSigner.recipientId,
                                                        EnvelopeId = envelope.EnvelopeId,
-                                                       DocumentName = curDocumentName,
+                                                       DocumentId = curTextTab.documentId,
                                                        Name = curTextTab.name,
                                                        TabId = curTextTab.tabId,
                                                        Value = curTextTab.value
