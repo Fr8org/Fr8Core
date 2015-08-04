@@ -126,3 +126,4 @@ ClientBin/
 /TestResult.xml
 Web.config.local
 /bower_components
+/node_modules
