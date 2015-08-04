@@ -1,4 +1,6 @@
-﻿'use strict';
+﻿/// <reference path="../_all.ts" />
+
+'use strict';
 
 app.directive('processBuilder', function () {
     var linkFn = function (scope, element, attrs) {

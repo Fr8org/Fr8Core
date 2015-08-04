@@ -1,21 +1,23 @@
-'use strict';
-
+/// <reference path="../_all.ts" />
 /*
     The filter converts numeric value to state name
 */
-app.filter('ProcessTemplateState', ['ConstantsService', function (ConstantsService) {
-
-    return function(input) {
-        switch (input)
-        {
-            case ConstantsService.ProcessTemplateState.Active:
-                return "Active";
-                break;
-            case ConstantsService.ProcessTemplateState.Inactive:
-                return "Inactive";
-                break;
-            default:
-                return "Inactive";
-        }
-    };
-}])
+var dockyard;
+(function (dockyard) {
+    'use strict';
+    app.filter('ProcessTemplateState', function () {
+        return function (input) {
+            switch (input) {
+                case dockyard.interfaces.ProcessState.Active:
+                    return "Active";
+                    break;
+                case dockyard.interfaces.ProcessState.Inactive:
+                    return "Inactive";
+                    break;
+                default:
+                    return "Inactive";
+            }
+        };
+    });
+})(dockyard || (dockyard = {}));
+//# sourceMappingURL=processtemplatestate.js.map

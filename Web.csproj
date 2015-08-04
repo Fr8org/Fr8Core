@@ -23,7 +23,7 @@
     <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
-    <TypeScriptToolsVersion>1.4</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -475,19 +475,22 @@
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="Scripts\app\directives\ProcessBuilderDirective.js" />
-    <Content Include="Scripts\app\MetronicApp.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="Scripts\_legacy\about-page.js" />
-    <Content Include="Scripts\app\app.js" />
-    <Content Include="Scripts\app\filters\ProcessTemplateState.js" />
-    <Content Include="Scripts\app\controllers\ProcessTemplateController.js" />
+    <TypeScriptCompile Include="Scripts\app\app.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplatesController.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateController.ts" />
     <Content Include="Scripts\app\directives\directives.js" />
-    <Content Include="Scripts\app\services\ConstantsService.js" />
-    <Content Include="Scripts\app\services\StringService.js" />
-    <Content Include="Scripts\app\services\ProcessTemplateService.js" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplatesScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateVM.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ProcessTemplateService.ts" />
     <Content Include="Scripts\lib\jquery-ui.js" />
     <Content Include="Scripts\_legacy\custom.js" />
     <Content Include="Scripts\_legacy\main.js" />
@@ -3595,6 +3598,7 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="Views\AngularTemplate\ProcessTemplate.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="tsd.json" />
     <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -3684,6 +3688,9 @@
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />
+    <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
+    <TypeScriptCompile Include="Scripts\app\_all.ts" />
+    <TypeScriptCompile Include="Scripts\typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
