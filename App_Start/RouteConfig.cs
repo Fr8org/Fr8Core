@@ -14,12 +14,20 @@ namespace Web.App_Start
             routes.MapRoute(
                 name: "ShowNegotiationResponse",
                 url: ShowNegotiationResponseUrl,
-                defaults: new { controller = "ClarificationRequest", action = "ShowNegotiationResponse", enc = UrlParameter.Optional });
+                defaults: new { controller = "ClarificationRequest", action = "ShowNegotiationResponse", enc = UrlParameter.Optional }
+                );
+
+            routes.MapRoute(
+                name: "AngularTemplates",
+                url: "AngularTemplate/{template}",
+                defaults: new { controller = "AngularTemplate", action = "Markup" }
+                );
 
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional});
+                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional}
+                );
         }
     }
 }

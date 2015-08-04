@@ -42,37 +42,65 @@ app.controller('ProcessTemplateController',
             }
         };
 
-        // BEGIN ProcessBuilder event handlers.
+        // BEGIN CriteriaPane & ProcessBuilder event routines.
 
         var criteriaIdSeq = 0;
         var actionIdSeq = 0;
 
-        $scope.$on('addCriteriaNode:click', function (event, args) {
-            $scope.$broadcast('addCriteria', { criteriaId: ++criteriaIdSeq });
-        });
+        $scope.criteria = [];
 
-        $scope.$on('criteriaNode:click', function (event, args) {
-            $scope.$broadcast('removeCriteria', { criteriaId: args.criteriaId });
-        });
-
-        $scope.$on('addActionNode:click', function (event, args) {
-            $scope.$broadcast('addAction', { criteriaId: args.criteriaId, actionId: ++actionIdSeq });
-        });
-
-        $scope.$on('actionNode:click', function (event, args) {
-            $scope.$broadcast('removeAction', { criteriaId: args.criteriaId, actionId: args.actionId });
-        });
-
-        // END ProcessBuilder event handlers.
-
-        // BEGIN QueryBuilder routines.
-
-        $scope.queryBuilderFields = [
+        $scope.fields = [
             { key: 'envelope.name', name: '[Envelope].Name' },
             { key: 'envelope.date', name: '[Envelope].Date' }
         ];
 
-        // END QueryBuilder routines.
+        $scope.selectedCriteria = null;
+
+        $scope.isCriteriaSelected = function () {
+            return $scope.selectedCriteria !== null;
+        };
+
+        $scope.addCriteria = function () {
+            var id = ++criteriaIdSeq;
+
+            $scope.criteria.push({
+                id: id,
+                name: 'New criteria #' + id.toString(),
+                conditions: [
+                    {
+                        field: 'envelope.name',
+                        operator: 'gt',
+                        value: ''
+                    }
+                ],
+                executionMode: 'conditions'
+            });
+        };
+
+        $scope.selectCriteria = function (criteriaId) {
+            var i;
+            for (i = 0; i < $scope.criteria.length; ++i) {
+                if ($scope.criteria[i].id === criteriaId) {
+                    $scope.selectedCriteria = $scope.criteria[i];
+                    break;
+                }
+            }
+        };
+
+        $scope.removeCriteria = function () {
+            if (!$scope.selectedCriteria) { return; }
+
+            var i;
+            for (i = 0; i < $scope.criteria.length; ++i) {
+                if ($scope.criteria[i].id === $scope.selectedCriteria.id) {
+                    $scope.criteria.splice(i, 1);
+                    $scope.selectedCriteria = null;
+                    break;
+                }
+            }
+        };
+
+        // END CriteriaPane & ProcessBuilder routines.
     }]);
 
 /*

@@ -60,9 +60,13 @@ app.directive('queryBuilder', function () {
     };
 
     var controller = function ($scope) {
-        if (!$scope.fields) {
-            $scope.fields = [];
-        }
+        // if ($scope.rows === null
+        //     || typeof $scope.rows === 'undefined'
+        //     || !($scope.rows instanceof Array)) {
+        // 
+        //     debugger;
+        //     throw 'QueryBuilder directive requires \'rows\' array to be specified.';
+        // }
 
         if (!$scope.operators) {
             $scope.operators = [
@@ -75,14 +79,14 @@ app.directive('queryBuilder', function () {
             ];
         }
 
-        $scope.rows = [
-            {
+        if ($scope.rows) {
+            $scope.rows.push({
                 field: tryFirstFieldKey($scope.fields),
                 operator: $scope.defaultOperator || 'gt',
                 value: null,
                 valueError: true
-            }
-        ];
+            });
+        }
 
         $scope.addRow = function () {
             $scope.rows.push({
@@ -109,7 +113,8 @@ app.directive('queryBuilder', function () {
         scope: {
             fields: '=',
             operators: '=',
-            defaultOperator: '='
+            defaultOperator: '=',
+            rows: '='
         }
     };
 });

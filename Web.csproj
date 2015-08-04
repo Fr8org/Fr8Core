@@ -474,6 +474,7 @@
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="Scripts\app\directives\CriteriaPaneDirective.js" />
     <Content Include="Scripts\app\directives\ProcessBuilderDirective.js" />
     <Content Include="Scripts\app\directives\QueryBuilderDirective.js" />
     <Content Include="Scripts\app\MetronicApp.js" />
@@ -3596,6 +3597,7 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="Views\AngularTemplate\ProcessTemplate.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\AngularTemplate\CriteriaPane.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
