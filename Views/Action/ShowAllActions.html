@@ -11,7 +11,10 @@
 		<th width="20%">Name</th>
 	</tr>
 	</thead>
-</table>
+</table> 
+    
+    <button id="savebutton" class="btn btn-large pull-right" type="button" onclick="OnSaveActionClick();">Save Action</button>
+    
     <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
     <script src="../../bower_components/DataTables/media/js/jquery.dataTables.min.js"></script>
 <script>
@@ -29,7 +32,38 @@
 				]
 			} );
 		}
+	    
+		function OnSaveActionClick() {
+		    alert("Save Clicked");
+		    var saveUri = "/api/Action/Save";
 
+		    var action = {
+		        Id: 1,
+		        Name: "NameOfTheAction",
+		        UserLabel: "UserLableOfTheAction",
+		        ActionType: "ActionTypeOfTheAction",
+		        ActionListId: 1,
+		        ConfigurationSettings: "JsonConfigSettings",
+		        FieldMappingSettings: "JsonFieldMapiingsSettings",
+		        ParentPluginRegistration: "ParentPlugInReg"
+		    };
+
+
+		    $.ajax({
+		        url: saveUri,
+		        type: "Post",
+		        data: JSON.stringify(action),
+		        contentType: "application/json; charset=utf-8",
+		        success: function (data) {
+		            if (data.ID == null) {
+
+		            }
+		        },
+		        error: function () {
+		        }
+		    });
+		}
+	    
 		//Ajax call to get all unprocessed booking request from server.
 		$.get( uri, {}, showActions, 'json' );
 	} );
