@@ -252,8 +252,10 @@
     <Compile Include="Services\Process.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
+    <Compile Include="Services\Signer.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\Tab.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocusignXml.cs" />
     <Compile Include="Interfaces\IDocusignXml.cs" />

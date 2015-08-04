@@ -24,6 +24,8 @@ using Utilities;
 using System;
 using Core.Utilities;
 
+using Data.Interfaces;
+
 namespace Core.StructureMap
 {
     public class StructureMapBootStrapper
@@ -54,7 +56,7 @@ namespace Core.StructureMap
         {
             public CoreRegistry()
             {
-               
+
             }
         }
 
@@ -66,10 +68,14 @@ namespace Core.StructureMap
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 //For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
-               
+
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
-              
+
+                //For<IEnvelope>().Use<Envelope>();
+                //For<ITab>().Use<Tab>();
+                //For<ISigner>().Use<Signer>();
+
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
@@ -86,7 +92,7 @@ namespace Core.StructureMap
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
-	          For< IProcessNodeService >().Use< ProcessNode >();
+                For<IProcessNodeService>().Use<ProcessNode>();
 
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
@@ -100,10 +106,14 @@ namespace Core.StructureMap
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 //For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
-               
+
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
-               
+
+                //For<IEnvelope>().Use<Envelope>();
+                //For<ITab>().Use<Tab>();
+                //For<ISigner>().Use<Signer>();
+
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
@@ -121,7 +131,7 @@ namespace Core.StructureMap
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
-	          For< IProcessNodeService >().Use< ProcessNode >();
+                For<IProcessNodeService>().Use<ProcessNode>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
@@ -131,6 +141,6 @@ namespace Core.StructureMap
             }
         }
 
-        #endregion       
+        #endregion
     }
 }

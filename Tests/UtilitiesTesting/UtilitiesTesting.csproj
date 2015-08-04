@@ -102,6 +102,9 @@
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
     <Compile Include="Fixtures\FixtureData - TestFiles.cs" />
+    <Compile Include="Fixtures\FixtureData - Recipient.cs" />
+    <Compile Include="Fixtures\FixtureData - Signer.cs" />
+    <Compile Include="Fixtures\FixtureData - Tab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
