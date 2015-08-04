@@ -81,9 +81,25 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
                 //.ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
 
-	      Mapper.CreateMap< ActionDO, ActionVM >()
-		      .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
-		      .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
+          //Mapper.CreateMap< ActionDO, ActionVM >()
+          //    .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
+          //    .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
+
+            Mapper.CreateMap<ActionDO, ActionVM>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
+                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
+                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
+                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
+                .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
+                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
+
+            Mapper.CreateMap<ActionVM, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
+                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
+                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
+                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
+                .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
+                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
 	        Mapper.CreateMap< ActionListDO, ActionListVM >()
 		        .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )

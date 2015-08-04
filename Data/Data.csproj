@@ -201,6 +201,9 @@
     <Compile Include="Migrations\201507292245379_ProcessServices_Migration.Designer.cs">
       <DependentUpon>201507292245379_ProcessServices_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508011853584_UpdateActionDo.cs" />
+    <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
+      <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     <Compile Include="Migrations\201508022353561_AddedRequiredUserIdToProcessTemplate.cs" />
     <Compile Include="Migrations\201508022353561_AddedRequiredUserIdToProcessTemplate.Designer.cs">
       <DependentUpon>201508022353561_AddedRequiredUserIdToProcessTemplate.cs</DependentUpon>
@@ -400,6 +403,8 @@
     <EmbeddedResource Include="Migrations\201507292245379_ProcessServices_Migration.resx">
       <DependentUpon>201507292245379_ProcessServices_Migration.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
+      <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     <EmbeddedResource Include="Migrations\201508022353561_AddedRequiredUserIdToProcessTemplate.resx">
       <DependentUpon>201508022353561_AddedRequiredUserIdToProcessTemplate.cs</DependentUpon>
     </EmbeddedResource>
