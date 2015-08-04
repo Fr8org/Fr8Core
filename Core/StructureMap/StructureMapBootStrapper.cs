@@ -89,6 +89,8 @@ namespace Core.StructureMap
 	          For< IProcessNodeService >().Use< ProcessNode >();
 
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+
+                For<IEventService>().Use<Event>();
             }
         }
 
@@ -128,6 +130,7 @@ namespace Core.StructureMap
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+                For<IEventService>().Use<Event>();
             }
         }
 

@@ -250,6 +250,7 @@
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\Api\ProcessTemplateController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
@@ -308,6 +309,7 @@
     <Compile Include="ViewModels\ActionListVM.cs" />
     <Compile Include="ViewModels\ActionVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
+    <Compile Include="ViewModels\EventDTO.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
