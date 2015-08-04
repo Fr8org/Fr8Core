@@ -27,9 +27,9 @@ var dockyard;
                 $scope.submit = function (isValid) {
                     if (isValid) {
                         ProcessTemplateService.save($scope.ptvm).$promise
-                            .then(function () {
+                            .finally(function () {
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes';
+                            window.location.href = '#processes/' + id + '/builder';
                         })
                             .catch(function (e) {
                             switch (e.status) {
@@ -46,22 +46,6 @@ var dockyard;
                         });
                     }
                 };
-                // BEGIN ProcessBuilder event handlers.
-                var criteriaIdSeq = 0;
-                var actionIdSeq = 0;
-                $scope.pbAddCriteriaClick = function () {
-                    $scope.processBuilder.addCriteria({ id: ++criteriaIdSeq });
-                };
-                $scope.pbCriteriaClick = function (criteriaId) {
-                    $scope.processBuilder.removeCriteria(criteriaId);
-                };
-                $scope.pbAddActionClick = function (criteriaId) {
-                    $scope.processBuilder.addAction(criteriaId, { id: ++actionIdSeq });
-                };
-                $scope.pbActionClick = function (criteriaId, actionId) {
-                    $scope.processBuilder.removeAction(criteriaId, actionId);
-                };
-                // END ProcessBuilder event handlers.
             }
             // $inject annotation.
             // It provides $injector with information about dependencies to be injected into constructor

@@ -13,12 +13,6 @@ app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
             cssFilesInsertBefore: 'ng_load_plugins_before' // load the above css files before a LINK element with this ID. Dynamic CSS files must be loaded between core and theme css files
         });
     }]);
-//AngularJS v1.3.x workaround for old style controller declarition in HTML
-app.config(['$controllerProvider', function ($controllerProvider) {
-        // this option might be handy for migrating old apps, but please don't use it
-        // in new ones!
-        $controllerProvider.allowGlobals();
-    }]);
 /* Setup global settings */
 app.factory('settings', ['$rootScope', function ($rootScope) {
         // supported languages
@@ -70,28 +64,17 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
             .state('processTemplates', {
             url: "/processes",
             templateUrl: "/AngularTemplate/ProcessTemplates",
-            data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' },
-            resolve: {
-                deps: ['$ocLazyLoad', function ($ocLazyLoad) {
-                        return $ocLazyLoad.load({
-                            name: 'app',
-                            insertBefore: '#ng_load_plugins_before',
-                            files: [
-                                '/Content/templates/metronic/assets/global/plugins/morris/morris.css',
-                                '/Content/templates/metronic/assets/global/plugins/morris/morris.min.js',
-                                '/Content/templates/metronic/assets/global/plugins/morris/raphael-min.js',
-                                '/Content/templates/metronic/assets/admin/pages/scripts/tasks.js',
-                                '/Content/templates/metronic/assets/global/plugins/jquery.sparkline.min.js',
-                                '/Content/templates/metronic/assets/admin/pages/scripts/index3.js'
-                            ]
-                        });
-                    }]
-            }
+            data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
         })
             .state('processTemplate', {
             url: "/processes/{id}",
             templateUrl: "/AngularTemplate/ProcessTemplate",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
+        })
+            .state('processBuilder', {
+            url: "/processes/{id}/builder",
+            templateUrl: "/AngularTemplate/ProcessBuilder",
+            data: { pageTitle: 'Process Builder', pageSubTitle: 'Configure your process here' },
         });
     }]);
 /* Init global settings and run the app */

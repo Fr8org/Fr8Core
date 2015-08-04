@@ -4,6 +4,7 @@
 
 app.directive('processBuilder', function () {
     var linkFn = function (scope, element, attrs) {
+        debugger;
         var factory = new ProcessBuilder.FabricJsFactory();
         var widget = Core.create(ProcessBuilder.Widget,
             element, factory, attrs.width, attrs.height);
