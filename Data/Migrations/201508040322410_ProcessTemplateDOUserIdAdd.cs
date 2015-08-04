@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedRequiredUserIdToProcessTemplate : DbMigration
+    public partial class ProcessTemplateDOUserIdAdd : DbMigration
     {
         public override void Up()
         {

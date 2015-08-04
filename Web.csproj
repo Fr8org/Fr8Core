@@ -254,6 +254,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\Helpers\MappingHelpers.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
@@ -335,6 +336,7 @@
     <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
+    <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
     <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
