@@ -276,6 +276,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />
+    <Folder Include="Exceptions\" />
     <Folder Include="UserAlerting\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
