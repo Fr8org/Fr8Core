@@ -42,6 +42,8 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
     return settings;
 }]);
 
+
+
 /* Setup App Main Controller */
 app.controller('AppController', ['$scope', '$rootScope', function ($scope, $rootScope) {
     $scope.$on('$viewContentLoaded', function () {
@@ -81,7 +83,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
     // Redirect any unmatched url
-    $urlRouterProvider.otherwise("/processes");
+    $urlRouterProvider.otherwise("/signIn");
 
     $stateProvider
 
@@ -90,7 +92,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
             url: "/processes",
             templateUrl: "/AngularTemplate/ProcessTemplates",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' },
-            resolve: {  
+            resolve: {
                 deps: ['$ocLazyLoad', function ($ocLazyLoad) {
                     return $ocLazyLoad.load({
                         name: 'app',
@@ -114,6 +116,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
             templateUrl: "/AngularTemplate/ProcessTemplate",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
+
+        .state('signIn', {
+        url: "/signIn",
+        templateUrl: "/Public/SignIn",
+        data: { pageTitle: 'Log In', pageSubTitle: 'Register, if you do not have a local account' },
+
+        })
+
 }]);
 
 /* Init global settings and run the app */

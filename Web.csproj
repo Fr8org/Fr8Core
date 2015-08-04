@@ -255,6 +255,7 @@
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Controllers\ProcessController.cs" />
+    <Compile Include="Controllers\PublicController.cs" />
     <Compile Include="Controllers\Services\ActionsService.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
@@ -3684,6 +3685,11 @@
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />
+    <Content Include="Views\Public\Footer.cshtml" />
+    <Content Include="Views\Public\Header.cshtml" />
+    <Content Include="Views\Public\Index.cshtml" />
+    <Content Include="Views\Public\PageHead.cshtml" />
+    <Content Include="Views\Public\SignIn.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
