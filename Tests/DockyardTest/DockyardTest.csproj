@@ -173,6 +173,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\ActionControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\Api\ProcessTemplateControllerTests.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />

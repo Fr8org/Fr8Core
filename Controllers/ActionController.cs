@@ -9,7 +9,7 @@ namespace Web.Controllers
 	{
 		private readonly IActionsService _service;
 
-		private ActionController()
+		public ActionController()
 		{
 			this._service = new ActionsService();
 		}
@@ -18,5 +18,18 @@ namespace Web.Controllers
 		{
 			return this._service.GetAllActions();
 		}
+
+        /// <summary>
+        /// POST : Saves or updates the given action
+        /// </summary>
+        [HttpPost]
+	    public IEnumerable<ActionVM> Save(ActionVM actionVm)
+	    {
+            if (_service.SaveOrUpdateAction(actionVm))
+            {
+                return new List<ActionVM> {actionVm};
+            }
+            return new List<ActionVM>();
+	    }
 	}
 }
