@@ -83,7 +83,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
     // Redirect any unmatched url
-    $urlRouterProvider.otherwise("/signIn");
+    $urlRouterProvider.otherwise("/processes");
 
     $stateProvider
 
@@ -118,7 +118,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         })
 
         .state('signIn', {
-        url: "/signIn",
+        url: "/signin",
         templateUrl: "/Public/SignIn",
         data: { pageTitle: 'Log In', pageSubTitle: 'Register, if you do not have a local account' },
 
