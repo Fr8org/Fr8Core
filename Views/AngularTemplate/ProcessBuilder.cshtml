@@ -29,11 +29,19 @@
                     <div class="tab-pane active" id="tab_1_1">
                         <div class="form-group">
                             <process-builder id="processBuilder" width="800" height="600"
-                                                add-criteria-click-callback="pbAddCriteriaClick"
-                                                criteria-click-callback="pbCriteriaClick"
-                                                add-action-click-callback="pbAddActionClick"
-                                                action-click-callback="pbActionClick">
+                                             criteria-list="criteria"
+                                             on-add-criteria="addCriteria()"
+                                             on-select-criteria="selectCriteria(criteriaId)"
+                                             on-add-action="addAction(criteriaId)"
+                                             on-select-action="selectAction(criteriaId, actionId)">
                             </process-builder>
+                        </div>
+
+                        <div class="form-group" ng-show="isCriteriaSelected()">
+                            <criteria-pane fields="fields"
+                                           criteria="selectedCriteria"
+                                           on-remove-criteria="removeCriteria()">
+                            </criteria-pane>
                         </div>
                     </div>
                     <!-- END PROCESS FORM -->

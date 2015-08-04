@@ -200,6 +200,10 @@
     <Compile Include="Migrations\201507292245379_ProcessServices_Migration.Designer.cs">
       <DependentUpon>201507292245379_ProcessServices_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508011853584_UpdateActionDo.cs" />
+    <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
+      <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -394,6 +398,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507292245379_ProcessServices_Migration.resx">
       <DependentUpon>201507292245379_ProcessServices_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
+      <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

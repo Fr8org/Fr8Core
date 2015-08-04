@@ -473,8 +473,11 @@
     <Content Include="Content\img\temp\old\test-background4.jpg" />
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
-    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />    
+	<Content Include="Scripts\app\directives\QueryBuilderDirective.js" />
+    <Content Include="Scripts\app\directives\CriteriaPaneDirective.js" />
     <Content Include="Scripts\app\directives\ProcessBuilderDirective.js" />
+
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
@@ -3600,6 +3603,7 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="Views\AngularTemplate\ProcessTemplate.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\AngularTemplate\CriteriaPane.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />

@@ -30,23 +30,98 @@ module dockyard.controllers {
             var criteriaIdSeq = 0;
             var actionIdSeq = 0;
 
-            this.pbAddCriteriaClick = function () {
-                this.processBuilder.addCriteria({ id: ++criteriaIdSeq })
+            // BEGIN CriteriaPane & ProcessBuilder event routines.
+
+            var criteriaIdSeq = 0;
+            var actionIdSeq = 0;
+
+            $scope.criteria = [];
+
+            $scope.fields = [
+                { key: 'envelope.name', name: '[Envelope].Name' },
+                { key: 'envelope.date', name: '[Envelope].Date' }
+            ];
+
+            $scope.selectedCriteria = null;
+
+            $scope.isCriteriaSelected = function () {
+                return $scope.selectedCriteria !== null;
             };
 
-            this.pbCriteriaClick = function (criteriaId) {
-                this.processBuilder.removeCriteria(criteriaId);
+            $scope.addCriteria = function () {
+                var id = ++criteriaIdSeq;
+
+                $scope.criteria.push({
+                    id: id,
+                    name: 'New criteria #' + id.toString(),
+                    actions: [],
+                    conditions: [
+                        {
+                            field: 'envelope.name',
+                            operator: 'gt',
+                            value: ''
+                        }
+                    ],
+                    executionMode: 'conditions'
+                });
             };
 
-            this.pbAddActionClick = function (criteriaId) {
-                this.processBuilder.addAction(criteriaId, { id: ++actionIdSeq });
+            $scope.selectCriteria = function (criteriaId) {
+                var i;
+                for (i = 0; i < $scope.criteria.length; ++i) {
+                    if ($scope.criteria[i].id === criteriaId) {
+                        $scope.selectedCriteria = $scope.criteria[i];
+                        break;
+                    }
+                }
             };
 
-            this.pbActionClick = function (criteriaId, actionId) {
-                this.processBuilder.removeAction(criteriaId, actionId);
+            $scope.removeCriteria = function () {
+                if (!$scope.selectedCriteria) { return; }
+
+                var i;
+                for (i = 0; i < $scope.criteria.length; ++i) {
+                    if ($scope.criteria[i].id === $scope.selectedCriteria.id) {
+                        $scope.criteria.splice(i, 1);
+                        $scope.selectedCriteria = null;
+                        break;
+                    }
+                }
             };
 
-            // END ProcessBuilder event handlers.
+            $scope.addAction = function (criteriaId) {
+                var id = ++actionIdSeq;
+
+                var i;
+                for (i = 0; i < $scope.criteria.length; ++i) {
+                    if ($scope.criteria[i].id === criteriaId) {
+                        $scope.criteria[i].actions.push({
+                            id: id,
+                            name: 'Action #' + id.toString()
+                        });
+                        break;
+                    }
+                }
+            };
+
+            $scope.selectAction = function (criteriaId, actionId) {
+                var i, j;
+                for (i = 0; i < $scope.criteria.length; ++i) {
+                    if ($scope.criteria[i].id === criteriaId) {
+                        for (j = 0; j < $scope.criteria[i].actions.length; ++j) {
+                            if ($scope.criteria[i].actions[j].id === actionId) {
+                                $scope.criteria[i].actions.splice(j, 1);
+                                break;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            };
+
+            // END CriteriaPane & ProcessBuilder routines.
+        }]);            // END ProcessBuilder event handlers.
         }
     }
     app.controller('ProcessBuilderController', ProcessBuilderController);
