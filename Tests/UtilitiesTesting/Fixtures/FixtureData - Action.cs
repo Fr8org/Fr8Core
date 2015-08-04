@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -9,17 +10,27 @@ namespace UtilitiesTesting.Fixtures
 			var curActionDO = new ActionDO
 			{
 				Id = 1,
-				Name = "Action 1"
+				UserLabel = "Action 1"
 			};
 			return curActionDO;
 		}
+
+	    public TemplateDO TestTemplate1()
+	    {
+	        var curTemplateDO = new TemplateDO(new Template())
+	        {
+	            Id = 1
+	        };
+
+	        return curTemplateDO;
+	    }
 
 		public ActionDO TestAction2()
 		{
 			var curActionDO = new ActionDO
 			{
 				Id = 2,
-				Name = "Action 2"
+				UserLabel = "Action 2"
 			};
 			return curActionDO;
 		}
@@ -47,15 +58,15 @@ namespace UtilitiesTesting.Fixtures
 			var curActionDO = new ActionDO
 			{
 				Id = 1,
-				Name = "Action 1",
-				ActionListID = 1
+				UserLabel = "Action 1",
+				ActionListId = 1
 			};
 
 			var curActionDO2 = new ActionDO
 			{
 				Id = 2,
-				Name = "Action 2",
-				ActionListID = 1
+				UserLabel = "Action 2",
+				ActionListId = 1
 			};
 
 			curActionListDO.ActionOrdering.Add( curActionDO );
