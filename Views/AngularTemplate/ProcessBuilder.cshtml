@@ -13,9 +13,9 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
-<div ng-controller="ProcessBuilderController as framework" class="margin-top-10">
+<div ng-controller="ProcessBuilderController" class="margin-top-10">
     <div class="row">
-        <div class="col-md-12 col-sm-12">
+        <div class="col-md-8 col-sm-8">
             <!-- BEGIN PORTLET-->
             <div class="portlet light ">
                 <div class="portlet-title">
@@ -28,7 +28,7 @@
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
                         <div class="form-group">
-                            <process-builder id="processBuilder" width="800" height="600"
+                            <process-builder id="processBuilder" width="700" height="600"
                                              criteria-list="criteria"
                                              on-add-criteria="addCriteria()"
                                              on-select-criteria="selectCriteria(criteriaId)"
@@ -49,16 +49,14 @@
             </div>
             <!-- END PORTLET-->
         </div>
-    </div>
-</div>
-<!-- END MAIN CONTENT -->
-
-<!-- BEGIN SCRIPT REQUIREMENTS -->
-<script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
-<!-- END SCRIPT REQUIREMENTS -->
+        <pane-select-action id="paneSelectAction"></pane-select-action>
+        <!-- END MAIN CONTENT -->
+        <!-- BEGIN SCRIPT REQUIREMENTS -->
+        <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
+        <!-- END SCRIPT REQUIREMENTS -->

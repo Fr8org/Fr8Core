@@ -106,7 +106,6 @@ module dockyard.controllers {
                                 break;
                             }
                         }
-
                         break;
                     }
                 }

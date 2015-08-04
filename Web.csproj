@@ -485,6 +485,7 @@
     <TypeScriptCompile Include="Scripts\app\app.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplatesController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateController.ts" />
     <Content Include="Scripts\app\directives\directives.js" />
@@ -3607,6 +3608,7 @@
     <Content Include="Views\AngularTemplate\CriteriaPane.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

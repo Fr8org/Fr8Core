@@ -19,10 +19,5 @@ namespace Web.Controllers
                 return HttpNotFound();
             }
         }
-        public ActionResult ProcessBuilder()
-        {
-            return View();
-        }
-
     }
 }
