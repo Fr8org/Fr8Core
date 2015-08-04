@@ -3736,30 +3736,6 @@
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\src\core\expressions\compiler.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx-lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.aggregates.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.all.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.async-lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.async-tests.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.async.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.backpressure-lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.backpressure-tests.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.backpressure.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.binding-lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.binding.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.coincidence-lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.coincidence.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.experimental.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.joinpatterns.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.testing.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.time-lite.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.time.d.ts" />
-    <TypeScriptCompile Include="node_modules\bower\node_modules\inquirer\node_modules\rx\ts\rx.virtualtime.d.ts" />
-  </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
