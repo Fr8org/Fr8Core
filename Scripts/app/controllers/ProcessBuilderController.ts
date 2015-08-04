@@ -12,26 +12,18 @@ module dockyard.controllers {
         // it is better to have it close to the constructor, because the parameters must match in count and type.
         // See http://docs.angularjs.org/guide/di
 
-        private pbAddCriteriaClick: () => void;
-        private pbCriteriaClick: (criteriaId: number) => void;
-        private pbAddActionClick: (criteriaId: number) => void;
-        private pbActionClick: (criteriaId: number, actionId: number) => void;
 
         public static $inject = [
             '$rootScope',
+            '$scope',
             'StringService'
         ];
         constructor(
             private $rootScope: interfaces.IAppRootScope,
+            private $scope: interfaces.IProcessBuilderScope,
             private StringService: services.IStringService) {
 
             // BEGIN ProcessBuilder event handlers.
-
-            var criteriaIdSeq = 0;
-            var actionIdSeq = 0;
-
-            // BEGIN CriteriaPane & ProcessBuilder event routines.
-
             var criteriaIdSeq = 0;
             var actionIdSeq = 0;
 
@@ -121,7 +113,7 @@ module dockyard.controllers {
             };
 
             // END CriteriaPane & ProcessBuilder routines.
-        }]);            // END ProcessBuilder event handlers.
+            // END ProcessBuilder event handlers.
         }
     }
     app.controller('ProcessBuilderController', ProcessBuilderController);

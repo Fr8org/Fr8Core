@@ -473,11 +473,10 @@
     <Content Include="Content\img\temp\old\test-background4.jpg" />
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
-    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />    
-	<Content Include="Scripts\app\directives\QueryBuilderDirective.js" />
+    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="Scripts\app\directives\QueryBuilderDirective.js" />
     <Content Include="Scripts\app\directives\CriteriaPaneDirective.js" />
     <Content Include="Scripts\app\directives\ProcessBuilderDirective.js" />
-
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
@@ -490,7 +489,9 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateController.ts" />
     <Content Include="Scripts\app\directives\directives.js" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderController.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplatesScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateScope.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
