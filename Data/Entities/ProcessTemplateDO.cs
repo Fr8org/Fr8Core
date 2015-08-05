@@ -16,6 +16,8 @@ namespace Data.Entities
 
 		public string Description{ get; set; }
 
+		public int StartingProcessNodeTemplate{ get; set; }
+
 		[ Required ]
 		[ ForeignKey( "ProcessTemplateStateTemplate" ) ]
 		public int ProcessTemplateState  { get; set; }

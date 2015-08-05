@@ -1,6 +1,5 @@
 ﻿using System;
 using Core.Interfaces;
-using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -10,16 +9,10 @@ namespace Core.Services
 {
 	public class Process: IProcess
 	{
-		private readonly EventReporter _alertReporter;
-		private readonly DockyardAccount _user;
-		private readonly IDocusignXml _docusignXml;
 		private readonly IProcessNode _processNode;
 
-		public Process( EventReporter alertReporter, DockyardAccount userService, IDocusignXml docusignXml )
+		public Process()
 		{
-			this._alertReporter = alertReporter;
-			this._user = userService;
-			this._docusignXml = docusignXml;
 			this._processNode = ObjectFactory.GetInstance< IProcessNode >();
 		}
 
@@ -57,52 +50,27 @@ namespace Core.Services
 			return curProcess;
 		}
 
-		/// <summary>
-		/// The method processes incoming notifications from DocuSign. 
-		/// </summary>
-		/// <param name="userId">UserId received from DocuSign.</param>
-		/// <param name="xmlPayload">XML content received from DocuSign.</param>
-		public void HandleDocusignNotification( string userId, string xmlPayload )
+		public void Execute( ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope )
 		{
-			string envelopeId;
-
-			if( string.IsNullOrEmpty( userId ) )
-				throw new ArgumentNullException( "userId" );
-
-			if( string.IsNullOrEmpty( xmlPayload ) )
-				throw new ArgumentNullException( "xmlPayload" );
-
-			try
+			var curProcess = this.Create( curProcessTemplate.Id, curEnvelope.Id );
+			if( curProcess.ProcessState == ProcessState.Failed && curProcess.ProcessState == ProcessState.Completed )
+				return;			
+			
+			curProcess.ProcessState = ProcessState.Processing;
+			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
-				envelopeId = this._docusignXml.GetEnvelopeIdFromXml( xmlPayload );
-			}
-			catch( ArgumentException )
-			{
-				const string message = "Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}";
-				this._alertReporter.ImproperDocusignNotificationReceived( message );
-				throw new ArgumentException();
-			}
+				ProcessNodeDO curProcessNode;
+				if( curProcess.CurrentProcessNodeId == 0 )
+				{
+					var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey( curProcessTemplate.StartingProcessNodeTemplate );
+					curProcessNode = new ProcessNodeDO();
+					curProcessNode.Name = curProcessNodeTemplate.Name;
+					curProcessNode.ParentProcessId = curProcess.Id;
+				}
+				curProcessNode = uow.ProcessNodeRepository.GetByKey( curProcess.CurrentProcessNodeId );
 
-			this._alertReporter.DocusignNotificationReceived( userId, xmlPayload );
-
-			var processList = this._user.GetProcessList( userId );
-			foreach( var process in processList )
-			{
-				this.HandleIncomingNotification( userId, envelopeId, process );
+				this._processNode.Execute( curProcess, curEnvelope, curProcessNode );
 			}
 		}
-
-		/// <summary>
-		/// Handles a notification by DocuSign by an individual Process.
-		/// </summary>
-		/// <param name="userId">UserId received from DocuSign.</param>
-		/// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-		/// <param name="process">An instance of ProcessDO object for which processing should occur.</param>
-		private void HandleIncomingNotification( string userId, string envelopeId, ProcessDO process )
-		{
-			this._alertReporter.AlertProcessProcessing( userId, envelopeId, process.Id );
-			//TODO: all notification processing logic.
-		}
-
 	}
 }

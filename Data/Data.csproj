@@ -115,7 +115,9 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
+    <Compile Include="Entities\DocuSignEventDO.cs" />
     <Compile Include="Entities\EnvelopeDataDO.cs" />
+    <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
@@ -204,12 +206,18 @@
     <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.cs" />
+    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.Designer.cs">
+      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
+    <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
+    <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
@@ -401,6 +409,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508051711123_ProcessFlow_Migration.resx">
+      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

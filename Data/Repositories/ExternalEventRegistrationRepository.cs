@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-	public class ExternalEventRegistrationRepository: GenericRepository< ExternalEventRegistrationDO >, IExternalEventRegistrationRepository
+	public class ExternalEventRegistrationRepository: GenericRepository< ExternalEventSubscriptionDO >, IExternalEventRegistrationRepository
 	{
 		public ExternalEventRegistrationRepository( IUnitOfWork uow )
 			: base( uow )
@@ -11,13 +11,13 @@ namespace Data.Repositories
 
 		}
 
-		public new void Add( ExternalEventRegistrationDO entity )
+		public new void Add( ExternalEventSubscriptionDO entity )
 		{
 			base.Add( entity );
 		}
 	}
 
-	public interface IExternalEventRegistrationRepository: IGenericRepository< ExternalEventRegistrationDO >
+	public interface IExternalEventRegistrationRepository: IGenericRepository< ExternalEventSubscriptionDO >
 	{
 
 	}

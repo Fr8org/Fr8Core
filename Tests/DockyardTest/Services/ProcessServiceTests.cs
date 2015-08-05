@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Core.Interfaces;
 using Core.Services;
+using Core.Utilities;
 using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
@@ -16,8 +17,8 @@ namespace DockyardTest.Services
 	public class ProcessServiceTests: BaseTest
 	{
 		private IProcess _processService;
+		private IDocuSignNotification _docuSignNotificationService;
 		private DockyardAccount _userService;
-		private IDocusignXml _docusignXml;
 		private string _testUserId = "testuser";
 		private string _xmlPayloadFullPath;
 
@@ -27,7 +28,7 @@ namespace DockyardTest.Services
 			base.SetUp();
 			this._processService = ObjectFactory.GetInstance< IProcess >();
 			this._userService = ObjectFactory.GetInstance< DockyardAccount >();
-			this._docusignXml = ObjectFactory.GetInstance< IDocusignXml >();
+			this._docuSignNotificationService = ObjectFactory.GetInstance< IDocuSignNotification >();
 
 			this._xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath( Environment.CurrentDirectory );
 			if( this._xmlPayloadFullPath == string.Empty )
@@ -35,23 +36,16 @@ namespace DockyardTest.Services
 		}
 
 		[ Test ]
-		public void ProcessService_CanExtractEnvelopeData()
-		{
-			var envelopeId = this._docusignXml.GetEnvelopeIdFromXml( File.ReadAllText( this._xmlPayloadFullPath ) );
-			Assert.AreEqual( "0aa561b8-b4d9-47e0-a615-2367971f876b", envelopeId );
-		}
-
-		[ Test ]
 		[ ExpectedException( typeof( ArgumentException ) ) ]
 		public void ProcessService_ThrowsIfXmlInvalid()
 		{
-			this._processService.HandleDocusignNotification( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath.Replace( ".xml", "_invalid.xml" ) ) );
+			this._docuSignNotificationService.Process( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath.Replace( ".xml", "_invalid.xml" ) ) );
 		}
 
 		[ Test ]
 		public void ProcessService_NotificationReceivedAlertCreated()
 		{
-			this._processService.HandleDocusignNotification( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath ) );
+			this._docuSignNotificationService.Process( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath ) );
 
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
@@ -94,7 +88,7 @@ namespace DockyardTest.Services
 			}
 
 			//Act
-			this._processService.HandleDocusignNotification( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath ) );
+			this._docuSignNotificationService.Process( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath ) );
 
 			//Assert
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )

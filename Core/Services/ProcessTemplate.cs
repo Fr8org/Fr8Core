@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Core.Exceptions;
+﻿using Core.Exceptions;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
@@ -12,10 +11,12 @@ namespace Core.Services
 	public class ProcessTemplate: IProcessTemplate
 	{
 		private EventReporter _eventReporter;
+		private readonly IProcess _process;
 
 		public ProcessTemplate()
 		{
 			this._eventReporter = ObjectFactory.GetInstance< EventReporter >();
+			this._process = ObjectFactory.GetInstance< IProcess >();
 		}
 
 		public void Delete( int id )
@@ -31,19 +32,6 @@ namespace Core.Services
 				uow.SaveChanges();
 			}
 
-		}
-
-		public void HandleExternalEvent( ExternalEventType curEventType )
-		{
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
-			{
-				var externalEventRegistrations = uow.ExternalEventRegistrationRepository.GetQuery().Where( e => e.EventType.Equals( curEventType ) );
-				foreach( var registration in externalEventRegistrations )
-				{
-					if( registration.ProcessTemplateId != null )
-						this.LaunchProcess( registration.ProcessTemplateId.Value );
-				}
-			}
 		}
 
 		public void CreateOrUpdate( ProcessTemplateDO ptdo )
@@ -75,13 +63,14 @@ namespace Core.Services
 			//}
 		}
 
-		private void LaunchProcess( int curProcessTemplateId )
+		public void LaunchProcess( int curProcessTemplateId, EnvelopeDO curEnvelope )
 		{
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
 				var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey( curProcessTemplateId );
 				if( curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive )
 				{
+					this._process.Execute( curProcessTemplate, curEnvelope );
 				}
 			}
 		}

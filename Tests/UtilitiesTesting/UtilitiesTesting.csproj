@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
+    <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Envelope.cs" />

@@ -65,6 +65,7 @@ namespace Data.Interfaces
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
 	  ExternalEventRegistrationRepository ExternalEventRegistrationRepository{ get; }
+	  ProcessNodeTemplateRepository ProcessNodeTemplateRepository{ get; }
 
 	    /// <summary>
         /// Starts a transaction on this unit of work

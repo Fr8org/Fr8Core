@@ -84,10 +84,9 @@ namespace Core.StructureMap
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcess>().Use<Process>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
 	          For< IProcessNode >().Use< ProcessNode >();
-
+	          For< IDocuSignNotification >().Use< DocuSignNotification >();
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
         }
@@ -119,9 +118,9 @@ namespace Core.StructureMap
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
 	          For< IProcessNode >().Use< ProcessNode >();
+	          For< IDocuSignNotification >().Use< DocuSignNotification >();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);

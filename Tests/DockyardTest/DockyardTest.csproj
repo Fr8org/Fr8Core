@@ -197,6 +197,7 @@
     <Compile Include="Services\ProcessNodeServiceTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
+    <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
   </ItemGroup>
   <ItemGroup>

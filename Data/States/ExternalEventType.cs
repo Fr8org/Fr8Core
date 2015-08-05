@@ -14,5 +14,26 @@
 		public const int RecipientCompleted = 10;
 		public const int RecipientDeclined = 11;
 		public const int RecipientVoided = 12;
+
+		public static int MapEnvelopeExternalEventType( string status )
+		{
+			switch( status )
+			{
+				case "Sent":
+					return EnvelopeSent;
+				case "Delivered":
+					return EnvelopeDelivered;
+				case "Signed":
+					return EnvelopeSigned;
+				case "Completed":
+					return EnvelopeCompleted;
+				case "Declined":
+					return EnvelopeDeclined;
+				case "Voided":
+					return EnvelopeVoided;
+				default:
+					return 0;
+			}
+		}
 	}
 }
