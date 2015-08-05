@@ -467,9 +467,9 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProcessTemplateRepository _processTemplateRepository;
+      private IProcessTemplateRepository _processTemplateRepository;
 
-        public ProcessTemplateRepository ProcessTemplateRepository
+        public IProcessTemplateRepository ProcessTemplateRepository
         {
             get
             {

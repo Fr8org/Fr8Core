@@ -7,12 +7,12 @@ using Data.States;
 
 namespace Web.ViewModels
 {
-    public class ProcessTemplateVM
+    public class ProcessTemplateDTO
     {
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        public int ProcessState { get; set; }
+        public int ProcessTemplateState { get; set; }
     }
 }
