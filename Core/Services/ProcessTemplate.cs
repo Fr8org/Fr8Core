@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
@@ -9,13 +11,18 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        public IQueryable<ProcessTemplateDO> GetForUser(string userId, int? id = null)
+        public IList<ProcessTemplateDO> GetForUser(string userId, int? id = null)
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var predicate = id != null
+                    ? (Func<ProcessTemplateDO, bool>) (pt => pt.Id == id)
+                    : (pt => pt.UserId == userId);
+
+
                 return unitOfWork.ProcessTemplateRepository
                 .GetQuery()
-                .Where(pt => pt.UserId == userId || (id != null && pt.Id == id));
+                .Where(predicate).ToList();
             }
         }
 
