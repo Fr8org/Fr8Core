@@ -25,7 +25,12 @@ namespace UtilitiesTesting.DocusignTools
 
             if (!result)
             {
-                throw new ApplicationException("Please, check your docusign credential info and integrator key.");
+                string errorText = "There is something wrong with contacting api. " +
+                                   "Please, check your docusign credential info and integrator key first. " +
+                                   "Error: " + account.RestError + " " +
+                                   "Trace: " + account.RestTrace;
+
+                throw new ApplicationException(errorText);
             }
 
             return account;
