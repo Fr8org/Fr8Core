@@ -5,6 +5,7 @@ using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.Principal;
 using System.Web.Http.Results;
 using Core.Interfaces;
+using Data.Entities;
 using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
@@ -31,12 +32,8 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            ProcessTemplateDTO processTemplateDto;
+            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                processTemplateDto = new FixtureData(uow).TestProcessTemplateDTO();
-            }
 
             //Act
             ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
@@ -60,12 +57,8 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            ProcessTemplateDTO processTemplateDto;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                processTemplateDto = new FixtureData(uow).TestEmptyNameProcessTemplateDTO();
-            }
+            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            processTemplateDto.Name = String.Empty;
 
 
             //Act
@@ -111,11 +104,7 @@ namespace DockyardTest.Controllers
 
             for (var i = 0; i < 4; i++)
             {
-                ProcessTemplateDTO processTemplateDto;
-                using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    processTemplateDto = new FixtureData(unitOfWork).TestProcessTemplateDTO();
-                }
+                var processTemplateDto = FixtureData.TestProcessTemplateDTO();
                 processTemplateController.Post(processTemplateDto);
 
             }
@@ -134,16 +123,8 @@ namespace DockyardTest.Controllers
         {
             //Arrange
             var testUserId = "testuser4";
-
             var processTemplateController = CreateProcessTemplateController(testUserId);
-
-
-
-            ProcessTemplateDTO processTemplateDto;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                processTemplateDto = new FixtureData(uow).TestProcessTemplateDTO();
-            }
+            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
             processTemplateController.Post(processTemplateDto);
 
 
@@ -163,17 +144,12 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser3";
-            int id = 3;
-            ProcessTemplateDTO processTemplateDto;
+            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                processTemplateDto = new FixtureData(uow).TestProcessTemplateDTO();
-            }
+
 
             ProcessTemplateController processTemplateController = CreateProcessTemplateController(testUserId);
             var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<ProcessTemplateDTO>;
-
 
             Assert.NotNull(postResult);
 
@@ -191,98 +167,59 @@ namespace DockyardTest.Controllers
         }
 
 
-        //[Test]
-        //public void ProcessController_CannotCreateIfProcessNameIsEmpty()
-        //{
-        //    //Arrange 
-        //    string testUserId = "testuser";
-        //    var ptvm = new ProcessTemplateDTO();
-        //    ptvm.Description = "Description for test process template";
-        //    ptvm.ProcessState = 1;
+        [Test]
+        public void ProcessController_CannotCreateIfProcessNameIsEmpty()
+        {
+            //Arrange 
+            string testUserId = "testuser";
+            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            processTemplateDto.Name = String.Empty;
 
-        //    //Act
-        //    ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
-        //    //ptc.Post(ptvm);
+            //Act
+            ProcessTemplateController processTemplateController = CreateProcessTemplateController(testUserId);
+            processTemplateController.Post(processTemplateDto);
 
-        //    //Assert
-        //    Assert.AreEqual(1, ptc.ModelState.Count()); //must be one error
-        //}
+            //Assert
+            Assert.AreEqual(1, processTemplateController.ModelState.Count()); //must be one error
+        }
 
-        //[Test]
-        //public void ProcessController_CanEditProcess()
-        //{
-        //    //Arrange 
-        //    IHttpActionResult result;
-        //    string testUserId = "testuser2";
-        //    int id = 2;
-        //    var ptvm = new ProcessTemplateDTO();
-        //    ptvm.Description = "Description for test process template";
-        //    ptvm.Name = "processtemplate1";
-        //    ptvm.ProcessState = 1;
-        //    ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
-        //   // ptc.Post(ptvm);
+        [Test]
+        public void ProcessController_CanEditProcess()
+        {
+            //Arrange 
+            string testUserId = "testuser2";
+            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateController = CreateProcessTemplateController(testUserId);
+            
+            //Save First
+            var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.NotNull(postResult);
 
-        //    //Manually specify Id since mocked repository does not generate id value automatically
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //	  //var ptdo = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.UserId == testUserId && pt.Name == ptvm.Name).SingleOrDefault();
-        //	  //ptdo.Id = id;
-        //	  uow.SaveChanges();
-        //    }
+            //Then Get
+            var getResult = processTemplateController.Get(postResult.Content.Id) as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.NotNull(getResult);
 
-        //    //Simulate editing Process Temlate
-        //    //Manually specify Id since mocked repository does not generate id value automatically
-        //    ptc = CreateProcessTemplateController(testUserId);
+            //Then Edit
+            var postEditNameValue = "EditedName";
+            getResult.Content.Name = postEditNameValue;
+            var editResult = processTemplateController.Post(getResult.Content) as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.NotNull(editResult);
 
-        //    //Act
-        //   // result = ptc.Get(id) as IHttpActionResult; // get view model for id 
-        //    //ptvm = (result as OkNegotiatedContentResult<ProcessTemplateDTO>).Content;
-        //    ptvm.Name = "processtemplate_edited";
-        //    ptvm.Description = "Description for test process template edited";
+            //Then Get
+            var postEditGetResult = processTemplateController.Get(editResult.Content.Id) as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.NotNull(postEditGetResult);
 
-        //    //result = ptc.Post(ptvm) as IHttpActionResult; //edit record
+            //Assert 
+            Assert.AreEqual(postEditGetResult.Content.Name,postEditNameValue);
+            Assert.AreEqual(postEditGetResult.Content.Id,editResult.Content.Id);
+            Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Id);
+            Assert.AreEqual(postEditGetResult.Content.Id, getResult.Content.Id);
+            
+        }
 
-        //    //Assert
-        //    Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //	  var ptdo = uow.ProcessTemplateRepository.GetByKey(id);
-        //	  Assert.IsNotNull(ptdo);
-        //	  Assert.AreEqual(ptvm.Name, ptdo.Name);
-        //	  Assert.AreEqual(ptvm.Description, ptdo.Description);
-        //    }
-        //}
+
 
        
-
-        //[Test]
-        //public void ProcessController_CanShowAllProcesses()
-        //{
-        //    ProcessTemplateDO ptdo;
-        //    string testUserId = "testuser4";
-
-        //    //Arrange 
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //	  for (int i = 0; i < 10; i++)
-        //	  {
-        //		ptdo = new ProcessTemplateDO();
-        //	     // ptdo.UserId = testUserId;
-        //		ptdo.Name = "Process template " + i.ToString();
-        //		//ptdo.ProcessState = ProcessTemplateState.Active;
-        //		ptdo.Description = "Process template descrption " + i.ToString();
-        //		uow.ProcessTemplateRepository.Add(ptdo);
-        //	  }
-        //	  uow.SaveChanges();
-        //    }
-
-        //    //Act
-        //    ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
-        //    var ptvm =  ptc.Get(); //get view model
-
-        //    //Assert
-        //   Assert.AreEqual(10, ptvm.ToList().Count);
-        //}
 
         private static ProcessTemplateController CreateProcessTemplateController(string testUserId)
         {

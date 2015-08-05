@@ -63,13 +63,9 @@ namespace Web.Controllers
                 return BadRequest("Some of the request data is invalid");
             }
 
-            processTemplateDto.Id = _processTemplate
-                .CreateOrUpdate(this.ConvertTo<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto,
-                (ptDto, ptDo) =>
-                {
-                    ptDo.UserId = User.Identity.Name;
-                }
-           ));
+            var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
+            curProcessTemplateDO.UserId = User.Identity.Name;
+            processTemplateDto.Id = _processTemplate.CreateOrUpdate(curProcessTemplateDO);
 
             return Ok(processTemplateDto);
         }

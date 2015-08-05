@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Core.Helper;
+﻿using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
-using Data.Infrastructure;
+using Data.Interfaces;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -15,12 +11,12 @@ namespace Core.Services
     {
         public IQueryable<ProcessTemplateDO> GetForUser(string userId, int? id = null)
         {
-            return this.Using(unitOfWork =>
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return unitOfWork.ProcessTemplateRepository
                 .GetQuery()
                 .Where(pt => pt.UserId == userId || (id != null && pt.Id == id));
-            });
+            }
         }
 
 
@@ -28,7 +24,7 @@ namespace Core.Services
         {
             var creating = ptdo.Id == 0;
 
-            this.Using(unitOfWork =>
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 if (creating)
                 {
@@ -43,14 +39,14 @@ namespace Core.Services
                     curProcessTemplate.Description = ptdo.Description;
                 }
                 unitOfWork.SaveChanges();
-            });
+            }
 
             return ptdo.Id;
         }
 
         public void Delete(int id)
         {
-            this.Using(unitOfWork =>
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(id);
                 if (curProcessTemplate == null)
@@ -59,7 +55,7 @@ namespace Core.Services
                 }
                 unitOfWork.ProcessTemplateRepository.Remove(curProcessTemplate);
                 unitOfWork.SaveChanges();
-            });
+            }
         }
     }
 }

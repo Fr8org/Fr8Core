@@ -166,7 +166,6 @@
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
-    <Compile Include="Helper\UnitOfWorkExtensions.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
@@ -174,7 +173,6 @@
     <Compile Include="Interfaces\IProcessNodeService.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
-    <Compile Include="Interfaces\IService.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
