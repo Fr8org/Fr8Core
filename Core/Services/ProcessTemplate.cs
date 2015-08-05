@@ -8,57 +8,62 @@ using StructureMap;
 
 namespace Core.Services
 {
-    public class ProcessTemplate : IProcessTemplate
-    {
+	public class ProcessTemplate: IProcessTemplate
+	{
 		private readonly IProcess _process;
-        public IQueryable<ProcessTemplateDO> GetForUser(string userId, int? id = null)
+
+		public ProcessTemplate()
+		{
 			this._process = ObjectFactory.GetInstance< IProcess >();
-        {
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return unitOfWork.ProcessTemplateRepository
-                .GetQuery()
-                .Where(pt => pt.UserId == userId || (id != null && pt.Id == id));
-            }
-        }
+		}
 
+		public IQueryable< ProcessTemplateDO > GetForUser( string userId, int? id = null )
+		{
+			using( var unitOfWork = ObjectFactory.GetInstance< IUnitOfWork >() )
+			{
+				return unitOfWork.ProcessTemplateRepository
+					.GetQuery()
+					.Where( pt => pt.UserId == userId || ( id != null && pt.Id == id ) );
+			}
+		}
 
-        public int CreateOrUpdate(ProcessTemplateDO ptdo)
-        {
-            var creating = ptdo.Id == 0;
+		public int CreateOrUpdate( ProcessTemplateDO ptdo )
+		{
+			var creating = ptdo.Id == 0;
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (creating)
-                {
-                    unitOfWork.ProcessTemplateRepository.Add(ptdo);
-                }
-                else
-                {
-                    var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
-                    if (curProcessTemplate == null)
-                        throw new EntityNotFoundException();
-                    curProcessTemplate.Name = ptdo.Name;
-                    curProcessTemplate.Description = ptdo.Description;
-                }
-                unitOfWork.SaveChanges();
-            }
+			using( var unitOfWork = ObjectFactory.GetInstance< IUnitOfWork >() )
+			{
+				if( creating )
+				{
+					unitOfWork.ProcessTemplateRepository.Add( ptdo );
+				}
+				else
+				{
+					var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey( ptdo.Id );
+					if( curProcessTemplate == null )
+						throw new EntityNotFoundException();
+					curProcessTemplate.Name = ptdo.Name;
+					curProcessTemplate.Description = ptdo.Description;
+				}
+				unitOfWork.SaveChanges();
+			}
 
-            return ptdo.Id;
-        }
+			return ptdo.Id;
+		}
 
-        public void Delete(int id)
-        {
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(id);
-                if (curProcessTemplate == null)
-                {
-                    throw new EntityNotFoundException<ProcessTemplateDO>(id);
-                }
-                unitOfWork.ProcessTemplateRepository.Remove(curProcessTemplate);
-                unitOfWork.SaveChanges();
-            }
+		public void Delete( int id )
+		{
+			using( var unitOfWork = ObjectFactory.GetInstance< IUnitOfWork >() )
+			{
+				var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey( id );
+				if( curProcessTemplate == null )
+				{
+					throw new EntityNotFoundException< ProcessTemplateDO >( id );
+				}
+				unitOfWork.ProcessTemplateRepository.Remove( curProcessTemplate );
+				unitOfWork.SaveChanges();
+			}
+		}
 
 		public void LaunchProcess( int curProcessTemplateId, EnvelopeDO curEnvelope )
 		{
@@ -71,6 +76,5 @@ namespace Core.Services
 				}
 			}
 		}
-        }
-    }
+	}
 }
