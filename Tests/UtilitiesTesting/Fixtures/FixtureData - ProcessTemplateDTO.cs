@@ -4,7 +4,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static ProcessTemplateDTO TestProcessTemplateDTO()
+        public static ProcessTemplateDTO CreateTestProcessTemplateDTO()
         {
             return new ProcessTemplateDTO()
             {

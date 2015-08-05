@@ -32,7 +32,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
 
 
             //Act
@@ -57,7 +57,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             processTemplateDto.Name = String.Empty;
 
 
@@ -104,7 +104,7 @@ namespace DockyardTest.Controllers
 
             for (var i = 0; i < 4; i++)
             {
-                var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+                var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
                 processTemplateController.Post(processTemplateDto);
 
             }
@@ -124,7 +124,7 @@ namespace DockyardTest.Controllers
             //Arrange
             var testUserId = "testuser4";
             var processTemplateController = CreateProcessTemplateController(testUserId);
-            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             processTemplateController.Post(processTemplateDto);
 
 
@@ -144,7 +144,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser3";
-            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
 
 
 
@@ -172,7 +172,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser";
-            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             processTemplateDto.Name = String.Empty;
 
             //Act
@@ -188,7 +188,7 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string testUserId = "testuser2";
-            var processTemplateDto = FixtureData.TestProcessTemplateDTO();
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             var processTemplateController = CreateProcessTemplateController(testUserId);
             
             //Save First
