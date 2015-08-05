@@ -4,7 +4,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public ProcessTemplateDTO TestProcessTemplateDTO()
+        public static ProcessTemplateDTO CreateTestProcessTemplateDTO()
         {
             return new ProcessTemplateDTO()
             {
@@ -14,14 +14,6 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public ProcessTemplateDTO TestEmptyNameProcessTemplateDTO()
-        {
-            return new ProcessTemplateDTO()
-            {
-                Name = "",
-                Description = "Description for test process template",
-                ProcessTemplateState = 1
-            };
-        }       
+           
     }
 }

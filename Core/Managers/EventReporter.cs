@@ -351,7 +351,7 @@ namespace Core.Managers
                 Activity = "Created",
                 CustomerId = userId,
                 ObjectId = "0",
-                Data = string.Format("ProcessTemplateService Name: {0}.",
+                Data = string.Format("ProcessTemplate Name: {0}.",
                         processTemplateName)
             };
             LogFactInformation(fact, "ProcessTemplateCreated");

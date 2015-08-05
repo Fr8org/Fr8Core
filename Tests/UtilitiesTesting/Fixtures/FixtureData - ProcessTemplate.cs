@@ -7,12 +7,15 @@ namespace UtilitiesTesting.Fixtures
 	{
 		public static ProcessTemplateDO CreateProcessTemplate()
 		{
-			var processTemplate = new ProcessTemplateDO();
-			processTemplate.Description = "descr 1";
-			processTemplate.Name = "template1";
-			processTemplate.ProcessTemplateState = ProcessTemplateState.Active;
+		    var processTemplate = new ProcessTemplateDO
+		    {
+		        Description = "descr 1",
+		        Name = "template1",
+		        ProcessTemplateState = ProcessTemplateState.Active,
+                UserId ="testUser1"
+		    };
 
-			return processTemplate;
+		    return processTemplate;
 		}
 	}
 }
