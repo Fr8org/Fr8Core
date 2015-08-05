@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Core.Exceptions
+namespace Data.Exceptions
 {
     public class EntityNotFoundException : ApplicationException
     {

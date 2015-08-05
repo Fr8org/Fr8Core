@@ -23,5 +23,8 @@ namespace Data.Entities
 		public int ProcessTemplateState  { get; set; }
 
 		public virtual _ProcessTemplateStateTemplate ProcessTemplateStateTemplate{ get; set; }
+        
+        [ Required ]
+	    public string UserId { get; set; }
 	}
 }

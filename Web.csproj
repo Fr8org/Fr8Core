@@ -66,12 +66,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation.Mvc">
-      <HintPath>packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    <Reference Include="FluentValidation.Mvc, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation.WebApi, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\FluentValidation.WebAPI.5.6.2.0\lib\Net45\FluentValidation.WebApi.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Google.Apis">
       <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.dll</HintPath>
@@ -249,7 +254,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
-    <Compile Include="Controllers\Api\ProcessTemplateController.cs" />
+    <Compile Include="Controllers\ProcessTemplateController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
@@ -323,13 +328,14 @@
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
-    <Compile Include="ViewModels\ProcessTemplateVM.cs" />
+    <Compile Include="ViewModels\ProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
     <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
+    <Compile Include="ViewModels\Validators\ProcessTemplateDTO.cs" />
     <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

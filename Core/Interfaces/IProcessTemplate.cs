@@ -1,11 +1,16 @@
-﻿using Data.Entities;
+﻿using System.Linq;
+using Data.Entities;
 
 namespace Core.Interfaces
 {
-	public interface IProcessTemplate
-	{
-		void CreateOrUpdate( ProcessTemplateDO ptdo );
-		void Delete( int id );
+    public interface IProcessTemplate 
+    {
+        IQueryable<ProcessTemplateDO> GetForUser(string userId, int? id = null);
+
+        int CreateOrUpdate(ProcessTemplateDO ptdo);
+        void Delete(int id); 
 		void LaunchProcess( int curProcessTemplateId, EnvelopeDO curEnvelope );
-	}
+    }
+
+   
 }

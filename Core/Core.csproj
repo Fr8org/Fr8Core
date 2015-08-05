@@ -164,7 +164,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
@@ -284,6 +283,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />
+    <Folder Include="Exceptions\" />
     <Folder Include="UserAlerting\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
