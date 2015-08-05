@@ -2,16 +2,20 @@
     Layout = null;
 }
 
-<div class="col-md-6 col-sm-6">
-    <div class="portlet light ">
-        <div class="portlet-title">
-            <div class="caption caption-md">
-                <i class="icon-bar-chart font-green-haze hide"></i>
-                <span class="caption-subject font-green-haze bold uppercase">Select Action</span>
-            </div>
+    <div class="portlet light " ng-show="selectedAction != null">
+    <div class="portlet-title">
+        <div class="caption caption-md">
+            <i class="icon-bar-chart font-green-haze hide"></i>
+            <span class="caption-subject font-green-haze bold uppercase">Select Action</span>
         </div>
-        <div class="portlet-body">
-            Select action
-        </div>
+    </div>
+    <div class="portlet-body">
+        <select ng-model="selectedAction.id">
+            <optgroup label="Select action">
+                <option value="1">Action Type 1</option>
+                <option value="2">Action Type 2</option>
+                <option value="3">Action Type 3</option>
+            </optgroup>
+        </select>
     </div>
 </div>

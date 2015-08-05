@@ -8,14 +8,22 @@ var dockyard;
         //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
         var PaneSelectAction = (function () {
             function PaneSelectAction($rootScope) {
+                var _this = this;
                 this.$rootScope = $rootScope;
                 this.templateUrl = '/AngularTemplate/PaneSelectAction';
-                this.scope = {};
+                this.scope = {
+                    criteriaList: '='
+                };
                 this.restrict = 'E';
                 PaneSelectAction.prototype.link = function (scope, element, attrs) {
                     //Link function goes here
                 };
+                PaneSelectAction.prototype.controller = function ($scope, $element, $attrs) {
+                    $scope.$watch(function (scope) { return scope.actionTypeId; }, _this.onActionTypeChanged, true);
+                };
             }
+            PaneSelectAction.prototype.onActionTypeChanged = function (newValue, oldValue, scope) {
+            };
             //The factory function returns Directive object as per Angular requirements
             PaneSelectAction.Factory = function () {
                 var directive = function ($rootScope) {

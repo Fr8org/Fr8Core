@@ -37,7 +37,6 @@ var dockyard;
                         animation: true,
                         templateUrl: 'modalDeleteConfirmation',
                         controller: 'ProcessTemplatesController__DeleteConfirmation',
-                        size: null
                     }).result.then(function (selectedItem) {
                         //Deletion confirmed
                         ProcessTemplateService.delete({ id: pt.Id }).$promise.then(function () {

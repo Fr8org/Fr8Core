@@ -13,7 +13,8 @@ module dockyard.interfaces {
 
     export interface IAction {
         id: number,
-        name: string
+        name: string,
+        actionTypeId: string
     }
 
     export interface ICondition {

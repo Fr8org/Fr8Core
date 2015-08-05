@@ -491,6 +491,8 @@
     <Content Include="Scripts\app\directives\directives.js" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\ISelectActionPaneScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneWorkflowDesignerScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderScope.ts" />

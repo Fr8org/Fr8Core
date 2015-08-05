@@ -47,9 +47,11 @@
                               on-remove-criteria="removeCriteria()"
                               ng-show="isCriteriaSelected()">
         </pane-define-criteria>
-        <pane-select-action id="paneSelectAction" ng-show="isActionSelected()"></pane-select-action>
-        <!-- END MAIN CONTENT -->
+        <div class="col-md-6 col-sm-6">
+            <pane-select-action id="paneSelectAction" criteria-list="criteria"></pane-select-action>
+        </div>
 
+        <!-- END MAIN CONTENT -->
         <!-- BEGIN SCRIPT REQUIREMENTS -->
         <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
         <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
