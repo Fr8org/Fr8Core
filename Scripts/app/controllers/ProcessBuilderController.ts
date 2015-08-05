@@ -35,15 +35,19 @@ module dockyard.controllers {
             ];
 
             $scope.selectedCriteria = null;
+            $scope.selectedAction = null;
 
             $scope.isCriteriaSelected = function () {
                 return $scope.selectedCriteria !== null;
             };
 
+            $scope.isActionSelected = function () {
+                return $scope.selectedAction !== null;
+            };
+
             $scope.addCriteria = function () {
                 var id = ++criteriaIdSeq;
-
-                $scope.criteria.push({
+                var criteria = {
                     id: id,
                     name: 'New criteria #' + id.toString(),
                     actions: [],
@@ -51,14 +55,22 @@ module dockyard.controllers {
                         {
                             field: 'envelope.name',
                             operator: 'gt',
-                            value: ''
+                            value: '',
+                            valueError: true
                         }
                     ],
                     executionMode: 'conditions'
-                });
+                };
+
+                $scope.criteria.push(criteria);
+
+                $scope.selectedCriteria = criteria;
+                $scope.selectedAction = null;
             };
 
             $scope.selectCriteria = function (criteriaId) {
+                $scope.selectedAction = null;
+
                 var i;
                 for (i = 0; i < $scope.criteria.length; ++i) {
                     if ($scope.criteria[i].id === criteriaId) {
@@ -85,18 +97,40 @@ module dockyard.controllers {
                 var id = ++actionIdSeq;
 
                 var i;
+                var action;
                 for (i = 0; i < $scope.criteria.length; ++i) {
                     if ($scope.criteria[i].id === criteriaId) {
-                        $scope.criteria[i].actions.push({
+                        action = {
                             id: id,
                             name: 'Action #' + id.toString()
-                        });
+                        };
+                        $scope.criteria[i].actions.push(action);
+
+                        $scope.selectedCriteria = null;
+                        $scope.selectedAction = action;
                         break;
                     }
                 }
             };
 
             $scope.selectAction = function (criteriaId, actionId) {
+                $scope.selectedCriteria = null;
+
+                var i, j;
+                for (i = 0; i < $scope.criteria.length; ++i) {
+                    if ($scope.criteria[i].id === criteriaId) {
+                        for (j = 0; j < $scope.criteria[i].actions.length; ++j) {
+                            if ($scope.criteria[i].actions[j].id === actionId) {                                
+                                $scope.selectedAction = $scope.criteria[i].actions[j];
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            };
+
+            $scope.removeAction = function (criteriaId, actionId) {
                 var i, j;
                 for (i = 0; i < $scope.criteria.length; ++i) {
                     if ($scope.criteria[i].id === criteriaId) {

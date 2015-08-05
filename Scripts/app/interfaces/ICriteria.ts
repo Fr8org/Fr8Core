@@ -19,10 +19,12 @@ module dockyard.interfaces {
     export interface ICondition {
         field: string,
         operator: string,
-        value: string
+        value: string,
+        valueError: boolean
     }
 
     export interface IField {
-        key: string, name: string
+        key: string,
+        name: string
     }
 }
