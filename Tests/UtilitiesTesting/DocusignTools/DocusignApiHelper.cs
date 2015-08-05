@@ -25,10 +25,15 @@ namespace UtilitiesTesting.DocusignTools
 
             if (!result)
             {
-                string errorText = "There is something wrong with contacting api. " +
-                                   "Please, check your docusign credential info and integrator key first. " +
-                                   "Error: " + account.RestError + " " +
-                                   "Trace: " + account.RestTrace;
+                string errorText = "There is something wrong with contacting api. ";
+
+                if (account.RestError != null)
+                {
+                    if (!string.IsNullOrEmpty(account.RestError.Serialize()))
+                    {
+                        errorText += "Error Detail: " + account.RestError.Serialize();
+                    }
+                }
 
                 throw new ApplicationException(errorText);
             }
