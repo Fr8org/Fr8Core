@@ -46,8 +46,8 @@ namespace Core.Services
 				foreach( var curEvent in curEvents )
 				{
 					var @event = curEvent;
-					var subscriptions = uow.ExternalEventRegistrationRepository.GetQuery().Where( s => s.EventType == @event.ExternalEventType );
-					var envelope = uow.EnvelopeRepository.GetByKey( curEvent.EnvelopeId );
+					var subscriptions = uow.ExternalEventRegistrationRepository.GetQuery().Where( s => s.EventType == @event.ExternalEventType ).ToList();
+					var envelope = uow.EnvelopeRepository.GetByKey( curEvent.Id );
 
 					foreach( var subscription in subscriptions )
 					{
