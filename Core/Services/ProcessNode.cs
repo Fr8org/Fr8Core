@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 
 namespace Core.Services
 {
-	public class ProcessNode: IProcessNodeService
+	public class ProcessNode: IProcessNode
 	{
 		/// <summary>
 		/// Creates ProcessNode Object

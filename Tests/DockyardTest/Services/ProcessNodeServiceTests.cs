@@ -14,13 +14,13 @@ namespace DockyardTest.Services
 	[ Category( "ProcessNodeService" ) ]
 	public class ProcessNodeServiceTests: BaseTest
 	{
-		private IProcessNodeService _service;
+		private IProcessNode _service;
 
 		[ SetUp ]
 		public override void SetUp()
 		{
 			base.SetUp();
-			this._service = ObjectFactory.GetInstance< IProcessNodeService >();
+			this._service = ObjectFactory.GetInstance< IProcessNode >();
 		}
 
 		[ Test ]

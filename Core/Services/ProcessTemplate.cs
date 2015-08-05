@@ -1,63 +1,61 @@
-﻿using Core.Exceptions;
+﻿using System.Linq;
 using Core.Interfaces;
-using Core.Managers;
 using Data.Entities;
+using Data.Exceptions;
 using Data.Interfaces;
 using StructureMap;
 
 namespace Core.Services
 {
-	public class ProcessTemplate: IProcessTemplate
-	{
-		private EventReporter _eventReporter;
+    public class ProcessTemplate : IProcessTemplate
+    {
+        public IQueryable<ProcessTemplateDO> GetForUser(string userId, int? id = null)
+        {
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return unitOfWork.ProcessTemplateRepository
+                .GetQuery()
+                .Where(pt => pt.UserId == userId || (id != null && pt.Id == id));
+            }
+        }
 
-		public ProcessTemplate()
-		{
-			this._eventReporter = ObjectFactory.GetInstance< EventReporter >();
-		}
 
-		public void Delete( int id )
-		{
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
-			{
-				var ptdo = uow.ProcessTemplateRepository.GetByKey( id );
-				if( ptdo == null )
-				{
-					throw new EntityNotFoundException();
-				}
-				uow.ProcessTemplateRepository.Remove( ptdo );
-				uow.SaveChanges();
-			}
+        public int CreateOrUpdate(ProcessTemplateDO ptdo)
+        {
+            var creating = ptdo.Id == 0;
 
-		}
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (creating)
+                {
+                    unitOfWork.ProcessTemplateRepository.Add(ptdo);
+                }
+                else
+                {
+                    var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
+                    if (curProcessTemplate == null)
+                        throw new EntityNotFoundException();
+                    curProcessTemplate.Name = ptdo.Name;
+                    curProcessTemplate.Description = ptdo.Description;
+                }
+                unitOfWork.SaveChanges();
+            }
 
-		public void CreateOrUpdate( ProcessTemplateDO ptdo )
-		{
-			var creating = ptdo.Id == 0;
+            return ptdo.Id;
+        }
 
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
-			{
-				if( ptdo.Id == 0 )
-				{
-					uow.ProcessTemplateRepository.Add( ptdo );
-				}
-				else
-				{
-					var entity = uow.ProcessTemplateRepository.GetByKey( ptdo.Id );
-
-					if( entity == null )
-						throw new EntityNotFoundException();
-
-					entity.Name = ptdo.Name;
-					entity.Description = ptdo.Description;
-				}
-				uow.SaveChanges();
-			}
-
-			//if (creating)
-			//{
-			//    _eventReporter.ProcessTemplateCreated(ptdo.UserId, ptdo.Name);
-			//}
-		}
-	}
+        public void Delete(int id)
+        {
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(id);
+                if (curProcessTemplate == null)
+                {
+                    throw new EntityNotFoundException<ProcessTemplateDO>(id);
+                }
+                unitOfWork.ProcessTemplateRepository.Remove(curProcessTemplate);
+                unitOfWork.SaveChanges();
+            }
+        }
+    }
 }

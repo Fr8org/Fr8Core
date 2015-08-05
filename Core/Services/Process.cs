@@ -13,14 +13,14 @@ namespace Core.Services
 		private readonly EventReporter _alertReporter;
 		private readonly DockyardAccount _user;
 		private readonly IDocusignXml _docusignXml;
-		private readonly IProcessNodeService _processNode;
+		private readonly IProcessNode _processNode;
 
 		public Process( EventReporter alertReporter, DockyardAccount userService, IDocusignXml docusignXml )
 		{
 			this._alertReporter = alertReporter;
 			this._user = userService;
 			this._docusignXml = docusignXml;
-			this._processNode = ObjectFactory.GetInstance< IProcessNodeService >();
+			this._processNode = ObjectFactory.GetInstance< IProcessNode >();
 		}
 
 		/// <summary>

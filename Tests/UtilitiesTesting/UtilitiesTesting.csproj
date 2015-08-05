@@ -97,6 +97,7 @@
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplate.cs" />
+    <Compile Include="Fixtures\FixtureData - ProcessTemplateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
