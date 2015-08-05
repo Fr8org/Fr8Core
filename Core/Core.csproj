@@ -170,7 +170,7 @@
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IProcessNodeService.cs" />
+    <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcessService.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />

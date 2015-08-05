@@ -86,7 +86,7 @@ namespace Core.StructureMap
                 For<IProcess>().Use<Process>();
                 For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
-                For<IProcessNodeService>().Use<ProcessNode>();
+                For<IProcessNode>().Use<ProcessNode>();
 
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
@@ -120,7 +120,7 @@ namespace Core.StructureMap
                 For<IProcess>().Use<Process>();
                 For<IDocusignXml>().Use<DocusignXml>();
                 For<ICriteria>().Use<Criteria>();
-                For<IProcessNodeService>().Use<ProcessNode>();
+                For<IProcessNode>().Use<ProcessNode>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
