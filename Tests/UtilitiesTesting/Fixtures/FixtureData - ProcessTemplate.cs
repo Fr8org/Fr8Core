@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-		public static ProcessTemplateDO GetProcessTemplate1()
+		public static ProcessTemplateDO TestProcessTemplate1()
 		{
 		    var processTemplate = new ProcessTemplateDO
 		    {

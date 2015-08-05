@@ -33,7 +33,7 @@ namespace DockyardTest.Services
                                                               FixtureData.TestRestSettings1());
 
             Envelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
-                                                                        FixtureData.TestEnvelope1WithGivenAccount(account),
+                                                                        FixtureData.TestEnvelope2(account),
                                                                         FixtureData.TestRealPdfFile1(),
                                                                         FixtureData.TestTabCollection1());
 

@@ -110,7 +110,7 @@ namespace DockyardTest.Services
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
 				var envelope = FixtureData.TestEnvelope1();
-				var processTemplate = FixtureData.GetProcessTemplate1();
+				var processTemplate = FixtureData.TestProcessTemplate1();
 
 				uow.EnvelopeRepository.Add( envelope );
 				uow.ProcessTemplateRepository.Add( processTemplate );
@@ -130,7 +130,7 @@ namespace DockyardTest.Services
 			{
 				const int incorrectEnvelopeId = 2;
 
-				var processTemplate = FixtureData.GetProcessTemplate1();
+				var processTemplate = FixtureData.TestProcessTemplate1();
 
 				uow.ProcessTemplateRepository.Add( processTemplate );
 				uow.SaveChanges();

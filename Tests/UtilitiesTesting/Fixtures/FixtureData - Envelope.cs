@@ -17,7 +17,7 @@ namespace UtilitiesTesting.Fixtures
 		           };
 		}
 
-        public static Envelope TestEnvelope1WithGivenAccount(Account account)
+        public static Envelope TestEnvelope2(Account account)
         {
             // create envelope object and assign login info
             return new Envelope

@@ -33,7 +33,7 @@ namespace Core.Services
         /// </returns>
         public List<EnvelopeData> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
         {
-            Signer[] curSignersSet = _signer.GetSignersFromRecipients(envelope);
+            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
             {
                 foreach (Signer curSigner in curSignersSet)
