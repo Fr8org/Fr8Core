@@ -2,6 +2,8 @@
 
 using DocuSign.Integrations.Client;
 
+using Newtonsoft.Json;
+
 using UtilitiesTesting.DocusignTools.Interfaces;
 
 namespace UtilitiesTesting.DocusignTools
@@ -27,13 +29,8 @@ namespace UtilitiesTesting.DocusignTools
             {
                 string errorText = "There is something wrong with contacting api. ";
 
-                if (account.RestError != null)
-                {
-                    if (!string.IsNullOrEmpty(account.RestError.Serialize()))
-                    {
-                        errorText += "Error Detail: " + account.RestError.Serialize();
-                    }
-                }
+                errorText = GetRestErrorAsSerialized(account, errorText);
+                errorText = SerializeParametersAndFillErrorText(account, restSettings, errorText);
 
                 throw new ApplicationException(errorText);
             }
@@ -59,5 +56,36 @@ namespace UtilitiesTesting.DocusignTools
 
             return envelope;
         }
+
+        #region [ private methods ]
+        private static string GetRestErrorAsSerialized(Account account, string errorText)
+        {
+            if (account.RestError != null)
+            {
+                if (!string.IsNullOrEmpty(account.RestError.Serialize()))
+                {
+                    errorText += "Error Detail: " + account.RestError.Serialize();
+                }
+            }
+            return errorText;
+        }
+
+        private static string SerializeParametersAndFillErrorText(Account account, RestSettings restSettings, string errorText)
+        {
+            string accountSerialized = JsonConvert.SerializeObject(account);
+            string restSettingsSerialized = JsonConvert.SerializeObject(restSettings);
+
+            if (!string.IsNullOrEmpty(accountSerialized))
+            {
+                errorText += "Account: " + accountSerialized;
+            }
+
+            if (!string.IsNullOrEmpty(accountSerialized))
+            {
+                errorText += "RestSettings: " + restSettingsSerialized;
+            }
+            return errorText;
+        }
+        #endregion
     }
 }
