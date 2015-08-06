@@ -7,7 +7,6 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Core.Exceptions;
 using Core.Managers.APIManagers.Packagers;
 using Core.Interfaces;
 using Core.Services;
@@ -347,7 +346,7 @@ namespace Core.Managers
         {
             FactDO fact = new FactDO
             {
-                PrimaryCategory = "ProcessTemplate",
+                PrimaryCategory = "ProcessTemplateService",
                 SecondaryCategory = null,
                 Activity = "Created",
                 CustomerId = userId,

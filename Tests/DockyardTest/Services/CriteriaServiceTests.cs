@@ -29,7 +29,7 @@ namespace DockyardTest.Services
         [Test]
         public void CriteriaService_CanApplyEqualCriterion()
         {
-            var envelopeDataList = FixtureData.CreateEnvelopeDataList();
+            var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             var results = new bool[2];
             var values = new string[] {envelopeDataList.First().Value, "__non-existing-value__"};
             for (var i = 0; i < 2; i++)
