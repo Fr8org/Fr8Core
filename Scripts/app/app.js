@@ -81,7 +81,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
 
     // Redirect any unmatched url
-    $urlRouterProvider.otherwise("/signIn");
+    $urlRouterProvider.otherwise("/processes");
 
     $stateProvider
 
