@@ -8,6 +8,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Microsoft.Ajax.Utilities;
 using StructureMap;
 using Web.Controllers.Helpers;
@@ -34,12 +35,13 @@ namespace Web.Controllers
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, id).ToList();
+
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
 
             switch (curProcessTemplates.Count)
             {
                 case 0:
-                    throw new ApplicationException("Process Template not found for id {0}".FormatInvariant(id));
+                    throw new ApplicationException("Process Template(s) not found for "+ (id != null ? "id {0}".FormatInvariant(id) :"the current user"));
                 case 1:
                     return Ok(Mapper.Map<ProcessTemplateDTO>(curProcessTemplates.First()));
             }
@@ -73,7 +75,7 @@ namespace Web.Controllers
         public IHttpActionResult Delete(int id)
         {
             _processTemplate.Delete(id);
-            return Ok();
+            return Ok(id);
         }
 
         
