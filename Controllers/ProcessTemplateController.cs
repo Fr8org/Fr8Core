@@ -8,6 +8,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Microsoft.Ajax.Utilities;
 using StructureMap;
 using Web.Controllers.Helpers;
@@ -34,7 +35,8 @@ namespace Web.Controllers
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, id);
+
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
 
             switch (curProcessTemplates.Count)
             {

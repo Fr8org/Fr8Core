@@ -11,18 +11,22 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        public IList<ProcessTemplateDO> GetForUser(string userId, int? id = null)
+        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
         {
+            if (userId == null)
+                throw new ApplicationException("UserId must not be null");
+
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var predicate = id != null
-                    ? (Func<ProcessTemplateDO, bool>) (pt => pt.Id == id)
-                    : (pt => pt.UserId == userId);
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
 
+                if (isAdmin)
+                {
+                    return (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id)).ToList();
+                }
 
-                return unitOfWork.ProcessTemplateRepository
-                .GetQuery()
-                .Where(predicate).ToList();
+                return (id == null ? queryableRepo.Where(pt => pt.UserId == userId)
+                                   : queryableRepo.Where(pt => pt.Id == id && pt.UserId == userId)).ToList();
             }
         }
 
