@@ -5,6 +5,7 @@ module dockyard.interfaces {
 
     export interface ICriteria {
         id: number,
+        isTempId: boolean,
         name: string,
         actions: Array<IAction>,
         conditions: Array<ICondition>,
@@ -13,8 +14,10 @@ module dockyard.interfaces {
 
     export interface IAction {
         id: number,
+        tempId: number,
+        criteriaId: number;
         name: string,
-        actionTypeId: string
+        actionTypeId: number
     }
 
     export interface ICondition {

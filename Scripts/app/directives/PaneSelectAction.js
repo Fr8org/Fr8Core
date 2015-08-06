@@ -19,10 +19,11 @@ var dockyard;
                     //Link function goes here
                 };
                 PaneSelectAction.prototype.controller = function ($scope, $element, $attrs) {
-                    $scope.$watch(function (scope) { return scope.actionTypeId; }, _this.onActionTypeChanged, true);
+                    $scope.$watch(function (scope) { return scope.action; }, _this.onActionChanged, true);
                 };
             }
-            PaneSelectAction.prototype.onActionTypeChanged = function (newValue, oldValue, scope) {
+            PaneSelectAction.prototype.onActionChanged = function (newValue, oldValue, scope) {
+                alert('action changed');
             };
             //The factory function returns Directive object as per Angular requirements
             PaneSelectAction.Factory = function () {

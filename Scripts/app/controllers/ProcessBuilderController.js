@@ -7,11 +7,18 @@ var dockyard;
     var controllers;
     (function (controllers) {
         'use strict';
+        //Setup aliases
+        var pwd = dockyard.directives.paneWorkflowDesigner;
+        var psa = dockyard.directives.paneSelectAction;
+        var pca = dockyard.directives.paneConfigureAction;
+        var pst = dockyard.directives.paneSelectTemplate;
         var ProcessBuilderController = (function () {
             function ProcessBuilderController($rootScope, $scope, StringService) {
                 this.$rootScope = $rootScope;
                 this.$scope = $scope;
                 this.StringService = StringService;
+                this._scope = $scope;
+                this.setupMessageProcessing();
                 // BEGIN ProcessBuilder event handlers.
                 var criteriaIdSeq = 0;
                 var actionIdSeq = 0;
@@ -32,6 +39,7 @@ var dockyard;
                     var id = ++criteriaIdSeq;
                     var criteria = {
                         id: id,
+                        isTempId: false,
                         name: 'New criteria #' + id.toString(),
                         actions: [],
                         conditions: [
@@ -120,6 +128,68 @@ var dockyard;
                 // END CriteriaPane & ProcessBuilder routines.
                 // END ProcessBuilder event handlers.
             }
+            /*
+                Mapping of incoming messages to handlers
+            */
+            ProcessBuilderController.prototype.setupMessageProcessing = function () {
+                var _this = this;
+                //Process Designer Pane events
+                this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_CriteriaSelected], function (event, eventArgs) { return _this.PaneWorkflowDesigner_CriteriaSelected(eventArgs); });
+                this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], function (event, eventArgs) { return _this.PaneWorkflowDesigner_ActionSelected(eventArgs); });
+                this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], function (event, eventArgs) { return _this.PaneWorkflowDesigner_TemplateSelected(eventArgs); });
+                //Process Configure Action Pane events
+                this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_Cancelled], function (event, eventArgs) { return _this.PaneConfigureAction_Cancelled(eventArgs); });
+                this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated], function (event, eventArgs) { return _this.PaneConfigureAction_ActionUpdated(eventArgs); });
+            };
+            /*
+                Handles message 'WorkflowDesignerPane_CriteriaSelected'
+            */
+            ProcessBuilderController.prototype.PaneWorkflowDesigner_CriteriaSelected = function (eventArgs) {
+                console.log("ProcessBuilderController: criteria selected");
+                //Hide Select Action Pane
+                this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                //Hide Configure Action Pane
+                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+            };
+            /*
+                Handles message 'WorkflowDesignerPane_ActionSelected'
+            */
+            ProcessBuilderController.prototype.PaneWorkflowDesigner_ActionSelected = function (eventArgs) {
+                console.log("ProcessBuilderController: action selected");
+                //Render Select Action Pane
+                var eArgs = new psa.RenderEventArgs(eventArgs.criteriaId, eventArgs.actionId, eventArgs.isTempId, eventArgs.processTemplateId);
+                this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Render], eArgs);
+                //Render Configure Action Pane
+                var eArgs = new psa.RenderEventArgs(eventArgs.criteriaId, eventArgs.actionId, eventArgs.isTempId, eventArgs.processTemplateId);
+                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+            };
+            /*
+                Handles message 'WorkflowDesignerPane_TemplateSelected'
+            */
+            ProcessBuilderController.prototype.PaneWorkflowDesigner_TemplateSelected = function (eventArgs) {
+                console.log("ProcessBuilderController: template selected");
+                //Show Select Template Pane
+                var eArgs = new dockyard.directives.paneSelectTemplate.RenderEventArgs(eventArgs.processTemplateId);
+                this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
+            };
+            /*
+                Handles message 'ConfigureActionPane_ActionUpdated'
+            */
+            ProcessBuilderController.prototype.PaneConfigureAction_ActionUpdated = function (eventArgs) {
+                //Force update on Select Action Pane 
+                var eArgs = new dockyard.directives.paneSelectAction.UpdateActionEventArgs(eventArgs.criteriaId, eventArgs.actionId, eventArgs.actionTempId, 0);
+                this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_UpdateAction], eArgs);
+                //Update Action on Designer
+                eArgs = new dockyard.directives.paneWorkflowDesigner.UpdateActionEventArgs(eventArgs.criteriaId, eventArgs.actionId, eventArgs.actionTempId, 0);
+                this._scope.$broadcast(psa.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
+            };
+            /*
+                Handles message 'ConfigureActionPane_Cancelled'
+            */
+            ProcessBuilderController.prototype.PaneConfigureAction_Cancelled = function (eventArgs) {
+                //Hide Select Action Pane
+                this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+            };
             // $inject annotation.
             // It provides $injector with information about dependencies to be injected into constructor
             // it is better to have it close to the constructor, because the parameters must match in count and type.

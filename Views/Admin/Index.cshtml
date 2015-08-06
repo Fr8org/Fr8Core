@@ -31,7 +31,6 @@
     <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
     <link href="/Content/templates/metronic/assets/admin/layout3/css/themes/default.css" rel="stylesheet" type="text/css" id="style_color" />
     <link href="/Content/templates/metronic/assets/admin/layout3/css/custom.css" rel="stylesheet" type="text/css" />
-
     <!-- END THEME STYLES -->
 
     <link rel="shortcut icon" href="favicon.ico" />
@@ -91,9 +90,11 @@
     <script src="/bower_components/jquery-migrate/jquery-migrate.min.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap-hover-dropdown/bootstrap-hover-dropdown.js" type="text/javascript"></script>
-
+    <script src="~/bower_components/notifyjs/dist/notify-combined.min.js"></script>
+    <script src="~/bower_components/notifyjs/dist/styles/bootstrap/notify-bootstrap.js"></script>
 
     <!-- END CORE JQUERY PLUGINS -->
+    
     <!-- BEGIN CORE ANGULARJS PLUGINS -->
     <script src="/bower_components/angular/angular.js" type="text/javascript"></script>
     <script src="/bower_components/angular-resource/angular-resource.js"></script>
@@ -103,10 +104,17 @@
     <script src="/bower_components/ocLazyLoad/dist/ocLazyLoad.js" type="text/javascript"></script>
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js" type="text/javascript"></script>
     <!-- END CORE ANGULARJS PLUGINS -->
+    
     <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
     <script src="~/Scripts/app/app.js" type="text/javascript"></script>
     <!-- END APP LEVEL ANGULARJS SCRIPTS -->
 
+    <!-- BEGIN APP LEVEL JQUERY SCRIPTS -->
+    <script src="~/Content/templates/metronic/assets/global/scripts/metronic.js" type="text/javascript"></script>
+    <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js" type="text/javascript"></script>
+    <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js" type="text/javascript"></script>
+    <!-- END APP LEVEL JQUERY SCRIPTS -->
+    
     <!-- INTERFACES -->
     <script src="~/Scripts/app/interfaces/IProcessTemplateVM.js"></script>
     <script src="~/Scripts/app/interfaces/IAppRootScope.js"></script>
@@ -117,30 +125,52 @@
     <script src="~/Scripts/app/interfaces/IQueryBuilderWidgetScope.js"></script>
     <!-- END INTERFACES -->
 
-    <!-- BEGIN APP LEVEL JQUERY SCRIPTS -->
-    <script src="~/Content/templates/metronic/assets/global/scripts/metronic.js" type="text/javascript"></script>
-    <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js" type="text/javascript"></script>
-    <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js" type="text/javascript"></script>
-    <!-- END APP LEVEL JQUERY SCRIPTS -->
+    <!-- MODELS -->
+    <script src="~/Scripts/app/model/Action.js"></script>
+    <!-- END MODELS -->
 
     <!-- SERVICES -->
     <script src="~/Scripts/app/services/ProcessTemplateService.js" type="text/javascript"></script>
     <script src="~/Scripts/app/services/StringService.js" type="text/javascript"></script>
     
-    <!-- CONTROLLERS -->
-    <script src="~/Scripts/app/controllers/ProcessTemplateController.js" type="text/javascript"></script>
-    <script src="~/Scripts/app/controllers/ProcessTemplatesController.js"></script>
-    <script src="~/Scripts/app/controllers/ProcessBuilderController.js"></script>
-
     <!-- FILTERS -->
     <script src="~/Scripts/app/filters/ProcessTemplateState.js"></script>
 
     <!-- DIRECTIVES -->
     <script type="text/javascript" src="~/Scripts/app/directives/directives.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneWorkflowDesigner.js"></script>
     <script type="text/javascript" src="~/Scripts/app/directives/PaneDefineCriteria.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneSelectAction.js"></script>
     <script type="text/javascript" src="~/Scripts/app/directives/QueryBuilderWidget.js"></script>
+
+    <!-- pane-workflow-designer -->
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/CriteriaSelectedEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/TemplateSelectedEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/ActionSelectedEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/MessageType.js"></script>
+    <script type="text/javascript" src="~/Scripts/app/directives/PaneWorkflowDesigner.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/UpdateActionEventArgs.js"></script>
+
+    <!-- pane-select-action -->
+    <script src="~/Scripts/app/directives/PaneSelectAction/MessageType.js"></script>
+    <script src="~/Scripts/app/directives/PaneSelectAction/RenderEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneSelectAction/PaneSelectAction.js"></script>
+    <script src="~/Scripts/app/directives/PaneSelectAction/ActionUpdatedEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneSelectAction/UpdateActionEventArgs.js"></script>
+
+    <!-- pane-configure-action -->
+    <script src="~/Scripts/app/directives/PaneConfigureAction/MessageType.js"></script>
+    <script src="~/Scripts/app/directives/PaneConfigureAction/ActionUpdatedEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneConfigureAction/CancelledEventArgs.js"></script>    
+    <script src="~/Scripts/app/directives/PaneConfigureAction/RenderEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneConfigureAction/PaneConfigureAction.js"></script>
+    
+    <!-- pane-select-template -->
+    <script src="~/Scripts/app/directives/PaneSelectTemplate/MessageType.js"></script>
+    <script src="~/Scripts/app/directives/PaneSelectTemplate/RenderEventArgs.js"></script>
+
+    <!-- CONTROLLERS -->
+    <script src="~/Scripts/app/controllers/ProcessTemplateController.js" type="text/javascript"></script>
+    <script src="~/Scripts/app/controllers/ProcessTemplatesController.js"></script>
+    <script src="~/Scripts/app/controllers/ProcessBuilderController.js"></script>
 
     <script type="text/javascript">
         /* Init Metronic's core jquery plugins and layout scripts */

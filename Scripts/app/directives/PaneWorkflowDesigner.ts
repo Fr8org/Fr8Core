@@ -121,7 +121,7 @@ app.directive('processBuilder', function () {
 */
 
 
-module dockyard.directives {
+module dockyard.directives.paneWorkflowDesigner {
     declare var Core: any;
     declare var ProcessBuilder: any;
 
@@ -134,7 +134,7 @@ module dockyard.directives {
                 'addCriteria': '&onAddCriteria',
                 'selectCriteria': '&onSelectCriteria',
                 'addAction': '&onAddAction',
-                'selectAction': '&onSelectAction'                
+                'selectAction': '&onSelectAction'
             },
 
             link: (scope: interfaces.IPaneWorkflowDesignerScope, element: JQuery, attrs: any): void => {
@@ -144,25 +144,70 @@ module dockyard.directives {
 
                 widget.on('addCriteriaNode:click', function () {
                     scope.$apply(function () {
+                        //If a new criteria becomes selected by default, 
+                        //please create and send the WorkflowDesignerPane_CriteriaSelected message
                         scope.addCriteria();
+
+                        var eventArgs = new paneWorkflowDesigner.CriteriaSelectedEventArgs();
+                        //If a criteria is newly added, create an unique ID within the current User scope. 
+                        //Otherwise, please use the permanent database-generated id. 
+                        eventArgs.criteriaId = 1; //dummy value
+                        //if a criteria is newly added but not saved to the DB, then true. Otherwise false.
+                        eventArgs.isTempId = true;
+                        //Send event message
+                        console.log("sending event");
+                        scope.$emit(MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected], eventArgs);
                     });
                 });
 
                 widget.on('criteriaNode:click', function (e, criteriaId) {
                     scope.$apply(function () {
                         scope.selectCriteria({ criteriaId: criteriaId });
+
+                        var eventArgs = new paneWorkflowDesigner.CriteriaSelectedEventArgs();
+                        //If a criteria is newly added, create an unique ID within the current User scope. 
+                        //Otherwise, please use the permanent database-generated id. 
+                        eventArgs.criteriaId = criteriaId;
+                        //if a criteria is newly added but not saved to the DB, then true. Otherwise false.
+                        eventArgs.isTempId = true;
+                        //Send event message
+                        console.log("sending event");
+                        scope.$emit(MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected], eventArgs);
                     });
                 });
 
                 widget.on('addActionNode:click', function (e, criteriaId) {
                     scope.$apply(function () {
                         scope.addAction({ criteriaId: criteriaId });
+                        
+                        //If a new action becomes selected by default, 
+                        //need to create and send the WorkflowDesignerPane_ActionSelected message
+
+                        var eventArgs = new paneWorkflowDesigner.ActionSelectedEventArgs();
+                        //If a criteria is newly added, create an unique ID within the current User scope. 
+                        //Otherwise, please use the permanent database-generated id. 
+                        eventArgs.criteriaId = 1; // dummy value
+                        //if a criteria is newly added but not saved to the DB, then true. Otherwise false.
+                        eventArgs.isTempId = true;
+                        //Send event message
+                        console.log("sending event");
+                        scope.$emit(MessageType[MessageType.PaneWorkflowDesigner_ActionSelected], eventArgs);
                     });
                 });
 
                 widget.on('actionNode:click', function (e, criteriaId, actionId) {
                     scope.$apply(function () {
                         scope.selectAction({ criteriaId: criteriaId, actionId: actionId });
+
+                        var eventArgs = new paneWorkflowDesigner.ActionSelectedEventArgs();
+                        //If a criteria is newly added, create an unique ID within the current User scope. 
+                        //Otherwise, please use the permanent database-generated id. 
+                        eventArgs.criteriaId = criteriaId;
+                        //if a criteria is newly added but not saved to the DB, then true. Otherwise false.
+                        eventArgs.isTempId = true;
+                        //Send event message
+                        console.log("sending event");
+                        scope.$emit(MessageType[MessageType.PaneWorkflowDesigner_ActionSelected], eventArgs);
                     });
                 });
 
@@ -235,10 +280,10 @@ module dockyard.directives {
                             });
                     },
                     true
-                );
+                    );
             }
         };
     }
 }
 
-app.directive('paneWorkflowDesigner', dockyard.directives.PaneWorkflowDesigner);
+app.directive('paneWorkflowDesigner', dockyard.directives.paneWorkflowDesigner.PaneWorkflowDesigner);

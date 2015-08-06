@@ -6,6 +6,12 @@
 module dockyard.controllers {
     'use strict';
 
+    //Setup aliases
+    import pwd = dockyard.directives.paneWorkflowDesigner;
+    import psa = dockyard.directives.paneSelectAction;
+    import pca = dockyard.directives.paneConfigureAction;
+    import pst = dockyard.directives.paneSelectTemplate;
+
     class ProcessBuilderController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -18,10 +24,17 @@ module dockyard.controllers {
             '$scope',
             'StringService'
         ];
+
+        private _scope: interfaces.IProcessBuilderScope;
+
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private $scope: interfaces.IProcessBuilderScope,
             private StringService: services.IStringService) {
+
+            this._scope = $scope;
+
+            this.setupMessageProcessing();
 
             // BEGIN ProcessBuilder event handlers.
             var criteriaIdSeq = 0;
@@ -49,6 +62,7 @@ module dockyard.controllers {
                 var id = ++criteriaIdSeq;
                 var criteria = {
                     id: id,
+                    isTempId: false,
                     name: 'New criteria #' + id.toString(),
                     actions: [],
                     conditions: [
@@ -147,6 +161,98 @@ module dockyard.controllers {
 
             // END CriteriaPane & ProcessBuilder routines.
             // END ProcessBuilder event handlers.
+        }
+
+        /*
+            Mapping of incoming messages to handlers
+        */
+        private setupMessageProcessing() {
+
+            //Process Designer Pane events
+            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_CriteriaSelected],
+                (event: ng.IAngularEvent, eventArgs: pwd.CriteriaSelectedEventArgs) => this.PaneWorkflowDesigner_CriteriaSelected(eventArgs));
+            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected],
+                (event: ng.IAngularEvent, eventArgs: pwd.ActionSelectedEventArgs) => this.PaneWorkflowDesigner_ActionSelected(eventArgs));
+            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected],
+                (event: ng.IAngularEvent, eventArgs: pwd.ActionSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelected(eventArgs));
+
+            //Process Configure Action Pane events
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_Cancelled],
+                (event: ng.IAngularEvent, eventArgs: pca.CancelledEventArgs) => this.PaneConfigureAction_Cancelled(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
+                (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+        }
+
+        /*
+            Handles message 'WorkflowDesignerPane_CriteriaSelected'
+        */
+        private PaneWorkflowDesigner_CriteriaSelected(eventArgs: pwd.CriteriaSelectedEventArgs) {
+            console.log("ProcessBuilderController: criteria selected");
+
+            //Hide Select Action Pane
+            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                
+            //Hide Configure Action Pane
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+        }
+
+        /*
+            Handles message 'WorkflowDesignerPane_ActionSelected'
+        */
+        private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) { 
+            console.log("ProcessBuilderController: action selected");
+
+            //Render Select Action Pane
+            var eArgs = new psa.RenderEventArgs(
+                eventArgs.criteriaId,
+                eventArgs.actionId,
+                eventArgs.isTempId,
+                eventArgs.processTemplateId);
+            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Render], eArgs);
+
+            //Render Configure Action Pane
+            var eArgs = new psa.RenderEventArgs(
+                eventArgs.criteriaId,
+                eventArgs.actionId,
+                eventArgs.isTempId,
+                eventArgs.processTemplateId);
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+        }
+
+        /*
+            Handles message 'WorkflowDesignerPane_TemplateSelected'
+        */
+        private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
+            console.log("ProcessBuilderController: template selected");
+
+            //Show Select Template Pane
+            var eArgs = new directives.paneSelectTemplate.RenderEventArgs(eventArgs.processTemplateId);
+            this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);       
+        }
+
+
+        /*
+            Handles message 'ConfigureActionPane_ActionUpdated'
+        */
+        private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
+
+            //Force update on Select Action Pane 
+            var eArgs = new directives.paneSelectAction.UpdateActionEventArgs(
+                eventArgs.criteriaId, eventArgs.actionId, eventArgs.actionTempId, 0);
+            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_UpdateAction], eArgs);
+
+            //Update Action on Designer
+            eArgs = new directives.paneWorkflowDesigner.UpdateActionEventArgs(
+                eventArgs.criteriaId, eventArgs.actionId, eventArgs.actionTempId, 0);
+            this._scope.$broadcast(psa.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
+        }
+
+        /*
+            Handles message 'ConfigureActionPane_Cancelled'
+        */
+        private PaneConfigureAction_Cancelled(eventArgs: pca.CancelledEventArgs) {
+            //Hide Select Action Pane
+            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
         }
     }
     app.controller('ProcessBuilderController', ProcessBuilderController);

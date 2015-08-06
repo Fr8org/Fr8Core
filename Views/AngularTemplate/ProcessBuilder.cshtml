@@ -48,9 +48,11 @@
                               ng-show="isCriteriaSelected()">
         </pane-define-criteria>
         <div class="col-md-6 col-sm-6">
-            <pane-select-action id="paneSelectAction" criteria-list="criteria"></pane-select-action>
+            <pane-select-action id="paneSelectAction"></pane-select-action>
         </div>
-
+        <div class="col-md-6 col-sm-6">
+            <pane-configure-action id="paneConfigureAction"></pane-configure-action>
+        </div>
         <!-- END MAIN CONTENT -->
         <!-- BEGIN SCRIPT REQUIREMENTS -->
         <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
