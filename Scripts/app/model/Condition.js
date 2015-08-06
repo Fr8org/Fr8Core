@@ -21,4 +21,4 @@ var dockyard;
         model.Condition = Condition;
     })(model = dockyard.model || (dockyard.model = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=Condition.js.map
+//# sourceMappingURL=condition.js.map

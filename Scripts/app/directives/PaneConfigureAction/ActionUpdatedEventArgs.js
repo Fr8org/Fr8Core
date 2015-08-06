@@ -6,17 +6,6 @@ var dockyard;
         var paneConfigureAction;
         (function (paneConfigureAction) {
             'use strict';
-            var ActionUpdatedEventArgs = (function () {
-                function ActionUpdatedEventArgs(criteriaId, actionId, actionTempId, processTemplateId) {
-                    this.actionId = actionId;
-                    this.criteriaId = criteriaId;
-                    this.actionTempId = actionTempId;
-                    this.processTemplateId = processTemplateId;
-                }
-                return ActionUpdatedEventArgs;
-            })();
-            paneConfigureAction.ActionUpdatedEventArgs = ActionUpdatedEventArgs;
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=ActionUpdatedEventArgs.js.map

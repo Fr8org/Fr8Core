@@ -59,4 +59,4 @@ var dockyard;
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=PaneConfigureAction.js.map
+//# sourceMappingURL=paneconfigureaction.js.map

@@ -16,4 +16,4 @@ var dockyard;
     })(services = dockyard.services || (dockyard.services = {}));
 })(dockyard || (dockyard = {}));
 app.service('LocalIdentityGenerator', dockyard.services.LocalIdentityGenerator);
-//# sourceMappingURL=LocalIdentityGenerator.js.map
+//# sourceMappingURL=localidentitygenerator.js.map

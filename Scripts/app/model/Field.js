@@ -15,4 +15,4 @@ var dockyard;
         model.Field = Field;
     })(model = dockyard.model || (dockyard.model = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=Field.js.map
+//# sourceMappingURL=field.js.map

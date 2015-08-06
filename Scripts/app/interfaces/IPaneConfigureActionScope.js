@@ -1,2 +1,2 @@
 /// <reference path="../_all.ts" />
-//# sourceMappingURL=IPaneConfigureActionScope.js.map
+//# sourceMappingURL=ipaneconfigureactionscope.js.map

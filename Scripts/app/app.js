@@ -1,4 +1,7 @@
-/// <reference path="_all.ts" />
+/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/metronic.d.ts" />
+
+'use strict';
 var app = angular.module("app", [
     "ui.router",
     "ui.bootstrap",
@@ -63,12 +66,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
         $stateProvider
             .state('processTemplates', {
             url: "/processes",
-            templateUrl: "/AngularTemplate/ProcessTemplates",
+            templateUrl: "/AngularTemplate/ProcessTemplateList",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
         })
             .state('processTemplate', {
             url: "/processes/{id}",
-            templateUrl: "/AngularTemplate/ProcessTemplate",
+            templateUrl: "/AngularTemplate/ProcessTemplateForm",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
             .state('processBuilder', {

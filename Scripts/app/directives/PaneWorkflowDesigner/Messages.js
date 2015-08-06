@@ -92,4 +92,4 @@ var dockyard;
         })(paneWorkflowDesigner = directives.paneWorkflowDesigner || (directives.paneWorkflowDesigner = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=Messages.js.map
+//# sourceMappingURL=messages.js.map

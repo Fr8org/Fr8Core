@@ -1,2 +1,2 @@
 /// <reference path="../_all.ts" />
-//# sourceMappingURL=ICriteria.js.map
+//# sourceMappingURL=icriteria.js.map

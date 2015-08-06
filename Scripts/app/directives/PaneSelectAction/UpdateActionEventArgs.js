@@ -19,4 +19,3 @@ var dockyard;
         })(paneSelectAction = directives.paneSelectAction || (directives.paneSelectAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=UpdateActionEventArgs.js.map

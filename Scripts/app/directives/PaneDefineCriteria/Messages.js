@@ -30,4 +30,4 @@ var dockyard;
         })(paneDefineCriteria = directives.paneDefineCriteria || (directives.paneDefineCriteria = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=Messages.js.map
+//# sourceMappingURL=messages.js.map

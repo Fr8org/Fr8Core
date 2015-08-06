@@ -6,17 +6,6 @@ var dockyard;
         var paneConfigureAction;
         (function (paneConfigureAction) {
             'use strict';
-            var RenderEventArgs = (function () {
-                function RenderEventArgs(criteriaId, actionId, isTempId, processTemplateId) {
-                    this.actionId = actionId;
-                    this.criteriaId = criteriaId;
-                    this.isTempId = isTempId;
-                    this.processTemplateId = processTemplateId;
-                }
-                return RenderEventArgs;
-            })();
-            paneConfigureAction.RenderEventArgs = RenderEventArgs;
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=RenderEventArgs.js.map

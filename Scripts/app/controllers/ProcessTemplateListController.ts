@@ -9,7 +9,7 @@ module dockyard.controllers {
     /*
         List controller
     */
-    class ProcessTemplatesController {
+    class ProcessTemplateListController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -52,7 +52,7 @@ module dockyard.controllers {
                 $modal.open({
                     animation: true,
                     templateUrl: 'modalDeleteConfirmation',
-                    controller: 'ProcessTemplatesController__DeleteConfirmation',
+                    controller: 'ProcessTemplateListController__DeleteConfirmation',
  
                 }).result.then(function (selectedItem) {
                     //Deletion confirmed
@@ -71,14 +71,14 @@ module dockyard.controllers {
             };
         }
     }
-    app.controller('ProcessTemplatesController', ProcessTemplatesController);
+    app.controller('ProcessTemplateListController', ProcessTemplateListController);
 
     /*
         A simple controller for Delete confirmation dialog.
         Note: here goes a simple (not really a TypeScript) way to define a controller. 
         Not as a class but as a lambda function.
     */
-    app.controller('ProcessTemplatesController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
+    app.controller('ProcessTemplateControllerList__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
         $scope.ok = function () {
             $modalInstance.close();
         };

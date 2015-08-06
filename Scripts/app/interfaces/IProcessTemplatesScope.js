@@ -1,2 +1,2 @@
 /// <reference path="../_all.ts" />
-//# sourceMappingURL=IProcessTemplatesScope.js.map
+//# sourceMappingURL=iprocesstemplatesscope.js.map

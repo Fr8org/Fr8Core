@@ -64,4 +64,4 @@ var dockyard;
         })(paneSelectAction = directives.paneSelectAction || (directives.paneSelectAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=PaneSelectAction.js.map
+//# sourceMappingURL=paneselectaction.js.map

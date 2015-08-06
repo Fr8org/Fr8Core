@@ -38,4 +38,4 @@ var dockyard;
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
 app.directive('paneDefineCriteria', dockyard.directives.paneDefineCriteria.PaneDefineCriteria);
-//# sourceMappingURL=PaneDefineCriteria.js.map
+//# sourceMappingURL=panedefinecriteria.js.map

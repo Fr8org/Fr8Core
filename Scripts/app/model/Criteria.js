@@ -27,4 +27,4 @@ var dockyard;
         model.Criteria = Criteria;
     })(model = dockyard.model || (dockyard.model = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=Criteria.js.map
+//# sourceMappingURL=criteria.js.map

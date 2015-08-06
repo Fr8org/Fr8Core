@@ -54,4 +54,4 @@ var dockyard;
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
 app.directive('queryBuilderWidget', dockyard.directives.QueryBuilderWidget);
-//# sourceMappingURL=QueryBuilderWidget.js.map
+//# sourceMappingURL=querybuilderwidget.js.map

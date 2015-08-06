@@ -63,4 +63,3 @@ var dockyard;
         app.controller('ProcessTemplateController', ProcessTemplateController);
     })(controllers = dockyard.controllers || (dockyard.controllers = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=ProcessTemplateController.js.map

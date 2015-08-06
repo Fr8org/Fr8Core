@@ -6,17 +6,6 @@ var dockyard;
         var paneConfigureAction;
         (function (paneConfigureAction) {
             'use strict';
-            var CancelledEventArgs = (function () {
-                function CancelledEventArgs(criteriaId, actionId, isTemp, processTemplateId) {
-                    this.actionId = actionId;
-                    this.criteriaId = criteriaId;
-                    this.isTempId = isTemp;
-                    this.processTemplateId = processTemplateId;
-                }
-                return CancelledEventArgs;
-            })();
-            paneConfigureAction.CancelledEventArgs = CancelledEventArgs;
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=CancelledEventArgs.js.map

@@ -1,2 +1,2 @@
 /// <reference path="../../_all.ts" />
-//# sourceMappingURL=IPaneWorkflowDesignerScope.js.map
+//# sourceMappingURL=ipaneworkflowdesignerscope.js.map

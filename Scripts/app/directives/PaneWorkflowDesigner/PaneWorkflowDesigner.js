@@ -60,4 +60,4 @@ var dockyard;
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
 app.directive('paneWorkflowDesigner', dockyard.directives.paneWorkflowDesigner.PaneWorkflowDesigner);
-//# sourceMappingURL=PaneWorkflowDesigner.js.map
+//# sourceMappingURL=paneworkflowdesigner.js.map
