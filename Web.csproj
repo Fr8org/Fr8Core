@@ -494,7 +494,6 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\MessageType.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\MessageType.ts" />
@@ -517,7 +516,6 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplatesScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\MessageType.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Action.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Criteria.ts" />
@@ -3791,8 +3789,10 @@
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
     <TypeScriptModuleKind>None</TypeScriptModuleKind>
     <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
-    <TypeScriptOutFile>allscripts.js</TypeScriptOutFile>
-    <TypeScriptOutDir>\Scripts\app</TypeScriptOutDir>
+    <TypeScriptOutFile>
+    </TypeScriptOutFile>
+    <TypeScriptOutDir>
+    </TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
     <TypeScriptSourceMap>True</TypeScriptSourceMap>

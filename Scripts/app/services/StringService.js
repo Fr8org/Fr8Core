@@ -1,7 +1,4 @@
 /// <reference path="../_all.ts" />
-/*
-    The service implements centralized string storage.
-*/
 var dockyard;
 (function (dockyard) {
     var services;

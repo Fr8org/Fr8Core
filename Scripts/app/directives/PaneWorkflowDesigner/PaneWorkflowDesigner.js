@@ -47,7 +47,6 @@ var dockyard;
                             scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelecting], new paneWorkflowDesigner.ActionSelectingEventArgs(criteriaId, actionId));
                         });
                         scope.widget = widget;
-                        // Event handlers.
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_Render], function (event, eventArgs) { return onRender(eventArgs, scope); });
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_CriteriaAdded], function (event, eventArgs) { return onCriteriaAdded(eventArgs, scope); });
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_CriteriaRemoved], function (event, eventArgs) { return onCriteriaRemoved(eventArgs, scope); });

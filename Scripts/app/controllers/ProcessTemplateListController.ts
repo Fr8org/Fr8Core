@@ -78,7 +78,7 @@ module dockyard.controllers {
         Note: here goes a simple (not really a TypeScript) way to define a controller. 
         Not as a class but as a lambda function.
     */
-    app.controller('ProcessTemplateControllerList__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
+    app.controller('ProcessTemplateListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
         $scope.ok = function () {
             $modalInstance.close();
         };

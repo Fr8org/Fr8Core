@@ -36,14 +36,12 @@
 */
 /// <reference path="filters/processtemplatestate.ts" />
 
-/// <reference path="directives/paneconfigureaction/messagetype.ts" />
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 
 /// <reference path="directives/panedefinecriteria/ipanedefinecriteriascope.ts" />
 /// <reference path="directives/panedefinecriteria/messages.ts" />
 /// <reference path="directives/panedefinecriteria/panedefinecriteria.ts" />
 
-/// <reference path="directives/paneselectaction/messagetype.ts" />
 /// <reference path="directives/paneselectaction/paneselectaction.ts" />
 
 /// <reference path="directives/paneselecttemplate/messagetype.ts" />

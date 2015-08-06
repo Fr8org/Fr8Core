@@ -1,7 +1,4 @@
 /// <reference path="../_all.ts" />
-/*
-    The service enables operations with Process Templates
-*/
 var dockyard;
 (function (dockyard) {
     var services;

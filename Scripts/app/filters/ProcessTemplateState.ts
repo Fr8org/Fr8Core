@@ -18,5 +18,5 @@ module dockyard {
                 default:
                     return "Inactive";
             }
-        });
+        }); 
 }

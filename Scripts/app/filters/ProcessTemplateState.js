@@ -1,7 +1,4 @@
 /// <reference path="../_all.ts" />
-/*
-    The filter converts numeric value to state name
-*/
 var dockyard;
 (function (dockyard) {
     'use strict';

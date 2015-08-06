@@ -1,7 +1,5 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="../typings/metronic.d.ts" />
-
-'use strict';
 var app = angular.module("app", [
     "ui.router",
     "ui.bootstrap",
@@ -10,18 +8,15 @@ var app = angular.module("app", [
     'ngResource',
     'ui.bootstrap'
 ]);
-/* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
 app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
         $ocLazyLoadProvider.config({
-            cssFilesInsertBefore: 'ng_load_plugins_before' // load the above css files before a LINK element with this ID. Dynamic CSS files must be loaded between core and theme css files
+            cssFilesInsertBefore: 'ng_load_plugins_before'
         });
     }]);
-/* Setup global settings */
 app.factory('settings', ['$rootScope', function ($rootScope) {
-        // supported languages
         var settings = {
             layout: {
-                pageAutoScrollOnLoad: 1000 // auto scroll to top on page load
+                pageAutoScrollOnLoad: 1000
             },
             layoutImgPath: Metronic.getAssetsPath() + 'admin/layout/img/',
             layoutCssPath: Metronic.getAssetsPath() + 'admin/layout/css/'
@@ -29,39 +24,27 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
         $rootScope.settings = settings;
         return settings;
     }]);
-/* Setup App Main Controller */
 app.controller('AppController', ['$scope', '$rootScope', function ($scope, $rootScope) {
         $scope.$on('$viewContentLoaded', function () {
-            Metronic.initComponents(); // init core components
-            //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive 
+            Metronic.initComponents();
         });
     }]);
-/***
-Layout Partials.
-By default the partials are loaded through AngularJS ng-include directive. In case they loaded in server side(e.g: PHP include function) then below partial
-initialization can be disabled and Layout.init() should be called on page load complete as explained above.
-***/
-/* Setup Layout Part - Header */
 app.controller('HeaderController', ['$scope', function ($scope) {
         $scope.$on('$includeContentLoaded', function () {
-            Layout.initHeader(); // init header
+            Layout.initHeader();
         });
     }]);
-/* Setup Layout Part - Sidebar */
 app.controller('PageHeadController', ['$scope', function ($scope) {
         $scope.$on('$includeContentLoaded', function () {
-            Demo.init(); // init theme panel
+            Demo.init();
         });
     }]);
-/* Setup Layout Part - Footer */
 app.controller('FooterController', ['$scope', function ($scope) {
         $scope.$on('$includeContentLoaded', function () {
-            Layout.initFooter(); // init footer
+            Layout.initFooter();
         });
     }]);
-/* Setup Rounting For All Pages */
 app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
-        // Redirect any unmatched url
         $urlRouterProvider.otherwise("/processes");
         $stateProvider
             .state('processTemplates', {
@@ -80,8 +63,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
             data: { pageTitle: 'Process Builder', pageSubTitle: 'Configure your process here' },
         });
     }]);
-/* Init global settings and run the app */
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
-        $rootScope.$state = $state; // state to be accessed from view
+        $rootScope.$state = $state;
     }]);
 //# sourceMappingURL=app.js.map
