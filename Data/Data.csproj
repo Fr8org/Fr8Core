@@ -117,10 +117,12 @@
     <Compile Include="Entities\DocusignAccountDO.cs" />
     <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
+    <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
+    <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
@@ -138,6 +140,8 @@
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
+    <Compile Include="Interfaces\IPluginRegistrationDO.cs" />
+    <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
       <DependentUpon>201507140439113_Initial_Migration.cs</DependentUpon>
@@ -210,6 +214,10 @@
     <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.Designer.cs">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.cs" />
+    <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.Designer.cs">
+      <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -228,6 +236,8 @@
     <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
+    <Compile Include="States\AccessLevel.cs" />
+    <Compile Include="States\PluginStatus.cs" />
     <Compile Include="States\ProcessNodeState.cs" />
     <Compile Include="States\ProcessState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
@@ -242,6 +252,8 @@
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
+    <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ProcessStateTemplate.cs" />
@@ -410,6 +422,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.resx">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508061339318_AddSubscriptionAndPlugin.resx">
+      <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

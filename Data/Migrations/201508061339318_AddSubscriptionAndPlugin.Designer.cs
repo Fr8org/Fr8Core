@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ActionList : IMigrationMetadata
+    public sealed partial class AddSubscriptionAndPlugin : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ActionList));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddSubscriptionAndPlugin));
         
         string IMigrationMetadata.Id
         {
-            get { return "201507232256511_ActionList"; }
+            get { return "201508061339318_AddSubscriptionAndPlugin"; }
         }
         
         string IMigrationMetadata.Source

@@ -17,7 +17,7 @@ using Logger = Utilities.Logging.Logger;
 
 namespace Web.Controllers
 {
-	[ KwasantAuthorize( Roles = "Booker" ) ]
+	[ DockyardAuthorize( Roles = "Booker" ) ]
 	public class DiagnosticsController: Controller
 	{
 		public ActionResult Index( int? pageAmount )
