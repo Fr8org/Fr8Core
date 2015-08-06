@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -23,6 +24,10 @@ namespace Web.Controllers
         [HttpPost]
         public IHttpActionResult Event(EventDTO submittedEvent)
         {
+            if (submittedEvent.EventType.Equals("Plugin Incident"))
+            {
+                _eventService.HandlePluginIncident();
+            }
             return Ok();
         }
 
