@@ -181,6 +181,10 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.CancelledEventArgs) => this.PaneConfigureAction_Cancelled(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+
+            //Process Select Action Pane events
+            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
         }
 
         /*
@@ -209,14 +213,6 @@ module dockyard.controllers {
                 eventArgs.isTempId,
                 eventArgs.processTemplateId);
             this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Render], eArgs);
-
-            //Render Configure Action Pane
-            var eArgs = new psa.RenderEventArgs(
-                eventArgs.criteriaId,
-                eventArgs.actionId,
-                eventArgs.isTempId,
-                eventArgs.processTemplateId);
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
         }
 
         /*
@@ -254,6 +250,21 @@ module dockyard.controllers {
             //Hide Select Action Pane
             this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
         }
+
+        /*
+            Handles message 'SelectActionPane_ActionTypeSelected'
+        */
+        private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
+            console.log("action type selected");
+            //Render Configure Action Pane
+            var eArgs = new psa.RenderEventArgs(
+                eventArgs.criteriaId,
+                eventArgs.actionId > 0 ? eventArgs.actionId : eventArgs.tempActionId, //either permanent or temp id
+                eventArgs.actionId < 0, //is it a temporary id
+                eventArgs.processTemplateId);
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+        }
+
     }
     app.controller('ProcessBuilderController', ProcessBuilderController);
 } 

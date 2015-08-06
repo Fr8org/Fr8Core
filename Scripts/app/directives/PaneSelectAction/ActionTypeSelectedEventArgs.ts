@@ -3,18 +3,18 @@
 module dockyard.directives.paneSelectAction {
     'use strict';
 
-    export class ActionUpdatedEventArgs {
+    export class ActionTypeSelectedEventArgs {
         public actionId: number;
         public criteriaId: number;
         public tempActionId: number;
-        public actionName: string;
+        public actionTypeId: number;
         public processTemplateId: number;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionName: string, processTemplateId: number) {
+        constructor(criteriaId: number, actionId: number, tempActionId: number, actionTypeId: number, processTemplateId: number) {
             this.actionId = actionId;
             this.criteriaId = criteriaId;
             this.tempActionId = tempActionId;
-            this.actionName = actionName;
+            this.actionTypeId = actionTypeId;
             this.processTemplateId = processTemplateId
         }
     }

@@ -140,6 +140,8 @@ var dockyard;
                 //Process Configure Action Pane events
                 this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_Cancelled], function (event, eventArgs) { return _this.PaneConfigureAction_Cancelled(eventArgs); });
                 this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated], function (event, eventArgs) { return _this.PaneConfigureAction_ActionUpdated(eventArgs); });
+                //Process Select Action Pane events
+                this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], function (event, eventArgs) { return _this.PaneSelectAction_ActionTypeSelected(eventArgs); });
             };
             /*
                 Handles message 'WorkflowDesignerPane_CriteriaSelected'
@@ -159,9 +161,6 @@ var dockyard;
                 //Render Select Action Pane
                 var eArgs = new psa.RenderEventArgs(eventArgs.criteriaId, eventArgs.actionId, eventArgs.isTempId, eventArgs.processTemplateId);
                 this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Render], eArgs);
-                //Render Configure Action Pane
-                var eArgs = new psa.RenderEventArgs(eventArgs.criteriaId, eventArgs.actionId, eventArgs.isTempId, eventArgs.processTemplateId);
-                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
             };
             /*
                 Handles message 'WorkflowDesignerPane_TemplateSelected'
@@ -189,6 +188,15 @@ var dockyard;
             ProcessBuilderController.prototype.PaneConfigureAction_Cancelled = function (eventArgs) {
                 //Hide Select Action Pane
                 this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+            };
+            /*
+                Handles message 'SelectActionPane_ActionTypeSelected'
+            */
+            ProcessBuilderController.prototype.PaneSelectAction_ActionTypeSelected = function (eventArgs) {
+                console.log("action type selected");
+                //Render Configure Action Pane
+                var eArgs = new psa.RenderEventArgs(eventArgs.criteriaId, eventArgs.actionId > 0 ? eventArgs.actionId : eventArgs.tempActionId, eventArgs.actionId < 0, eventArgs.processTemplateId);
+                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
             };
             // $inject annotation.
             // It provides $injector with information about dependencies to be injected into constructor

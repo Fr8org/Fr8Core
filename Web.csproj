@@ -488,6 +488,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\RenderEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\CancelledEventArgs.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\ActionTypeSelectedEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\UpdateActionEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\ActionUpdatedEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\RenderEventArgs.ts" />

@@ -28,7 +28,20 @@ module dockyard.directives.paneSelectAction {
 
                 this.PupulateSampleData($scope);
 
-                $scope.$watch<interfaces.IAction>((scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<interfaces.IAction>(
+                    (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
+
+                $scope.ActionTypeSelected = () => {
+                    var eventArgs = new ActionTypeSelectedEventArgs(
+                        $scope.action.criteriaId,
+                        $scope.action.id,
+                        $scope.action.tempId,
+                        $scope.action.actionTypeId,
+                        0);
+                    $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
+
+                }
+
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Hide], this.onHide);
                 $scope.$on(MessageType[MessageType.PaneSelectAction_UpdateAction], this.onUpdate);
@@ -36,11 +49,11 @@ module dockyard.directives.paneSelectAction {
         }
 
         private onActionChanged(newValue: interfaces.IAction, oldValue: interfaces.IAction, scope: interfaces.IPaneSelectActionScope) {
-            console.log(newValue);
+
         }
 
+
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            console.log('render');
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
@@ -50,12 +63,10 @@ module dockyard.directives.paneSelectAction {
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            console.log('hide');
             (<interfaces.IPaneSelectActionScope> event.currentScope).isVisible = false;
         }
 
         private onUpdate(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            console.log('update');
             (<any>$).notify("Greetings from Select Action Pane. I've got a message about my neighbor saving its data so I saved my data, too.", "success");
         }
 

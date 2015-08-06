@@ -4,5 +4,7 @@
         PaneSelectAction_Render,
         PaneSelectAction_Hide,
         PaneSelectAction_UpdateAction,
+        PaneSelectAction_ActionTypeSelected
+
     }
 }
