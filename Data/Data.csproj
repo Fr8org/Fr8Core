@@ -214,6 +214,10 @@
     <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.Designer.cs">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508061234281_AddSubscriptionAndPluginRegistration.cs" />
+    <Compile Include="Migrations\201508061234281_AddSubscriptionAndPluginRegistration.Designer.cs">
+      <DependentUpon>201508061234281_AddSubscriptionAndPluginRegistration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -418,6 +422,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.resx">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508061234281_AddSubscriptionAndPluginRegistration.resx">
+      <DependentUpon>201508061234281_AddSubscriptionAndPluginRegistration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
