@@ -1,6 +1,6 @@
-﻿/// <reference path="../_all.ts" />
+﻿/// <reference path="../../_all.ts" />
 
-module dockyard.interfaces {
+module dockyard.directives.paneWorkflowDesigner {
 
     export interface IPaneWorkflowDesignerSelectCriteriaArgs {
         criteriaId: any
@@ -16,9 +16,6 @@ module dockyard.interfaces {
     }
 
     export interface IPaneWorkflowDesignerScope extends ng.IScope {
-        addCriteria: () => void,
-        selectCriteria: (args: IPaneWorkflowDesignerSelectCriteriaArgs) => void,
-        addAction: (args: IPaneWorkflowDesignerAddActionArgs) => void,
-        selectAction: (args: IPaneWorkflowDesignerSelectActionArgs) => void
+        widget: any
     }
 } 

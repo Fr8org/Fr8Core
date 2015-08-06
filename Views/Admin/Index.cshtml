@@ -127,27 +127,31 @@
 
     <!-- MODELS -->
     <script src="~/Scripts/app/model/Action.js"></script>
+    <script src="~/Scripts/app/model/Criteria.js"></script>
+    <script src="~/Scripts/app/model/Field.js"></script>
     <!-- END MODELS -->
 
     <!-- SERVICES -->
-    <script src="~/Scripts/app/services/ProcessTemplateService.js" type="text/javascript"></script>
-    <script src="~/Scripts/app/services/StringService.js" type="text/javascript"></script>
+    <script src="~/Scripts/app/services/ProcessTemplateService.js"></script>
+    <script src="~/Scripts/app/services/StringService.js"></script>
+    <script src="~/Scripts/app/services/LocalIdentityGenerator.js"></script>
     
     <!-- FILTERS -->
     <script src="~/Scripts/app/filters/ProcessTemplateState.js"></script>
 
     <!-- DIRECTIVES -->
     <script type="text/javascript" src="~/Scripts/app/directives/directives.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneDefineCriteria.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/QueryBuilderWidget.js"></script>
 
     <!-- pane-workflow-designer -->
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/CriteriaSelectedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/TemplateSelectedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/ActionSelectedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/MessageType.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneWorkflowDesigner.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/UpdateActionEventArgs.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/Messages.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js"></script>
+    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/IPaneDefineCriteriaScope.js"></script>
+
+    <!-- pane-define-criteria -->
+    <script src="~/Scripts/app/directives/PaneDefineCriteria/IPaneDefineCriteriaScope.js"></script>
+    <script src="~/Scripts/app/directives/PaneDefineCriteria/Messages.js"></script>
+    <script src="~/Scripts/app/directives/PaneDefineCriteria/PaneDefineCriteria.js"></script>
+    <script src="~/Scripts/app/directives/QueryBuilderWidget.js"></script>
 
     <!-- pane-select-action -->
     <script src="~/Scripts/app/directives/PaneSelectAction/MessageType.js"></script>
