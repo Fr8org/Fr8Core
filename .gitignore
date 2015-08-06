@@ -15,7 +15,7 @@ build/
 [Bb]in/
 [Oo]bj/
 
-
+.vs
 
 # we will not track App_Data, which changes constantly.
 App_Data
