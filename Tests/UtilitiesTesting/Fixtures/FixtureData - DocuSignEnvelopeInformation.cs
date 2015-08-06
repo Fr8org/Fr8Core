@@ -13,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Statuses = new[]
 				{
-					new RecipientStatus { Id = "fb89d2ee-2876-4290-b530-ff1833d5d0d2" }
+					new RecipientStatus {Id = "fb89d2ee-2876-4290-b530-ff1833d5d0d2"}
 				}
 			};
 			return info;

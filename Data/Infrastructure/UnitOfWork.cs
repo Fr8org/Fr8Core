@@ -479,16 +479,22 @@ namespace Data.Infrastructure
 
 		private ProcessNodeRepository _proeProcessNodeRepository;
 
-	    public ProcessNodeRepository ProcessNodeRepository
-	    {
-		    get { return this._proeProcessNodeRepository ?? ( this._proeProcessNodeRepository = new ProcessNodeRepository( this ) ); }
-	    }
+        public ProcessNodeRepository ProcessNodeRepository
+        {
+            get
+            {
+                return _proeProcessNodeRepository ?? (_proeProcessNodeRepository = new ProcessNodeRepository(this));
+            }
+        }
 
-	    private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
+        private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
 
 	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
 	    {
-		    get { return this._externalEventRegistrationRepository ?? ( this._externalEventRegistrationRepository = new ExternalEventRegistrationRepository( this ) ); }
+		    get
+		    {
+		        return _externalEventRegistrationRepository ?? (_externalEventRegistrationRepository = new ExternalEventRegistrationRepository(this));
+		    }
 	    }
 
 	    private ProcessNodeTemplateRepository _processNodeTemplateRepository;

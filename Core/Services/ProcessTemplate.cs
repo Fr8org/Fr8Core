@@ -10,86 +10,86 @@ using StructureMap;
 
 namespace Core.Services
 {
-	public class ProcessTemplate : IProcessTemplate
-	{
-		private readonly IProcess _process;
+    public class ProcessTemplate : IProcessTemplate
+    {
+        private readonly IProcess _process;
 
-		public ProcessTemplate()
-		{
-			_process = ObjectFactory.GetInstance<IProcess>();
-		}
+        public ProcessTemplate()
+        {
+            _process = ObjectFactory.GetInstance<IProcess>();
+        }
 
-		public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
-		{
-			if (userId == null)
-				throw new ApplicationException("UserId must not be null");
+        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
+        {
+            if (userId == null)
+                throw new ApplicationException("UserId must not be null");
 
-			using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-			{
-				var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
 
-				if (isAdmin)
-				{
-					return (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id)).ToList();
-				}
+                if (isAdmin)
+                {
+                    return (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id)).ToList();
+                }
 
-				return (id == null
-					? queryableRepo.Where(pt => pt.UserId == userId)
-					: queryableRepo.Where(pt => pt.Id == id && pt.UserId == userId)).ToList();
-			}
-		}
+                return (id == null
+                    ? queryableRepo.Where(pt => pt.UserId == userId)
+                    : queryableRepo.Where(pt => pt.Id == id && pt.UserId == userId)).ToList();
+            }
+        }
 
-		public int CreateOrUpdate(ProcessTemplateDO ptdo)
-		{
-			var creating = ptdo.Id == 0;
+        public int CreateOrUpdate(ProcessTemplateDO ptdo)
+        {
+            var creating = ptdo.Id == 0;
 
-			using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-			{
-				if (creating)
-				{
-					unitOfWork.ProcessTemplateRepository.Add(ptdo);
-				}
-				else
-				{
-					var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
-					if (curProcessTemplate == null)
-						throw new EntityNotFoundException();
-					curProcessTemplate.Name = ptdo.Name;
-					curProcessTemplate.Description = ptdo.Description;
-				}
-				unitOfWork.SaveChanges();
-			}
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (creating)
+                {
+                    unitOfWork.ProcessTemplateRepository.Add(ptdo);
+                }
+                else
+                {
+                    var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
+                    if (curProcessTemplate == null)
+                        throw new EntityNotFoundException();
+                    curProcessTemplate.Name = ptdo.Name;
+                    curProcessTemplate.Description = ptdo.Description;
+                }
+                unitOfWork.SaveChanges();
+            }
 
-			return ptdo.Id;
-		}
+            return ptdo.Id;
+        }
 
-		public void Delete(int id)
-		{
-			using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-			{
-				var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(id);
-				if (curProcessTemplate == null)
-				{
-					throw new EntityNotFoundException<ProcessTemplateDO>(id);
-				}
-				unitOfWork.ProcessTemplateRepository.Remove(curProcessTemplate);
-				unitOfWork.SaveChanges();
-			}
-		}
+        public void Delete(int id)
+        {
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(id);
+                if (curProcessTemplate == null)
+                {
+                    throw new EntityNotFoundException<ProcessTemplateDO>(id);
+                }
+                unitOfWork.ProcessTemplateRepository.Remove(curProcessTemplate);
+                unitOfWork.SaveChanges();
+            }
+        }
 
-		public void LaunchProcess(int curProcessTemplateId, EnvelopeDO curEnvelope)
-		{
-			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			{
-				var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateId);
-				if(curProcessTemplate == null)
-					throw new EntityNotFoundException(curProcessTemplateId);
+        public void LaunchProcess(int curProcessTemplateId, EnvelopeDO curEnvelope)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateId);
+                if (curProcessTemplate == null)
+                    throw new EntityNotFoundException(curProcessTemplateId);
 
-				if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
-				{
-					_process.Execute(curProcessTemplate, curEnvelope);
-				}
-			}
-		}
-	}
+                if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
+                {
+                    _process.Execute(curProcessTemplate, curEnvelope);
+                }
+            }
+        }
+    }
 }

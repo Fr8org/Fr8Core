@@ -85,8 +85,8 @@ namespace Core.StructureMap
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
-	          For< IProcessNode >().Use< ProcessNode >();
-	          For< IDocuSignNotification >().Use< DocuSignNotification >();
+                For<IProcessNode>().Use<ProcessNode>();
+                For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
             }
         }
@@ -118,9 +118,9 @@ namespace Core.StructureMap
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
-	          For< IProcessNode >().Use< ProcessNode >();
-	          For< IDocuSignNotification >().Use< DocuSignNotification >();
-			   For<IProcessTemplate>().Use<ProcessTemplate>();
+                For<IProcessNode>().Use<ProcessNode>();
+                For<IDocuSignNotification>().Use<DocuSignNotification>();
+                For<IProcessTemplate>().Use<ProcessTemplate>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
