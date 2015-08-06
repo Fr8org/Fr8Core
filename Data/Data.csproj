@@ -122,6 +122,7 @@
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\TemplateDO.cs" />
+    <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
     <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
@@ -203,6 +205,10 @@
     <Compile Include="Migrations\201508011853584_UpdateActionDo.cs" />
     <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.cs" />
+    <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.Designer.cs">
+      <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
@@ -401,6 +407,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.resx">
+      <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

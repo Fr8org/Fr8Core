@@ -41,6 +41,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="DocuSign.Integration.Client, Version=1.5.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\DocuSign.Integration.Client.dll.1.5.1\lib\DocuSign.Integration.Client.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -48,8 +52,9 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation">
-      <HintPath>..\..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -175,14 +180,13 @@
   <ItemGroup>
     <Compile Include="Controllers\ActionControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
-    <Compile Include="Controllers\Api\ProcessTemplateControllerTests.cs" />
+    <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\ActionTests .cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />
-    <Compile Include="Entities\ProcessNodeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
@@ -194,7 +198,7 @@
     <Compile Include="Entities\CustomFieldTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />
-    <Compile Include="Services\ProcessNodeServiceTests.cs" />
+    <Compile Include="Services\EnvelopeServiceTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
@@ -222,6 +226,10 @@
     <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Tools\DocusignApiWrapper\DocusignApiWrapper.csproj">
+      <Project>{F0A732A2-D57E-46D3-B7BB-34050E3641C4}</Project>
+      <Name>DocusignApiWrapper</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

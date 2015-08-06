@@ -1,0 +1,67 @@
+﻿@{
+    Layout = null;
+}
+
+<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb hide">
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+<div ng-controller="ProcessBuilderController" class="margin-top-10">
+    <div class="row">
+        <div class="col-md-6 col-sm-6">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light ">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">Add a Process</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <!-- PROCESS FORM -->
+                    <div class="tab-pane active" id="tab_1_1">
+                        <div class="form-group">
+                            <pane-workflow-designer id="processBuilder" width="700" height="600"
+                                                    criteria-list="criteria"
+                                                    on-add-criteria="addCriteria()"
+                                                    on-select-criteria="selectCriteria(criteriaId)"
+                                                    on-add-action="addAction(criteriaId)"
+                                                    on-select-action="selectAction(criteriaId, actionId)">
+                            </pane-workflow-designer>
+                        </div>
+                    </div>
+                    <!-- END PROCESS FORM -->
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+        <pane-define-criteria fields="fields"
+                              criteria="selectedCriteria"
+                              on-remove-criteria="removeCriteria()"
+                              ng-show="isCriteriaSelected()">
+        </pane-define-criteria>
+        <div class="col-md-6 col-sm-6">
+            <pane-select-action id="paneSelectAction"></pane-select-action>
+        </div>
+        <div class="col-md-6 col-sm-6">
+            <pane-configure-action id="paneConfigureAction"></pane-configure-action>
+        </div>
+        <!-- END MAIN CONTENT -->
+        <!-- BEGIN SCRIPT REQUIREMENTS -->
+        <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
+        <!-- END SCRIPT REQUIREMENTS -->
+    </div>
+</div>

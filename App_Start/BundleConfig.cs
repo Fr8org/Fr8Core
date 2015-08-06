@@ -117,6 +117,12 @@ namespace Web.App_Start
                "~/bower_components/select2/select2.css", new CssRewriteUrlTransform()
                ));
 
+            bundles.Add(new ScriptBundle("~/bundles/jsunittests")
+                .IncludeDirectory("~/Scripts/tests/unit/","*.js",true));
+
+            bundles.Add(new ScriptBundle("~/bundles/jsintegrationtests")
+                .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
+
             //bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
             //   "~/Content/css/temp/temp.css", new CssRewriteUrlTransform()
             //   ));         
