@@ -10,43 +10,44 @@ using Web.ViewModels;
 
 namespace Web.Controllers
 {
-	public class ActionController: ApiController
-	{
-		private readonly IActionsService _service;
+    public class ActionController : ApiController
+    {
+        private readonly IActionsService _service;
 
-		private ActionController()
-		{
-			this._service = new ActionsService(ObjectFactory.GetInstance<ISubscriptionService>());
-		}
+        public ActionController()
+        {
+            this._service = new ActionsService(ObjectFactory.GetInstance<ISubscriptionService>());
+        }
 
-/*
-		public IEnumerable< ActionVM > Get()
-		{
-			return this._service.GetAllActions();
-		}
-*/
+        /*
+                public IEnumerable< ActionVM > Get()
+                {
+                    return this._service.GetAllActions();
+                }
+        */
+
         [KwasantAuthorize]
-	    public IEnumerable<string> GetAvailableActions()
-	    {
-	        var userId = this.User.Identity.GetUserId();
-	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-	        {
-	            var account = uow.UserRepository.GetByKey(userId);
+        public IEnumerable<string> GetAvailableActions()
+        {
+            var userId = this.User.Identity.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var account = uow.UserRepository.GetByKey(userId);
                 return this._service.GetAvailableActions(account);
             }
-	    }
+        }
 
- /// <summary>
+        /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-	    public IEnumerable<ActionVM> Save(ActionVM actionVm)
-	    {
+        public IEnumerable<ActionVM> Save(ActionVM actionVm)
+        {
             if (_service.SaveOrUpdateAction(actionVm))
             {
-                return new List<ActionVM> {actionVm};
+                return new List<ActionVM> { actionVm };
             }
             return new List<ActionVM>();
-	    }
-	}
+        }
+    }
 }

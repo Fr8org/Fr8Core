@@ -10,62 +10,68 @@ using Web.ViewModels;
 
 namespace Web.Controllers.Services
 {
-	public interface IActionsService
-	{
-		IEnumerable< ActionVM > GetAllActions();
-		IEnumerable< ActionListVM > GetAllActionLists();
-	    IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount);
-	    bool SaveOrUpdateAction(ActionVM action);
-	}
+    public interface IActionsService
+    {
+        IEnumerable<ActionVM> GetAllActions();
+        IEnumerable<ActionListVM> GetAllActionLists();
+        IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount);
+        bool SaveOrUpdateAction(ActionVM action);
+    }
 
-	public class ActionsService: IActionsService
-	{
-	    private readonly ISubscriptionService _subscriptionService;
+    public class ActionsService : IActionsService
+    {
+        private readonly ISubscriptionService _subscriptionService;
 
-	    public ActionsService(ISubscriptionService subscriptionService)
-	    {
-	        _subscriptionService = subscriptionService;
-	    }
+        public ActionsService()
+            : this(ObjectFactory.GetInstance<ISubscriptionService>())
+        {
+            
+        }
 
-	    public IEnumerable< ActionVM > GetAllActions()
-		{
-			var items = new List< ActionVM >();
+        public ActionsService(ISubscriptionService subscriptionService)
+        {
+            _subscriptionService = subscriptionService;
+        }
 
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
-			{
-				var actions = uow.ActionRepository.GetAll();
-				items.AddRange( actions.Select( Mapper.Map< ActionVM > ) );
-			}
+        public IEnumerable<ActionVM> GetAllActions()
+        {
+            var items = new List<ActionVM>();
 
-			return items;
-		}
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var actions = uow.ActionRepository.GetAll();
+                items.AddRange(actions.Select(Mapper.Map<ActionVM>));
+            }
 
-		public IEnumerable< ActionListVM > GetAllActionLists()
-		{
-			var items = new List< ActionListVM >();
+            return items;
+        }
 
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
-			{
-				var actionLists = uow.ActionListRepository.GetAll();
-				items.AddRange( actionLists.Select( Mapper.Map< ActionListVM > ) );
-			}
+        public IEnumerable<ActionListVM> GetAllActionLists()
+        {
+            var items = new List<ActionListVM>();
 
-			return items;
-		}
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var actionLists = uow.ActionListRepository.GetAll();
+                items.AddRange(actionLists.Select(Mapper.Map<ActionListVM>));
+            }
 
-	    public IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount)
-	    {
-	        var plugins = _subscriptionService.GetAuthorizedPlugins(curAccount);
-	        return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s, StringComparer.OrdinalIgnoreCase);
-	    }
-	    public bool SaveOrUpdateAction(ActionVM submittedAction)
-	    {
-	        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-	        {
+            return items;
+        }
+
+        public IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount)
+        {
+            var plugins = _subscriptionService.GetAuthorizedPlugins(curAccount);
+            return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s, StringComparer.OrdinalIgnoreCase);
+        }
+        public bool SaveOrUpdateAction(ActionVM submittedAction)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
                 var currentActionDo = Mapper.Map<ActionDO>(submittedAction);
-	            var existingActionDo = uow.ActionRepository.GetByKey(submittedAction.Id);
-	            if (existingActionDo != null)
-	            {
+                var existingActionDo = uow.ActionRepository.GetByKey(submittedAction.Id);
+                if (existingActionDo != null)
+                {
                     existingActionDo.ActionList = currentActionDo.ActionList;
                     existingActionDo.ActionListId = currentActionDo.ActionListId;
                     existingActionDo.ActionType = currentActionDo.ActionType;
@@ -73,22 +79,22 @@ namespace Web.Controllers.Services
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                     existingActionDo.UserLabel = currentActionDo.UserLabel;
-	            }
-	            else
-	            {
+                }
+                else
+                {
                     uow.ActionRepository.Add(currentActionDo);
-	            }
+                }
 
-	            try
-	            {
+                try
+                {
                     uow.SaveChanges();
                     return true;
-	            }
-	            catch (Exception)
-	            {
-	                return false;
-	            }
-	        }
-	    }
-	}
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+    }
 }
