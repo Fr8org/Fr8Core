@@ -4,28 +4,28 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-	public class ProfileNodeDO: BaseDO
+	public class ProfileNodeDO : BaseDO
 	{
-		[ Key ]
-		public int Id{ get; set; }
+		[Key]
+		public int Id { get; set; }
 
-		public string Name{ get; set; }
+		public string Name { get; set; }
 
-		[ ForeignKey( "Profile" ) ]
-		[ Required ]
-		public int? ProfileID{ get; set; }
+		[ForeignKey("Profile")]
+		[Required]
+		public int? ProfileID { get; set; }
 
-		public virtual ProfileDO Profile{ get; set; }
+		public virtual ProfileDO Profile { get; set; }
 
-		[ ForeignKey( "ParentNode" ) ]
-		public int? ParentNodeID{ get; set; }
+		[ForeignKey("ParentNode")]
+		public int? ParentNodeID { get; set; }
 
-		public ProfileNodeDO ParentNode{ get; set; }
+		public ProfileNodeDO ParentNode { get; set; }
 
-		[ InverseProperty( "ParentNode" ) ]
-		public virtual IList< ProfileNodeDO > ChildNodes{ get; set; }
+		[InverseProperty("ParentNode")]
+		public virtual IList<ProfileNodeDO> ChildNodes { get; set; }
 
-		[ InverseProperty( "ProfileNode" ) ]
-		public virtual IList< ProfileItemDO > ProfileItems{ get; set; }
+		[InverseProperty("ProfileNode")]
+		public virtual IList<ProfileItemDO> ProfileItems { get; set; }
 	}
 }

@@ -14,14 +14,14 @@ namespace Web.Controllers
 
 		public DocuSignNotificationController()
 		{
-			this._docuSignNotificationService = ObjectFactory.GetInstance< IDocuSignNotification >();
-			this._alertReporter = ObjectFactory.GetInstance< EventReporter >();
+			_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
+			_alertReporter = ObjectFactory.GetInstance<EventReporter>();
 		}
 
-		public DocuSignNotificationController( IDocuSignNotification docusignNotificationService )
+		public DocuSignNotificationController(IDocuSignNotification docusignNotificationService)
 		{
-			this._docuSignNotificationService = docusignNotificationService;
-			this._alertReporter = ObjectFactory.GetInstance< EventReporter >();
+			_docuSignNotificationService = docusignNotificationService;
+			_alertReporter = ObjectFactory.GetInstance<EventReporter>();
 		}
 
 		/// <summary>
@@ -29,36 +29,36 @@ namespace Web.Controllers
 		/// </summary>
 		/// <returns>HTTP 200 if notification is successfully processed, 
 		/// HTTP 400 if request does not contain all expected data or malformed.</returns>
-		[ HttpPost ]
-		public async Task< IHttpActionResult > HandleDocuSignNotification( [ FromUri ] string userId )
+		[HttpPost]
+		public async Task<IHttpActionResult> HandleDocuSignNotification([FromUri] string userId)
 		{
-			var xmlPayload = await this.Request.Content.ReadAsStringAsync();
+			var xmlPayload = await Request.Content.ReadAsStringAsync();
 
-			if( string.IsNullOrEmpty( userId ) )
+			if (string.IsNullOrEmpty(userId))
 			{
 				var message = "Cannot find userId in DocuSign notification. XML payload";
-				this._alertReporter.ImproperDocusignNotificationReceived( message );
-				return this.BadRequest( message );
+				_alertReporter.ImproperDocusignNotificationReceived(message);
+				return BadRequest(message);
 			}
 
-			if( string.IsNullOrEmpty( xmlPayload ) )
+			if (string.IsNullOrEmpty(xmlPayload))
 			{
-				var message = string.Format( "Cannot find XML payload in DocuSign notification: UserId {0}.",
-					userId );
-				this._alertReporter.ImproperDocusignNotificationReceived( message );
-				return this.BadRequest( message );
+				var message = string.Format("Cannot find XML payload in DocuSign notification: UserId {0}.",
+					userId);
+				_alertReporter.ImproperDocusignNotificationReceived(message);
+				return BadRequest(message);
 			}
 
 			try
 			{
-				this._docuSignNotificationService.Process( userId, xmlPayload );
+				_docuSignNotificationService.Process(userId, xmlPayload);
 			}
-			catch( ArgumentException )
+			catch (ArgumentException)
 			{
 				//The event is already logged.
-				return this.BadRequest( "Cannot find envelopeId in XML payload." );
+				return BadRequest("Cannot find envelopeId in XML payload.");
 			}
-			return this.Ok();
+			return Ok();
 		}
 
 		public void Get()

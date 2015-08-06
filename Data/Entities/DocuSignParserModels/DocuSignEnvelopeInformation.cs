@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Core.Models.DocuSign
+namespace Data.Entities.DocuSignParserModels
 {
 	[ XmlRoot( ElementName = "DocuSignEnvelopeInformation", Namespace = "http://www.docusign.net/API/3.0" ) ]
 	public class DocuSignEnvelopeInformation

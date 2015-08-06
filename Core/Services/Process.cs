@@ -7,13 +7,13 @@ using StructureMap;
 
 namespace Core.Services
 {
-	public class Process: IProcess
+	public class Process : IProcess
 	{
 		private readonly IProcessNode _processNode;
 
 		public Process()
 		{
-			this._processNode = ObjectFactory.GetInstance< IProcessNode >();
+			_processNode = ObjectFactory.GetInstance<IProcessNode>();
 		}
 
 		/// <summary>
@@ -22,54 +22,55 @@ namespace Core.Services
 		/// <param name="processTemplateId"></param>
 		/// <param name="envelopeId"></param>
 		/// <returns></returns>
-		public ProcessDO Create( int processTemplateId, int envelopeId )
+		public ProcessDO Create(int processTemplateId, int envelopeId)
 		{
 			var curProcess = new ProcessDO();
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				var template = uow.ProcessTemplateRepository.GetByKey( processTemplateId );
-				var envelope = uow.EnvelopeRepository.GetByKey( envelopeId );
+				var template = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
+				var envelope = uow.EnvelopeRepository.GetByKey(envelopeId);
 
-				if( template == null )
-					throw new ArgumentNullException( "processTemplateId" );
-				if( envelope == null )
-					throw new ArgumentNullException( "envelopeId" );
+				if (template == null)
+					throw new ArgumentNullException("processTemplateId");
+				if (envelope == null)
+					throw new ArgumentNullException("envelopeId");
 
 				curProcess.Name = template.Name;
-				curProcess.ProcessState = ProcessState.Processing;
+				curProcess.ProcessState = ProcessState.Executing;
 				curProcess.EnvelopeId = envelopeId.ToString();
 
-				var processNode = this._processNode.Create( uow, curProcess );
+				var processNode = _processNode.Create(uow, curProcess);
 				uow.SaveChanges();
 
 				curProcess.CurrentProcessNodeId = processNode.Id;
 
-				uow.ProcessRepository.Add( curProcess );
+				uow.ProcessRepository.Add(curProcess);
 				uow.SaveChanges();
 			}
 			return curProcess;
 		}
 
-		public void Execute( ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope )
+		public void Execute(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
 		{
-			var curProcess = this.Create( curProcessTemplate.Id, curEnvelope.Id );
-			if( curProcess.ProcessState == ProcessState.Failed && curProcess.ProcessState == ProcessState.Completed )
-				return;			
-			
-			curProcess.ProcessState = ProcessState.Processing;
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
+			var curProcessDo = Create(curProcessTemplate.Id, curEnvelope.Id);
+			if (curProcessDo.ProcessState == ProcessState.Failed || curProcessDo.ProcessState == ProcessState.Completed)
+				return;
+
+			curProcessDo.ProcessState = ProcessState.Executing;
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ProcessNodeDO curProcessNode;
-				if( curProcess.CurrentProcessNodeId == 0 )
+				if (curProcessDo.CurrentProcessNodeId == 0)
 				{
-					var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey( curProcessTemplate.StartingProcessNodeTemplate );
+					var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curProcessTemplate.StartingProcessNodeTemplate);
 					curProcessNode = new ProcessNodeDO();
 					curProcessNode.Name = curProcessNodeTemplate.Name;
-					curProcessNode.ParentProcessId = curProcess.Id;
+					curProcessNode.ParentProcessId = curProcessDo.Id;
+					uow.SaveChanges();
 				}
-				curProcessNode = uow.ProcessNodeRepository.GetByKey( curProcess.CurrentProcessNodeId );
+				curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDo.CurrentProcessNodeId);
 
-				this._processNode.Execute( curProcess, curEnvelope, curProcessNode );
+				_processNode.Execute(curProcessDo, curEnvelope, curProcessNode);
 			}
 		}
 	}

@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using Core.Interfaces;
 using Core.Services;
-using Core.Utilities;
 using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
@@ -26,12 +25,12 @@ namespace DockyardTest.Services
 		public override void SetUp()
 		{
 			base.SetUp();
-			this._processService = ObjectFactory.GetInstance< IProcess >();
-			this._userService = ObjectFactory.GetInstance< DockyardAccount >();
-			this._docuSignNotificationService = ObjectFactory.GetInstance< IDocuSignNotification >();
+			_processService = ObjectFactory.GetInstance< IProcess >();
+			_userService = ObjectFactory.GetInstance< DockyardAccount >();
+			_docuSignNotificationService = ObjectFactory.GetInstance< IDocuSignNotification >();
 
-			this._xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath( Environment.CurrentDirectory );
-			if( this._xmlPayloadFullPath == string.Empty )
+			_xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath( Environment.CurrentDirectory );
+			if( _xmlPayloadFullPath == string.Empty )
 				throw new Exception( "XML payload file for testing DocuSign notification is not found." );
 		}
 
@@ -39,13 +38,13 @@ namespace DockyardTest.Services
 		[ ExpectedException( typeof( ArgumentException ) ) ]
 		public void ProcessService_ThrowsIfXmlInvalid()
 		{
-			this._docuSignNotificationService.Process( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath.Replace( ".xml", "_invalid.xml" ) ) );
+			_docuSignNotificationService.Process( _testUserId, File.ReadAllText( _xmlPayloadFullPath.Replace( ".xml", "_invalid.xml" ) ) );
 		}
 
 		[ Test ]
 		public void ProcessService_NotificationReceivedAlertCreated()
 		{
-			this._docuSignNotificationService.Process( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath ) );
+			_docuSignNotificationService.Process( _testUserId, File.ReadAllText( _xmlPayloadFullPath ) );
 
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
@@ -68,7 +67,7 @@ namespace DockyardTest.Services
 			}
 
 			//Act
-			var processList = this._userService.GetProcessList( this._testUserId );
+			var processList = _userService.GetProcessList( _testUserId );
 
 			//Assert
 			Assert.AreEqual( 2, processList.Count() );
@@ -88,7 +87,7 @@ namespace DockyardTest.Services
 			}
 
 			//Act
-			this._docuSignNotificationService.Process( this._testUserId, File.ReadAllText( this._xmlPayloadFullPath ) );
+			_docuSignNotificationService.Process( _testUserId, File.ReadAllText( _xmlPayloadFullPath ) );
 
 			//Assert
 			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
@@ -110,7 +109,7 @@ namespace DockyardTest.Services
 				uow.ProcessTemplateRepository.Add( processTemplate );
 				uow.SaveChanges();
 
-				var process = this._processService.Create( processTemplate.Id, envelope.Id );
+				var process = _processService.Create( processTemplate.Id, envelope.Id );
 				Assert.IsNotNull( process );
 				Assert.IsTrue( process.Id > 0 );
 			}
@@ -128,7 +127,7 @@ namespace DockyardTest.Services
 
 				uow.ProcessTemplateRepository.Add( processTemplate );
 				uow.SaveChanges();
-				this._processService.Create( processTemplate.Id, incorrectEnvelopeId );
+				_processService.Create( processTemplate.Id, incorrectEnvelopeId );
 			}
 		}
 
@@ -144,7 +143,23 @@ namespace DockyardTest.Services
 
 				uow.EnvelopeRepository.Add( envelope );
 				uow.SaveChanges();
-				this._processService.Create( incorrectProcessTemplateId, envelope.Id );
+				_processService.Create( incorrectProcessTemplateId, envelope.Id );
+			}
+		}
+
+		[Test]
+		public void ProcessService_Can_ExecuteWithoutExceptions()
+		{
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			{
+				var template = FixtureData.TestProcessTemplate1();
+				var envelope = FixtureData.TestEnvelope1();
+
+				uow.EnvelopeRepository.Add(envelope);
+				uow.ProcessTemplateRepository.Add(template);
+				uow.SaveChanges();
+
+				_processService.Execute(template, envelope);
 			}
 		}
 	}

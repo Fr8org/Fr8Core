@@ -228,10 +228,6 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="Models\DocuSign\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Models\DocuSign\EnvelopeStatus.cs" />
-    <Compile Include="Models\DocuSign\RecipientStatus.cs" />
-    <Compile Include="Models\DocuSign\RecipientStatuses.cs" />
     <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />

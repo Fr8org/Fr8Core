@@ -11,7 +11,7 @@ namespace Data.Entities
 		public int EventType{ get; set; }
 
 		[ ForeignKey( "ProcessTemplate" ) ]
-		public int? ProcessTemplateId{ get; set; }
+		public int ProcessTemplateId{ get; set; }
 
 		public virtual ProcessTemplateDO ProcessTemplate{ get; set; }
 	}

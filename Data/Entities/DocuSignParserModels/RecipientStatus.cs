@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Core.Models.DocuSign
+namespace Data.Entities.DocuSignParserModels
 {
 	[ XmlRoot( ElementName = "RecipientStatuses" ) ]
 	public class RecipientStatus

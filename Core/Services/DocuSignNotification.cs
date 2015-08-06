@@ -11,17 +11,15 @@ using StructureMap;
 
 namespace Core.Services
 {
-	public class DocuSignNotification: IDocuSignNotification
+	public class DocuSignNotification : IDocuSignNotification
 	{
 		private readonly EventReporter _alertReporter;
-		private readonly DockyardAccount _user;
 		private readonly IProcessTemplate _processTemplate;
 
-		public DocuSignNotification( EventReporter alertReporter, DockyardAccount userService )
+		public DocuSignNotification(EventReporter alertReporter, DockyardAccount userService)
 		{
-			this._alertReporter = alertReporter;
-			this._user = userService;
-			this._processTemplate = ObjectFactory.GetInstance< ProcessTemplate >();
+			_alertReporter = alertReporter;
+			_processTemplate = ObjectFactory.GetInstance<ProcessTemplate>();
 		}
 
 		/// <summary>
@@ -29,70 +27,59 @@ namespace Core.Services
 		/// </summary>
 		/// <param name="userId">UserId received from DocuSign.</param>
 		/// <param name="xmlPayload">XML content received from DocuSign.</param>
-		public void Process( string userId, string xmlPayload )
+		public void Process(string userId, string xmlPayload)
 		{
-			if( string.IsNullOrEmpty( userId ) )
-				throw new ArgumentNullException( "userId" );
+			if (string.IsNullOrEmpty(userId))
+				throw new ArgumentNullException("userId");
 
-			if( string.IsNullOrEmpty( xmlPayload ) )
-				throw new ArgumentNullException( "xmlPayload" );
+			if (string.IsNullOrEmpty(xmlPayload))
+				throw new ArgumentNullException("xmlPayload");
 
-			List< DocuSignEventDO > curEvents;
+			List<DocuSignEventDO> curEvents;
 			string curEnvelopeId;
-			this.Parse( xmlPayload, out curEvents, out curEnvelopeId );
+			Parse(xmlPayload, out curEvents, out curEnvelopeId);
+			ProcessEvents(curEvents);
 
-			using( var uow = ObjectFactory.GetInstance< IUnitOfWork >() )
-			{
-				foreach( var curEvent in curEvents )
-				{
-					var @event = curEvent;
-					var subscriptions = uow.ExternalEventRegistrationRepository.GetQuery().Where( s => s.EventType == @event.ExternalEventType ).ToList();
-					var envelope = uow.EnvelopeRepository.GetByKey( curEvent.Id );
-
-					foreach( var subscription in subscriptions )
-					{
-						this._processTemplate.LaunchProcess( subscription.ProcessTemplateId.Value, envelope );
-					}
-				}
-			}
-
-			this._alertReporter.DocusignNotificationReceived( userId, curEnvelopeId);
-			this.HandleIncomingNotification( userId, curEnvelopeId );
+			_alertReporter.DocusignNotificationReceived(userId, curEnvelopeId);
 		}
 
-		private void Parse( string xmlPayload, out List< DocuSignEventDO > curEvents, out string curEnvelopeId )
+		private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
 		{
-			curEvents = new List< DocuSignEventDO >();;
+			curEvents = new List<DocuSignEventDO>();
 			try
 			{
-				var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation( xmlPayload );
+				var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation(xmlPayload);
 				curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
-				curEvents.Add( new DocuSignEventDO
+				curEvents.Add(new DocuSignEventDO
 				{
-					ExternalEventType = ExternalEventType.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
+					ExternalEventType =
+						ExternalEventType.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
 					EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId
-				} );
+				});
 			}
-			catch( ArgumentException )
+			catch (ArgumentException)
 			{
-				const string message = "Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}";
-				this._alertReporter.ImproperDocusignNotificationReceived( message );
+				_alertReporter.ImproperDocusignNotificationReceived("Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}");
 				throw new ArgumentException();
 			}
 		}
 
-		// <summary>
-		/// Handles a notification by DocuSign by an individual Process.
-		/// </summary>
-		/// <param name="userId">UserId received from DocuSign.</param>
-		/// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-		private void HandleIncomingNotification( string userId, string envelopeId )
+		private void ProcessEvents(IEnumerable<DocuSignEventDO> curEvents)
 		{
-			var processList = this._user.GetProcessList( userId );
-			foreach( var process in processList )
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				this._alertReporter.AlertProcessProcessing( userId, envelopeId, process.Id );
-				//TODO: all notification processing logic.
+				foreach (var curEvent in curEvents)
+				{
+					var @event = curEvent;
+					var subscriptions =
+						uow.ExternalEventRegistrationRepository.GetQuery().Where(s => s.EventType == @event.ExternalEventType).ToList();
+					var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
+
+					foreach (var subscription in subscriptions)
+					{
+						_processTemplate.LaunchProcess(subscription.ProcessTemplateId, curEnvelope);
+					}
+				}
 			}
 		}
 	}

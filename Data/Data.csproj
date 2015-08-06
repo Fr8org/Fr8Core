@@ -103,6 +103,8 @@
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -116,6 +118,10 @@
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
     <Compile Include="Entities\DocuSignEventDO.cs" />
+    <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
+    <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />

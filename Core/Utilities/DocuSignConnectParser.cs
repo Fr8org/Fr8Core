@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Serialization;
-using Core.Models.DocuSign;
+using Data.Entities.DocuSignParserModels;
 
 namespace Core.Utilities
 {

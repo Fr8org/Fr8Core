@@ -1,4 +1,4 @@
-﻿using Core.Models.DocuSign;
+﻿using Data.Entities.DocuSignParserModels;
 
 namespace UtilitiesTesting.Fixtures
 {

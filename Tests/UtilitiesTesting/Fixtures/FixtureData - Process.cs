@@ -27,7 +27,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 1,
 				Name = "Process 1",
 				DockyardAccountId = "testuser",
-				ProcessState = ProcessState.Processing
+				ProcessState = ProcessState.Executing
 			} );
 
 			processList.Add( new ProcessDO()
@@ -35,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
 				Id = 2,
 				Name = "Process 2",
 				DockyardAccountId = "testuser",
-				ProcessState = ProcessState.Processing
+				ProcessState = ProcessState.Executing
 			} );
 
 			processList.Add( new ProcessDO()
