@@ -30,7 +30,7 @@ namespace Web.Controllers
         */
 
         [DockyardAuthorize]
-        [Route("/available")]
+        [Route("available")]
         public IEnumerable<string> GetAvailableActions()
         {
             var userId = this.User.Identity.GetUserId();
