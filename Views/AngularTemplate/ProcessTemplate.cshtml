@@ -43,18 +43,8 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Description</label>
-                                <input type="text" placeholder="" class="form-control" ng-model="ptvm.Description" />
+                                <input type="text" placeholder="" maxlength="100" class="form-control" ng-model="ptvm.Description" />
                             </div>
-
-                            <div class="form-group">
-                                <process-builder id="processBuilder" width="800" height="600"
-                                                 add-criteria-click-callback="pbAddCriteriaClick"
-                                                 criteria-click-callback="pbCriteriaClick"
-                                                 add-action-click-callback="pbAddActionClick"
-                                                 action-click-callback="pbActionClick">
-                                </process-builder>
-                            </div>
-
                             <div class="margiv-top-10">
                                 <button type="submit" class="btn green-haze">
                                     Save Changes
@@ -75,12 +65,3 @@
 </div>
 <!-- END MAIN CONTENT -->
 
-<!-- BEGIN SCRIPT REQUIREMENTS -->
-<script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
-<!-- END SCRIPT REQUIREMENTS -->

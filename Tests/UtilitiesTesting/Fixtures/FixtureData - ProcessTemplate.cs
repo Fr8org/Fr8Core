@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-		public static ProcessTemplateDO CreateProcessTemplate()
+		public static ProcessTemplateDO TestProcessTemplate1()
 		{
 		    var processTemplate = new ProcessTemplateDO
 		    {
@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
                 UserId ="testUser1"
 		    };
 
-		    return processTemplate;
+			return processTemplate;
 		}
 	}
 }

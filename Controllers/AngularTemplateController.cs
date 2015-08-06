@@ -8,28 +8,16 @@ namespace Web.Controllers
 {
     public class AngularTemplateController : Controller
     {
-        public ActionResult Footer()
+        public ActionResult Markup(string template)
         {
-            return View();
-        }
-
-        public ActionResult Header()
-        {
-            return View();
-        }
-
-        public ActionResult PageHead()
-        {
-            return View();
-        }
-
-        public ActionResult ProcessTemplates()
-        {
-            return View();
-        }
-        public ActionResult ProcessTemplate()
-        {
-            return View();
+            try
+            {
+                return View(string.Format("~/Views/AngularTemplate/{0}.cshtml", template));
+            }
+            catch
+            {
+                return HttpNotFound();
+            }
         }
     }
 }

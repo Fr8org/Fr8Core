@@ -1,6 +1,11 @@
+/// <reference path="../_all.ts" />
+
 /***
 GLobal Directives
 ***/
+
+
+'use strict';
 
 app.directive('autoFocus', function ($timeout) {
     return {
@@ -15,20 +20,20 @@ app.directive('autoFocus', function ($timeout) {
 
 // Route State Load Spinner(used on page or content load)
 app.directive('ngSpinnerBar', ['$rootScope',
-    function($rootScope) {
+    function ($rootScope) {
         return {
-            link: function(scope, element, attrs) {
+            link: function (scope, element, attrs) {
                 // by defult hide the spinner bar
                 element.addClass('hide'); // hide spinner bar by default
 
                 // display the spinner bar whenever the route changes(the content part started loading)
-                $rootScope.$on('$stateChangeStart', function() {
+                $rootScope.$on('$stateChangeStart', function () {
                     element.removeClass('hide'); // show spinner bar
                     Layout.closeMainMenu();
                 });
 
                 // hide the spinner bar on rounte change success(after the content loaded)
-                $rootScope.$on('$stateChangeSuccess', function() {
+                $rootScope.$on('$stateChangeSuccess', function () {
                     element.addClass('hide'); // hide spinner bar
                     $('body').removeClass('page-on-load'); // remove page loading indicator
                     Layout.setMainMenuActiveLink('match'); // activate selected link in the sidebar menu
@@ -36,16 +41,16 @@ app.directive('ngSpinnerBar', ['$rootScope',
                     // auto scorll to page top
                     setTimeout(function () {
                         Metronic.scrollTop(); // scroll to the top on content load
-                    }, $rootScope.settings.layout.pageAutoScrollOnLoad);                    
+                    }, $rootScope.settings.layout.pageAutoScrollOnLoad);
                 });
 
                 // handle errors
-                $rootScope.$on('$stateNotFound', function() {
+                $rootScope.$on('$stateNotFound', function () {
                     element.addClass('hide'); // hide spinner bar
                 });
 
                 // handle errors
-                $rootScope.$on('$stateChangeError', function() {
+                $rootScope.$on('$stateChangeError', function () {
                     element.addClass('hide'); // hide spinner bar
                 });
             }
@@ -55,12 +60,12 @@ app.directive('ngSpinnerBar', ['$rootScope',
 
 // Handle global LINK click
 app.directive('a',
-    function() {
+    function () {
         return {
             restrict: 'E',
-            link: function(scope, elem, attrs) {
+            link: function (scope, elem, attrs) {
                 if (attrs.ngClick || attrs.href === '' || attrs.href === '#') {
-                    elem.on('click', function(e) {
+                    elem.on('click', function (e) {
                         e.preventDefault(); // prevent link click for above criteria
                     });
                 }
@@ -70,9 +75,9 @@ app.directive('a',
 
 // Handle Dropdown Hover Plugin Integration
 app.directive('dropdownMenuHover', function () {
-  return {
-    link: function (scope, elem) {
-      elem.dropdownHover();
-    }
-  };  
+    return {
+        link: function (scope, elem) {
+            elem.dropdownHover();
+        }
+    };
 });

@@ -154,7 +154,7 @@ namespace DockyardTest.Controllers
             Assert.NotNull(postResult);
 
             //Act
-            var deleteResult = processTemplateController.Delete(postResult.Content.Id) as OkResult;
+            var deleteResult = processTemplateController.Delete(postResult.Content.Id) as OkNegotiatedContentResult<int>;
 
             Assert.NotNull(deleteResult);
 

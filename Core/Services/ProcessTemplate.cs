@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
@@ -17,13 +19,22 @@ namespace Core.Services
 			this._process = ObjectFactory.GetInstance< IProcess >();
 		}
 
-		public IQueryable< ProcessTemplateDO > GetForUser( string userId, int? id = null )
+        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
 		{
+            if (userId == null)
+                throw new ApplicationException("UserId must not be null");
+
 			using( var unitOfWork = ObjectFactory.GetInstance< IUnitOfWork >() )
 			{
-				return unitOfWork.ProcessTemplateRepository
-					.GetQuery()
-					.Where( pt => pt.UserId == userId || ( id != null && pt.Id == id ) );
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
+
+                if (isAdmin)
+                {
+                    return (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id)).ToList();
+                }
+
+                return (id == null ? queryableRepo.Where(pt => pt.UserId == userId)
+                                   : queryableRepo.Where(pt => pt.Id == id && pt.UserId == userId)).ToList();
 			}
 		}
 
