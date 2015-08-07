@@ -498,6 +498,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\RenderEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\CancelledEventArgs.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneFieldMapping\PaneFieldMapping.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\ActionTypeSelectedEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\UpdateActionEventArgs.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\ActionUpdatedEventArgs.ts" />
@@ -3644,6 +3645,7 @@
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneFieldMapping.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -3750,7 +3752,6 @@
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
-    <Folder Include="Scripts\app\directives\PaneFieldMapping\" />
     <Folder Include="Scripts\tests\unit\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
