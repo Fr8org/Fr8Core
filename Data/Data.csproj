@@ -103,6 +103,8 @@
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -115,7 +117,13 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
+    <Compile Include="Entities\DocuSignEventDO.cs" />
+    <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
+    <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\EnvelopeDataDO.cs" />
+    <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
@@ -210,6 +218,10 @@
     <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.cs" />
+    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.Designer.cs">
+      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.cs" />
     <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.Designer.cs">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
@@ -223,7 +235,9 @@
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
+    <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
+    <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
@@ -245,7 +259,7 @@
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
-    <Compile Include="States\EventState.cs" />
+    <Compile Include="States\ExternalEventType.cs" />
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
@@ -419,6 +433,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508051711123_ProcessFlow_Migration.resx">
+      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.resx">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>

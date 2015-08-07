@@ -1,55 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Core.Interfaces;
 using Core.Managers;
-using Core.Services;
 using StructureMap;
-using Utilities.Logging;
 
 namespace Web.Controllers
 {
-    public class NotificationController : ApiController
+    public class DocuSignNotificationController : ApiController
     {
+        private readonly IDocuSignNotification _docuSignNotificationService;
+        private readonly EventReporter _alertReporter;
 
-        IProcess _processService;
-        EventReporter _alertReporter;
-
-        public NotificationController()
+        public DocuSignNotificationController()
         {
-            _processService = ObjectFactory.GetInstance<IProcess>();
+            _docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
         }
 
-        public NotificationController(IProcess processService)
+        public DocuSignNotificationController(IDocuSignNotification docusignNotificationService)
         {
-            _processService = processService;
+            _docuSignNotificationService = docusignNotificationService;
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
         }
+
         /// <summary>
         /// Processes incoming DocuSign notifications.
         /// </summary>
         /// <returns>HTTP 200 if notification is successfully processed, 
         /// HTTP 400 if request does not contain all expected data or malformed.</returns>
         [HttpPost]
-        public async Task<IHttpActionResult> HandleDocusignNotification([FromUri] string userId)
+        public async Task<IHttpActionResult> HandleDocuSignNotification([FromUri] string userId)
         {
-            var xmlPayload = await this.Request.Content.ReadAsStringAsync();
+            var xmlPayload = await Request.Content.ReadAsStringAsync();
 
             if (string.IsNullOrEmpty(userId))
             {
-                string message = "Cannot find userId in DocuSign notification. XML payload";
+                var message = "Cannot find userId in DocuSign notification. XML payload";
                 _alertReporter.ImproperDocusignNotificationReceived(message);
                 return BadRequest(message);
             }
 
             if (string.IsNullOrEmpty(xmlPayload))
             {
-                string message = String.Format("Cannot find XML payload in DocuSign notification: UserId {0}.",
+                var message = string.Format("Cannot find XML payload in DocuSign notification: UserId {0}.",
                     userId);
                 _alertReporter.ImproperDocusignNotificationReceived(message);
                 return BadRequest(message);
@@ -57,14 +51,14 @@ namespace Web.Controllers
 
             try
             {
-                _processService.HandleDocusignNotification(userId, xmlPayload);
+                _docuSignNotificationService.Process(userId, xmlPayload);
             }
             catch (ArgumentException)
             {
                 //The event is already logged.
                 return BadRequest("Cannot find envelopeId in XML payload.");
             }
-            return Ok();               
+            return Ok();
         }
 
         public void Get()

@@ -1,18 +1,19 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.States.Templates
 {
-    public class _EventStatusTemplate : IStateTemplate<EventState>
+    public class _EventStatusTemplate : IStateTemplate<ExternalEventType>
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
-        public String Name { get; set; }
+
+        public string Name { get; set; }
 
         public override string ToString()
         {
-            return Name;
+            return this.Name;
         }
     }
 }
