@@ -3750,6 +3750,7 @@
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
+    <Folder Include="Scripts\app\directives\PaneFieldMapping\" />
     <Folder Include="Scripts\tests\unit\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
