@@ -9,13 +9,13 @@ module dockyard.interfaces {
 
     export interface IQueryBuilderWidgetScope extends ng.IScope {
         operators: Array<IOperator>,
-        fields: Array<IField>,
-        rows: Array<ICondition>,
+        fields: Array<model.Field>,
+        rows: Array<model.Condition>,
         defaultOperator: string,
 
         addRow: () => void,
         removeRow: (index: number) => void,
-        valueChanged: (row: ICondition) => void
+        valueChanged: (row: model.Condition) => void
     }
 
 }

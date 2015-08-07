@@ -5,7 +5,7 @@ module dockyard.directives {
 
     export function QueryBuilderWidget(): ng.IDirective {
 
-        var tryFirstFieldKey = function (array: Array<interfaces.IField>): string {
+        var tryFirstFieldKey = function (array: Array<model.Field>): string {
             if(array) {
                 return array[0].key;
             }
@@ -37,21 +37,25 @@ module dockyard.directives {
                 }
 
                 if ($scope.rows) {
-                    $scope.rows.push({
-                        field: tryFirstFieldKey($scope.fields),
-                        operator: $scope.defaultOperator || 'gt',
-                        value: null,
-                        valueError: true
-                    });
+                    var condition = new model.Condition(
+                        tryFirstFieldKey($scope.fields),
+                        $scope.defaultOperator || 'gt',
+                        null
+                    );
+                    condition.validate();
+
+                    $scope.rows.push(condition);
                 }
 
                 $scope.addRow = function () {
-                    $scope.rows.push({
-                        field: tryFirstFieldKey($scope.fields),
-                        operator: $scope.defaultOperator || 'gt',
-                        value: null,
-                        valueError: true
-                    });
+                    var condition = new model.Condition(
+                        tryFirstFieldKey($scope.fields),
+                        $scope.defaultOperator || 'gt',
+                        null
+                        );
+                    condition.validate();
+
+                    $scope.rows.push(condition);
                 };
 
                 $scope.removeRow = function (index) {

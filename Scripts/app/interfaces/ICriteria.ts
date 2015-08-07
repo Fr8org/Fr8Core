@@ -1,7 +1,7 @@
 ﻿/// <reference path="../_all.ts" />
-
 module dockyard.interfaces {
 
+    // TODO: Do we really need all these interfaces, since we have model type safe classes?
 
     export interface ICriteria {
         id: number,
