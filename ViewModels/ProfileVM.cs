@@ -21,8 +21,8 @@ namespace Web.ViewModels
         {
             Id = profileDO.Id;
             Name = profileDO.Name;
-            UserName = profileDO.User.UserName;
-            UserId = profileDO.UserID;
+            UserName = profileDO.DockyardAccount.UserName;
+            UserId = profileDO.DockyardAccountID;
             Nodes = profileDO.ProfileNodes.Where(pn => pn.ParentNodeID == null).Select(CreateNodeVM).ToList();
         }
         private ProfileNodeVM CreateNodeVM(ProfileNodeDO profileNode)

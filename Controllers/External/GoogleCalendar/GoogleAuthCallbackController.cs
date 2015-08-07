@@ -5,7 +5,7 @@ using Core.Managers.APIManagers.Authorizers.Google;
 
 namespace Web.Controllers.External.GoogleCalendar
 {
-    [KwasantAuthorize]
+    [DockyardAuthorize]
     public class GoogleAuthCallbackController : Google.Apis.Auth.OAuth2.Mvc.Controllers.AuthCallbackController
     {
         protected override FlowMetadata FlowData
