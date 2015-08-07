@@ -19,7 +19,7 @@ namespace Web.Controllers
 
         public ActionController()
         {
-			this._service = new ActionsService();
+			_service = new Action();
         }
 
         /*
@@ -33,11 +33,11 @@ namespace Web.Controllers
         [Route("available")]
         public IEnumerable<string> GetAvailableActions()
         {
-            var userId = this.User.Identity.GetUserId();
+            var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var account = uow.UserRepository.GetByKey(userId);
-                return this._service.GetAvailableActions(account);
+                return _service.GetAvailableActions(account);
             }
         }
 
