@@ -1,22 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
-using Web.Controllers.Services;
+using Core.Interfaces;
+using Core.Services;
+using StructureMap;
 using Web.ViewModels;
 
 namespace Web.Controllers
 {
-    public class ActionListController : ApiController
-    {
-        private readonly IActionsService _service;
+	public class ActionListController: ApiController
+	{
+		private readonly IAction _action;
 
-        private ActionListController()
-        {
-            _service = new ActionsService();
-        }
+		private ActionListController()
+		{
+			this._action = new Action();
+		}
 
-        public IEnumerable<ActionListVM> Get()
-        {
-            return _service.GetAllActionLists();
-        }
-    }
+		public IEnumerable<ActionListVM> Get()
+		{
+            return this._action.GetAllActionLists<ActionListVM>();
+		}
+	}
 }

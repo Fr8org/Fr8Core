@@ -7,7 +7,7 @@ using Utilities;
 
 namespace Web.Controllers
 {
-    [KwasantAuthorize(Roles = "Booker")]
+    [DockyardAuthorize(Roles = "Booker")]
     public class ReportController : Controller
     {
         //private DataTablesPackager _datatables;

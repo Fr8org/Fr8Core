@@ -23,6 +23,7 @@ using Core.Managers.APIManagers.Authorizers.Docusign;
 using Utilities;
 using System;
 using Core.Utilities;
+using Action = Core.Services.Action;
 
 namespace Core.StructureMap
 {
@@ -85,6 +86,8 @@ namespace Core.StructureMap
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
+                For<IAction>().Use<Action>();
+                For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
@@ -118,6 +121,8 @@ namespace Core.StructureMap
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
+                For<ISubscription>().Use<Subscription>();
+                For<IAction>().Use<Action>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();

@@ -1,22 +1,44 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
-using Web.Controllers.Services;
+using AutoMapper;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Interfaces;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Web.ViewModels;
+using Core.Services;
+using Data.Entities;
 
 namespace Web.Controllers
 {
+    [RoutePrefix("api/actions")]
     public class ActionController : ApiController
     {
-        private readonly IActionsService _service;
+        private readonly IAction _service;
 
         public ActionController()
         {
-            _service = new ActionsService();
+			this._service = new ActionsService();
         }
 
-        public IEnumerable<ActionVM> Get()
+        /*
+                public IEnumerable< ActionVM > Get()
+                {
+                    return this._service.GetAllActions();
+                }
+        */
+
+        [DockyardAuthorize]
+        [Route("available")]
+        public IEnumerable<string> GetAvailableActions()
         {
-            return _service.GetAllActions();
+            var userId = this.User.Identity.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var account = uow.UserRepository.GetByKey(userId);
+                return this._service.GetAvailableActions(account);
+            }
         }
 
         /// <summary>
@@ -25,9 +47,9 @@ namespace Web.Controllers
         [HttpPost]
         public IEnumerable<ActionVM> Save(ActionVM actionVm)
         {
-            if (_service.SaveOrUpdateAction(actionVm))
+            if (_service.SaveOrUpdateAction(Mapper.Map<ActionDO>(actionVm)))
             {
-                return new List<ActionVM> {actionVm};
+                return new List<ActionVM> { actionVm };
             }
             return new List<ActionVM>();
         }

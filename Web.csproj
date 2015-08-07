@@ -264,7 +264,6 @@
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\DocuSignNotificationController .cs" />
     <Compile Include="Controllers\ProcessController.cs" />
-    <Compile Include="Controllers\Services\ActionsService.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />

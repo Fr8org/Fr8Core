@@ -9,10 +9,6 @@ namespace Data.Interfaces
         string Id { get; set; }
         //IList<BookingRequestDO> UserBookingRequests { get; set; }
         IEmailAddressDO EmailAddress { get; }
-
-        [InverseProperty("User")]
-        IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }
-
-        bool IsRemoteCalendarAccessGranted(string providerName);
+        IList<ISubscriptionDO> Subscriptions { get; set; } 
     }
 }
