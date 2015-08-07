@@ -1,24 +1,39 @@
-﻿using System.Collections.Generic;
-using System.Web.Http;
-using Core.Interfaces;
+﻿using Core.Interfaces;
 using Core.Services;
-using StructureMap;
+using Data.Entities;
+using System.Collections.Generic;
+using System.Web.Http;
 using Web.ViewModels;
 
 namespace Web.Controllers
 {
 	public class ActionListController: ApiController
 	{
-		private readonly IAction _action;
+		private readonly IActionList _service;
 
-		private ActionListController()
+        public ActionListController()
 		{
-			this._action = new Action();
+			this._service = new ActionList();
 		}
 
-		public IEnumerable<ActionListVM> Get()
+		public IEnumerable<ActionListDO> GetAll()
 		{
-            return this._action.GetAllActionLists<ActionListVM>();
+			return this._service.GetAll();
 		}
+
+        public ActionListDO Get(int id)
+        {
+            return this._service.Get(id);
+        }
+
+        public bool AddAction(ActionDO curActionDO, string position)
+        {
+            return this._service.AddAction(curActionDO, position);
+        }
+
+        public void Process(ActionListDO curActionListDO)
+        {
+            this._service.Process(curActionListDO);
+        }
 	}
 }

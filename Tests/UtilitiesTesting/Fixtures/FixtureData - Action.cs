@@ -59,14 +59,16 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 1,
 				UserLabel = "Action 1",
-				ActionListId = 1
+				ActionListId = 1,
+                Ordering = 1
 			};
 
 			var curActionDO2 = new ActionDO
 			{
 				Id = 2,
 				UserLabel = "Action 2",
-				ActionListId = 1
+				ActionListId = 1,
+                Ordering = 2
 			};
 
 			curActionListDO.ActionOrdering.Add( curActionDO );

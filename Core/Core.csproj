@@ -168,9 +168,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
+    <Compile Include="Interfaces\IActionList.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
@@ -244,6 +246,7 @@
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Action.cs" />
+    <Compile Include="Services\ActionList.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
