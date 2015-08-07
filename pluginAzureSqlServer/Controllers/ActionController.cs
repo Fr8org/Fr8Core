@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
@@ -11,8 +7,10 @@ using pluginAzureSqlServer.Services;
 
 namespace pluginAzureSqlServer.Controllers
 {
-    public class CommandController : ApiController
+    public class ActionController : ApiController
     {
+        public const string Version = "1.0";
+
         /// <summary>
         /// Insert user data to remote database tables.
         /// </summary>
