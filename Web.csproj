@@ -257,6 +257,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="ViewModels\ActionVMBase.cs" />
     <Compile Include="ViewModels\ActionListVM.cs" />
     <Compile Include="ViewModels\ActionVM.cs" />
+    <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />

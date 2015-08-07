@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Web.ViewModels;
 using Web.ViewModels.JsonConverters;
+using Utilities.AutoMapper;
 
 namespace Web.App_Start
 {
@@ -108,6 +110,8 @@ namespace Web.App_Start
 
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
+            Mapper.CreateMap<string, JObject>().ConvertUsing<StringToJObjectConverter>();
+            Mapper.CreateMap<JObject, string>().ConvertUsing<JObjectToStringConverter>();
         }
     }
 }
