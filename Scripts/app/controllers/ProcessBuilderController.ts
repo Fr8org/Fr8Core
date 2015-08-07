@@ -39,6 +39,8 @@ module dockyard.controllers {
 
             this.setupMessageProcessing();
 
+            // Dummy value for processTemplateId;
+            this._scope.processTemplateId = 0;
             this._scope.criteria = [];
             this._scope.fields = [
                 new model.Field('envelope.name', '[Envelope].Name'),
@@ -60,11 +62,11 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pwd.ActionAddingEventArgs) => this.PaneWorkflowDesigner_ActionAdding(eventArgs));
             this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting],
                 (event: ng.IAngularEvent, eventArgs: pwd.ActionSelectingEventArgs) => this.PaneWorkflowDesigner_ActionSelecting(eventArgs));
-            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected],
-                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelected(eventArgs));
+            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting],
+                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelecting(eventArgs));
 
             //Define Criteria pane events
-            this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_CriteriaRemoved],
+            this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_CriteriaRemoving],
                 (event: ng.IAngularEvent, eventArgs: pdc.CriteriaRemovingEventArgs) => this.PaneDefineCriteria_CriteriaRemoving(eventArgs));
 
             //Process Configure Action Pane events
@@ -210,11 +212,11 @@ module dockyard.controllers {
         /*
             Handles message 'WorkflowDesignerPane_TemplateSelected'
         */
-        private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
+        private PaneWorkflowDesigner_TemplateSelecting(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("ProcessBuilderController: template selected");
 
             //Show Select Template Pane
-            var eArgs = new directives.paneSelectTemplate.RenderEventArgs(eventArgs.processTemplateId);
+            var eArgs = new directives.paneSelectTemplate.RenderEventArgs(this._scope.processTemplateId);
             this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);       
         }
 

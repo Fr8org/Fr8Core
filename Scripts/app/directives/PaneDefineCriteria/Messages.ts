@@ -3,9 +3,9 @@
     export enum MessageType {
         PaneDefineCriteria_Render,
         PaneDefineCriteria_Hide,
-        PaneDefineCriteria_CriteriaRemoved,
-        PaneDefineCriteria_CriteriaUpdated,
-        PaneDefineCriteria_Cancelled
+        PaneDefineCriteria_CriteriaRemoving,
+        PaneDefineCriteria_CriteriaUpdating,
+        PaneDefineCriteria_Cancelling
     }
 
     export class RenderEventArgs {

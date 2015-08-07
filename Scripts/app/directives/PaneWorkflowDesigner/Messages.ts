@@ -5,7 +5,7 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export enum MessageType {
         PaneWorkflowDesigner_Render,
-        PaneWorkflowDesigner_TemplateSelected,
+        PaneWorkflowDesigner_TemplateSelecting,
         PaneWorkflowDesigner_CriteriaAdding,
         PaneWorkflowDesigner_CriteriaAdded,
         PaneWorkflowDesigner_CriteriaSelecting,
@@ -88,7 +88,6 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class TemplateSelectedEventArgs {
-        public processTemplateId: number;
     }
 
     // export class UpdateActionEventArgs {

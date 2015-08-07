@@ -23,7 +23,7 @@ module dockyard.directives.paneDefineCriteria {
 
         var removeCriteria = function (scope: IPaneDefineCriteriaScope) {
             var eventArgs = new CriteriaRemovingEventArgs(scope.criteria.id);
-            scope.$emit(MessageType[MessageType.PaneDefineCriteria_CriteriaRemoved], eventArgs);
+            scope.$emit(MessageType[MessageType.PaneDefineCriteria_CriteriaRemoving], eventArgs);
         };
 
 
