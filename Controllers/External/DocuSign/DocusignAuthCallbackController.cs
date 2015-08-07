@@ -12,7 +12,7 @@ using Web.ViewModels;
 
 namespace Web.Controllers.External.DocuSign
 {
-    [KwasantAuthorize]
+    [DockyardAuthorize]
     public class DocusignAuthCallbackController : Controller
     {
         // GET: DocusignAuthCallback/IndexAsync
