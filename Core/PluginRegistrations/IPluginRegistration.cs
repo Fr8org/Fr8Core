@@ -9,7 +9,7 @@ namespace Core.PluginRegistrations
 
         IEnumerable<string> AvailableCommands { get; }
 
-        List<string> GetAvailableActions();
+        IEnumerable<string> GetAvailableActions();
 
         JObject GetConfigurationSettings();
 

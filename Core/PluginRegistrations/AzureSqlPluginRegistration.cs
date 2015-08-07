@@ -40,7 +40,7 @@ namespace Core.PluginRegistrations
             throw new System.NotImplementedException();
         }
 
-        public override List<string> GetFieldMappingTargets(string curActionName, string configUiData)
+        public override IEnumerable<string> GetFieldMappingTargets(string curActionName, string configUiData)
         {
             throw new System.NotImplementedException();
         }
