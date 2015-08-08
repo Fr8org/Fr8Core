@@ -125,6 +125,7 @@
     <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
+    <Compile Include="Entities\MailerDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
@@ -148,6 +149,7 @@
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
+    <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginRegistrationDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
@@ -234,12 +236,17 @@
     <Compile Include="Migrations\201508081609195_blank_migration.Designer.cs">
       <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508081752116_AddMailerDO.cs" />
+    <Compile Include="Migrations\201508081752116_AddMailerDO.Designer.cs">
+      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
+    <Compile Include="Repositories\MailerRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
@@ -449,6 +456,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508081609195_blank_migration.resx">
       <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508081752116_AddMailerDO.resx">
+      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
