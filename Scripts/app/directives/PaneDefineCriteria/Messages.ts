@@ -25,5 +25,11 @@
             this.criteriaId = criteriaId;
         }
     }
+    export class CriteriaUpdated {
+        public criteriaId: number;
 
+        constructor(criteriaId: number) {
+            this.criteriaId = criteriaId;
+        }
+    }
 } 

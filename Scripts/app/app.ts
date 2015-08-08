@@ -53,13 +53,6 @@ app.controller('HeaderController', ['$scope', function ($scope) {
     });
 }]);
 
-/* Setup Layout Part - Sidebar */
-app.controller('PageHeadController', ['$scope', function ($scope) {
-    $scope.$on('$includeContentLoaded', function () {
-        Demo.init(); // init theme panel
-    });
-}]);
-
 /* Setup Layout Part - Footer */
 app.controller('FooterController', ['$scope', function ($scope) {
     $scope.$on('$includeContentLoaded', function () {
@@ -68,7 +61,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 }]);
 
 /* Setup Rounting For All Pages */
-app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider) {
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/processes");

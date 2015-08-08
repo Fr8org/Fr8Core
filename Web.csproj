@@ -493,10 +493,12 @@
     <TypeScriptCompile Include="Scripts\app\app.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\Messages.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\MessageType.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
@@ -3727,6 +3729,7 @@
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />
+    <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />

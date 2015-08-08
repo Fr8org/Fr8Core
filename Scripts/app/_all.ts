@@ -34,6 +34,8 @@
 /*
     FILTERS AND COMPONENTS
 */
+/// <reference path="directives/eventargsbase.ts" />
+
 /// <reference path="filters/processtemplatestate.ts" />
 
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
@@ -44,7 +46,6 @@
 
 /// <reference path="directives/paneselectaction/paneselectaction.ts" />
 
-/// <reference path="directives/paneselecttemplate/messagetype.ts" />
 
 /// <reference path="directives/paneworkflowdesigner/ipaneworkflowdesignerscope.ts" />
 /// <reference path="directives/paneworkflowdesigner/messages.ts" />
