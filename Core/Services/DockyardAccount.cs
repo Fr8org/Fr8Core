@@ -161,7 +161,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.ProcessRepository.GetQuery().Where
-                    (r => r.ProcessState == ProcessState.Processing
+                    (r => r.ProcessState == ProcessState.Executing
                         & r.DockyardAccountId == userId).ToList();
             }
         }
