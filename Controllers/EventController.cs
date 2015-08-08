@@ -27,9 +27,26 @@ namespace Web.Controllers
         {
             if (submittedEvent.EventType.Equals("Plugin Incident"))
             {
-                _eventService.HandlePluginIncident();
+                var incidentDo = new IncidentDO
+                {
+                    ObjectId = submittedEvent.Data.ObjectId,
+                    CustomerId = submittedEvent.Data.CustomerId,
+                    Data = submittedEvent.Data.Data,
+                    PrimaryCategory = submittedEvent.Data.PrimaryCategory,
+                    SecondaryCategory = submittedEvent.Data.SecondaryCategory,
+                    Activity = submittedEvent.Data.Activity
+                };
+
+                if (_eventService.HandlePluginIncident(incidentDo))
+                {
+                    return Ok();
+                }
+
+                return
+                    InternalServerError(new Exception("Updating incident is failed due to internal server error."));
             }
-            return Ok();
+
+            return BadRequest("Only plugin in incidennt is handled by this method.");
         }
 
         //// GET api/<controller>

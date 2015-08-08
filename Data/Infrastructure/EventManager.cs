@@ -101,12 +101,21 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
+        public delegate void PluginIncidentHandler(HistoryItemDO incidentItem);
+        public static event PluginIncidentHandler PluginIncidentReported;
+
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
         {
             UserNotificationHandler handler = AlertUserNotification;
             if (handler != null) handler(userid, message, expiresIn);
+        }
+
+        public static void ReportPluginIncident(HistoryItemDO incidentItem)
+        {
+            PluginIncidentHandler handler = PluginIncidentReported;
+            if (handler != null) handler(incidentItem);
         }
 
         //public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)

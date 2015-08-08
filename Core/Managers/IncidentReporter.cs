@@ -24,6 +24,29 @@ namespace Core.Managers
             //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
+            EventManager.PluginIncidentReported += OnPluginIncidentReported;
+        }
+
+        private void OnPluginIncidentReported(HistoryItemDO incidentItem)
+        {
+            var currentIncident = (IncidentDO) incidentItem;
+            if (currentIncident != null)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    uow.IncidentRepository.Add(currentIncident);
+                    uow.SaveChanges();
+
+                    string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                        currentIncident.PrimaryCategory,
+                        currentIncident.SecondaryCategory,
+                        currentIncident.Activity,
+                        currentIncident.ObjectId,
+                        currentIncident.CustomerId);
+
+                    Logger.GetLogger().Info(logData);
+                }
+            }
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)

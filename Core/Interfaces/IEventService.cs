@@ -1,7 +1,9 @@
-﻿namespace Core.Interfaces
+﻿using Data.Entities;
+
+namespace Core.Interfaces
 {
     public interface IEventService
     {
-        bool HandlePluginIncident();
+        bool HandlePluginIncident(HistoryItemDO incident);
     }
 }
