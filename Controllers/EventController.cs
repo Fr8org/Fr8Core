@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using Core.Interfaces;
+using Data.Entities;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Web.ViewModels;

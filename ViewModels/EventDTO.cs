@@ -1,4 +1,6 @@
-﻿namespace Web.ViewModels
+﻿using Data.Entities;
+
+namespace Web.ViewModels
 {
     public class EventDTO
     {
@@ -6,6 +8,6 @@
 
         public string EventType { get; set; }
 
-        public string Data { get; set; }
+        public HistoryItemDO Data { get; set; }
     }
 }
