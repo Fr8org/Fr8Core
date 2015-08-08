@@ -1,7 +1,8 @@
 /// <reference path="../_all.ts" />
+/// <reference path="../../typings/metronic.d.ts" />
 
 /***
-GLobal Directives
+Global Directives
 ***/
 
 
@@ -64,7 +65,7 @@ app.directive('a',
         return {
             restrict: 'E',
             link: function (scope, elem, attrs) {
-                if (attrs.ngClick || attrs.href === '' || attrs.href === '#') {
+                if ((<any>attrs).ngClick || (<any>attrs).href === '' || (<any>attrs).href === '#') {
                     elem.on('click', function (e) {
                         e.preventDefault(); // prevent link click for above criteria
                     });
@@ -77,7 +78,7 @@ app.directive('a',
 app.directive('dropdownMenuHover', function () {
     return {
         link: function (scope, elem) {
-            elem.dropdownHover();
+            (<any>elem).dropdownHover();
         }
     };
 });
