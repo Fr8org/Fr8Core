@@ -42,6 +42,10 @@
     <Reference Include="AutoMapper.Net4">
       <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
     </Reference>
+    <Reference Include="DocuSign.Integration.Client, Version=1.5.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocuSign.Integration.Client.dll.1.5.1\lib\DocuSign.Integration.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -104,8 +108,8 @@
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
@@ -164,15 +168,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
+    <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IProcessNodeService.cs" />
-    <Compile Include="Interfaces\IProcessService.cs" />
+    <Compile Include="Interfaces\IProcessNode.cs" />
+    <Compile Include="Interfaces\IProcess.cs" />
+    <Compile Include="Interfaces\ISubscription.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
@@ -222,7 +228,7 @@
     <Compile Include="Managers\InboundEmailHandlers\IInboundEmailHandler.cs" />
     <Compile Include="Managers\InboundEmailHandlers\InvitationResponseHandler.cs" />
     <Compile Include="Managers\IntakeManager.cs" />
-    <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
+    <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
     <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
@@ -237,9 +243,11 @@
     <Compile Include="Security\KwasantUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
+    <Compile Include="Services\Action.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
+    <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
@@ -248,11 +256,13 @@
     <Compile Include="Services\Process.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
+    <Compile Include="Services\Signer.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\Subscription.cs" />
+    <Compile Include="Services\Tab.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="Utilities\DocusignXml.cs" />
-    <Compile Include="Interfaces\IDocusignXml.cs" />
+    <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
@@ -279,6 +289,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />
+    <Folder Include="Exceptions\" />
     <Folder Include="UserAlerting\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

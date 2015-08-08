@@ -1,0 +1,11 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Javascript " + @ViewBag.TestType + " Tests";
+    Layout = "~/Views/Shared/_JsTestsLayout.cshtml";
+}
+
+@Scripts.Render("~/bundles/js" + @ViewBag.TestType.ToLower() + "tests")
+
+
+

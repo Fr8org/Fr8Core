@@ -3,8 +3,8 @@ using System.Text;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Core.Exceptions;
 using Core.Services;
+using Data.Exceptions;
 using StructureMap;
 using Utilities.Logging;
 

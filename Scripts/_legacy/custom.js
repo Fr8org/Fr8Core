@@ -8,7 +8,6 @@ $(document).ready(function () {
 	});  
 
     if ($('#loginform, .registration-section, .login-section.status-message').length > 0) {
-	    $('#main-container').addClass('login-page');
 		$(window).resize(function () {
 		    getLogiTop();
 		});   

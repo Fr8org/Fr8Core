@@ -41,7 +41,7 @@ namespace Web.Controllers
         }
     }
 
-    [KwasantAuthorize]
+    [DockyardAuthorize]
     public class AccountController : Controller
     {
         private readonly Account _account;

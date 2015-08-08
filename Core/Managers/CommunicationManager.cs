@@ -6,7 +6,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Core.Exceptions;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Packagers;
 using StructureMap;

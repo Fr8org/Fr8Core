@@ -467,9 +467,9 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProcessTemplateRepository _processTemplateRepository;
+      private IProcessTemplateRepository _processTemplateRepository;
 
-        public ProcessTemplateRepository ProcessTemplateRepository
+        public IProcessTemplateRepository ProcessTemplateRepository
         {
             get
             {
@@ -479,10 +479,33 @@ namespace Data.Infrastructure
 
 		private ProcessNodeRepository _proeProcessNodeRepository;
 
-	    public ProcessNodeRepository ProcessNodeRepository
+        public ProcessNodeRepository ProcessNodeRepository
+        {
+            get
+            {
+                return _proeProcessNodeRepository ?? (_proeProcessNodeRepository = new ProcessNodeRepository(this));
+            }
+        }
+
+        private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
+
+	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
 	    {
-		    get { return this._proeProcessNodeRepository ?? ( this._proeProcessNodeRepository = new ProcessNodeRepository( this ) ); }
+		    get
+		    {
+		        return _externalEventRegistrationRepository ?? (_externalEventRegistrationRepository = new ExternalEventRegistrationRepository(this));
+		    }
 	    }
+
+	    private ProcessNodeTemplateRepository _processNodeTemplateRepository;
+
+        public ProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        {
+            get
+            {
+                return _processNodeTemplateRepository ?? (_processNodeTemplateRepository = new ProcessNodeTemplateRepository(this));
+            }
+        }
 
 	    public void Save()
         {

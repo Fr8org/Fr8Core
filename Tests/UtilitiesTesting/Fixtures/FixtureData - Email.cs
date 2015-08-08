@@ -6,7 +6,6 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-
         public EmailDO TestEmail1()
         {
 
@@ -33,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
-        public MailMessage TestMessage1() 
+        public MailMessage TestMessage1()
         {
             string testSubject = "Conversation Test Subject";
             string testBody = "Conversation Test Body";

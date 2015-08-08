@@ -257,6 +257,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<DocusignAccountDO>().ToTable("DocusignAccounts");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
+            modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
+            modelBuilder.Entity<PluginDO>().ToTable("Plugins");
             //modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
             //modelBuilder.Entity<AnswerDO>().ToTable("Answers");
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
@@ -276,8 +278,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
             modelBuilder.Entity<TemplateDO>().ToTable("Templates");
-	      modelBuilder.Entity< ProcessNodeDO >().ToTable( "ProcessNodes" );
-		modelBuilder.Entity< ProcessNodeTemplateDO >().ToTable( "ProcessNodeTemplates" );
+            modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
+            modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
+            modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventRegistrations");
+            modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
@@ -285,11 +289,11 @@ namespace Data.Infrastructure
                 .HasForeignKey(a => a.FromID)
                 .WillCascadeOnDelete(false);
 
-  	        modelBuilder.Entity< ProcessNodeDO >()
-		        .HasRequired( p => p.Process )
-		        .WithMany()
-		        .HasForeignKey( p => p.ParentProcessId )
-		        .WillCascadeOnDelete( false );
+            modelBuilder.Entity<ProcessNodeDO>()
+                .HasRequired(p => p.Process)
+                .WithMany()
+                .HasForeignKey(p => p.ParentProcessId)
+                .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DockyardAccountDO>()
                 .Property(u => u.EmailAddressID)

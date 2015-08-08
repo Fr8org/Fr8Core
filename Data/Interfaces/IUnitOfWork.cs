@@ -44,7 +44,7 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        ProcessTemplateRepository ProcessTemplateRepository { get; }
+        IProcessTemplateRepository ProcessTemplateRepository { get; }
         SlipRepository SlipRepository { get; }
 	  ActionRepository ActionRepository{ get; }
 	  ActionListRepository ActionListRepository{ get; }
@@ -64,8 +64,10 @@ namespace Data.Interfaces
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
+	  ExternalEventRegistrationRepository ExternalEventRegistrationRepository{ get; }
+	  ProcessNodeTemplateRepository ProcessNodeTemplateRepository{ get; }
 
-        /// <summary>
+	    /// <summary>
         /// Starts a transaction on this unit of work
         /// </summary>
         void StartTransaction();

@@ -3,7 +3,7 @@ using Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
-	partial class FixtureData
+	public partial class FixtureData
 	{
 		public ProcessNodeDO TestProcessNode()
 		{

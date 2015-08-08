@@ -101,7 +101,7 @@ namespace Data.Repositories
 
             if (!curDockyardAccount.Profiles.Any())
             {
-                var defaultProfile = new ProfileDO() {Name = "Default Profile", User = curDockyardAccount};
+                var defaultProfile = new ProfileDO() {Name = "Default Profile", DockyardAccount = curDockyardAccount};
                 defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Communications", Profile = defaultProfile, ProfileID = defaultProfile.Id});
                 defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Locations", Profile = defaultProfile, ProfileID = defaultProfile.Id });
                 defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Travel", Profile = defaultProfile, ProfileID = defaultProfile.Id });
