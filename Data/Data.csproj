@@ -232,6 +232,10 @@
     <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.Designer.cs">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508081609195_blank_migration.cs" />
+    <Compile Include="Migrations\201508081609195_blank_migration.Designer.cs">
+      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -445,6 +449,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508061339318_AddSubscriptionAndPlugin.resx">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508081609195_blank_migration.resx">
+      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
