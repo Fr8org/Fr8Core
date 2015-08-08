@@ -9,31 +9,21 @@ namespace Web.Controllers
 {
 	public class ActionListController: ApiController
 	{
-		private readonly IActionList _service;
+        private readonly IActionList _actionList;
 
         public ActionListController()
 		{
-			this._service = new ActionList();
+            _actionList = new ActionList();
 		}
 
 		public IEnumerable<ActionListDO> GetAll()
 		{
-			return this._service.GetAll();
+            return _actionList.GetAll();
 		}
 
-        public ActionListDO Get(int id)
+        public ActionListDO GetByKey(int curActionListId)
         {
-            return this._service.Get(id);
-        }
-
-        public bool AddAction(ActionDO curActionDO, string position)
-        {
-            return this._service.AddAction(curActionDO, position);
-        }
-
-        public void Process(ActionListDO curActionListDO)
-        {
-            this._service.Process(curActionListDO);
+            return _actionList.GetByKey(curActionListId);
         }
 	}
 }

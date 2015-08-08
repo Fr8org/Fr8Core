@@ -9,7 +9,7 @@ namespace Data.Entities
 	{
 		public ActionListDO()
 		{
-			this.ActionOrdering = new List< ActionDO >();
+			Actions = new List< ActionDO >();
 		}
 
 		[ Key ]
@@ -31,7 +31,7 @@ namespace Data.Entities
 		public virtual _EventStatusTemplate TriggerEvent{ get; set; }
 
 		[ InverseProperty( "ActionList" ) ]
-		public List< ActionDO > ActionOrdering{ get; set; }
+		public List< ActionDO > Actions{ get; set; }
 
         public ActionDO  CurrentAction  { get; set; }
 	}

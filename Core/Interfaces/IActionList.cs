@@ -10,8 +10,8 @@ namespace Core.Interfaces
     public interface IActionList
     {
         IEnumerable<ActionListDO> GetAll();
-        ActionListDO Get(int id);
-        bool AddAction(ActionDO curActionDO, string position);
+        ActionListDO GetByKey(int curActionListId);
+        void AddAction(ActionDO curActionDO, string position);
         void Process(ActionListDO curActionListDO);
     }
 }

@@ -21,44 +21,44 @@ namespace Core.Services
             }
         }
 
-        public ActionListDO Get(int id)
+        public ActionListDO GetByKey(int curActionListId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var action = uow.ActionListRepository.GetByKey(id);
-                if (action == null)
-                    throw new ArgumentNullException("actionId");
+                var curActionListDO = uow.ActionListRepository.GetByKey(curActionListId);
+                if (curActionListDO == null)
+                    throw new ArgumentNullException("actionListId");
 
-                return action;
+                return curActionListDO;
             }
         }
 
-        public bool AddAction(ActionDO curActionDO, string position)
+        public void AddAction(ActionDO curActionDO, string position)
         {
             if (!curActionDO.ActionListId.HasValue)
                 throw new NullReferenceException("ActionListId");
 
-            var actionList = Get(curActionDO.ActionListId.Value);
-            int ordering = 0;
-            if (!string.IsNullOrEmpty(position) && position.Equals("last", StringComparison.OrdinalIgnoreCase))
+            var curActionList = GetByKey(curActionDO.ActionListId.Value);
+            Reorder(curActionList, curActionDO, position);
+            curActionList.Actions.Add(curActionDO);
+            if (curActionList.CurrentAction == null)
+                curActionList.CurrentAction = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ordering = actionList.ActionOrdering.Select(action => action.Ordering).Max();
+                uow.ActionListRepository.Add(curActionList);
+                uow.SaveChanges();
+            }
+        }
+
+        private void Reorder(ActionListDO curActionListDO, ActionDO curActionDO, string position)
+        {
+            if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
+            {
+                int ordering = curActionListDO.Actions.Select(action => action.Ordering).Max();
                 curActionDO.Ordering = ordering + 1;
             }
             else
-                curActionDO.Ordering = 0; // Temporarily setting default value. Nee to discuss what should it be exactly.
-
-            actionList.ActionOrdering.Add(curActionDO);
-
-            if (actionList.CurrentAction == null)
-                actionList.CurrentAction = actionList.ActionOrdering.OrderBy(action => action.Ordering).FirstOrDefault();
-            
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ActionListRepository.Add(actionList);
-                uow.SaveChanges();
-            }
-            return true;
+                throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
         }
 
         public void Process(ActionListDO curActionListDO)

@@ -8,30 +8,29 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
+using Core.Services;
 
 namespace DockyardTest.Controllers
 {
     [TestFixture]
     public class ActionListControllerTest : BaseTest
     {
+
         public override void SetUp()
         {
             base.SetUp();
-           
+            InitializeActionList();
         }
 
         [Test]
         [Category("Controllers.ActionListController.AddAction")]
-        public void ActionListController_Add_ActionDO_To_ActionListDO_With_Last_Position()
+        public void ActionListController_CanAddActionDOInLastPosition()
         {
-            CreateActionList();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var controller = new ActionListController();
+                var curService = new ActionList();
                 ActionDO actionDO = CreateActionDO();
-                // call AddAction(actionDO, "last") -
-                controller.AddAction(actionDO, "last");
-                //Assert
+                curService.AddAction(actionDO, "last");
                 Assert.IsNotNull(uow.ActionRepository.GetByKey(10));
                 Assert.AreEqual(uow.ActionRepository.GetByKey(10).Ordering, 3);
             }
@@ -39,18 +38,14 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("Controllers.ActionListController.AddAction")]
-        public void ActionListController_Add_ActionDO_To_ActionListDO_With_Default_Position()
+        [ExpectedException(ExpectedException = typeof(NotSupportedException))]
+        public void ActionListController_CanAddActionDOInPositionOtherThanLast()
         {
-            CreateActionList();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var controller = new ActionListController();
+                var curService = new ActionList();
                 ActionDO actionDO = CreateActionDO();
-                // call AddAction(actionDO, "last") -
-                controller.AddAction(actionDO, "");
-                //Assert
-                Assert.IsNotNull(uow.ActionRepository.GetByKey(10));
-                Assert.AreEqual(uow.ActionRepository.GetByKey(10).Ordering, 0);
+                curService.AddAction(actionDO, "first");
             }
         }
 
@@ -58,14 +53,11 @@ namespace DockyardTest.Controllers
         [Category("Controllers.ActionListController.AddAction")]
         public void ActionListController_Set_LowestPostitoned_ActionDO_To_CurrentAtion_Of_ActionListDO()
         {
-            CreateActionListWithNullCurrentAction();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var controller = new ActionListController();
+                var curService = new ActionList();
                 ActionDO actionDO = CreateActionDO();
-                // call AddAction(actionDO, "last") -
-                controller.AddAction(actionDO, "last");
-                //Assert
+                curService.AddAction(actionDO, "last");
                 Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
                 Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentAction.Ordering, 1);
             }
@@ -73,15 +65,14 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("Controllers.ActionListController.Process")]
-        [ExpectedException(ExpectedException= typeof(ArgumentNullException))]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionListController_NULL_CurrentAtion_Of_ActionListDO()
         {
-            CreateActionListWithNullCurrentAction();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var controller = new ActionListController();
+                var curService = new ActionList();
                 Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
-                controller.Process(uow.ActionListRepository.GetByKey(1));
+                curService.Process(uow.ActionListRepository.GetByKey(1));
             }
         }
 
@@ -104,26 +95,7 @@ namespace DockyardTest.Controllers
             };
         }
 
-        private void CreateActionList()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fixture = new FixtureData(uow);
-
-                //Add a template
-                var template = fixture.TestTemplate1();
-                var templates = uow.Db.Set<TemplateDO>();
-                templates.Add(template);
-                uow.Db.SaveChanges();
-
-                var actionList = new FixtureData(uow).TestActionList();
-
-                uow.ActionListRepository.Add(actionList);
-                uow.SaveChanges();
-            }
-        }
-
-        private void CreateActionListWithNullCurrentAction()
+        void InitializeActionList()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -141,6 +113,8 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
             }
         }
+
         #endregion
     }
+
 }

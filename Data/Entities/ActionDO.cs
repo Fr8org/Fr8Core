@@ -22,6 +22,9 @@ namespace Data.Entities
 
         public string ParentPluginRegistration { get; set; }
 
+        /// <summary>
+        /// This property defines the permanent postion of Actions in ActionList.
+        /// </summary>
         public int Ordering  { get; set; }
 	}
 }
