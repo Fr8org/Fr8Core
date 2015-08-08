@@ -169,14 +169,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
+    <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IEventService.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
-    <Compile Include="Interfaces\IProcessService.cs" />
+    <Compile Include="Interfaces\IProcess.cs" />
+    <Compile Include="Interfaces\ISubscription.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
@@ -226,7 +229,7 @@
     <Compile Include="Managers\InboundEmailHandlers\IInboundEmailHandler.cs" />
     <Compile Include="Managers\InboundEmailHandlers\InvitationResponseHandler.cs" />
     <Compile Include="Managers\IntakeManager.cs" />
-    <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
+    <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
     <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
@@ -241,9 +244,11 @@
     <Compile Include="Security\KwasantUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
+    <Compile Include="Services\Action.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
+    <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
@@ -256,10 +261,10 @@
     <Compile Include="Services\Signer.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Tab.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="Utilities\DocusignXml.cs" />
-    <Compile Include="Interfaces\IDocusignXml.cs" />
+    <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

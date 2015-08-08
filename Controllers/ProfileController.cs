@@ -12,7 +12,7 @@ namespace Web.Controllers
 {
     public class ProfileController : Controller
     {
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         public ActionResult Index(int profileID)
         {
             if (profileID == 0)
@@ -26,7 +26,7 @@ namespace Web.Controllers
             }
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         public ActionResult ProfilesForUser(string userID)
         {
             if (String.IsNullOrWhiteSpace(userID))
@@ -35,7 +35,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userDO = uow.UserRepository.GetByKey(userID);
-                var profiles = uow.ProfileRepository.GetQuery().Where(pn => pn.UserID == userID);
+                var profiles = uow.ProfileRepository.GetQuery().Where(pn => pn.DockyardAccountID == userID);
                 var vm = new UserProfilesVM
                 {
                     UserName = userDO.UserName,
@@ -50,7 +50,7 @@ namespace Web.Controllers
         }
         
         [HttpPost]
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         public ActionResult UpdateProfile(ProfileVM value)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -71,19 +71,19 @@ namespace Web.Controllers
             return Json(true);
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult CreateNewProfile()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ProfileRepository.Add(new ProfileDO {Name = "New Profile", UserID = this.GetUserId()});
+                uow.ProfileRepository.Add(new ProfileDO {Name = "New Profile", DockyardAccountID = this.GetUserId()});
                 uow.SaveChanges();
             }
             return Json(true);
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult DeleteProfile(int profileID)
         {
@@ -96,7 +96,7 @@ namespace Web.Controllers
             return Json(true);
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
+        [DockyardAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult RenameProfile(int profileID, String newUserName)
         {

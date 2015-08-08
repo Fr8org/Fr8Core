@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [KwasantAuthorize(Roles = Roles.Booker)]
+    [DockyardAuthorize(Roles = Roles.Booker)]
     public class DashboardController : Controller
     {
         //
