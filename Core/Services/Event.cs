@@ -6,8 +6,12 @@ using Data.Infrastructure;
 
 namespace Core.Services
 {
+    /// <summary>
+    /// Event service implementation
+    /// </summary>
     public class Event : IEventService
     {
+        /// <see cref="IEventService.HandlePluginIncident"/>
         public bool HandlePluginIncident(HistoryItemDO incident)
         {
             try

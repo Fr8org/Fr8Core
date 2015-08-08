@@ -1,6 +1,6 @@
 ﻿
+using System.Configuration;
 using Core.ExternalServices.REST;
-using StructureMap;
 using Utilities;
 
 namespace PluginUtilities
@@ -9,14 +9,16 @@ namespace PluginUtilities
     {
         public static void AfterStartup(string message)
         {
-            var baseUrl = @"http://localhost:46281/api/Event/Event";
-
+            string EventWebServerUrl = "EventWebServerUrl";
+            
             var restCall = new RestfulCallWrapper();
-            restCall.Initialize(baseUrl, string.Empty, Method.POST);
+
+            string url = ConfigurationManager.AppSettings[EventWebServerUrl];
+            restCall.Initialize(url, string.Empty, Method.POST);
 
             restCall.AddBody(message, "application/json");
 
-            var res = restCall.Execute();
+            restCall.Execute();
         }
     }
 }

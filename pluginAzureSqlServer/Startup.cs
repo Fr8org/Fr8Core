@@ -29,8 +29,6 @@ namespace pluginAzureSqlServer
 
             var json = new {Source = "azure_sql_plugin", EventType = "Plugin Incident", Data = data};
             PluginBase.AfterStartup(JsonConvert.SerializeObject(json));
-
-            
         }
     }
 }
