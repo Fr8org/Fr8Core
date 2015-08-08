@@ -734,6 +734,22 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
 	background-color: #c62d1f;
 } 
 
+/*Metronic validation section*/
+.metronic-validation-section .validation-summary-errors ul {
+   
+    padding: 0;
+    list-style: none;    
+    border: 5px solid #ffffff;
+    margin-top: 10px;       
+}
+
+.metronic-validation-section .validation-summary-errors ul li, .login-section span.field-validation-error {
+    background: #b94a48;
+    color: #f2e9df;
+    padding: 5px 10px;
+}
+
+
 /*Login section*/
 
 
