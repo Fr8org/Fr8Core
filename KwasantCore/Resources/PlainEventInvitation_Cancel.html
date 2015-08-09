@@ -1,0 +1,22 @@
+﻿@{
+var time = Model.IsAllDay
+                        ? "All day - " + Model.StartDate.ToString("ddd d MMM")
+                        : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
+
+var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+}
+
+@Model.EmailBasicText
+@Model.Summary
+@Model.Description
+*When*
+@time UTC+@timeZone
+*Where*
+@Model.Location
+*Who*
+@{
+foreach(var attendee in @Model.Attendees)
+{
+@(attendee.Name + " - " + attendee.EmailAddress)
+}
+}

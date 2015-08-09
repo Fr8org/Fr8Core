@@ -1,0 +1,54 @@
+﻿/* navigator */
+
+.navigator_blue_main 
+{
+	xborder-left: 1px solid #A0A0A0;
+	xborder-right: 1px solid #A0A0A0;
+	xborder-bottom: 1px solid #A0A0A0;
+    background-color: white;
+    color: #000000;
+}
+
+.navigator_blue_month {
+    font-family: Tahoma;
+    font-size: 8pt;
+    /*border: 1px solid black;*/
+}
+.navigator_blue_day {
+    color: black;
+    /*background-color: white;*/
+}
+.navigator_blue_weekend {
+    background-color: #f0f0f0;
+}
+.navigator_blue_dayheader {
+    color: black;
+}
+
+.navigator_blue_line 
+{
+	xborder-bottom: 1px solid #A0A0A0;
+}
+
+.navigator_blue_dayother {
+    color: gray;
+}
+.navigator_blue_todaybox
+{
+	border: 1px solid red;
+}
+
+.navigator_blue_select 
+{
+    background-color: #6b9cad;
+    color: #fff;
+}
+.navigator_blue_title, .navigator_blue_titleleft, .navigator_blue_titleright {
+    xborder-top: 1px solid #A0A0A0;
+	color: #000;
+	font-weight: bold;
+
+}
+.navigator_blue_busy {
+	font-weight: bold;
+}

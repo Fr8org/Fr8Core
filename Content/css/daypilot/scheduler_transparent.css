@@ -1,0 +1,210 @@
+.scheduler_transparent_main 
+{
+    font-family: Tahoma, Arial, sans-serif;
+    border: 1px solid #999;
+}
+
+.scheduler_transparent_event 
+{
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+
+    font-size: 12px;
+    color: #000;
+}
+
+.scheduler_transparent_event_inner  
+{
+    padding: 6px 4px 4px 4px;
+    overflow: hidden;
+
+    position: absolute;
+    top: 0px;
+    bottom: 1px;
+    left: 0px;
+    right: 0px;
+
+    background: #47afff;
+    border: 1px solid #1066a8;
+}
+
+.scheduler_transparent_event_hover .scheduler_transparent_event_inner 
+{
+}
+
+.scheduler_transparent_event .scheduler_transparent_action:hover
+{
+    opacity: 1;
+    filter: none;
+}
+
+.scheduler_transparent_selected .scheduler_transparent_event_inner
+{
+    background: #ddd;
+}
+
+.scheduler_transparent_timeheader 
+{
+    cursor: default;
+    color: #666;
+}
+
+.scheduler_transparent_message
+{
+    opacity: 0.7;
+    filter: alpha(opacity=70);
+
+    padding: 10px; 
+    color: #eeeeee;
+    background: #333;
+}
+
+.scheduler_transparent_timeheadergroup,
+.scheduler_transparent_timeheadercol
+{
+    color: #666;
+    text-align: center;
+    
+    background: #eeeeee;
+    background: -webkit-gradient(linear, left top, left bottom, from(#f3f3f3), to(#e9e9e9));
+    background: -webkit-linear-gradient(top, #f3f3f3 0%, #e9e9e9);
+    background: -moz-linear-gradient(top, #f3f3f3 0%, #e9e9e9);
+    background: -ms-linear-gradient(top, #f3f3f3 0%, #e9e9e9);
+    background: -o-linear-gradient(top, #f3f3f3 0%, #e9e9e9);
+    background: linear-gradient(top, #f3f3f3 0%, #e9e9e9);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#f3f3f3", endColorStr="#e9e9e9");
+}
+
+.scheduler_transparent_rowheader,
+.scheduler_transparent_corner
+{
+    color: #666666;
+    
+    background: #eeeeee;
+    background: -webkit-gradient(linear, left top, right top, from(#f3f3f3), to(#e9e9e9));
+    background: -webkit-linear-gradient(left, #f3f3f3 0%, #e9e9e9);
+    background: -moz-linear-gradient(left, #f3f3f3 0%, #e9e9e9);
+    background: -ms-linear-gradient(left, #f3f3f3 0%, #e9e9e9);
+    background: -o-linear-gradient(left, #f3f3f3 0%, #e9e9e9);
+    background: linear-gradient(left, #f3f3f3 0%, #e9e9e9);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#f3f3f3", endColorStr="#e9e9e9", GradientType=1);
+}
+
+.scheduler_transparent_rowheader_inner {
+    padding: 3px;
+}
+
+.scheduler_transparent_timeheadergroup_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    text-align: center;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+}
+
+.scheduler_transparent_timeheadercol_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #999;
+}
+
+.scheduler_transparent_cellcolumn 
+{
+    background: #fff;
+}
+
+.scheduler_transparent_cellparent {
+    background-color: #f8f8f8;
+}
+
+.scheduler_transparent_tree_image_no_children {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLzEyzsCJAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAADBJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOL31MeLxHwCeXUT0WkFMKAAAAABJRU5ErkJggg==);
+}
+.scheduler_transparent_tree_image_expand {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLyUoFBT0AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAFJJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeRhgJGREc4GijMBtTNgA0BxFog+uA4IA2gmUJwFog/IgUhAGBB9KPYhA3T74Jog+hjx+A8A1KRQ+AN5vcwAAAAASUVORK5CYII=);
+}
+.scheduler_transparent_tree_image_collapse {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLxB+p9DXAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAENJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOAtEHyMjI7IE0EygOAtEH5CDqY9c+xjx+A8ANndK9WaZlP4AAAAASUVORK5CYII=);
+}
+
+.scheduler_transparent_divider 
+{
+    background-color: #999;
+}
+
+.scheduler_transparent_divider_horizontal
+{
+    background-color: #999;
+}
+
+.scheduler_transparent_matrix_vertical_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_transparent_matrix_vertical_break 
+{
+    background-color: #000;
+}
+
+.scheduler_transparent_matrix_horizontal_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_transparent_resourcedivider 
+{
+    background-color: #999;
+}
+
+.scheduler_transparent_shadow_inner 
+{
+    background-color: #666666;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    height: 100%;
+}
+
+.scheduler_transparent_event_bar
+{
+    top: 3px;
+    left: 4px;
+    right: 4px;
+    height: 4px;
+
+    background-color: #8bceff;
+}
+
+.scheduler_transparent_event_bar_inner  
+{
+    position: absolute;
+    height: 4px;
+    background-color: #1066a8;
+}
+
+.scheduler_transparent_timeheader_float_inner {
+}
+
+.scheduler_transparent_event_float_inner {
+    padding: 7px 4px 4px 8px;
+}
+
+.scheduler_transparent_event_float_inner:after {
+    content:"";
+    border-color: transparent #1066a8 transparent transparent;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    top:9px;
+    left:-4px;
+}
