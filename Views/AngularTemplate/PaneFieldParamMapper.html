@@ -1,0 +1,21 @@
+﻿<div class="portlet light " ng-show="doneLoading()">
+    <div class="row " ng-if="showHeading()">
+        <div class="col-md-6 text-center">
+            <h4 class="bold">{{HeadingLeft}}</h4>
+        </div>
+        <div class="col-md-6 text-center ">
+            <h4 class="bold">{{HeadingRight}}</h4>
+        </div>
+    </div>
+    <div class="row margin-top-15" ng-repeat="mappedFrom in toBeMappedFrom ">
+        <div class="col-md-6">
+            <select ng-model="mappedFrom.mappedTo" class="form-control"
+                    ng-options="mappedTo  as mappedTo.Name for mappedTo in toBeMappedTo" ng-change="mapChanged()">
+                <option value="">Select Document Field</option>
+            </select>
+        </div>
+        <div class="col-md-6 text-center">
+            {{mappedFrom.Name}}
+        </div>
+    </div>
+</div>
