@@ -185,6 +185,7 @@
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
+    <Compile Include="Entities\ActionRegistrationTests.cs" />
     <Compile Include="Entities\ActionTests .cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />

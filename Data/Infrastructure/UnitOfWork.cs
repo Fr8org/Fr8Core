@@ -469,6 +469,15 @@ namespace Data.Infrastructure
             }
         }
 
+      private ActionRegistrationRepository _actionRegistrationRepository;
+      public ActionRegistrationRepository ActionRegistrationRepository
+      {
+          get
+          {
+              return _actionRegistrationRepository ?? (_actionRegistrationRepository = new ActionRegistrationRepository(this));
+          }
+      }
+
 	  private ActionListRepository _actionListRepository;
 	  public ActionListRepository ActionListRepository
         {
