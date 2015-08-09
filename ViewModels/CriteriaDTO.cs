@@ -2,12 +2,22 @@
 
 namespace Web.ViewModels
 {
+    /// <summary>Data transfer object for Criteria entity.</summary>
     public class CriteriaDTO
     {
+        /// <summary>Criteria identity.</summary>
         public int Id { get; set; }
+        
+        /// <summary>ProcessTemplate identity.</summary>
         public int ProcessTemplateId { get; set; }
+        
+        /// <summary>Criteria name.</summary>
         public string Name { get; set; }
+        
+        /// <summary>Whether to execute action when conditions are satisfied or execute without using conditions.</summary>
         public int ExecutionMode { get; set; }
-        public JObject Conditions { get; set; }
+
+        /// <summary>JSON array with condition tuples.</summary>
+        public JToken Conditions { get; set; }
     }
 }

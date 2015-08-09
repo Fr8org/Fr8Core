@@ -507,6 +507,17 @@ namespace Data.Infrastructure
             }
         }
 
+
+        private CriteriaRepository _criteriaRepository;
+
+        public ICriteriaRepository CriteriaRepository
+        {
+            get
+            {
+                return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
+            }
+        }
+
 	    public void Save()
         {
             _context.SaveChanges();

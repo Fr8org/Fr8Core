@@ -136,6 +136,8 @@
     <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
+    <Compile Include="Interfaces\IUnitOfWorkAwareComponent.cs" />
+    <Compile Include="Infrastructure\StructureMap\StructureMapDataExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
@@ -240,6 +242,7 @@
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
+    <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />

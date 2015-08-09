@@ -15,6 +15,9 @@ namespace Web.App_Start
 
         public static void ConfigureAutoMapper()
         {
+            Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
+            Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
+
             //Mapper.CreateMap<EventDO, EventVM>()
             //    .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
             //    .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
@@ -107,11 +110,13 @@ namespace Web.App_Start
 		        .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
 		        .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
 
-
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
-            Mapper.CreateMap<string, JObject>().ConvertUsing<StringToJObjectConverter>();
-            Mapper.CreateMap<JObject, string>().ConvertUsing<JObjectToStringConverter>();
+
+            Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
+                .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
+            Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
+                .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
         }
     }
 }

@@ -6,11 +6,11 @@ namespace Utilities.AutoMapper
     /// <summary>
     /// AutoMapper converter to convert string JSON representation to JObject.
     /// </summary>
-    public class StringToJObjectConverter : ITypeConverter<string, JObject>
+    public class StringToJTokenConverter : ITypeConverter<string, JToken>
     {
-        public JObject Convert(ResolutionContext context)
+        public JToken Convert(ResolutionContext context)
         {
-            return JObject.Parse((string)context.SourceValue);
+            return JToken.Parse((string)context.SourceValue);
         }
     }
 }

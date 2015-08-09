@@ -50,6 +50,8 @@ namespace Data.Interfaces
 	  ActionListRepository ActionListRepository{ get; }
 	  ProcessNodeRepository ProcessNodeRepository{ get; }
 
+      ICriteriaRepository CriteriaRepository { get; }
+
 	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
