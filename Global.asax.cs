@@ -53,7 +53,7 @@ namespace Web
                 //set to either "test" or "live"
 
             var db = ObjectFactory.GetInstance<DbContext>();
-            db.Database.Initialize(false);
+            db.Database.Initialize(true);
 
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
 
