@@ -39,7 +39,7 @@ module dockyard.tests.controller {
 
         //Below rule number are given per part 3. "Message Processing" of Design Document for DO-781 
         //at https://maginot.atlassian.net/wiki/display/SH/Design+Document+for+DO-781
-        //Rules 1 and 3 are bypassed because these events not yet stabilized
+        //Rules 1, 3 and 4 are bypassed because these events not yet stabilized
 
         //Rule #2
         it("When PaneWorkflowDesigner_TemplateSelecting is emitted, PaneSelectTemplate_Render should be received", () => {
@@ -48,13 +48,6 @@ module dockyard.tests.controller {
         });
 
         //Rule #4
-        it("When PaneDefineCriteria_CriteriaUpdated is emitted, PaneWorkflowDesigner_UpdateCriteriaName should be received", () => {
-            var incomingEventArgs = new pdc.CriteriaUpdated(1),
-                outgoingEventArgs = new pwd.UpdateCriteriaNameEventArgs(1);
-
-            _$scope.$emit("PaneDefineCriteria_CriteriaUpdated", incomingEventArgs);
-            expect(_$scope.$broadcast).toHaveBeenCalledWith('PaneWorkflowDesigner_UpdateCriteriaName', outgoingEventArgs);
-        });
 
         //Rule #5
         it("When PaneSelectTemplate_ProcessTemplateUpdated is sent, state data (template name) must be updated", () => {
