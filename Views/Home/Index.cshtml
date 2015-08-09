@@ -64,15 +64,11 @@
                 sessionID = "";
             }
         }
-        var lastUserID = '';
         var userID = '';
-        var cookieID = $.cookie('sessionID');
         if ('@userID' !== '') {
             userID = '@userID';
-            if (cookieID != null) {
-                lastUserID = cookieID;
-            }
         } else {
+            var cookieID = $.cookie('sessionID');
             if (cookieID != null) {
                 userID = cookieID;
             } else {
