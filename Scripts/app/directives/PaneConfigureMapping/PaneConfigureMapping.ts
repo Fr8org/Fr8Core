@@ -7,6 +7,7 @@
     }
 
     export class RenderEventArgs extends RenderEventArgsBase { }
+    export class HideEventArgs extends HideEventArgsBase { }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 }

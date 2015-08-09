@@ -6,7 +6,7 @@
         }
     }
 
-    export class CriteriaEventArgs extends EventArgsBase {
+    export class CriteriaEventArgsBase extends EventArgsBase {
         public criteriaId: number;
         constructor(criteriaId: number) {
             super();
@@ -14,7 +14,7 @@
         }
     }
 
-    export class ActionEventArgs extends CriteriaEventArgs {
+    export class ActionEventArgsBase extends CriteriaEventArgsBase {
         public criteriaId: number;
         public actionId: number;
         constructor(criteriaId: number, actionId: number) {
@@ -23,7 +23,7 @@
         }
     }
 
-    export class RenderEventArgsBase extends ActionEventArgs {
+    export class RenderEventArgsBase extends ActionEventArgsBase {
         public isTempId: boolean;
 
         constructor(criteriaId: number, actionId: number, isTempId: boolean) {
@@ -32,7 +32,7 @@
         }
     }
 
-    export class CancelledEventArgsBase extends ActionEventArgs{
+    export class CancelledEventArgsBase extends ActionEventArgsBase {
         public isTempId: boolean;
 
         constructor(criteriaId: number, actionId: number, isTemp: boolean) {
@@ -41,7 +41,16 @@
         }
     }
 
-    export class ActionUpdatedEventArgsBase extends ActionEventArgs{
+    export class HideEventArgsBase extends ActionEventArgsBase {
+        public isTempId: boolean;
+
+        constructor(criteriaId: number, actionId: number, isTemp: boolean) {
+            super(criteriaId, actionId);
+            this.isTempId = isTemp;
+        }
+    }
+
+    export class ActionUpdatedEventArgsBase extends ActionEventArgsBase {
         public actionTempId: number;
 
         constructor(criteriaId: number, actionId: number, actionTempId: number) {

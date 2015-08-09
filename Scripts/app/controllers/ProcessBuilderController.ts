@@ -37,7 +37,6 @@ module dockyard.controllers {
             private StringService: services.IStringService,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState) {
-
             this._scope = $scope;
 
             this.setupMessageProcessing();
@@ -90,7 +89,7 @@ module dockyard.controllers {
                     this.$state.data.pageSubTitle = eventArgs.processTemplateName
                 });
         }
-
+         
         // Find criteria by Id.
         private findCriteria(criteriaId: number): model.Criteria {
             var i;
@@ -253,12 +252,10 @@ module dockyard.controllers {
             this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
         }
 
-
         /*
             Handles message 'ConfigureActionPane_ActionUpdated'
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
-
             //Force update on Select Action Pane (FOR DEMO ONLY, NOT IN DESIGN DOCUMENT)
             var eArgs = new directives.paneSelectAction.UpdateActionEventArgs(
                 eventArgs.criteriaId, eventArgs.actionId, eventArgs.actionTempId);
@@ -280,34 +277,36 @@ module dockyard.controllers {
         private PaneConfigureAction_Cancelled(eventArgs: pca.CancelledEventArgs) {
             //Hide Select Action Pane
             this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+
+            //Hide Configure Mapping Pane
+            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Hide]);
         }
 
         /*
             Handles message 'SelectActionPane_ActionTypeSelected'
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            //Render Configure Action Pane
-            var eArgs = new psa.RenderEventArgs(
+            //Render Pane Configure Action 
+            var eArgs = new pca.RenderEventArgs(
                 eventArgs.criteriaId,
                 eventArgs.actionId > 0 ? eventArgs.actionId : eventArgs.tempActionId, //either permanent or temp id
                 eventArgs.actionId < 0); //is it a temporary id
                 
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
 
-            //Render Configure Mapping Pane
-            var eArgs = new psa.RenderEventArgs(
+            //Render Pane Configure Mapping 
+            eArgs = new pcm.RenderEventArgs(
                 eventArgs.criteriaId,
                 eventArgs.actionId > 0 ? eventArgs.actionId : eventArgs.tempActionId, //either permanent or temp id
                 eventArgs.actionId < 0); //is it a temporary id
-                
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+
+            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], eArgs);
         }
-
+         
         /*
             Handles message 'PaneSelectAction_ActionUpdated'
         */
         private PaneSelectAction_ActionUpdated(eventArgs: psa.ActionTypeSelectedEventArgs) {
-
             //Update Pane Workflow Designer
             var eArgs = new pwd.UpdateActionEventArgs(
                 eventArgs.criteriaId,
@@ -316,6 +315,8 @@ module dockyard.controllers {
                 eventArgs.actionName);
             this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
         }
+
+
     }
     app.controller('ProcessBuilderController', ProcessBuilderController);
 } 

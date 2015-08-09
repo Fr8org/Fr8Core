@@ -53,6 +53,11 @@ app.controller('HeaderController', ['$scope', function ($scope) {
     });
 }]);
 
+/* Setup Layout Part - Sidebar */
+app.controller('PageHeadController', ['$scope', function ($scope) {
+
+}]);
+
 /* Setup Layout Part - Footer */
 app.controller('FooterController', ['$scope', function ($scope) {
     $scope.$on('$includeContentLoaded', function () {

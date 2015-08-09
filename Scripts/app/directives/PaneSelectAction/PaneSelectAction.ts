@@ -11,7 +11,7 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_ActionTypeSelected
     }
 
-    export class ActionTypeSelectedEventArgs extends ActionEventArgs {
+    export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
         public tempActionId: number;
         public actionTypeId: number;
         public actionName: string;
@@ -24,7 +24,7 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class ActionUpdatedEventArgs extends ActionEventArgs {
+    export class ActionUpdatedEventArgs extends ActionEventArgsBase {
         public tempActionId: number;
         public actionName: string;
 
@@ -35,7 +35,7 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class RenderEventArgs extends ActionEventArgs {
+    export class RenderEventArgs extends ActionEventArgsBase {
         public isTempId: boolean;
 
         constructor(criteriaId: number, actionId: number, isTemp: boolean) {
@@ -44,7 +44,7 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class UpdateActionEventArgs extends ActionEventArgs {
+    export class UpdateActionEventArgs extends ActionEventArgsBase {
         public actionTempId: number;
 
         constructor(criteriaId: number, actionId: number, actionTempId: number) {

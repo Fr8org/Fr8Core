@@ -49,7 +49,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class UpdateCriteriaNameEventArgs extends CriteriaEventArgs {
+    export class UpdateCriteriaNameEventArgs extends CriteriaEventArgsBase {
         public criteriaId: number;
 
         constructor(criteriaId: number) {
@@ -98,11 +98,11 @@ module dockyard.directives.paneWorkflowDesigner {
     export class TemplateSelectedEventArgs {
     }
 
-    export class UpdateActionEventArgs extends ActionEventArgs {
+    export class UpdateActionEventArgs extends ActionEventArgsBase {
         public actionTempId: number;
         public actionName: string;
 
-        constructor(criteriaId, actionId, actionTempId, actionName) {
+        constructor(criteriaId: number, actionId: number, actionTempId: number, actionName: string) {
             super(criteriaId, actionId);
             this.actionTempId = actionTempId;
             this.actionName = actionName;
