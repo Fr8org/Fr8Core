@@ -66,8 +66,9 @@ namespace Data.Interfaces
         HistoryRepository HistoryRepository { get; }
 	  ExternalEventRegistrationRepository ExternalEventRegistrationRepository{ get; }
 	  ProcessNodeTemplateRepository ProcessNodeTemplateRepository{ get; }
+        MailerRepository MailerRepository { get; }
 
-	    /// <summary>
+        /// <summary>
         /// Starts a transaction on this unit of work
         /// </summary>
         void StartTransaction();
