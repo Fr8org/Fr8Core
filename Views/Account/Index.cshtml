@@ -64,6 +64,14 @@
     </div>
 </div>
 
+
 @section Scripts {
     @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+<script type="text/javascript">
+    $(function () {
+        window.analytics.page('Log In');
+    });
+</script>
+
 }
