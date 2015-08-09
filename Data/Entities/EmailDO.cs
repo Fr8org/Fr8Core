@@ -126,8 +126,8 @@ namespace Data.Entities
         /// <summary>
         /// This is guaranteed to contain 0..1 envelopes, never many. 
         /// </summary>
-	  //[InverseProperty("Email")]
-	  //public virtual List<EnvelopeDO> Envelopes { get; set; }
+	    [InverseProperty("Email")]
+	    public virtual List<MailerDO> Mailers { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }

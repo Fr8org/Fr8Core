@@ -1,0 +1,178 @@
+.scheduler_blue_wrap_inner 
+{
+    padding: 10px;
+    border-radius: 10px;
+
+    background: #77c2fc;
+    background: -webkit-gradient(linear, left top, left bottom, from(#77c2fc), to(#0e86c7));
+    background: -webkit-linear-gradient(top, #77c2fc 0%, #0e86c7);
+    background: -moz-linear-gradient(top, #77c2fc 0%, #0e86c7);
+    background: -ms-linear-gradient(top, #77c2fc 0%, #0e86c7);
+    background: -o-linear-gradient(top, #77c2fc 0%, #0e86c7);
+    background: linear-gradient(top, #77c2fc 0%, #0e86c7);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#77c2fc", endColorStr="#0e86c7");
+}
+
+.scheduler_blue_main 
+{
+    font-family: Tahoma, Arial, sans-serif;
+    border: 1px solid #999;
+    background: #ffffff;
+}
+
+.scheduler_blue_event {
+    font-size: 12px;
+    color: #ffffff;
+    text-shadow: 0px -1px 0px rgba(007,155,235,1), 0px 0px 0px rgba(000,000,000,0);
+}
+
+.scheduler_blue_event_inner  
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    padding: 4px;
+
+    background: #09b2ef;
+    border-radius: 5px;
+    border: 1px solid #079beb;
+    -webkit-box-shadow: 0px 0px 5px rgba(000,000,000,0.5), inset 0px 1px 0px rgba(072,211,246,1);
+    box-shadow: 0px 0px 5px rgba(000,000,000,0.5), inset 0px 1px 0px rgba(072,211,246,1);
+}
+
+.scheduler_blue_event_hover .scheduler_blue_event_inner 
+{
+    background: #5BC8EF;
+}
+
+.scheduler_blue_event .scheduler_blue_action:hover
+{
+    opacity: 1;
+    filter: none;
+}
+
+.scheduler_blue_message
+{
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+    padding: 10px; 
+    color: #fff;
+    background: #045776;
+    border-radius: 10px;
+    display: inline-block;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.scheduler_blue_timeheadergroup,
+.scheduler_blue_timeheadercol,
+.scheduler_blue_rowheader,
+.scheduler_blue_corner
+{
+    color: #045776;
+    background: #fff;
+}
+
+.scheduler_blue_timeheadergroup,
+.scheduler_blue_timeheadercol
+{
+    text-align: center;
+}
+
+.scheduler_blue_timeheadergroup_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #ddd;
+}
+
+.scheduler_blue_timeheadercol_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-top: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.scheduler_blue_cellcolumn 
+{
+    background: #fff;
+}
+
+.scheduler_blue_tree_image_no_children {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLzEyzsCJAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAADBJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOL31MeLxHwCeXUT0WkFMKAAAAABJRU5ErkJggg==);
+}
+.scheduler_blue_tree_image_expand {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLyUoFBT0AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAFJJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeRhgJGREc4GijMBtTNgA0BxFog+uA4IA2gmUJwFog/IgUhAGBB9KPYhA3T74Jog+hjx+A8A1KRQ+AN5vcwAAAAASUVORK5CYII=);
+}
+.scheduler_blue_tree_image_collapse {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLxB+p9DXAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAENJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOAtEHyMjI7IE0EygOAtEH5CDqY9c+xjx+A8ANndK9WaZlP4AAAAASUVORK5CYII=);
+}
+
+.scheduler_blue_divider 
+{
+    background-color: #ccc;
+}
+
+.scheduler_blue_divider_horizontal
+{
+    background-color: #ccc;
+}
+
+.scheduler_blue_matrix_vertical_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_blue_matrix_vertical_break 
+{
+    background-color: #000;
+}
+
+.scheduler_blue_matrix_horizontal_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_blue_resourcedivider 
+{
+    background-color: #ccc;
+}
+
+.scheduler_blue_shadow_inner 
+{
+    background-color: #666666;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    height: 100%;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.scheduler_blue_timeheader_float_inner {
+}
+
+.scheduler_blue_event_float_inner {
+    padding: 4px 4px 4px 8px;
+}
+
+.scheduler_blue_event_float_inner:after {
+    content:"";
+    border-color: transparent #fff transparent transparent;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    top:6px;
+    left:-4px;
+}

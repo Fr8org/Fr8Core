@@ -1,0 +1,211 @@
+.scheduler_8_main,
+.scheduler_8_rowheader,
+.scheduler_8_timeheadercol,
+.scheduler_8_timeheadergroup
+{
+    font-family: Segoe UI Light,Segoe UI,Arial,Helvetica,Verdana,Sans Serif;
+}
+
+.scheduler_8_main 
+{
+    border: 1px solid #999;
+    background: #ffffff;
+}
+
+.scheduler_8_event {
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.scheduler_8_event_inner  
+{
+    position:absolute;
+    left:0px;
+    right: 1px;
+    top: 0px;
+    bottom: 1px;
+    padding: 4px;
+
+    background: #09b2ef;
+    border: 1px solid #079beb;
+}
+
+.scheduler_8_event_inner
+{
+    -ms-transition: background-color .3s linear;
+    -moz-transition: background-color .3s linear;
+    -webkit-transition: background-color .3s linear;
+    transition: background-color .3s linear;	
+}
+
+.scheduler_8_event:hover .scheduler_8_event_inner 
+{
+    background: #079beb;
+}
+
+.scheduler_8_event .scheduler_8_action:hover
+{
+    opacity: 1;
+    filter: none;
+}
+
+.scheduler_8_timeheader 
+{
+    cursor: default;
+    color: #666;
+}
+
+.scheduler_8_message
+{
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+    padding: 10px; 
+    color: #fff;
+    background: #045776;
+}
+
+.scheduler_8_timeheadergroup,
+.scheduler_8_timeheadercol,
+.scheduler_8_rowheader,
+.scheduler_8_corner
+{
+    color: #ffffff;
+    background: #646464;
+
+    -ms-transition: background-color .3s linear;
+    -moz-transition: background-color .3s linear;
+    -webkit-transition: background-color .3s linear;
+    transition: background-color .3s linear;	
+}
+
+.scheduler_8_rowheader_inner {
+    padding: 2px;
+}
+
+.scheduler_8_timeheadergroup:hover,
+.scheduler_8_timeheadercol:hover,
+.scheduler_8_rowheader:hover,
+.scheduler_8_corner:hover
+{
+    background: #464646;
+}
+
+.scheduler_8_timeheadergroup,
+.scheduler_8_timeheadercol {
+    text-align: center;
+}
+
+.scheduler_8_timeheadergroup_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 3px;
+}
+
+.scheduler_8_timeheadercol_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #ddd;
+
+    padding: 3px;
+}
+
+.scheduler_8_cellcolumn 
+{
+    background: #fff;
+}
+
+.scheduler_8_tree_image_no_children {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLzEyzsCJAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAADBJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOL31MeLxHwCeXUT0WkFMKAAAAABJRU5ErkJggg==);
+}
+.scheduler_8_tree_image_expand {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLyUoFBT0AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAFJJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeRhgJGREc4GijMBtTNgA0BxFog+uA4IA2gmUJwFog/IgUhAGBB9KPYhA3T74Jog+hjx+A8A1KRQ+AN5vcwAAAAASUVORK5CYII=);
+}
+.scheduler_8_tree_image_collapse {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLxB+p9DXAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAENJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOAtEHyMjI7IE0EygOAtEH5CDqY9c+xjx+A8ANndK9WaZlP4AAAAASUVORK5CYII=);    
+}
+
+.scheduler_8_divider 
+{
+    background-color: #ccc;
+}
+
+.scheduler_8_divider_horizontal
+{
+    background-color: #ccc;
+}
+
+.scheduler_8_matrix_vertical_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_8_matrix_horizontal_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_8_resourcedivider 
+{
+    background-color: #ccc;
+}
+
+.scheduler_8_shadow_inner 
+{
+    background-color: #666666;
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+    height: 100%;
+}
+
+.scheduler_8_cellparent {
+    background-color: #f8f8f8;
+}
+
+.scheduler_8_columnheader {
+}
+
+.scheduler_8_columnheader_inner {
+}
+
+.scheduler_8_columnheader_cell {
+    
+}
+
+.scheduler_8_columnheader_splitter {
+    background-color: #ffffff;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+.scheduler_8_columnheader_cell_inner {
+    padding: 2px;   
+}
+
+.scheduler_8_timeheader_float_inner {
+    padding: 3px;
+}
+
+.scheduler_8_event_float_inner {
+    padding: 5px 4px 4px 8px;
+}
+
+.scheduler_8_event_float_inner:after {
+    content:"";
+    border-color: transparent #fff transparent transparent;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    top:8px;
+    left:-4px;
+}

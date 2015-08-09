@@ -1,0 +1,82 @@
+.resource_action_menu
+{
+	background-color: #dddddd;
+	cursor: pointer;
+	opacity: 0.6;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+}
+.resource_action_menu:hover
+{
+	opacity: 1;
+	-ms-filter: none;
+}
+
+.resource_action_menu div
+{
+	position: absolute;
+	top: 50%;
+	width: 100%;
+}
+
+.resource_action_menu div div 
+{
+	background: url('areas/icons.png') 0px 0px;
+	height: 18px;
+	position: absolute;
+	top: -9px;
+	width: 100%;
+}
+
+
+.event_action_menu
+{
+	background: url('areas/icons.png') 0px 0px;
+	opacity: 0.6;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+	cursor: pointer;
+}
+
+.event_action_menu:hover
+{
+	opacity: 1;
+	-ms-filter: none;
+}
+
+.event_action_delete
+{
+	background: url('areas/icons.png') 0px -17px;
+	opacity: 0.6;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+	cursor: pointer;
+}
+
+.event_action_delete:hover
+{
+	opacity: 1;
+	-ms-filter: none;
+}
+
+.event_action_bottomdrag 
+{
+	opacity: 0.6;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+	background: url('areas/icons.png') 50% -63px no-repeat;
+}
+
+.event_action_bottomdrag:hover
+{
+	opacity: 1;
+	-ms-filter: none;
+}
+
+.event_action_move
+{
+	opacity: 0.6;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+	xbackground-color: #eeeeee;
+	border-color: #999999;
+	border-width: 0px 1px 1px 1px;
+	border-style: solid;
+	border-radius: 0px 0px 5px 5px;
+	xbackground: url('areas/icons.png') 2px -74px repeat-x;
+}

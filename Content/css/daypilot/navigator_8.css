@@ -1,0 +1,62 @@
+﻿/* navigator styles */
+
+.navigator_8_main {
+	font-family: Segoe UI Light,Segoe UI,Arial,Helvetica,Verdana,Sans Serif;
+}
+
+
+.navigator_8_main 
+{
+	border-left: 1px solid #A0A0A0;
+	border-right: 1px solid #A0A0A0;
+	border-bottom: 1px solid #A0A0A0;
+    background-color: white;
+    color: #000000;
+}
+
+.navigator_8_month {
+    font-size: 8pt;
+    /*border: 1px solid black;*/
+}
+.navigator_8_day {
+    color: black;
+    /*background-color: white;*/
+}
+.navigator_8_weekend {
+    background-color: #f0f0f0;
+}
+.navigator_8_dayheader {
+    color: black;
+}
+
+.navigator_8_line 
+{
+	border-bottom: 1px solid #A0A0A0;
+}
+
+.navigator_8_dayother {
+    color: gray;
+}
+.navigator_8_todaybox
+{
+	border: 1px solid red;
+}
+
+.navigator_8_select 
+{
+    background-color: #FFE794;
+}
+.navigator_8_title, .navigator_8_titleleft, .navigator_8_titleright {
+    border-top: 1px solid #A0A0A0;
+
+	color: #ffffff;
+	background: #646464;
+
+	-ms-transition: background-color .3s linear;
+	-moz-transition: background-color .3s linear;
+	-webkit-transition: background-color .3s linear;
+	transition: background-color .3s linear;	
+}
+.navigator_8_busy {
+	font-weight: bold;
+}
