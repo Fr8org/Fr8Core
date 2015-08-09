@@ -1,0 +1,127 @@
+﻿/* month blue */
+
+.month_blue_wrap_inner 
+{
+	padding: 10px;
+	border-radius: 10px;
+	
+	background: #77c2fc;
+	background: -moz-linear-gradient(
+		top,
+		#77c2fc 0%,
+		#0e86c7);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#77c2fc),
+		to(#0e86c7));
+	/*filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#77c2fc", endColorStr="#0e86c7");*/
+}
+
+.month_blue_main 
+{
+	/*border: 1px solid #aaa;*/
+}
+
+.month_blue_cell 
+{
+	background-color: white;
+}
+
+.month_blue_cell_inner 
+{
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;	
+}
+
+.month_blue_cell_header 
+{
+	text-align: right;
+	padding-right: 2px;
+}
+
+.month_blue_header_inner
+{
+	background-color: #fff;
+	text-align: center; 
+	vertical-align: middle;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	cursor: default;
+	
+}
+
+.month_blue_message 
+{
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+
+	padding: 10px; 
+	color: #fff;
+	background: #045776;
+	border-radius: 10px;
+	display: inline-block;
+	margin-left: 5px;
+	margin-top: 5px;
+}
+
+
+.month_blue_event_inner 
+{
+	position: absolute;
+	top: 0px;
+	bottom: 2px;
+	left: 0px;
+	right: 0px;
+	overflow:hidden;
+	
+	padding: 2px;
+	padding-left: 5px;
+	
+	font-size: 12px;
+	color: #ffffff;
+	background: #09b2ef;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #079beb;
+	-moz-box-shadow:
+		0px 0px 5px rgba(000,000,000,0.5),
+		inset 0px 1px 0px rgba(072,211,246,1);
+	-webkit-box-shadow:
+		0px 0px 5px rgba(000,000,000,0.5),
+		inset 0px 1px 0px rgba(072,211,246,1);
+	box-shadow:
+		0px 0px 5px rgba(000,000,000,0.5),
+		inset 0px 1px 0px rgba(072,211,246,1);
+	text-shadow:
+		0px -1px 0px rgba(007,155,235,1),
+		0px 0px 0px rgba(000,000,000,0);
+}
+
+.month_blue_event_hover .month_blue_event_inner 
+{
+	background: #5BC8EF;
+}
+
+.month_blue_shadow_inner 
+{
+	background-color: #666666;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+

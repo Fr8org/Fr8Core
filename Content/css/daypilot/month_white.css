@@ -1,0 +1,161 @@
+﻿/* month white */
+
+.month_white_main 
+{
+	border: 1px solid #aaa;
+}
+
+.month_white_cell 
+{
+	background-color: white;
+}
+
+.month_white_cell_inner 
+{
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;	
+}
+
+.month_white_cell_header 
+{
+	text-align: right;
+	padding-right: 2px;
+}
+
+.month_white_header_inner
+{
+	text-align: center; 
+	vertical-align: middle;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	cursor: default;
+	
+	color: #666;
+	background: #eee;
+	background: -moz-linear-gradient(
+		top,
+		#eee 0%,
+		#ddd);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#eee),
+		to(#ddd));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#eeeeee", endColorStr="#dddddd");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+}
+
+.month_white_message 
+{
+	padding: 10px;
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+	color: #ffffff;
+	background: #ffa216;
+	background: -moz-linear-gradient(
+		top,
+		#ffa216 0%,
+		#ff8400);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#ffa216),
+		to(#ff8400));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#ffa216", endColorStr="#ff8400");
+}
+
+
+.month_white_event_inner 
+{
+	position: absolute;
+	top: 0px;
+	bottom: 2px;
+	left: 2px;
+	right: 2px;
+	overflow:hidden;
+	
+	padding: 2px;
+	padding-left: 5px;
+	
+	font-size: 12px;
+	color: #666;
+	background: #fff;
+	background: -moz-linear-gradient(
+		top,
+		#ffffff 0%,
+		#eee);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#ffffff),
+		to(#eee));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#ffffff", endColorStr="#eeeeee");
+	border: 1px solid #999;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	-webkit-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+}
+
+.month_white_event_continueright .month_white_event_inner {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+	border-right-style: dotted;
+}
+
+.month_white_event_continueleft .month_white_event_inner 
+{
+	border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;	
+	border-left-style: dotted;
+}
+
+.month_white_event_hover .month_white_event_inner 
+{
+	background: #fff;
+	background: -moz-linear-gradient(
+		top,
+		#ffffff 0%,
+		#e8e8e8);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#ffffff),
+		to(#e8e8e8));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#ffffff", endColorStr="#e8e8e8");
+}
+
+
+.month_white_selected .month_white_event_inner 
+{
+	background: #ddd;
+}
+
+.month_white_shadow_inner 
+{
+	background-color: #666666;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+

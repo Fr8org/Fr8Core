@@ -1,0 +1,263 @@
+/* 
+
+DayPilot Scheduler Theme 
+http://themes.daypilot.org/scheduler/theme/m3km5n
+
+*/
+
+.scheduler_traditional_main 
+{
+	border: 1px solid #999999;
+}
+
+.scheduler_traditional_main, .scheduler_traditional_main td 
+{
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.scheduler_traditional_event { 
+	
+}
+
+.scheduler_traditional_event { 
+	color: #333333;
+}
+
+.scheduler_traditional_event_inner { 
+	position: absolute;
+	
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	
+	margin: 0px;
+	overflow: hidden;
+
+	background-color: #ffffff;
+	
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#f2f2f2));  
+	background: -webkit-linear-gradient(top, #ffffff 0%, #f2f2f2);
+	background: -moz-linear-gradient(top, #ffffff 0%, #f2f2f2);
+	background: -ms-linear-gradient(top, #ffffff 0%, #f2f2f2);
+	background: -o-linear-gradient(top, #ffffff 0%, #f2f2f2);
+	background: linear-gradient(top, #ffffff 0%, #f2f2f2);
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#ffffff", endColorStr="#f2f2f2");
+	
+	
+	
+	padding: 2px;
+	
+	
+	padding-top: 5px;
+	
+	
+	border: 1px solid #999999;
+	
+	
+	
+	
+	
+}
+
+.scheduler_traditional_timeheadergroup,
+.scheduler_traditional_timeheadercol
+{
+	color: #333333;
+	background: #ece9d8;
+	
+	background: -webkit-gradient(linear, left top, left bottom, from(#efecde), to(#e9e6d2));
+	background: -webkit-linear-gradient(top, #efecde 0%, #e9e6d2);
+	background: -moz-linear-gradient(top, #efecde 0%, #e9e6d2);
+	background: -ms-linear-gradient(top, #efecde 0%, #e9e6d2);
+	background: -o-linear-gradient(top, #efecde 0%, #e9e6d2);
+	background: linear-gradient(top, #efecde 0%, #e9e6d2);
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#efecde", endColorStr="#e9e6d2");
+	
+}
+
+.scheduler_traditional_rowheader,
+.scheduler_traditional_corner
+{
+	color: #333333;
+	background: #ece9d8;
+	
+	background: -webkit-gradient(linear, left top, right top, from(#efecde), to(#e9e6d2));
+	background: -webkit-linear-gradient(left, #efecde 0%, #e9e6d2);
+	background: -moz-linear-gradient(left, #efecde 0%, #e9e6d2);
+	background: -ms-linear-gradient(left, #efecde 0%, #e9e6d2);
+	background: -o-linear-gradient(left, #efecde 0%, #e9e6d2);
+	background: linear-gradient(left, #efecde 0%, #e9e6d2);
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#efecde", endColorStr="#e9e6d2", GradientType=1);
+	
+}
+
+.scheduler_traditional_rowheader_inner {
+	padding: 2px;
+}
+
+.scheduler_traditional_timeheadergroup,
+.scheduler_traditional_timeheadercol
+{
+	text-align: center;
+}
+
+.scheduler_traditional_timeheadergroup_inner,
+.scheduler_traditional_timeheadercol_inner
+{
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	border-right: 1px solid #999999;
+	padding: 2px;
+}
+
+.scheduler_traditional_timeheadergroup_inner {
+	border-bottom: 1px solid #999999;
+}
+
+.scheduler_traditional_divider,
+.scheduler_traditional_divider_horizontal,
+.scheduler_traditional_resourcedivider 
+{
+	background-color: #999999;
+}
+
+.scheduler_traditional_matrix_vertical_line,
+.scheduler_traditional_matrix_horizontal_line 
+{
+	background-color: #ead098;
+}
+
+.scheduler_traditional_cell 
+{
+	background: #fff4bc;
+}
+
+.scheduler_traditional_cell.scheduler_traditional_cell_business 
+{
+	background: #ffffd5;
+}
+
+.scheduler_traditional_message 
+{
+	padding: 10px;
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+	
+	color: #ffffff;
+	background: #777777;
+	
+	background: -webkit-gradient(linear, left top, left bottom, from(#838383), to(#6b6b6b));
+	background: -webkit-linear-gradient(top, #838383 0%, #6b6b6b);
+	background: -moz-linear-gradient(top, #838383 0%, #6b6b6b);
+	background: -ms-linear-gradient(top, #838383 0%, #6b6b6b);
+	background: -o-linear-gradient(top, #838383 0%, #6b6b6b);
+	background: linear-gradient(top, #838383 0%, #6b6b6b);
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#838383", endColorStr="#6b6b6b");
+	
+}
+
+.scheduler_traditional_shadow_inner 
+{
+	background-color: #666666;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+
+.scheduler_traditional_event_bar
+{
+	top: 1px;
+	left: 1px;
+	right: 1px;
+	height: 3px;
+	background-color: #ffffff;
+        
+        border-bottom: 1px solid #999999;
+}
+
+.scheduler_traditional_event_bar_inner  
+{
+	position: absolute;
+	height: 3px;
+	background-color: #2d5de0;
+}
+
+
+.scheduler_traditional_matrix_vertical_break 
+{
+	background-color: #000;
+}
+
+.scheduler_traditional_cellparent {
+}
+
+.scheduler_traditional_tree_image_no_children {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLzEyzsCJAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAADBJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOL31MeLxHwCeXUT0WkFMKAAAAABJRU5ErkJggg==);
+}
+.scheduler_traditional_tree_image_expand {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLyUoFBT0AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAFJJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeRhgJGREc4GijMBtTNgA0BxFog+uA4IA2gmUJwFog/IgUhAGBB9KPYhA3T74Jog+hjx+A8A1KRQ+AN5vcwAAAAASUVORK5CYII=);
+}
+.scheduler_traditional_tree_image_collapse {
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLxB+p9DXAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAENJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOAtEHyMjI7IE0EygOAtEH5CDqY9c+xjx+A8ANndK9WaZlP4AAAAASUVORK5CYII=);
+}
+
+.scheduler_traditional_columnheader 
+{
+}
+
+.scheduler_traditional_columnheader_inner {
+    font-weight: bold;
+}
+
+.scheduler_traditional_columnheader_cell {
+    background: -webkit-gradient(linear, left top, right top, from(#eeeeee), to(#dddddd));
+    background: -moz-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: -ms-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: -webkit-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: linear-gradient(left, #eeeeee 0%, #dddddd);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#eeeeee", endColorStr="#dddddd", GradientType=1);
+}
+
+.scheduler_traditional_columnheader_splitter {
+    background-color: #666;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+.scheduler_traditional_columnheader_cell_inner {
+    padding: 2px;   
+}
+
+.scheduler_traditional_timeheader_float_inner {
+	padding: 2px;
+}
+
+.scheduler_traditional_event_float_inner {
+	
+    padding: 6px 2px 2px 7px;
+	
+	
+}
+
+.scheduler_traditional_event_float_inner:after {
+    content:"";
+    border-color: transparent #333333 transparent transparent;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+	
+    top:8px;
+	
+	
+    left:-4px;
+}
