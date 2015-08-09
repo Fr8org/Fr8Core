@@ -1,0 +1,65 @@
+﻿/* bubble full css */
+
+.bubble_default_main
+{
+	/*overflow: hidden;*/
+	cursor: default;
+}
+
+.bubble_default_main_inner 
+{
+	border-radius: 5px;
+
+	font-size: 12px;
+	padding: 4px;
+	color: #666;
+	background: #eeeeee;
+	background: -moz-linear-gradient(
+		top,
+		#ffffff 0%,
+		#eee);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#ffffff),
+		to(#eee));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#ffffff", endColorStr="#eeeeee");
+	border: 1px solid #ccc;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	-moz-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	-webkit-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+}
+/*
+.bubble_default_main_inner:after, .bubble_default_main_inner:before {
+	top: 100%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.bubble_default_main_inner:after {
+	border-color: rgba(238, 238, 238, 0);
+	border-top-color: #eee;
+	border-width: 10px;
+	left: 20%;
+	margin-left: -10px;
+}
+.bubble_default_main_inner:before {
+	border-color: rgba(204, 204, 204, 0);
+	border-top-color: #ccc;
+	border-width: 11px;
+	left: 20%;
+	margin-left: -11px;
+}
+*/

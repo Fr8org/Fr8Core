@@ -179,6 +179,17 @@ namespace Data.Infrastructure
             }
         }
 
+
+        private MailerRepository _mailerRepository;
+
+        public MailerRepository MailerRepository
+        {
+            get
+            {
+                return _mailerRepository ?? (_mailerRepository = new MailerRepository(this));
+            }
+        }
+
         //private EventRepository _eventRepository;
 
         //public EventRepository EventRepository
