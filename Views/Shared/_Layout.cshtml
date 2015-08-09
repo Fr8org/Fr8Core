@@ -64,11 +64,6 @@
             }
         }
         $.cookie('sessionID', userID);
-        if (lastUserID !== '' && lastUserID !== userID)
-            window.analytics.alias(userID);
-        
-        window.analytics.identify(userID);
-        window.analytics.page();
     </script>
 </head>
 <body>
