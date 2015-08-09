@@ -28,13 +28,7 @@
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
                         <div class="form-group">
-                            <pane-workflow-designer id="processBuilder" width="700" height="600"
-                                                    criteria-list="criteria"
-                                                    on-add-criteria="addCriteria()"
-                                                    on-select-criteria="selectCriteria(criteriaId)"
-                                                    on-add-action="addAction(criteriaId)"
-                                                    on-select-action="selectAction(criteriaId, actionId)">
-                            </pane-workflow-designer>
+                            <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
                         </div>
                     </div>
                     <!-- END PROCESS FORM -->
@@ -42,11 +36,10 @@
             </div>
             <!-- END PORTLET-->
         </div>
-        <pane-define-criteria fields="fields"
-                              criteria="selectedCriteria"
-                              on-remove-criteria="removeCriteria()"
-                              ng-show="isCriteriaSelected()">
-        </pane-define-criteria>
+        
+        <div class="col-md-6 col-sm-6">
+            <pane-define-criteria></pane-define-criteria>
+        </div>
         <div class="col-md-6 col-sm-6">
             <pane-select-action id="paneSelectAction"></pane-select-action>
         </div>
