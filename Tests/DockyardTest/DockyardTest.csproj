@@ -180,6 +180,7 @@
   <ItemGroup>
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
+    <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
