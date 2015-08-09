@@ -81,11 +81,11 @@
     </div>
     <!-- END FOOTER -->
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
-    <!-- BEGIN CORE JQUERY PLUGINS -->
-    <!--[if lt IE 9]>
-    <script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
-    <script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
-    <![endif]-->
+<!-- BEGIN CORE JQUERY PLUGINS -->
+<!--[if lt IE 9]>
+<script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
+<script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
+<![endif]-->
     <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
     <script src="/bower_components/jquery-migrate/jquery-migrate.min.js" type="text/javascript"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.js" type="text/javascript"></script>
@@ -93,87 +93,7 @@
     <script src="~/bower_components/notifyjs/dist/notify-combined.min.js"></script>
     <script src="~/bower_components/notifyjs/dist/styles/bootstrap/notify-bootstrap.js"></script>
 
-    <!-- END CORE JQUERY PLUGINS -->
-    
-    <!-- BEGIN CORE ANGULARJS PLUGINS -->
-    <script src="/bower_components/angular/angular.js" type="text/javascript"></script>
-    <script src="/bower_components/angular-resource/angular-resource.js"></script>
-    <script src="/bower_components/angular-sanitize/angular-sanitize.js" type="text/javascript"></script>
-    <script src="/bower_components/angular-touch/angular-touch.js" type="text/javascript"></script>
-    <script src="/bower_components/angular-ui-router/release/angular-ui-router.js" type="text/javascript"></script>
-    <script src="/bower_components/ocLazyLoad/dist/ocLazyLoad.js" type="text/javascript"></script>
-    <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.js" type="text/javascript"></script>
-    <!-- END CORE ANGULARJS PLUGINS -->
-    
-    <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
-    <script src="~/Scripts/app/app.js" type="text/javascript"></script>
-    <!-- END APP LEVEL ANGULARJS SCRIPTS -->
-
-    <!-- BEGIN APP LEVEL JQUERY SCRIPTS -->
-    <script src="~/Content/templates/metronic/assets/global/scripts/metronic.js" type="text/javascript"></script>
-    <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/layout.js" type="text/javascript"></script>
-    <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js" type="text/javascript"></script>
-    <!-- END APP LEVEL JQUERY SCRIPTS -->
-    
-    <!-- INTERFACES -->
-    <script src="~/Scripts/app/interfaces/IProcessTemplateVM.js"></script>
-    <script src="~/Scripts/app/interfaces/IAppRootScope.js"></script>
-    <script src="~/Scripts/app/interfaces/IProcessTemplateScope.js"></script>
-    <script src="~/Scripts/app/interfaces/IProcessTemplatesScope.js"></script>
-    <script src="~/Scripts/app/interfaces/ICriteria.js"></script>
-    <script src="~/Scripts/app/interfaces/IProcessBuilderController.js"></script>
-    <script src="~/Scripts/app/interfaces/IQueryBuilderWidgetScope.js"></script>
-    <!-- END INTERFACES -->
-
-    <!-- MODELS -->
-    <script src="~/Scripts/app/model/Action.js"></script>
-    <!-- END MODELS -->
-
-    <!-- SERVICES -->
-    <script src="~/Scripts/app/services/ProcessTemplateService.js" type="text/javascript"></script>
-    <script src="~/Scripts/app/services/StringService.js" type="text/javascript"></script>
-    
-    <!-- FILTERS -->
-    <script src="~/Scripts/app/filters/ProcessTemplateState.js"></script>
-
-    <!-- DIRECTIVES -->
-    <script type="text/javascript" src="~/Scripts/app/directives/directives.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneDefineCriteria.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/QueryBuilderWidget.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneFieldMapping/PaneFieldMapping.js"></script>
-
-    <!-- pane-workflow-designer -->
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/CriteriaSelectedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/TemplateSelectedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/ActionSelectedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/MessageType.js"></script>
-    <script type="text/javascript" src="~/Scripts/app/directives/PaneWorkflowDesigner.js"></script>
-    <script src="~/Scripts/app/directives/PaneWorkflowDesigner/UpdateActionEventArgs.js"></script>
-
-    <!-- pane-select-action -->
-    <script src="~/Scripts/app/directives/PaneSelectAction/MessageType.js"></script>
-    <script src="~/Scripts/app/directives/PaneSelectAction/RenderEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneSelectAction/PaneSelectAction.js"></script>
-    <script src="~/Scripts/app/directives/PaneSelectAction/ActionUpdatedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneSelectAction/UpdateActionEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneSelectAction/ActionTypeSelectedEventArgs.js"></script>
-
-    <!-- pane-configure-action -->
-    <script src="~/Scripts/app/directives/PaneConfigureAction/MessageType.js"></script>
-    <script src="~/Scripts/app/directives/PaneConfigureAction/ActionUpdatedEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneConfigureAction/CancelledEventArgs.js"></script>    
-    <script src="~/Scripts/app/directives/PaneConfigureAction/RenderEventArgs.js"></script>
-    <script src="~/Scripts/app/directives/PaneConfigureAction/PaneConfigureAction.js"></script>
-    
-    <!-- pane-select-template -->
-    <script src="~/Scripts/app/directives/PaneSelectTemplate/MessageType.js"></script>
-    <script src="~/Scripts/app/directives/PaneSelectTemplate/RenderEventArgs.js"></script>
-
-    <!-- CONTROLLERS -->
-    <script src="~/Scripts/app/controllers/ProcessTemplateController.js" type="text/javascript"></script>
-    <script src="~/Scripts/app/controllers/ProcessTemplatesController.js"></script>
-    <script src="~/Scripts/app/controllers/ProcessBuilderController.js"></script>
-
+    @Html.Partial("_AngularAppScripts")
     <script type="text/javascript">
         /* Init Metronic's core jquery plugins and layout scripts */
         $(document).ready(function () {

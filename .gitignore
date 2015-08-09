@@ -117,6 +117,11 @@ csx
 # Windows Store app package directory
 AppPackages/
 
+# Ignore compilation results of TypeScript 
+Scripts/app/**/*.js
+*.map.js
+ 
+
 # Others
 sql/
 *.Cache
@@ -126,5 +131,11 @@ ClientBin/
 /NUnit.Runners.2.6.3
 /TestResult.xml
 Web.config.local
-/bower_components
-/node_modules
+
+### Bower ###
+bower_components
+.bower-cache
+.bower-registry
+.bower-tmp
+
+node_modules

@@ -11,5 +11,13 @@
             this.id = id;
             this.tempId = tempId;
         }
+
+        clone(): Action {
+            var result = new Action(this.id, this.tempId, this.criteriaId);
+            result.name = this.name;
+            result.actionTypeId = this.actionTypeId;
+
+            return result;
+        }
     }
 }

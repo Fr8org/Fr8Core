@@ -16,17 +16,17 @@ namespace Web.App_Start
                 "~/bower_components/jquery/dist/jquery.min.js"
                 ));
 
-			bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
                 "~/bower_components/bootstrap/dist/js/bootstrap.min.js"
-				));
+                ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap31").Include(
                 "~/bower_components/bootstrap/js/bootstrap.min.js"
                 ));
 
-			bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
                 "~/bower_components/jquery/dist/jquery.min.js"
-				));
+                ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/colorbox").Include(
                 "~/bower_components/jquery-colorbox/jquery.colorbox.min.js"
@@ -48,12 +48,12 @@ namespace Web.App_Start
                 "~/Scripts/_legacy/about-page.js"
                 ));
 
-			bundles.Add(new ScriptBundle("~/bundles/js/customjs").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/customjs").Include(
                 "~/Scripts/_legacy/custom.js"
-				));
+                ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/select2").Include(
-                "~/bower_components/select2/select2.min.js" 
+                "~/bower_components/select2/select2.min.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-datetimepicker").Include(
@@ -68,13 +68,13 @@ namespace Web.App_Start
                 "~/bower_components/moment/min/moment.min.js"
                 ));
 
-			bundles.Add(new ScriptBundle("~/bundles/js/bootstraptransition").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstraptransition").Include(
                 "~/bower_components/bootstrap/js/transition.js"
-				));
+                ));
 
-			bundles.Add(new ScriptBundle("~/bundles/js/collapse").Include(
+            bundles.Add(new ScriptBundle("~/bundles/js/collapse").Include(
                 "~/bower_components/bootstrap/js/collapse.js"
-				));
+                ));
 
             bundles.Add(new ScriptBundle("~/bundles/js/cookies").Include(
                 "~/bower_components/jquery.cookie-min/jquery.cookie.js"
@@ -82,35 +82,35 @@ namespace Web.App_Start
 
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
-				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()
+                "~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap30").Include(
-				"~/Content/css/additionalcss/bootstrap30/css/bootstrap3.0.css", new CssRewriteUrlTransform()
+                "~/Content/css/additionalcss/bootstrap30/css/bootstrap3.0.css", new CssRewriteUrlTransform()
                 ));
 
-			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-responsive").Include(
-				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-responsive.css", new CssRewriteUrlTransform()
-				));
+            bundles.Add(new StyleBundle("~/bundles/css/bootstrap-responsive").Include(
+                "~/Content/css/additionalcss/bootstrap30/css/bootstrap-responsive.css", new CssRewriteUrlTransform()
+                ));
 
-			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-datetimepicker").Include(
-				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-datetimepicker.css", new CssRewriteUrlTransform()
-			    ));
+            bundles.Add(new StyleBundle("~/bundles/css/bootstrap-datetimepicker").Include(
+                "~/Content/css/additionalcss/bootstrap30/css/bootstrap-datetimepicker.css", new CssRewriteUrlTransform()
+                ));
 
             bundles.Add(new StyleBundle("~/bundles/css/colorbox").Include(
-				"~/Content/css/additionalcss/colorbox/colorbox.css", new CssRewriteUrlTransform()
+                "~/Content/css/additionalcss/colorbox/colorbox.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
-				"~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
+                "~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
                 ));
 
-			bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
-				"~/Content/css/backendcss/default.css", new CssRewriteUrlTransform()
-				));
+            bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
+                "~/Content/css/backendcss/default.css", new CssRewriteUrlTransform()
+                ));
 
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
-				"~/Content/css/additionalcss/font-awesome/font-awesome.css", new CssRewriteUrlTransform()
+                "~/Content/css/additionalcss/font-awesome/font-awesome.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/select2").Include(
@@ -118,9 +118,11 @@ namespace Web.App_Start
                ));
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
-                .IncludeDirectory("~/Scripts/tests/unit/","*.js",true));
+                .IncludeDirectory("~/Scripts/tests/mocks/", "*.js", true)
+                .IncludeDirectory("~/Scripts/tests/unit/", "*.js", true));
 
             bundles.Add(new ScriptBundle("~/bundles/jsintegrationtests")
+                .IncludeDirectory("~/Scripts/tests/mocks/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
 
             //bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
