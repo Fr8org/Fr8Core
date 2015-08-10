@@ -5,16 +5,26 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlPluginRegistration : BasePluginRegistration
     {
-
-        public AzureSqlPluginRegistration()
-            : base(ConfigurationManager.AppSettings[BaseUrlKey], new[] { "writeSQL" })
-        {
-
-        }
-
         public const string BaseUrlKey = "AzureSql.BaseUrl";
 
 
+        public string BaseUrl
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings[BaseUrlKey];
+            }
+        }
 
+        public IEnumerable<string> AvailableCommands
+        {
+            get
+            {
+                return new[]
+                {
+                    "writeSQL"
+                };
+            }
+        }
     }
 }
