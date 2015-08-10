@@ -15,20 +15,7 @@ namespace pluginAzureSqlServer
     {
         public void Configuration(IAppBuilder app)
         {
-
-            var data =
-                new
-                {
-                    ObjectId = "azure_sql_plugin_object",
-                    CustomerId = "not_applicable",
-                    Data = "service_start_up",
-                    PrimaryCategory = "Operations",
-                    SecondaryCategory = "System Startup",
-                    Activity = "system startup"
-                };
-
-            var json = new {Source = "azure_sql_plugin", EventType = "Plugin Incident", Data = data};
-            PluginBase.AfterStartup(JsonConvert.SerializeObject(json));
+            PluginBase.AfterStartup("azure_sql_server_plugin");
         }
     }
 }

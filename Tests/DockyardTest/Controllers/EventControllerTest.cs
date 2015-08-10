@@ -16,21 +16,6 @@ namespace DockyardTest.Controllers
     {
         [Test]
         [Category("Controllers.EventController.Event")]
-        public void EventController_Event_WithNonPlugIn_ReturnsBadRequest()
-        {
-            //Arrange with empty event
-            var eventDto = FixtureData.TestEmptyEventDto();
-
-            //Act
-            var controller = new EventController();
-            var result = controller.Event(eventDto);
-
-            //Assert
-            Assert.IsTrue(result is BadRequestErrorMessageResult);
-        }
-
-        [Test]
-        [Category("Controllers.EventController.Event")]
         public void EventController_Event_WithPluginIncident_ReturnsOK()
         {
             //Arrange with plugin incident

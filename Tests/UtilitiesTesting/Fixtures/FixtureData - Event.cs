@@ -16,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
             var eventDto = new EventDTO
             {
                 EventType = "Plugin Incident",
-                Data = new HistoryItemDO {PrimaryCategory = "PrimaryCategory", SecondaryCategory = "SecondaryCategory"}
+                Data = new HistoryItemDO { PrimaryCategory = "PrimaryCategory", SecondaryCategory = "SecondaryCategory" }
             };
             return eventDto;
         }

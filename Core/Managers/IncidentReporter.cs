@@ -24,29 +24,40 @@ namespace Core.Managers
             //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
-            EventManager.PluginIncidentReported += OnPluginIncidentReported;
+            EventManager.PluginIncidentReported += LogPluginIncident;
         }
 
-        private void OnPluginIncidentReported(HistoryItemDO incidentItem)
+        private void LogPluginIncident(HistoryItemDO incidentItem)
         {
-            var currentIncident = (IncidentDO) incidentItem;
-            if (currentIncident != null)
+            var currentIncident = new IncidentDO
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    uow.IncidentRepository.Add(currentIncident);
-                    uow.SaveChanges();
+                ObjectId = incidentItem.ObjectId,
+                CustomerId = incidentItem.CustomerId,
+                Data = incidentItem.Data,
+                PrimaryCategory = incidentItem.PrimaryCategory,
+                SecondaryCategory = incidentItem.SecondaryCategory,
+                Activity = incidentItem.Activity
+            };
 
-                    string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
-                        currentIncident.PrimaryCategory,
-                        currentIncident.SecondaryCategory,
-                        currentIncident.Activity,
-                        currentIncident.ObjectId,
-                        currentIncident.CustomerId);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(currentIncident);
+                uow.SaveChanges();
 
-                    Logger.GetLogger().Info(logData);
-                }
+                GenerateLogData(currentIncident);
             }
+        }
+
+        private void GenerateLogData(HistoryItemDO currentIncident)
+        {
+            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                currentIncident.PrimaryCategory,
+                currentIncident.SecondaryCategory,
+                currentIncident.Activity,
+                currentIncident.ObjectId,
+                currentIncident.CustomerId);
+
+            Logger.GetLogger().Info(logData);
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -261,14 +272,7 @@ namespace Core.Managers
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
 
-                string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
-                        incidentDO.PrimaryCategory,
-                        incidentDO.SecondaryCategory,
-                        incidentDO.Activity,
-                        incidentDO.ObjectId,
-                        incidentDO.CustomerId);
-
-                Logger.GetLogger().Info(logData);
+                GenerateLogData(incidentDO);
             }
         }
 

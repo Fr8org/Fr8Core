@@ -12,11 +12,11 @@ namespace Web.Controllers
     /// </summary>
     public class EventController : ApiController
     {
-        private readonly IEventService _eventService;
+        private readonly IEvent _eventService;
 
         public EventController()
         {
-            _eventService = ObjectFactory.GetInstance<IEventService>();
+            _eventService = ObjectFactory.GetInstance<IEvent>();
         }
 
         [HttpPost]
@@ -24,26 +24,11 @@ namespace Web.Controllers
         {
             if (submittedEvent.EventType.Equals("Plugin Incident"))
             {
-                var incidentDo = new IncidentDO
-                {
-                    ObjectId = submittedEvent.Data.ObjectId,
-                    CustomerId = submittedEvent.Data.CustomerId,
-                    Data = submittedEvent.Data.Data,
-                    PrimaryCategory = submittedEvent.Data.PrimaryCategory,
-                    SecondaryCategory = submittedEvent.Data.SecondaryCategory,
-                    Activity = submittedEvent.Data.Activity
-                };
-
-                if (_eventService.HandlePluginIncident(incidentDo))
-                {
-                    return Ok();
-                }
-
-                return
-                    InternalServerError(new Exception("Updating incident is failed due to internal server error."));
+                _eventService.HandlePluginIncident(submittedEvent.Data);
+                return Ok();
             }
 
-            return BadRequest("Only plugin in incidennt is handled by this method.");
+            throw new InvalidOperationException("Only plugin incidents are handled at this moment.");
         }
     }
 }

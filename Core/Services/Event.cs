@@ -9,22 +9,12 @@ namespace Core.Services
     /// <summary>
     /// Event service implementation
     /// </summary>
-    public class Event : IEventService
+    public class Event : IEvent
     {
-        /// <see cref="IEventService.HandlePluginIncident"/>
-        public bool HandlePluginIncident(HistoryItemDO incident)
+        /// <see cref="IEvent.HandlePluginIncident"/>
+        public void HandlePluginIncident(HistoryItemDO incident)
         {
-            try
-            {
-                EventManager.ReportPluginIncident(incident);
-
-                return true;
-            }
-            catch (Exception)
-            {
-                //Nothing doing by cathing the exception. Just return to mention internal server error.
-                return false;
-            }
+            EventManager.ReportPluginIncident(incident);
         }
     }
 }
