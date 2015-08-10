@@ -5,7 +5,7 @@
 *.suo
 *.user
 *.sln.docstates
-.vs
+.vs/
 
 # Build results
 
@@ -116,6 +116,11 @@ csx
 
 # Windows Store app package directory
 AppPackages/
+
+# Ignore compilation results of TypeScript 
+Scripts/app/**/*.js
+*.map.js
+ 
 
 # Others
 sql/

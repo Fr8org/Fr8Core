@@ -1,0 +1,276 @@
+.scheduler_white_main 
+{
+	border: 1px solid #999;
+}
+
+.scheduler_white_event {
+    font-size: 12px;
+    color: #666;
+}
+
+.scheduler_white_event_inner  
+{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 4px;
+
+    padding: 4px;
+    overflow:hidden;
+
+    border: 1px solid #999;
+    border-radius: 5px;
+
+    -webkit-box-shadow: 0px 2px 3px rgba(000,000,000,0.3),inset 0px 0px 2px rgba(255,255,255,0.8);
+    box-shadow:0px 2px 3px rgba(000,000,000,0.3), inset 0px 0px 2px rgba(255,255,255,0.8);
+
+    background: #fff;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#eeeeee));
+    background: -moz-linear-gradient(top, #ffffff 0%, #eeeeee);
+    background: -ms-linear-gradient(top, #ffffff 0%, #eeeeee);
+    background: -webkit-linear-gradient(top, #ffffff 0%, #eeeeee);
+    background: linear-gradient(top, #ffffff 0%, #eeeeee);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#ffffff", endColorStr="#eeeeee");  
+}
+
+.scheduler_white_event_hover .scheduler_white_event_inner 
+{
+}
+
+.scheduler_white_event_continueright .scheduler_white_event_inner {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-right-style: dotted;
+}
+
+.scheduler_white_event_continueleft .scheduler_white_event_inner 
+{
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;	
+    border-left-style: dotted;
+}
+
+.scheduler_white_event .scheduler_white_action:hover
+{
+    opacity: 1;
+    filter: none;
+}
+
+.scheduler_white_selected .scheduler_white_event_inner
+{
+    background: #ddd;
+}
+
+.scheduler_white_red .scheduler_white_event_inner 
+{
+    border: 1px solid #c00004;
+    background: #ab0000;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff2819), to(#ab0000));
+    background: -moz-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: -ms-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: -webkit-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: linear-gradient(top, #ff2819 0%, #ab0000);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#ff2819", endColorStr="#ab0000");
+}
+
+
+.scheduler_white_timeheader 
+{
+    cursor: default;
+    color: #666;
+}
+
+.scheduler_white_message
+{
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+    padding: 10px; 
+    color: #ffffff;
+    background: #ffa216;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ffa216), to(#ff8400));
+    background: -moz-linear-gradient(top, #ffa216 0%, #ff8400);
+    background: -ms-linear-gradient(top, #ffa216 0%, #ff8400);
+    background: -webkit-linear-gradient(top, #ffa216 0%, #ff8400);
+    background: linear-gradient(top, #ffa216 0%, #ff8400);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#ffa216", endColorStr="#ff8400");
+}
+
+.scheduler_white_timeheadergroup,
+.scheduler_white_timeheadercol
+{
+	text-align: center;
+
+        color: #666;
+	background: #eee;
+	background: -webkit-gradient(linear, left top, left bottom, from(#eeeeee), to(#dddddd));
+	background: -moz-linear-gradient(top, #eeeeee 0%, #dddddd);
+	background: -ms-linear-gradient(top, #eeeeee 0%, #dddddd);
+	background: -webkit-linear-gradient(top, #eeeeee 0%, #dddddd);
+	background: linear-gradient(top, #eeeeee 0%, #dddddd);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#eeeeee", endColorStr="#dddddd");
+/*	text-shadow: 0px -1px 1px rgba(000,000,000,0.2), 0px 1px 0px rgba(255,255,255,0.3); */
+}
+
+.scheduler_white_rowheader,
+.scheduler_white_corner
+{
+    color: #666;
+    background: #eee;
+    background: -webkit-gradient(linear, left top, right top, from(#eeeeee), to(#dddddd));
+    background: -moz-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: -ms-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: -webkit-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: linear-gradient(left, #eeeeee 0%, #dddddd);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#eeeeee", endColorStr="#dddddd", GradientType=1);
+    zoom: 1;
+/*	text-shadow: 0px -1px 1px rgba(000,000,000,0.2), 0px 1px 0px rgba(255,255,255,0.3);*/
+}
+
+.scheduler_white_rowheader_inner 
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+
+    border-right: 1px solid #eee;
+    padding: 2px;
+}
+
+.scheduler_white_timeheadergroup_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    text-align: center;
+    border-right: 1px solid #999;
+    border-bottom: 1px solid #999;
+}
+
+.scheduler_white_timeheadercol_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #999;
+}
+
+.scheduler_white_cellcolumn 
+{
+    background: #fff;
+}
+
+.scheduler_white_tree_image_no_children {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLzEyzsCJAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAADBJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOL31MeLxHwCeXUT0WkFMKAAAAABJRU5ErkJggg==);
+}
+.scheduler_white_tree_image_expand {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLyUoFBT0AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAFJJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeRhgJGREc4GijMBtTNgA0BxFog+uA4IA2gmUJwFog/IgUhAGBB9KPYhA3T74Jog+hjx+A8A1KRQ+AN5vcwAAAAASUVORK5CYII=);
+}
+.scheduler_white_tree_image_collapse {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLxB+p9DXAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAENJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOAtEHyMjI7IE0EygOAtEH5CDqY9c+xjx+A8ANndK9WaZlP4AAAAASUVORK5CYII=);    
+}
+
+.scheduler_white_divider 
+{
+    background-color: #999;
+}
+
+.scheduler_white_divider_horizontal
+{
+    background-color: #999;
+}
+
+.scheduler_white_matrix_vertical_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_white_matrix_vertical_break 
+{
+    background-color: #000;
+}
+
+.scheduler_white_matrix_horizontal_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_white_resourcedivider 
+{
+    background-color: #999;
+}
+
+.scheduler_white_shadow_inner 
+{
+    background-color: #666666;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    height: 100%;
+    border-radius: 5px;
+}
+
+.scheduler_white_event_bar
+{
+    top: 3px;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+}
+
+.scheduler_white_event_bar_inner  
+{
+    position: absolute;
+    height: 2px;
+    background-color: #999;
+}
+
+.scheduler_white_columnheader 
+{
+}
+
+.scheduler_white_columnheader_inner {
+    font-weight: bold;
+}
+
+.scheduler_white_columnheader_cell {
+    background: -webkit-gradient(linear, left top, right top, from(#eeeeee), to(#dddddd));
+    background: -moz-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: -ms-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: -webkit-linear-gradient(left, #eeeeee 0%, #dddddd);
+    background: linear-gradient(left, #eeeeee 0%, #dddddd);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr="#eeeeee", endColorStr="#dddddd", GradientType=1);
+}
+
+.scheduler_white_columnheader_splitter {
+    background-color: #666;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+.scheduler_white_columnheader_cell_inner {
+    padding: 2px;   
+}
+
+.scheduler_white_timeheader_float_inner {
+}
+
+.scheduler_white_event_float_inner {
+    padding: 5px 4px 4px 8px;
+}
+
+.scheduler_white_event_float_inner:after {
+    content:"";
+    border-color: transparent #999 transparent transparent;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    top:7px;
+    left:-4px;
+}

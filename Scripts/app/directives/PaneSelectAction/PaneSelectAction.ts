@@ -1,7 +1,57 @@
 ﻿/// <reference path="../../_all.ts" />
- 
+
 module dockyard.directives.paneSelectAction {
     'use strict';
+
+    export enum MessageType {
+        PaneSelectAction_ActionUpdated,
+        PaneSelectAction_Render,
+        PaneSelectAction_Hide,
+        PaneSelectAction_UpdateAction,
+        PaneSelectAction_ActionTypeSelected
+    }
+
+    export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
+        public tempActionId: number;
+        public actionTypeId: number;
+        public actionName: string;
+
+        constructor(criteriaId: number, actionId: number, tempActionId: number, actionTypeId: number, actionName: string) {
+            super(criteriaId, actionId);
+            this.tempActionId = tempActionId;
+            this.actionTypeId = actionTypeId;
+            this.actionName = actionName;
+        }
+    }
+
+    export class ActionUpdatedEventArgs extends ActionEventArgsBase {
+        public tempActionId: number;
+        public actionName: string;
+
+        constructor(criteriaId: number, actionId: number, tempActionId: number, actionName: string) {
+            super(criteriaId, actionId);
+            this.tempActionId = tempActionId;
+            this.actionName = actionName;
+        }
+    }
+
+    export class RenderEventArgs extends ActionEventArgsBase {
+        public isTempId: boolean;
+
+        constructor(criteriaId: number, actionId: number, isTemp: boolean) {
+            super(criteriaId, actionId);
+            this.isTempId = isTemp;
+        }
+    }
+
+    export class UpdateActionEventArgs extends ActionEventArgsBase {
+        public actionTempId: number;
+
+        constructor(criteriaId: number, actionId: number, actionTempId: number) {
+            super(criteriaId, actionId);
+            this.actionTempId = actionTempId;
+        }
+    }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
@@ -37,7 +87,7 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.id,
                         $scope.action.tempId,
                         $scope.action.actionTypeId,
-                        0);
+                        $scope.action.name);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
                 }

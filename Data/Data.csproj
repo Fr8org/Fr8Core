@@ -103,6 +103,8 @@
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
@@ -115,8 +117,15 @@
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
+    <Compile Include="Entities\DocuSignEventDO.cs" />
+    <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
+    <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
+    <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\EnvelopeDataDO.cs" />
+    <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
+    <Compile Include="Entities\MailerDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
@@ -140,6 +149,7 @@
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
+    <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginRegistrationDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
@@ -210,6 +220,10 @@
     <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.cs" />
+    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.Designer.cs">
+      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.cs" />
     <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.Designer.cs">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
@@ -218,12 +232,23 @@
     <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.Designer.cs">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508081609195_blank_migration.cs" />
+    <Compile Include="Migrations\201508081609195_blank_migration.Designer.cs">
+      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508081752116_AddMailerDO.cs" />
+    <Compile Include="Migrations\201508081752116_AddMailerDO.Designer.cs">
+      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
+    <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
+    <Compile Include="Repositories\MailerRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
+    <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
@@ -245,7 +270,7 @@
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
-    <Compile Include="States\EventState.cs" />
+    <Compile Include="States\ExternalEventType.cs" />
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
@@ -420,11 +445,20 @@
     <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
       <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508051711123_ProcessFlow_Migration.resx">
+      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.resx">
       <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508061339318_AddSubscriptionAndPlugin.resx">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508081609195_blank_migration.resx">
+      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508081752116_AddMailerDO.resx">
+      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

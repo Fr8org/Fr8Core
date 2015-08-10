@@ -1,0 +1,258 @@
+.scheduler_green_main 
+{
+    font-family: Tahoma, Arial, sans-serif;
+    border: 1px solid #999;
+}
+
+.scheduler_green_event {
+    font-size:12px;
+    color:#fff;
+    text-shadow: 0px -1px 0px rgba(000,000,000,0.2), 0px 1px 0px rgba(255,255,255,1);
+}
+
+.scheduler_green_event_inner
+{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 4px;
+
+    color: #ffffff;
+    padding: 4px;
+
+    background: #a2c200;
+    background: -webkit-gradient(linear, left top, left bottom, from(#a2c200), to(#8aaa00));
+    background: -webkit-linear-gradient(top, #a2c200 0%, #8aaa00);
+    background: -moz-linear-gradient(top, #a2c200 0%, #8aaa00);
+    background: -ms-linear-gradient(top, #a2c200 0%, #8aaa00);
+    background: -o-linear-gradient(top, #a2c200 0%, #8aaa00);
+    background: linear-gradient(top, #a2c200 0%, #8aaa00);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#a2c200", endColorStr="#8aaa00");
+
+    border-radius: 5px;
+    border: 1px solid #7cb316;
+
+    -webkit-box-shadow: 0px 2px 3px rgba(000,000,000,0.3), inset 0px 0px 2px rgba(255,255,255,0.8);
+    box-shadow: 0px 2px 3px rgba(000,000,000,0.3), inset 0px 0px 2px rgba(255,255,255,0.8);
+}
+
+.scheduler_green_event_bar
+{
+    top: 3px;
+    left: 4px;
+    right: 4px;
+    height: 2px;
+    background-color: #C7D48D;
+}
+
+.scheduler_green_event_bar_inner  
+{
+    position: absolute;
+    height: 2px;
+    background-color: #6E8700;
+}
+
+.scheduler_green_event_hover .scheduler_green_event_inner 
+{
+    background: #a8dc18;
+    background: -webkit-gradient(linear, left top, left bottom, from(#a8dc18), to(#8fc300));
+    background: -webkit-linear-gradient(top, #a8dc18 0%, #8fc300);
+    background: -moz-linear-gradient(top, #a8dc18 0%, #8fc300);
+    background: -ms-linear-gradient(top, #a8dc18 0%, #8fc300);
+    background: -o-linear-gradient(top, #a8dc18 0%, #8fc300);
+    background: linear-gradient(top, #a8dc18 0%, #8fc300);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#a8dc18", endColorStr="#8fc300");
+}
+
+/* .scheduler_green_red is an example custom class that can be applied using BeforeEventRender handler */
+.scheduler_green_red .scheduler_green_event_inner 
+{
+    border: 1px solid #c00004;
+    background: #ab0000;
+    background: -webkit-gradient(linear, left top, left bottom, from(#ff2819), to(#ab0000));
+    background: -webkit-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: -moz-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: -ms-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: -o-linear-gradient(top, #ff2819 0%, #ab0000);
+    background: linear-gradient(top, #ff2819 0%, #ab0000);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#ff2819", endColorStr="#ab0000");
+}
+
+
+.scheduler_green_timeheader 
+{
+    cursor: default;
+    color: #666;
+}
+
+.scheduler_green_message 
+{
+    padding: 10px;
+    opacity: 0.9;
+    filter: alpha(opacity=90);
+    color: #ffffff;
+    text-shadow: 0px -1px 1px rgba(000,000,000,0.2), 0px 1px 0px rgba(255,255,255,0.3);
+    
+    background: #000;
+    background: -webkit-gradient(linear, left top, left bottom, from(#999999), to(#666666));
+    background: -webkit-linear-gradient(top, #999999 0%, #666666);
+    background: -moz-linear-gradient(top, #999999 0%, #666666);
+    background: -ms-linear-gradient(top, #999999 0%, #666666);
+    background: -o-linear-gradient(top, #999999 0%, #666666);
+    background: linear-gradient(top, #999999 0%, #666666);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#999999", endColorStr="#666666");
+}
+
+.scheduler_green_timeheadergroup,
+.scheduler_green_timeheadercol {
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 0px -1px 1px rgba(000,000,000,0.2), 0px 1px 0px rgba(255,255,255,0.3);
+}
+
+.scheduler_green_timeheadergroup_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+
+    border-right: 1px solid #999;
+
+    background: #666;
+    background: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#666666));
+    background: -webkit-linear-gradient(top, #777777 0%, #666666);
+    background: -moz-linear-gradient(top, #777777 0%, #666666);
+    background: -ms-linear-gradient(top, #777777 0%, #666666);
+    background: -o-linear-gradient(top, #777777 0%, #666666);
+    background: linear-gradient(top, #777777 0%, #666666);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+}
+
+.scheduler_green_timeheadercol_inner
+{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-right: 1px solid #999;
+    border-top: 1px solid #999;
+
+    background: #666;
+    background: -webkit-gradient(linear, left top, left bottom, from(#777777), to(#666666));
+    background: -webkit-linear-gradient(top, #777777 0%, #666666);
+    background: -moz-linear-gradient(top, #777777 0%, #666666);
+    background: -ms-linear-gradient(top, #777777 0%, #666666);
+    background: -o-linear-gradient(top, #777777 0%, #666666);
+    background: linear-gradient(top, #777777 0%, #666666);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+}
+
+.scheduler_green_rowheader 
+{
+    color: #ffffff;
+    text-shadow: 0px -1px 1px rgba(000,000,000,0.2), 0px 1px 0px rgba(255,255,255,0.3);
+
+    background: #666;
+    background: -webkit-gradient(linear, left top, right top, from(#777777), to(#666666));
+    background: -webkit-linear-gradient(left, #777777 0%, #666666);
+    background: -moz-linear-gradient(left, #777777 0%, #666666);
+    background: -ms-linear-gradient(left, #777777 0%, #666666);
+    background: -o-linear-gradient(left, #777777 0%, #666666);
+    background: linear-gradient(left, #777777 0%, #666666);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666", GradientType=1);
+}
+
+.scheduler_green_corner
+{
+    color: #ffffff;
+    background: #666;
+    background: -webkit-gradient(linear, left top, right top, from(#777777), to(#666666));
+    background: -webkit-linear-gradient(left, #777777 0%, #666666);
+    background: -moz-linear-gradient(left, #777777 0%, #666666);
+    background: -ms-linear-gradient(left, #777777 0%, #666666);
+    background: -o-linear-gradient(left, #777777 0%, #666666);
+    background: linear-gradient(left, #777777 0%, #666666);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666", GradientType=1);
+}
+
+.scheduler_green_resourceheader td
+{
+    border-bottom: 1px solid black;
+    padding: 0px;
+}
+
+.scheduler_green_tree_image_no_children {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLzEyzsCJAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAADBJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOL31MeLxHwCeXUT0WkFMKAAAAABJRU5ErkJggg==);
+}
+.scheduler_green_tree_image_expand {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLyUoFBT0AAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAFJJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeRhgJGREc4GijMBtTNgA0BxFog+uA4IA2gmUJwFog/IgUhAGBB9KPYhA3T74Jog+hjx+A8A1KRQ+AN5vcwAAAAASUVORK5CYII=);
+}
+.scheduler_green_tree_image_collapse {
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAIAAABv85FHAAAAKXRFWHRDcmVhdGlvbiBUaW1lAHDhIDMwIEkgMjAwOSAwODo0NjozMSArMDEwMClDkt4AAAAHdElNRQfZAR4HLxB+p9DXAAAACXBIWXMAAA7CAAAOwgEVKEqAAAAABGdBTUEAALGPC/xhBQAAAENJREFUeNpjrK6s5uTl/P75OybJ0NLW8h8bAIozgeSxAaA4E1A7VjmgOAtEHyMjI7IE0EygOAtEH5CDqY9c+xjx+A8ANndK9WaZlP4AAAAASUVORK5CYII=);
+}
+
+.scheduler_green_divider 
+{
+    background-color: #ccc;
+}
+
+.scheduler_green_divider_horizontal
+{
+    background-color: #ccc;
+}
+
+.scheduler_green_matrix_vertical_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_green_matrix_vertical_break 
+{
+    background-color: #000;
+}
+.scheduler_green_matrix_horizontal_line 
+{
+    background-color: #eee;
+}
+
+.scheduler_green_resourcedivider 
+{
+    background-color: #ccc;
+}
+
+.scheduler_green_shadow_inner 
+{
+    background-color: #666666;
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+    height: 100%;
+    border-radius: 5px;
+}
+
+.scheduler_green_cellweekend 
+{
+    background-color: #f0f0f0;
+}
+
+.scheduler_green_timeheader_float_inner {
+}
+
+.scheduler_green_event_float_inner {
+    padding: 4px 4px 4px 8px;
+}
+
+.scheduler_green_event_float_inner:after {
+    content:"";
+    border-color: transparent #fff transparent transparent;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    top:7px;
+    left:-4px;
+}
