@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Web.Http;
+using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Messages;
 using pluginAzureSqlServer.Services;
+using PluginUtilities.Infrastructure;
 
 namespace pluginAzureSqlServer.Controllers
 {
     public class ActionController : ApiController
     {
         public const string Version = "1.0";
-        public const string AvailableActions = "[{'type_name':'write to azure sql server','version':'4.3'}]";
+        public const string AvailableActions = "{'type_name':'write to azure sql server','version':4.3}";
 
         /// <summary>
         /// Insert user data to remote database tables.
@@ -41,6 +43,8 @@ namespace pluginAzureSqlServer.Controllers
         [Route("available")]
         public string GetAvailable()
         {
+            Validations.ValidateDtoString<ActionTypeListDTO>(AvailableActions);
+
             return AvailableActions;
         }
 

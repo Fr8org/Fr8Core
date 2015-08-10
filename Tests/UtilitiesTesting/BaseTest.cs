@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using Core.StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Core.StructureMap;
-using Web.App_Start;
 using NUnit.Framework;
 using StructureMap;
+using Web.App_Start;
 
 namespace UtilitiesTesting
 {
