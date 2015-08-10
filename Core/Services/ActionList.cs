@@ -39,7 +39,10 @@ namespace Core.Services
                 throw new NullReferenceException("ActionListId");
 
             var curActionList = GetByKey(curActionDO.ActionListId.Value);
-            Reorder(curActionList, curActionDO, position);
+            if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
+                Reorder(curActionList, curActionDO, position);
+            else
+                throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
             curActionList.Actions.Add(curActionDO);
             if (curActionList.CurrentAction == null)
                 curActionList.CurrentAction = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
@@ -52,13 +55,8 @@ namespace Core.Services
 
         private void Reorder(ActionListDO curActionListDO, ActionDO curActionDO, string position)
         {
-            if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
-            {
-                int ordering = curActionListDO.Actions.Select(action => action.Ordering).Max();
-                curActionDO.Ordering = ordering + 1;
-            }
-            else
-                throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
+            int ordering = curActionListDO.Actions.Select(action => action.Ordering).Max();
+            curActionDO.Ordering = ordering + 1;
         }
 
         public void Process(ActionListDO curActionListDO)

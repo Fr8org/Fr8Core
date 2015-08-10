@@ -33,5 +33,27 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionListDO;
         }
+
+        public ActionDO TestActionList1()
+        {
+            return new ActionDO
+            {
+                Id = 1,
+                UserLabel = "Action 1",
+                ActionListId = 1,
+                Ordering = 1
+            };
+        }
+
+        public ActionDO TestActionList2()
+        {
+            return new ActionDO
+            {
+                Id = 2,
+                UserLabel = "Action 2",
+                ActionListId = 1,
+                Ordering = 2
+            };
+        }
     }
 }

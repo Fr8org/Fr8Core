@@ -21,9 +21,9 @@ namespace Web.Controllers
             return _actionList.GetAll();
 		}
 
-        public ActionListDO GetByKey(int curActionListId)
+        public ActionListDO Get(int id)
         {
-            return _actionList.GetByKey(curActionListId);
+            return _actionList.GetByKey(id);
         }
 	}
 }

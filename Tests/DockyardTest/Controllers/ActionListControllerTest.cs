@@ -23,7 +23,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionListController.AddAction")]
+        [Category("ActionListController.AddAction")]
         public void ActionListController_CanAddActionDOInLastPosition()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -37,7 +37,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionListController.AddAction")]
+        [Category("ActionListController.AddAction")]
         [ExpectedException(ExpectedException = typeof(NotSupportedException))]
         public void ActionListController_CanAddActionDOInPositionOtherThanLast()
         {
@@ -50,7 +50,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionListController.AddAction")]
+        [Category("ActionListController.AddAction")]
         public void ActionListController_Set_LowestPostitoned_ActionDO_To_CurrentAtion_Of_ActionListDO()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -64,7 +64,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionListController.Process")]
+        [Category("ActionListController.Process")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionListController_NULL_CurrentAtion_Of_ActionListDO()
         {
