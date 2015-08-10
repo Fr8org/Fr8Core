@@ -113,8 +113,10 @@ namespace Web.App_Start
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
 
-            Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>();
-            Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>();
+            Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
+                .ForMember(x => x.ParentTemplateId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
+            Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
+                .ForMember(x => x.ProcessTemplateId, opts => opts.ResolveUsing(x => x.ParentTemplateId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));

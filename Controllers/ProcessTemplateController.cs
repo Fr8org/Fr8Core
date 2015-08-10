@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -7,17 +8,20 @@ using System.Web.Http;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Microsoft.Ajax.Utilities;
 using StructureMap;
 using Web.Controllers.Helpers;
 using Web.ViewModels;
+using System.Web.Http.Description;
 
 namespace Web.Controllers
 {
     [Authorize]
-    public class ProcessTemplateController : ApiController
+    [RoutePrefix("api/processTemplate")]
+    public class ProcessTemplateController : ApiController, IUnitOfWorkAwareComponent
     {
         private readonly IProcessTemplate _processTemplate;
 
@@ -32,10 +36,48 @@ namespace Web.Controllers
             _processTemplate = processTemplate;
         }
 
+        [Route("full")]
+        [ResponseType(typeof(FullProcessTemplateDTO))]
+        [HttpGet]
+        public IHttpActionResult GetFullProcessTemplate(int id)
+        {
+            return this.InUnitOfWork(uow =>
+            {
+                var processTemplate = uow.ProcessTemplateRepository
+                    .GetQuery()
+                    .SingleOrDefault(x => x.Id == id);
+
+                if (processTemplate == null)
+                {
+                    return Ok<FullProcessTemplateDTO>(null);
+                }
+
+                var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
+                    .GetQuery()
+                    .Include(x => x.Criteria)
+                    .Where(x => x.ParentTemplateId == id)
+                    .OrderBy(x => x.Id)
+                    .AsEnumerable()
+                    .Select(x => new FullProcessNodeTemplateDTO()
+                    {
+                        ProcessNodeTemplate = Mapper.Map<ProcessNodeTemplateDTO>(x),
+                        Criteria = Mapper.Map<CriteriaDTO>(x.Criteria)
+                    })
+                    .ToList();
+
+                var result = new FullProcessTemplateDTO()
+                {
+                    ProcessTemplate = Mapper.Map<ProcessTemplateDTO>(processTemplate),
+                    ProcessNodeTemplates = processNodeTemplateDTOList
+                };
+
+                return Ok(result);
+            });
+        }
+
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-
             var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
 
             switch (curProcessTemplates.Count)
@@ -49,8 +91,6 @@ namespace Web.Controllers
             return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateDTO>));
             
         }
-
-        
 
         public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
         {

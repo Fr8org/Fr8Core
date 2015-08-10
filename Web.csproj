@@ -319,6 +319,7 @@
     <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
+    <Compile Include="ViewModels\FullProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />

@@ -45,7 +45,7 @@ namespace Core.Services
         }
 
         /// <summary>
-        /// Remove ProcessNodeTemplate entity by id with criteria entity.
+        /// Remove ProcessNodeTemplate and children entities by id.
         /// </summary>
         public ProcessNodeTemplateDO Remove(int id)
         {
@@ -53,7 +53,7 @@ namespace Core.Services
             {
                 var processNodeTemplate = uow.ProcessNodeTemplateRepository
                     .GetQuery()
-                    .Include("Criteria")
+                    .Include(x => x.Criteria)
                     .SingleOrDefault(x => x.Id == id);
 
                 if (processNodeTemplate == null)
