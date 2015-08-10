@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Linq;
+﻿using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using NUnit.Framework;

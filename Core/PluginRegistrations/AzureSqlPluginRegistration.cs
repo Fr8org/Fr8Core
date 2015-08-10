@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
 {
@@ -25,6 +26,23 @@ namespace Core.PluginRegistrations
                     "writeSQL"
                 };
             }
+        }
+
+        public override IEnumerable<string> GetAvailableActions()
+        {
+            var curAvailableActions = new List<string> {"Write To Azure Sql Server"};
+
+            return curAvailableActions;
+        }
+
+        public override JObject GetConfigurationSettings()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override IEnumerable<string> GetFieldMappingTargets(string curActionName, string configUiData)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
