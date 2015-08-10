@@ -77,83 +77,93 @@ namespace Daemons
 
         protected override void Run()
         {
-		//while (ProcessNextEventNoWait())
-		//{
-		//}
+		    while (ProcessNextEventNoWait())
+		    {
+		    }
 
-		//using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-		//{
-		//    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-		//    EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
-		//    var numSent = 0;
-		//    foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
-		//    {
-		//	  LogEvent("Sending an email with subject '" + curEnvelopeDO.Email.Subject + "'");
-		//	  using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
-		//	  {
-		//		var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
-		//		try
-		//		{
-		//		    // we have to query EnvelopeDO one more time to have it loaded in subUow
-		//		    IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
-		//		    if (configRepository.Get<bool>("ArchiveOutboundEmail"))
-		//		    {
-		//			  EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
-		//			  envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
-		//		    }
+            using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                MailerRepository mailerRepository = unitOfWork.MailerRepository;
+                var numSent = 0;
+                foreach (
+                    MailerDO curMailerDO in mailerRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
+                {
+                    LogEvent("Sending an email with subject '" + curMailerDO.Email.Subject + "'");
+                    using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        var mailer = subUow.MailerRepository.GetByKey(curMailerDO.Id);
+                        try
+                        {
+                            // we have to query EnvelopeDO one more time to have it loaded in subUow
+                            IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(mailer.Handler);
+                            if (configRepository.Get<bool>("ArchiveOutboundEmail"))
+                            {
+                                EmailAddressDO outboundemailaddress =
+                                    subUow.EmailAddressRepository.GetOrCreateEmailAddress(
+                                        configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
+                                mailer.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
+                            }
 
-		//		    //Removing email address which are not test account in debug mode
-		//		    if (Server.IsDevMode)
-		//		    {
-		//			  var recipientsRemoved = RemoveRecipients(envelope.Email, subUow);
-		//			  if (recipientsRemoved.Any())
-		//			  {
-		//				var message = String.Format("The following recipients were removed because they are not test accounts: {0}", String.Join(", ", recipientsRemoved));
-		//				Logger.GetLogger().Info(message);
-		//				LogEvent(message);
-		//			  }
-		//		    }
+                            //Removing email address which are not test account in debug mode
+                            if (Server.IsDevMode)
+                            {
+                                var recipientsRemoved = RemoveRecipients(mailer.Email, subUow);
+                                if (recipientsRemoved.Any())
+                                {
+                                    var message =
+                                        String.Format(
+                                            "The following recipients were removed because they are not test accounts: {0}",
+                                            String.Join(", ", recipientsRemoved));
+                                    Logger.GetLogger().Info(message);
+                                    LogEvent(message);
+                                }
+                            }
 
-		//		    if (String.IsNullOrEmpty(envelope.Email.ReplyToAddress))
-		//			  envelope.Email.ReplyToAddress = configRepository.Get("replyToEmail", String.Empty);
-		//		    if (String.IsNullOrEmpty(envelope.Email.ReplyToName))
-		//			  envelope.Email.ReplyToName = configRepository.Get("replyToName", String.Empty);
-                            
-		//		    packager.Send(envelope);
-		//		    numSent++;
+                            if (String.IsNullOrEmpty(mailer.Email.ReplyToAddress))
+                                mailer.Email.ReplyToAddress = configRepository.Get("replyToEmail", String.Empty);
+                            if (String.IsNullOrEmpty(mailer.Email.ReplyToName))
+                                mailer.Email.ReplyToName = configRepository.Get("replyToName", String.Empty);
 
-		//		    var email = envelope.Email;
-		//		    email.EmailStatus = EmailState.Dispatched;
-		//		    subUow.SaveChanges();
+                            packager.Send(mailer);
+                            numSent++;
 
-		//		    LogSuccess("Sent.");
+                            var email = mailer.Email;
+                            email.EmailStatus = EmailState.Dispatched;
+                            subUow.SaveChanges();
 
-		//		    foreach (var recipient in email.To)
-		//		    {
-		//			  var curUser = subUow.UserRepository.GetQuery()
-		//				.FirstOrDefault(u => u.EmailAddressID == recipient.Id);
-		//			  if (curUser != null)
-		//			  {
-		//				AlertManager.EmailSent(email.Id, curUser.Id);
-		//			  }
-		//		    }
-		//		}
-		//		catch (StructureMapConfigurationException ex)
-		//		{
-		//		    Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curEnvelopeDO.Handler);
+                            LogSuccess("Sent.");
 
-		//		    try
-		//		    {
-		//			  var email = envelope.Email;
-		//			  email.EmailStatus = EmailState.Invalid;
-		//			  subUow.SaveChanges();
-		//		    } catch (Exception) {}
+                            foreach (var recipient in email.To)
+                            {
+                                var curUser = subUow.UserRepository.GetQuery()
+                                    .FirstOrDefault(u => u.EmailAddressID == recipient.Id);
+                                if (curUser != null)
+                                {
+                                    EventManager.EmailSent(email.Id, curUser.Id);
+                                }
+                            }
+                        }
+                        catch (StructureMapConfigurationException ex)
+                        {
+                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curMailerDO.Handler);
 
-		//		    throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", curEnvelopeDO.Handler), ex);
-		//		}
-		//	  }
-		//    }
-		//}
+                            try
+                            {
+                                var email = mailer.Email;
+                                email.EmailStatus = EmailState.Invalid;
+                                subUow.SaveChanges();
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                            throw new UnknownEmailPackagerException(
+                                string.Format("Unknown email packager: {0}", curMailerDO.Handler), ex);
+                        }
+                    }
+                }
+            }
         }
 
         private List<String> RemoveRecipients(EmailDO emailDO, IUnitOfWork uow)

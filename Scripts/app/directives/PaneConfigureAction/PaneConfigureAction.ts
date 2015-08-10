@@ -1,7 +1,19 @@
 ﻿/// <reference path="../../_all.ts" />
- 
 module dockyard.directives.paneConfigureAction {
     'use strict';
+
+    export enum MessageType {
+        PaneConfigureAction_ActionUpdated,
+        PaneConfigureAction_Render,
+        PaneConfigureAction_Hide,
+        PaneConfigureAction_Cancelled
+    }
+
+    export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
+
+    export class RenderEventArgs extends RenderEventArgsBase { }
+
+    export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
@@ -33,12 +45,12 @@ module dockyard.directives.paneConfigureAction {
                     var eventArgs = new CancelledEventArgs(
                         $scope.action.criteriaId,
                         $scope.action.id > 0 ? $scope.action.id : $scope.action.tempId,
-                        $scope.action.id < 0, 0);
+                        $scope.action.id < 0);
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_Cancelled], eventArgs);
                 }
 
                 $scope.save = function (event) {
-                    var eventArgs = new ActionUpdatedEventArgs($scope.action.criteriaId, $scope.action.id, $scope.action.tempId, 0);
+                    var eventArgs = new ActionUpdatedEventArgs($scope.action.criteriaId, $scope.action.id, $scope.action.tempId);
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], eventArgs);
                     (<any>$).notify("Thank you, Action saved!", "success");
                 }

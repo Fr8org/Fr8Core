@@ -1,0 +1,153 @@
+﻿/* month white */
+
+.month_transparent_main 
+{
+	border: 1px solid #aaa;
+}
+
+.month_transparent_cell 
+{
+	background-color: #f3f3f3;
+}
+
+.month_transparent_cell.month_transparent_cell_business 
+{
+	background-color: white;
+}
+
+.month_transparent_cell_inner 
+{
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;	
+}
+
+.month_transparent_cell_header 
+{
+	text-align: right;
+	padding-right: 2px;
+}
+
+.month_transparent_header_inner
+{
+	text-align: center; 
+	vertical-align: middle;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	cursor: default;
+	
+	color: #666;
+	background: #eeeeee;
+	
+	background: -moz-linear-gradient(
+		top,
+		#f3f3f3 0%,
+		#e9e9e9);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#f3f3f3),
+		to(#e9e9e9));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#f3f3f3", endColorStr="#e9e9e9");
+}
+
+.month_transparent_message 
+{
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+
+	padding: 10px; 
+	color: #eeeeee;
+	background: #333;
+}
+
+.month_transparent_event
+{
+	opacity: 0.7;
+	filter: alpha(opacity=70);
+}
+
+.month_transparent_event_inner 
+{
+	position: absolute;
+	top: 0px;
+	bottom: 2px;
+	left: 5px;
+	right: 5px;
+	overflow:hidden;
+	
+	padding: 2px;
+	padding-left: 5px;
+	
+	font-size: 12px;
+	color: #000;
+	background: #47afff;
+	border: 1px solid #1066a8;
+	border-left: 5px solid #1066a8;
+}
+
+.month_transparent_event_continueright:after {
+    content:"";
+    border-color: transparent transparent transparent #1066a8;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    bottom:8px;
+    right:-5px;
+}
+
+.month_transparent_event_continueleft:after {
+    content:"";
+    border-color: transparent #1066a8 transparent transparent ;
+    border-style:solid;
+    border-width:5px;
+    width:0;
+    height:0;
+    position:absolute;
+    bottom:8px;
+    left:-5px;
+}
+
+.month_transparent_event_continueright .month_transparent_event_inner  {
+    border-right: 1px solid #1066a8;
+}
+
+.month_transparent_event_continueleft .month_transparent_event_inner 
+{
+    border-left: 1px solid #1066a8;
+}
+
+.month_transparent_event_hover
+{
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+
+
+.month_transparent_selected .month_transparent_event_inner 
+{
+	background: #ddd;
+}
+
+.month_transparent_shadow_inner 
+{
+	background-color: #666666;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+

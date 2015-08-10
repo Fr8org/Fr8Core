@@ -1,0 +1,330 @@
+﻿/* calendar full */
+
+.calendar_green_main  
+{
+	border: 1px solid #999;
+}
+
+.calendar_green_colheader
+{
+}
+
+.calendar_green_cornerright_inner 
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-bottom: 1px solid #999;
+	
+	color: #ffffff;
+	background: #666;
+	background: -moz-linear-gradient(
+		top,
+		#777 0%,
+		#666);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#777),
+		to(#666));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+	
+}
+
+.calendar_green_rowheader_inner 
+{
+	font-size: 16pt;
+	
+	text-align: right; 
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	
+	color: #ffffff;
+	background: #666;
+	background: -moz-linear-gradient(
+		top,
+		#777 0%,
+		#666);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#777),
+		to(#666));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+	
+}
+
+.calendar_green_corner_inner 
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	
+	color: #ffffff;
+	background: #666;
+	background: -moz-linear-gradient(
+		top,
+		#777 0%,
+		#666);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#777),
+		to(#666));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+	
+}
+
+.calendar_green_rowheader_minutes 
+{
+	font-size:10px; 
+	vertical-align: super; 
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
+.calendar_green_colheader_inner 
+{
+	text-align: center; 
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	
+	color: #ffffff;
+	background: #666;
+	background: -moz-linear-gradient(
+		top,
+		#777 0%,
+		#666);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#777),
+		to(#666));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+	
+}
+.calendar_green_cell_inner
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	background-color: #ffffff;
+}
+
+.calendar_green_alldayheader_inner 
+{
+	text-align: center; 
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	bottom: 0px;
+	right: 0px;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	
+	color: #ffffff;
+	background: #666;
+	background: -moz-linear-gradient(
+		top,
+		#777 0%,
+		#666);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#777),
+		to(#666));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#777777", endColorStr="#666666");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+	
+}
+
+.calendar_green_message
+{
+	padding: 10px; 
+	opacity: 0.9;
+	filter: alpha(opacity=90);
+	
+	color: #ffffff;
+	background: #000;
+	background: -moz-linear-gradient(
+		top,
+		#999 0%,
+		#666);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#999),
+		to(#666));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#999999", endColorStr="#666666");
+	text-shadow:
+		0px -1px 1px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,0.3);
+
+}
+
+.calendar_green_alldayevent 
+{
+	border-radius: 15px; /* ie gradient + rounded corners problem */
+	overflow: hidden;
+}
+
+.calendar_green_alldayevent_inner  
+{
+	position: absolute;
+	overflow: hidden;
+	top: 2px;
+	bottom: 2px;
+	left: 2px;
+	right: 2px;
+	
+	padding: 2px;
+	
+	margin-right: 1px;
+	font-size: 12px;
+	color: #ffffff;
+	background: #a8dc18;
+	background: -moz-linear-gradient(
+		top,
+		#a2c200 0%,
+		#8aaa00);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#a2c200),
+		to(#8aaa00));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#a2c200", endColorStr="#8aaa00");
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #7cb316;
+	-moz-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	-webkit-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,1);
+}
+
+.calendar_green_event 
+{
+	border-radius: 5px; /* ie gradient + rounded corners problem */
+}
+
+
+.calendar_green_event_inner  
+{
+	overflow: hidden;
+	position: absolute;
+	top: 0px;
+	bottom: 2px;
+	left: 2px;
+	right: 0px;
+	margin-right: 1px;
+	font-size: 12px;
+	padding: 2px;
+	padding-left: 8px; /* make space for duration bar */
+	
+	color: #ffffff;
+	background: #a2c200;
+	background: -moz-linear-gradient(
+		top,
+		#a2c200 0%,
+		#8aaa00);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#a2c200),
+		to(#8aaa00));  
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#a2c200", endColorStr="#8aaa00");
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	border: 1px solid #7cb316;
+	-moz-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	-webkit-box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	box-shadow:
+		0px 2px 3px rgba(000,000,000,0.3),
+		inset 0px 0px 2px rgba(255,255,255,0.8);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.2),
+		0px 1px 0px rgba(255,255,255,1);
+}
+
+.calendar_green_event_bar
+{
+	top: 3px;
+	bottom: 4px;
+    left: 6px;
+	width: 2px;
+	background-color: #C0D46A;
+	background-color: #C7D48D;
+}
+
+.calendar_green_event_bar_inner  
+{
+	position: absolute;
+	width: 2px;
+	background-color: #6E8700;
+}
+
+.calendar_green_event_hover .calendar_green_event_inner,
+.calendar_green_alldayevent_hover .calendar_green_alldayevent_inner
+{
+	background: #a8dc18;
+	background: -moz-linear-gradient(
+		top,
+		#a8dc18 0%,
+		#8fc300);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#a8dc18),
+		to(#8fc300));
+	filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#a8dc18", endColorStr="#8fc300");
+}
+
+.calendar_green_shadow_inner 
+{
+	background-color: #666666;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	height: 100%;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}

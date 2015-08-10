@@ -2,53 +2,50 @@
     Layout = null;
 }
 
-<div class="col-md-6 col-sm-6">
-    <div class="portlet light ">
-        <div class="portlet-title">
-            <div class="caption caption-md">
-                <i class="icon-bar-chart font-green-haze hide"></i>
-                <span class="caption-subject font-green-haze bold uppercase">{{criteria.name}}</span>
+<div class="portlet light" ng-show="isVisible">
+    <div class="portlet-title">
+        <div class="caption caption-md">
+            <i class="icon-bar-chart font-green-haze hide"></i>
+            <span class="caption-subject font-green-haze bold uppercase">{{criteria.name}}</span>
+        </div>
+    </div>
+    <div class="portlet-body">
+        <div class="form-group">
+            <a href class="btn btn-danger" ng-click="removeCriteria()">Remove criteria</a>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Criteria Name</label>
+            <input type="text" class="form-control" ng-model="criteria.name" />
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Criteria for Executing Actions</label>
+            <div class="radio">
+                <label>
+                    <input type="radio"
+                           name="executionMode"
+                           value="1"
+                           ng-model="criteria.executionMode" />
+                    <span>Filter conditions are met</span>
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio"
+                           name="executionMode"
+                           value="2"
+                           ng-model="criteria.executionMode" />
+                    <span>No criteria - just execute the actions!</span>
+                </label>
             </div>
         </div>
-        <div class="portlet-body">
-            <div class="form-group">
-                <a href class="btn btn-danger" ng-click="removeCriteria()">Remove criteria</a>
-            </div>
 
-            <div class="form-group">
-                <label class="control-label">Criteria Name</label>
-                <input type="text" class="form-control" ng-model="criteria.name" />
-            </div>
-
-            <div class="form-group">
-                <label class="control-label">Criteria for Executing Actions</label>
-                <div class="radio">
-                    <label>
-                        <input type="radio"
-                               name="executionMode"
-                               value="conditions"
-                               ng-model="criteria.executionMode" />
-                        <span>Filter conditions are met</span>
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio"
-                               name="executionMode"
-                               value="actions"
-                               ng-model="criteria.executionMode" />
-                        <span>No criteria - just execute the actions!</span>
-                    </label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <query-builder-widget id="queryBuilder"
-                                      fields="fields"
-                                      rows="criteria.conditions"
-                                      ng-show="criteria.executionMode === 'conditions'">
-                </query-builder-widget>
-            </div>
+        <div class="form-group">
+            <query-builder-widget fields="fields"
+                                  rows="criteria.conditions"
+                                  ng-show="criteria.executionMode === 1">
+            </query-builder-widget>
         </div>
     </div>
 </div>

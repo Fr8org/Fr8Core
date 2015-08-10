@@ -76,15 +76,13 @@
             }
         }
         $.cookie('sessionID', userID);
-        window.analytics.identify(userID);
-        window.analytics.page();
+        window.analytics.page('Home');
     </script>
 
     <script type="text/javascript">
         //The below is vimeo's API. Since we cannot track events in an IFrame, we need to post messages to vimeo to retrieve play events.
         $(function () {
             $(function () {
-                
                 var player = $('#video');
                 var url = window.location.protocol + player.attr('src').split('?')[0];
 
