@@ -178,6 +178,7 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcess.cs" />
+    <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
     <Compile Include="Interfaces\ISubscription.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
@@ -254,6 +255,7 @@
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Process.cs" />
+    <Compile Include="Services\ProcessNodeTemplate.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Signer.cs" />

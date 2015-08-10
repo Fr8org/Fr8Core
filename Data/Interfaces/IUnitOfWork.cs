@@ -46,11 +46,12 @@ namespace Data.Interfaces
         ExpectedResponseRepository ExpectedResponseRepository { get; }
         IProcessTemplateRepository ProcessTemplateRepository { get; }
         SlipRepository SlipRepository { get; }
-	  ActionRepository ActionRepository{ get; }
-	  ActionListRepository ActionListRepository{ get; }
-	  ProcessNodeRepository ProcessNodeRepository{ get; }
+	    ActionRepository ActionRepository{ get; }
+	    ActionListRepository ActionListRepository{ get; }
+	    ProcessNodeRepository ProcessNodeRepository{ get; }
 
-      ICriteriaRepository CriteriaRepository { get; }
+        IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
+        ICriteriaRepository CriteriaRepository { get; }
 
 	    /// <summary>
         /// Call this to commit the unit of work
@@ -66,8 +67,7 @@ namespace Data.Interfaces
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-	  ExternalEventRegistrationRepository ExternalEventRegistrationRepository{ get; }
-	  ProcessNodeTemplateRepository ProcessNodeTemplateRepository{ get; }
+	    ExternalEventRegistrationRepository ExternalEventRegistrationRepository{ get; }
 
 	    /// <summary>
         /// Starts a transaction on this unit of work

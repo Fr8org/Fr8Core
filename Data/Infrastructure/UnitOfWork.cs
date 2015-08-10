@@ -499,7 +499,7 @@ namespace Data.Infrastructure
 
 	    private ProcessNodeTemplateRepository _processNodeTemplateRepository;
 
-        public ProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
         {
             get
             {

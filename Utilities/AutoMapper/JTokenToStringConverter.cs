@@ -10,6 +10,8 @@ namespace Utilities.AutoMapper
     {
         public string Convert(ResolutionContext context)
         {
+            if (context.SourceValue == null) { return null; }
+
             return ((JToken)context.SourceValue).ToString();
         }
     }

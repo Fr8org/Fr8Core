@@ -6,7 +6,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ProcessNodeTemplateDO : IStateTemplate<ProcessTemplateState>
+    public class ProcessNodeTemplateDO
     {
         public ProcessNodeTemplateDO()
         {
@@ -14,7 +14,7 @@ namespace Data.Entities
         }
 
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -29,6 +29,8 @@ namespace Data.Entities
         ///[{'Flag':'true','Id':'234kljdf'},{'Flag':'false','Id':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.
         /// </summary>
         public string TransitionKey { get; set; }
+
+        public CriteriaDO Criteria { get; set; }
 
         public List<ActionListDO> ActionLists { get; set; }
 

@@ -10,6 +10,16 @@ namespace Data.Repositories
         {
 
         }
+
+        public override void Add(ProcessNodeTemplateDO entity)
+        {
+            if (System.Diagnostics.Debugger.IsAttached == false)
+            {
+                System.Diagnostics.Debugger.Launch();
+            }
+
+            base.Add(entity);
+        }
     }
 
     public interface IProcessNodeTemplateRepository : IGenericRepository<ProcessNodeTemplateDO>

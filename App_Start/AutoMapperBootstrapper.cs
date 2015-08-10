@@ -113,6 +113,9 @@ namespace Web.App_Start
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
 
+            Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>();
+            Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>();
+
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()

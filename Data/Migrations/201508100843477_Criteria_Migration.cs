@@ -12,22 +12,23 @@ namespace Data.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        ProcessTemplateId = c.Int(nullable: false),
-                        Name = c.String(),
                         ExecutionMode = c.Int(nullable: false),
                         ConditionsJSON = c.String(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.ProcessTemplates", t => t.ProcessTemplateId, cascadeDelete: true)
-                .Index(t => t.ProcessTemplateId);
+                .PrimaryKey(t => t.Id);
+            
+            AddColumn("dbo.ProcessNodeTemplates", "Criteria_Id", c => c.Int());
+            CreateIndex("dbo.ProcessNodeTemplates", "Criteria_Id");
+            AddForeignKey("dbo.ProcessNodeTemplates", "Criteria_Id", "dbo.Criteria", "Id");
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.Criteria", "ProcessTemplateId", "dbo.ProcessTemplates");
-            DropIndex("dbo.Criteria", new[] { "ProcessTemplateId" });
+            DropForeignKey("dbo.ProcessNodeTemplates", "Criteria_Id", "dbo.Criteria");
+            DropIndex("dbo.ProcessNodeTemplates", new[] { "Criteria_Id" });
+            DropColumn("dbo.ProcessNodeTemplates", "Criteria_Id");
             DropTable("dbo.Criteria");
         }
     }
