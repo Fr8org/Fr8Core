@@ -95,7 +95,7 @@ namespace pluginAzureSqlServerTests
             };
 
             // Getting http response.
-            string response = restCall.PostAsync<object, string>(new Uri(WriteSqlCommand), content).Result;
+            var response = restCall.PostAsync(new Uri(WriteSqlCommand, UriKind.Relative), content).Result;
             Debug.WriteLine(response);            
 
             // Validating correct data in database.

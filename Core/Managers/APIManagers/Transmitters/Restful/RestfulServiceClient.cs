@@ -78,11 +78,11 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-        public async Task PostAsync<TContent>(Uri requestUri, TContent content)
+        public async Task<string> PostAsync<TContent>(Uri requestUri, TContent content)
         {
-            using (await PostInternalAsync(requestUri, content))
+            using (var response = await PostInternalAsync(requestUri, content))
             {
-                
+                return await response.Content.ReadAsStringAsync();
             }
         }
 
@@ -104,11 +104,11 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-        public async Task PutAsync<TContent>(Uri requestUri, TContent content)
+        public async Task<string> PutAsync<TContent>(Uri requestUri, TContent content)
         {
-            using (await PutInternalAsync(requestUri, content))
+            using (var response = await PutInternalAsync(requestUri, content))
             {
-
+                return await response.Content.ReadAsStringAsync();
             }
         }
     }
