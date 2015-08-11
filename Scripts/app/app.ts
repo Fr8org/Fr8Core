@@ -6,7 +6,8 @@ var app = angular.module("app", [
     "oc.lazyLoad",
     "ngSanitize",
     'ngResource',
-    'ui.bootstrap'
+    'ui.bootstrap',
+    "ngMockE2E"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */

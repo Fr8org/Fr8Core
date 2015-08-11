@@ -489,6 +489,8 @@
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="Scripts\tests\integration\processtemplatecontroller_tests.js" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneFieldParamMapper\PaneFieldParamMapper.ts" />
+    <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\mocks\TypedScopeFactory.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
@@ -3641,6 +3643,7 @@
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneFieldParamMapper.html" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -3742,6 +3745,7 @@
     <TypeScriptCompile Include="Scripts\typings\tsd.d.ts" />
     <None Include="Views\JsTests\tests.cshtml" />
     <Content Include="Views\Shared\_JsTestsLayout.cshtml" />
+    <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
