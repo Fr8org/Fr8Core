@@ -106,29 +106,24 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("ActionController.GetConfigurationSettings")]
-        public void ActionController_GetConfigurationSettings_CanGetcorrectJson()
+        public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
         {
             var curActionRegistration = CreateActionRegistrationDO();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionController = new ActionController();
-                var _curAction = new Core.Services.Action();
-                int curActionRegistrationId = curActionRegistration.Id;
-                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                //Assert.IsNotNull(uow.ActionRegistrationRepository.GetByKey(curActionRegistrationId));
-                Assert.AreEqual(_curAction.GetConfigurationSettings(curActionRegistration), curJsonResult);
-            }
+           
+            var curActionController = new ActionController();
+            var _service = new Core.Services.Action();
+            int curActionRegistrationId = curActionRegistration.Id;
+            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+            Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
         }
+
         [Test]
         [Category("ActionController.GetConfigurationSettings")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionController_NULL_ActionRegistration()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Assert.IsNotNull(uow.ActionRegistrationRepository.GetByKey(1));
-                //Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
-            }
+            var curAction = new ActionController();
+            Assert.IsNotNull(curAction.GetConfigurationSetting(1));
         }
 
         /// <summary>

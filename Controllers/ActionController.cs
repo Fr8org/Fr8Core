@@ -59,8 +59,7 @@ namespace Web.Controllers
         [Route("api/actions/configuration")]
         public ActionDTO GetConfigurationSetting(int curActionRegistrationDOId)
         {
-            IActionRegistration _serviceActionRegistration;
-            _serviceActionRegistration = new ActionRegistration();
+            IActionRegistration _serviceActionRegistration = new ActionRegistration();
             ActionRegistrationDO curActionRegistrationDO = _serviceActionRegistration.GetByKey(curActionRegistrationDOId);
             return _service.GetConfigurationSettings(curActionRegistrationDO);
         }
