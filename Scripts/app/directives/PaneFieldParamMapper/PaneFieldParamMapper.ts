@@ -33,6 +33,10 @@ module dockyard.directives.PaneFieldMapping {
 
             $scope.mappedValue = mappedValue;
             var transform = () => {
+                if (!$scope.toBeMappedFrom)
+                    return;
+                if ($scope.toBeMappedFrom.constructor !== Array && $scope.toBeMappedFrom<0)
+                    return;
                 mappedValue.Map = [];
                 var includeOnly = ['Id', 'Name', 'type'];
 
@@ -62,6 +66,7 @@ module dockyard.directives.PaneFieldMapping {
                         return;
                     }
                     $scope.toBeMappedFrom = returnedParams;
+                    transform();
                     $scope.HeadingLeft = "Document Fields";
                     $scope.HeadingRight = "Action Params";
                     return;
@@ -74,9 +79,11 @@ module dockyard.directives.PaneFieldMapping {
                     });
                     if ($scope.mode === "param") {
                         $scope.toBeMappedFrom = docFields;
+                        transform();
                         return;
                     }
                     $scope.toBeMappedTo = docFields;
+
                 });
 
                 $scope.doneLoading = () => loadedActions && loadedFields;
@@ -106,7 +113,7 @@ module dockyard.directives.PaneFieldMapping {
 
             var onUpdate = () => { };
 
-            init();
+            //init();
 
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Hide], onHide);
