@@ -7,5 +7,6 @@ namespace Core.PluginRegistrations
         public abstract string BaseUrl { get; }
 
         public abstract IEnumerable<string> AvailableCommands { get; }
+
     }
 }

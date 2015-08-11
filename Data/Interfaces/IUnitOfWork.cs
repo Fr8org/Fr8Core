@@ -48,6 +48,7 @@ namespace Data.Interfaces
         SlipRepository SlipRepository { get; }
 	  ActionRepository ActionRepository{ get; }
 	  ActionListRepository ActionListRepository{ get; }
+      ActionRegistrationRepository ActionRegistrationRepository { get; }
 	  ProcessNodeRepository ProcessNodeRepository{ get; }
 
 	    /// <summary>

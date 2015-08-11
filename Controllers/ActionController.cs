@@ -9,6 +9,7 @@ using StructureMap;
 using Web.ViewModels;
 using Core.Services;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
@@ -16,10 +17,10 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _service;
-
+        
         public ActionController()
         {
-			_service = new Action();
+            _service = new Action();
         }
 
         /*
@@ -52,6 +53,16 @@ namespace Web.Controllers
                 return new List<ActionVM> { actionVm };
             }
             return new List<ActionVM>();
+        }
+
+        [HttpGet]
+        [Route("api/actions/configuration")]
+        public ActionDTO GetConfigurationSetting(int curActionRegistrationDOId)
+        {
+            IActionRegistration _serviceActionRegistration;
+            _serviceActionRegistration = new ActionRegistration();
+            ActionRegistrationDO curActionRegistrationDO = _serviceActionRegistration.GetByKey(curActionRegistrationDOId);
+            return _service.GetConfigurationSettings(curActionRegistrationDO);
         }
     }
 }

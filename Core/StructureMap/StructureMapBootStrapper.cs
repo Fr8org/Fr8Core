@@ -90,7 +90,7 @@ namespace Core.StructureMap
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
-                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+                For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
             }
         }
 
@@ -131,7 +131,7 @@ namespace Core.StructureMap
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
-                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+                For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
             }
         }
 

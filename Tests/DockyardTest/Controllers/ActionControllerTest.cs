@@ -9,6 +9,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
+using Core.Services;
 
 namespace DockyardTest.Controllers
 {
@@ -22,7 +23,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController.Save")]
+        [Category("ActionController.Save")]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -46,7 +47,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController.Save")]
+        [Category("ActionController.Save")]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -75,7 +76,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController.Save")]
+        [Category("ActionController.Save")]
         public void ActionController_Save_WithActionExists_ExistingActionShouldBeUpdated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -100,6 +101,33 @@ namespace DockyardTest.Controllers
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+            }
+        }
+
+        [Test]
+        [Category("ActionController.GetConfigurationSettings")]
+        public void ActionController_GetConfigurationSettings_CanGetcorrectJson()
+        {
+            var curActionRegistration = CreateActionRegistrationDO();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionController = new ActionController();
+                var _curAction = new Core.Services.Action();
+                int curActionRegistrationId = curActionRegistration.Id;
+                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+                //Assert.IsNotNull(uow.ActionRegistrationRepository.GetByKey(curActionRegistrationId));
+                Assert.AreEqual(_curAction.GetConfigurationSettings(curActionRegistration), curJsonResult);
+            }
+        }
+        [Test]
+        [Category("ActionController.GetConfigurationSettings")]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionController_NULL_ActionRegistration()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.IsNotNull(uow.ActionRegistrationRepository.GetByKey(1));
+                //Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
             }
         }
 
@@ -141,6 +169,18 @@ namespace DockyardTest.Controllers
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql"
             };
+        }
+
+        public ActionRegistrationDO CreateActionRegistrationDO()
+        {
+            var curActionDO = new ActionRegistrationDO
+            {
+                Id = 1,
+                ActionType = "Type1",
+                ParentPluginRegistration = "AzureSqlServer",
+                Version = "1"
+            };
+            return curActionDO;
         }
     }
 }

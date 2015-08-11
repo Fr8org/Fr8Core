@@ -478,6 +478,15 @@ namespace Data.Infrastructure
             }
         }
 
+      private ActionRegistrationRepository _actionRegistrationRepository;
+      public ActionRegistrationRepository ActionRegistrationRepository
+      {
+          get
+          {
+              return _actionRegistrationRepository ?? (_actionRegistrationRepository = new ActionRegistrationRepository(this));
+          }
+      }
+
       private IProcessTemplateRepository _processTemplateRepository;
 
         public IProcessTemplateRepository ProcessTemplateRepository

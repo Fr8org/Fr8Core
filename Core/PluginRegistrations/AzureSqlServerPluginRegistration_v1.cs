@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using Data.Entities;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace Core.PluginRegistrations
 {
-    public class AzureSqlPluginRegistration : BasePluginRegistration
+    public class AzureSqlServerPluginRegistration_v1 : BasePluginRegistration
     {
         public const string BaseUrlKey = "AzureSql.BaseUrl";
 
@@ -26,5 +27,11 @@ namespace Core.PluginRegistrations
                 };
             }
         }
+
+        public string GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+        {
+            return "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+        }
+
     }
 }
