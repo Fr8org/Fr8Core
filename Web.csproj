@@ -488,46 +488,43 @@
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="Scripts\tests\integration\processtemplatecontroller_tests.js" />
+    <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
+    <TypeScriptCompile Include="Scripts\tests\mocks\TypedScopeFactory.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplatesController.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ActionUpdatedEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\MessageType.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\RenderEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\CancelledEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\ActionTypeSelectedEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\UpdateActionEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\ActionUpdatedEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\RenderEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\MessageType.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\RenderEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\UpdateActionEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\TemplateSelectedEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\ActionSelectedEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\Messages.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\MessageType.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\QueryBuilderWidget.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateController.ts" />
-    <Content Include="Scripts\app\directives\directives.js" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneConfigureActionScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\IPaneDefineCriteriaScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneWorkflowDesignerScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplatesScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\CriteriaSelectedEventArgs.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\MessageType.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Action.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Criteria.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Field.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\LocalIdentityGenerator.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateVM.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ProcessTemplateService.ts" />
@@ -3637,14 +3634,14 @@
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="UnauthorizedRequest.html" />
     <Compile Include="ViewModels\EventWindowVM.cs" />
-    <Content Include="Views\AngularTemplate\ProcessTemplate.cshtml" />
+    <Content Include="Views\AngularTemplate\ProcessTemplateForm.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\AngularTemplate\PaneDefineCriteria.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
-    <None Include="Views\AngularTemplate\ProcessTemplates.cshtml" />
+    <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -3734,8 +3731,11 @@
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />
+    <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular.d.ts" />
+    <TypeScriptCompile Include="Scripts\typings\jasmine\jasmine.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\Metronic.d.ts" />
     <TypeScriptCompile Include="Scripts\app\_all.ts" />
@@ -3750,7 +3750,6 @@
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
-    <Folder Include="Scripts\tests\unit\" />
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
@@ -3760,8 +3759,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
-      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
+      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
       <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="Core\Core.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="Daemons\Daemons.csproj">
       <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
@@ -3770,10 +3773,6 @@
     <ProjectReference Include="Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="Core\Core.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
@@ -3790,6 +3789,22 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|Any CPU'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>None</TypeScriptModuleKind>
+    <TypeScriptRemoveComments>True</TypeScriptRemoveComments>
+    <TypeScriptOutFile>
+    </TypeScriptOutFile>
+    <TypeScriptOutDir>
+    </TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>True</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" />

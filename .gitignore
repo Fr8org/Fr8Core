@@ -117,6 +117,14 @@ csx
 # Windows Store app package directory
 AppPackages/
 
+# Ignore compilation results of TypeScript 
+Scripts/app/**/*.js
+Scripts/tests/mocks/*.js
+Scripts/tests/unit/*.js
+
+*.map.js
+ 
+
 # Others
 sql/
 *.Cache

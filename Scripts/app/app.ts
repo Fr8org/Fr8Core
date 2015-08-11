@@ -1,6 +1,5 @@
-/// <reference path="_all.ts" />
-
-
+/// <reference path="../typings/tsd.d.ts" />
+/// <reference path="../typings/metronic.d.ts" />
 var app = angular.module("app", [
     "ui.router",
     "ui.bootstrap",
@@ -56,9 +55,7 @@ app.controller('HeaderController', ['$scope', function ($scope) {
 
 /* Setup Layout Part - Sidebar */
 app.controller('PageHeadController', ['$scope', function ($scope) {
-    $scope.$on('$includeContentLoaded', function () {
-        Demo.init(); // init theme panel
-    });
+
 }]);
 
 /* Setup Layout Part - Footer */
@@ -69,7 +66,7 @@ app.controller('FooterController', ['$scope', function ($scope) {
 }]);
 
 /* Setup Rounting For All Pages */
-app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider) {
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/processes");
@@ -79,14 +76,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider, $u
     // Process Template list
         .state('processTemplates', {
             url: "/processes",
-            templateUrl: "/AngularTemplate/ProcessTemplates",
+            templateUrl: "/AngularTemplate/ProcessTemplateList",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
         })
 
     // Process Template form
         .state('processTemplate', {
             url: "/processes/{id}",
-            templateUrl: "/AngularTemplate/ProcessTemplate",
+            templateUrl: "/AngularTemplate/ProcessTemplateForm",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
 
