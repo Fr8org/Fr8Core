@@ -119,6 +119,9 @@ AppPackages/
 
 # Ignore compilation results of TypeScript 
 Scripts/app/**/*.js
+Scripts/tests/mocks/*.js
+Scripts/tests/unit/*.js
+
 *.map.js
  
 
