@@ -1,61 +1,83 @@
 ﻿/// <reference path="../../_all.ts" />
 /// <reference path="../../../typings/angularjs/angular.d.ts"/>
-
+/// <reference path="../../../typings/underscore/underscore.d.ts" />
 
 module dockyard.directives.PaneFieldMapping {
     'use strict';
 
+    export enum MessageType {
+        PaneConfigureMapping_ActionUpdated,
+        PaneConfigureMapping_Render,
+        PaneConfigureMapping_Hide,
+        PaneConfigureMapping_UpdateAction
+    }
+
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneFieldMapping implements ng.IDirective {
-        public link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public templateUrl = '/Views/AngularTemplate/PaneFieldParamMapper.html';
-        public restrict = 'E';
+        public templateUrl = "/Views/AngularTemplate/PaneFieldParamMapper.html";
+        public restrict = "E";
+
         public scope = {
             actionId: "@",
             mode: "@",
             mappedValue: "="
         };
-        public controller = ['$scope', '$http', ($scope, $http) => {
 
-            var transform = (map) => {
+        public controller = ["$scope", "$resource", "urlPrefix", ($scope, $resource, urlPrefix) => {
 
+            var mappedValue = <any>{
+                Map: [
+                ]
+            };
+
+            $scope.mappedValue = mappedValue;
+            var transform = () => {
+                mappedValue.Map = [];
+                var includeOnly = ['Id', 'Name', 'type'];
+
+                $scope.toBeMappedFrom.forEach((current) => {
+                    mappedValue.Map.push({
+                        from: _.pick(current, includeOnly), to: _.pick(current.mappedTo, includeOnly)
+                    });
+                });
             };
 
             function init() {
+              
+
                 var loadedActions = false;
                 var loadedFields = false;
-                var urlPrefix = '/apimock';
-                var mappedValue = {};
                 $scope.mappedValue = mappedValue;
 
-                $http.get(urlPrefix + '/actionparams')
-                    .then((response) => {
-                        loadedActions = true;
-                        if ($scope.mode === 'param') {
-                            $scope.toBeMappedTo = response.data;
-                            $scope.HeadingRight = "Document Fields";
-                            $scope.HeadingLeft = "Action Params";
-                            return;
-                        }
-                        $scope.toBeMappedFrom = response.data;
-                        $scope.HeadingLeft = "Document Fields";
-                        $scope.HeadingRight = "Action Params";
+                var returnedParams = $resource(urlPrefix + "/actionparams").query(() => {
+                    loadedActions = true;
+                    returnedParams.forEach((actionParam) => {
+                        actionParam.type = "actionparam";
+                    });
+                    if ($scope.mode === "param") {
+                        $scope.toBeMappedTo = returnedParams;
+                        $scope.HeadingRight = "Document Fields";
+                        $scope.HeadingLeft = "Action Params";
                         return;
+                    }
+                    $scope.toBeMappedFrom = returnedParams;
+                    $scope.HeadingLeft = "Document Fields";
+                    $scope.HeadingRight = "Action Params";
+                    return;
+                });
 
+                var docFields = $resource(urlPrefix + "/actionparams").query(() => {
+                    loadedFields = true;
+                    docFields.forEach((docField) => {
+                        docField.type = "docusignfield";
                     });
-
-                $http.get(urlPrefix + '/documentfields')
-                    .then((response) => {
-
-                        loadedFields = true;
-                        if ($scope.mode === 'param') {
-                            $scope.toBeMappedFrom = response.data;
-                            return;
-                        }
-                        $scope.toBeMappedTo = response.data;
-                    });
-
+                    if ($scope.mode === "param") {
+                        $scope.toBeMappedFrom = docFields;
+                        return;
+                    }
+                    $scope.toBeMappedTo = docFields;
+                });
 
                 $scope.doneLoading = () => loadedActions && loadedFields;
 
@@ -65,55 +87,63 @@ module dockyard.directives.PaneFieldMapping {
                     }
                     return false;
                 }
+
+                $scope.uiDropDownChanged = () => {
+                    transform();
+                };
+
             }
 
-            $scope.mapChanged = () => {
-                transform($scope.toBeMappedFrom);
-                //console.log($scope.toBeMappedFrom);
+            var onRender = () => {
+                init();
+                transform();
+            }
+
+            var onHide = () => {
+                $scope.doneLoading = () => { return false }
             };
 
+
+            var onUpdate = () => { };
 
             init();
 
+            $scope.$on(MessageType[MessageType.PaneConfigureMapping_Render], onRender);
+            $scope.$on(MessageType[MessageType.PaneConfigureMapping_Hide], onHide);
+            $scope.$on(MessageType[MessageType.PaneConfigureMapping_UpdateAction], onUpdate);
 
         }];
 
-        public static factory() {
-            var directive = () => {
-                return new PaneFieldMapping();
-
-            };
-
-            return directive;
-        }
+        public static factory = () => new PaneFieldMapping();
     }
+
     app.run([
-        '$httpBackend', httpBackend => {
+        "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
 
             var actions = [
-                { Name: 'Action Param1', Id: 11 },
+                { Name: "Action Param1", Id: 11 },
                 { Name: 'Action Param2', Id: 12 },
                 { Name: 'Action Param3', Id: 13 },
                 { Name: 'Action Param4', Id: 14 }
             ];
 
             var documentFields = [
-                { Name: 'Field1', Id: 21  },
-                { Name: 'Field2', Id: 22  },
-                { Name: 'Field3', Id: 23  },
-                { Name: 'Field4', Id: 24  },
-                { Name: 'Field5', Id: 25  },
-                { Name: 'Field6', Id: 26  }
+                { Name: "Field1", Id: 21 },
+                { Name: "Field2", Id: 22 },
+                { Name: "Field3", Id: 23 },
+                { Name: "Field4", Id: 24 },
+                { Name: "Field5", Id: 25 },
+                { Name: "Field6", Id: 26 }
             ];
 
             httpBackend
-                .whenGET('/apimock/actionparams')
+                .whenGET(urlPrefix + "/actionparams")
                 .respond(actions);
 
             httpBackend
-                .whenGET('/apimock/documentfields')
+                .whenGET(urlPrefix + "/documentfields")
                 .respond(documentFields);
         }
     ]);
-    app.directive('paneFieldParamMapper', PaneFieldMapping.factory());
+    app.directive("paneFieldParamMapper", <any>PaneFieldMapping.factory);
 }

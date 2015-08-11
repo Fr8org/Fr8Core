@@ -3745,6 +3745,7 @@
     <TypeScriptCompile Include="Scripts\typings\tsd.d.ts" />
     <None Include="Views\JsTests\tests.cshtml" />
     <Content Include="Views\Shared\_JsTestsLayout.cshtml" />
+    <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

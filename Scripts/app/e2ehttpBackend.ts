@@ -1,10 +1,15 @@
-﻿app.run([
+﻿app.constant('urlPrefix', '/apimocks');
+//app.constant('urlPrefix', '/api');
+app.run([
     '$httpBackend', httpBackend => {
-        httpBackend.whenGET(/^\/AngularTemplate\//).passThrough();
-        httpBackend.whenGET(/^\/Views\//).passThrough();
-        httpBackend.whenGET(/^\/api\//).passThrough();
-        httpBackend.whenPOST(/^\/api\//).passThrough();
-        httpBackend.whenPUT(/^\/api\//).passThrough();
-        httpBackend.whenDELETE(/^\/api\//).passThrough();
+        var validation = (url) => {
+            return url.indexOf("/apimocks") === -1;
+        }
+        httpBackend.whenGET(validation).passThrough();
+        httpBackend.whenGET(validation).passThrough();
+        httpBackend.whenGET(validation).passThrough();
+        httpBackend.whenPOST(validation).passThrough();
+        httpBackend.whenPUT(validation).passThrough();
+        httpBackend.whenDELETE(validation).passThrough();
     }
 ]);
