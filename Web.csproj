@@ -313,10 +313,10 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MvcHandleErrorAttribute.cs" />
-    <Compile Include="ViewModels\ActionVMBase.cs" />
-    <Compile Include="ViewModels\ActionListVM.cs" />
-    <Compile Include="ViewModels\ActionVM.cs" />
-    <Compile Include="ViewModels\AutoMapper\ProcessTemplateDOToFullProcessTemplateDTO.cs" />
+    <Compile Include="ViewModels\ActionDTOBase.cs" />
+    <Compile Include="ViewModels\ActionListDTO.cs" />
+    <Compile Include="ViewModels\ActionDTO.cs" />
+    <Compile Include="ViewModels\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />

@@ -10,7 +10,7 @@ using Data.States;
 
 namespace Core.Services
 {
-    public class ProcessNodeTemplate : IProcessNodeTemplate, IUnitOfWorkAwareComponent
+    public class ProcessNodeTemplate : IProcessNodeTemplate
     {
         /// <summary>
         /// Create ProcessNodeTemplate entity with required children criteria entity.
@@ -22,26 +22,30 @@ namespace Core.Services
                 throw new Exception("Creating logic was passed a null ProcessNodeTemplateDO");
             }
 
-            var criteria = new CriteriaDO();
+            var criteria = new CriteriaDO()
+            {
+                ExecutionType = CriteriaExecutionType.WithoutConditions
+            };
             uow.CriteriaRepository.Add(criteria);
+
+            processNodeTemplate.Criteria = criteria;
+            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
 
             var immediateActionList = new ActionListDO()
             {
                 Name = "Immediate",
-                ActionListType = ActionListType.Immediate
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = processNodeTemplate.Id
             };
+            uow.ActionListRepository.Add(immediateActionList);
 
             var scheduledActionList = new ActionListDO()
             {
                 Name = "Scheduled",
-                ActionListType = ActionListType.Scheduled
+                ActionListType = ActionListType.Scheduled,
+                ProcessNodeTemplateID = processNodeTemplate.Id
             };
-
-            processNodeTemplate.Criteria = criteria;
-            processNodeTemplate.ActionLists.Add(immediateActionList);
-            processNodeTemplate.ActionLists.Add(scheduledActionList);
-
-            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
+            uow.ActionListRepository.Add(scheduledActionList);
         }
 
         /// <summary>
@@ -69,18 +73,36 @@ namespace Core.Services
         /// </summary>
         public void Delete(IUnitOfWork uow, int id)
         {
-            var processNodeTemplate = uow.ProcessNodeTemplateRepository
-                .GetQuery()
-                .Include(x => x.Criteria)
-                .SingleOrDefault(x => x.Id == id);
+            var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(id);
 
             if (processNodeTemplate == null)
             {
                 throw new Exception(string.Format("Unable to find ProcessNodeTemplate by id = {0}", id));
             }
 
+            // Remove all actions.
+            uow.ActionRepository
+                .GetQuery()
+                .Where(x => x.ActionList.ProcessNodeTemplate.Id == id)
+                .ToList()
+                .ForEach(x => uow.ActionRepository.Remove(x));
+
+            uow.SaveChanges();
+
+            // Remove all action-lists.
+            uow.ActionListRepository
+                .GetQuery()
+                .Where(x => x.ProcessNodeTemplateID == id)
+                .ToList()
+                .ForEach(x => uow.ActionListRepository.Remove(x));
+
+            uow.SaveChanges();
+
+            // Remove Criteria and ProcessNoteTemplate
             uow.CriteriaRepository.Remove(processNodeTemplate.Criteria);
             uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
+
+            uow.SaveChanges();
         }
     }
 }

@@ -116,9 +116,9 @@
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
-    <Compile Include="Migrations\201508110730366_Criteria_Migration.cs" />
-    <Compile Include="Migrations\201508110730366_Criteria_Migration.Designer.cs">
-      <DependentUpon>201508110730366_Criteria_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
+    <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
+      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -143,8 +143,6 @@
     <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
-    <Compile Include="Interfaces\IUnitOfWorkAwareComponent.cs" />
-    <Compile Include="Infrastructure\StructureMap\StructureMapDataExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
@@ -480,8 +478,8 @@
     <EmbeddedResource Include="Migrations\201508110145235_merge.resx">
       <DependentUpon>201508110145235_merge.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508110730366_Criteria_Migration.resx">
-      <DependentUpon>201508110730366_Criteria_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508110909400_Criteria_Migration.resx">
+      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

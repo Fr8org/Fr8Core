@@ -5,30 +5,30 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
+using Microsoft.Ajax.Utilities;
+using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Microsoft.Ajax.Utilities;
-using StructureMap;
 using Web.Controllers.Helpers;
 using Web.ViewModels;
-using System.Web.Http.Description;
+using Web.ViewModels.AutoMapper;
 
 namespace Web.Controllers
 {
     [Authorize]
     [RoutePrefix("api/processTemplate")]
-    public class ProcessTemplateController : ApiController, IUnitOfWorkAwareComponent
+    public class ProcessTemplateController : ApiController
     {
         private readonly IProcessTemplate _processTemplate;
 
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IProcessTemplate>())
         {
-            
         }
 
         public ProcessTemplateController(IProcessTemplate processTemplate)
@@ -41,38 +41,14 @@ namespace Web.Controllers
         [HttpGet]
         public IHttpActionResult GetFullProcessTemplate(int id)
         {
-            return this.InUnitOfWork(uow =>
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = uow.ProcessTemplateRepository
-                    .GetQuery()
-                    .SingleOrDefault(x => x.Id == id);
-
-                if (processTemplate == null)
-                {
-                    return Ok<FullProcessTemplateDTO>(null);
-                }
-
-                var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
-                    .GetQuery()
-                    .Include(x => x.Criteria)
-                    .Where(x => x.ParentTemplateId == id)
-                    .OrderBy(x => x.Id)
-                    .AsEnumerable()
-                    .Select(x => new FullProcessNodeTemplateDTO()
-                    {
-                        ProcessNodeTemplate = Mapper.Map<ProcessNodeTemplateDTO>(x),
-                        Criteria = Mapper.Map<CriteriaDTO>(x.Criteria)
-                    })
-                    .ToList();
-
-                var result = new FullProcessTemplateDTO()
-                {
-                    ProcessTemplate = Mapper.Map<ProcessTemplateDTO>(processTemplate),
-                    ProcessNodeTemplates = processNodeTemplateDTOList
-                };
+                var processTemplate = uow.ProcessTemplateRepository.GetByKey(id);
+                var result = Mapper.Map<FullProcessTemplateDTO>(processTemplate,
+                    opts => { opts.Items[ProcessTemplateDOFullConverter.UnitOfWork_OptionsKey] = uow; });
 
                 return Ok(result);
-            });
+            };
         }
 
         // GET api/<controller>
@@ -117,7 +93,5 @@ namespace Web.Controllers
             _processTemplate.Delete(id);
             return Ok(id);
         }
-
-        
     }
 }

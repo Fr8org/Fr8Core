@@ -1,6 +1,6 @@
 ﻿namespace Web.ViewModels
 {
-	public class ActionVMBase
+	public class ActionDTOBase
 	{
 		public int Id{ get; set; }
 

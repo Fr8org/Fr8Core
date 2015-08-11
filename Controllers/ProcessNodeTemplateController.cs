@@ -18,14 +18,34 @@ namespace Web.Controllers
     /// ProcessNodeTemplate web api controller to handle CRUD operations from frontend.
     /// </summary>
     [RoutePrefix("api/processNodeTemplate")]
-    public class ProcessNodeTemplateController : ApiController, IUnitOfWorkAwareComponent
+    public class ProcessNodeTemplateController : ApiController
     {
         /// <summary>
         /// Instance of ProcessNodeTemplate service.
         /// </summary>
-        public IProcessNodeTemplate ProcessNodeTemplateService
+        private readonly IProcessNodeTemplate _processNodeTemplate;
+
+        public ProcessNodeTemplateController()
         {
-            get { return ObjectFactory.GetInstance<IProcessNodeTemplate>(); }
+            _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
+        }
+
+        /// <summary>
+        /// Retrieve criteria by ProcessNodeTemplate.Id.
+        /// </summary>
+        /// <param name="id">ProcessNodeTemplate.id.</param>
+        [ResponseType(typeof(CriteriaDTO))]
+        [Route("criteria")]
+        [HttpGet]
+        public IHttpActionResult GetByProcessNodeTemplateId(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(id);
+                var curCriteria = curProcessNodeTemplate.Criteria;
+
+                return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
+            };
         }
 
         /// <summary>
@@ -35,11 +55,12 @@ namespace Web.Controllers
         [ResponseType(typeof(ProcessNodeTemplateDTO))]
         public IHttpActionResult Get(int id)
         {
-            return this.InUnitOfWork(uow =>
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(id);
+
                 return Ok(Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate));
-            });
+            };
         }
 
         /// <summary>
@@ -48,17 +69,17 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="dto">ProcessNodeTemplate data transfer object.</param>
         /// <returns>Created ProcessNodeTemplate with global id.</returns>
-        [ResponseType(typeof(ProcessNodeTemplateDTO))]
+        [ResponseType(typeof(int))]
         public IHttpActionResult Post(ProcessNodeTemplateDTO dto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processNodeTemplate = Mapper.Map<ProcessNodeTemplateDO>(dto);
-                ProcessNodeTemplateService.Create(uow, processNodeTemplate);
+                _processNodeTemplate.Create(uow, processNodeTemplate);
 
                 uow.SaveChanges();
 
-                return Ok(Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate));
+                return Ok(processNodeTemplate.Id);
             }
         }
 
@@ -69,12 +90,13 @@ namespace Web.Controllers
         /// <param name="dto">ProcessNodeTemplate data transfer object.</param>
         /// <returns>Updated ProcessNodeTemplate.</returns>
         [ResponseType(typeof(ProcessNodeTemplateDTO))]
-        public IHttpActionResult Put(ProcessNodeTemplateDTO dto)
+        [HttpPut]
+        public IHttpActionResult Update(ProcessNodeTemplateDTO dto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processNodeTemplate = Mapper.Map<ProcessNodeTemplateDO>(dto);
-                ProcessNodeTemplateService.Update(uow, processNodeTemplate);
+                _processNodeTemplate.Update(uow, processNodeTemplate);
 
                 uow.SaveChanges();
 
@@ -92,7 +114,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ProcessNodeTemplateService.Delete(uow, id);
+                _processNodeTemplate.Delete(uow, id);
 
                 return Ok();
             }

@@ -7,6 +7,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using StructureMap;
 using Web.ViewModels;
 
 namespace Web.Controllers
@@ -15,24 +16,8 @@ namespace Web.Controllers
     /// Critera web api controller to handle operations from frontend.
     /// </summary>
     [RoutePrefix("api/criteria")]
-    public class CriteriaController : ApiController, IUnitOfWorkAwareComponent
+    public class CriteriaController : ApiController
     {
-        /// <summary>
-        /// Retrieve criteria by ProcessNodeTemplate.Id.
-        /// </summary>
-        /// <param name="id">ProcessNodeTemplate.id.</param>
-        [ResponseType(typeof(CriteriaDTO))]
-        public IHttpActionResult GetByProcessNodeTemplateId(int id)
-        {
-            return this.InUnitOfWork(uow =>
-            {
-                var processNodeTemplateRepository = uow.ProcessNodeTemplateRepository.GetByKey(id);
-                var criteria = processNodeTemplateRepository.Criteria;
-
-                return Ok(Mapper.Map<CriteriaDTO>(criteria));
-            });
-        }
-
         /// <summary>
         /// Recieve criteria with global id, update criteria,
         /// and return updated criteria.
@@ -40,23 +25,25 @@ namespace Web.Controllers
         /// <param name="dto">Criteria data transfer object.</param>
         /// <returns>Updated criteria.</returns>
         [ResponseType(typeof(CriteriaDTO))]
-        public IHttpActionResult Put(CriteriaDTO dto)
+        [HttpPut]
+        public IHttpActionResult Update(CriteriaDTO dto)
         {
-            return this.InUnitOfWork(uow =>
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                CriteriaDO criteria = null;
+                CriteriaDO curCriteria = null;
 
-                criteria = uow.CriteriaRepository.GetByKey(dto.Id);
-                if (criteria == null)
+                curCriteria = uow.CriteriaRepository.GetByKey(dto.Id);
+                if (curCriteria == null)
                 {
                     throw new Exception(string.Format("Unable to find criteria by id = {0}", dto.Id));
                 }
-            
-                Mapper.Map<CriteriaDTO, CriteriaDO>(dto, criteria);
 
-                var resultDTO = Mapper.Map<CriteriaDTO>(criteria);
-                return Ok(resultDTO);
-            });
+                Mapper.Map<CriteriaDTO, CriteriaDO>(dto, curCriteria);
+
+                uow.SaveChanges();
+
+                return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
+            };
         }
     }
 }

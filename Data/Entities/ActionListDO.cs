@@ -17,6 +17,11 @@ namespace Data.Entities
 
 		public string Name{ get; set; }
 
+        [ForeignKey("ProcessNodeTemplate")]
+        [Column("ProcessNodeTemplateDO_Id")]
+        public int? ProcessNodeTemplateID { get; set; }
+        public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
+
 		[ForeignKey("Template")]
 		public int? TemplateId{ get; set; }
 		public virtual TemplateDO Template{ get; set; }
@@ -36,9 +41,10 @@ namespace Data.Entities
         [Required]
         [ForeignKey("ActionListTypeTemplate")]
         public int ActionListType { get; set; }
-
         public virtual _ActionListTypeTemplate ActionListTypeTemplate { get; set; }
 
+        [ForeignKey("CurrentAction")]
+        public int? CurrentActionID { get; set; }
         public virtual ActionDO CurrentAction  { get; set; }
 	}
 }

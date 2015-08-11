@@ -20,6 +20,22 @@ namespace Web.ViewModels
     }
 
     /// <summary>
+    /// ActionList DTO that contains full graph of Action objects.
+    /// </summary>
+    public class FullActionListDTO
+    {
+        /// <summary>
+        /// DTO for ActionList entity.
+        /// </summary>
+        public ActionListDTO ActionList { get; set; }
+
+        /// <summary>
+        /// List of Action DTOs.
+        /// </summary>
+        public List<ActionDTO> Actions { get; set; }
+    }
+
+    /// <summary>
     /// ProcessNodeTemplate DTO that contains full graph of other DTO objects.
     /// </summary>
     public class FullProcessNodeTemplateDTO
@@ -33,5 +49,10 @@ namespace Web.ViewModels
         /// DTO for Criteria entity.
         /// </summary>
         public CriteriaDTO Criteria { get; set; }
+
+        /// <summary>
+        /// List of ActionList DTOs.
+        /// </summary>
+        public List<FullActionListDTO> ActionLists { get; set; }
     }
 }
