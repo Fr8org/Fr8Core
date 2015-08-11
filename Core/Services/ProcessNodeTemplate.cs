@@ -14,58 +14,60 @@ namespace Core.Services
         /// <summary>
         /// Create ProcessNodeTemplate entity with required children criteria entity.
         /// </summary>
-        public void Create(ProcessNodeTemplateDO processNodeTemplate)
+        public void Create(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate)
         {
-            this.InUnitOfWork(uow =>
+            if (processNodeTemplate == null)
             {
-                var criteria = new CriteriaDO();
-                uow.CriteriaRepository.Add(criteria);
+                throw new Exception("Creating logic was passed a null ProcessNodeTemplateDO");
+            }
 
-                processNodeTemplate.Criteria = criteria;
-                uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
-            });
+            var criteria = new CriteriaDO();
+            uow.CriteriaRepository.Add(criteria);
+
+            var immediateActionList = new ActionListDO();
+            var scheduledActionList = new ActionListDO();
+
+            processNodeTemplate.Criteria = criteria;
+            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
         }
 
         /// <summary>
         /// Update ProcessNodeTemplate entity.
         /// </summary>
-        public void Update(ProcessNodeTemplateDO processNodeTemplate)
+        public void Update(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate)
         {
-            this.InUnitOfWork(uow =>
+            if (processNodeTemplate == null)
             {
-                var attachedEntity = uow.ProcessNodeTemplateRepository.GetByKey(processNodeTemplate.Id);
-                if (processNodeTemplate == null)
-                {
-                    throw new Exception(string.Format("Unable to find criteria by id = {0}", processNodeTemplate.Id));
-                }
+                throw new Exception("Updating logic was passed a null ProcessNodeTemplateDO");
+            }
 
-                attachedEntity.Name = processNodeTemplate.Name;
-                attachedEntity.TransitionKey = processNodeTemplate.TransitionKey;
-            });
+            var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(processNodeTemplate.Id);
+            if (curProcessNodeTemplate == null)
+            {
+                throw new Exception(string.Format("Unable to find criteria by id = {0}", processNodeTemplate.Id));
+            }
+
+            curProcessNodeTemplate.Name = processNodeTemplate.Name;
+            curProcessNodeTemplate.TransitionKey = processNodeTemplate.TransitionKey;
         }
 
         /// <summary>
         /// Remove ProcessNodeTemplate and children entities by id.
         /// </summary>
-        public ProcessNodeTemplateDO Remove(int id)
+        public void Delete(IUnitOfWork uow, int id)
         {
-            return this.InUnitOfWork(uow =>
+            var processNodeTemplate = uow.ProcessNodeTemplateRepository
+                .GetQuery()
+                .Include(x => x.Criteria)
+                .SingleOrDefault(x => x.Id == id);
+
+            if (processNodeTemplate == null)
             {
-                var processNodeTemplate = uow.ProcessNodeTemplateRepository
-                    .GetQuery()
-                    .Include(x => x.Criteria)
-                    .SingleOrDefault(x => x.Id == id);
+                throw new Exception(string.Format("Unable to find ProcessNodeTemplate by id = {0}", id));
+            }
 
-                if (processNodeTemplate == null)
-                {
-                    throw new Exception(string.Format("Unable to find ProcessNodeTemplate by id = {0}", id));
-                }
-
-                uow.CriteriaRepository.Remove(processNodeTemplate.Criteria);
-                uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
-
-                return processNodeTemplate;
-            });
+            uow.CriteriaRepository.Remove(processNodeTemplate.Criteria);
+            uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
         }
     }
 }

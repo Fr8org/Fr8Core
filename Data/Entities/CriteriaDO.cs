@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Data.States.Templates;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,11 +13,15 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        [ForeignKey("ExecutionTypeTemplate")]
+        public int ExecutionType { get; set; }
+
         /// <summary>
         /// Execute when conditions are satisfied,
         /// or execute regardless of conditions.
         /// </summary>
-        public CriteriaExecutionMode ExecutionMode { get; set; }
+        public virtual _CriteriaExecutionTypeTemplate ExecutionTypeTemplate { get; set; }
 
         /// <summary>
         /// Conditions JSON string

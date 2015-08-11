@@ -51,10 +51,15 @@ namespace Web.Controllers
         [ResponseType(typeof(ProcessNodeTemplateDTO))]
         public IHttpActionResult Post(ProcessNodeTemplateDTO dto)
         {
-            var processNodeTemplate = Mapper.Map<ProcessNodeTemplateDO>(dto);
-            ProcessNodeTemplateService.Create(processNodeTemplate);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processNodeTemplate = Mapper.Map<ProcessNodeTemplateDO>(dto);
+                ProcessNodeTemplateService.Create(uow, processNodeTemplate);
 
-            return Ok(Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate));
+                uow.SaveChanges();
+
+                return Ok(Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate));
+            }
         }
 
         /// <summary>
@@ -66,10 +71,15 @@ namespace Web.Controllers
         [ResponseType(typeof(ProcessNodeTemplateDTO))]
         public IHttpActionResult Put(ProcessNodeTemplateDTO dto)
         {
-            var processNodeTemplate = Mapper.Map<ProcessNodeTemplateDO>(dto);
-            ProcessNodeTemplateService.Update(processNodeTemplate);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processNodeTemplate = Mapper.Map<ProcessNodeTemplateDO>(dto);
+                ProcessNodeTemplateService.Update(uow, processNodeTemplate);
 
-            return Ok(Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate));
+                uow.SaveChanges();
+
+                return Ok(Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate));
+            }
         }
 
         /// <summary>
@@ -80,10 +90,12 @@ namespace Web.Controllers
         [ResponseType(typeof(ProcessNodeTemplateDTO))]
         public IHttpActionResult Delete(int id)
         {
-            var processNodeTemplate = ProcessNodeTemplateService.Remove(id);
-            var dto = Mapper.Map<ProcessNodeTemplateDTO>(processNodeTemplate);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ProcessNodeTemplateService.Delete(uow, id);
 
-            return Ok(dto);
+                return Ok();
+            }
         }
     }
 }

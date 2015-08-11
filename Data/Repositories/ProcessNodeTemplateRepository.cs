@@ -8,17 +8,6 @@ namespace Data.Repositories
         internal ProcessNodeTemplateRepository(IUnitOfWork uow)
             : base(uow)
         {
-
-        }
-
-        public override void Add(ProcessNodeTemplateDO entity)
-        {
-            if (System.Diagnostics.Debugger.IsAttached == false)
-            {
-                System.Diagnostics.Debugger.Launch();
-            }
-
-            base.Add(entity);
         }
     }
 

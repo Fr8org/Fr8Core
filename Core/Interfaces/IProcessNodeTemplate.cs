@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data.Entities;
+using Data.Interfaces;
 
 namespace Core.Interfaces
 {
@@ -8,8 +9,8 @@ namespace Core.Interfaces
     /// </summary>
     public interface IProcessNodeTemplate
     {
-        void Create(ProcessNodeTemplateDO processNodeTemplate);
-        void Update(ProcessNodeTemplateDO processNodeTemplate);
-        ProcessNodeTemplateDO Remove(int id);
+        void Create(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate);
+        void Update(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate);
+        void Delete(IUnitOfWork uow, int id);
     }
 }

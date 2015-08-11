@@ -115,7 +115,11 @@
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
-    <Compile Include="Entities\CriteriaExecutionMode.cs" />
+    <Compile Include="Migrations\201508110344382_Criteria_Migration.cs" />
+    <Compile Include="Migrations\201508110344382_Criteria_Migration.Designer.cs">
+      <DependentUpon>201508110344382_Criteria_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
@@ -234,10 +238,6 @@
     <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.Designer.cs">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508100843477_Criteria_Migration.cs" />
-    <Compile Include="Migrations\201508100843477_Criteria_Migration.Designer.cs">
-      <DependentUpon>201508100843477_Criteria_Migration.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -276,6 +276,7 @@
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
@@ -452,8 +453,8 @@
     <EmbeddedResource Include="Migrations\201508061339318_AddSubscriptionAndPlugin.resx">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508100843477_Criteria_Migration.resx">
-      <DependentUpon>201508100843477_Criteria_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508110344382_Criteria_Migration.resx">
+      <DependentUpon>201508110344382_Criteria_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
