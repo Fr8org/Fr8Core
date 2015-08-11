@@ -110,15 +110,17 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
-    <Compile Include="Migrations\201508110344382_Criteria_Migration.cs" />
-    <Compile Include="Migrations\201508110344382_Criteria_Migration.Designer.cs">
-      <DependentUpon>201508110344382_Criteria_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201508110730366_Criteria_Migration.cs" />
+    <Compile Include="Migrations\201508110730366_Criteria_Migration.Designer.cs">
+      <DependentUpon>201508110730366_Criteria_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
+    <Compile Include="Entities\MailerDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
@@ -156,6 +159,7 @@
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
+    <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginRegistrationDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
@@ -238,6 +242,18 @@
     <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.Designer.cs">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508081609195_blank_migration.cs" />
+    <Compile Include="Migrations\201508081609195_blank_migration.Designer.cs">
+      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508081752116_AddMailerDO.cs" />
+    <Compile Include="Migrations\201508081752116_AddMailerDO.Designer.cs">
+      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508110145235_merge.cs" />
+    <Compile Include="Migrations\201508110145235_merge.Designer.cs">
+      <DependentUpon>201508110145235_merge.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -245,6 +261,7 @@
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
+    <Compile Include="Repositories\MailerRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
@@ -276,6 +293,7 @@
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
@@ -453,8 +471,17 @@
     <EmbeddedResource Include="Migrations\201508061339318_AddSubscriptionAndPlugin.resx">
       <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508110344382_Criteria_Migration.resx">
-      <DependentUpon>201508110344382_Criteria_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508081609195_blank_migration.resx">
+      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508081752116_AddMailerDO.resx">
+      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508110145235_merge.resx">
+      <DependentUpon>201508110145235_merge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508110730366_Criteria_Migration.resx">
+      <DependentUpon>201508110730366_Criteria_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

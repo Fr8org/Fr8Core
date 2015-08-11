@@ -282,6 +282,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
             modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventRegistrations");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
+            modelBuilder.Entity<MailerDO>().ToTable("Mailers");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

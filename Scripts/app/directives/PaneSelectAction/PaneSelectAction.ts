@@ -11,63 +11,45 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_ActionTypeSelected
     }
 
-    export class ActionTypeSelectedEventArgs {
-        public actionId: number;
-        public criteriaId: number;
+    export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
         public tempActionId: number;
         public actionTypeId: number;
-        public processTemplateId: number;
+        public actionName: string;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionTypeId: number, processTemplateId: number) {
-            this.actionId = actionId;
-            this.criteriaId = criteriaId;
+        constructor(criteriaId: number, actionId: number, tempActionId: number, actionTypeId: number, actionName: string) {
+            super(criteriaId, actionId);
             this.tempActionId = tempActionId;
             this.actionTypeId = actionTypeId;
-            this.processTemplateId = processTemplateId
+            this.actionName = actionName;
         }
     }
 
-    export class ActionUpdatedEventArgs {
-        public actionId: number;
-        public criteriaId: number;
+    export class ActionUpdatedEventArgs extends ActionEventArgsBase {
         public tempActionId: number;
         public actionName: string;
-        public processTemplateId: number;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionName: string, processTemplateId: number) {
-            this.actionId = actionId;
-            this.criteriaId = criteriaId;
+        constructor(criteriaId: number, actionId: number, tempActionId: number, actionName: string) {
+            super(criteriaId, actionId);
             this.tempActionId = tempActionId;
             this.actionName = actionName;
-            this.processTemplateId = processTemplateId
         }
     }
 
-    export class RenderEventArgs {
-        public criteriaId: number;
-        public actionId: number;
+    export class RenderEventArgs extends ActionEventArgsBase {
         public isTempId: boolean;
-        public processTemplateId: number;
 
-        constructor(criteriaId: number, actionId: number, isTemp: boolean, processTemplateId: number) {
-            this.actionId = actionId;
-            this.criteriaId = criteriaId;
+        constructor(criteriaId: number, actionId: number, isTemp: boolean) {
+            super(criteriaId, actionId);
             this.isTempId = isTemp;
-            this.processTemplateId = processTemplateId
         }
     }
 
-    export class UpdateActionEventArgs {
-        public actionId: number;
-        public criteriaId: number;
+    export class UpdateActionEventArgs extends ActionEventArgsBase {
         public actionTempId: number;
-        public processTemplateId: number;
 
-        constructor(criteriaId: number, actionId: number, actionTempId: number, processTemplateId: number) {
-            this.actionId = actionId;
-            this.criteriaId = criteriaId;
+        constructor(criteriaId: number, actionId: number, actionTempId: number) {
+            super(criteriaId, actionId);
             this.actionTempId = actionTempId;
-            this.processTemplateId = processTemplateId
         }
     }
 
@@ -105,7 +87,7 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.id,
                         $scope.action.tempId,
                         $scope.action.actionTypeId,
-                        0);
+                        $scope.action.name);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
                 }

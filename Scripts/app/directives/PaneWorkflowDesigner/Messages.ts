@@ -15,8 +15,8 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
-        // PaneWorkflowDesigner_UpdateAction,
-        // PaneWorkflowDesigner_UpdateCriteriaName
+        PaneWorkflowDesigner_UpdateAction,
+        PaneWorkflowDesigner_UpdateCriteriaName
     }
 
     export class RenderEventArgs {
@@ -46,6 +46,14 @@ module dockyard.directives.paneWorkflowDesigner {
 
         constructor(criteriaId: number) {
             this.criteriaId = criteriaId;
+        }
+    }
+
+    export class UpdateCriteriaNameEventArgs extends CriteriaEventArgsBase {
+        public criteriaId: number;
+
+        constructor(criteriaId: number) {
+            super(criteriaId);
         }
     }
 
@@ -88,6 +96,17 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class TemplateSelectedEventArgs {
+    }
+
+    export class UpdateActionEventArgs extends ActionEventArgsBase {
+        public actionTempId: number;
+        public actionName: string;
+
+        constructor(criteriaId: number, actionId: number, actionTempId: number, actionName: string) {
+            super(criteriaId, actionId);
+            this.actionTempId = actionTempId;
+            this.actionName = actionName;
+        }
     }
 
     // export class UpdateActionEventArgs {

@@ -6,6 +6,7 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.States;
 
 namespace Core.Services
 {
@@ -24,10 +25,22 @@ namespace Core.Services
             var criteria = new CriteriaDO();
             uow.CriteriaRepository.Add(criteria);
 
-            var immediateActionList = new ActionListDO();
-            var scheduledActionList = new ActionListDO();
+            var immediateActionList = new ActionListDO()
+            {
+                Name = "Immediate",
+                ActionListType = ActionListType.Immediate
+            };
+
+            var scheduledActionList = new ActionListDO()
+            {
+                Name = "Scheduled",
+                ActionListType = ActionListType.Scheduled
+            };
 
             processNodeTemplate.Criteria = criteria;
+            processNodeTemplate.ActionLists.Add(immediateActionList);
+            processNodeTemplate.ActionLists.Add(scheduledActionList);
+
             uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
         }
 

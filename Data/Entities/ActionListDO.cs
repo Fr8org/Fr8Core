@@ -5,34 +5,40 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ActionListDO : BaseDO
-    {
-        public ActionListDO()
-        {
-            this.ActionOrdering = new List<ActionDO>();
-        }
+	public class ActionListDO: BaseDO
+	{
+		public ActionListDO()
+		{
+			Actions = new List<ActionDO>();
+		}
 
-        [Key]
-        public int Id { get; set; }
+		[Key]
+		public int Id{ get; set; }
 
-        public string Name { get; set; }
+		public string Name{ get; set; }
 
-        [ForeignKey("Template")]
-        public int? TemplateId { get; set; }
+		[ForeignKey("Template")]
+		public int? TemplateId{ get; set; }
+		public virtual TemplateDO Template{ get; set; }
 
-        public virtual TemplateDO Template { get; set; }
+		[ForeignKey("Process")]
+		public int? ProcessID{ get; set; }
+		public virtual ProcessDO Process{ get; set; }
 
-        [ForeignKey("Process")]
-        public int? ProcessID { get; set; }
+		[ForeignKey("TriggerEvent")]
+		public int? TriggerEventID{ get; set; }
 
-        public virtual ProcessDO Process { get; set; }
+		public virtual _EventStatusTemplate TriggerEvent{ get; set; }
 
-        [ForeignKey("TriggerEvent")]
-        public int? TriggerEventID { get; set; }
+		[InverseProperty("ActionList")]
+		public virtual List<ActionDO> Actions{ get; set; }
 
-        public virtual _EventStatusTemplate TriggerEvent { get; set; }
+        [Required]
+        [ForeignKey("ActionListTypeTemplate")]
+        public int ActionListType { get; set; }
 
-        [InverseProperty("ActionList")]
-        public List<ActionDO> ActionOrdering { get; set; }
-    }
+        public virtual _ActionListTypeTemplate ActionListTypeTemplate { get; set; }
+
+        public virtual ActionDO CurrentAction  { get; set; }
+	}
 }

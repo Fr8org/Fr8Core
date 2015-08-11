@@ -30,9 +30,9 @@ namespace Data.Entities
         /// </summary>
         public string TransitionKey { get; set; }
 
-        public CriteriaDO Criteria { get; set; }
+        public virtual CriteriaDO Criteria { get; set; }
 
-        public List<ActionListDO> ActionLists { get; set; }
+        public virtual List<ActionListDO> ActionLists { get; set; }
 
         public override string ToString()
         {
