@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Configuration;
-using System.IO;
-using System.Net;
-using NUnit.Framework;
-using StructureMap;
-using Core.ExternalServices.REST;
+using System.Diagnostics;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces;
+using NUnit.Framework;
+using pluginAzureSqlServer;
+using StructureMap;
+using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using pluginAzureSqlServer;
-
 
 namespace pluginAzureSqlServerTests
 {
@@ -84,31 +83,20 @@ namespace pluginAzureSqlServerTests
             var baseUrl = ConfigurationManager.AppSettings[TestServerUrlKey];
 
             // Sending http request.
-            var restCall = ObjectFactory.GetInstance<IRestfullCall>();
-            restCall.Initialize(baseUrl, WriteSqlCommand, Utilities.Method.POST);
-
+            var restCall = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            restCall.BaseUri = new Uri(baseUrl);
+            
             // Composing json data.
-            var json = string.Format(
-                @"{{
-	                ""connectionString"": ""{0}"",
-	                ""provider"": ""System.Data.SqlClient"",
-	                ""tables"": [ 
-		                {{
-			                {1}
-		                }}
-	                ]
-                }}",
-                // We need to escape single back-slash to form a valid json string.
-                _helper.GetConnectionString().Replace("\\", "\\\\"),
-                // Place fixture data into json.
-                _fixtureData.TestCustomerTable1_Json()
-            );
-
-            restCall.AddBody(json, "application/json");
+            var content = new
+            {
+                connectionString = _helper.GetConnectionString().Replace("\\", "\\\\"),
+                provider = "System.Data.SqlClient",
+                tables = new[] {_fixtureData.TestCustomerTable1_Content()}
+            };
 
             // Getting http response.
-            var response = restCall.Execute();
-            System.Diagnostics.Debug.WriteLine(response);            
+            string response = restCall.PostAsync<object, string>(new Uri(WriteSqlCommand), content).Result;
+            Debug.WriteLine(response);            
 
             // Validating correct data in database.
             using (var dbconn = _helper.CreateConnection())

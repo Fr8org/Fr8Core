@@ -32,18 +32,16 @@ namespace UtilitiesTesting.Fixtures
             return @"DROP TABLE [dbo].[Customers]";
         }
 
-        public string TestCustomerTable1_Json()
+        public object TestCustomerTable1_Content()
         {
-            return @"""Customers"": [
-			    {
-			    ""firstName"": ""John"",
-			    ""lastName"": ""Smith""
-			    },
-			    {
-			    ""firstName"": ""Sam"", 
-			    ""lastName"": ""Jones""
-			    },
-			]";
+            return new
+            {
+                Customers = new[]
+                {
+                    new {firstName = "John", lastName = "Smith"},
+                    new {firstName = "Sam", lastName = "Jones"},
+                }
+            };
         }
     }
 }

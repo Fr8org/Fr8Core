@@ -63,6 +63,21 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
             }
         }
 
+        public Uri BaseUri
+        {
+            get { return _innerClient.BaseAddress; }
+            set { _innerClient.BaseAddress = value; }
+        }
+
+        public async Task<TResponse> GetAsync<TResponse>(Uri requestUri)
+        {
+            using (var response = await GetInternalAsync(requestUri))
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<TResponse>(responseContent);
+            }
+        }
+
         public async Task PostAsync<TContent>(Uri requestUri, TContent content)
         {
             using (await PostInternalAsync(requestUri, content))
@@ -74,15 +89,6 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
         public async Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content)
         {
             using (var response = await PostInternalAsync(requestUri, content))
-            {
-                var responseContent = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<TResponse>(responseContent);
-            }
-        }
-
-        public async Task<TResponse> GetAsync<TResponse>(Uri requestUri)
-        {
-            using (var response = await GetInternalAsync(requestUri))
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
                 return JsonConvert.DeserializeObject<TResponse>(responseContent);
