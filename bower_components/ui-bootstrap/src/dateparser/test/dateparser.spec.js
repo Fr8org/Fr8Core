@@ -68,6 +68,16 @@ describe('date parser', function () {
       expectParse('11-08-13 23', 'd-MM-yy HH', new Date(2013, 7, 11, 23));
     });
 
+    it('should work correctly for `hh`', function() {
+      expectParse('22.March.15.22', 'd.MMMM.yy.hh', undefined);
+      expectParse('22.March.15.12', 'd.MMMM.yy.hh', new Date(2015, 2, 22, 12));
+      expectParse('8-March-1991-11', 'd-MMMM-yyyy-HH', new Date(1991, 2, 8, 11));
+      expectParse('February/5/1980/00', 'MMMM/d/yyyy/hh', new Date(1980, 1, 5, 0));
+      expectParse('1955/February/5 03', 'yyyy/MMMM/d hh', new Date(1955, 1, 5, 3));
+      expectParse('11-08-13 23', 'd-MM-yy hh', undefined);
+      expectParse('11-08-13 09', 'd-MM-yy hh', new Date(2013, 7, 11, 9));
+    });
+
     it('should work correctly for `H`', function() {
       expectParse('22.March.15.22', 'd.MMMM.yy.H', new Date(2015, 2, 22, 22));
       expectParse('8-March-1991-11', 'd-MMMM-yyyy-H', new Date(1991, 2, 8, 11));
@@ -125,6 +135,19 @@ describe('date parser', function () {
       expectParse('22.March.15.22:33:4', 'd.MMMM.yy.HH:mm:s', new Date(2015, 2, 22, 22, 33, 4));
       expectParse('22.March.15.22:3:4', 'd.MMMM.yy.HH:m:s', new Date(2015, 2, 22, 22, 3, 4));
     });
+
+    it('should work correctly for `a`', function() {
+      expectParse('22.March.15.10AM', 'd.MMMM.yy.hha', new Date(2015, 2, 22, 10));
+      expectParse('22.March.15.10PM', 'd.MMMM.yy.hha', new Date(2015, 2, 22, 22));
+      expectParse('8-March-1991-11AM', 'd-MMMM-yyyy-hha', new Date(1991, 2, 8, 11));
+      expectParse('8-March-1991-11PM', 'd-MMMM-yyyy-hha', new Date(1991, 2, 8, 23));
+      expectParse('February/5/1980/12AM', 'MMMM/d/yyyy/hha', new Date(1980, 1, 5, 0));
+      expectParse('February/5/1980/12PM', 'MMMM/d/yyyy/hha', new Date(1980, 1, 5, 12));
+      expectParse('1955/February/5 03AM', 'yyyy/MMMM/d hha', new Date(1955, 1, 5, 3));
+      expectParse('1955/February/5 03PM', 'yyyy/MMMM/d hha', new Date(1955, 1, 5, 15));
+      expectParse('11-08-13 09AM', 'd-MM-yy hha', new Date(2013, 7, 11, 9));
+      expectParse('11-08-13 09PM', 'd-MM-yy hha', new Date(2013, 7, 11, 21));
+    });
   });
 
   describe('with predefined formats', function() {
@@ -161,6 +184,14 @@ describe('date parser', function () {
     it('should not work for 31 days for some months', function() {
       expect(dateParser.parse('31-04-2013', 'dd-MM-yyyy')).toBeUndefined();
       expect(dateParser.parse('November 31, 2013', 'MMMM d, yyyy')).toBeUndefined();
+    });
+
+    it('should work when base date is a string', function() {
+      expect(dateParser.parse('01-02-2034', 'dd-MM-yyyy', '05-06-2078')).toEqual(new Date(2034, 1, 1));
+    });
+
+    it('should work when base date is an invalid date', function() {
+      expect(dateParser.parse('30-12-2015', 'dd-MM-yyyy', new Date('foo'))).toEqual(new Date(2015, 11, 30));
     });
   });
 

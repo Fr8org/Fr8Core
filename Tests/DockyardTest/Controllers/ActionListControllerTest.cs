@@ -108,6 +108,7 @@ namespace DockyardTest.Controllers
                 uow.Db.SaveChanges();
 
                 var actionList = new FixtureData(uow).TestActionList();
+                actionList.ActionListType = 1;
                 actionList.CurrentAction = null;
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();

@@ -1,5 +1,6 @@
 ﻿namespace Data.Interfaces.DataTransferObjects
 {
+    // TODO: Do we need this class? There is one in Web project.
     public class ActionDTO
     {
         public int Id { get; set; }

@@ -3,11 +3,11 @@ using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
 {
-    public abstract class BasePluginRegistration : IPluginRegistration
+    public class BasePluginRegistration : IPluginRegistration
     {
-        public abstract string BaseUrl { get; }
+        public string BaseUrl { get; set; }
 
-        public abstract IEnumerable<string> AvailableCommands { get; }
+        public IEnumerable<string> AvailableCommands { get; set; }
 
         public abstract IEnumerable<string> GetAvailableActions();
 
