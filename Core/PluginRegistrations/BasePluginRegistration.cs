@@ -28,6 +28,8 @@ namespace Core.PluginRegistrations
             {
                 return baseUrl;
             }
+
+            set { }
         }
 
         public IEnumerable<ActionRegistrationDO> AvailableCommands
