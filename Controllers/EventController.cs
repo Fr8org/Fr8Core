@@ -11,11 +11,11 @@ namespace Web.Controllers
     /// </summary>
     public class EventController : ApiController
     {
-        private readonly IEvent _eventService;
+        private readonly IEvent _event;
 
         public EventController()
         {
-            _eventService = ObjectFactory.GetInstance<IEvent>();
+            _event = ObjectFactory.GetInstance<IEvent>();
         }
 
         [HttpPost]
@@ -23,7 +23,7 @@ namespace Web.Controllers
         {
             if (submittedEvent.EventType.Equals("Plugin Incident"))
             {
-                _eventService.HandlePluginIncident(submittedEvent.Data);
+                _event.HandlePluginIncident(submittedEvent.Data);
                 return Ok();
             }
 
