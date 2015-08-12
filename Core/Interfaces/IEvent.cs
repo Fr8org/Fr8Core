@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+﻿using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -10,6 +10,6 @@ namespace Core.Interfaces
         /// <summary>
         /// Handles Plugin Incident
         /// </summary>
-        void HandlePluginIncident(HistoryItemDO incident);
+        void HandlePluginIncident(EventData incident);
     }
 }

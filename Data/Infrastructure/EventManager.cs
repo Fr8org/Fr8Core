@@ -3,6 +3,7 @@
 using System;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Infrastructure
 {
@@ -101,7 +102,7 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void PluginIncidentHandler(HistoryItemDO incidentItem);
+        public delegate void PluginIncidentHandler(EventData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
         #region Method
@@ -112,7 +113,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportPluginIncident(HistoryItemDO incidentItem)
+        public static void ReportPluginIncident(EventData incidentItem)
         {
             PluginIncidentHandler handler = PluginIncidentReported;
             if (handler != null) handler(incidentItem);

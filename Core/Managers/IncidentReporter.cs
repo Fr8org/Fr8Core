@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Text;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Core.Services;
 using Data.Exceptions;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Utilities.Logging;
 
@@ -27,7 +27,7 @@ namespace Core.Managers
             EventManager.PluginIncidentReported += LogPluginIncident;
         }
 
-        private void LogPluginIncident(HistoryItemDO incidentItem)
+        private void LogPluginIncident(EventData incidentItem)
         {
             var currentIncident = new IncidentDO
             {

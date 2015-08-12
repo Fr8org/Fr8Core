@@ -1,8 +1,7 @@
 ﻿
-using System;
 using Core.Interfaces;
-using Data.Entities;
 using Data.Infrastructure;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Services
 {
@@ -12,7 +11,7 @@ namespace Core.Services
     public class Event : IEvent
     {
         /// <see cref="IEvent.HandlePluginIncident"/>
-        public void HandlePluginIncident(HistoryItemDO incident)
+        public void HandlePluginIncident(EventData incident)
         {
             EventManager.ReportPluginIncident(incident);
         }

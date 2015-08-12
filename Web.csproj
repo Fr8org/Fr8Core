@@ -320,7 +320,6 @@
     <Compile Include="ViewModels\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
-    <Compile Include="ViewModels\EventDTO.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\FullProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />

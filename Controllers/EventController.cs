@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Web.Http;
 using Core.Interfaces;
-using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
-using Web.ViewModels;
 
 namespace Web.Controllers
 {

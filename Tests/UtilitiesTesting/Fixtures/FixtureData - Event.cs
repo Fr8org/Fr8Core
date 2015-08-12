@@ -1,6 +1,4 @@
-﻿
-using Data.Entities;
-using Web.ViewModels;
+﻿using Data.Interfaces.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -16,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             var eventDto = new EventDTO
             {
                 EventType = "Plugin Incident",
-                Data = new HistoryItemDO { PrimaryCategory = "PrimaryCategory", SecondaryCategory = "SecondaryCategory" }
+                Data = new EventData { PrimaryCategory = "PrimaryCategory", SecondaryCategory = "SecondaryCategory" }
             };
             return eventDto;
         }
