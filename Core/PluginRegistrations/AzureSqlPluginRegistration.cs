@@ -14,7 +14,7 @@ namespace Core.PluginRegistrations
         public AzureSqlPluginRegistration()
             : base(availableActions, baseUrl)
         {
-            
+
         }
     }
 }
