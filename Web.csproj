@@ -494,6 +494,7 @@
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="Scripts\tests\integration\processtemplatecontroller_tests.js" />
+    <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneFieldParamMapper\PaneFieldParamMapper.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />

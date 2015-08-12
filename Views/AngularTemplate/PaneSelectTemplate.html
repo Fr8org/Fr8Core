@@ -1,0 +1,27 @@
+﻿<div class="portlet row light " ng-if="Visible">
+    <div class=" " ng-if="!doneLoading()">
+        <h4 class="bold">{{ loadingMessage }}</h4>
+    </div>
+    <form ng-if="doneLoading()">
+        <div class="form-group">
+            <label for="processName" class="control-label">Process Name</label>
+            <input type="text" class="form-control" id="processName" placeholder="Process Name" ng-model="DataModel.ProcessName">
+        </div>
+        <div class="form-group">
+            <label for="docuSignTemplate" class="control-label">Select Docusign Template</label>
+
+            <select class="form-control" ng-options="dt as dt.Name for dt in docusignTemplates"
+                    ng-model="DataModel.SelectedDocuSignTemplate" id="docuSignTemplate"></select>
+
+        </div>
+        <div class="form-group">
+            <div class="row" ng-repeat="trigger in triggers">
+                <div class="checkbox col-sm-offset-1 col-sm-11 ">
+                    <label>
+                        <input type="checkbox" value="{{trigger.Id}}"> {{trigger.Name}}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,5 +1,4 @@
-﻿// to enable disable, service hitting real backend comment this line and 
-// uncomment second line
+﻿// to disable mocking comment following line, and uncomment the line after that
 app.constant('urlPrefix', '/apimocks');
 //app.constant('urlPrefix', '/api');
 app.run([
@@ -15,3 +14,40 @@ app.run([
         httpBackend.whenDELETE(validation).passThrough();
     }
 ]);
+
+// this is the to delay mock http requests
+// https://mrgamer.github.io/2013/10/19/full-backend-mock-with-angularjs/
+app.factory('delayHTTP', ($q, $timeout) => {
+    return {
+        request(request) {
+            if (request.url.indexOf("/apimocks") === -1)
+                return $q.resolve(request);
+
+            var delayedResponse = $q.defer();
+            $timeout(() => {
+                delayedResponse.resolve(request);
+            }, Math.floor(600 + (Math.random() * 1400)));
+            return delayedResponse.promise;
+        },
+        response(response) {
+            var deferResponse = $q.defer();
+
+            if (response.config.timeout && response.config.timeout.then) {
+                response.config.timeout.then(() => {
+                    deferResponse.reject();
+                });
+            } else {
+                deferResponse.resolve(response);
+            }
+
+            return $timeout(() => {
+                deferResponse.resolve(response);
+                return deferResponse.promise;
+            });
+        }
+    };
+})
+// delay HTTP
+    .config(['$httpProvider', 'urlPrefix', ($httpProvider, urlPrefix) => {
+        $httpProvider.interceptors.push('delayHTTP');
+    }]);
