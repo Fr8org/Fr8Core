@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Text;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Core.Services;
 using Data.Exceptions;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Utilities.Logging;
 
@@ -24,6 +24,40 @@ namespace Core.Managers
             //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
+            EventManager.PluginIncidentReported += LogPluginIncident;
+        }
+
+        private void LogPluginIncident(EventData incidentItem)
+        {
+            var currentIncident = new IncidentDO
+            {
+                ObjectId = incidentItem.ObjectId,
+                CustomerId = incidentItem.CustomerId,
+                Data = incidentItem.Data,
+                PrimaryCategory = incidentItem.PrimaryCategory,
+                SecondaryCategory = incidentItem.SecondaryCategory,
+                Activity = incidentItem.Activity
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(currentIncident);
+                uow.SaveChanges();
+
+                GenerateLogData(currentIncident);
+            }
+        }
+
+        private void GenerateLogData(HistoryItemDO currentIncident)
+        {
+            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                currentIncident.PrimaryCategory,
+                currentIncident.SecondaryCategory,
+                currentIncident.Activity,
+                currentIncident.ObjectId,
+                currentIncident.CustomerId);
+
+            Logger.GetLogger().Info(logData);
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -238,14 +272,7 @@ namespace Core.Managers
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
 
-                string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
-                        incidentDO.PrimaryCategory,
-                        incidentDO.SecondaryCategory,
-                        incidentDO.Activity,
-                        incidentDO.ObjectId,
-                        incidentDO.CustomerId);
-
-                Logger.GetLogger().Info(logData);
+                GenerateLogData(incidentDO);
             }
         }
 

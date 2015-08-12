@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Data.Entities;
+using System.Collections.Generic;
 
 namespace Core.PluginRegistrations
 {
@@ -6,6 +7,8 @@ namespace Core.PluginRegistrations
     {
         string BaseUrl { get; set; }
 
-        IEnumerable<string> AvailableCommands { get; set; }
+        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+
+        void RegisterActions();
     }
 }
