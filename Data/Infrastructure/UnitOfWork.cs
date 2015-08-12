@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
@@ -128,7 +128,7 @@ namespace Data.Infrastructure
         //        return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
         //    }
         //}
-        
+
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
         public CommunicationConfigurationRepository CommunicationConfigurationRepository
@@ -236,7 +236,7 @@ namespace Data.Infrastructure
         //{
         //    get
         //    {
-        //        return _invitationResponseRepository ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
+        //        return _invitationResponseRepositorya ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
         //    }
         //}
 
@@ -271,7 +271,7 @@ namespace Data.Infrastructure
         }
 
         private FactRepository _factRepository;
-        
+
         public FactRepository FactRepository
         {
             get
@@ -279,7 +279,7 @@ namespace Data.Infrastructure
                 return _factRepository ?? (_factRepository = new FactRepository(this));
             }
         }
-     
+
         private UserRepository _userRepository;
 
         public UserRepository UserRepository
@@ -460,8 +460,8 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionRepository _actionRepository;
-	  public ActionRepository ActionRepository
+        private ActionRepository _actionRepository;
+        public ActionRepository ActionRepository
         {
             get
             {
@@ -469,8 +469,17 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionListRepository _actionListRepository;
-	  public ActionListRepository ActionListRepository
+        private ActionRegistrationRepository _actionRegistrationRepository;
+        public ActionRegistrationRepository ActionRegistrationRepository
+        {
+            get
+            {
+                return _actionRegistrationRepository ?? (_actionRegistrationRepository = new ActionRegistrationRepository(this));
+            }
+        }
+
+        private ActionListRepository _actionListRepository;
+        public ActionListRepository ActionListRepository
         {
             get
             {
@@ -478,7 +487,7 @@ namespace Data.Infrastructure
             }
         }
 
-      private IProcessTemplateRepository _processTemplateRepository;
+        private IProcessTemplateRepository _processTemplateRepository;
 
         public IProcessTemplateRepository ProcessTemplateRepository
         {
@@ -488,7 +497,7 @@ namespace Data.Infrastructure
             }
         }
 
-		private ProcessNodeRepository _proeProcessNodeRepository;
+        private ProcessNodeRepository _proeProcessNodeRepository;
 
         public ProcessNodeRepository ProcessNodeRepository
         {
@@ -500,15 +509,15 @@ namespace Data.Infrastructure
 
         private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
 
-	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
-	    {
-		    get
-		    {
-		        return _externalEventRegistrationRepository ?? (_externalEventRegistrationRepository = new ExternalEventRegistrationRepository(this));
-		    }
-	    }
+        public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
+        {
+            get
+            {
+                return _externalEventRegistrationRepository ?? (_externalEventRegistrationRepository = new ExternalEventRegistrationRepository(this));
+            }
+        }
 
-	    private ProcessNodeTemplateRepository _processNodeTemplateRepository;
+        private ProcessNodeTemplateRepository _processNodeTemplateRepository;
 
         public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
         {
@@ -588,7 +597,7 @@ namespace Data.Infrastructure
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
         }
 
-        public bool IsEntityModified<TEntity>(TEntity entity) 
+        public bool IsEntityModified<TEntity>(TEntity entity)
             where TEntity : class
         {
             return _context.Entry(entity).State == EntityState.Modified;

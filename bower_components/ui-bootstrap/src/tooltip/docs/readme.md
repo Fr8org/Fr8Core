@@ -6,7 +6,7 @@ There are three versions of the tooltip: `tooltip`, `tooltip-template`, and
 
 - `tooltip` takes text only and will escape any HTML provided.
 - `tooltip-template` takes text that specifies the location of a template to
-  use for the tooltip.
+  use for the tooltip. Note that this needs to be wrapped in a tag.
 - `tooltip-html` takes
   whatever HTML is provided and displays it in a tooltip; *The user is responsible for ensuring the
   content is safe to put into the DOM!*
@@ -20,7 +20,7 @@ will display:
 - `tooltip-animation`: Should it fade in and out? Defaults to "true".
 - `tooltip-popup-delay`: For how long should the user have to have the mouse
   over the element before the tooltip shows (in milliseconds)? Defaults to 0.
-- `tooltip-trigger`: What should trigger a show of the tooltip?
+- `tooltip-trigger`: What should trigger a show of the tooltip? Supports a space separated list of event names.
   Note: this attribute is no longer observable. See `tooltip-enable`.
 - `tooltip-enable`: Is it enabled? It will enable or disable the configured
   `tooltip-trigger`.
