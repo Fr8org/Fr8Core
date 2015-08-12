@@ -97,11 +97,11 @@ namespace Web
 
         private void RegisterPluginActions()
         {
-            IAction action = ObjectFactory.GetInstance<IAction>();
+            IAction _action = ObjectFactory.GetInstance<IAction>();
             IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
                 .Assembly.GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t, action));
+                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t, _action));
             foreach (var plugin in plugins)
             {
                 plugin.RegisterActions();

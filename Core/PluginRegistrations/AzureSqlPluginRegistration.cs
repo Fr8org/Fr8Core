@@ -8,17 +8,13 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlPluginRegistration : BasePluginRegistration
     {
-        public const string BaseUrlKey = "AzureSql.BaseUrl";
-        private const string _AvailableActions = @"[{ ""ActionType"" : ""Write To Sql Server"" , ""Version"": ""1.3""},
-                                                    {""ActionType"" : ""Write To Sql Server"", ""Version"" : ""1.4""},
-                                                    {""ActionType"" : ""Read From Sql Server"", ""Version"" : ""1.6""}]";
+        public const string baseUrl = "AzureSql.BaseUrl";
+        private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
-        private readonly IAction _action;
-
-        public AzureSqlPluginRegistration(IAction action)
-            : base(action, _AvailableActions, BaseUrlKey)
+        public AzureSqlPluginRegistration()
+            : base(availableActions, baseUrl)
         {
-            this._action = action;
+            
         }
     }
 }

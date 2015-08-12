@@ -1,30 +1,32 @@
 ﻿using Core.Interfaces;
 using Data.Entities;
 using Newtonsoft.Json;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using Utilities;
 
 namespace Core.PluginRegistrations
 {
     public class BasePluginRegistration : IPluginRegistration
     {
-        private readonly string _AvailableActions = "";
-        private readonly string _BaseUrlKey = "";
+        private readonly string availableActions = "";
+        private readonly string baseUrl = "";
         private readonly IAction _action;
 
-        public BasePluginRegistration(IAction action, string availableActions, string baseURLKey)
+        public BasePluginRegistration(string curAvailableActions, string curBaseURL)
         {
-            _AvailableActions = availableActions;
-            _BaseUrlKey = baseURLKey;
-            _action = action;
+            availableActions = curAvailableActions;
+            baseUrl = curBaseURL;
+            _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public string BaseUrl
         {
             get
             {
-                return ConfigurationManager.AppSettings[_BaseUrlKey];
+                return baseUrl;
             }
         }
 
@@ -32,22 +34,17 @@ namespace Core.PluginRegistrations
         {
             get
             {
-                return GetParsedJSON();
+                var result = JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions, new JsonSerializerSettings());
+                return result;
             }
-        }
-
-        protected IEnumerable<ActionRegistrationDO> GetParsedJSON()
-        {
-            var result = JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(_AvailableActions, new JsonSerializerSettings());
-            return result;
         }
 
         public virtual void RegisterActions()
         {
-            IEnumerable<ActionRegistrationDO> actionList = GetParsedJSON();
-            foreach (var item in actionList)
+            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableCommands;
+            foreach (var action in curAvailableCommands)
             {
-                _action.Register(item.ActionType, this.GetType().Name, item.Version);
+                _action.Register(action.ActionType, this.GetType().Name, action.Version);
             }
         }
     }

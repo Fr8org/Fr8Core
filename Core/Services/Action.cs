@@ -39,9 +39,9 @@ namespace Core.Services
                 if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == ActionType 
                     && a.Version == Version && a.ParentPluginRegistration == PluginRegistration).Any())
                 {
-                    ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO() { ActionType = ActionType, 
-                                                                    ParentPluginRegistration = PluginRegistration, 
-                                                                    Version = Version };
+                    ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType, 
+                                                                    PluginRegistration, 
+                                                                    Version);
                     uow.SaveChanges();
                 }
             }
