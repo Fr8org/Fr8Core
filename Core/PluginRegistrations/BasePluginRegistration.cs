@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
 {
-    public class BasePluginRegistration : IPluginRegistration
+    public abstract class BasePluginRegistration : IPluginRegistration
     {
         public string BaseUrl { get; set; }
 

@@ -1,9 +1,5 @@
 ﻿using Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -15,7 +11,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 TemplateId = 1,
-                Name = "list1"
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
             };
             curActionListDO.Actions.Add(TestActionList1());
             curActionListDO.Actions.Add(TestActionList2());
@@ -29,7 +26,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 4,
                 TemplateId = 1,
-                Name = "list1"
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
             };
             return curActionListDO;
         }
