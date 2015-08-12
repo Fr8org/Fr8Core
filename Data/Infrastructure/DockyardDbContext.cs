@@ -367,6 +367,8 @@ namespace Data.Infrastructure
             //    .WithRequired(a => a.Question)
             //    .WillCascadeOnDelete(true);
 
+            modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
+
             base.OnModelCreating(modelBuilder);
         }
 
