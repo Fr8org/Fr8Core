@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Data.Entities;
+using System.Collections.Generic;
 
 namespace Core.PluginRegistrations
 {
@@ -7,5 +8,7 @@ namespace Core.PluginRegistrations
         string BaseUrl { get; }
 
         IEnumerable<string> AvailableCommands { get; }
+
+        string InvokeMethod(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO);
     }
 }

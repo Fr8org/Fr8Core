@@ -30,6 +30,12 @@ namespace Core.Services
 
                 return curActionRegistrationDO;
             }
+
+        }
+
+        public string AssemblePluginRegistrationName(ActionRegistrationDO curActionRegistrationDO)
+        {
+            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionRegistrationDO.ParentPluginRegistration, curActionRegistrationDO.Version);
         }
     }
 }

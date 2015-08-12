@@ -17,7 +17,7 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _service;
-        
+
         public ActionController()
         {
             _service = new Action();
@@ -61,7 +61,9 @@ namespace Web.Controllers
         {
             IActionRegistration _serviceActionRegistration = new ActionRegistration();
             ActionRegistrationDO curActionRegistrationDO = _serviceActionRegistration.GetByKey(curActionRegistrationDOId);
-            return _service.GetConfigurationSettings(curActionRegistrationDO);
+            ActionDTO curActionDTO = new ActionDTO();
+            curActionDTO.ConfigurationSettings = _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
+            return curActionDTO;
         }
     }
 }

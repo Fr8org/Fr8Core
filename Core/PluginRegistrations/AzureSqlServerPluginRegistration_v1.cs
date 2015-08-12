@@ -1,6 +1,8 @@
 ﻿using Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Reflection;
 
 namespace Core.PluginRegistrations
 {
@@ -9,7 +11,7 @@ namespace Core.PluginRegistrations
         public const string BaseUrlKey = "AzureSql.BaseUrl";
 
 
-        public override string BaseUrl
+        public string BaseUrl
         {
             get
             {
@@ -17,7 +19,7 @@ namespace Core.PluginRegistrations
             }
         }
 
-        public override IEnumerable<string> AvailableCommands
+        public IEnumerable<string> AvailableCommands
         {
             get
             {
@@ -32,6 +34,5 @@ namespace Core.PluginRegistrations
         {
             return "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
         }
-
     }
 }

@@ -7,7 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
-using System.Reflection;
+using Core.PluginRegistrations;
 
 namespace Core.Services
 {
@@ -57,31 +57,19 @@ namespace Core.Services
             }
         }
 
-        public ActionDTO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+        public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
-            ActionDTO curActionDTO = new ActionDTO();
+            ActionDO curActionDO = new ActionDO();
+            ActionRegistration curActionRegistration = new ActionRegistration();
+            IPluginRegistration curBasePluginRegistration = new BasePluginRegistration();
             if(curActionRegistrationDO != null)
             {
-                string pluginRegistrationName = PluginRegistrationName(curActionRegistrationDO);
-               curActionDTO.ConfigurationSettings = InvokeMethodForPluginRegistration(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
+                string pluginRegistrationName = curActionRegistration.AssemblePluginRegistrationName(curActionRegistrationDO);
+                curActionDO.ConfigurationSettings = curBasePluginRegistration.InvokeMethod(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
             }
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
-            return curActionDTO;
-        }
-
-        private string PluginRegistrationName(ActionRegistrationDO curActionRegistrationDO)
-        {
-            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionRegistrationDO.ParentPluginRegistration, curActionRegistrationDO.Version);
-        }
-
-        private string InvokeMethodForPluginRegistration(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO)
-        {
-            // Get the Type for the class
-            Type calledType = Type.GetType(typeName);
-            MethodInfo curMethodInfo = calledType.GetMethod(methodName);
-            object curObject = Activator.CreateInstance(calledType);
-            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionRegistrationDO });
+            return curActionDO;
         }
     }
 }

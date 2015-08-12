@@ -108,13 +108,19 @@ namespace DockyardTest.Controllers
         [Category("ActionController.GetConfigurationSettings")]
         public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var curActionRegistration = CreateActionRegistrationDO();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //Add one test action
+                var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
+                //var curActionRegistration = TestActionRegistrationDO1();
            
-            var curActionController = new ActionController();
-            var _service = new Core.Services.Action();
-            int curActionRegistrationId = curActionRegistration.Id;
-            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-            Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+                var curActionController = new ActionController();
+                var _service = new Core.Services.Action();
+                int curActionRegistrationId = curActionRegistration.Id;
+                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+                Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+            }
         }
 
         [Test]
@@ -166,16 +172,5 @@ namespace DockyardTest.Controllers
             };
         }
 
-        public ActionRegistrationDO CreateActionRegistrationDO()
-        {
-            var curActionDO = new ActionRegistrationDO
-            {
-                Id = 1,
-                ActionType = "Type1",
-                ParentPluginRegistration = "AzureSqlServer",
-                Version = "1"
-            };
-            return curActionDO;
-        }
     }
 }

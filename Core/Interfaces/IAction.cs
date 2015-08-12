@@ -10,7 +10,6 @@ namespace Core.Interfaces
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount);
         bool SaveOrUpdateAction(ActionDO currentActionDo);
-
-        ActionDTO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO);
+        ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO);
     }
 }

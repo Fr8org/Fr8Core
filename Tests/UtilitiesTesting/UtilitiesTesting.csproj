@@ -90,6 +90,7 @@
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
+    <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignAccount.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
