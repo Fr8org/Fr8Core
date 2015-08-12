@@ -18,7 +18,6 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
-
         public List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelope)
         {
             List<EnvelopeData> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
