@@ -11,7 +11,7 @@ namespace Data.Migrations
                 "dbo.ProcessNodeTemplates",
                 c => new
                     {
-                        Id = c.Int(nullable: false),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                         ProcessTemplateID = c.Int(),
                         TransitionKey = c.String(),

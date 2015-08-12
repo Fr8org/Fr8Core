@@ -519,7 +519,7 @@ namespace Data.Infrastructure
 
         private ProcessNodeTemplateRepository _processNodeTemplateRepository;
 
-        public ProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
         {
             get
             {
@@ -527,7 +527,18 @@ namespace Data.Infrastructure
             }
         }
 
-        public void Save()
+
+        private CriteriaRepository _criteriaRepository;
+
+        public ICriteriaRepository CriteriaRepository
+        {
+            get
+            {
+                return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
+            }
+        }
+
+	    public void Save()
         {
             _context.SaveChanges();
         }

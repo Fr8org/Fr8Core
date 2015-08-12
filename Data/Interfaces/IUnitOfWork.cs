@@ -51,7 +51,10 @@ namespace Data.Interfaces
         ActionListRepository ActionListRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
-        /// <summary>
+        IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
+        ICriteriaRepository CriteriaRepository { get; }
+
+	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();
@@ -66,7 +69,6 @@ namespace Data.Interfaces
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
         ExternalEventRegistrationRepository ExternalEventRegistrationRepository { get; }
-        ProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
         MailerRepository MailerRepository { get; }
 
         /// <summary>

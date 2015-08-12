@@ -9,30 +9,42 @@ namespace Data.Entities
 	{
 		public ActionListDO()
 		{
-			Actions = new List< ActionDO >();
+			Actions = new List<ActionDO>();
 		}
 
-		[ Key ]
+		[Key]
 		public int Id{ get; set; }
 
 		public string Name{ get; set; }
 
-		[ ForeignKey( "Template" ) ]
+        [ForeignKey("ProcessNodeTemplate")]
+        [Column("ProcessNodeTemplateDO_Id")]
+        public int? ProcessNodeTemplateID { get; set; }
+        public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
+
+		[ForeignKey("Template")]
 		public int? TemplateId{ get; set; }
 		public virtual TemplateDO Template{ get; set; }
 
-		[ ForeignKey( "Process" ) ]
+		[ForeignKey("Process")]
 		public int? ProcessID{ get; set; }
 		public virtual ProcessDO Process{ get; set; }
 
-		[ ForeignKey( "TriggerEvent" ) ]
+		[ForeignKey("TriggerEvent")]
 		public int? TriggerEventID{ get; set; }
 
 		public virtual _EventStatusTemplate TriggerEvent{ get; set; }
 
-		[ InverseProperty( "ActionList" ) ]
-		public List< ActionDO > Actions{ get; set; }
+		[InverseProperty("ActionList")]
+		public virtual List<ActionDO> Actions{ get; set; }
 
-        public ActionDO  CurrentAction  { get; set; }
+        [Required]
+        [ForeignKey("ActionListTypeTemplate")]
+        public int ActionListType { get; set; }
+        public virtual _ActionListTypeTemplate ActionListTypeTemplate { get; set; }
+
+        [ForeignKey("CurrentAction")]
+        public int? CurrentActionID { get; set; }
+        public virtual ActionDO CurrentAction  { get; set; }
 	}
 }
