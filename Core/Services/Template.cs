@@ -6,36 +6,39 @@ using System.Threading.Tasks;
 using Data.Interfaces;
 using Utilities;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 
 namespace Core.Services
 {
     public class Template : ITemplate
     {
-        private readonly Envelope _envelop;
+        private readonly IEnvelope _envelope;
 
         public Template()
         {
-            _envelop = new Envelope();
+            _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
 
-        public List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelop)
+        public List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelope)
         {
-            List<EnvelopeData> items = _envelop.GetEnvelopeData(envelop);
-            List<int> distinctDocIds = items.Select(x => x.DocumentId).Distinct().ToList();
-            if (distinctDocIds.Count == 1) 
+            List<EnvelopeData> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
+            List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
+            if (curLstDistinctDocIds.Count == 1) 
             {
-                return items.Select(x => x.Name).ToList();
+                return curLstEnvelopeData.Select(x => x.Name).ToList();
             }
-            else if (distinctDocIds.Count > 1)
+            else if (curLstDistinctDocIds.Count > 1)
             {
-                List<string> data = new List<string>();
-                foreach (EnvelopeData ed in items)
+                List<string> curLstMappableSourceFields = new List<string>();
+                foreach (EnvelopeData curEnvelopeData in curLstEnvelopeData)
                 {
-                    DocuSign.Integrations.Client.EnvelopeDocuments envelopDocuments = envelop.GetEnvelopeDocumentInfo(ed.EnvelopeId);
-                    List<DocuSign.Integrations.Client.EnvelopeDocument> lstenvelopDocuments = envelopDocuments.envelopeDocuments.ToList().Where(x => Convert.ToInt32(x.documentId) == ed.DocumentId).ToList();
-                    data.Add(ed.Name + " from " + lstenvelopDocuments[0].name);
+                    DocuSign.Integrations.Client.EnvelopeDocuments curEnvelopDocuments = envelope.GetEnvelopeDocumentInfo(curEnvelopeData.EnvelopeId);
+                    List<DocuSign.Integrations.Client.EnvelopeDocument> curLstenvelopDocuments = curEnvelopDocuments
+                                                                                                                    .envelopeDocuments.ToList()
+                                                                                                                    .Where(x => Convert.ToInt32(x.documentId) == curEnvelopeData.DocumentId).ToList();
+                    curLstMappableSourceFields.Add(curEnvelopeData.Name + " from " + curLstenvelopDocuments[0].name);
                 }
-                return data;
+                return curLstMappableSourceFields;
             }
             else 
             {
