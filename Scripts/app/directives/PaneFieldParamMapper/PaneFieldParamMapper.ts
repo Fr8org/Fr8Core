@@ -18,10 +18,10 @@ module dockyard.directives.PaneFieldMapping {
         public templateUrl = "/Views/AngularTemplate/PaneFieldParamMapper.html";
         public restrict = "E";
 
+        // control works in two modes field (fields would be dropdown) or param (would be dropdown)
+        // if nothing is set it works as field mapper
         public scope = {
-            actionId: "@",
-            mode: "@",
-            mappedValue: "="
+            mode: "@"
         };
 
         public controller = ["$scope", "$resource", "urlPrefix", ($scope, $resource, urlPrefix) => {
@@ -31,11 +31,11 @@ module dockyard.directives.PaneFieldMapping {
                 ]
             };
 
-            $scope.mappedValue = mappedValue;
+
             var transform = () => {
                 if (!$scope.toBeMappedFrom)
                     return;
-                if ($scope.toBeMappedFrom.constructor !== Array && $scope.toBeMappedFrom<0)
+                if ($scope.toBeMappedFrom.constructor !== Array && $scope.toBeMappedFrom < 0)
                     return;
                 mappedValue.Map = [];
                 var includeOnly = ['Id', 'Name', 'type'];
@@ -48,7 +48,7 @@ module dockyard.directives.PaneFieldMapping {
             };
 
             function init() {
-              
+
 
                 var loadedActions = false;
                 var loadedFields = false;
@@ -113,7 +113,7 @@ module dockyard.directives.PaneFieldMapping {
 
             var onUpdate = () => { };
 
-            //init();
+            //onRender();
 
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Hide], onHide);
