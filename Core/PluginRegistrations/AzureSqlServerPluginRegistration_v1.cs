@@ -11,7 +11,7 @@ namespace Core.PluginRegistrations
         public const string BaseUrlKey = "AzureSql.BaseUrl";
 
 
-        public string BaseUrl
+        public override string BaseUrl
         {
             get
             {
@@ -19,7 +19,7 @@ namespace Core.PluginRegistrations
             }
         }
 
-        public IEnumerable<string> AvailableCommands
+        public override IEnumerable<string> AvailableCommands
         {
             get
             {

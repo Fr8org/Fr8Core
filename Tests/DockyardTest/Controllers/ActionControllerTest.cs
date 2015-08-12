@@ -10,6 +10,7 @@ using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
 using Core.Services;
+using Core.PluginRegistrations;
 
 namespace DockyardTest.Controllers
 {
@@ -110,12 +111,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Arrange
-                //Add one test action
                 var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
-                //var curActionRegistration = TestActionRegistrationDO1();
-           
-                var curActionController = new ActionController();
                 var _service = new Core.Services.Action();
                 int curActionRegistrationId = curActionRegistration.Id;
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
@@ -129,8 +125,35 @@ namespace DockyardTest.Controllers
         public void ActionController_NULL_ActionRegistration()
         {
             var curAction = new ActionController();
-            Assert.IsNotNull(curAction.GetConfigurationSetting(1));
+            Assert.IsNotNull(curAction.GetConfigurationSettings(1));
         }
+
+        [Test]
+        [Category("BasePluginRegistration.AssembleName")]
+        public void BasePluginRegistration_AssembleName__CanConcatinateParentPluginRegistrationAndVersion()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string assembeledName = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1";
+                Assert.AreEqual(_pluginRegistration.AssembleName(curActionRegistration), assembeledName);
+            }
+        }
+
+        [Test]
+        [Category("BasePluginRegistration.CallPluginRegistrationByString")]
+        public void BasePluginRegistration_CallPluginRegistrationByString__ShouldReturnConfigurationSettingsJson()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+                Assert.AreEqual(_pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionRegistration), curJsonResult);
+            }
+        }
+
 
         /// <summary>
         /// Creates one empty action list

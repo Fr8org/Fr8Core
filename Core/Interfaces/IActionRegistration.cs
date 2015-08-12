@@ -11,5 +11,6 @@ namespace Core.Interfaces
     {
         IEnumerable<ActionRegistrationDO> GetAll();
         ActionRegistrationDO GetByKey(int curActionRegistrationDOId);
+       // string AssemblePluginRegistrationName(ActionRegistrationDO curActionRegistrationDO);
     }
 }

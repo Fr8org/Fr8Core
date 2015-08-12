@@ -9,6 +9,8 @@ namespace Core.PluginRegistrations
 
         IEnumerable<string> AvailableCommands { get; }
 
-        string InvokeMethod(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO);
+        string CallPluginRegistrationByString(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO);
+
+        string AssembleName(ActionRegistrationDO curActionRegistrationDO);
     }
 }

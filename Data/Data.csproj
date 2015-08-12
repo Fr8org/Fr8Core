@@ -283,7 +283,7 @@
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\ProcessTemplateState.cs" />
-    <Compile Include="States\ProcessTemplateTypeState.cs" />
+    <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />

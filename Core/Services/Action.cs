@@ -14,10 +14,14 @@ namespace Core.Services
     public class Action : IAction
     {
         private readonly ISubscription _subscription;
+        //private readonly IActionRegistration _actionRegistration;
+        IPluginRegistration _pluginRegistration;// = new BasePluginRegistration();
 
         public Action()
         {
             _subscription = ObjectFactory.GetInstance<ISubscription>();
+            //_actionRegistration = ObjectFactory.GetInstance<IActionRegistration>();
+            _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -60,12 +64,10 @@ namespace Core.Services
         public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
             ActionDO curActionDO = new ActionDO();
-            ActionRegistration curActionRegistration = new ActionRegistration();
-            IPluginRegistration curBasePluginRegistration = new BasePluginRegistration();
             if(curActionRegistrationDO != null)
             {
-                string pluginRegistrationName = curActionRegistration.AssemblePluginRegistrationName(curActionRegistrationDO);
-                curActionDO.ConfigurationSettings = curBasePluginRegistration.InvokeMethod(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
+                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
+                curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
             }
             else
                 throw new ArgumentNullException("ActionRegistrationDO");

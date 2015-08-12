@@ -56,14 +56,12 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        [Route("api/actions/configuration")]
-        public ActionDTO GetConfigurationSetting(int curActionRegistrationDOId)
+        [Route("actions/configuration")]
+        public string GetConfigurationSettings(int curActionRegistrationId)
         {
-            IActionRegistration _serviceActionRegistration = new ActionRegistration();
-            ActionRegistrationDO curActionRegistrationDO = _serviceActionRegistration.GetByKey(curActionRegistrationDOId);
-            ActionDTO curActionDTO = new ActionDTO();
-            curActionDTO.ConfigurationSettings = _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
-            return curActionDTO;
+            IActionRegistration _actionRegistration = new ActionRegistration();
+            ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
+            return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
         }
     }
 }
