@@ -85,7 +85,7 @@ module dockyard.directives.paneSelectTemplate {
                 $scope.Visible = false;
             };
 
-            onRender();
+            //onRender();
 
             $scope.$on(MessageType[MessageType.PaneSelectTemplate_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], onHide);
