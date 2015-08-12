@@ -13,6 +13,8 @@ using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
 using Utilities.Logging;
+using Core.PluginRegistrations;
+using Core.Interfaces;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -25,6 +27,7 @@ namespace Web
             ConfigureDaemons();
             ConfigureAuth(app);
             ConfigureCommunicationConfigs();
+            RegisterPluginActions();
         }
 
 
@@ -89,6 +92,19 @@ namespace Web
                         }
                     }
                 }
+            }
+        }
+
+        private void RegisterPluginActions()
+        {
+            IAction action = ObjectFactory.GetInstance<IAction>();
+            IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
+                .Assembly.GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
+                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t, action));
+            foreach (var plugin in plugins)
+            {
+                plugin.RegisterActions();
             }
         }
     }

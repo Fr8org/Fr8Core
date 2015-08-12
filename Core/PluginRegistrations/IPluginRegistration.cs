@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using Data.Entities;
+using System.Collections.Generic;
 
 namespace Core.PluginRegistrations
 {
     public interface IPluginRegistration
     {
-        string BaseUrl { get; set; }
+        string BaseUrl { get; }
 
-        IEnumerable<string> AvailableCommands { get; set; }
+        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+
+        void RegisterActions();
     }
 }
