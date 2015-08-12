@@ -14,12 +14,13 @@ describe('carousel', function() {
   }));
   beforeEach(module('template/carousel/carousel.html', 'template/carousel/slide.html'));
 
-  var $rootScope, $compile, $controller, $interval;
-  beforeEach(inject(function(_$rootScope_, _$compile_, _$controller_, _$interval_) {
+  var $rootScope, $compile, $controller, $interval, $templateCache;
+  beforeEach(inject(function(_$rootScope_, _$compile_, _$controller_, _$interval_, _$templateCache_) {
     $rootScope = _$rootScope_;
     $compile = _$compile_;
     $controller = _$controller_;
     $interval = _$interval_;
+    $templateCache = _$templateCache_;
   }));
 
   describe('basics', function() {
@@ -52,6 +53,29 @@ describe('carousel', function() {
         }
       }
     }
+
+    it('should allow overriding of the carousel template', function() {
+      $templateCache.put('foo/bar.html', '<div>foo</div>');
+
+      elm = $compile('<carousel template-url="foo/bar.html"></carousel>')(scope);
+      $rootScope.$digest();
+
+      expect(elm.html()).toBe('foo');
+    });
+
+    it('should allow overriding of the slide template', function() {
+      $templateCache.put('foo/bar.html', '<div class="slide">bar</div>');
+
+      elm = $compile(
+        '<carousel interval="interval" no-transition="true" no-pause="nopause">' +
+          '<slide template-url="foo/bar.html"></slide>' + 
+        '</carousel>'
+      )(scope);
+      $rootScope.$digest();
+
+      var slide = elm.find('.slide');
+      expect(slide.html()).toBe('bar');
+    });
 
     it('should set the selected slide to active = true', function() {
       expect(scope.slides[0].content).toBe('one');
@@ -457,5 +481,22 @@ describe('carousel', function() {
         expect(scope.next.calls.count()).toBe(1);
       });
     });
+
+    it('should be exposed in the template', inject(function($templateCache) {
+      $templateCache.put('template/carousel/carousel.html', '<div>{{carousel.text}}</div>');
+
+      var scope = $rootScope.$new();
+      var elm = $compile('<carousel interval="bar" no-transition="false" no-pause="true"></carousel>')(scope);
+      $rootScope.$digest();
+
+      var ctrl = elm.controller('carousel');
+
+      expect(ctrl).toBeDefined();
+
+      ctrl.text = 'foo';
+      $rootScope.$digest();
+
+      expect(elm.html()).toBe('foo');
+    }));
   });
 });

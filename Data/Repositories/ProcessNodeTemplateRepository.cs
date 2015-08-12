@@ -8,7 +8,6 @@ namespace Data.Repositories
         internal ProcessNodeTemplateRepository(IUnitOfWork uow)
             : base(uow)
         {
-
         }
     }
 

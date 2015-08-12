@@ -77,6 +77,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoMapper\JTokenToStringConverter.cs" />
+    <Compile Include="AutoMapper\StringToJTokenConverter.cs" />
     <Compile Include="ConfigRepository.cs" />
     <Compile Include="DateUtility.cs" />
     <Compile Include="Encryption.cs" />
