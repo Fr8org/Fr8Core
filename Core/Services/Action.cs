@@ -26,14 +26,6 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<TViewModel> GetAllActionLists<TViewModel>()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return uow.ActionListRepository.GetAll().Select(Mapper.Map<TViewModel>);
-            }
-        }
-
         public IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);

@@ -68,6 +68,24 @@ describe('tooltip', function() {
     expect( tooltipScope.placement ).toBe( 'bottom' );
   }));
 
+  it('should update placement dynamically', inject( function( $compile, $timeout ) {
+    scope.place = 'bottom';
+    elm = $compile( angular.element(
+      '<span tooltip="tooltip text" tooltip-placement="{{place}}">Selector Text</span>'
+    ) )( scope );
+    scope.$apply();
+    elmScope = elm.scope();
+    tooltipScope = elmScope.$$childTail;
+
+    elm.trigger( 'mouseenter' );
+    expect( tooltipScope.placement ).toBe( 'bottom' );
+
+    scope.place = 'right';
+    scope.$digest();
+    $timeout.flush();
+    expect(tooltipScope.placement).toBe( 'right' );
+  }));
+
   it('should work inside an ngRepeat', inject( function( $compile ) {
 
     elm = $compile( angular.element(
@@ -242,7 +260,7 @@ describe('tooltip', function() {
     beforeEach(inject(function ($compile) {
       scope.delay='1000';
       elm = $compile(angular.element(
-        '<span tooltip="tooltip text" tooltip-popup-delay="{{delay}}">Selector Text</span>'
+        '<span tooltip="tooltip text" tooltip-popup-delay="{{delay}}" ng-disabled="disabled">Selector Text</span>'
       ))(scope);
       elmScope = elm.scope();
       tooltipScope = elmScope.$$childTail;
@@ -274,6 +292,19 @@ describe('tooltip', function() {
       elm.trigger('mouseenter');
       expect(tooltipScope.isOpen).toBe(true);
     });
+
+    it('should not open if disabled is present', inject(function($timeout) {
+      elm.trigger('mouseenter');
+      expect(tooltipScope.isOpen).toBe(false);
+
+      $timeout.flush(500);
+      expect(tooltipScope.isOpen).toBe(false);
+      elmScope.disabled = true;
+      elmScope.$digest();
+
+      $timeout.flush();
+      expect(tooltipScope.isOpen).toBe(false);
+    }));
 
   });
 
@@ -345,6 +376,27 @@ describe('tooltip', function() {
       // mouseenter trigger is still set
       elm2.trigger('mouseenter');
       expect( tooltipScope2.isOpen ).toBeTruthy();
+    }));
+
+    it( 'should accept multiple triggers based on the map for mapped triggers', inject( function( $compile ) {
+      elmBody = angular.element(
+        '<div><input tooltip="Hello!" tooltip-trigger="focus fakeTriggerAttr" /></div>'
+      );
+      $compile(elmBody)(scope);
+      scope.$apply();
+      elm = elmBody.find('input');
+      elmScope = elm.scope();
+      tooltipScope = elmScope.$$childTail;
+
+      expect( tooltipScope.isOpen ).toBeFalsy();
+      elm.trigger('focus');
+      expect( tooltipScope.isOpen ).toBeTruthy();
+      elm.trigger('blur');
+      expect( tooltipScope.isOpen ).toBeFalsy();
+      elm.trigger('fakeTriggerAttr');
+      expect( tooltipScope.isOpen ).toBeTruthy();
+      elm.trigger('fakeTriggerAttr');
+      expect( tooltipScope.isOpen ).toBeFalsy();
     }));
   });
 
@@ -474,24 +526,26 @@ describe( 'tooltip positioning', function() {
     tooltipScope = elmScope.$$childTail;
   }));
 
-  it( 'should re-position on every digest', inject( function ($timeout) {
+  it( 'should re-position when value changes', inject( function ($timeout) {
     elm.trigger( 'mouseenter' );
 
     scope.$digest();
     $timeout.flush();
     var startingPositionCalls = $position.positionElements.calls.count();
 
+    scope.text = 'New Text';
     scope.$digest();
     $timeout.flush();
+    expect(elm.attr('tooltip')).toBe( 'New Text' );
     expect($position.positionElements.calls.count()).toEqual(startingPositionCalls + 1);
     // Check that positionElements was called with elm
     expect($position.positionElements.calls.argsFor(startingPositionCalls)[0][0])
       .toBe(elm[0]);
 
     scope.$digest();
-    $timeout.flush();
-    expect($position.positionElements.calls.count()).toEqual(startingPositionCalls + 2);
-    expect($position.positionElements.calls.argsFor(startingPositionCalls + 1)[0][0])
+    $timeout.verifyNoPendingTasks();
+    expect($position.positionElements.calls.count()).toEqual(startingPositionCalls + 1);
+    expect($position.positionElements.calls.argsFor(startingPositionCalls)[0][0])
       .toBe(elm[0]);
     scope.$digest();
   }));
