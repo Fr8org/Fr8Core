@@ -116,6 +116,14 @@
     <Compile Include="Entities\ActionRegistrationDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
+    <Compile Include="Entities\CriteriaDO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
+    <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
+      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="States\ActionListType.cs" />
+    <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
@@ -251,6 +259,7 @@
     <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActionRegistrationRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
+    <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
     <Compile Include="Repositories\MailerRepository.cs" />
@@ -285,6 +294,8 @@
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
+    <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
@@ -469,6 +480,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508110145235_merge.resx">
       <DependentUpon>201508110145235_merge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508110909400_Criteria_Migration.resx">
+      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

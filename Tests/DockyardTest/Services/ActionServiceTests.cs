@@ -64,7 +64,7 @@ namespace DockyardTest.Services
                 .Zip(
                     result, expectedResult,
                     (s1, s2) => string.Equals(s1.ActionType, s2.ActionType, StringComparison.Ordinal))
-                .All(b => b),
+                .All(b => b), 
                 "Actions lists are different.");
         }
 

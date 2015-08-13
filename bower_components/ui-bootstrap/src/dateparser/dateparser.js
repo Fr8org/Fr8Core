@@ -1,6 +1,6 @@
 angular.module('ui.bootstrap.dateparser', [])
 
-.service('dateParser', ['$locale', 'orderByFilter', function($locale, orderByFilter) {
+.service('dateParser', ['$log', '$locale', 'orderByFilter', function($log, $locale, orderByFilter) {
   // Pulled from https://github.com/mbostock/d3/blob/master/src/format/requote.js
   var SPECIAL_CHARACTERS_REGEXP = /[\\\^\$\*\+\?\|\[\]\(\)\.\{\}]/g;
 
@@ -53,6 +53,10 @@ angular.module('ui.bootstrap.dateparser', [])
       regex: '(?:0|1)[0-9]|2[0-3]',
       apply: function(value) { this.hours = +value; }
     },
+    'hh': {
+      regex: '0[0-9]|1[0-2]',
+      apply: function(value) { this.hours = +value; }
+    },
     'H': {
       regex: '1?[0-9]|2[0-3]',
       apply: function(value) { this.hours = +value; }
@@ -76,6 +80,18 @@ angular.module('ui.bootstrap.dateparser', [])
     's': {
       regex: '[0-9]|[1-5][0-9]',
       apply: function(value) { this.seconds = +value; }
+    },
+    'a': {
+      regex: $locale.DATETIME_FORMATS.AMPMS.join('|'),
+      apply: function(value) {
+        if (this.hours === 12) {
+          this.hours = 0;
+        }
+
+        if (value === 'PM') {
+          this.hours += 12;
+        }
+      }
     }
   };
 
@@ -125,7 +141,7 @@ angular.module('ui.bootstrap.dateparser', [])
 
     if ( results && results.length ) {
       var fields, dt;
-      if (baseDate) {
+      if (angular.isDate(baseDate) && !isNaN(baseDate.getTime())) {
         fields = {
           year: baseDate.getFullYear(),
           month: baseDate.getMonth(),
@@ -136,6 +152,9 @@ angular.module('ui.bootstrap.dateparser', [])
           milliseconds: baseDate.getMilliseconds()
         };
       } else {
+        if (baseDate) {
+          $log.warn('dateparser:', 'baseDate is not a valid date');
+        }
         fields = { year: 1900, month: 0, date: 1, hours: 0, minutes: 0, seconds: 0, milliseconds: 0 };
       }
 

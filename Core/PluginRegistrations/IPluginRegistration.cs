@@ -5,7 +5,7 @@ namespace Core.PluginRegistrations
 {
     public interface IPluginRegistration
     {
-        string BaseUrl { get; }
+        string BaseUrl { get; set; }
 
         IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
 

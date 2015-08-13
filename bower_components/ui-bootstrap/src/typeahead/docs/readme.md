@@ -27,6 +27,10 @@ The typeahead directives provide several attributes:
 * `typeahead-editable` <i class="glyphicon glyphicon-eye-open"></i>
    _(Defaults: true)_ :
    Should it restrict model values to the ones selected from the popup only ?
+   
+* `typeahead-focus-first`
+   _(Defaults: true)_ :
+   Should the first match automatically be focused as you type?
 
 * `typeahead-input-formatter` <i class="glyphicon glyphicon-eye-open"></i>
    _(Defaults: undefined)_ :
@@ -38,11 +42,19 @@ The typeahead directives provide several attributes:
 
 * `typeahead-min-length` <i class="glyphicon glyphicon-eye-open"></i>
    _(Defaults: 1)_ :
-   Minimal no of characters that needs to be entered before typeahead kicks-in
+   Minimal no of characters that needs to be entered before typeahead kicks-in. Must be greater than or equal to 1.
+
+* `typeahead-no-results` <i class="glyphicon glyphicon-eye-open"></i>
+   _(Defaults: angular.noop)_ :
+   Binding to a variable that indicates if no matching results were found
 
 * `typeahead-on-select($item, $model, $label)`
    _(Defaults: null)_ :
    A callback executed when a match is selected
+
+* `typeahead-select-on-exact`
+   _(Defaults: false)_ :
+   Should it automatically select an item when there is one option that exactly matches the user input?
 
 * `typeahead-template-url` <i class="glyphicon glyphicon-eye-open"></i>
    :
@@ -52,10 +64,6 @@ The typeahead directives provide several attributes:
    _(Defaults: 0)_ :
    Minimal wait time after last character typed before typeahead kicks-in
 
-* `typeahead-focus-first`
-   _(Defaults: true)_ :
-   Should the first match automatically be focused as you type?
-
-* `select-on`blur`
+* `typeahead-select-on-blur`
    _(Defaults: false)_ :
    On blur, select the currently highlighted match

@@ -1,6 +1,6 @@
 ﻿namespace Web.ViewModels
 {
-	public class ActionVM: ActionVMBase
+	public class ActionDTO: ActionDTOBase
 	{
 	    public string UserLabel { get; set; }
 

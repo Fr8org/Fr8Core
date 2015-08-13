@@ -45,13 +45,13 @@ namespace Web.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        public IEnumerable<ActionVM> Save(ActionVM actionVm)
+        public IEnumerable<ActionDTO> Save(ActionDTO actionVm)
         {
             if (_service.SaveOrUpdateAction(Mapper.Map<ActionDO>(actionVm)))
             {
-                return new List<ActionVM> { actionVm };
+                return new List<ActionDTO> { actionVm };
             }
-            return new List<ActionVM>();
+            return new List<ActionDTO>();
         }
     }
 }
