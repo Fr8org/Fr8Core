@@ -55,9 +55,9 @@ namespace pluginAzureSqlServer.Controllers
             return string.Empty;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("field_mapping_targets")]
-        public string GetFieldMappingTargets()
+        public string GetFieldMappingTargets(ActionDTO curAction)
         {
             return string.Empty;
         }
