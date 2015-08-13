@@ -32,7 +32,7 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        public IEnumerable<string> GetAvailableActions()
+        public IEnumerable<ActionRegistrationDO> GetAvailableActions()
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

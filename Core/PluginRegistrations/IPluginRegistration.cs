@@ -5,9 +5,11 @@ namespace Core.PluginRegistrations
 {
     public interface IPluginRegistration
     {
-        string BaseUrl { get; }
+        string BaseUrl { get; set; }
 
-        IEnumerable<string> AvailableCommands { get; }
+        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+
+        void RegisterActions();
 
         string CallPluginRegistrationByString(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO);
 

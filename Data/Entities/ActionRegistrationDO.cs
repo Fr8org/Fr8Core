@@ -5,6 +5,15 @@ namespace Data.Entities
 {
     public class ActionRegistrationDO : BaseDO
     {
+        public ActionRegistrationDO() { }
+
+        public ActionRegistrationDO(string actionType, string parentPluginRegistration, string version)
+        {
+            this.ActionType = actionType;
+            this.ParentPluginRegistration = parentPluginRegistration;
+            this.Version = version;
+        }
+
         [Key]
         public int Id { get; set; }
 

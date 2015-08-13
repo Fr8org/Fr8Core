@@ -113,7 +113,6 @@ namespace DockyardTest.Controllers
             {
                 var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
                 var _service = new Core.Services.Action();
-                int curActionRegistrationId = curActionRegistration.Id;
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
                 Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
             }

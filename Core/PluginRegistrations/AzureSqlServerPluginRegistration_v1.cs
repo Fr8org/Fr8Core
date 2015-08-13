@@ -8,26 +8,13 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlServerPluginRegistration_v1 : BasePluginRegistration
     {
-        public const string BaseUrlKey = "AzureSql.BaseUrl";
+        public const string baseUrl = "AzureSql.BaseUrl";
+        private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
-
-        public override string BaseUrl
+        public AzureSqlServerPluginRegistration_v1()
+            : base(availableActions, baseUrl)
         {
-            get
-            {
-                return ConfigurationManager.AppSettings[BaseUrlKey];
-            }
-        }
 
-        public override IEnumerable<string> AvailableCommands
-        {
-            get
-            {
-                return new[]
-                {
-                    "writeSQL"
-                };
-            }
         }
 
         public string GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
