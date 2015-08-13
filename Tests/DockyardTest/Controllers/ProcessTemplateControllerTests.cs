@@ -4,16 +4,16 @@ using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using System.Security.Principal;
 using System.Web.Http.Results;
-using Core.Interfaces;
-using Data.Entities;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
 using StructureMap.AutoMocking;
+using Core.Interfaces;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
-using Web.ViewModels;
 
 namespace DockyardTest.Controllers
 {

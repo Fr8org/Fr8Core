@@ -2,6 +2,7 @@
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;

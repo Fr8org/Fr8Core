@@ -6,13 +6,8 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    // TODO: Do we need this class? There is one in Web project.
-    public class ActionDTO
+    public class ActionDTO : ActionDTOBase
     {
-        public int Id { get; set; }
-
-        public string Name { get; set; }
-
         public string UserLabel { get; set; }
 
         public string ActionType { get; set; }
