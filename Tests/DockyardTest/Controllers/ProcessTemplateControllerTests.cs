@@ -72,7 +72,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        public void ProcessTemplateController_Will_ThrowException_If_No_ProcessTemplate_Found()
+        public void ProcessTemplateController_Will_ReturnEmptyOkResult_If_No_ProcessTemplate_Found()
         {
             //Arrange 
             string testUserId = "testuser";
@@ -85,12 +85,8 @@ namespace DockyardTest.Controllers
 
             //Assert
 
-            Assert.Throws<ApplicationException>(() =>
-            {
-                processTemplateController.Get(55);
-
-            }, "Process Template not found for id 55");
-
+            var postResult = processTemplateController.Get(55);
+            Assert.IsNull(postResult as OkNegotiatedContentResult<ProcessTemplateDO>);
         }
 
         [Test]
@@ -159,11 +155,10 @@ namespace DockyardTest.Controllers
             Assert.NotNull(deleteResult);
 
             //Assert
-            Assert.Throws<ApplicationException>(() =>
-            {
-                processTemplateController.Get(postResult.Content.Id);
-
-            }, "Process Template not found for id " + postResult.Content.Id);
+            //After delete, if we get the same process template, it should be null
+            var afterDeleteAttemptResult =
+                processTemplateController.Get(postResult.Content.Id) as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.IsNull(afterDeleteAttemptResult);
         }
 
 
