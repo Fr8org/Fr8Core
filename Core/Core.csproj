@@ -233,6 +233,7 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
+    <Compile Include="PluginRegistrations\AutoMapperBootStrapper.cs" />
     <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
