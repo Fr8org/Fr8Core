@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using Core.Interfaces;
-using Newtonsoft.Json;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
@@ -16,6 +21,36 @@ namespace Core.PluginRegistrations
             : base(availableActions, baseUrl)
         {
 
+        }
+
+        public override IEnumerable<string> GetAvailableActions()
+        {
+            yield break;
+        }
+
+        public override JObject GetConfigurationSettings()
+        {
+            return null;
+        }
+
+        public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)
+        {
+            List<string> result;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(baseUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+
+                var action = new ActionDTO();
+                Mapper.Map(curAction, action);
+
+                var contentPost = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("/actions/field_mapping_targets", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
+
+                var curMappingTargets = await response.Content.ReadAsStringAsync();
+                result = JsonConvert.DeserializeObject<List<string>>(curMappingTargets);
+            }
+            return result;
         }
     }
 }

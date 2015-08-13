@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
@@ -11,5 +12,11 @@ namespace Core.PluginRegistrations
         IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
 
         void RegisterActions();
+		
+        IEnumerable<string> GetAvailableActions();
+
+        JObject GetConfigurationSettings();
+
+        Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
     }
 }

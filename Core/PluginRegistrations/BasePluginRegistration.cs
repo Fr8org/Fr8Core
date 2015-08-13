@@ -1,34 +1,31 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Core.Interfaces;
 using Data.Entities;
 using Newtonsoft.Json;
-using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Utilities;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 
 namespace Core.PluginRegistrations
 {
     public abstract class BasePluginRegistration : IPluginRegistration
     {
-        private readonly string availableActions = "";
-        private readonly string baseUrl = "";
+        private readonly string availableActions;
+        private readonly string baseUrl;
         private readonly IAction _action;
 
-        public BasePluginRegistration(string curAvailableActions, string curBaseURL)
+        protected BasePluginRegistration(string curAvailableActions, string curBaseUrl)
         {
+            AutoMapperBootStrapper.ConfigureAutoMapper();
+
             availableActions = curAvailableActions;
-            baseUrl = curBaseURL;
+            baseUrl = curBaseUrl;
             _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public string BaseUrl
         {
-            get
-            {
-                return baseUrl;
-            }
+            get { return baseUrl; }
 
             set { }
         }
@@ -37,18 +34,23 @@ namespace Core.PluginRegistrations
         {
             get
             {
-                var result = JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions, new JsonSerializerSettings());
-                return result;
+                return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions, new JsonSerializerSettings());
             }
         }
 
         public virtual void RegisterActions()
         {
-            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableCommands;
+            var curAvailableCommands = AvailableCommands;
             foreach (var action in curAvailableCommands)
             {
-                _action.Register(action.ActionType, this.GetType().Name, action.Version);
+                _action.Register(action.ActionType, GetType().Name, action.Version);
             }
         }
+		
+		public abstract IEnumerable<string> GetAvailableActions();
+
+        public abstract JObject GetConfigurationSettings();
+
+        public abstract Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
     }
 }
