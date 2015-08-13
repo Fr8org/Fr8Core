@@ -44,7 +44,7 @@ module dockyard.directives.paneSelectTemplate {
         public controller = ["$scope", "$resource", "urlPrefix", ($scope, $resource, urlPrefix) => {
             $scope.Visible = true;
             $scope.DataModel = {};
-
+            $scope.DataModel.ProcessName = "My Process";
             function init() {
 
                 var loadedDocuTemplates = false;
@@ -74,6 +74,7 @@ module dockyard.directives.paneSelectTemplate {
                 $scope.doneLoading = () => loadedDocuTemplates && loadedTriggers;
 
                 $scope.loadingMessage = "Loading Templates .....";
+
             }
 
             var onRender = () => {
@@ -85,7 +86,7 @@ module dockyard.directives.paneSelectTemplate {
                 $scope.Visible = false;
             };
 
-            //onRender();
+            onRender();
 
             $scope.$on(MessageType[MessageType.PaneSelectTemplate_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], onHide);
