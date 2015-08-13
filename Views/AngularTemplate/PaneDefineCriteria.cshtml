@@ -40,7 +40,9 @@
         <div class="form-group">
             <query-builder-widget fields="fields"
                                   rows="criteria.conditions"
-                                  ng-show="criteria.executionMode === 1">
+                                  operators="operators"
+                                  default-operator="defaultOperator"
+                                  ng-show="criteria.executionMode == 1">
             </query-builder-widget>
         </div>
     </div>
