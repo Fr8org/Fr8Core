@@ -283,6 +283,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventRegistrations");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
+            modelBuilder.Entity<ActionRegistrationDO>().ToTable("ActionRegistration");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
@@ -366,6 +367,8 @@ namespace Data.Infrastructure
             //    .HasMany(e => e.Answers)
             //    .WithRequired(a => a.Question)
             //    .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
 
             base.OnModelCreating(modelBuilder);
         }

@@ -26,19 +26,27 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<TViewModel> GetAllActionLists<TViewModel>()
+        public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
+        {
+            var plugins = _subscription.GetAuthorizedPlugins(curAccount);
+            return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s.ActionType);
+        }
+
+        public void Register(string ActionType, string PluginRegistration, string Version)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionListRepository.GetAll().Select(Mapper.Map<TViewModel>);
+                if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == ActionType 
+                    && a.Version == Version && a.ParentPluginRegistration == PluginRegistration).Any())
+                {
+                    ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType, 
+                                                                    PluginRegistration, 
+                                                                    Version);
+                    uow.SaveChanges();
+                }
             }
         }
 
-        public IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount)
-        {
-            var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s, StringComparer.OrdinalIgnoreCase);
-        }
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

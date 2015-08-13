@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
@@ -236,7 +236,7 @@ namespace Data.Infrastructure
         //{
         //    get
         //    {
-        //        return _invitationResponseRepository ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
+        //        return _invitationResponseRepositorya ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
         //    }
         //}
 
@@ -469,6 +469,15 @@ namespace Data.Infrastructure
             }
         }
 
+        private ActionRegistrationRepository _actionRegistrationRepository;
+        public ActionRegistrationRepository ActionRegistrationRepository
+        {
+            get
+            {
+                return _actionRegistrationRepository ?? (_actionRegistrationRepository = new ActionRegistrationRepository(this));
+            }
+        }
+
 	  private ActionListRepository _actionListRepository;
 	  public ActionListRepository ActionListRepository
         {
@@ -510,11 +519,22 @@ namespace Data.Infrastructure
 
 	    private ProcessNodeTemplateRepository _processNodeTemplateRepository;
 
-        public ProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
         {
             get
             {
                 return _processNodeTemplateRepository ?? (_processNodeTemplateRepository = new ProcessNodeTemplateRepository(this));
+            }
+        }
+
+
+        private CriteriaRepository _criteriaRepository;
+
+        public ICriteriaRepository CriteriaRepository
+        {
+            get
+            {
+                return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
             }
         }
 

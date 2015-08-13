@@ -257,8 +257,11 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
+    <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
@@ -311,11 +314,14 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MvcHandleErrorAttribute.cs" />
-    <Compile Include="ViewModels\ActionVMBase.cs" />
-    <Compile Include="ViewModels\ActionListVM.cs" />
-    <Compile Include="ViewModels\ActionVM.cs" />
+    <Compile Include="ViewModels\ActionDTOBase.cs" />
+    <Compile Include="ViewModels\ActionListDTO.cs" />
+    <Compile Include="ViewModels\ActionDTO.cs" />
+    <Compile Include="ViewModels\AutoMapper\ProcessTemplateDOFullConverter.cs" />
+    <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
+    <Compile Include="ViewModels\FullProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
@@ -331,6 +337,7 @@
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
+    <Compile Include="ViewModels\ProcessNodeTemplateDTO.cs" />
     <Compile Include="ViewModels\ProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
@@ -666,6 +673,8 @@
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <Content Include="Scripts\tests\integration\processtemplatecontroller_tests.js" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneFieldParamMapper\PaneFieldParamMapper.ts" />
+    <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\mocks\TypedScopeFactory.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
@@ -3746,8 +3755,8 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\typeahead\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\uniform\css\uniform.default.scss" />
     <Content Include="Content\templates\metronic\assets\global\plugins\uniform\README.md" />
-    <Content Include="Documentation\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Documentation\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\medical_intake_form.pdf" />
+    <Content Include="Content\Sample Excel Contact List.xlsx" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
@@ -3820,6 +3829,7 @@
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneFieldParamMapper.html" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -3921,11 +3931,13 @@
     <TypeScriptCompile Include="Scripts\typings\tsd.d.ts" />
     <None Include="Views\JsTests\tests.cshtml" />
     <Content Include="Views\Shared\_JsTestsLayout.cshtml" />
+    <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
+    <Folder Include="Content\NewFolder1\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
@@ -3938,8 +3950,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
-      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
+      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
       <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="Core\Core.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="Daemons\Daemons.csproj">
       <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
@@ -3948,10 +3964,6 @@
     <ProjectReference Include="Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="Core\Core.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

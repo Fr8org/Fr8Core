@@ -1,30 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Configuration;
+using Core.Interfaces;
+using Newtonsoft.Json;
+using Data.Entities;
+using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
 {
     public class AzureSqlPluginRegistration : BasePluginRegistration
     {
-        public const string BaseUrlKey = "AzureSql.BaseUrl";
+        public const string baseUrl = "AzureSql.BaseUrl";
+        private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
-
-        public override string BaseUrl
+        public AzureSqlPluginRegistration(IAction action)
+            : base(availableActions, baseUrl)
         {
-            get
-            {
-                return ConfigurationManager.AppSettings[BaseUrlKey];
-            }
-        }
 
-        public override IEnumerable<string> AvailableCommands
-        {
-            get
-            {
-                return new[]
-                {
-                    "writeSQL"
-                };
-            }
         }
     }
 }

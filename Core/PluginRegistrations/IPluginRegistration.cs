@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using Data.Entities;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
 {
     public interface IPluginRegistration
     {
-        string BaseUrl { get; }
+        string BaseUrl { get; set; }
 
-        IEnumerable<string> AvailableCommands { get; }
+        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+
+        void RegisterActions();
     }
 }

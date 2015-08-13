@@ -12,14 +12,13 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks('grunt-karma');
   grunt.loadNpmTasks('grunt-conventional-changelog');
-  grunt.loadNpmTasks('grunt-ngdocs');
   grunt.loadNpmTasks('grunt-ddescribe-iit');
 
   // Project configuration.
   grunt.util.linefeed = '\n';
 
   grunt.initConfig({
-    ngversion: '1.3.13',
+    ngversion: '1.4.3',
     bsversion: '3.1.1',
     modules: [],//to be filled in by build task
     pkg: grunt.file.readJSON('package.json'),
@@ -140,12 +139,14 @@ module.exports = function(grunt) {
       },
       jenkins: {
         singleRun: true,
+        autoWatch: false,
         colors: false,
         reporters: ['dots', 'junit'],
         browsers: ['Chrome', 'ChromeCanary', 'Firefox', 'Opera', '/Users/jenkins/bin/safari.sh']
       },
       travis: {
         singleRun: true,
+        autoWatch: false,
         reporters: ['dots'],
         browsers: ['Firefox']
       },
@@ -178,25 +179,6 @@ module.exports = function(grunt) {
         'grunt version:minor:"SNAPSHOT"',
         'git commit package.json -m "chore(release): Starting v%version%"'
       ]
-    },
-    ngdocs: {
-      options: {
-        dest: 'dist/docs',
-        scripts: [
-          'angular.js',
-          '<%= concat.dist_tpls.dest %>'
-        ],
-        styles: [
-          'docs/css/style.css'
-        ],
-        navTemplate: 'docs/nav.html',
-        title: 'ui-bootstrap',
-        html5Mode: false
-      },
-      api: {
-        src: ['src/**/*.js', 'src/**/*.ngdoc'],
-        title: 'API Documentation'
-      }
     },
     'ddescribe-iit': {
       files: [

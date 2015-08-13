@@ -11,6 +11,22 @@ module dockyard.directives.paneDefineCriteria {
             scope.fields = eventArgs.fields;
             scope.criteria = eventArgs.criteria.clone();
             scope.isVisible = true;
+
+            if (!scope.criteria.conditions) {
+                scope.criteria.conditions = [];
+            }
+
+            if (scope.criteria.conditions.length === 0) {
+                var fieldKey = '';
+                if (scope.fields && scope.fields.length > 0) {
+                    fieldKey = scope.fields[0].key;
+                }
+
+                var condition = new model.Condition(fieldKey, 'gt', '');
+                condition.validate();
+
+                scope.criteria.conditions.push(condition);
+            }
         };
 
 
@@ -32,13 +48,26 @@ module dockyard.directives.paneDefineCriteria {
             templateUrl: '/AngularTemplate/PaneDefineCriteria',
             scope: {},
             controller: ($scope: IPaneDefineCriteriaScope): void => {
-                $scope.removeCriteria = function () { removeCriteria($scope); }
+                $scope.operators = [
+                    { text: 'Greater than', value: 'gt' },
+                    { text: 'Greater than or equal', value: 'gte' },
+                    { text: 'Less than', value: 'lt' },
+                    { text: 'Less than or equal', value: 'lte' },
+                    { text: 'Equal', value: 'eq' },
+                    { text: 'Not equal', value: 'neq' }
+                ];
+
+                $scope.defaultOperator = 'gt';
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Render],
                     (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope));
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Hide],
                     (event: ng.IAngularEvent) => onHide($scope));
+
+                $scope.removeCriteria = function () {
+                    removeCriteria($scope);
+                };
             }
         };
     }

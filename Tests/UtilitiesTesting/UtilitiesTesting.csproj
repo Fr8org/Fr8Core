@@ -88,13 +88,16 @@
     <Compile Include="BaseTest.cs" />
     <Compile Include="DocusignTools\DocusignApiHelper.cs" />
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
+    <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
+    <Compile Include="Fixtures\FixtureData - ActionList.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignAccount.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Envelope.cs" />
     <Compile Include="Fixtures\FixtureData - EnvelopeData.cs" />
+    <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplate.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="Fixtures\FixtureData - Signer.cs" />
     <Compile Include="Fixtures\FixtureData - Tab.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validations\ValidationsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -124,6 +128,10 @@
     <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\PluginUtilities\PluginUtilities.csproj">
+      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
+      <Name>PluginUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

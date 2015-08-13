@@ -110,10 +110,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
+    <Compile Include="Entities\ActionRegistrationDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
+    <Compile Include="Entities\CriteriaDO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\ITemplate.cs" />
+    <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
+    <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
+      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508130055069_ActionRegistration.cs" />
+    <Compile Include="Migrations\201508130055069_ActionRegistration.Designer.cs">
+      <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="States\ActionListType.cs" />
+    <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\DocusignAccountDO.cs" />
@@ -135,6 +150,7 @@
     <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionTypeListDTO.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
@@ -240,10 +256,16 @@
     <Compile Include="Migrations\201508081752116_AddMailerDO.Designer.cs">
       <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508110145235_merge.cs" />
+    <Compile Include="Migrations\201508110145235_merge.Designer.cs">
+      <DependentUpon>201508110145235_merge.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
+    <Compile Include="Repositories\ActionRegistrationRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
+    <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\ExternalEventRegistrationRepository.cs" />
     <Compile Include="Repositories\MailerRepository.cs" />
@@ -278,6 +300,8 @@
     <Compile Include="States\ProcessTemplateState.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
+    <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
     <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
@@ -459,6 +483,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508081752116_AddMailerDO.resx">
       <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508110145235_merge.resx">
+      <DependentUpon>201508110145235_merge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508110909400_Criteria_Migration.resx">
+      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508130055069_ActionRegistration.resx">
+      <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,22 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
+using Microsoft.Ajax.Utilities;
+using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Microsoft.Ajax.Utilities;
-using StructureMap;
 using Web.Controllers.Helpers;
 using Web.ViewModels;
+using Web.ViewModels.AutoMapper;
 
 namespace Web.Controllers
 {
     [Authorize]
+    [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
         private readonly IProcessTemplate _processTemplate;
@@ -24,7 +29,6 @@ namespace Web.Controllers
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IProcessTemplate>())
         {
-            
         }
 
         public ProcessTemplateController(IProcessTemplate processTemplate)
@@ -32,25 +36,45 @@ namespace Web.Controllers
             _processTemplate = processTemplate;
         }
 
+        [Route("full")]
+        [ResponseType(typeof(FullProcessTemplateDTO))]
+        [HttpGet]
+        public IHttpActionResult GetFullProcessTemplate(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processTemplate = uow.ProcessTemplateRepository.GetByKey(id);
+                var result = Mapper.Map<FullProcessTemplateDTO>(processTemplate,
+                    opts => { opts.Items[ProcessTemplateDOFullConverter.UnitOfWork_OptionsKey] = uow; });
+
+                return Ok(result);
+            };
+        }
+
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-
             var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
 
-            switch (curProcessTemplates.Count)
+            if (curProcessTemplates.Count == 0)
             {
-                case 0:
-                    throw new ApplicationException("Process Template(s) not found for "+ (id != null ? "id {0}".FormatInvariant(id) :"the current user"));
-                case 1:
-                    return Ok(Mapper.Map<ProcessTemplateDTO>(curProcessTemplates.First()));
+                throw new ApplicationException("Process Template(s) not found for "+ (id != null ? "id {0}".FormatInvariant(id) :"the current user"));
             }
-
-            return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateDTO>));
-            
+            else
+            {
+                // Return first record from curProcessTemplates, in case id parameter was provided.
+                // User intentionally wants to receive a single JSON object in response.
+                if (id.HasValue)
+                {
+                    return Ok(Mapper.Map<ProcessTemplateDTO>(curProcessTemplates.First()));
+                }
+                // Return JSON array of objects, in case no id parameter was provided.
+                else
+                {
+                    return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateDTO>));
+                }
+            }            
         }
-
-
 
         public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
         {
@@ -77,7 +101,5 @@ namespace Web.Controllers
             _processTemplate.Delete(id);
             return Ok(id);
         }
-
-        
     }
 }
