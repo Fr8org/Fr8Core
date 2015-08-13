@@ -11,7 +11,7 @@ namespace Core.PluginRegistrations
         public const string baseUrl = "AzureSql.BaseUrl";
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
-        public AzureSqlPluginRegistration()
+        public AzureSqlPluginRegistration(IAction action)
             : base(availableActions, baseUrl)
         {
 
