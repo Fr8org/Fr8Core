@@ -261,6 +261,7 @@
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
@@ -3577,6 +3578,8 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\typeahead\README.md" />
     <Content Include="Content\templates\metronic\assets\global\plugins\uniform\css\uniform.default.scss" />
     <Content Include="Content\templates\metronic\assets\global\plugins\uniform\README.md" />
+    <Content Include="Content\medical_intake_form.pdf" />
+    <Content Include="Content\Sample Excel Contact List.xlsx" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
@@ -3757,6 +3760,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
+    <Folder Include="Content\NewFolder1\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />

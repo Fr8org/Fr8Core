@@ -117,6 +117,8 @@
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\ITemplate.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
       <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
