@@ -95,13 +95,12 @@ namespace Web
             }
         }
 
-        private void RegisterPluginActions()
+        public void RegisterPluginActions()
         {
-            IAction _action = ObjectFactory.GetInstance<IAction>();
             IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
                 .Assembly.GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t, _action));
+                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
             foreach (var plugin in plugins)
             {
                 plugin.RegisterActions();

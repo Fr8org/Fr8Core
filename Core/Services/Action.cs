@@ -42,6 +42,7 @@ namespace Core.Services
                     ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType, 
                                                                     PluginRegistration, 
                                                                     Version);
+                    uow.ActionRegistrationRepository.Add(actionRegistrationDO);
                     uow.SaveChanges();
                 }
             }

@@ -67,5 +67,31 @@ namespace DockyardTest.Services
                 .All(b => b),
                 "Actions lists are different.");
         }
+
+        [Test]
+        public void Register_NewAction_RegisterNewAction()
+        {
+            var newAction = _fixtureData.TestActionRegistration1();
+
+            _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
+            var savedAction = _uow.ActionRegistrationRepository.GetQuery().FirstOrDefault(i => i.Id == newAction.Id);
+
+            Assert.AreEqual(savedAction.ActionType, savedAction.ActionType);
+            Assert.AreEqual(savedAction.ParentPluginRegistration, savedAction.ParentPluginRegistration);
+            Assert.AreEqual(savedAction.Version, savedAction.Version);
+        }
+
+        [Test]
+        public void Register_ExistingAction_DoNothing()
+        {
+            var newAction = _fixtureData.TestActionRegistration1();
+
+            _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
+            int totalRecords = _uow.ActionRegistrationRepository.GetQuery().Count();
+            _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
+            int totalRecordsAfterExistingRegister = _uow.ActionRegistrationRepository.GetQuery().Count();
+
+            Assert.AreEqual(totalRecords, totalRecordsAfterExistingRegister);
+        }
     }
 }

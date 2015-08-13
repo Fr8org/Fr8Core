@@ -39,7 +39,7 @@ namespace Core.PluginRegistrations
             }
         }
 
-        public virtual void RegisterActions()
+        public void RegisterActions()
         {
             IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableCommands;
             foreach (var action in curAvailableCommands)
