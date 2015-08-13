@@ -12,6 +12,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Data.Entities;
 
 namespace DockyardTest.Services
 {
@@ -22,8 +23,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly string[] _pr1Actions = new[] { "D", "C" };
-        private readonly string[] _pr2Actions = new[] { "A", "B" };
+        private readonly IEnumerable<ActionRegistrationDO> _pr1Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO(){ ActionType = "Write", Version = "1.0"}, new ActionRegistrationDO(){ ActionType = "Read", Version = "1.0"} };
+        private readonly IEnumerable<ActionRegistrationDO> _pr2Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "SQL Read", Version = "1.0" } };
 
 
         [SetUp]
@@ -57,12 +58,12 @@ namespace DockyardTest.Services
         {
             var dockyardAccount = _fixtureData.TestUser1();
             var result = _action.GetAvailableActions(dockyardAccount).ToArray();
-            var expectedResult = _pr1Actions.Concat(_pr2Actions).OrderBy(s => s, StringComparer.OrdinalIgnoreCase).ToArray();
+            var expectedResult = _pr1Actions.Concat(_pr2Actions).OrderBy(s => s.ActionType, StringComparer.OrdinalIgnoreCase).ToArray();
             Assert.AreEqual(expectedResult.Length, result.Length, "Actions list length is different.");
             Assert.That(Enumerable
                 .Zip(
                     result, expectedResult,
-                    (s1, s2) => string.Equals(s1, s2, StringComparison.Ordinal))
+                    (s1, s2) => string.Equals(s1.ActionType, s2.ActionType, StringComparison.Ordinal))
                 .All(b => b), 
                 "Actions lists are different.");
         }

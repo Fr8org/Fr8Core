@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Data.Entities;
+using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
@@ -7,6 +8,10 @@ namespace Core.PluginRegistrations
     {
         string BaseUrl { get; set; }
 
+        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+
+        void RegisterActions();
+		
         IEnumerable<string> AvailableCommands { get; set; }
 
         IEnumerable<string> GetAvailableActions();

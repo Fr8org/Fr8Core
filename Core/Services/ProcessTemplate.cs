@@ -47,6 +47,7 @@ namespace Core.Services
             {
                 if (creating)
                 {
+                    ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
                     unitOfWork.ProcessTemplateRepository.Add(ptdo);
                 }
                 else

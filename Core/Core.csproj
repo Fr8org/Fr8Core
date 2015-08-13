@@ -267,6 +267,7 @@
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Tab.cs" />
+    <Compile Include="Services\Template.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>

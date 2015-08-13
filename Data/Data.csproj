@@ -118,9 +118,14 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\ITemplate.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
       <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508130055069_ActionRegistration.cs" />
+    <Compile Include="Migrations\201508130055069_ActionRegistration.Designer.cs">
+      <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
     </Compile>
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -484,6 +489,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508110909400_Criteria_Migration.resx">
       <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508130055069_ActionRegistration.resx">
+      <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
