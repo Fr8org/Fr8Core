@@ -53,6 +53,8 @@ namespace Data.Interfaces
 
         IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
+	 
+
 
 	    /// <summary>
         /// Call this to commit the unit of work
