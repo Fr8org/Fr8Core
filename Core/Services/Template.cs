@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Interfaces;
+using DocuSign.Integrations.Client;
 using Utilities;
 using Newtonsoft.Json.Linq;
 using StructureMap;
+
 
 namespace Core.Services
 {
@@ -18,11 +21,18 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
+
+        public IEnumerable<string> GetMappableSourceFields(string templateId)
+        {
+            return _envelope.GetEnvelopeData(templateId).Select(r=>r.Name);
+
+        }
+
         public List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelope)
         {
             List<EnvelopeData> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
             List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
-            if (curLstDistinctDocIds.Count == 1) 
+            if (curLstDistinctDocIds.Count == 1)
             {
                 return curLstEnvelopeData.Select(x => x.Name).ToList();
             }
@@ -39,7 +49,7 @@ namespace Core.Services
                 }
                 return curLstMappableSourceFields;
             }
-            else 
+            else
             {
                 return null;
             }

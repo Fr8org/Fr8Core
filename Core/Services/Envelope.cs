@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using Data.Interfaces;
-
+using DocuSign.Integrations.Client;
+using Newtonsoft.Json.Linq;
 using Utilities;
 
 namespace Core.Services
@@ -15,7 +19,7 @@ namespace Core.Services
         public Envelope()
         {
             //TODO change baseUrl later. Remove it to constructor parameter etc.
-            _baseUrl = string.Empty; 
+            _baseUrl = string.Empty;
 
             //TODO move ioc container.
             _tab = new Tab();
@@ -45,5 +49,67 @@ namespace Core.Services
             return new List<EnvelopeData>();
         }
 
+        public IEnumerable<EnvelopeData> GetEnvelopeData(string templateId)
+        {
+
+            var username = ConfigurationManager.AppSettings["username"];
+            var password = ConfigurationManager.AppSettings["password"];
+            var integratorKey = ConfigurationManager.AppSettings["IntegratorKey"];
+            var baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
+
+            if (username == null
+                || password == null
+                || integratorKey == null
+                || baseUrl == null
+              )
+                throw new ApplicationException(" Web/App Config is missing Docusign values of "
+                                                + (username == null ? "username, " : "")
+                                                + (password == null ? "password, " : "")
+                                                + (integratorKey == null ? "IntegratorKey, " : "")
+                                                + (baseUrl == null ? "environment, " : ""));
+
+
+            RestSettings.Instance.IntegratorKey = integratorKey;
+
+
+            var template = new DocuSign.Integrations.Client.Template
+            {
+                Login = new DocuSign.Integrations.Client.Account
+                {
+                    Email = username,
+                    ApiPassword = password,
+                    BaseUrl = baseUrl
+                }
+            };
+
+
+            var templateDetails = template.GetTemplate(templateId);
+            foreach (var signer in templateDetails["recipients"]["signers"])
+            {
+                if (signer["tabs"]["textTabs"] != null)
+                    foreach (var textTab in signer["tabs"]["textTabs"])
+                    {
+                        yield return CreateEnvelopeData(textTab, textTab["value"].ToString());
+                    }
+                if (signer["tabs"]["checkboxTabs"] == null) continue;
+                foreach (var chekBoxTabs in signer["tabs"]["checkboxTabs"])
+                {
+                    yield return CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString());
+                }
+            }
+
+        }
+
+        private EnvelopeData CreateEnvelopeData(dynamic tab, string value)
+        {
+            return new EnvelopeData()
+            {
+                DocumentId = tab.documentId,
+                RecipientId = tab.recipientId,
+                Name = tab.name,
+                TabId = tab.tabId,
+                Value = value
+            };
+        }
     }
 }

@@ -208,6 +208,7 @@
     <Compile Include="Services\ProcessTemplateTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
+    <Compile Include="TemplateServiceTests.cs" />
     <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
   </ItemGroup>
