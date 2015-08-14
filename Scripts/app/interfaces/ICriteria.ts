@@ -15,9 +15,13 @@ module dockyard.interfaces {
     export interface IAction {
         id: number,
         tempId: number,
-        criteriaId: number;
+        criteriaId: number,
         name: string,
-        actionTypeId: number
+        userLabel: string,
+        actionListId: number,
+        actionType: string;
+        configurationSettings: string;
+        mappingSettigns: string
     }
 
     export interface ICondition {

@@ -1,7 +1,7 @@
 ﻿// to enable disable, service hitting real backend comment this line and 
 // uncomment second line
-app.constant('urlPrefix', '/apimocks');
-//app.constant('urlPrefix', '/api');
+//app.constant('urlPrefix', '/apimocks');
+app.constant('urlPrefix', '/api');
 app.run([
     '$httpBackend', httpBackend => {
         var validation = (url) => {

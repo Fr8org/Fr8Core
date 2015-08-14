@@ -13,13 +13,13 @@ module dockyard.directives.paneSelectAction {
 
     export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
         public tempActionId: number;
-        public actionTypeId: number;
+        public actionType: string;
         public actionName: string;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionTypeId: number, actionName: string) {
+        constructor(criteriaId: number, actionId: number, tempActionId: number, actionType: string, actionName: string) {
             super(criteriaId, actionId);
             this.tempActionId = tempActionId;
-            this.actionTypeId = actionTypeId;
+            this.actionType = actionType;
             this.actionName = actionName;
         }
     }
@@ -86,7 +86,7 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.criteriaId,
                         $scope.action.id,
                         $scope.action.tempId,
-                        $scope.action.actionTypeId,
+                        $scope.action.actionType,
                         $scope.action.name);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
@@ -108,8 +108,7 @@ module dockyard.directives.paneSelectAction {
             scope.isVisible = true;
             scope.action = new model.Action(
                 eventArgs.isTempId ? 0 : eventArgs.actionId,
-                eventArgs.isTempId ? eventArgs.actionId : 0,
-                eventArgs.criteriaId);
+                eventArgs.isTempId ? eventArgs.actionId : 0);
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

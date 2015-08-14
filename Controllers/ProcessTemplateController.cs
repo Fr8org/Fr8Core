@@ -96,6 +96,15 @@ namespace Web.Controllers
             return Ok(processTemplateDto);
         }
 
+        [HttpPost]
+        [Route("action")]
+        [ActionName("action")]
+        public IHttpActionResult PutAction(ActionDTO actionDto)
+        {
+            //A stub until the functionaltiy is ready
+            return Ok();
+        }
+
         public IHttpActionResult Delete(int id)
         {
             _processTemplate.Delete(id);

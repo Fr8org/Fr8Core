@@ -40,21 +40,6 @@ module dockyard.directives.paneConfigureAction {
 
                 //Template function goes here
 
-                $scope.cancel = function (event) {
-                    $scope.isVisible = false;
-                    var eventArgs = new CancelledEventArgs(
-                        $scope.action.criteriaId,
-                        $scope.action.id > 0 ? $scope.action.id : $scope.action.tempId,
-                        $scope.action.id < 0);
-                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_Cancelled], eventArgs);
-                }
-
-                $scope.save = function (event) {
-                    var eventArgs = new ActionUpdatedEventArgs($scope.action.criteriaId, $scope.action.id, $scope.action.tempId);
-                    $scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], eventArgs);
-                    (<any>$).notify("Thank you, Action saved!", "success");
-                }
-
                 $scope.$watch<interfaces.IAction>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
@@ -70,8 +55,7 @@ module dockyard.directives.paneConfigureAction {
             scope.isVisible = true;
             scope.action = new model.Action(
                 eventArgs.isTempId ? 0 : eventArgs.actionId,
-                eventArgs.isTempId ? eventArgs.actionId : 0,
-                eventArgs.criteriaId);
+                eventArgs.isTempId ? eventArgs.actionId : 0);
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

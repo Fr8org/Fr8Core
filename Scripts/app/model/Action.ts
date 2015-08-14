@@ -2,21 +2,22 @@
     export class Action implements interfaces.IAction {
         id: number;
         tempId: number;
-        criteriaId: number;
         name: string;
-        actionTypeId: number;
+        criteriaId: number;
+        actionType: string;
+        actionListId: number
+        configurationSettings: string;
+        mappingSettigns: string;
+        userLabel: string
 
-        constructor(id: number, tempId: number, criteriaId: number) {
-            this.criteriaId = criteriaId;
+        constructor(id: number, tempId: number) {
             this.id = id;
             this.tempId = tempId;
         }
 
         clone(): Action {
-            var result = new Action(this.id, this.tempId, this.criteriaId);
+            var result = new Action(this.id, this.tempId);
             result.name = this.name;
-            result.actionTypeId = this.actionTypeId;
-
             return result;
         }
     }

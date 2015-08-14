@@ -36,7 +36,8 @@
     "angular-mocks": "~1.4.3",
     "jasmine": "~2.3.4",
     "underscore": "~1.8.3",
-    "fabric": "~1.5.0"
+    "fabric": "~1.5.0",
+    "spin.js": "~2.3.2"
   },
   "resolutions": {
     "angular": "~1.4.3",

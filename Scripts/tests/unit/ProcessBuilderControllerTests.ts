@@ -81,7 +81,7 @@ module dockyard.tests.controller {
         //Rule #8
         it("When PaneSelectAction_ActionTypeSelected is sent, PaneConfigureMapping_Render " +
             "and PaneConfigureAction_Render should be received with correct args", () => {
-                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, 3, 4, "myaction"),
+                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, 3,"myaction", "myaction"),
                     outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false),
                     outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false);
 
@@ -89,17 +89,6 @@ module dockyard.tests.controller {
 
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
-            });
-
-        //Rule #9
-        it("When PaneConfigureAction_Cancelled is sent, PaneConfigureMapping_Hide " +
-            "and PaneSelectAction_Hide should be received with no args", () => {
-                var incomingEventArgs = new pca.CancelledEventArgs(1, 2, false);
-
-                _$scope.$emit("PaneConfigureAction_Cancelled", incomingEventArgs);
-
-                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Hide");
-                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneSelectAction_Hide");
             });
     });
 }

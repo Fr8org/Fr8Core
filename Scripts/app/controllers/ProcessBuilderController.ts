@@ -26,7 +26,9 @@ module dockyard.controllers {
             '$scope',
             'StringService',
             'LocalIdentityGenerator',
-            '$state'
+            '$state',
+            'ActionService',
+            '$q'
         ];
 
         private _scope: interfaces.IProcessBuilderScope;
@@ -36,11 +38,14 @@ module dockyard.controllers {
             private $scope: interfaces.IProcessBuilderScope,
             private StringService: services.IStringService,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ng.ui.IState) {
+            private $state: ng.ui.IState,
+            private ActionService: services.IActionService,
+            private $q: ng.IQService
+            ) {
             this._scope = $scope;
 
             this.setupMessageProcessing();
-
+             
             // Dummy value for processTemplateId;
             this._scope.processTemplateId = 0;
             this._scope.criteria = [];
@@ -48,6 +53,8 @@ module dockyard.controllers {
                 new model.Field('envelope.name', '[Envelope].Name'),
                 new model.Field('envelope.date', '[Envelope].Date')
             ];
+            this._scope.Cancel = angular.bind(this, this.Cancel);
+            this._scope.Save = angular.bind(this, this.SaveAction);
         }
 
         /*
@@ -72,8 +79,6 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pdc.CriteriaRemovingEventArgs) => this.PaneDefineCriteria_CriteriaRemoving(eventArgs));
 
             //Process Configure Action Pane events
-            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_Cancelled],
-                (event: ng.IAngularEvent, eventArgs: pca.CancelledEventArgs) => this.PaneConfigureAction_Cancelled(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
 
@@ -175,6 +180,10 @@ module dockyard.controllers {
         private PaneWorkflowDesigner_CriteriaSelecting(eventArgs: pwd.CriteriaSelectingEventArgs) {
             console.log("ProcessBuilderController::PaneWorkflowDesigner_CriteriaSelected", eventArgs);
 
+            this.SaveAction();
+
+            this._scope.currentAction = null; // the prev action is apparently unselected
+
             var criteria = this.findCriteria(eventArgs.criteriaId);
 
             var scope = this._scope;
@@ -205,9 +214,7 @@ module dockyard.controllers {
             // Create action object.
             var action = new model.Action(
                 id,
-                id,
-                eventArgs.criteriaId
-                );
+                id);
 
             action.name = 'Action #' + id.toString();
 
@@ -232,7 +239,11 @@ module dockyard.controllers {
             var eArgs = new psa.RenderEventArgs(
                 eventArgs.criteriaId,
                 eventArgs.actionId,
-                true); // eventArgs.isTempId,
+                false); // eventArgs.isTempId,
+
+            this.SaveAction();
+
+            this._scope.currentAction = this.ActionService.get({ id: eventArgs.criteriaId });
 
             var scope = this._scope;
             this._scope.$apply(function () {
@@ -246,6 +257,10 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_TemplateSelecting(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("ProcessBuilderController: template selected");
+
+            this.SaveAction();
+
+            this._scope.currentAction = null; // actino is apparently unselected
 
             //Show Select Template Pane
             var eArgs = new directives.paneSelectTemplate.RenderEventArgs();
@@ -269,17 +284,6 @@ module dockyard.controllers {
                 null);
 
             this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
-        }
-
-        /*
-            Handles message 'ConfigureActionPane_Cancelled'
-        */
-        private PaneConfigureAction_Cancelled(eventArgs: pca.CancelledEventArgs) {
-            //Hide Select Action Pane
-            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
-
-            //Hide Configure Mapping Pane
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Hide]);
         }
 
         /*
@@ -316,7 +320,58 @@ module dockyard.controllers {
             this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
         }
 
+        private SaveAction() {
+            //If an action is selected, save it
+            if (this._scope.currentAction != null) {
+                return this.ActionService.save({
+                    id: this._scope.currentAction.id
+                }, this._scope.currentAction, null, null).$promise;
+            }
+        }
 
+        private Cancel() {
+            this._scope.currentAction = null;
+            this.HideActionPanes();
+        }
+
+        private HideActionPanes() {
+            //Hide Select Action Pane
+            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+
+            //Hide Configure Mapping Pane
+            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Hide]);
+
+            //Hide Configure Action Pane
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+        }
     }
+
+    app.run([
+        "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
+            var actions: interfaces.IAction =
+                {
+                    actionType: "test action type",
+                    configurationSettings: "",
+                    criteriaId: 1,
+                    id: 1,
+                    mappingSettigns: "",
+                    name: "test",
+                    tempId: 0,
+                    actionListId: 0,
+                    userLabel: ""
+                };
+
+            $httpBackend
+                .whenGET(urlPrefix + "/Action/1")
+                .respond(actions);
+
+            $httpBackend
+                .whenPOST(urlPrefix + "/Action/1")
+                .respond(function (method, url, data) {
+                    return data;
+                })
+        }
+    ]);
+
     app.controller('ProcessBuilderController', ProcessBuilderController);
 } 
