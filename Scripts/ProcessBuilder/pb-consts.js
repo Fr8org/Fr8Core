@@ -22,7 +22,7 @@
         startNodeTextSize: 15,
         startNodeTextFill: 'white',
         startNodeTextFont: 'Tahoma',
-        startNodeTextWeight: 'bold',
+        startNodeTextWeight: 'normal',
         startNodeTextOffsetY: 2,
         startNodeCornerRadius: 5,
         startNodeBgImage: '/Content/img/ProcessBuilder/start-node-bg.png',
