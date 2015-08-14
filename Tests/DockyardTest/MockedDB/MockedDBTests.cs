@@ -22,7 +22,7 @@ namespace DockyardTest.MockedDB
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUser = new FixtureData(uow).TestUser1();
+                var curUser = FixtureData.TestUser1();
                 curUser.Id = "1";
                
                 uow.UserRepository.Add(curUser);

@@ -119,10 +119,10 @@
   <ItemGroup>
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
+    <Compile Include="Entities\ActionRegistrationDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
-    <Compile Include="Entities\ActionRegistrationDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
@@ -317,6 +317,7 @@
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\ProcessTemplateState.cs" />
+    <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
     <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />

@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IActionRegistration.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
@@ -233,8 +234,7 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="PluginRegistrations\AutoMapperBootStrapper.cs" />
-    <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
+    <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -249,6 +249,7 @@
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
+    <Compile Include="Services\ActionRegistration.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
