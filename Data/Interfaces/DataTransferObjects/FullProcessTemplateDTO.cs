@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Web.ViewModels
+namespace Data.Interfaces.DataTransferObjects
 {
     /// <summary>
     /// ProcessTemplate DTO that contains full graph of other DTO objects

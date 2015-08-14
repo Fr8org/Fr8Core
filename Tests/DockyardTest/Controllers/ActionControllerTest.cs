@@ -1,8 +1,8 @@
-﻿
-using System;
-using System.Linq;
+﻿using System.Linq;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -120,6 +120,7 @@ namespace DockyardTest.Controllers
 
                 var actionList = new FixtureData(uow).TestEmptyActionList();
                 actionList.Id = 1;
+                actionList.ActionListType = 1;
 
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();

@@ -32,11 +32,27 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<string> GetAvailableActions(IDockyardAccountDO curAccount)
+        public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s, StringComparer.OrdinalIgnoreCase);
+            return plugins.SelectMany(p => p.AvailableActions).OrderBy(s => s.ActionType);
         }
+
+        public void Register(string ActionType, string PluginRegistration, string Version)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == ActionType 
+                    && a.Version == Version && a.ParentPluginRegistration == PluginRegistration).Any())
+                {
+                    ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType, 
+                                                                    PluginRegistration, 
+                                                                    Version);
+                    uow.SaveChanges();
+                }
+            }
+        }
+
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

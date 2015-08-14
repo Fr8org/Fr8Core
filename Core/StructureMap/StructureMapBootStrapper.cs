@@ -91,6 +91,8 @@ namespace Core.StructureMap
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+
+                For<IEvent>().Use<Event>();
             }
         }
 
@@ -134,6 +136,7 @@ namespace Core.StructureMap
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
                 For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+                For<IEvent>().Use<Event>();
             }
         }
 

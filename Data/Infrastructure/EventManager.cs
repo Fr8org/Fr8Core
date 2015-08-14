@@ -3,6 +3,7 @@
 using System;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Infrastructure
 {
@@ -104,12 +105,21 @@ namespace Data.Infrastructure
         public delegate void EventActionDispatchedHandler(ActionDO curAction);
         public static event EventActionDispatchedHandler AlertEventActionDispatched;
 
+        public delegate void PluginIncidentHandler(EventData incidentItem);
+        public static event PluginIncidentHandler PluginIncidentReported;
+
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
         {
             UserNotificationHandler handler = AlertUserNotification;
             if (handler != null) handler(userid, message, expiresIn);
+        }
+
+        public static void ReportPluginIncident(EventData incidentItem)
+        {
+            PluginIncidentHandler handler = PluginIncidentReported;
+            if (handler != null) handler(incidentItem);
         }
 
         //public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)

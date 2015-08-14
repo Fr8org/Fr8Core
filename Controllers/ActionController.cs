@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Web.ViewModels;
+using Core.Interfaces;
+using Core.Managers;
 using Core.Services;
 using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -31,7 +32,7 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        public IEnumerable<string> GetAvailableActions()
+        public IEnumerable<ActionRegistrationDO> GetAvailableActions()
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

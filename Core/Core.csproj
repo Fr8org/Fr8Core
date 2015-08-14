@@ -174,6 +174,7 @@
     <Compile Include="Interfaces\IActionList.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
+    <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
@@ -231,6 +232,7 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
+    <Compile Include="PluginRegistrations\AutoMapperBootStrapper.cs" />
     <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
@@ -253,6 +255,7 @@
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\Event.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Process.cs" />
@@ -264,6 +267,7 @@
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Tab.cs" />
+    <Compile Include="Services\Template.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>
