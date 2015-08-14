@@ -78,8 +78,8 @@ module dockyard.directives.paneSelectTemplate {
             }
 
             var onRender = () => {
+                $scope.Visible = true;
                 init();
-
             }
 
             var onHide = () => {
