@@ -30,24 +30,23 @@ namespace Core.PluginRegistrations
             set { }
         }
 
-        public IEnumerable<ActionRegistrationDO> AvailableCommands
+        public IEnumerable<ActionRegistrationDO> AvailableActions
         {
             get
             {
-                return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions, new JsonSerializerSettings());
+                return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
+                    new JsonSerializerSettings());
             }
         }
 
         public virtual void RegisterActions()
         {
-            var curAvailableCommands = AvailableCommands;
-            foreach (var action in curAvailableCommands)
+            IEnumerable<ActionRegistrationDO> curAvailableActions = AvailableActions;
+            foreach (var action in curAvailableActions)
             {
                 _action.Register(action.ActionType, GetType().Name, action.Version);
             }
         }
-		
-		public abstract IEnumerable<string> GetAvailableActions();
 
         public abstract JObject GetConfigurationSettings();
 

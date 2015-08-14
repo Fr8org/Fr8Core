@@ -23,11 +23,6 @@ namespace Core.PluginRegistrations
 
         }
 
-        public override IEnumerable<string> GetAvailableActions()
-        {
-            yield break;
-        }
-
         public override JObject GetConfigurationSettings()
         {
             return null;
@@ -41,10 +36,10 @@ namespace Core.PluginRegistrations
                 client.BaseAddress = new Uri(baseUrl);
                 client.DefaultRequestHeaders.Accept.Clear();
 
-                var action = new ActionDTO();
-                Mapper.Map(curAction, action);
+                var curActionDto = new ActionDTO();
+                Mapper.Map(curAction, curActionDto);
 
-                var contentPost = new StringContent(JsonConvert.SerializeObject(action), Encoding.UTF8, "application/json");
+                var contentPost = new StringContent(JsonConvert.SerializeObject(curActionDto), Encoding.UTF8, "application/json");
                 var response = await client.PostAsync("/actions/field_mapping_targets", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
 
                 var curMappingTargets = await response.Content.ReadAsStringAsync();

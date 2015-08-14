@@ -9,12 +9,10 @@ namespace Core.PluginRegistrations
     {
         string BaseUrl { get; set; }
 
-        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+        IEnumerable<ActionRegistrationDO> AvailableActions { get; }
 
         void RegisterActions();
 		
-        IEnumerable<string> GetAvailableActions();
-
         JObject GetConfigurationSettings();
 
         Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
