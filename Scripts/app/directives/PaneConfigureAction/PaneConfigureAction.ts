@@ -44,24 +44,28 @@ module dockyard.directives.paneConfigureAction {
                     $scope.isVisible = false;
                     var eventArgs = new CancelledEventArgs(
                         $scope.action.criteriaId,
-                        $scope.action.id > 0 ? $scope.action.id : $scope.action.tempId,
-                        $scope.action.id < 0);
+                        $scope.action.id,
+                        $scope.action.isTempId);
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_Cancelled], eventArgs);
                 }
 
                 $scope.save = function (event) {
-                    var eventArgs = new ActionUpdatedEventArgs($scope.action.criteriaId, $scope.action.id, $scope.action.tempId);
+                    var eventArgs = new ActionUpdatedEventArgs(
+                        $scope.action.criteriaId,
+                        $scope.action.id,
+                        $scope.action.isTempId
+                    );
                     $scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], eventArgs);
                     (<any>$).notify("Thank you, Action saved!", "success");
                 }
 
-                $scope.$watch<interfaces.IAction>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<model.Action>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
             };
         }
 
-        private onActionChanged(newValue: interfaces.IAction, oldValue: interfaces.IAction, scope: interfaces.IPaneConfigureActionScope) {
+        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneConfigureActionScope) {
 
         }
 
@@ -70,7 +74,7 @@ module dockyard.directives.paneConfigureAction {
             scope.isVisible = true;
             scope.action = new model.Action(
                 eventArgs.isTempId ? 0 : eventArgs.actionId,
-                eventArgs.isTempId ? eventArgs.actionId : 0,
+                eventArgs.isTempId,
                 eventArgs.criteriaId);
         }
 
