@@ -71,7 +71,7 @@ namespace DockyardTest.Services
         [Test]
         public void Register_NewAction_RegisterNewAction()
         {
-            var newAction = _fixtureData.TestActionRegistration1();
+            var newAction = FixtureData.TestActionRegistration1();
 
             _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
             var savedAction = _uow.ActionRegistrationRepository.GetQuery().FirstOrDefault(i => i.Id == newAction.Id);
@@ -84,7 +84,7 @@ namespace DockyardTest.Services
         [Test]
         public void Register_ExistingAction_DoNothing()
         {
-            var newAction = _fixtureData.TestActionRegistration1();
+            var newAction = FixtureData.TestActionRegistration1();
 
             _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
             int totalRecords = _uow.ActionRegistrationRepository.GetQuery().Count();
