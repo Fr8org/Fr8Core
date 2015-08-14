@@ -16,7 +16,6 @@ namespace Core.PluginRegistrations
     {
         private readonly string availableActions = "";
         private readonly string baseUrl = "";
-        private readonly IAction _action;
 
         public BasePluginRegistration(string curAvailableActions, string curBaseURL)
         {
