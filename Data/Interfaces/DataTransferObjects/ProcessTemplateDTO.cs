@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using Data.States;
 
-namespace Web.ViewModels
+namespace Data.Interfaces.DataTransferObjects
 {
     public class ProcessTemplateDTO
     {

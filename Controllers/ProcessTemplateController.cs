@@ -11,12 +11,13 @@ using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Web.Controllers.Helpers;
 using Web.ViewModels;
-using Web.ViewModels.AutoMapper;
 
 namespace Web.Controllers
 {

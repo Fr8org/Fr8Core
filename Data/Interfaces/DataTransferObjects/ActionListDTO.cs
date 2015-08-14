@@ -1,4 +1,4 @@
-﻿namespace Web.ViewModels
+﻿namespace Data.Interfaces.DataTransferObjects
 {
 	public class ActionListDTO : ActionDTOBase
 	{
