@@ -7,7 +7,7 @@
         actionType: string;
         actionListId: number
         configurationSettings: string;
-        mappingSettigns: string;
+        fieldMappingSettings: string;
         userLabel: string
 
         constructor(id: number, tempId: number) {

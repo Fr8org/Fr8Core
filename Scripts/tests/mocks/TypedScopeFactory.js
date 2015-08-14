@@ -4,11 +4,9 @@ var dockyard;
     (function (tests) {
         var mocks;
         (function (mocks) {
-            //The class contains methods to create mocks for certain objects
             var TypedScopeFactory = (function () {
                 function TypedScopeFactory() {
                 }
-                //Creates a mock for ProcessBuilderController $scope
                 TypedScopeFactory.GetProcessBuilderScope = function (rootScope) {
                     var scope = rootScope.$new();
                     scope.processTemplateId = 0;

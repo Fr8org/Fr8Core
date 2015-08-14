@@ -8,6 +8,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
+using Core.Interfaces;
+using Moq;
 
 namespace DockyardTest.Controllers
 {
@@ -99,6 +101,38 @@ namespace DockyardTest.Controllers
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
                 Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+            }
+        }
+
+        [Test]
+        [Category("Controllers.ActionController")]
+        public void ActionController_Delete()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Mock<IAction> actionMock = new Mock<IAction>();
+                actionMock.Setup(a => a.Delete(It.IsAny<int>()));
+
+                ActionDO actionDO = new FixtureData(uow).TestAction3();
+                var controller = new ActionController(actionMock.Object);
+                controller.Delete(actionDO.Id);
+                actionMock.Verify(a => a.Delete(actionDO.Id));
+            }
+        }
+
+        [Test]
+        [Category("Controllers.ActionController")]
+        public void ActionController_Get()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Mock<IAction> actionMock = new Mock<IAction>();
+                actionMock.Setup(a => a.GetById(It.IsAny<int>()));
+
+                ActionDO actionDO = new FixtureData(uow).TestAction3();
+                var controller = new ActionController(actionMock.Object);
+                controller.Delete(actionDO.Id);
+                actionMock.Verify(a => a.GetById(actionDO.Id));
             }
         }
 

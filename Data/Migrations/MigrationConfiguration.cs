@@ -70,7 +70,6 @@ namespace Data.Migrations
             //AddEvents(uow);
         }
 
-
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork uow)
         {

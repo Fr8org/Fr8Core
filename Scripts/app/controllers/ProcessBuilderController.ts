@@ -106,7 +106,6 @@ module dockyard.controllers {
             return null;
         }
 
-
         /*
             Handles message 'PaneDefineCriteria_CriteriaRemoving'
         */
@@ -354,7 +353,7 @@ module dockyard.controllers {
                     configurationSettings: "",
                     criteriaId: 1,
                     id: 1,
-                    mappingSettigns: "",
+                    fieldMappingSettings: "",
                     name: "test",
                     tempId: 0,
                     actionListId: 0,

@@ -21,7 +21,7 @@ module dockyard.interfaces {
         actionListId: number,
         actionType: string;
         configurationSettings: string;
-        mappingSettigns: string
+        fieldMappingSettings: string
     }
 
     export interface ICondition {
