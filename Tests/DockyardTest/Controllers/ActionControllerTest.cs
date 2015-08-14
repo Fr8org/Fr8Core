@@ -55,7 +55,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //Add one test action
-                var action = new FixtureData(uow).TestAction1();
+                var action = FixtureData.TestAction1();
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
 
@@ -84,7 +84,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //Add one test action
-                var action = new FixtureData(uow).TestAction1();
+                var action = FixtureData.TestAction1();
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
                 
@@ -111,7 +111,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
+                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
                 var _service = new Core.Services.Action();
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
                 Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
@@ -133,7 +133,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
+                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string assembeledName = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1";
                 Assert.AreEqual(_pluginRegistration.AssembleName(curActionRegistration), assembeledName);
@@ -146,7 +146,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = new FixtureData(uow).TestActionRegistrationDO1();
+                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
                 Assert.AreEqual(_pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionRegistration), curJsonResult);
@@ -161,15 +161,15 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+               
 
                 //Add a template
-                var template = fixture.TestTemplate1();
+                var template = FixtureData.TestTemplate1();
                 var templates = uow.Db.Set<TemplateDO>();
                 templates.Add(template);
                 uow.Db.SaveChanges();
 
-                var actionList = new FixtureData(uow).TestEmptyActionList();
+                var actionList = FixtureData.TestEmptyActionList();
                 actionList.Id = 1;
 
                 uow.ActionListRepository.Add(actionList);

@@ -36,20 +36,20 @@ namespace Core.Services
             return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s.ActionType);
         }
 
-        public void Register(string ActionType, string PluginRegistration, string Version)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == ActionType
-                    && a.Version == Version && a.ParentPluginRegistration == PluginRegistration).Any())
-                {
-                    ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType,
-                                                                    PluginRegistration,
-                                                                    Version);
-                    uow.SaveChanges();
-                }
-            }
-        }
+        //public void Register(string ActionType, string PluginRegistration, string Version)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == ActionType
+        //            && a.Version == Version && a.ParentPluginRegistration == PluginRegistration).Any())
+        //        {
+        //            ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType,
+        //                                                            PluginRegistration,
+        //                                                            Version);
+        //            uow.SaveChanges();
+        //        }
+        //    }
+        //}
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {

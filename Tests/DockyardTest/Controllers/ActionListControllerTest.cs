@@ -99,15 +99,15 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
 
                 //Add a template
-                var template = fixture.TestTemplate1();
+                var template = FixtureData.TestTemplate1();
                 var templates = uow.Db.Set<TemplateDO>();
                 templates.Add(template);
                 uow.Db.SaveChanges();
 
-                var actionList = new FixtureData(uow).TestActionList();
+                var actionList = FixtureData.TestActionList();
                 actionList.CurrentAction = null;
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();

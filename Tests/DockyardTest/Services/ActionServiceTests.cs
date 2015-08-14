@@ -50,13 +50,13 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<ISubscription>().Use(subscriptionMock.Object));
             _action = ObjectFactory.GetInstance<IAction>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _fixtureData = new FixtureData(_uow);
+            
         }
 
         [Test]
         public void CanRetrieveActionsForAccount()
         {
-            var dockyardAccount = _fixtureData.TestUser1();
+            var dockyardAccount = FixtureData.TestUser1();
             var result = _action.GetAvailableActions(dockyardAccount).ToArray();
             var expectedResult = _pr1Actions.Concat(_pr2Actions).OrderBy(s => s.ActionType, StringComparer.OrdinalIgnoreCase).ToArray();
             Assert.AreEqual(expectedResult.Length, result.Length, "Actions list length is different.");
@@ -70,7 +70,7 @@ namespace DockyardTest.Services
         [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var curActionRegistration = _fixtureData.TestActionRegistrationDO1();
+            var curActionRegistration = FixtureData.TestActionRegistrationDO1();
             string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
             Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
         }

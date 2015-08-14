@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using Utilities;
 using System.Reflection;
+using Data.Interfaces;
+using System.Linq;
 
 namespace Core.PluginRegistrations
 {
@@ -20,7 +22,7 @@ namespace Core.PluginRegistrations
         {
             availableActions = curAvailableActions;
             baseUrl = curBaseURL;
-            _action = ObjectFactory.GetInstance<IAction>();
+           // _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public string BaseUrl
@@ -47,7 +49,18 @@ namespace Core.PluginRegistrations
             IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableCommands;
             foreach (var action in curAvailableCommands)
             {
-                _action.Register(action.ActionType, this.GetType().Name, action.Version);
+                //_action.Register(action.ActionType, this.GetType().Name, action.Version);
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
+                        && a.Version == action.Version && a.ParentPluginRegistration == this.GetType().Name).Any())
+                    {
+                        ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(action.ActionType,
+                                                                        this.GetType().Name,
+                                                                        action.Version);
+                        uow.SaveChanges();
+                    }
+                }
             }
         }
         public string CallPluginRegistrationByString(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO)

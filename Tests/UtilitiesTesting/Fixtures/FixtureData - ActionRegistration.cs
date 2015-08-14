@@ -9,7 +9,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public ActionRegistrationDO TestActionRegistrationDO1()
+        public static ActionRegistrationDO TestActionRegistrationDO1()
         {
             var curActionDO = new ActionRegistrationDO
             {
