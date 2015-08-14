@@ -45,6 +45,8 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
+
+            EventManager.AlertEventActionDispatched += OnAlertEventActionDispatched;
         }
 
         public void UnsubscribeFromAlerts()
@@ -70,6 +72,8 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
+            
+            EventManager.AlertEventActionDispatched -= OnAlertEventActionDispatched;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -553,6 +557,23 @@ namespace Core.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
+        }
+
+        private void OnAlertEventActionDispatched(ActionDO curAction)
+        {
+            Logger.GetLogger().InfoFormat("Action of type {0} dispatched.", curAction.ActionType);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO factDO = new FactDO
+                {
+                    PrimaryCategory = "Action",
+                    SecondaryCategory = curAction.ActionType,
+                    Activity = "Dispatch",
+                };
+
+                uow.FactRepository.Add(factDO);
+                uow.SaveChanges();
+            }
         }
 
         private enum EventType

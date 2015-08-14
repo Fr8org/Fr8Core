@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.PluginRegistrations;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 
 namespace Core.Services
@@ -62,12 +65,12 @@ namespace Core.Services
             }
         }
 
-        public void Process(ActionDO curAction)
+        public async Task Process(ActionDO curAction)
         {
-            Dispatch(curAction);
+            await Dispatch(curAction);
         }
 
-        public void Dispatch(ActionDO curAction)
+        public async Task Dispatch(ActionDO curAction)
         {
             if (curAction == null)
                 throw new ArgumentNullException("curAction");
@@ -77,10 +80,11 @@ namespace Core.Services
             var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
             if (pluginRegistration == null)
                 throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            var curActionDTO = Mapper.Map<ActionDTO>(curAction);
             var pluginClient = ObjectFactory.GetInstance<IPluginClient>(); 
             pluginClient.BaseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-            var action = Regex.Replace(curAction.ActionType, @"\s", "_");
-            var requestUri = new Uri(string.Format("/actions/{0}", action));
+            await pluginClient.PostActionAsync(curAction.ActionType, curActionDTO);
+            EventManager.EventActionDispatched(curAction);
         }
     }
 }

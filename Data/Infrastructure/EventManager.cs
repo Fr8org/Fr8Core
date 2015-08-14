@@ -101,6 +101,9 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
+        public delegate void EventActionDispatchedHandler(ActionDO curAction);
+        public static event EventActionDispatchedHandler AlertEventActionDispatched;
+
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -296,6 +299,12 @@ namespace Data.Infrastructure
         {
             var handler = AlertTokenRevoked;
             if (handler != null) handler(userId);
+        }
+
+        public static void EventActionDispatched(ActionDO curAction)
+        {
+            var handler = AlertEventActionDispatched;
+            if (handler != null) handler(curAction);
         }
 
         #endregion
