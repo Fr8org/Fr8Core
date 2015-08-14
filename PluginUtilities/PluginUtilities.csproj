@@ -45,9 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Errors\PluginErrorCode.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
     <Compile Include="PluginBase.cs" />
+    <Compile Include="Errors\PluginCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
