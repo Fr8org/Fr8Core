@@ -284,6 +284,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
             modelBuilder.Entity<ActionRegistrationDO>().ToTable("ActionRegistration");
+            modelBuilder.Entity<DocuSignTemplateSubscriptionDO>().ToTable("DocuSignTemplateSubscriptions");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

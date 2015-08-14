@@ -117,6 +117,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
@@ -145,6 +146,10 @@
     <Compile Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.cs" />
     <Compile Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.Designer.cs">
       <DependentUpon>201508131250520_CriteriaForeignKey_Move_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.cs" />
+    <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
+      <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -514,6 +519,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.resx">
       <DependentUpon>201508131250520_CriteriaForeignKey_Move_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
+      <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
