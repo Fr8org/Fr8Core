@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Core.Managers.APIManagers.Transmitters.Restful
 {
-    class RestfulServiceClient : IRestfulServiceClient
+    public class RestfulServiceClient : IRestfulServiceClient
     {
         private readonly HttpClient _innerClient;
 
