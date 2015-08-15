@@ -19,7 +19,7 @@ namespace Core.ExternalServices.REST
         {
             _client.AddBody(body, contentType);
         }
-
+        
         public IRestfulResponse Execute()
         {
             _serviceManager.LogEvent("Sending REST call...");

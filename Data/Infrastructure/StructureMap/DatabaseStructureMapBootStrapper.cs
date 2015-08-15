@@ -22,7 +22,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));                
             }
         }
 

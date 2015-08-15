@@ -19,7 +19,7 @@ using PluginUtilities;
 
 namespace pluginAzureSqlServer.Controllers
 {
-    [RoutePrefix("actions")]
+    [RoutePrefix("plugin_azure_sql_server/actions")]
     public class ActionController : ApiController
     {
         public const string Version = "1.0";
@@ -58,16 +58,14 @@ namespace pluginAzureSqlServer.Controllers
             return CommandResponse.SuccessResponse();
         }
 
-        [HttpGet]
-        [Route("write_to_sql_server")]
-        public string WriteToSqlServer(ActionDTO actionDto) {
-            var curActionDO = Mapper.Map<ActionDO>(actionDto);
-
-            switch (ControllerContext.RouteData.Values["id"].ToString().ToLower()) {
+        [HttpPost]
+        [Route("write_to_sql_server/{path}")]
+        public string WriteToSqlServer(ActionDTO actionDto, string path) {
+            switch (path) {
                 case "execute":
-                    return Execute(curActionDO);
+                    return JsonConvert.SerializeObject(Execute(actionDto));
                 case "field_mappings":
-                    return GetFieldMappings(curActionDO);
+                    return JsonConvert.SerializeObject(GetFieldMappings(actionDto));
                 default:
                     return null;
             }
@@ -77,7 +75,12 @@ namespace pluginAzureSqlServer.Controllers
         private const string C_FIELDMAPPINGS_QUERY = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols" +
                                                      @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols" +
                                                      @"ORDER BY tbls.name, cols.COLUMN_NAME";
-        private string GetFieldMappings(ActionDO curActionDO) {             
+
+        [HttpPost]
+        [Route("write_to_sql_server/field_mappings")]
+        public IEnumerable<string> GetFieldMappings(ActionDTO actionDTO) {
+            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
+ 
             //Get configuration settings and check for connection string
             var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
             var connString = settings.Value<string>("connection_string");
@@ -88,7 +91,7 @@ namespace pluginAzureSqlServer.Controllers
             }
             
             //We have a conn string, initiate db connection and open
-            var dbProvider = ObjectFactory.GetInstance<IDbProvider>();
+            var dbProvider = ObjectFactory.GetInstance<SqlClientDbProvider>();
             var connection = dbProvider.CreateConnection(connString);
 
             try {
@@ -110,7 +113,7 @@ namespace pluginAzureSqlServer.Controllers
                 }
 
                 //Serialize and return
-                return JsonConvert.SerializeObject(tableMetaData);
+                return tableMetaData;
             }
             catch (Exception ex) {
                 //Should any exception be caught during the process, a connection failed error code is returned with the details
@@ -126,7 +129,9 @@ namespace pluginAzureSqlServer.Controllers
         
         //TODO - SF - Not sure how to handle this method since the Command stuff is supposedly outdated
         //The original method still exists at the top of the plugin code
-        private string Execute(ActionDO curActionDO) {
+        [HttpPost]
+        [Route("write_to_sql_server/execute")]
+        private string Execute(ActionDTO curActionDTO) {
             return string.Empty;
             //try {
             //    // Creating ExtrationHelper and parsing WriteCommandArgs.
@@ -155,13 +160,6 @@ namespace pluginAzureSqlServer.Controllers
         [HttpGet]
         [Route("configurationsettings")]
         public string GetConfigurationSettings()
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [Route("field_mapping_targets")]
-        public string GetFieldMappingTargets(ActionDTO curAction)
         {
             return string.Empty;
         }
