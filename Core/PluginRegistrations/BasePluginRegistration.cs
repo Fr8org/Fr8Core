@@ -42,12 +42,11 @@ namespace Core.PluginRegistrations
             }
         }
 
-        public virtual void RegisterActions()
+        public void RegisterActions()
         {
-            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableCommands;
+            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableActions;
             foreach (var action in curAvailableCommands)
             {
-                //_action.Register(action.ActionType, this.GetType().Name, action.Version);
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
@@ -56,16 +55,13 @@ namespace Core.PluginRegistrations
                         ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(action.ActionType,
                                                                         this.GetType().Name,
                                                                         action.Version);
+                        uow.ActionRegistrationRepository.Add(actionRegistrationDO);
                         uow.SaveChanges();
                     }
                 }
             }
         }
 
-        public IEnumerable<Data.Entities.ActionRegistrationDO> AvailableCommands
-        {
-            get { throw new NotImplementedException(); }
-        }
 
         public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionRegistrationDO curActionRegistrationDO)
         {

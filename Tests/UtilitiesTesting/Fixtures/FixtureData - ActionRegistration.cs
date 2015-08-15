@@ -3,9 +3,9 @@ using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
-	partial class FixtureData
+	public partial class FixtureData
 	{
-        public ActionRegistrationDO TestActionRegistration1()
+        public static ActionRegistrationDO TestActionRegistration1()
 		{
             ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO
 			{
@@ -17,7 +17,7 @@ namespace UtilitiesTesting.Fixtures
             return actionRegistrationDO;
 		}
 
-        public ActionRegistrationDO TestActionRegistration2()
+        public static ActionRegistrationDO TestActionRegistration2()
         {
             ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO
             {

@@ -54,20 +54,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void CanRetrieveActionsForAccount()
-        {
-            var dockyardAccount = FixtureData.TestUser1();
-            var result = _action.GetAvailableActions(dockyardAccount).ToArray();
-            var expectedResult = _pr1Actions.Concat(_pr2Actions).OrderBy(s => s.ActionType, StringComparer.OrdinalIgnoreCase).ToArray();
-            Assert.AreEqual(expectedResult.Length, result.Length, "Actions list length is different.");
-            Assert.That(Enumerable
-                .Zip(
-                    result, expectedResult,
-                    (s1, s2) => string.Equals(s1.ActionType, s2.ActionType, StringComparison.Ordinal))
-                .All(b => b), 
-                "Actions lists are different.");
-        }
-        [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
             var curActionRegistration = FixtureData.TestActionRegistrationDO1();
