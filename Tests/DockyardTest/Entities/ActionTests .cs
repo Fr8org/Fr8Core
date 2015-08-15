@@ -45,7 +45,7 @@ namespace DockyardTest.Entities
             }
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("ActionList")]
         public void ActionList_Add_CanCreateActionList()
         {
