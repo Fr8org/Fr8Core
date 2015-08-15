@@ -80,7 +80,7 @@ module dockyard.tests.controller {
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated], incomingEventArgs);
 
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
-            }); 
+            });
 
         //Rule #7
         it("When PaneConfigureAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
@@ -108,7 +108,7 @@ module dockyard.tests.controller {
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1);
-                var currentAction = <any>new model.Action(1, false);
+                var currentAction = <any>new model.Action(1, false, 1);
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], incomingEventArgs);
@@ -128,7 +128,7 @@ module dockyard.tests.controller {
         it("When PaneWorkflowDesigner_CriteriaSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.CriteriaSelectedEventArgs(1);
-                var currentAction = <any>new model.Action(1, false);
+                var currentAction = <any>new model.Action(1, false, 1);
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_CriteriaSelected], incomingEventArgs);
@@ -138,11 +138,21 @@ module dockyard.tests.controller {
         it("When PaneWorkflowDesigner_TemplateSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.TemplateSelectedEventArgs();
-                var currentAction = <any>new model.Action(1, false);
+                var currentAction = <any>new model.Action(1, false, 1);
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
+            });
+        //Rule #9
+        it("When PaneConfigureAction_Cancelled is sent, PaneConfigureMapping_Hide " +
+            "and PaneSelectAction_Hide should be received with no args", () => {
+                var incomingEventArgs = new pca.CancelledEventArgs(1, 2, false);
+
+                _$scope.$emit("PaneConfigureAction_Cancelled", incomingEventArgs);
+
+                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Hide");
+                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneSelectAction_Hide");
             });
     });
 }

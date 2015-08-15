@@ -55,7 +55,8 @@ module dockyard.directives.paneConfigureAction {
             scope.isVisible = true;
             scope.action = new model.Action(
                 eventArgs.actionId,
-                eventArgs.isTempId);
+                eventArgs.isTempId,
+                1);
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

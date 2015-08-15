@@ -108,7 +108,8 @@ module dockyard.directives.paneSelectAction {
             scope.isVisible = true;
             scope.action = new model.Action(
                 eventArgs.actionId,
-                eventArgs.isTempId);
+                eventArgs.isTempId,
+                eventArgs.criteriaId);
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

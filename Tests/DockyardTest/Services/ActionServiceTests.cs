@@ -54,18 +54,19 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void CanRetrieveActionsForAccount()
+        public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var dockyardAccount = _fixtureData.TestUser1();
-            var result = _action.GetAvailableActions(dockyardAccount).ToArray();
-            var expectedResult = _pr1Actions.Concat(_pr2Actions).OrderBy(s => s.ActionType, StringComparer.OrdinalIgnoreCase).ToArray();
-            Assert.AreEqual(expectedResult.Length, result.Length, "Actions list length is different.");
-            Assert.That(Enumerable
-                .Zip(
-                    result, expectedResult,
-                    (s1, s2) => string.Equals(s1.ActionType, s2.ActionType, StringComparison.Ordinal))
-                .All(b => b), 
-                "Actions lists are different.");
+            var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+            Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+        }
+
+        [Test]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionService_NULL_ActionRegistration()
+        {
+            var _service = new Core.Services.Action();
+            Assert.IsNotNull(_service.GetConfigurationSettings(null));
         }
 
         [Test]

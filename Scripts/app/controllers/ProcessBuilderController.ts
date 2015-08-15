@@ -56,7 +56,7 @@ module dockyard.controllers {
             this._scope.Cancel = angular.bind(this, this.Cancel);
             this._scope.Save = angular.bind(this, this.SaveAction);
         }
-        
+
         /*
             Mapping of incoming messages to handlers
         */
@@ -198,11 +198,11 @@ module dockyard.controllers {
                     );
             }
 
-            // Hide Select Action Pane
-            scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                // Hide Select Action Pane
+                scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
                 
-            // Hide Configure Action Pane
-            scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+                // Hide Configure Action Pane
+                scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
             //});
         }
 
@@ -216,7 +216,11 @@ module dockyard.controllers {
             var id = this.LocalIdentityGenerator.getNextId();
 
             // Create action object.
-            var action = new model.Action(id, true);
+            var action = new model.Action(
+                id,
+                true,
+                eventArgs.criteriaId
+            );
 
             action.userLabel = 'New Action #' + Math.abs(id).toString();
 
@@ -248,7 +252,7 @@ module dockyard.controllers {
             var scope = this._scope;
             //this._scope.$apply(function () {
             scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
-            scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
+                scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
             scope.$broadcast(
                 psa.MessageType[psa.MessageType.PaneSelectAction_Render],
                 eArgs
@@ -266,6 +270,8 @@ module dockyard.controllers {
             this._scope.currentAction = null; // action is apparently unselected
             //this._scope.$apply(function () {
 
+            var scope = this._scope;
+            //this._scope.$apply(function () {
             //Show Select Template Pane
             var eArgs = new directives.paneSelectTemplate.RenderEventArgs();
             scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
@@ -383,7 +389,7 @@ module dockyard.controllers {
                 .respond(function (method, url, data) {
                     return data;
                 })
-        }
+    }
     ]);
 
     app.controller('ProcessBuilderController', ProcessBuilderController);

@@ -79,5 +79,14 @@ namespace Web.Controllers
             }
             return new List<ActionDTO>();
         }
+
+        [HttpGet]
+        [Route("actions/configuration")]
+        public string GetConfigurationSettings(int curActionRegistrationId)
+        {
+            IActionRegistration _actionRegistration = new ActionRegistration();
+            ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
+            return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
+        }
     }
 }
