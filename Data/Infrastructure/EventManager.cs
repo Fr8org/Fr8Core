@@ -102,11 +102,29 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void EventActionDispatchedHandler(ActionDO curAction);
-        public static event EventActionDispatchedHandler AlertEventActionDispatched;
-
         public delegate void PluginIncidentHandler(EventData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
+
+        public delegate void EventDocuSignNotificationReceivedHandler();
+        public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
+
+        public delegate void EventProcessLaunchedHandler();
+        public static event EventProcessLaunchedHandler EventProcessLaunched;
+
+        public delegate void EventProcessNodeCreatedHandler();
+        public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
+
+        public delegate void EventCriteriaEvaluationStartedHandler();
+        public static event EventCriteriaEvaluationStartedHandler EventCriteriaEvaluationStarted;
+
+        public delegate void EventCriteriaEvaluationFinishedHandler();
+        public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
+
+        public delegate void EventActionStartedHandler();
+        public static event EventActionStartedHandler EventActionStarted;
+
+        public delegate void EventActionDispatchedHandler(ActionDO curAction);
+        public static event EventActionDispatchedHandler EventActionDispatched;
 
         #region Method
 
@@ -311,9 +329,9 @@ namespace Data.Infrastructure
             if (handler != null) handler(userId);
         }
 
-        public static void EventActionDispatched(ActionDO curAction)
+        public static void ActionDispatched(ActionDO curAction)
         {
-            var handler = AlertEventActionDispatched;
+            var handler = EventActionDispatched;
             if (handler != null) handler(curAction);
         }
 

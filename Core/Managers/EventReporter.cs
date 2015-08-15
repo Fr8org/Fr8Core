@@ -46,7 +46,7 @@ namespace Core.Managers
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
 
-            EventManager.AlertEventActionDispatched += OnAlertEventActionDispatched;
+            EventManager.EventActionDispatched += OnAlertEventActionDispatched;
         }
 
         public void UnsubscribeFromAlerts()
@@ -73,7 +73,7 @@ namespace Core.Managers
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
             
-            EventManager.AlertEventActionDispatched -= OnAlertEventActionDispatched;
+            EventManager.EventActionDispatched -= OnAlertEventActionDispatched;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)

@@ -98,7 +98,7 @@ namespace Core.Services
             var pluginClient = ObjectFactory.GetInstance<IPluginClient>(); 
             pluginClient.BaseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
             await pluginClient.PostActionAsync(curAction.ActionType, curActionDTO);
-            EventManager.EventActionDispatched(curAction);
+            EventManager.ActionDispatched(curAction);
         }
     }
 }
