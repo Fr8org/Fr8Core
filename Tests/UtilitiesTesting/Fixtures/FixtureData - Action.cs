@@ -34,5 +34,33 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
+
+        public static ActionDO TestAction3()
+        {
+            var curActionDO = new ActionDO
+            {
+                Id = 3,
+                UserLabel = "Send an Email"
+            };
+            return curActionDO;
+        }
+        public static ActionDO TestAction4()
+        {
+            var curActionDO = new ActionDO
+            {
+                Id = 4,
+                UserLabel = "Send a Text (SMS) Message"
+            };
+            return curActionDO;
+        }
+        public static ActionDO TestAction5()
+        {
+            var curActionDO = new ActionDO
+            {
+                Id = 5,
+                UserLabel = ""
+            };
+            return curActionDO;
+        }
     }
 }
