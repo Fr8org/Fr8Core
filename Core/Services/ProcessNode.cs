@@ -16,12 +16,12 @@ namespace Core.Services
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess)
+        public ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name="ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
-                //ProcessNodeTemplate = 
+                Name = name,
                 ParentProcessId = parentProcess.Id
             };
 

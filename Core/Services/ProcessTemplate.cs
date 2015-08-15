@@ -88,7 +88,7 @@ namespace Core.Services
 
                 if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
                 {
-                    _process.Execute(curProcessTemplate, curEnvelope);
+                    _process.Launch(curProcessTemplate, curEnvelope);
                 }
             }
         }
