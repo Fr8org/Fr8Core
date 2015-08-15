@@ -46,6 +46,12 @@ namespace Core.Managers
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
 
+            EventManager.EventDocuSignNotificationReceived += OnEventDocuSignNotificationReceived;
+            EventManager.EventProcessLaunched += OnEventProcessLaunched;
+            EventManager.EventProcessNodeCreated += OnEventProcessNodeCreated;
+            EventManager.EventCriteriaEvaluationStarted += OnEventCriteriaEvaluationStarted;
+            EventManager.EventCriteriaEvaluationFinished += OnEventCriteriaEvaluationFinished;
+            EventManager.EventActionStarted += OnEventActionStarted;
             EventManager.EventActionDispatched += OnAlertEventActionDispatched;
         }
 
@@ -557,6 +563,36 @@ namespace Core.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
+        }
+
+        private void OnEventDocuSignNotificationReceived()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnEventProcessLaunched()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnEventProcessNodeCreated()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnEventCriteriaEvaluationStarted()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnEventCriteriaEvaluationFinished()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void OnEventActionStarted()
+        {
+            throw new NotImplementedException();
         }
 
         private void OnAlertEventActionDispatched(ActionDO curAction)

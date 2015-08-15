@@ -329,6 +329,42 @@ namespace Data.Infrastructure
             if (handler != null) handler(userId);
         }
 
+        public static void DocuSignNotificationReceived()
+        {
+            var handler = EventDocuSignNotificationReceived;
+            if (handler != null) handler();
+        }
+
+        public static void ProcessLaunched()
+        {
+            var handler = EventProcessLaunched;
+            if (handler != null) handler();
+        }
+
+        public static void ProcessNodeCreated()
+        {
+            var handler = EventProcessNodeCreated;
+            if (handler != null) handler();
+        }
+
+        public static void CriteriaEvaluationStarted()
+        {
+            var handler = EventCriteriaEvaluationStarted;
+            if (handler != null) handler();
+        }
+
+        public static void CriteriaEvaluationFinished()
+        {
+            var handler = EventCriteriaEvaluationFinished;
+            if (handler != null) handler();
+        }
+
+        public static void ActionStarted()
+        {
+            var handler = EventActionStarted;
+            if (handler != null) handler();
+        }
+
         public static void ActionDispatched(ActionDO curAction)
         {
             var handler = EventActionDispatched;
