@@ -49,9 +49,13 @@ namespace Core.Services
             sourcePNode.ProcessNodeTemplate.TransitionKey = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
-        public void Execute(ProcessDO parentProcess, EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
             //TODO: implement
+            throw new NotImplementedException();
+
+            //if Criteria#Evaluate then ActionList#Process
+            if _criteria.Evaluate()
         }
 
         /// <summary>

@@ -13,17 +13,50 @@ using Data.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using StructureMap;
+using AutoMapper;
+using Core.Interfaces;
+using Data.Entities;
+using Data.Infrastructure.AutoMapper;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
 
 namespace Core.Services
 {
     public class Criteria : ICriteria
     {
-        public bool Evaluate(string criteria, int processId, string envelopeId, IEnumerable<EnvelopeDataDO> envelopeData)
+        private IEnvelope _envelope;
+        public Criteria()
         {
-            return Filter(criteria, processId, envelopeId, envelopeData.AsQueryable()).Any();
+            _envelope = ObjectFactory.GetInstance<IEnvelope>();
+        }
+        public bool Evaluate(string criteria, int processId,  IEnumerable<EnvelopeDataDO> envelopeData)
+        {
+            return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
 
-        public IQueryable<EnvelopeDataDO> Filter(string criteria, int processId, string envelopeId,
+        public bool Evaluate(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        {
+            
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplate.Id == curProcessNode.Id);
+                if (curCriteria == null)
+                    throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
+
+                DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = //need to retrieve the docusign envelop here
+
+                return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));//there are two different EnvelopeDatas here!
+            };
+        }
+
+
+        public IQueryable<EnvelopeDataDO> Filter(string criteria, int processId, 
             IQueryable<EnvelopeDataDO> envelopeData)
         {
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);

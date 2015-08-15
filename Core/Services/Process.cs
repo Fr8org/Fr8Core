@@ -67,7 +67,7 @@ namespace Core.Services
                 }
                 curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.CurrentProcessNodeId);
 
-                _processNode.Execute(curProcessDO, curEnvelope, curProcessNode);
+                _processNode.Execute(curEnvelope, curProcessNode);
             }
         }
     }
