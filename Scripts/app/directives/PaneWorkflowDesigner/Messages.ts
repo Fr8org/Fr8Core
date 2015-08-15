@@ -5,14 +5,14 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export enum MessageType {
         PaneWorkflowDesigner_Render,
-        PaneWorkflowDesigner_TemplateSelecting,
+        PaneWorkflowDesigner_TemplateSelected,
         PaneWorkflowDesigner_CriteriaAdding,
         PaneWorkflowDesigner_CriteriaAdded,
-        PaneWorkflowDesigner_CriteriaSelecting,
+        PaneWorkflowDesigner_CriteriaSelected,
         PaneWorkflowDesigner_CriteriaRemoved,
         PaneWorkflowDesigner_ActionAdding,
         PaneWorkflowDesigner_ActionAdded,
-        PaneWorkflowDesigner_ActionSelecting,
+        PaneWorkflowDesigner_ActionSelected,
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
         PaneWorkflowDesigner_UpdateAction,
@@ -33,7 +33,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class CriteriaSelectingEventArgs {
+    export class CriteriaSelectedEventArgs {
         public criteriaId: number;
 
         constructor(criteriaId: number) {
@@ -75,7 +75,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ActionSelectingEventArgs {
+    export class ActionSelectedEventArgs {
         public criteriaId: number;
         public actionId: number;
 
@@ -99,12 +99,12 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class UpdateActionEventArgs extends ActionEventArgsBase {
-        public actionTempId: number;
         public actionName: string;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number, actionTempId: number, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionName: string) {
             super(criteriaId, actionId);
-            this.actionTempId = actionTempId;
+            this.isTempId = isTempId;
             this.actionName = actionName;
         }
     }

@@ -9,12 +9,17 @@ namespace Core.PluginRegistrations
     {
         string BaseUrl { get; set; }
 
-        IEnumerable<ActionRegistrationDO> AvailableActions { get; }
+        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
 
         void RegisterActions();
-		
-        JObject GetConfigurationSettings();
 
+        string CallPluginRegistrationByString(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO);
+
+        IEnumerable<ActionRegistrationDO> AvailableActions { get; }
+		
+      //  JObject GetConfigurationSettings();
+
+        string AssembleName(ActionRegistrationDO curActionRegistrationDO);
         Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
     }
 }
