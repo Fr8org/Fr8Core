@@ -35,10 +35,10 @@ namespace Core.Services
             if (string.IsNullOrEmpty(xmlPayload))
                 throw new ArgumentNullException("xmlPayload");
 
-            List<DocuSignEventDO> curEvents;
+            List<DocuSignEventDO> curExternalEvents;
             string curEnvelopeId;
-            Parse(xmlPayload, out curEvents, out curEnvelopeId);
-            ProcessEvents(curEvents);
+            Parse(xmlPayload, out curExternalEvents, out curEnvelopeId);
+            ProcessEvents(curExternalEvents);
 
             _alertReporter.DocusignNotificationReceived(userId, curEnvelopeId);
         }
@@ -71,10 +71,10 @@ namespace Core.Services
             {
                 foreach (var curEvent in curEvents)
                 {
-                    var @event = curEvent;
+                    //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventRegistrationRepository.GetQuery()
-                            .Where(s => s.EventType == @event.ExternalEventType)
+                        uow.ExternalEventSubscription.GetQuery()
+                            .Where(s => s.EventType == curEvent.ExternalEventType)
                             .ToList();
                     var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
 
