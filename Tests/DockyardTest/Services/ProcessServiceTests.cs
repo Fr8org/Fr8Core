@@ -2,8 +2,10 @@
 using System.IO;
 using System.Linq;
 using Core.Interfaces;
+using Core.Managers;
 using Core.Services;
 using Data.Interfaces;
+using Data.States;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -45,8 +47,24 @@ namespace DockyardTest.Services
 		[Test]
 		public void ProcessService_NotificationReceivedAlertCreated()
 		{
+            //Arrange 
+            //create a test process
+		    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+		    {
+		        var process = FixtureData.TestProcess1();
+		        process.EnvelopeId = "0aa561b8-b4d9-47e0-a615-2367971f876b";
+		        process.ProcessState = ProcessState.Executing;
+		        uow.ProcessRepository.Add(process);
+		        uow.SaveChanges();
+		    }
+
+            //subscribe the events
+		    new EventReporter().SubscribeToAlerts();
+
+            //Act
 			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
 
+            //Assert
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();

@@ -105,7 +105,7 @@ namespace Data.Infrastructure
         public delegate void PluginIncidentHandler(EventData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
-        public delegate void EventDocuSignNotificationReceivedHandler();
+        public delegate void EventDocuSignNotificationReceivedHandler(string processTemplateName);
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
         public delegate void EventProcessLaunchedHandler();
@@ -329,10 +329,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(userId);
         }
 
-        public static void DocuSignNotificationReceived()
+        public static void DocuSignNotificationReceived(string envelopeId)
         {
             var handler = EventDocuSignNotificationReceived;
-            if (handler != null) handler();
+            if (handler != null) handler(envelopeId);
         }
 
         public static void ProcessLaunched()

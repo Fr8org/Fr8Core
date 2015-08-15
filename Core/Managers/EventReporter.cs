@@ -565,9 +565,28 @@ namespace Core.Managers
             AddFactOnToken(userId, "Revoked");
         }
 
-        private void OnEventDocuSignNotificationReceived()
+        private void OnEventDocuSignNotificationReceived(string envelopeId)
         {
-            throw new NotImplementedException();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ProcessDO processInExecution =
+                    uow.ProcessRepository.FindOne(
+                        process =>
+                            process.EnvelopeId.Equals(envelopeId) && process.ProcessState == ProcessState.Executing);
+
+                FactDO fact = new FactDO
+                {
+                    Data = processInExecution.Id.ToStr(),
+                    ObjectId = processInExecution.Id.ToStr(),
+                    PrimaryCategory = "Process Execution",
+                    SecondaryCategory = "DocuSign Notification",
+                    Activity = "Received"
+                };
+
+                uow.FactRepository.Add(fact);
+                uow.SaveChanges();
+                LogFactInformation(fact, "DocuSign Notification Received", EventType.Info);
+            }
         }
 
         private void OnEventProcessLaunched()
