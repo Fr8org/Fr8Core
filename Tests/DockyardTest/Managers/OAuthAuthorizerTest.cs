@@ -45,8 +45,8 @@ namespace DockyardTest.Managers
             DockyardAccountDO dockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixtureData = new FixtureData(uow);
-                dockyardAccount = fixtureData.TestUser1();
+               
+                dockyardAccount = FixtureData.TestUser1();
                 uow.SaveChanges();
             }
 

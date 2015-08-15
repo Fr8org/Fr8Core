@@ -52,21 +52,21 @@ var dockyard;
                 //Rule #6
                 it("When PaneSelectAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
                     "should be received with correct args", function () {
-                    var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, 3, "testaction"), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, 3, "testaction");
+                    var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, 3, "testaction"), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, true, "testaction");
                     _$scope.$emit("PaneSelectAction_ActionUpdated", incomingEventArgs);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
                 });
                 //Rule #7
                 it("When PaneConfigureAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
                     "should be received with correct args", function () {
-                    var incomingEventArgs = new pca.ActionUpdatedEventArgs(1, 2, 3), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, 3, null);
+                    var incomingEventArgs = new pca.ActionUpdatedEventArgs(1, 2, true), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, true, null);
                     _$scope.$emit("PaneConfigureAction_ActionUpdated", incomingEventArgs);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith('PaneWorkflowDesigner_UpdateAction', outgoingEventArgs);
                 });
                 //Rule #8
                 it("When PaneSelectAction_ActionTypeSelected is sent, PaneConfigureMapping_Render " +
                     "and PaneConfigureAction_Render should be received with correct args", function () {
-                    var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, 3, 4, "myaction"), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false);
+                    var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, true, 4, "myaction"), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false);
                     _$scope.$emit("PaneSelectAction_ActionTypeSelected", incomingEventArgs);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);

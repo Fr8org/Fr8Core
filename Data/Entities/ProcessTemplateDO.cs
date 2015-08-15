@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
 
@@ -6,6 +7,12 @@ namespace Data.Entities
 {
     public class ProcessTemplateDO : BaseDO
     {
+        public ProcessTemplateDO()
+        {
+            SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
+            SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
+        }
+
         [Key]
         public int Id { get; set; }
 
@@ -26,5 +33,11 @@ namespace Data.Entities
 
         [Required]
         public string UserId { get; set; }
+
+        [InverseProperty("ProcessTemplate")]
+        public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }
+
+        [InverseProperty("ProcessTemplate")]
+        public virtual IList<ExternalEventSubscriptionDO> SubscribedExternalEvents { get; set; }
     }
 }

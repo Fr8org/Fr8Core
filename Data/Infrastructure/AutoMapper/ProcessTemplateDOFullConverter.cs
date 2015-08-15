@@ -3,9 +3,9 @@ using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
-
-namespace Web.ViewModels.AutoMapper
+namespace Data.Infrastructure.AutoMapper
 {
     /// <summary>
     /// AutoMapper converter to convert ProcessTemplateDO to FullProcessTemplateDTO.

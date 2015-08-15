@@ -5,7 +5,6 @@ using AutoMapper;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Web.ViewModels;
-using Web.ViewModels.AutoMapper;
 using Web.ViewModels.JsonConverters;
 using Utilities.AutoMapper;
 
@@ -16,9 +15,6 @@ namespace Web.App_Start
 
         public static void ConfigureAutoMapper()
         {
-            Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
-            Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
-
             //Mapper.CreateMap<EventDO, EventVM>()
             //    .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
             //    .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
@@ -90,40 +86,6 @@ namespace Web.App_Start
           //Mapper.CreateMap< ActionDO, ActionVM >()
           //    .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
           //    .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );
-
-            Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
-                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
-                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
-                .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
-                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
-
-            Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
-                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
-                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
-                .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
-                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
-
-            Mapper.CreateMap<ActionListDO, ActionListDTO>();
-
-            Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
-
-            Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
-                .ForMember(x => x.ParentTemplateId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
-            Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
-                .ForMember(x => x.ProcessTemplateId, opts => opts.ResolveUsing(x => x.ParentTemplateId));
-
-            Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
-                .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
-            Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
-                .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
-
-            Mapper.CreateMap<ProcessTemplateDO, FullProcessTemplateDTO>()
-                .ConvertUsing<ProcessTemplateDOFullConverter>();
         }
     }
 }

@@ -12,7 +12,6 @@ namespace pluginAzureSqlServer.Controllers
     public class ActionController : ApiController
     {
         public const string Version = "1.0";
-        public const string AvailableActions = "{'type_name':'write to azure sql server','version':4.3}";
 
         /// <summary>
         /// Insert user data to remote database tables.
@@ -41,18 +40,23 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpGet]
         [Route("available")]
-        public string GetAvailable()
+        public ActionTypeListDTO GetAvailable()
         {
-            Validations.ValidateDtoString<ActionTypeListDTO>(AvailableActions);
-
-            return AvailableActions;
+            return new ActionTypeListDTO { TypeName = "write to azure sql server'", Version = "4.3" };
         }
 
         [HttpGet]
         [Route("configurationsettings")]
-        public string GetConfigurationSettings()
+        public object GetConfigurationSettings()
         {
-            return string.Empty;
+            return new { };
+        }
+
+        [HttpPost]
+        [Route("field_mapping_targets")]
+        public object GetFieldMappingTargets(ActionDTO curAction)
+        {
+            return new {};
         }
     }
 }

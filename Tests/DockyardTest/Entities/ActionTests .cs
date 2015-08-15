@@ -16,10 +16,10 @@ namespace DockyardTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
                 //SETUP
                 //create a customer from fixture data
-                var curActionDO = fixture.TestAction1();
+                var curActionDO = FixtureData.TestAction1();
 
                 //EXECUTE
                 uow.ActionRepository.Add(curActionDO);
@@ -31,7 +31,7 @@ namespace DockyardTest.Entities
                 Assert.NotNull(savedActionDO);
                 Assert.AreEqual(curActionDO.UserLabel, savedActionDO.UserLabel);
 
-                var curActionDO2 = fixture.TestAction2();
+                var curActionDO2 = FixtureData.TestAction2();
 
                 //EXECUTE
                 uow.ActionRepository.Add(curActionDO2);
@@ -51,10 +51,10 @@ namespace DockyardTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+              
                 //SETUP
                 //create a customer from fixture data
-                var curActionListDO = fixture.TestEmptyActionList();
+                var curActionListDO = FixtureData.TestEmptyActionList();
 
                 //EXECUTE
                 uow.ActionListRepository.Add(curActionListDO);
@@ -66,7 +66,7 @@ namespace DockyardTest.Entities
                 Assert.NotNull(savedActionListDO);
                 Assert.AreEqual(curActionListDO.Name, savedActionListDO.Name);
 
-                var curActionListDO2 = fixture.TestActionList();
+                var curActionListDO2 = FixtureData.TestActionList();
 
                 //EXECUTE
                 uow.ActionListRepository.Add(curActionListDO2);
