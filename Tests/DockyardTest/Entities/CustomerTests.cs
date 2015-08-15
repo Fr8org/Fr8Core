@@ -19,10 +19,10 @@ namespace DockyardTest.Models
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
                 //SETUP
                 //create a customer from fixture data
-                DockyardAccountDO curDockyardAccountDO = fixture.TestUser1();
+                DockyardAccountDO curDockyardAccountDO = FixtureData.TestUser1();
 
                 //EXECUTE
                 uow.UserRepository.Add(curDockyardAccountDO);

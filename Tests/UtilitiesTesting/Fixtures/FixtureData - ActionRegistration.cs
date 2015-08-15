@@ -26,5 +26,16 @@ namespace UtilitiesTesting.Fixtures
             };
             return actionRegistrationDO;
         }
+        public static ActionRegistrationDO TestActionRegistrationDO1()
+        {
+            var curActionDO = new ActionRegistrationDO
+            {
+                Id = 1,
+                ActionType = "Type1",
+                ParentPluginRegistration = "AzureSqlServer",
+                Version = "1"
+            };
+            return curActionDO;
+        }
 	}
 }

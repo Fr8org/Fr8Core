@@ -1,21 +1,18 @@
 ﻿using Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public ActionListDO TestActionList()
+        public static ActionListDO TestActionList()
         {
             var curActionListDO = new ActionListDO
             {
                 Id = 1,
                 TemplateId = 1,
-                Name = "list1"
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
             };
             curActionListDO.Actions.Add(TestActionList1());
             curActionListDO.Actions.Add(TestActionList2());
@@ -23,18 +20,19 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 
-        public ActionListDO TestEmptyActionList()
+        public static ActionListDO TestEmptyActionList()
         {
             var curActionListDO = new ActionListDO
             {
                 Id = 4,
                 TemplateId = 1,
-                Name = "list1"
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
             };
             return curActionListDO;
         }
 
-        public ActionDO TestActionList1()
+        public static ActionDO TestActionList1()
         {
             return new ActionDO
             {
@@ -45,7 +43,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public ActionDO TestActionList2()
+        public static ActionDO TestActionList2()
         {
             return new ActionDO
             {

@@ -199,7 +199,6 @@
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
-    <Compile Include="Entities\CustomFieldTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\ActionServiceTests.cs" />
     <Compile Include="Services\BasePluginRegistrationTests.cs" />

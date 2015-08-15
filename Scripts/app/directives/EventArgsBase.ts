@@ -51,11 +51,11 @@
     }
 
     export class ActionUpdatedEventArgsBase extends ActionEventArgsBase {
-        public actionTempId: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number, actionTempId: number) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean) {
             super(criteriaId, actionId);
-            this.actionTempId = actionTempId;
+            this.isTempId = isTempId;
         }
     }
 }

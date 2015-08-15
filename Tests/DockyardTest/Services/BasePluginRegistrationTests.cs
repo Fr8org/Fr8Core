@@ -40,7 +40,7 @@ namespace DockyardTest.Services
             var basePluginRegistrationMock = new Mock<BasePluginRegistration>(availableActions, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
-            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableCommands;
+            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableActions;
 
             Assert.AreEqual(2, result.Count());
         }
@@ -51,7 +51,7 @@ namespace DockyardTest.Services
             var basePluginRegistrationMock = new Mock<BasePluginRegistration>(availableActions, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
-            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableCommands;
+            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableActions;
 
             Assert.AreEqual(actionType, result.ToList()[0].ActionType);
             Assert.AreEqual(version, result.ToList()[0].Version);
@@ -71,6 +71,24 @@ namespace DockyardTest.Services
 
             Assert.AreEqual(actionType, newActionRegistration.ActionType);
             Assert.AreEqual(version, newActionRegistration.Version);
+        }
+
+        [Test]
+        public void RegisterActions_RegisterExisting_DoNoCreateNew()
+        {
+            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(availableActions, baseUrl);
+            ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
+
+            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
+            basePluginRegistration.RegisterActions();
+            int totalRecords = _uow.ActionRegistrationRepository.GetQuery().Count();
+
+            basePluginRegistrationMock = new Mock<BasePluginRegistration>(availableActions, baseUrl);
+            ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
+            basePluginRegistration.RegisterActions();
+            int totalRecordsAfterExistingRegister = _uow.ActionRegistrationRepository.GetQuery().Count();
+
+            Assert.AreEqual(totalRecords, totalRecordsAfterExistingRegister);
         }
     }
 }

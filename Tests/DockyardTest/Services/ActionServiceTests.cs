@@ -33,11 +33,11 @@ namespace DockyardTest.Services
             base.SetUp();
             var pluginRegistration1Mock = new Mock<IPluginRegistration>();
             pluginRegistration1Mock
-                .SetupGet(pr => pr.AvailableCommands)
+                .SetupGet(pr => pr.AvailableActions)
                 .Returns(_pr1Actions);
             var pluginRegistration2Mock = new Mock<IPluginRegistration>();
             pluginRegistration2Mock
-                .SetupGet(pr => pr.AvailableCommands)
+                .SetupGet(pr => pr.AvailableActions)
                 .Returns(_pr2Actions);
             var subscriptionMock = new Mock<ISubscription>();
             subscriptionMock
@@ -54,44 +54,19 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void CanRetrieveActionsForAccount()
+        public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var dockyardAccount = _fixtureData.TestUser1();
-            var result = _action.GetAvailableActions(dockyardAccount).ToArray();
-            var expectedResult = _pr1Actions.Concat(_pr2Actions).OrderBy(s => s.ActionType, StringComparer.OrdinalIgnoreCase).ToArray();
-            Assert.AreEqual(expectedResult.Length, result.Length, "Actions list length is different.");
-            Assert.That(Enumerable
-                .Zip(
-                    result, expectedResult,
-                    (s1, s2) => string.Equals(s1.ActionType, s2.ActionType, StringComparison.Ordinal))
-                .All(b => b), 
-                "Actions lists are different.");
+            var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+            Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
         }
 
         [Test]
-        public void Register_NewAction_RegisterNewAction()
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionService_NULL_ActionRegistration()
         {
-            var newAction = FixtureData.TestActionRegistration1();
-
-            _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
-            var savedAction = _uow.ActionRegistrationRepository.GetQuery().FirstOrDefault(i => i.Id == newAction.Id);
-
-            Assert.AreEqual(savedAction.ActionType, savedAction.ActionType);
-            Assert.AreEqual(savedAction.ParentPluginRegistration, savedAction.ParentPluginRegistration);
-            Assert.AreEqual(savedAction.Version, savedAction.Version);
-        }
-
-        [Test]
-        public void Register_ExistingAction_DoNothing()
-        {
-            var newAction = FixtureData.TestActionRegistration1();
-
-            _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
-            int totalRecords = _uow.ActionRegistrationRepository.GetQuery().Count();
-            _action.Register(newAction.ActionType, newAction.ParentPluginRegistration, newAction.Version);
-            int totalRecordsAfterExistingRegister = _uow.ActionRegistrationRepository.GetQuery().Count();
-
-            Assert.AreEqual(totalRecords, totalRecordsAfterExistingRegister);
+            var _service = new Core.Services.Action();
+            Assert.IsNotNull(_service.GetConfigurationSettings(null));
         }
     }
 }

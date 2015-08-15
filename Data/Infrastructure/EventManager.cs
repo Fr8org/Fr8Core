@@ -102,6 +102,9 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
+        public delegate void EventActionDispatchedHandler(ActionDO curAction);
+        public static event EventActionDispatchedHandler AlertEventActionDispatched;
+
         public delegate void PluginIncidentHandler(EventData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
@@ -306,6 +309,12 @@ namespace Data.Infrastructure
         {
             var handler = AlertTokenRevoked;
             if (handler != null) handler(userId);
+        }
+
+        public static void EventActionDispatched(ActionDO curAction)
+        {
+            var handler = AlertEventActionDispatched;
+            if (handler != null) handler(curAction);
         }
 
         #endregion

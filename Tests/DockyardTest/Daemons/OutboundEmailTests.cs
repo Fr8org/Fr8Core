@@ -28,11 +28,11 @@ namespace DockyardTest.Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
                 var outboundEmailDaemon = new OutboundEmail();
 
                 // SETUP
-                var email = fixture.TestEmail1();
+                var email = FixtureData.TestEmail1();
 
                 uow.EmailRepository.Add(email);
 
@@ -62,11 +62,11 @@ namespace DockyardTest.Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
                 var outboundEmailDaemon = new OutboundEmail();
 
                 // SETUP
-                var email = fixture.TestEmail1();
+                var email = FixtureData.TestEmail1();
 
                 // EXECUTE
                 //var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "template", null);
@@ -94,11 +94,11 @@ namespace DockyardTest.Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
                 var outboundEmailDaemon = new OutboundEmail();
 
                 // SETUP
-                var email = fixture.TestEmail1();
+                var email = FixtureData.TestEmail1();
 
                 // EXECUTE
 		    //var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "a16da250-a48b-42ad-88e1-bdde24ae1dee", null);
@@ -129,7 +129,7 @@ namespace DockyardTest.Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
+                
                 var outboundEmailDaemon = new OutboundEmail();
 
                 emailAddress.Recipients = new List<RecipientDO>()
@@ -140,7 +140,7 @@ namespace DockyardTest.Daemons
                         EmailParticipantType = EmailParticipantType.To
                     }
                 };
-                uow.AspNetRolesRepository.Add(fixture.TestRole());
+                uow.AspNetRolesRepository.Add(FixtureData.TestRole());
                 var u = new DockyardAccountDO();
                 var user = new DockyardAccount();
                 DockyardAccountDO currDockyardAccountDO = new DockyardAccountDO();

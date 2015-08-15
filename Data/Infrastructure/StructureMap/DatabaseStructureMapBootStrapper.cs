@@ -1,5 +1,6 @@
 using System.Data.Entity;
 using Data.Entities;
+using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using StructureMap.Configuration.DSL;
 
@@ -31,6 +32,8 @@ namespace Data.Infrastructure.StructureMap
             {
                 For<DbContext>().Use<DockyardDbContext>();
                 For<IDBContext>().Use<DockyardDbContext>();
+
+                DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
 
@@ -39,6 +42,8 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IDBContext>().Use<MockedDBContext>();
+
+                DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
     }

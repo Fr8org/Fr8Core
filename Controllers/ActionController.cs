@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 using AutoMapper;
-using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Web.ViewModels;
+using Core.Interfaces;
+using Core.Managers;
 using Core.Services;
 using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -52,6 +53,15 @@ namespace Web.Controllers
                 return new List<ActionDTO> { actionVm };
             }
             return new List<ActionDTO>();
+        }
+
+        [HttpGet]
+        [Route("actions/configuration")]
+        public string GetConfigurationSettings(int curActionRegistrationId)
+        {
+            IActionRegistration _actionRegistration = new ActionRegistration();
+            ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
+            return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
         }
     }
 }

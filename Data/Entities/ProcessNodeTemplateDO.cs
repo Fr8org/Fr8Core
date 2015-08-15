@@ -10,6 +10,7 @@ namespace Data.Entities
     {
         public ProcessNodeTemplateDO()
         {
+            this.Criteria = new List<CriteriaDO>();
             this.ActionLists = new List<ActionListDO>();
         }
 
@@ -30,7 +31,7 @@ namespace Data.Entities
         /// </summary>
         public string TransitionKey { get; set; }
 
-        public virtual CriteriaDO Criteria { get; set; }
+        public virtual List<CriteriaDO> Criteria { get; set; }
 
         public virtual List<ActionListDO> ActionLists { get; set; }
 
