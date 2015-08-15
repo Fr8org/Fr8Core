@@ -40,13 +40,13 @@ module dockyard.directives.paneConfigureAction {
 
                 //Template function goes here
 
-                $scope.$watch<interfaces.IAction>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<model.Action>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
             };
         }
 
-        private onActionChanged(newValue: interfaces.IAction, oldValue: interfaces.IAction, scope: interfaces.IPaneConfigureActionScope) {
+        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneConfigureActionScope) {
 
         }
 
@@ -54,8 +54,8 @@ module dockyard.directives.paneConfigureAction {
             var scope = (<interfaces.IPaneConfigureActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
-                eventArgs.isTempId ? 0 : eventArgs.actionId,
-                eventArgs.isTempId ? eventArgs.actionId : 0);
+                eventArgs.actionId,
+                eventArgs.isTempId);
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

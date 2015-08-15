@@ -12,25 +12,25 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
-        public tempActionId: number;
         public actionType: string;
+        public isTempId: boolean;
         public actionName: string;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionType: string, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionType: string, actionName: string) {
             super(criteriaId, actionId);
-            this.tempActionId = tempActionId;
+            this.isTempId = isTempId;
             this.actionType = actionType;
             this.actionName = actionName;
         }
     }
 
     export class ActionUpdatedEventArgs extends ActionEventArgsBase {
-        public tempActionId: number;
+        public isTempId: boolean;
         public actionName: string;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionName: string) {
             super(criteriaId, actionId);
-            this.tempActionId = tempActionId;
+            this.isTempId = isTempId;
             this.actionName = actionName;
         }
     }
@@ -45,11 +45,11 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class UpdateActionEventArgs extends ActionEventArgsBase {
-        public actionTempId: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number, actionTempId: number) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean) {
             super(criteriaId, actionId);
-            this.actionTempId = actionTempId;
+            this.isTempId = isTempId;
         }
     }
 
@@ -78,16 +78,16 @@ module dockyard.directives.paneSelectAction {
 
                 this.PupulateSampleData($scope);
 
-                $scope.$watch<interfaces.IAction>(
+                $scope.$watch<model.Action>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
                     var eventArgs = new ActionTypeSelectedEventArgs(
                         $scope.action.criteriaId,
                         $scope.action.id,
-                        $scope.action.tempId,
+                        $scope.action.isTempId,
                         $scope.action.actionType,
-                        $scope.action.name);
+                        $scope.action.userLabel);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
                 }
@@ -98,7 +98,7 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: interfaces.IAction, oldValue: interfaces.IAction, scope: interfaces.IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneSelectActionScope) {
 
         }
 
@@ -107,8 +107,8 @@ module dockyard.directives.paneSelectAction {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
-                eventArgs.isTempId ? 0 : eventArgs.actionId,
-                eventArgs.isTempId ? eventArgs.actionId : 0);
+                eventArgs.actionId,
+                eventArgs.isTempId);
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

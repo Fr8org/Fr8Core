@@ -2,6 +2,7 @@
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -131,7 +132,7 @@ namespace DockyardTest.Controllers
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
                 var controller = new ActionController(actionMock.Object);
-                controller.Delete(actionDO.Id);
+                controller.Get(actionDO.Id);
                 actionMock.Verify(a => a.GetById(actionDO.Id));
             }
         }

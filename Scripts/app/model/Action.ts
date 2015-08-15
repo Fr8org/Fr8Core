@@ -1,8 +1,7 @@
 ﻿module dockyard.model {
     export class Action implements interfaces.IAction {
         id: number;
-        tempId: number;
-        name: string;
+        isTempId: boolean;
         criteriaId: number;
         actionType: string;
         actionListId: number
@@ -10,14 +9,14 @@
         fieldMappingSettings: string;
         userLabel: string
 
-        constructor(id: number, tempId: number) {
+        constructor(id: number, isTempId: boolean) {
             this.id = id;
-            this.tempId = tempId;
+            this.isTempId = isTempId;
         }
 
         clone(): Action {
-            var result = new Action(this.id, this.tempId);
-            result.name = this.name;
+            var result = new Action(this.id, this.isTempId);
+            result.userLabel = this.userLabel;
             return result;
         }
     }

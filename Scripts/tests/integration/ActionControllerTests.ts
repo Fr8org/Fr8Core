@@ -3,7 +3,7 @@
 
 module dockyard.tests.controller {
 
-    describe("Process Template Controller ", function () {
+    describe("Action Controller ", function () {
         var testData = {};
 
         var returnedData = null;
@@ -21,7 +21,7 @@ module dockyard.tests.controller {
         var deleteInvoker = function (data, done) {
             $.ajax({
                 type: "Delete",
-                url: "/api/processtemplate/" + data.Id,
+                url: "/api/action/" + data.Id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -35,7 +35,7 @@ module dockyard.tests.controller {
         var getInvoker = function (data, done) {
             $.ajax({
                 type: "GET",
-                url: "/api/processtemplate/" + data.Id,
+                url: "/api/action/" + data[0].Id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -52,7 +52,7 @@ module dockyard.tests.controller {
         var postInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "/api/processtemplate",
+                url: "/api/action/save",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -69,11 +69,24 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            postInvoker(done, { name: "testdata" });
+            var actions: interfaces.IAction =
+                {
+                    actionType: "test action type",
+                    configurationSettings: "test",
+                    criteriaId: 1,
+                    isTempId: false,
+                    id: null,
+                    fieldMappingSettings: "test",
+                    userLabel: "test",
+                    tempId: 0,
+                    actionListId: null
+                };
+
+            postInvoker(done, actions);
 
         });
 
-        it("Can Get One Process Template", function () {
+        it("can save action", function () {
             expect(returnedData).not.toBe(null);
         });
     });

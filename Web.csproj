@@ -314,14 +314,8 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MvcHandleErrorAttribute.cs" />
-    <Compile Include="ViewModels\ActionDTOBase.cs" />
-    <Compile Include="ViewModels\ActionListDTO.cs" />
-    <Compile Include="ViewModels\ActionDTO.cs" />
-    <Compile Include="ViewModels\AutoMapper\ProcessTemplateDOFullConverter.cs" />
-    <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
-    <Compile Include="ViewModels\FullProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
@@ -337,8 +331,6 @@
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
-    <Compile Include="ViewModels\ProcessNodeTemplateDTO.cs" />
-    <Compile Include="ViewModels\ProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
@@ -494,13 +486,15 @@
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
-    <TypeScriptCompile Include="Scripts\tests\integration\processtemplatecontroller_tests - Copy.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
+    <Content Include="Scripts\tests\integration\processtemplatecontroller_tests.js" />
+    <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneFieldParamMapper\PaneFieldParamMapper.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
-    <TypeScriptCompile Include="Scripts\tests\mocks\TypedScopeFactory.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixtures.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
@@ -3794,6 +3788,9 @@
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>

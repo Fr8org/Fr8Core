@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentValidation;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Web.ViewModels.Validators
 {

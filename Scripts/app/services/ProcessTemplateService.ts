@@ -15,8 +15,12 @@ module dockyard.services {
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
-        <IActionService> $resource(urlPrefix + '/Action/:id', { id: '@id' })
+        <IActionService> $resource(urlPrefix + '/Action/:id',
+            {
+                id: '@id'
+            },
+            {
+                'save': { method: 'POST', isArray: true }
+            })
     ]);
-
-
 }

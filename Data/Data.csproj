@@ -35,6 +35,13 @@
     <Reference Include="Analytics.NET">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper, Version=3.3.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4">
+      <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="DocuSign.Integration.Client">
       <HintPath>..\packages\DocuSign.Integration.Client.dll.1.5.1\lib\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
@@ -110,6 +117,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
+    <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
+    <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
@@ -117,7 +127,13 @@
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\ITemplate.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
@@ -126,6 +142,14 @@
     <Compile Include="Migrations\201508130055069_ActionRegistration.cs" />
     <Compile Include="Migrations\201508130055069_ActionRegistration.Designer.cs">
       <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.cs" />
+    <Compile Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.Designer.cs">
+      <DependentUpon>201508131250520_CriteriaForeignKey_Move_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.cs" />
+    <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
+      <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -492,6 +516,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508130055069_ActionRegistration.resx">
       <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.resx">
+      <DependentUpon>201508131250520_CriteriaForeignKey_Move_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
+      <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

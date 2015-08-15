@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace Core.PluginRegistrations
@@ -8,8 +9,12 @@ namespace Core.PluginRegistrations
     {
         string BaseUrl { get; set; }
 
-        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
+        IEnumerable<ActionRegistrationDO> AvailableActions { get; }
 
         void RegisterActions();
+		
+        JObject GetConfigurationSettings();
+
+        Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
     }
 }

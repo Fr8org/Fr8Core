@@ -33,11 +33,11 @@ namespace DockyardTest.Services
             base.SetUp();
             var pluginRegistration1Mock = new Mock<IPluginRegistration>();
             pluginRegistration1Mock
-                .SetupGet(pr => pr.AvailableCommands)
+                .SetupGet(pr => pr.AvailableActions)
                 .Returns(_pr1Actions);
             var pluginRegistration2Mock = new Mock<IPluginRegistration>();
             pluginRegistration2Mock
-                .SetupGet(pr => pr.AvailableCommands)
+                .SetupGet(pr => pr.AvailableActions)
                 .Returns(_pr2Actions);
             var subscriptionMock = new Mock<ISubscription>();
             subscriptionMock

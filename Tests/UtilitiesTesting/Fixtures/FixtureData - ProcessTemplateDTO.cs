@@ -1,4 +1,4 @@
-﻿using Web.ViewModels;
+﻿using Data.Interfaces.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {

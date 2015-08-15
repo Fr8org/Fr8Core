@@ -30,7 +30,7 @@ namespace Core.Services
         public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            return plugins.SelectMany(p => p.AvailableCommands).OrderBy(s => s.ActionType);
+            return plugins.SelectMany(p => p.AvailableActions).OrderBy(s => s.ActionType);
         }
 
         public void Register(string ActionType, string PluginRegistration, string Version)

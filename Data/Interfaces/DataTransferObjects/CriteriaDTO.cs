@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace Web.ViewModels
+namespace Data.Interfaces.DataTransferObjects
 {
     /// <summary>Data transfer object for Criteria entity.</summary>
     public class CriteriaDTO

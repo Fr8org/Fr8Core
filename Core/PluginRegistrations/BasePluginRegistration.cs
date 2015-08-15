@@ -1,54 +1,55 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Core.Interfaces;
 using Data.Entities;
 using Newtonsoft.Json;
-using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Utilities;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 
 namespace Core.PluginRegistrations
 {
     public abstract class BasePluginRegistration : IPluginRegistration
     {
-        private readonly string availableActions = "";
-        private readonly string baseUrl = "";
+        private readonly string availableActions;
+        private readonly string baseUrl;
         private readonly IAction _action;
 
-        public BasePluginRegistration(string curAvailableActions, string curBaseURL)
+        protected BasePluginRegistration(string curAvailableActions, string curBaseUrl)
         {
+            AutoMapperBootStrapper.ConfigureAutoMapper();
+
             availableActions = curAvailableActions;
-            baseUrl = curBaseURL;
+            baseUrl = curBaseUrl;
             _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public string BaseUrl
         {
-            get
-            {
-                return baseUrl;
-            }
+            get { return baseUrl; }
 
             set { }
         }
 
-        public IEnumerable<ActionRegistrationDO> AvailableCommands
+        public IEnumerable<ActionRegistrationDO> AvailableActions
         {
             get
             {
-                var result = JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions, new JsonSerializerSettings());
-                return result;
+                return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
+                    new JsonSerializerSettings());
             }
         }
 
         public virtual void RegisterActions()
         {
-            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableCommands;
-            foreach (var action in curAvailableCommands)
+            IEnumerable<ActionRegistrationDO> curAvailableActions = AvailableActions;
+            foreach (var action in curAvailableActions)
             {
-                _action.Register(action.ActionType, this.GetType().Name, action.Version);
+                _action.Register(action.ActionType, GetType().Name, action.Version);
             }
         }
+
+        public abstract JObject GetConfigurationSettings();
+
+        public abstract Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
     }
 }

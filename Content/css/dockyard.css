@@ -10,3 +10,7 @@
     More info: https://angular-ui.github.io/bootstrap/
 */
 .nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.form-horizontal .control-label {
+    text-align: left;
+}
