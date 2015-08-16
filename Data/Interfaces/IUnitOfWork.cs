@@ -70,7 +70,7 @@ namespace Data.Interfaces
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        ExternalEventRegistrationRepository ExternalEventSubscription { get; }
+        ExternalEventRegistrationRepository ExternalEventRegistrationRepository { get; }
         MailerRepository MailerRepository { get; }
 
         /// <summary>

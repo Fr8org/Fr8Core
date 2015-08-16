@@ -38,7 +38,7 @@ namespace Core.Services
             List<DocuSignEventDO> curExternalEvents;
             string curEnvelopeId;
             Parse(xmlPayload, out curExternalEvents, out curEnvelopeId);
-            ProcessEvents(curExternalEvents);
+            ProcessEvents(curExternalEvents, userId);
 
             _alertReporter.DocusignNotificationReceived(userId, curEnvelopeId);
         }
@@ -65,7 +65,7 @@ namespace Core.Services
             }
         }
 
-        private void Post(IEnumerable<DocuSignEventDO> curEvents, string curUserID)
+        private void ProcessEvents(IEnumerable<DocuSignEventDO> curEvents, string curUserID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -73,8 +73,8 @@ namespace Core.Services
                 {
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventSubscription.GetQuery()
-                            .Where(s => s.EventType == curEvent.ExternalEventType)
+                        uow.ExternalEventRegistrationRepository.GetQuery()
+                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType)
                             .ToList();
                     var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
 
