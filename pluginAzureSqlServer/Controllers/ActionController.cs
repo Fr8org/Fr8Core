@@ -22,6 +22,8 @@ namespace pluginAzureSqlServer.Controllers
     [RoutePrefix("plugin_azure_sql_server/actions")]
     public class ActionController : ApiController
     {
+        protected delegate object WriteToSqlServerAction(ActionDO curActionDO);
+
         public const string Version = "1.0";
         public const string AvailableActions = "{'type_name':'write to azure sql server','version':4.3}";
 
@@ -36,41 +38,48 @@ namespace pluginAzureSqlServer.Controllers
         /// <summary>
         /// Insert user data to remote database tables.
         /// </summary>
-        [HttpPost]
-        [Route("writeSQL")]
-        public CommandResponse Write(JObject data)
-        {
-            try
-            {
-                // Creating ExtrationHelper and parsing WriteCommandArgs.
-                var parser = new DbServiceJsonParser();
-                var writeArgs = parser.ExtractWriteCommandArgs(data);
+        //[HttpPost]
+        //[Route("writeSQL")]
+        //public CommandResponse Write(JObject data)
+        //{                 
+        //    try
+        //    {
+        //        // Creating ExtrationHelper and parsing WriteCommandArgs.
+        //        var parser = new DbServiceJsonParser();
+        //        var writeArgs = parser.ExtractWriteCommandArgs(data);
 
-                // Creating DbService and running WriteCommand logic.
-                var dbService = new DbService();
-                dbService.WriteCommand(writeArgs);
-            }
-            catch (Exception ex)
-            {
-                return CommandResponse.ErrorResponse(ex.Message);
-            }
+        //        // Creating DbService and running WriteCommand logic.
+        //        var dbService = new DbService();
+        //        dbService.WriteCommand(writeArgs);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return CommandResponse.ErrorResponse(ex.Message);
+        //    }
 
-            return CommandResponse.SuccessResponse();
-        }
+        //    return CommandResponse.SuccessResponse();
+        //}
+
 
         [HttpPost]
         [Route("write_to_sql_server/{path}")]
-        public string WriteToSqlServer(ActionDTO actionDto, string path) {
-            switch (path) {
-                case "execute":
-                    return JsonConvert.SerializeObject(Execute(actionDto));
-                case "field_mappings":
-                    return JsonConvert.SerializeObject(GetFieldMappings(actionDto));
-                default:
-                    return null;
-            }
-
+        public string WriteToSqlServer(ActionDTO curActionDTO, string path) {
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var action = GetWriteToSqlServerAction(path);
+            return JsonConvert.SerializeObject(action(curActionDO));
         }
+
+        private WriteToSqlServerAction GetWriteToSqlServerAction(string path) {
+            switch (path) {
+                case "execute":         return Execute;
+                case "field_mappings":  return GetFieldMappings;
+                default:                return null;
+            }
+        }
+
+
+
+
 
         private const string C_FIELDMAPPINGS_QUERY = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols" +
                                                      @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols" +
@@ -78,28 +87,14 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("write_to_sql_server/field_mappings")]
-        public IEnumerable<string> GetFieldMappings(ActionDTO actionDTO) {
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
- 
+        public object GetFieldMappings(ActionDO curActionDO) {             
             //Get configuration settings and check for connection string
             var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
             var connString = settings.Value<string>("connection_string");
 
-            if (string.IsNullOrEmpty(connString)) {
-                //Error point 1
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-            
-            //We have a conn string, initiate db connection and open
-            var dbProvider = ObjectFactory.GetInstance<SqlClientDbProvider>();
-            var connection = dbProvider.CreateConnection(connString);
+            var curProvider = ObjectFactory.GetInstance<IDbProvider>();         
 
-            try {
-                //Open the connection, remember to close!!
-                connection.Open();
-
-                //Create a command from the const query to comb all tables/cols in one query
-                var command = connection.CreateCommand();
+            return curProvider.ConnectToSql(connString, (command) => {
                 command.CommandText = C_FIELDMAPPINGS_QUERY;
 
                 //The list to serialize
@@ -114,24 +109,14 @@ namespace pluginAzureSqlServer.Controllers
 
                 //Serialize and return
                 return tableMetaData;
-            }
-            catch (Exception ex) {
-                //Should any exception be caught during the process, a connection failed error code is returned with the details
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_FAILED, ex.Message);
-            }
-            finally {
-                //Ensure the connection is closed after use if still open.
-                if (connection.State != System.Data.ConnectionState.Closed) {
-                    connection.Close();
-                }
-            }
+            });
         }
         
         //TODO - SF - Not sure how to handle this method since the Command stuff is supposedly outdated
         //The original method still exists at the top of the plugin code
         [HttpPost]
         [Route("write_to_sql_server/execute")]
-        private string Execute(ActionDTO curActionDTO) {
+        private string Execute(ActionDO curActionDO) {
             return string.Empty;
             //try {
             //    // Creating ExtrationHelper and parsing WriteCommandArgs.

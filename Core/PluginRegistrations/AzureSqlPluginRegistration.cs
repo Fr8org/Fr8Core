@@ -14,7 +14,13 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlPluginRegistration : BasePluginRegistration
     {
-        public const string baseUrl = "plugin_azure_sql_server";
+
+#if DEBUG
+        public const string baseUrl = "http://localhost:23432";
+#else
+        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
+#endif
+
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
         public AzureSqlPluginRegistration(IAction action)
