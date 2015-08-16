@@ -51,7 +51,7 @@ namespace Core.Services
                 if (curCriteria == null)
                     throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
 
-                DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = //need to retrieve the docusign envelop here
+                DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = null; //should just change GetEnvelopeData to pass an EnvelopeDO
 
 
                 return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));

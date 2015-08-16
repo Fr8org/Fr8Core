@@ -55,7 +55,7 @@ namespace Core.Services
             throw new NotImplementedException();
 
             //if Criteria#Evaluate then ActionList#Process
-            if _criteria.Evaluate()
+            
         }
 
         /// <summary>
