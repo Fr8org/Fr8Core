@@ -15,7 +15,7 @@ namespace Core.PluginRegistrations
     {
         private readonly string availableActions;
         private readonly string baseUrl;
-       // private readonly IAction _action;
+        // private readonly IAction _action;
 
         protected BasePluginRegistration(string curAvailableActions, string curBaseUrl)
         {
@@ -23,7 +23,7 @@ namespace Core.PluginRegistrations
 
             availableActions = curAvailableActions;
             baseUrl = curBaseUrl;
-          //  _action = ObjectFactory.GetInstance<IAction>();
+            //  _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public string BaseUrl
@@ -49,11 +49,12 @@ namespace Core.PluginRegistrations
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+                    string curParentPluginRegistration = this.GetType().Name;
                     if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
-                        && a.Version == action.Version && a.ParentPluginRegistration == this.GetType().Name).Any())
+                        && a.Version == action.Version && a.ParentPluginRegistration == curParentPluginRegistration).Any())
                     {
                         ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(action.ActionType,
-                                                                        this.GetType().Name,
+                                                                        curParentPluginRegistration,
                                                                         action.Version);
                         uow.ActionRegistrationRepository.Add(actionRegistrationDO);
                         uow.SaveChanges();
@@ -72,7 +73,7 @@ namespace Core.PluginRegistrations
             return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionRegistrationDO });
         }
 
-      
+
 
         public string AssembleName(Data.Entities.ActionRegistrationDO curActionRegistrationDO)
         {

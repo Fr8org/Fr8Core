@@ -66,6 +66,13 @@ namespace Core.Services
             }
         }
 
+        public ActionDO GetById(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActionRepository.GetByKey(id);
+            }
+        }
         public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
             ActionDO curActionDO = new ActionDO();
@@ -77,6 +84,18 @@ namespace Core.Services
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
             return curActionDO;
+        }
+
+        public void Delete(int Id)
+        {
+            ActionDO entity = new ActionDO() { Id = Id };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionRepository.Attach(entity);
+                uow.ActionRepository.Remove(entity);
+                uow.SaveChanges();
+            }
         }
 
         public async Task Process(ActionDO curAction)

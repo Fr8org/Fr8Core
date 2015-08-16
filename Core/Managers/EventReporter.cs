@@ -78,7 +78,7 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
-
+            
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventProcessLaunched -= LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
@@ -699,14 +699,14 @@ namespace Core.Managers
             }
 
             var fact = new FactDO
-            {
+                {
                 CustomerId = processInExecution.DockyardAccountId,
                 Data = processInExecution.Id.ToStr(),
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",
                 Activity = "Started"
-            };
+                };
 
             SaveAndLogFact(fact);
         }
