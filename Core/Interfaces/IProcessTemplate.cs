@@ -9,6 +9,6 @@ namespace Core.Interfaces
 
 		int CreateOrUpdate(ProcessTemplateDO ptdo);
 		void Delete(int id);
-		void LaunchProcess(int curProcessTemplateId, EnvelopeDO curEnvelope);
+        void LaunchProcess(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope);
 	}
 }
