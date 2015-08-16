@@ -32,6 +32,18 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
+            Mapper.CreateMap<ActionRegistrationDO, ActionRegistrationDTO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.ActionType, opts => opts.ResolveUsing(x => x.ActionType))
+                .ForMember(x => x.ParentPluginRegistration, opts => opts.ResolveUsing(x => x.ParentPluginRegistration))
+                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
+
+            Mapper.CreateMap<ActionRegistrationDTO, ActionRegistrationDO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.ActionType, opts => opts.ResolveUsing(x => x.ActionType))
+                .ForMember(x => x.ParentPluginRegistration, opts => opts.ResolveUsing(x => x.ParentPluginRegistration))
+                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
+
             Mapper.CreateMap<ActionListDO, ActionListDTO>();
 
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();

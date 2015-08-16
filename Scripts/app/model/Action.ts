@@ -7,7 +7,7 @@
         actionListId: number
         configurationSettings: string;
         fieldMappingSettings: string;
-        userLabel: string
+        userLabel: string;
 
         constructor(id: number, isTempId: boolean, criteriaId: number) {
             this.criteriaId = criteriaId;

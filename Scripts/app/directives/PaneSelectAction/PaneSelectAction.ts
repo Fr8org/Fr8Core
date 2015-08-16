@@ -53,8 +53,6 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    //More detail on creating directives in TypeScript: 
-    //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneSelectAction implements ng.IDirective {
         public link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public templateUrl = '/AngularTemplate/PaneSelectAction';
@@ -62,7 +60,12 @@ module dockyard.directives.paneSelectAction {
         public scope = {};
         public restrict = 'E';
 
-        constructor(private $rootScope: interfaces.IAppRootScope) {
+        constructor(
+            private $rootScope: interfaces.IAppRootScope,
+            private $resource: ng.resource.IResourceService,
+            private urlPrefix: any
+            ) {
+
             PaneSelectAction.prototype.link = (
                 scope: interfaces.IPaneSelectActionScope,
                 element: ng.IAugmentedJQuery,
@@ -76,7 +79,7 @@ module dockyard.directives.paneSelectAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
-                this.PupulateSampleData($scope);
+                this.PupulateData($scope);
 
                 $scope.$watch<model.Action>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
@@ -89,7 +92,6 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.actionType,
                         $scope.action.userLabel);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
-
                 }
 
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Render], this.onRender);
@@ -120,21 +122,31 @@ module dockyard.directives.paneSelectAction {
             (<any>$).notify("Greetings from Select Action Pane. I've got a message about my neighbor saving its data so I saved my data, too.", "success");
         }
 
-        private PupulateSampleData($scope: interfaces.IPaneSelectActionScope) {
-            $scope.sampleActionTypes = [
-                { name: "Action type 1", value: "1" },
-                { name: "Action type 2", value: "2" },
-                { name: "Action type 3", value: "3" }
-            ];
+        private PupulateData($scope: interfaces.IPaneSelectActionScope) {
+            // $scope.sampleActionTypes = [
+            //     { name: "Action type 1", value: "1" },
+            //     { name: "Action type 2", value: "2" },
+            //     { name: "Action type 3", value: "3" }
+            // ];
+
+            var actionRegistrations = this.$resource(this.urlPrefix + '/action/available')
+                .query(() => {
+                    console.log(actionRegistrations);
+                    return;
+                });
         }
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = ($rootScope: interfaces.IAppRootScope) => {
-                return new PaneSelectAction($rootScope);
+            var directive = (
+                $rootScope: interfaces.IAppRootScope,
+                $resource: ng.resource.IResourceService,
+                urlPrefix: any) => {
+
+                return new PaneSelectAction($rootScope, $resource, urlPrefix);
             };
 
-            directive['$inject'] = ['$rootScope'];
+            directive['$inject'] = ['$rootScope', '$resource', 'urlPrefix'];
             return directive;
         }
     }

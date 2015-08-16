@@ -7,15 +7,15 @@
     </div>
     <div class="portlet-body">
         <div class="form-group">
-            <label class="control-label">Criteria Name</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                    required size="20" maxlength="20" ng-model="action.name" />
-        </div>
-        <div class="form-group">
             <select ng-model="action.actionTypeId" class="form-control" ng-change="ActionTypeSelected()"
                     ng-options="sampleActionType.value as sampleActionType.name for sampleActionType in sampleActionTypes">
                 <option value="">Select Action Type</option>
             </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label">Name</label>
+            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
+                   required size="20" maxlength="20" ng-model="action.name" />
         </div>
         <br />
     </div>

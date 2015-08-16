@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
@@ -10,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Web.ViewModels;
+using System.Web.Http.Description;
 
 namespace Web.Controllers
 {
@@ -37,13 +39,19 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        public IEnumerable<ActionRegistrationDO> GetAvailableActions()
+        [ResponseType(typeof(IEnumerable<ActionRegistrationDTO>))]
+        public IHttpActionResult GetAvailableActions()
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var account = uow.UserRepository.GetByKey(userId);
-                return _service.GetAvailableActions(account);
+                var availableActions = _service
+                    .GetAvailableActions(account)
+                    .Select(x => Mapper.Map<ActionRegistrationDTO>(x))
+                    .ToList();
+
+                return Ok(availableActions);
             }
         }
 
