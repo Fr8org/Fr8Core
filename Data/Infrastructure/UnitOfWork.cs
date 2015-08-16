@@ -509,7 +509,7 @@ namespace Data.Infrastructure
 
         private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
 
-	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
+	    public ExternalEventRegistrationRepository ExternalEventSubscription
 	    {
 		    get
 		    {
