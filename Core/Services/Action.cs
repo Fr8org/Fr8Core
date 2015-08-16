@@ -42,21 +42,6 @@ namespace Core.Services
             return plugins.SelectMany(p => p.AvailableActions).OrderBy(s => s.ActionType);
         }
 
-        //public void Register(string ActionType, string PluginRegistration, string Version)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == ActionType 
-        //            && a.Version == Version && a.ParentPluginRegistration == PluginRegistration).Any())
-        //        {
-        //            ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(ActionType, 
-        //                                                            PluginRegistration, 
-        //                                                            Version);
-        //            uow.SaveChanges();
-        //        }
-        //    }
-        //}
-
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -81,6 +66,13 @@ namespace Core.Services
             }
         }
 
+        public ActionDO GetById(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActionRepository.GetByKey(id);
+            }
+        }
         public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
             ActionDO curActionDO = new ActionDO();
@@ -92,6 +84,18 @@ namespace Core.Services
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
             return curActionDO;
+        }
+
+        public void Delete(int Id)
+        {
+            ActionDO entity = new ActionDO() { Id = Id };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionRepository.Attach(entity);
+                uow.ActionRepository.Remove(entity);
+                uow.SaveChanges();
+            }
         }
 
         public async Task Process(ActionDO curAction)

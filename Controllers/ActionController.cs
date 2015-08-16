@@ -20,7 +20,12 @@ namespace Web.Controllers
 
         public ActionController()
         {
-			_service = new Action();
+			_service = ObjectFactory.GetInstance<IAction>();
+        }
+
+        public ActionController(IAction service)
+        {
+            _service = service;
         }
 
         /*
@@ -43,13 +48,33 @@ namespace Web.Controllers
         }
 
         /// <summary>
+        /// GET : Returns an action with the specified id
+        /// </summary>
+        [HttpGet]
+        public ActionDTO Get(int id)
+        {
+            return Mapper.Map<ActionDTO>(_service.GetById(id)); 
+        }
+
+        /// <summary>
+        /// GET : Returns an action with the specified id
+        /// </summary>
+        [HttpDelete]
+        public void Delete(int id)
+        {
+            _service.Delete(id); 
+        }
+
+        /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
         public IEnumerable<ActionDTO> Save(ActionDTO actionVm)
         {
-            if (_service.SaveOrUpdateAction(Mapper.Map<ActionDO>(actionVm)))
+            ActionDO actionDo = Mapper.Map<ActionDO>(actionVm);
+            if (_service.SaveOrUpdateAction(actionDo))
             {
+                actionVm.Id = actionDo.Id;
                 return new List<ActionDTO> { actionVm };
             }
             return new List<ActionDTO>();

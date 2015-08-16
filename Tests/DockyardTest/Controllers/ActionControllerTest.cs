@@ -9,9 +9,10 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
-using Core.Services;
+using Moq;
 using Core.PluginRegistrations;
 using System;
+using Core.Interfaces;
 
 namespace DockyardTest.Controllers
 {
@@ -154,6 +155,38 @@ namespace DockyardTest.Controllers
             }
         }
 
+
+        [Test]
+        [Category("Controllers.ActionController")]
+        public void ActionController_Delete()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Mock<IAction> actionMock = new Mock<IAction>();
+                actionMock.Setup(a => a.Delete(It.IsAny<int>()));
+
+                ActionDO actionDO = new FixtureData(uow).TestAction3();
+                var controller = new ActionController(actionMock.Object);
+                controller.Delete(actionDO.Id);
+                actionMock.Verify(a => a.Delete(actionDO.Id));
+            }
+        }
+
+        [Test]
+        [Category("Controllers.ActionController")]
+        public void ActionController_Get()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Mock<IAction> actionMock = new Mock<IAction>();
+                actionMock.Setup(a => a.GetById(It.IsAny<int>()));
+
+                ActionDO actionDO = new FixtureData(uow).TestAction3();
+                var controller = new ActionController(actionMock.Object);
+                controller.Get(actionDO.Id);
+                actionMock.Verify(a => a.GetById(actionDO.Id));
+            }
+        }
 
         /// <summary>
         /// Creates one empty action list

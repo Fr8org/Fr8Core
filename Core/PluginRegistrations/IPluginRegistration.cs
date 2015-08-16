@@ -9,8 +9,6 @@ namespace Core.PluginRegistrations
     {
         string BaseUrl { get; set; }
 
-        IEnumerable<ActionRegistrationDO> AvailableCommands { get; }
-
         void RegisterActions();
 
         string CallPluginRegistrationByString(string typeName, string methodName, ActionRegistrationDO curActionRegistrationDO);

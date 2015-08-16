@@ -1,4 +1,4 @@
-mocks/*.js
-mocks/*.map
+utils/*.js
+utils/*.map
 unit/*.js
 unit/*.map

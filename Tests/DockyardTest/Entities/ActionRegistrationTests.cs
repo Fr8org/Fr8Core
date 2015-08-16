@@ -18,7 +18,7 @@ namespace DockyardTest.Entities
             {
                 var fixture = new FixtureData(uow);
                 
-                var actionRegistrationDO = fixture.TestActionRegistration1();
+                var actionRegistrationDO = FixtureData.TestActionRegistration1();
 
                 uow.ActionRegistrationRepository.Add(actionRegistrationDO);
                 uow.SaveChanges();
@@ -40,7 +40,7 @@ namespace DockyardTest.Entities
             {
                 var fixture = new FixtureData(uow);
 
-                var actionRegistrationDO = fixture.TestActionRegistration1();
+                var actionRegistrationDO = FixtureData.TestActionRegistration1();
 
                 uow.ActionRegistrationRepository.Add(actionRegistrationDO);
                 uow.SaveChanges();
