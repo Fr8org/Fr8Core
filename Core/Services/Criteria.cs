@@ -25,6 +25,8 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Utilities;
+
 
 namespace Core.Services
 {
@@ -35,7 +37,7 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
-        public bool Evaluate(string criteria, int processId,  IEnumerable<EnvelopeDataDO> envelopeData)
+        public bool Evaluate(string criteria, int processId,  IEnumerable<EnvelopeData> envelopeData)
         {
             return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
@@ -51,17 +53,18 @@ namespace Core.Services
 
                 DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = //need to retrieve the docusign envelop here
 
-                return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));//there are two different EnvelopeDatas here!
+
+                return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));
             };
         }
 
 
-        public IQueryable<EnvelopeDataDO> Filter(string criteria, int processId, 
-            IQueryable<EnvelopeDataDO> envelopeData)
+        public IQueryable<EnvelopeData> Filter(string criteria, int processId, 
+            IQueryable<EnvelopeData> envelopeData)
         {
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
-            IQueryable<EnvelopeDataDO> results =
-                envelopeData.Provider.CreateQuery<EnvelopeDataDO>(filterExpression);
+            IQueryable<EnvelopeData> results =
+                envelopeData.Provider.CreateQuery<EnvelopeData>(filterExpression);
             return results;
         }
 
