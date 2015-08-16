@@ -49,11 +49,12 @@ namespace Core.PluginRegistrations
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+                    string curParentPluginRegistration = this.GetType().Name;
                     if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
-                        && a.Version == action.Version && a.ParentPluginRegistration == this.GetType().Name).Any())
+                        && a.Version == action.Version && a.ParentPluginRegistration == curParentPluginRegistration).Any())
                     {
                         ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(action.ActionType,
-                                                                        this.GetType().Name,
+                                                                        curParentPluginRegistration,
                                                                         action.Version);
                         uow.ActionRegistrationRepository.Add(actionRegistrationDO);
                         uow.SaveChanges();
