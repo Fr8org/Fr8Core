@@ -74,7 +74,7 @@ namespace Core.Services
                     var @event = curEvent;
                     var subscriptions =
                         uow.ExternalEventRegistrationRepository.GetQuery()
-                            .Where(s => s.EventType == @event.ExternalEventType)
+                            .Where(s => s.ExternalEvent == @event.ExternalEventType)
                             .ToList();
                     var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
 
