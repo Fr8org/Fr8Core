@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Helper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using Newtonsoft.Json;
@@ -26,6 +27,7 @@ namespace Core.Services
             };
 
             uow.ProcessNodeRepository.Add(processNode);
+            EventManager.ProcessNodeCreated(processNode);
 
             return processNode;
         }

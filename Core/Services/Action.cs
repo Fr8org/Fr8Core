@@ -100,6 +100,7 @@ namespace Core.Services
 
         public async Task Process(ActionDO curAction)
         {
+            EventManager.ActionStarted(curAction);
             await Dispatch(curAction);
         }
 

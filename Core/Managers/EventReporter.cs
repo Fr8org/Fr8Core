@@ -52,7 +52,7 @@ namespace Core.Managers
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted += LogEventActionStarted;
-            EventManager.EventActionDispatched += LogAlertEventActionDispatched;
+            EventManager.EventActionDispatched += LogEventActionDispatched;
         }
 
         public void UnsubscribeFromAlerts()
@@ -85,7 +85,7 @@ namespace Core.Managers
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted -= LogEventActionStarted;
-            EventManager.EventActionDispatched -= LogAlertEventActionDispatched;
+            EventManager.EventActionDispatched -= LogEventActionDispatched;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -699,19 +699,19 @@ namespace Core.Managers
             }
 
             var fact = new FactDO
-                {
+            {
                 CustomerId = processInExecution.DockyardAccountId,
                 Data = processInExecution.Id.ToStr(),
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",
                 Activity = "Started"
-                };
+            };
 
             SaveAndLogFact(fact);
         }
 
-        private void LogAlertEventActionDispatched(ActionDO curAction)
+        private void LogEventActionDispatched(ActionDO curAction)
         {
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
