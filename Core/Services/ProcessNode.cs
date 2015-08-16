@@ -22,7 +22,7 @@ namespace Core.Services
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
                 //ProcessNodeTemplate = 
-                ParentProcessId = parentProcess.Id
+                ParentProcessId = parentProcess.Id,
             };
 
             uow.ProcessNodeRepository.Add(processNode);

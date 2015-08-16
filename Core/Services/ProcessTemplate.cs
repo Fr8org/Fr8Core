@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -89,6 +90,7 @@ namespace Core.Services
                 if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
                 {
                     _process.Execute(curProcessTemplate, curEnvelope);
+                    EventManager.ProcessLaunched(curProcessTemplate, curEnvelope);
                 }
             }
         }

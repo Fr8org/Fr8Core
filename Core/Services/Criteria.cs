@@ -20,7 +20,8 @@ namespace Core.Services
     {
         public bool Evaluate(string criteria, int processId, string envelopeId, IEnumerable<EnvelopeDataDO> envelopeData)
         {
-            return Filter(criteria, processId, envelopeId, envelopeData.AsQueryable()).Any();
+            var envelopes = Filter(criteria, processId, envelopeId, envelopeData.AsQueryable());
+            return envelopes.Any();
         }
 
         public IQueryable<EnvelopeDataDO> Filter(string criteria, int processId, string envelopeId,

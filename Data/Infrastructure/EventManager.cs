@@ -108,19 +108,19 @@ namespace Data.Infrastructure
         public delegate void EventDocuSignNotificationReceivedHandler(string processTemplateName);
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler();
+        public delegate void EventProcessLaunchedHandler(ProcessTemplateDO processTemplate, EnvelopeDO envelope);
         public static event EventProcessLaunchedHandler EventProcessLaunched;
 
-        public delegate void EventProcessNodeCreatedHandler();
+        public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
         public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
 
-        public delegate void EventCriteriaEvaluationStartedHandler();
+        public delegate void EventCriteriaEvaluationStartedHandler(int processId);
         public static event EventCriteriaEvaluationStartedHandler EventCriteriaEvaluationStarted;
 
-        public delegate void EventCriteriaEvaluationFinishedHandler();
+        public delegate void EventCriteriaEvaluationFinishedHandler(int processId);
         public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
 
-        public delegate void EventActionStartedHandler();
+        public delegate void EventActionStartedHandler(ActionDO action);
         public static event EventActionStartedHandler EventActionStarted;
 
         public delegate void EventActionDispatchedHandler(ActionDO curAction);
@@ -335,34 +335,34 @@ namespace Data.Infrastructure
             if (handler != null) handler(envelopeId);
         }
 
-        public static void ProcessLaunched()
+        public static void ProcessLaunched(ProcessTemplateDO processTemplate, EnvelopeDO envelope)
         {
             var handler = EventProcessLaunched;
-            if (handler != null) handler();
+            if (handler != null) handler(processTemplate, envelope);
         }
 
-        public static void ProcessNodeCreated()
+        public static void ProcessNodeCreated(ProcessNodeDO processNode)
         {
             var handler = EventProcessNodeCreated;
-            if (handler != null) handler();
+            if (handler != null) handler(processNode);
         }
 
-        public static void CriteriaEvaluationStarted()
+        public static void CriteriaEvaluationStarted(int processId)
         {
             var handler = EventCriteriaEvaluationStarted;
-            if (handler != null) handler();
+            if (handler != null) handler(processId);
         }
 
-        public static void CriteriaEvaluationFinished()
+        public static void CriteriaEvaluationFinished(int processId)
         {
             var handler = EventCriteriaEvaluationFinished;
-            if (handler != null) handler();
+            if (handler != null) handler(processId);
         }
 
-        public static void ActionStarted()
+        public static void ActionStarted(ActionDO action)
         {
             var handler = EventActionStarted;
-            if (handler != null) handler();
+            if (handler != null) handler(action);
         }
 
         public static void ActionDispatched(ActionDO curAction)
