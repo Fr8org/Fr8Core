@@ -48,6 +48,13 @@
         <div class="col-md-6 col-sm-6">
             <pane-select-template ></pane-select-template>
         </div>
+        <div class="col-md-4 col-sm-4" ng-show="currentAction">
+            <div class="form-group">
+                <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>
+                <button class="btn btn-danger btn-large" ng-click="Cancel()">Cancel</button>
+            </div>
+        </div>
+        </div>
         <!-- END MAIN CONTENT -->
         <!-- BEGIN SCRIPT REQUIREMENTS -->
         <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>

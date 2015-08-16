@@ -12,25 +12,25 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
+        public actionType: string;
         public isTempId: boolean;
-        public actionTypeId: number;
         public actionName: string;
 
-        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionTypeId: number, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionType: string, actionName: string) {
             super(criteriaId, actionId);
             this.isTempId = isTempId;
-            this.actionTypeId = actionTypeId;
+            this.actionType = actionType;
             this.actionName = actionName;
         }
     }
 
     export class ActionUpdatedEventArgs extends ActionEventArgsBase {
-        public tempActionId: number;
+        public isTempId: boolean;
         public actionName: string;
 
-        constructor(criteriaId: number, actionId: number, tempActionId: number, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionName: string) {
             super(criteriaId, actionId);
-            this.tempActionId = tempActionId;
+            this.isTempId = isTempId;
             this.actionName = actionName;
         }
     }
@@ -86,8 +86,8 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.criteriaId,
                         $scope.action.id,
                         $scope.action.isTempId,
-                        $scope.action.actionTypeId,
-                        $scope.action.name);
+                        $scope.action.actionType,
+                        $scope.action.userLabel);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
                 }
@@ -107,7 +107,7 @@ module dockyard.directives.paneSelectAction {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
-                eventArgs.isTempId ? 0 : eventArgs.actionId,
+                eventArgs.actionId,
                 eventArgs.isTempId,
                 eventArgs.criteriaId);
         }
