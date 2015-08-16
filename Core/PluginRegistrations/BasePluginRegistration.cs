@@ -15,7 +15,7 @@ namespace Core.PluginRegistrations
     {
         private readonly string availableActions;
         private readonly string baseUrl;
-       // private readonly IAction _action;
+        // private readonly IAction _action;
 
         protected BasePluginRegistration(string curAvailableActions, string curBaseUrl)
         {
@@ -23,7 +23,7 @@ namespace Core.PluginRegistrations
 
             availableActions = curAvailableActions;
             baseUrl = curBaseUrl;
-          //  _action = ObjectFactory.GetInstance<IAction>();
+            //  _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public string BaseUrl
@@ -72,7 +72,7 @@ namespace Core.PluginRegistrations
             return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionRegistrationDO });
         }
 
-      
+
 
         public string AssembleName(Data.Entities.ActionRegistrationDO curActionRegistrationDO)
         {

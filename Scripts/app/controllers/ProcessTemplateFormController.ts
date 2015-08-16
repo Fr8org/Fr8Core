@@ -22,7 +22,7 @@ module dockyard.controllers {
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private $scope: interfaces.IProcessTemplateScope,
-            private ProcessTemplateService: services.IProcessTemplateVMService,
+            private ProcessTemplateService: services.IProcessTemplateService,
             private $stateParams: any,
             private StringService: services.IStringService) {
 

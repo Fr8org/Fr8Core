@@ -6,7 +6,7 @@ module dockyard.interfaces {
     export interface ICriteria {
         id: number,
         isTempId: boolean,
-        name: string,
+        userLabel: string,
         actions: Array<IAction>,
         conditions: Array<ICondition>,
         executionMode: string
@@ -14,10 +14,13 @@ module dockyard.interfaces {
 
     export interface IAction {
         id: number,
-        tempId: number,
-        criteriaId: number;
-        name: string,
-        actionTypeId: number
+        isTempId: boolean, 
+        criteriaId: number,
+        userLabel: string,
+        actionListId: number,
+        actionType: string;
+        configurationSettings: string;
+        fieldMappingSettings: string
     }
 
     export interface ICondition {

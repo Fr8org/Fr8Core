@@ -68,5 +68,30 @@ namespace DockyardTest.Services
             var _service = new Core.Services.Action();
             Assert.IsNotNull(_service.GetConfigurationSettings(null));
         }
+
+        [Test]
+        public void CanCRUDActions()
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IAction action = new Core.Services.Action();
+                var origActionDO = new FixtureData(uow).TestAction3();
+
+                //Add
+                action.SaveOrUpdateAction(origActionDO);
+
+                //Get
+                var actionDO = action.GetById(origActionDO.Id);
+                Assert.AreEqual(origActionDO.ActionType, actionDO.ActionType);
+                Assert.AreEqual(origActionDO.Id, actionDO.Id);
+                Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
+                Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
+                Assert.AreEqual(origActionDO.UserLabel, actionDO.UserLabel);
+                Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
+
+                //Delete
+                action.Delete(actionDO.Id);
+            }
+        }
     }
 }

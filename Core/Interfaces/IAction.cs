@@ -13,5 +13,7 @@ namespace Core.Interfaces
         //void Register(string ActionType, string PluginRegistration, string Version);
         ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO);
         //void Register(string ActionType, string PluginRegistration, string Version);
+        ActionDO GetById(int id);
+        void Delete(int id);
     }
 }
