@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -20,16 +21,17 @@ namespace Core.Services
     {
         public bool Evaluate(string criteria, int processId, string envelopeId, IEnumerable<EnvelopeDataDO> envelopeData)
         {
-            var envelopes = Filter(criteria, processId, envelopeId, envelopeData.AsQueryable());
-            return envelopes.Any();
+            return Filter(criteria, processId, envelopeId, envelopeData.AsQueryable()).Any();
         }
 
         public IQueryable<EnvelopeDataDO> Filter(string criteria, int processId, string envelopeId,
             IQueryable<EnvelopeDataDO> envelopeData)
         {
+            EventManager.CriteriaEvaluationStarted(processId);
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
             IQueryable<EnvelopeDataDO> results =
                 envelopeData.Provider.CreateQuery<EnvelopeDataDO>(filterExpression);
+            EventManager.CriteriaEvaluationFinished(processId);
             return results;
         }
 
