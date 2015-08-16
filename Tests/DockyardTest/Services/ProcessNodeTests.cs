@@ -1,20 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using Core.Interfaces;
+﻿using Core.Interfaces;
 using Core.Services;
-using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Moq;
 using System.Collections.Generic;
-using Data.Entities;
+using Utilities;
 
 namespace DockyardTest.Services
 {
-	[TestFixture]
+    [TestFixture]
 	[Category("ProcessNode")]
 	public class ProcessNodeTests : BaseTest
 	{
@@ -50,7 +46,7 @@ namespace DockyardTest.Services
             string envelopeId = "fake envelopeID";
             var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), (List<EnvelopeDataDO>)It.IsAny<object>()))
+                .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<int>(), (List<EnvelopeData>)It.IsAny<object>()))
                 .Returns(true);
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
 

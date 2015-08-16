@@ -52,7 +52,7 @@ namespace Core.Services
         public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
             //TODO: implement
-            throw new NotImplementedException();
+           
 
             //if Criteria#Evaluate then ActionList#Process
             
