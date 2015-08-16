@@ -25,7 +25,6 @@ namespace pluginAzureSqlServer.Controllers
         protected delegate object WriteToSqlServerAction(ActionDO curActionDO);
 
         public const string Version = "1.0";
-        public const string AvailableActions = "{'type_name':'write to azure sql server','version':4.3}";
 
         //private readonly IDbProvider _dbProvider;
         //private readonly JsonSerializer _serializer;
@@ -104,14 +103,14 @@ namespace pluginAzureSqlServer.Controllers
                 using (IDataReader reader = command.ExecuteReader()) {
                     while (reader.Read()) {
                         tableMetaData.Add(reader["tblcols"].ToString());
-                    }
+            }
                 }
 
                 //Serialize and return
                 return tableMetaData;
             });
-        }
-        
+            }
+
         //TODO - SF - Not sure how to handle this method since the Command stuff is supposedly outdated
         //The original method still exists at the top of the plugin code
         [HttpPost]
@@ -135,18 +134,23 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpGet]
         [Route("available")]
-        public string GetAvailable()
+        public ActionTypeListDTO GetAvailable()
         {
-            Validations.ValidateDtoString<ActionTypeListDTO>(AvailableActions);
-
-            return AvailableActions;
+            return new ActionTypeListDTO { TypeName = "write to azure sql server'", Version = "4.3" };
         }
 
         [HttpGet]
         [Route("configurationsettings")]
-        public string GetConfigurationSettings()
+        public object GetConfigurationSettings()
         {
-            return string.Empty;
+            return new { };
+        }
+
+        [HttpPost]
+        [Route("field_mapping_targets")]
+        public object GetFieldMappingTargets(ActionDTO curAction)
+        {
+            return new {};
         }
     }
 }

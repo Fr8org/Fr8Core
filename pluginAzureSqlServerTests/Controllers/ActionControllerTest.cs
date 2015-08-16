@@ -10,23 +10,13 @@ namespace pluginAzureSqlServerTests.Controllers
     [TestFixture]
     public class ActionControllerTest : BaseTest
     {
-        private const string SchemaJson =
-            @"{'title': 'available actions','type':'object','properties':{'typename':{'type':'string'},'version':{'type':'number'}}}";
-
         [Test]
         [Category("Controllers.ActionController.GetAvailable")]
-        public void ActionController_GetAvailable_JsonStringShouldBeValid()
+        public void ActionController_CanGetAvailable()
         {
             var controller = new ActionController();
-            var actionsString = controller.GetAvailable();
-
-            var schema = JsonSchema.Parse(SchemaJson);
-            var actions = JObject.Parse(actionsString);
-
-            IList<string> messages;
-            var valid = actions.IsValid(schema, out messages);
-
-            Assert.IsTrue(valid);
+            var actions = controller.GetAvailable();
+            Assert.IsNotNull(actions);
         }
     }
 }

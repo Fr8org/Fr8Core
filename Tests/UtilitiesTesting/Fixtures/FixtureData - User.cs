@@ -4,22 +4,22 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public DockyardAccountDO TestUser1()
+        public static DockyardAccountDO TestUser1()
         {
-            var curEmailAddressDO = TestEmailAddress1();
-            return _uow.UserRepository.GetOrCreateUser(curEmailAddressDO);
+            var curEmailAddressDO = FixtureData.TestEmailAddress1();
+            return new DockyardAccountDO(curEmailAddressDO);
         }
 
-        public DockyardAccountDO TestUser2()
+        public static DockyardAccountDO TestUser2()
         {
             var curEmailAddressDO = TestEmailAddress5();
-            return _uow.UserRepository.GetOrCreateUser(curEmailAddressDO);
+            return new DockyardAccountDO(curEmailAddressDO);
         }
 
-        public DockyardAccountDO TestUser3()
+        public static DockyardAccountDO TestUser3()
         {
             var curEmailAddressDO = TestEmailAddress3();
-            return _uow.UserRepository.GetOrCreateUser(curEmailAddressDO);
+            return new DockyardAccountDO(curEmailAddressDO);
         }
     }
 }

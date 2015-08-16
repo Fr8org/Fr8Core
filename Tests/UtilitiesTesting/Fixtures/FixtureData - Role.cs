@@ -4,7 +4,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public AspNetRolesDO TestRole()
+        public static AspNetRolesDO TestRole()
         {
             return new AspNetRolesDO()
             {                

@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public ActionListDO TestActionList()
+        public static ActionListDO TestActionList()
         {
             var curActionListDO = new ActionListDO
             {
@@ -20,7 +20,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 
-        public ActionListDO TestEmptyActionList()
+        public static ActionListDO TestEmptyActionList()
         {
             var curActionListDO = new ActionListDO
             {
@@ -32,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 
-        public ActionDO TestActionList1()
+        public static ActionDO TestActionList1()
         {
             return new ActionDO
             {
@@ -43,7 +43,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public ActionDO TestActionList2()
+        public static ActionDO TestActionList2()
         {
             return new ActionDO
             {
