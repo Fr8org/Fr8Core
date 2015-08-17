@@ -1,5 +1,6 @@
 /// <reference path="../typings/tsd.d.ts" />
 /// <reference path="../typings/metronic.d.ts" />
+
 var app = angular.module("app", [
     "ui.router",
     "ui.bootstrap",

@@ -23,6 +23,12 @@ namespace Data.Entities
             SecurityStamp = Guid.NewGuid().ToString();
         }
 
+        public DockyardAccountDO(EmailAddressDO curEmailAddress) : base()
+        {
+            EmailAddress = curEmailAddress;
+           
+        }
+
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public Boolean TestAccount { get; set; }

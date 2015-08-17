@@ -43,7 +43,17 @@
             <pane-configure-action id="paneConfigureAction"></pane-configure-action>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-field-param-mapper id="paneConfigureAction" mode="field" action-id="10" mapped-value="mappedValue"></pane-field-param-mapper>
+            <pane-field-param-mapper id="paneConfigureAction" mode="field" ></pane-field-param-mapper>
+        </div>
+        <div class="col-md-6 col-sm-6">
+            <pane-select-template ></pane-select-template>
+        </div>
+        <div class="col-md-4 col-sm-4" ng-show="currentAction">
+            <div class="form-group">
+                <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>
+                <button class="btn btn-danger btn-large" ng-click="Cancel()">Cancel</button>
+            </div>
+        </div>
         </div>
         <!-- END MAIN CONTENT -->
         <!-- BEGIN SCRIPT REQUIREMENTS -->

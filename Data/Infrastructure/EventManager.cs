@@ -109,6 +109,26 @@ namespace Data.Infrastructure
         public static event PluginEventHandler PluginEventReported;
 
 
+        public delegate void EventDocuSignNotificationReceivedHandler();
+        public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
+
+        public delegate void EventProcessLaunchedHandler(ProcessDO launchedProcess);
+        public static event EventProcessLaunchedHandler EventProcessLaunched;
+
+        public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
+        public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
+
+        public delegate void EventCriteriaEvaluationStartedHandler(int processId);
+        public static event EventCriteriaEvaluationStartedHandler EventCriteriaEvaluationStarted;
+
+        public delegate void EventCriteriaEvaluationFinishedHandler(int processId);
+        public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
+
+        public delegate void EventActionStartedHandler(ActionDO action);
+        public static event EventActionStartedHandler EventActionStarted;
+
+        public delegate void EventActionDispatchedHandler(ActionDO curAction);
+        public static event EventActionDispatchedHandler EventActionDispatched;
 
         #region Method
 
@@ -317,6 +337,48 @@ namespace Data.Infrastructure
         {
             var handler = AlertTokenRevoked;
             if (handler != null) handler(userId);
+        }
+
+        public static void DocuSignNotificationReceived()
+        {
+            var handler = EventDocuSignNotificationReceived;
+            if (handler != null) handler();
+        }
+
+        public static void ProcessLaunched(ProcessDO launchedProcess)
+        {
+            var handler = EventProcessLaunched;
+            if (handler != null) handler(launchedProcess);
+        }
+
+        public static void ProcessNodeCreated(ProcessNodeDO processNode)
+        {
+            var handler = EventProcessNodeCreated;
+            if (handler != null) handler(processNode);
+        }
+
+        public static void CriteriaEvaluationStarted(int processId)
+        {
+            var handler = EventCriteriaEvaluationStarted;
+            if (handler != null) handler(processId);
+        }
+
+        public static void CriteriaEvaluationFinished(int processId)
+        {
+            var handler = EventCriteriaEvaluationFinished;
+            if (handler != null) handler(processId);
+        }
+
+        public static void ActionStarted(ActionDO action)
+        {
+            var handler = EventActionStarted;
+            if (handler != null) handler(action);
+        }
+
+        public static void ActionDispatched(ActionDO curAction)
+        {
+            var handler = EventActionDispatched;
+            if (handler != null) handler(curAction);
         }
 
         #endregion

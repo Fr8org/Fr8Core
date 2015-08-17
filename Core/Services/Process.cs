@@ -24,7 +24,7 @@ namespace Core.Services
         /// <returns></returns>
         public ProcessDO Create(int processTemplateId, int envelopeId)
         {
-            var curProcess = new ProcessDO();
+            var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var template = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
@@ -35,43 +35,39 @@ namespace Core.Services
                 if (envelope == null)
                     throw new ArgumentNullException("envelopeId");
 
-                curProcess.Name = template.Name;
-                curProcess.ProcessState = ProcessState.Executing;
-                curProcess.EnvelopeId = envelopeId.ToString();
+                curProcessDO.Name = template.Name;
+                curProcessDO.ProcessState = ProcessState.Unstarted;
+                curProcessDO.EnvelopeId = envelopeId.ToString();
 
-                var processNode = _processNode.Create(uow, curProcess);
+                var processNode = _processNode.Create(uow, curProcessDO, "process node");
                 uow.SaveChanges();
 
-                curProcess.CurrentProcessNodeId = processNode.Id;
+                curProcessDO.CurrentProcessNodeId = processNode.Id;
 
-                uow.ProcessRepository.Add(curProcess);
+                uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
             }
-            return curProcess;
+            return curProcessDO;
         }
 
-        public void Execute(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
+        public void Launch(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
         {
-            var curProcessDo = Create(curProcessTemplate.Id, curEnvelope.Id);
-            if (curProcessDo.ProcessState == ProcessState.Failed || curProcessDo.ProcessState == ProcessState.Completed)
-                return;
+            var curProcessDO = Create(curProcessTemplate.Id, curEnvelope.Id);
+            if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
+                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
 
-            curProcessDo.ProcessState = ProcessState.Executing;
+            curProcessDO.ProcessState = ProcessState.Executing;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ProcessNodeDO curProcessNode;
-                if (curProcessDo.CurrentProcessNodeId == 0)
+                if (curProcessDO.CurrentProcessNodeId == 0)
                 {
-                    var curProcessNodeTemplate =
-                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessTemplate.StartingProcessNodeTemplate);
-                    curProcessNode = new ProcessNodeDO();
-                    curProcessNode.Name = curProcessNodeTemplate.Name;
-                    curProcessNode.ParentProcessId = curProcessDo.Id;
+                    curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
                     uow.SaveChanges();
                 }
-                curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDo.CurrentProcessNodeId);
+                curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.CurrentProcessNodeId);
 
-                _processNode.Execute(curProcessDo, curEnvelope, curProcessNode);
+                _processNode.Execute(curEnvelope, curProcessNode);
             }
         }
     }

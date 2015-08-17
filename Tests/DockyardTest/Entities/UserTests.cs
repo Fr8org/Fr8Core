@@ -32,8 +32,8 @@ namespace DockyardTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixture = new FixtureData(uow);
-                uow.AspNetRolesRepository.Add(fixture.TestRole());
+                
+                uow.AspNetRolesRepository.Add(FixtureData.TestRole());
                 var u = new DockyardAccountDO();
                 var user = new DockyardAccount();
 

@@ -169,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IActionRegistration.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
@@ -188,14 +189,16 @@
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
     <Compile Include="ExternalServices\ISmtpClient.cs" />
     <Compile Include="ExternalServices\ITwilioRestClient.cs" />
-    <Compile Include="ExternalServices\REST\IRestfullCall.cs" />
-    <Compile Include="ExternalServices\REST\IRestfulResponse.cs" />
-    <Compile Include="ExternalServices\REST\RestfulCallWrapper.cs" />
-    <Compile Include="ExternalServices\REST\RestfulResponseWrapper.cs" />
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginClient.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Plugin\PluginClient.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Restful\IRestfulServiceClient.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
     <Compile Include="Managers\EventReporter.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthFlow.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Docusign\DocusignAuthorizer.cs" />
@@ -221,9 +224,6 @@
     <Compile Include="Managers\APIManagers\Packagers\ISMSPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Twilio\TwilioPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\UnknownEmailPackagerException.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulCall.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulResponse.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulTransmitter.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
     <Compile Include="Managers\IncidentReporter.cs" />
     <Compile Include="Interfaces\IIntakeManager.cs" />
@@ -233,7 +233,7 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="PluginRegistrations\AzureSqlPluginRegistration.cs" />
+    <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -248,6 +248,7 @@
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
+    <Compile Include="Services\ActionRegistration.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
@@ -267,6 +268,7 @@
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Tab.cs" />
+    <Compile Include="Services\Template.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>

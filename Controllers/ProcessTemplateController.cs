@@ -11,12 +11,13 @@ using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Web.Controllers.Helpers;
 using Web.ViewModels;
-using Web.ViewModels.AutoMapper;
 
 namespace Web.Controllers
 {
@@ -56,16 +57,21 @@ namespace Web.Controllers
         {
             var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
 
-            switch (curProcessTemplates.Count)
+            if (curProcessTemplates.Any())
             {
-                case 0:
-                    throw new ApplicationException("Process Template(s) not found for "+ (id != null ? "id {0}".FormatInvariant(id) :"the current user"));
-                case 1:
+                // Return first record from curProcessTemplates, in case id parameter was provided.
+                // User intentionally wants to receive a single JSON object in response.
+                if (id.HasValue)
+                {
                     return Ok(Mapper.Map<ProcessTemplateDTO>(curProcessTemplates.First()));
+                }
+
+                // Return JSON array of objects, in case no id parameter was provided.
+                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateDTO>));
             }
 
-            return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateDTO>));
-            
+            //DO-840 Return empty view as having empty process templates are valid use case.
+            return Ok();
         }
 
         public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
@@ -86,6 +92,15 @@ namespace Web.Controllers
             processTemplateDto.Id = _processTemplate.CreateOrUpdate(curProcessTemplateDO);
 
             return Ok(processTemplateDto);
+        }
+
+        [HttpPost]
+        [Route("action")]
+        [ActionName("action")]
+        public IHttpActionResult PutAction(ActionDTO actionDto)
+        {
+            //A stub until the functionaltiy is ready
+            return Ok();
         }
 
         public IHttpActionResult Delete(int id)

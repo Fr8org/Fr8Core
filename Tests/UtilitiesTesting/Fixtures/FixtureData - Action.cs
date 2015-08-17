@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public ActionDO TestAction1()
+        public static ActionDO TestAction1()
         {
             var curActionDO = new ActionDO
             {
@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionDO;
         }
 
-        public TemplateDO TestTemplate1()
+        public static TemplateDO TestTemplate1()
         {
             var curTemplateDO = new TemplateDO(new Template())
             {
@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
             return curTemplateDO;
         }
 
-        public ActionDO TestAction2()
+        public static ActionDO TestAction2()
         {
             var curActionDO = new ActionDO
             {
@@ -33,6 +33,22 @@ namespace UtilitiesTesting.Fixtures
                 UserLabel = "Action 2"
             };
             return curActionDO;
+        }
+
+        public ActionDO TestAction3()
+        {
+            var origActionDO = new ActionDO()
+            {
+                ActionListId = null,
+                ActionType = "type 1",
+                Id = 34,
+                ConfigurationSettings = "config settings",
+                FieldMappingSettings = "fieldMappingSettings",
+                UserLabel = "my test action",
+                Ordering = 3
+            };
+
+            return origActionDO;
         }
 
     }
