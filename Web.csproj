@@ -3649,6 +3649,9 @@
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneFieldParamMapper.html" />
+    <Content Include="Scripts\tests\Chutzpah.json" />
+    <Content Include="RunFrontEndTests - With Web Server.ps1" />
+    <Content Include="RunFrontEndTests.ps1" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
