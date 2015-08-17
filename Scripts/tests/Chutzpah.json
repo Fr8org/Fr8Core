@@ -1,0 +1,89 @@
+﻿{
+  "Framework": "jasmine",
+  "References": [
+    {
+      "Path": "../../bower_components/angular/angular.min.js",
+      "IsTestFrameworkFile": true
+    },
+    {
+      "Path": "../../bower_components/angular-resource/angular-resource.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-sanitize/angular-sanitize.js"
+    },
+    {
+      "Path": "../../bower_components/angular-touch/angular-touch.js"
+    },        
+    {
+      "Path": "../../bower_components/angular-ui-router/release/angular-ui-router.min.js"
+    },
+    {
+      "Path": "../../bower_components/ocLazyLoad/dist/ocLazyLoad.js"
+    },
+    {
+      "Path": "../../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
+    },
+    {
+      "Path": "../app/app.js"
+    },    
+    {
+      "Path": "../../Content/templates/metronic/assets/global/scripts/metronic.js"
+    },
+    {
+      "Path": "../../Content/templates/metronic/assets/admin/layout3/scripts/layout.js"
+    },
+    {
+      "Path": "../../Content/templates/metronic/assets/admin/layout3/scripts/demo.js"
+    },
+    {
+      "Path": "../../bower_components/angular-mocks/angular-mocks.js"
+    },    
+    {
+      "Path": "../app/interfaces/IProcessTemplateVM.js"
+    },    
+    {
+      "Path": "../app/model/",  
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/services/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/filters/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/ProcessBuilder/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },    
+    {
+      "Path": "../app/directives/EventArgsBase.js"
+    },       
+    {
+      "Path": "../app/directives/",
+      "Includes": [ "messages.js", "I*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/directives/",
+      "Includes": [ "*.js" ], 
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../app/controllers/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
+      "Path": "../tests/mocks/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    }
+  ],
+  "RootReferencePathMode": "SettingsFileDirectory"
+}
