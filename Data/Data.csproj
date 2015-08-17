@@ -152,6 +152,10 @@
     <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508170348137_Fixup_Migration.cs" />
+    <Compile Include="Migrations\201508170348137_Fixup_Migration.Designer.cs">
+      <DependentUpon>201508170348137_Fixup_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -524,6 +528,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508170348137_Fixup_Migration.resx">
+      <DependentUpon>201508170348137_Fixup_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

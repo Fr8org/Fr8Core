@@ -129,7 +129,7 @@ module dockyard.directives.paneSelectAction {
             //     { name: "Action type 3", value: "3" }
             // ];
 
-            var actionRegistrations = this.$resource(this.urlPrefix + '/action/available')
+            var actionRegistrations = this.$resource(this.urlPrefix + '/actions/available')
                 .query(() => {
                     console.log(actionRegistrations);
                     return;
