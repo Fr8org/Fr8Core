@@ -1,5 +1,6 @@
 ﻿using Core.Interfaces;
 using Data.Exceptions;
+using Data.Migrations;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -25,7 +26,8 @@ namespace DockyardTest.Services
 		public void ProcessTemplateService_CanNot_LaunchProcess()
 		{
 			var envelope = FixtureData.TestEnvelope1();
-			_processTemplateService.LaunchProcess(2, envelope);
+            Data.Entities.ProcessTemplateDO processTemplate = null;
+            _processTemplateService.LaunchProcess(processTemplate, envelope);
 		}
 	}
 }
