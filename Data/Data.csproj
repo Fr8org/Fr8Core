@@ -152,6 +152,8 @@
     <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\PluginRepository.cs" />
+    <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Migrations\201508170348137_Fixup_Migration.cs" />
     <Compile Include="Migrations\201508170348137_Fixup_Migration.Designer.cs">
       <DependentUpon>201508170348137_Fixup_Migration.cs</DependentUpon>
@@ -195,7 +197,7 @@
     <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
-    <Compile Include="Interfaces\IPluginRegistrationDO.cs" />
+    <Compile Include="Interfaces\IPluginDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
     <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
