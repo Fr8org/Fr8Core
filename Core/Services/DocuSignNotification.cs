@@ -6,6 +6,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Utilities;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -41,7 +42,7 @@ namespace Core.Services
             Parse(xmlPayload, out curExternalEvents, out curEnvelopeId);
             ProcessEvents(curExternalEvents, userId);
 
-            _alertReporter.DocusignNotificationReceived(userId, curEnvelopeId);
+            EventManager.DocuSignNotificationReceived();
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
