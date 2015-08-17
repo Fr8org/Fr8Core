@@ -577,42 +577,23 @@ namespace Core.Managers
             AddFactOnToken(userId, "Revoked");
         }
 
-        private void LogDocuSignNotificationReceived(string envelopeId)
+        private void LogDocuSignNotificationReceived()
         {
-            ProcessDO processInExecution;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                processInExecution =
-                    uow.ProcessRepository.FindOne(
-                        process =>
-                            process.EnvelopeId.Equals(envelopeId) && process.ProcessState == ProcessState.Executing);
-            }
-
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
-                ObjectId = processInExecution.Id.ToStr(),
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "DocuSign Notification",
+                CustomerId = null,
+                Data = "DocuSign Notificaiton Received",
+                ObjectId = null,
+                PrimaryCategory = "External Event",
+                SecondaryCategory = "DocuSign",
                 Activity = "Received"
             };
 
             SaveAndLogFact(fact);
         }
 
-        private void LogEventProcessLaunched(ProcessTemplateDO processTemplate, EnvelopeDO envelope)
+        private void LogEventProcessLaunched(ProcessDO launchedProcess)
         {
-            ProcessDO launchedProcess;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                launchedProcess =
-                    uow.ProcessRepository.FindOne(
-                        process =>
-                            process.Name.Equals(processTemplate.Name) && process.EnvelopeId.Equals(envelope.Id.ToStr()) &&
-                            process.ProcessState == ProcessState.Executing);
-            }
-
             var fact = new FactDO
             {
                 CustomerId = launchedProcess.DockyardAccountId,

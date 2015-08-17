@@ -42,7 +42,7 @@ namespace Core.Services
             Parse(xmlPayload, out curExternalEvents, out curEnvelopeId);
             ProcessEvents(curExternalEvents, userId);
 
-            EventManager.DocuSignNotificationReceived(curEnvelopeId);
+            EventManager.DocuSignNotificationReceived();
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)

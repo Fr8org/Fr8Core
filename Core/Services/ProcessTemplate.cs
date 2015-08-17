@@ -89,7 +89,11 @@ namespace Core.Services
                 if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
                 {
                     _process.Launch(curProcessTemplate, curEnvelope);
-                    EventManager.ProcessLaunched(curProcessTemplate, curEnvelope);
+                    ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
+                        process =>
+                            process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEnvelope.Id.ToString()) &&
+                            process.ProcessState == ProcessState.Executing);
+                    EventManager.ProcessLaunched(launchedProcess);
                 }
             }
         }

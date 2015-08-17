@@ -105,10 +105,10 @@ namespace Data.Infrastructure
         public delegate void PluginIncidentHandler(EventData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
-        public delegate void EventDocuSignNotificationReceivedHandler(string processTemplateName);
+        public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
-        public delegate void EventProcessLaunchedHandler(ProcessTemplateDO processTemplate, EnvelopeDO envelope);
+        public delegate void EventProcessLaunchedHandler(ProcessDO launchedProcess);
         public static event EventProcessLaunchedHandler EventProcessLaunched;
 
         public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
@@ -329,16 +329,16 @@ namespace Data.Infrastructure
             if (handler != null) handler(userId);
         }
 
-        public static void DocuSignNotificationReceived(string envelopeId)
+        public static void DocuSignNotificationReceived()
         {
             var handler = EventDocuSignNotificationReceived;
-            if (handler != null) handler(envelopeId);
+            if (handler != null) handler();
         }
 
-        public static void ProcessLaunched(ProcessTemplateDO processTemplate, EnvelopeDO envelope)
+        public static void ProcessLaunched(ProcessDO launchedProcess)
         {
             var handler = EventProcessLaunched;
-            if (handler != null) handler(processTemplate, envelope);
+            if (handler != null) handler(launchedProcess);
         }
 
         public static void ProcessNodeCreated(ProcessNodeDO processNode)
