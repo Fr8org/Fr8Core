@@ -30,6 +30,7 @@ namespace Core.Managers
             if (emailAddress == null)
                 throw new ArgumentNullException("emailAddress");
             _configRepository = configRepository;
+
             _emailAddress = emailAddress;
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>(); //can this be mocked? we would want an interface...
             //_negotiation = ObjectFactory.GetInstance<INegotiation>();
