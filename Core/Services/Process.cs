@@ -50,6 +50,8 @@ namespace Core.Services
             return curProcessDO;
         }
 
+
+
         public void Launch(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEnvelope.Id);
@@ -67,8 +69,13 @@ namespace Core.Services
                 }
                 curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.CurrentProcessNodeId);
 
-                _processNode.Execute(curEnvelope, curProcessNode);
+                Execute(curEnvelope, curProcessNode);
             }
+        }
+
+        public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        {
+            _processNode.Execute(curEnvelope, curProcessNode);
         }
     }
 }

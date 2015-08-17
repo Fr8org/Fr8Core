@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
 			process.Id = 49;
 			process.CurrentProcessNodeId = 50;
 			process.ProcessState = 1;
-			process.ProcessNode = TestProcessNode1();
+			process.CurrentProcessNode = TestProcessNode1();
 			return process;
 		}
 

@@ -13,7 +13,7 @@ namespace Data.Entities
 
         public int ParentProcessId { get; set; }
 
-        public virtual ProcessDO Process { get; set; }
+        public virtual ProcessDO ParentProcess { get; set; }
 
         [ForeignKey("ProcessNodeStatusTemplate")]
         public int? ProcessNodeState { get; set; }
