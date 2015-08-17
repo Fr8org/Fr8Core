@@ -24,6 +24,9 @@
       "Path": "../../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
     },
     {
+      "Path": "../../bower_components/underscore/underscore.js"
+    },    
+    {
       "Path": "../app/app.js"
     },    
     {
@@ -38,6 +41,9 @@
     {
       "Path": "../../bower_components/angular-mocks/angular-mocks.js"
     },    
+    {
+      "Path": "../app/e2ehttpBackend.js"
+    }, 
     {
       "Path": "../app/interfaces/IProcessTemplateVM.js"
     },    
@@ -60,10 +66,13 @@
       "Path": "../app/ProcessBuilder/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
-    },    
+    },
     {
       "Path": "../app/directives/EventArgsBase.js"
-    },       
+    },
+    {
+      "Path": "../app/directives/indiClick.js"
+    },
     {
       "Path": "../app/directives/",
       "Includes": [ "messages.js", "I*.js" ],
@@ -80,7 +89,7 @@
       "Excludes": [ "*.ts" ]
     },
     {
-      "Path": "../tests/mocks/",
+      "Path": "../tests/utils/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     }
