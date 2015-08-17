@@ -28,7 +28,7 @@ namespace Data.Entities
         public _AccessLevelTemplate AccessLevelTemplate { get; set; }
 
         [NotMapped]
-        IPluginRegistrationDO ISubscriptionDO.PluginRegistration
+        IPluginDO ISubscriptionDO.PluginRegistration
         {
             get { return Plugin; }
             set { Plugin = (PluginDO) value; }

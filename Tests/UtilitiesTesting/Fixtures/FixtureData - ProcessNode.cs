@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-		public ProcessNodeDO TestProcessNode()
+		public static ProcessNodeDO TestProcessNode()
 		{
 			var processNode = new ProcessNodeDO();
 			processNode.Id = 50;

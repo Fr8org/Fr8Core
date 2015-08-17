@@ -43,7 +43,7 @@ namespace DockyardTest.Controllers
 			notificationController.Request = request;
 
 			//Act
-			notificationController.HandleDocuSignNotification( this._testUserId ).Wait();
+			notificationController.Post( this._testUserId ).Wait();
 
 			//Assert
 			mockProcess.Verify( e => e.Process( this._testUserId, xmlPayload ) );
