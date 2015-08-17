@@ -23,6 +23,10 @@ namespace PluginUtilities
         /// <param name="pluginName"></param>
         private static void ReportStartUp(string pluginName)
         {
+            //SF DEBUG -- Skip this event call for local testing
+            //return;
+
+
             //make Post call
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";

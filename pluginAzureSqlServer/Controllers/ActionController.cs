@@ -26,8 +26,8 @@ namespace pluginAzureSqlServer.Controllers
 
         private readonly AzureSqlServerActionHandler _actionHandler;
 
-        public ActionController(AzureSqlServerActionHandler actionHandler) {
-            _actionHandler = actionHandler;
+        public ActionController() {
+            _actionHandler = ObjectFactory.GetInstance<AzureSqlServerActionHandler>();
         }
 
         //private readonly IDbProvider _dbProvider;

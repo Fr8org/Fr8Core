@@ -95,12 +95,6 @@ namespace pluginAzureSqlServer.Infrastructure {
         //[Route("configurationsettings")]
         private object GetConfigurationSettings(ActionDO curActionDO) {
             return null;
-        }
-
-        //[HttpPost]
-        //[Route("field_mapping_targets")]
-        private object GetFieldMappingTargets(ActionDTO curAction) {
-            return null;
-        }
+        }      
     }
 }
