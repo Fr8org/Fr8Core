@@ -14,7 +14,7 @@ namespace pluginAzureSqlServer
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            AutoMapperBootStrapper.ConfigureAutoMapper();
+            DataAutoMapperBootStrapper.ConfigureAutoMapper();
         }
     }
 }

@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Errors\PluginErrorCode.cs" />
+    <Compile Include="Infrastructure\Action\ActionHandler.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
     <Compile Include="PluginBase.cs" />
