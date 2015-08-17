@@ -81,7 +81,6 @@ namespace Core.Managers
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
 
-            
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventProcessLaunched -= LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
@@ -151,40 +150,6 @@ namespace Core.Managers
 
         //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         //}
-
-        private void LogPluginEvent(EventData eventData)
-        {
-            var currentEvent = new FactDO
-            {
-                ObjectId = eventData.ObjectId,
-                CustomerId = eventData.CustomerId,
-                Data = eventData.Data,
-                PrimaryCategory = eventData.PrimaryCategory,
-                SecondaryCategory = eventData.SecondaryCategory,
-                Activity = eventData.Activity
-            };
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.FactRepository.Add(currentEvent);
-                uow.SaveChanges();
-
-                GenerateLogData(currentEvent);
-            }
-        }
-
-        private void GenerateLogData(HistoryItemDO currentEvent)
-        {
-            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
-                currentEvent.PrimaryCategory,
-                currentEvent.SecondaryCategory,
-                currentEvent.Activity,
-                currentEvent.ObjectId,
-                currentEvent.CustomerId);
-
-            Logger.GetLogger().Info(logData);
-        }
-
 
         private static void TrackablePropertyUpdated(string entityName, string propertyName, object id,
             object value)
@@ -587,7 +552,8 @@ namespace Core.Managers
                 fact.ObjectId,
                 fact.Data);
 
-            switch (eventType) {
+            switch (eventType)
+            {
                 case EventType.Info:
                     Logger.GetLogger().Info(message);
                     break;
@@ -751,6 +717,41 @@ namespace Core.Managers
 
             SaveAndLogFact(fact);
         }
+
+        private void LogPluginEvent(EventData eventData)
+        {
+            var currentEvent = new FactDO
+            {
+                ObjectId = eventData.ObjectId,
+                CustomerId = eventData.CustomerId,
+                Data = eventData.Data,
+                PrimaryCategory = eventData.PrimaryCategory,
+                SecondaryCategory = eventData.SecondaryCategory,
+                Activity = eventData.Activity
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.FactRepository.Add(currentEvent);
+                uow.SaveChanges();
+
+                GenerateLogData(currentEvent);
+            }
+        }
+
+        private void GenerateLogData(HistoryItemDO currentEvent)
+        {
+            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                currentEvent.PrimaryCategory,
+                currentEvent.SecondaryCategory,
+                currentEvent.Activity,
+                currentEvent.ObjectId,
+                currentEvent.CustomerId);
+
+            Logger.GetLogger().Info(logData);
+        }
+
+
 
         private enum EventType
         {
