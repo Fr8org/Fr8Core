@@ -13,8 +13,9 @@ namespace UtilitiesTesting.Fixtures
 				Description = "descr 1",
 				Name = "template1",
 				ProcessTemplateState = ProcessTemplateState.Active,
+
                 //UserId = "testUser1"
-                //DockyardAccount = FixtureData.TestDo
+                DockyardAccount = FixtureData.TestDockyardAccount1()
 			};
 
 
