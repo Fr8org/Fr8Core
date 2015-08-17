@@ -4,7 +4,7 @@
     {
         int Id { get; set; }
         string DockyardAccountId { get; set; }
-        IPluginRegistrationDO PluginRegistration { get; set; }
+        IPluginDO PluginRegistration { get; set; }
         int AccessLevel { get; set; }
     }
 }

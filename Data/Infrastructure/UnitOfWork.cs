@@ -483,6 +483,29 @@ namespace Data.Infrastructure
             }
         }
 
+
+        private PluginRepository _pluginRepository;
+
+        public IPluginRepository PluginRepository
+        {
+            get
+            {
+                return _pluginRepository ?? (_pluginRepository = new PluginRepository(this));
+            }
+        }
+
+
+        private SubscriptionRepository _subscriptionRepository;
+
+        public ISubscriptionRepository SubscriptionRepository
+        {
+            get
+            {
+                return _subscriptionRepository ?? (_subscriptionRepository = new SubscriptionRepository(this));
+            }
+        }
+
+
 	    public void Save()
         {
             _context.SaveChanges();

@@ -61,20 +61,21 @@ namespace Data.Migrations
 
             AddRoles(uow);
             AddAdmins(uow);
-            AddCustomers(uow);
+            AddDockyardAccounts(uow);
             //AddBookingRequest(uow);
 
             //AddCalendars(uow);
 
             AddProfiles(uow);
             //AddEvents(uow);
+
+            AddPlugins(uow);
         }
 
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork uow)
         {
             SeedConstants(uow);
-
             SeedInstructions(uow);
         }
 
@@ -265,9 +266,9 @@ namespace Data.Migrations
         /// </summary>
         /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
-        private static void AddCustomers(IUnitOfWork unitOfWork)
+        private static void AddDockyardAccounts(IUnitOfWork unitOfWork)
         {
-            CreateCustomer("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
+            CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
         }
 
         /// <summary>
@@ -277,7 +278,7 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static void CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
+        private static DockyardAccountDO CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
@@ -286,6 +287,8 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
             user.TestAccount = false;
+
+            return user;
         }
 
         /// <summary>
@@ -295,13 +298,15 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private static void CreateCustomer(string userEmail, string curPassword, IUnitOfWork uow)
+        private static DockyardAccountDO CreateDockyardAccount(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
             user.TestAccount = true;
+
+            return user;
         }
 
         //private static void AddBookingRequest(IUnitOfWork unitOfWork)
@@ -353,6 +358,41 @@ namespace Data.Migrations
             var users = uow.UserRepository.GetAll().ToList();
             foreach (var user in users)
                 uow.UserRepository.AddDefaultProfile(user);
+        }
+
+        private void AddPlugins(IUnitOfWork uow)
+        {
+            const string azureSqlPluginName = "AzureSqlServer";
+
+            // Create test Dockaard account for plugin subscription.
+            var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+
+            // Check that plugin does not exist yet.
+            var azureSqlPluginExists = uow.PluginRepository.GetQuery()
+                .Any(x => x.Name == azureSqlPluginName);
+
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!azureSqlPluginExists)
+            {
+                // Create plugin instance.
+                var azureSqlPlugin = new PluginDO()
+                {
+                    Name = "AzureSqlServer",
+                    PluginStatus = PluginStatus.Active
+                };
+
+                uow.PluginRepository.Add(azureSqlPlugin);
+
+                // Create subscription instance.
+                var azureSqlPluginSubscription = new SubscriptionDO()
+                {
+                    Plugin = azureSqlPlugin,
+                    DockyardAccount = account,
+                    AccessLevel = AccessLevel.User
+                };
+
+                uow.SubscriptionRepository.Add(azureSqlPluginSubscription);
+            }
         }
 
         //private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
