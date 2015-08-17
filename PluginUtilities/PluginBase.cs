@@ -46,6 +46,36 @@ namespace PluginUtilities
         }
 
         /// <summary>
+        ///  Reports event when process an action by making a post request
+        /// </summary>
+        /// <param name="pluginName"></param>
+        private static void ReportEvent(string pluginName)
+        {
+            //prepare the event information
+            var json = string.Format(
+                @"{{
+                    ""Source"":""{0}"",
+                    ""EventType"":""Plugin Event"",
+                    ""Data"":
+                        {{
+                            ""ObjectId"":""{0}"",
+                            ""CustomerId"":""not_applicable"",
+                            ""Data"":""service_start_up"",
+                            ""PrimaryCategory"":""Operations"",
+                            ""SecondaryCategory"":""System Action"",
+                            ""Activity"":""system action""                                
+                        }}
+                }}",
+                pluginName);
+
+            //make Post call
+            RestfulCallWrapper restCall = PrepareRestCall();
+            restCall.AddBody(json, "application/json");
+            restCall.Execute();
+        }
+
+
+        /// <summary>
         /// Initializes a new rest call
         /// </summary>
         private static RestfulCallWrapper PrepareRestCall()

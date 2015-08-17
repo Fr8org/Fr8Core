@@ -13,6 +13,7 @@ using Core.Services;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
+using Data.Interfaces.DataTransferObjects;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -45,7 +46,43 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
+            EventManager.PluginEventReported += LogPluginEvent;
         }
+
+
+        private void LogPluginEvent(EventData eventData)
+        {
+            var currentEvent = new FactDO
+            {
+                ObjectId = eventData.ObjectId,
+                CustomerId = eventData.CustomerId,
+                Data = eventData.Data,
+                PrimaryCategory = eventData.PrimaryCategory,
+                SecondaryCategory = eventData.SecondaryCategory,
+                Activity = eventData.Activity
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.FactRepository.Add(currentEvent);
+                uow.SaveChanges();
+
+                GenerateLogData(currentEvent);
+            }
+        }
+
+        private void GenerateLogData(HistoryItemDO currentEvent)
+        {
+            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                currentEvent.PrimaryCategory,
+                currentEvent.SecondaryCategory,
+                currentEvent.Activity,
+                currentEvent.ObjectId,
+                currentEvent.CustomerId);
+
+            Logger.GetLogger().Info(logData);
+        }
+
 
         public void UnsubscribeFromAlerts()
         {
@@ -70,6 +107,7 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
+            EventManager.PluginEventReported -= LogPluginEvent;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)

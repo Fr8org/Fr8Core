@@ -105,6 +105,11 @@ namespace Data.Infrastructure
         public delegate void PluginIncidentHandler(EventData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
+        public delegate void PluginEventHandler(EventData eventData);
+        public static event PluginEventHandler PluginEventReported;
+
+
+
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -117,6 +122,12 @@ namespace Data.Infrastructure
         {
             PluginIncidentHandler handler = PluginIncidentReported;
             if (handler != null) handler(incidentItem);
+        }
+
+        public static void ReportPluginEvent(EventData eventData)
+        {
+            PluginEventHandler handler = PluginEventReported;
+            if (handler != null) handler(eventData);
         }
 
         //public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
