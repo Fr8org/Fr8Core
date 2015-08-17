@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Core.Interfaces;
 using Core.Managers;
@@ -73,8 +74,8 @@ namespace Core.Services
                 {
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventRegistrationRepository.GetQuery()
-                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType)
+                        uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ProcessTemplate)
+                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ProcessTemplate.UserId == curUserID)
                             .ToList();
                     var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
 
