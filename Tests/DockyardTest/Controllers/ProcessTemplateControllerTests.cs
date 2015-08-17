@@ -46,7 +46,7 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.ProcessTemplateRepository.
-                    GetQuery().SingleOrDefault(pt => pt.UserId == testUserId && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == testUserId && pt.Name == processTemplateDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(processTemplateDto.Description, ptdo.Description);
             }

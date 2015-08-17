@@ -32,7 +32,7 @@ namespace Data.Entities
         public virtual _ProcessTemplateStateTemplate ProcessTemplateStateTemplate { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public DockyardAccountDO DockyardAccount { get; set; }
 
         [InverseProperty("ProcessTemplate")]
         public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }

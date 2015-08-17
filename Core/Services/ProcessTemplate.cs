@@ -34,8 +34,8 @@ namespace Core.Services
                 }
 
                 return (id == null
-                    ? queryableRepo.Where(pt => pt.UserId == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.UserId == userId)).ToList();
+                    ? queryableRepo.Where(pt => Convert.ToString(pt.DockyardAccount.DocusignAccountId) == userId)
+                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId)).ToList();
             }
         }
 
