@@ -42,9 +42,10 @@ namespace PluginUtilities
                     }
                 }).Wait();
         }
-        
+  
+
         /// <summary>
-        ///  Reports event when process an action by making a post request
+        /// Initializes a new rest call
         /// </summary>
         /// <param name="pluginName"></param>
         private static void ReportEvent(string pluginName)

@@ -108,7 +108,6 @@ namespace Data.Infrastructure
         public delegate void PluginEventHandler(EventData eventData);
         public static event PluginEventHandler PluginEventReported;
 
-
         public delegate void EventDocuSignNotificationReceivedHandler();
         public static event EventDocuSignNotificationReceivedHandler EventDocuSignNotificationReceived;
 
