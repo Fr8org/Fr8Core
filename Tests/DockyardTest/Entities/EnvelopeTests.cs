@@ -27,14 +27,14 @@ namespace DockyardTest.Entities
 
                 var createdEnvelope = uow.EnvelopeRepository.GetQuery().FirstOrDefault();
                 Assert.NotNull(createdEnvelope);
-                Assert.AreEqual(newStatus, createdEnvelope.Status);
+                Assert.AreEqual(newStatus, createdEnvelope.EnvelopeStatus);
 
                 createdEnvelope.EnvelopeStatus = updatedStatus;
                 uow.SaveChanges();
 
                 var updatedEnvelope = uow.EnvelopeRepository.GetQuery().FirstOrDefault();
                 Assert.NotNull(updatedEnvelope);
-                Assert.AreEqual(updatedStatus, updatedEnvelope.Status);
+                Assert.AreEqual(updatedStatus, updatedEnvelope.EnvelopeStatus);
             }
         }
     }
