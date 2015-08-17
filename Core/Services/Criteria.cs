@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using RestSharp;
@@ -46,7 +47,7 @@ namespace Core.Services
         {
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+        {
                 var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplate.Id == curProcessNode.Id);
                 if (curCriteria == null)
                     throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
@@ -62,6 +63,7 @@ namespace Core.Services
         public IQueryable<EnvelopeData> Filter(string criteria, int processId, 
             IQueryable<EnvelopeData> envelopeData)
         {
+            EventManager.CriteriaEvaluationStarted(processId);
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
             IQueryable<EnvelopeData> results =
                 envelopeData.Provider.CreateQuery<EnvelopeData>(filterExpression);

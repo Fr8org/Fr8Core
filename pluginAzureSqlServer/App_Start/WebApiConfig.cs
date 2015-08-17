@@ -15,9 +15,8 @@ namespace pluginAzureSqlServer
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                name: "PluginAzureSqlServer",
+                routeTemplate: "plugin_azure_sql_server/{controller}/{id}"                
             );
         }
     }

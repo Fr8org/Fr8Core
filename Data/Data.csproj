@@ -151,6 +151,10 @@
     <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508171449101_merge1.cs" />
+    <Compile Include="Migrations\201508171449101_merge1.Designer.cs">
+      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListType.cs" />
@@ -428,6 +432,9 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
+    <Compile Include="Wrappers\DocuSignEnvelope.cs" />
+    <Compile Include="Wrappers\Signer.cs" />
+    <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -525,6 +532,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508171449101_merge1.resx">
+      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
