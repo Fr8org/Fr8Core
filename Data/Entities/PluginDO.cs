@@ -10,7 +10,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class PluginDO : BaseDO, IPluginRegistrationDO
+    public class PluginDO : BaseDO, IPluginDO
     {
         [Key]
         public int Id { get; set; }

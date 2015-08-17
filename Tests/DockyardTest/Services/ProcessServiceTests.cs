@@ -179,7 +179,7 @@ namespace DockyardTest.Services
 				uow.ProcessTemplateRepository.Add(template);
 				uow.SaveChanges();
 
-				_processService.Execute(template, envelope);
+				_processService.Launch(template, envelope);
 			}
 		}
 	}

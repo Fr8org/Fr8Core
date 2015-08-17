@@ -79,17 +79,16 @@ namespace Core.Services
             }
         }
 
-        public void LaunchProcess(int curProcessTemplateId, EnvelopeDO curEnvelope)
+        public void LaunchProcess(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateId);
                 if (curProcessTemplate == null)
-                    throw new EntityNotFoundException(curProcessTemplateId);
+                    throw new EntityNotFoundException(curProcessTemplate);
 
                 if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
                 {
-                    _process.Execute(curProcessTemplate, curEnvelope);
+                    _process.Launch(curProcessTemplate, curEnvelope);
                     EventManager.ProcessLaunched(curProcessTemplate, curEnvelope);
                 }
             }

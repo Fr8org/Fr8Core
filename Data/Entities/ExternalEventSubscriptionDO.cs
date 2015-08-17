@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Data.States.Templates;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
@@ -8,7 +9,10 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        public int EventType { get; set; }
+        [ForeignKey("EventStatusTemplate")]
+        public int ExternalEvent { get; set; }
+
+        public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
 
         [ForeignKey("ProcessTemplate")]
         public int ProcessTemplateId { get; set; }
