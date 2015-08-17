@@ -123,15 +123,18 @@ module dockyard.directives.paneSelectAction {
         }
 
         private PupulateData($scope: interfaces.IPaneSelectActionScope) {
-            // $scope.sampleActionTypes = [
-            //     { name: "Action type 1", value: "1" },
-            //     { name: "Action type 2", value: "2" },
-            //     { name: "Action type 3", value: "3" }
-            // ];
-
-            var actionRegistrations = this.$resource(this.urlPrefix + '/actions/available')
+            var actionTypeResult = this.$resource(this.urlPrefix + '/actions/available')
                 .query(() => {
-                    console.log(actionRegistrations);
+                    var actionTypes = [];
+
+                    angular.forEach(actionTypeResult, function (it: any) {
+                        actionTypes.push({
+                            name: it.actionType,
+                            value: '[' + it.parentPluginRegistration + '].[' + it.actionType + ']'
+                        });
+                    });
+
+                    $scope.actionTypes = actionTypes;
                     return;
                 });
         }

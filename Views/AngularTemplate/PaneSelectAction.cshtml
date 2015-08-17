@@ -8,7 +8,7 @@
     <div class="portlet-body">
         <div class="form-group">
             <select ng-model="action.actionTypeId" class="form-control" ng-change="ActionTypeSelected()"
-                    ng-options="sampleActionType.value as sampleActionType.name for sampleActionType in sampleActionTypes">
+                    ng-options="actionType.value as actionType.name for actionType in actionTypes">
                 <option value="">Select Action Type</option>
             </select>
         </div>

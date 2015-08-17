@@ -42,44 +42,17 @@ namespace Web.Controllers
         [ResponseType(typeof(IEnumerable<ActionRegistrationDTO>))]
         public IHttpActionResult GetAvailableActions()
         {
-            // var userId = User.Identity.GetUserId();
-            // using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            // {
-            //     var account = uow.UserRepository.GetByKey(userId);
-            //     var availableActions = _service
-            //         .GetAvailableActions(account)
-            //         .Select(x => Mapper.Map<ActionRegistrationDTO>(x))
-            //         .ToList();
-            // 
-            //     return Ok(availableActions);
-            // }
-
-            var data = new List<ActionRegistrationDTO>()
+            var userId = User.Identity.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                new ActionRegistrationDTO()
-                {
-                    Id = 1,
-                    ActionType = "ActionType One",
-                    ParentPluginRegistration = "PluginRegistration One",
-                    Version = "1.0.0"
-                },
-                new ActionRegistrationDTO()
-                {
-                    Id = 2,
-                    ActionType = "ActionType Two",
-                    ParentPluginRegistration = "PluginRegistration Two",
-                    Version = "1.0.0"
-                },
-                new ActionRegistrationDTO()
-                {
-                    Id = 3,
-                    ActionType = "ActionType Three",
-                    ParentPluginRegistration = "PluginRegistration Three",
-                    Version = "1.0.0"
-                }
-            };
-
-            return Ok(data);
+                var account = uow.UserRepository.GetByKey(userId);
+                var availableActions = _service
+                    .GetAvailableActions(account)
+                    .Select(x => Mapper.Map<ActionRegistrationDTO>(x))
+                    .ToList();
+            
+                return Ok(availableActions);
+            }
         }
 
         /// <summary>
