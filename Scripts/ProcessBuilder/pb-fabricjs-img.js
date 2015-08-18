@@ -461,7 +461,7 @@
             var line = new fabric.Line([ns.WidgetConsts.actionsNodeWidth - ns.WidgetConsts.actionsNodeCornerRadius, 0, 10, 0], {
                 left: 0,
                 top: label.getTop() - ns.WidgetConsts.actionsNodeBottomHeight,
-                stroke: '#B3BCC3'
+                stroke: ns.WidgetConsts.arrowStroke
             });
 
             var group = new fabric.Group([label, image, line], {
