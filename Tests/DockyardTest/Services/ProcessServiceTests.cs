@@ -135,6 +135,29 @@ namespace DockyardTest.Services
 			}
 		}
 
+        [Test]
+        public void Process_CanAccessCurrentProcessNode()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var envelope = FixtureData.TestEnvelope1();
+                var processTemplate = FixtureData.TestProcessTemplate1();
+
+                uow.EnvelopeRepository.Add(envelope);
+                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.SaveChanges();
+
+                var process = _processService.Create(processTemplate.Id, envelope.Id);
+
+                var processNode = uow.ProcessNodeRepository.GetByKey(process.CurrentProcessNodeId);
+                processNode.ParentProcessId = process.Id;
+                uow.SaveChanges();
+                //_processService.Launch(processTemplate, envelope);
+
+                process = uow.ProcessRepository.GetByKey(process.Id);
+            }
+        }
+
 		[Test]
 		[ExpectedException(typeof (ArgumentNullException))]
 		public void ProcessService_CanNot_CreateProcessWithIncorrectEnvelope()

@@ -7,6 +7,11 @@ namespace Data.Entities
 {
     public class ProcessDO : BaseDO
     {
+        public ProcessDO()
+        {
+            ProcessNodes = new List<ProcessNodeDO>();
+        }
+
         [Key]
         public int Id { get; set; }
 
