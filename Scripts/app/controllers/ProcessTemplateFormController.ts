@@ -40,10 +40,12 @@ module dockyard.controllers {
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    ProcessTemplateService.save($scope.ptvm).$promise
+                    var result = ProcessTemplateService.save($scope.ptvm);
+
+                    result.$promise
                         .finally(function () {
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes/' + id + '/builder';
+                            window.location.href = '#processes/' + result.Id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {

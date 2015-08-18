@@ -6,46 +6,49 @@ module dockyard.directives.paneWorkflowDesigner {
     export enum MessageType {
         PaneWorkflowDesigner_Render,
         PaneWorkflowDesigner_TemplateSelecting,
-        PaneWorkflowDesigner_CriteriaAdding,
-        PaneWorkflowDesigner_CriteriaAdded,
-        PaneWorkflowDesigner_CriteriaSelecting,
-        PaneWorkflowDesigner_CriteriaRemoved,
+        PaneWorkflowDesigner_ProcessNodeTemplateAdding,
+        PaneWorkflowDesigner_ProcessNodeTemplateAdded,
+        PaneWorkflowDesigner_ProcessNodeTemplateSelecting,
+        PaneWorkflowDesigner_ProcessNodeTemplateRemoved,
         PaneWorkflowDesigner_ActionAdding,
         PaneWorkflowDesigner_ActionAdded,
         PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
         PaneWorkflowDesigner_UpdateAction,
-        PaneWorkflowDesigner_UpdateCriteriaName
+        PaneWorkflowDesigner_UpdateCriteriaName,
+        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced
     }
 
     export class RenderEventArgs {
     }
 
-    export class CriteriaAddingEventArgs {
+    export class ProcessNodeTemplateAddingEventArgs {
     }
 
-    export class CriteriaAddedEventArgs {
-        public criteria: model.Criteria;
+    export class ProcessNodeTemplateAddedEventArgs {
+        public processNodeTemplate: model.ProcessNodeTemplate;
 
-        constructor(criteria: model.Criteria) {
-            this.criteria = criteria;
+        constructor(processNodeTemplate: model.ProcessNodeTemplate) {
+            this.processNodeTemplate = processNodeTemplate;
         }
     }
 
-    export class CriteriaSelectingEventArgs {
-        public criteriaId: number;
+    export class ProcessNodeTemplateSelectingEventArgs {
+        public processNodeTemplateId: number;
 
-        constructor(criteriaId: number) {
-            this.criteriaId = criteriaId;
+        constructor(processNodeTemplateId: number) {
+            this.processNodeTemplateId = processNodeTemplateId;
         }
     }
 
-    export class CriteriaRemovedEventArgs {
+    export class ProcessNodeTemplateRemovedEventArgs {
         public criteriaId: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number) {
+        constructor(criteriaId: number, isTempId: boolean) {
             this.criteriaId = criteriaId;
+            this.isTempId = isTempId;
         }
     }
 
@@ -106,6 +109,16 @@ module dockyard.directives.paneWorkflowDesigner {
             super(criteriaId, actionId);
             this.isTempId = isTempId;
             this.userLabel = userLabel;
+        }
+    }
+
+    export class ProcessNodeTemplateTempIdReplacedEventArgs {
+        public tempId: number;
+        public id: number;
+
+        constructor(tempId: number, id: number) {
+            this.tempId = tempId;
+            this.id = id;
         }
     }
 

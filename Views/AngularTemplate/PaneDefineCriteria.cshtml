@@ -2,17 +2,17 @@
     <div class="portlet-title">
         <div class="caption caption-md">
             <i class="icon-bar-chart font-green-haze hide"></i>
-            <span class="caption-subject font-green-haze bold uppercase">{{criteria.name}}</span>
+            <span class="caption-subject font-green-haze bold uppercase">{{processNodeTemplate.name}}</span>
         </div>
     </div>
     <div class="portlet-body">
         <div class="form-group">
-            <a href class="btn btn-danger" ng-click="removeCriteria()">Remove criteria</a>
+            <a href class="btn btn-danger" ng-hide="processNodeTemplate.isTempId" ng-click="removeCriteria()">Remove criteria</a>
         </div>
 
         <div class="form-group">
             <label class="control-label">Criteria Name</label>
-            <input type="text" class="form-control" ng-model="criteria.name" />
+            <input type="text" class="form-control" ng-model="processNodeTemplate.name" />
         </div>
 
         <div class="form-group">
@@ -22,7 +22,7 @@
                     <input type="radio"
                            name="executionMode"
                            value="1"
-                           ng-model="criteria.executionMode" />
+                           ng-model="processNodeTemplate.criteria.executionMode" />
                     <span>Filter conditions are met</span>
                 </label>
             </div>
@@ -31,7 +31,7 @@
                     <input type="radio"
                            name="executionMode"
                            value="2"
-                           ng-model="criteria.executionMode" />
+                           ng-model="processNodeTemplate.criteria.executionMode" />
                     <span>No criteria - just execute the actions!</span>
                 </label>
             </div>
@@ -39,11 +39,16 @@
 
         <div class="form-group">
             <query-builder-widget fields="fields"
-                                  rows="criteria.conditions"
+                                  rows="processNodeTemplate.criteria.conditions"
                                   operators="operators"
                                   default-operator="defaultOperator"
-                                  ng-show="criteria.executionMode == 1">
+                                  ng-show="processNodeTemplate.criteria.executionMode == 1">
             </query-builder-widget>
+        </div>
+
+        <div class="form-group">
+            <a href="#" class="btn btn-success" ng-click="save()">Save criteria</a>
+            <a href="#" class="btn btn-default" ng-click="cancel()">Cancel</a>
         </div>
     </div>
 </div>

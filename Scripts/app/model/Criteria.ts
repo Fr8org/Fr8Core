@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export enum CriteriaExecutionMode {
+    export enum CriteriaExecutionType {
         WithConditions = 1,
         WithoutConditions = 2
     }
@@ -7,28 +7,29 @@
     export class Criteria {
         public id: number;
         public isTempId: boolean;
-        public name: string;
-        public actions: Array<Action>;
+        public processNodeTemplateId: number;
         public conditions: Array<Condition>;
-        public executionMode: CriteriaExecutionMode;
+        public executionType: CriteriaExecutionType;
 
-        constructor(id: number, isTempId: boolean, name: string, executionMode: CriteriaExecutionMode) {
+        constructor(
+            id: number,
+            isTempId: boolean,
+            processNodeTemplateId: number,
+            executionType: CriteriaExecutionType
+        ) {
             this.id = id;
             this.isTempId = isTempId;
-            this.name = name;
-            this.executionMode = executionMode;
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.executionType = executionType;
 
-            this.actions = [];
             this.conditions = [];
         }
 
         clone(): Criteria {
-            var result = new Criteria(this.id, this.isTempId, this.name, this.executionMode);
-            this.actions.forEach(function (it) { result.actions.push(it.clone()); });
-            this.conditions.forEach(function (it) { result.conditions.push(it.clone()); });
+            var result = new Criteria(this.id, this.isTempId, this.processNodeTemplateId, this.executionType);
+            angular.forEach(this.conditions, function (it) { result.conditions.push(it.clone()); });
 
             return result;
         }
     }
 }
- 

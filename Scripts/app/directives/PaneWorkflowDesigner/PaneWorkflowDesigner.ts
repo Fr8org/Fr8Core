@@ -11,22 +11,22 @@ module dockyard.directives.paneWorkflowDesigner {
         };
 
 
-        var onCriteriaAdded = function (eventArgs: CriteriaAddedEventArgs, scope: IPaneWorkflowDesignerScope) {
+        var onProcessNodeTemplateAdded = function (eventArgs: ProcessNodeTemplateAddedEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onCriteriaAdded', eventArgs);
 
-            scope.widget.addCriteria(eventArgs.criteria);
+            scope.widget.addCriteria(eventArgs.processNodeTemplate);
 
             scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelecting],
-                new CriteriaSelectingEventArgs(eventArgs.criteria.id)
+                MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting],
+                new ProcessNodeTemplateSelectingEventArgs(eventArgs.processNodeTemplate.id)
             );
         };
 
 
-        var onCriteriaRemoved = function (eventArgs: CriteriaRemovedEventArgs, scope: IPaneWorkflowDesignerScope) {
+        var onProcessNodeTemplateRemoved = function (eventArgs: ProcessNodeTemplateRemovedEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onCriteriaRemoved', eventArgs);
 
-            scope.widget.removeCriteria(eventArgs.criteriaId);
+            scope.widget.removeCriteria(eventArgs.criteriaId, eventArgs.isTempId);
         };
 
 
@@ -48,6 +48,10 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.removeAction(eventArgs.criteriaId, eventArgs.actionId);
         };
 
+        var onTempIdReplaced = function (eventArgs: ProcessNodeTemplateTempIdReplacedEventArgs, scope: IPaneWorkflowDesignerScope) {
+            scope.widget.replaceCriteriaTempId(eventArgs.tempId, eventArgs.id);
+        };
+
 
         return {
             restrict: 'E',
@@ -59,38 +63,48 @@ module dockyard.directives.paneWorkflowDesigner {
                     element.children()[0], factory, attrs.width, attrs.height);
 
                 widget.on('startNode:click', function () {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_TemplateSelecting],
-                        new TemplateSelectingEventArgs()
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_TemplateSelecting],
+                            new TemplateSelectingEventArgs()
+                        );
+                    });
                 });
 
                 widget.on('addCriteriaNode:click', function () {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_CriteriaAdding],
-                        new CriteriaAddingEventArgs()
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateAdding],
+                            new ProcessNodeTemplateAddingEventArgs()
+                        );
+                    });
                 });
 
                 widget.on('criteriaNode:click', function (e, criteriaId) {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelecting],
-                        new CriteriaSelectingEventArgs(criteriaId)
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting],
+                            new ProcessNodeTemplateSelectingEventArgs(criteriaId)
+                        );
+                    });
                 });
 
                 widget.on('addActionNode:click', function (e, criteriaId) {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_ActionAdding],
-                        new ActionAddingEventArgs(criteriaId)
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_ActionAdding],
+                            new ActionAddingEventArgs(criteriaId)
+                        );
+                    });
                 });
 
                 widget.on('actionNode:click', function (e, criteriaId, actionId) {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
-                        new ActionSelectingEventArgs(criteriaId, actionId)
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
+                            new ActionSelectingEventArgs(criteriaId, actionId)
+                        );
+                    });
                 });
 
                 scope.widget = widget;
@@ -99,14 +113,17 @@ module dockyard.directives.paneWorkflowDesigner {
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_Render],
                     (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, scope));
 
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_CriteriaAdded],
-                    (event: ng.IAngularEvent, eventArgs: CriteriaAddedEventArgs) => onCriteriaAdded(eventArgs, scope));
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateAdded],
+                    (event: ng.IAngularEvent, eventArgs: ProcessNodeTemplateAddedEventArgs) => onProcessNodeTemplateAdded(eventArgs, scope));
 
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_CriteriaRemoved],
-                    (event: ng.IAngularEvent, eventArgs: CriteriaRemovedEventArgs) => onCriteriaRemoved(eventArgs, scope));
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateRemoved],
+                    (event: ng.IAngularEvent, eventArgs: ProcessNodeTemplateRemovedEventArgs) => onProcessNodeTemplateRemoved(eventArgs, scope));
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionAdded],
                     (event: ng.IAngularEvent, eventArgs: ActionAddedEventArgs) => onActionAdded(eventArgs, scope));
+
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced],
+                    (event: ng.IAngularEvent, eventArgs: ProcessNodeTemplateTempIdReplacedEventArgs) => onTempIdReplaced(eventArgs, scope));
             }
         };
     }

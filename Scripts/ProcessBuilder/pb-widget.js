@@ -60,6 +60,7 @@
 
             var criteriaDescr = {
                 id: criteria.id,
+                isTempId: !!criteria.isTempId,
                 data: criteria,
                 actions: [],
                 criteriaNode: null,
@@ -102,10 +103,12 @@
         // Remove criteria from ProcessBuilder canvas.
         // Parameters:
         //     id - criteriaId
-        removeCriteria: function (id) {
+        removeCriteria: function (id, isTempId) {
             var i, j;
             for (i = 0; i < this._criteria.length; ++i) {
-                if (this._criteria[i].id === id) {
+                if (this._criteria[i].id === id
+                    && this._criteria[i].isTempId === isTempId) {
+
                     this._canvas.remove(this._criteria[i].addActionNode);
                     this._canvas.remove(this._criteria[i].actionsNode);
                     this._canvas.remove(this._criteria[i].criteriaNode);
@@ -129,6 +132,20 @@
             }
 
             this.relayout();
+        },
+
+        // Replace temporary ID with global ID.
+        replaceCriteriaTempId: function (tempId, id) {
+            var criteria = null;
+            var i;
+            for (i = 0; i < this._criteria.length; ++i) {
+                if (this._criteria[i].id === tempId
+                    && this._criteria[i].isTempId) {
+                    
+                    this._criteria[i].isTempId = false;
+                    this._criteria[i].id = id;
+                }
+            }
         },
 
         // Search criteria by id.

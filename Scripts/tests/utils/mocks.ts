@@ -7,7 +7,7 @@
         public static GetProcessBuilderScope(rootScope: interfaces.IAppRootScope): interfaces.IProcessBuilderScope {
             var scope = <interfaces.IProcessBuilderScope>rootScope.$new();
             scope.processTemplateId = 0;
-            scope.criteria = null;
+            scope.processNodeTemplates = null;
             scope.fields = null;
 
             return scope;
