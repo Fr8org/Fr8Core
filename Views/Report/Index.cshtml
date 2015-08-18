@@ -52,16 +52,12 @@
 </table>
 
 
-
-
-
 <script type="text/javascript">
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
         $('#tblAllLogs').hide();
         $('#tblreport').hide();
         $('#tblincidentreport').hide();
-       
         updateTables();
     });
 
@@ -128,24 +124,45 @@
                 tableToWrite = $('#tblAllLogs');
                 tableToHide = $('#tblreport');
                 tableToHide = $('#tblincidentreport');
-              
+
             }
             else if ("@ViewBag.type" == "incident") {
                 tableToWrite = $('#tblincidentreport');
                 tableToHide = $('#tblreport');
                 tableToHide = $('#tblAllLogs');
-                
+
             }
-           
-           
+
+          
             else {
                 tableToWrite = $('#tblreport');
                 tableToHide = $('#tblAllLogs');
                 tableToHide = $('#tblincidentreport');
-                
+               
             }
 
-
+            table = tableToWrite.DataTable({
+                destroy: true,
+                searching: false,
+                ordering: false,
+                bLengthChange: false,
+                processing: true,
+                serverSide: true, //Enabling server side processing
+                //data: JSON.parse(response),
+                order: [0, 'desc'],
+                columns: columns,
+                ajax:
+                     {
+                         url: "@Url.Action("ShowReport", "Report")" + "?queryPeriod=" + queryPeriod + "&type="+"@ViewBag.type",
+                dataSrc: function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                },
+                type: "POST"
+            }
+            });
+             
+        }
         tableToHide.hide();
         tableToWrite.show();
 
