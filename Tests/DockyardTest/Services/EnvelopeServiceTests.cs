@@ -12,6 +12,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.DocusignTools;
 using UtilitiesTesting.DocusignTools.Interfaces;
 using UtilitiesTesting.Fixtures;
+using Data.Interfaces.DataTransferObjects;
 
 namespace DockyardTest.Services
 {
@@ -39,8 +40,8 @@ namespace DockyardTest.Services
 
             Assert.IsTrue(envelope.RestError == null, "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
-            IEnvelope envelopeService = new Core.Services.Envelope();
-            List<EnvelopeData> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
+            IEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
+            List<EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 
             Assert.IsNotNull(envelopeDatas);
             //Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.

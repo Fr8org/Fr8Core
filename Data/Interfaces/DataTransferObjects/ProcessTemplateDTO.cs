@@ -10,6 +10,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
             SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
+            DockyardAccount = new DockyardAccountDO();
         }
 
         public int Id { get; set; }
@@ -19,6 +20,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Description { get; set; }
         public int ProcessTemplateState { get; set; }
+        public virtual DockyardAccountDO DockyardAccount { get; set; }
 
         public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }
 

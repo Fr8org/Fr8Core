@@ -7,6 +7,7 @@ using Data.Interfaces;
 using Utilities;
 using Newtonsoft.Json.Linq;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Services
 {
@@ -20,7 +21,7 @@ namespace Core.Services
         }
         public List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelope)
         {
-            List<EnvelopeData> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
+            List<EnvelopeDataDTO> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
             List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
             if (curLstDistinctDocIds.Count == 1) 
             {
@@ -29,7 +30,7 @@ namespace Core.Services
             else if (curLstDistinctDocIds.Count > 1)
             {
                 List<string> curLstMappableSourceFields = new List<string>();
-                foreach (EnvelopeData curEnvelopeData in curLstEnvelopeData)
+                foreach (EnvelopeDataDTO curEnvelopeData in curLstEnvelopeData)
                 {
                     DocuSign.Integrations.Client.EnvelopeDocuments curEnvelopDocuments = envelope.GetEnvelopeDocumentInfo(curEnvelopeData.EnvelopeId);
                     List<DocuSign.Integrations.Client.EnvelopeDocument> curLstenvelopDocuments = curEnvelopDocuments

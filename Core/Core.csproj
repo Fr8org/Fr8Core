@@ -254,7 +254,6 @@
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
-    <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\Notification.cs" />
@@ -263,11 +262,9 @@
     <Compile Include="Services\ProcessNodeTemplate.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
-    <Compile Include="Services\Signer.cs" />
     <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\Subscription.cs" />
-    <Compile Include="Services\Tab.cs" />
     <Compile Include="Services\Template.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocuSignConnectParser.cs" />

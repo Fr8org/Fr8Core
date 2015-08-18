@@ -1,3 +1,4 @@
+
 using System;
 using System.Configuration;
 using Core.Managers.APIManagers.Transmitters.Restful;
@@ -22,6 +23,10 @@ namespace PluginUtilities
         /// <param name="pluginName"></param>
         private static void ReportStartUp(string pluginName)
         {
+            //SF DEBUG -- Skip this event call for local testing
+            //return;
+
+
             //make Post call
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
@@ -42,15 +47,14 @@ namespace PluginUtilities
                     }
                 }).Wait();
         }
-  
 
         /// <summary>
-        /// Initializes a new rest call
+        /// 
         /// </summary>
         /// <param name="pluginName"></param>
         private static void ReportEvent(string pluginName)
         {
-             //make Post call
+            //make Post call
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
@@ -72,6 +76,7 @@ namespace PluginUtilities
         }﻿
 
 
+
         /// <summary>
         /// Initializes a new rest call
         /// </summary>
@@ -82,4 +87,3 @@ namespace PluginUtilities
         }
     }
 }
-
