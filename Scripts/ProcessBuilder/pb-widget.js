@@ -540,7 +540,7 @@
         _placeActionNode: function (criteria, action, prevAction) {
             var topOffset;
             if (!prevAction) {
-                topOffset = this._getAddActionNodeBottomPoint(criteria);
+                topOffset = criteria.addActionNode.getTop();
             }
             else {
                 topOffset = this._getActionNodeBottomPoint(prevAction);
@@ -551,6 +551,9 @@
             action.actionNode.setLeft(criteria.addActionNode.getLeft());
             action.actionNode.setTop(topOffset);
             action.actionNode.relayout();
+
+            criteria.addActionNode.setTop(topOffset + action.actionNode.getHeight() + ns.WidgetConsts.actionNodePadding);
+            criteria.addActionNode.relayout();
         },
 
         // Get bottom Y point of user defined action.
