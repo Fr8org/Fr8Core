@@ -4,7 +4,7 @@ using DocuSign.Integrations.Client;
 
 using Utilities;
 
-namespace Core.Services
+namespace Data.Wrappers
 {
     public interface ITab
     {

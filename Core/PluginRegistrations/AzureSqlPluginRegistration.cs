@@ -14,7 +14,13 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlPluginRegistration : BasePluginRegistration
     {
-        public const string baseUrl = "AzureSql.BaseUrl";
+
+#if DEBUG
+        public const string baseUrl = "http://localhost:23432";
+#else
+        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
+#endif
+
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
         public AzureSqlPluginRegistration(IAction action)
@@ -26,8 +32,8 @@ namespace Core.PluginRegistrations
         public override JObject GetConfigurationSettings()
         {
             return null;
-        }
-
+        }        
+        
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)
         {
             List<string> result;
@@ -40,7 +46,7 @@ namespace Core.PluginRegistrations
                 Mapper.Map(curAction, curActionDto);
 
                 var contentPost = new StringContent(JsonConvert.SerializeObject(curActionDto), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("/actions/field_mapping_targets", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
+                var response = await client.PostAsync(baseUrl + "/actions/write_to_sql_server/field_mappings", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
 
                 var curMappingTargets = await response.Content.ReadAsStringAsync();
                 result = JsonConvert.DeserializeObject<List<string>>(curMappingTargets);

@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Fixup_Migration : DbMigration
+    public partial class merge1 : DbMigration
     {
         public override void Up()
         {
