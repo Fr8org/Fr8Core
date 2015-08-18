@@ -1,15 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
-using Core.Services;
+using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Web.ViewModels;
+using Action = Core.Services.Action;
 
 namespace Web.Controllers
 {
@@ -20,7 +23,7 @@ namespace Web.Controllers
 
         public ActionController()
         {
-			_service = new Action();
+            _service = new Action();
         }
 
         /*
@@ -53,6 +56,13 @@ namespace Web.Controllers
                 return new List<ActionDTO> { actionVm };
             }
             return new List<ActionDTO>();
+        }
+
+        [HttpGet]
+        [Route("fieldmappings")]
+        public async Task<IEnumerable<string>> GetFieldMappingTargets(ActionDTO curAction)
+        {
+            return await _service.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(curAction));
         }
     }
 }

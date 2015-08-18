@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
+using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 
 namespace Core.Services
@@ -45,6 +48,19 @@ namespace Core.Services
                     uow.SaveChanges();
                 }
             }
+        }
+
+        public async Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO actionDo)
+        {
+            var pluginType = Type.GetType(actionDo.ParentPluginRegistration);
+            if (pluginType == null)
+                throw new ApplicationException("Plugin Not Found");
+
+            var pluginInstance = Activator.CreateInstance(pluginType, ObjectFactory.GetInstance<IAction>()) as IPluginRegistration;
+            if (pluginInstance == null)
+                throw new ApplicationException("Plugin Not Found");
+
+            return await pluginInstance.GetFieldMappingTargets(actionDo);
         }
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)

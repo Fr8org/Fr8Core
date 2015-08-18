@@ -143,5 +143,16 @@ namespace DockyardTest.Controllers
                 ParentPluginRegistration = "AzureSql"
             };
         }
+
+
+        [Test]
+        public async  void Can_Create_Instance()
+        {
+            //Arrange 
+            string pluginName =
+                "Core.PluginRegistrations.AzureSqlPluginRegistration, Core, Version = 1.0.0.0, Culture = neutral, PublicKeyToken = null";
+            var cntroller = new ActionController();
+            cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
+         }
     }
 }
