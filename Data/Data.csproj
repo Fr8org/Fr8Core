@@ -160,6 +160,10 @@
     <Compile Include="Migrations\201508180255327_FixEnvelopeDO.Designer.cs">
       <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508182114281_mergetest.cs" />
+    <Compile Include="Migrations\201508182114281_mergetest.Designer.cs">
+      <DependentUpon>201508182114281_mergetest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListType.cs" />
@@ -542,6 +546,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508180255327_FixEnvelopeDO.resx">
       <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508182114281_mergetest.resx">
+      <DependentUpon>201508182114281_mergetest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
