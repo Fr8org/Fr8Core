@@ -61,7 +61,7 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
-        public static ActionDO TestAction6()
+        public static ActionDO TestAction5()
         {
             var curActionDO = new ActionDO
             {
@@ -70,7 +70,7 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
-        public static ActionDO TestAction5()
+        public static ActionDO TestAction6()
         {
             var curActionDO = new ActionDO
             {
