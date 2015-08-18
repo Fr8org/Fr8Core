@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Utilities;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -40,7 +42,7 @@ namespace Core.Services
             Parse(xmlPayload, out curExternalEvents, out curEnvelopeId);
             ProcessEvents(curExternalEvents, userId);
 
-            _alertReporter.DocusignNotificationReceived(userId, curEnvelopeId);
+            EventManager.DocuSignNotificationReceived();
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
@@ -73,8 +75,8 @@ namespace Core.Services
                 {
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventRegistrationRepository.GetQuery()
-                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType)
+                        uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ProcessTemplate)
+                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
                     var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
 

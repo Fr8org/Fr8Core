@@ -4,7 +4,7 @@ using DocuSign.Integrations.Client;
 
 using Data.Interfaces.DataTransferObjects;
 
-namespace Core.Services
+namespace Data.Wrappers
 {
     public interface ITab
     {

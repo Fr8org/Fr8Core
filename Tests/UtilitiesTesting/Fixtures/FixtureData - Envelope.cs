@@ -11,7 +11,7 @@ namespace UtilitiesTesting.Fixtures
 			return new EnvelopeDO
 			{
 				DocusignEnvelopeId = "21",
-				Status = EnvelopeDO.EnvelopeState.Any
+				EnvelopeStatus = EnvelopeDO.EnvelopeState.Any
 			};
 		}
 

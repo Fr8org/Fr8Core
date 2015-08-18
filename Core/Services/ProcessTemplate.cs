@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -34,33 +35,38 @@ namespace Core.Services
                 }
 
                 return (id == null
-                    ? queryableRepo.Where(pt => pt.UserId == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.UserId == userId)).ToList();
+                    ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
+                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId)).ToList();
             }
         }
 
         public int CreateOrUpdate(ProcessTemplateDO ptdo)
         {
             var creating = ptdo.Id == 0;
-
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                if (creating)
+                using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
-                    unitOfWork.ProcessTemplateRepository.Add(ptdo);
+                    if (creating)
+                    {
+                        ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
+                        unitOfWork.ProcessTemplateRepository.Add(ptdo);
+                    }
+                    else
+                    {
+                        var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
+                        if (curProcessTemplate == null)
+                            throw new EntityNotFoundException();
+                        curProcessTemplate.Name = ptdo.Name;
+                        curProcessTemplate.Description = ptdo.Description;
+                    }
+                    unitOfWork.SaveChanges();
                 }
-                else
-                {
-                    var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
-                    if (curProcessTemplate == null)
-                        throw new EntityNotFoundException();
-                    curProcessTemplate.Name = ptdo.Name;
-                    curProcessTemplate.Description = ptdo.Description;
-                }
-                unitOfWork.SaveChanges();
             }
-
+            catch (Exception ex)
+            {
+                throw;
+            }
             return ptdo.Id;
         }
 
@@ -88,6 +94,11 @@ namespace Core.Services
                 if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
                 {
                     _process.Launch(curProcessTemplate, curEnvelope);
+                    ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
+                        process =>
+                            process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEnvelope.Id.ToString()) &&
+                            process.ProcessState == ProcessState.Executing);
+                    EventManager.ProcessLaunched(launchedProcess);
                 }
             }
         }
