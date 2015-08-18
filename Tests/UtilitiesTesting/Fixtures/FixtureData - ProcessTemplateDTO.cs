@@ -10,8 +10,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "processtemplate1",
                 Description = "Description for test process template",
-                ProcessTemplateState = 1,
-                DockyardAccount = FixtureData.TestDockyardAccount1()
+                ProcessTemplateState = 1
+                //DockyardAccount = FixtureData.TestDockyardAccount1()
             };
         }
 

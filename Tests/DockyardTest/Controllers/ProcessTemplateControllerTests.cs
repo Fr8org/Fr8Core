@@ -94,15 +94,22 @@ namespace DockyardTest.Controllers
         {
             //Arrange
             var testUserId = "testuser1";
-
             var processTemplateController = CreateProcessTemplateController(testUserId);
-
-
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < 2; i++)
             {
                 var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
+                switch (i)
+                {
+                    case 0:
+                        processTemplateDto.DockyardAccount = FixtureData.TestDockyardAccount1();
+                        break;
+                    case 1:
+                        processTemplateDto.DockyardAccount = FixtureData.TestDockyardAccount2();
+                        break;
+                    default:
+                        break;
+                }
                 processTemplateController.Post(processTemplateDto);
-
             }
 
             //Act
@@ -110,8 +117,7 @@ namespace DockyardTest.Controllers
 
             //Assert
             Assert.NotNull(actionResult);
-            Assert.AreEqual(4, actionResult.Content.Count());
-
+            Assert.AreEqual(2, actionResult.Content.Count());
         }
 
         [Test]
