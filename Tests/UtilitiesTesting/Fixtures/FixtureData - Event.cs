@@ -18,5 +18,15 @@ namespace UtilitiesTesting.Fixtures
             };
             return eventDto;
         }
+
+        public static EventDTO TestPluginEventDto()
+        {
+            var eventDto = new EventDTO
+            {
+                EventType = "Plugin Event",
+                Data = new EventData { PrimaryCategory = "Operations", SecondaryCategory = "Action" }
+            };
+            return eventDto;
+        }
     }
 }
