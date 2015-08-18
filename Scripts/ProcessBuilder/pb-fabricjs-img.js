@@ -445,16 +445,26 @@
         },
 
         init: function () {
-            var label = new fabric.Text('Add action', {
+            var imagePath = ns.ImageLoader.instance.getImage(ns.WidgetConsts.addActionNodeAddImage)
+            var image = new fabric.Image(imagePath, {
+                left: 75,
+                top: 0  
+            });
+
+            var label = new fabric.Text('Add Action', {
                 fontSize: ns.WidgetConsts.addActionNodeTextSize,
                 fontFamily: ns.WidgetConsts.addActionNodeTextFont,
                 fill: ns.WidgetConsts.addActionNodeTextFill,
                 selectable: false
             });
 
-            label.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
+            var group = new fabric.Group([label, image], {
+                selectable: false
+            });
 
-            this._object = label;
+            group.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
+
+            this._object = group;
         },
 
         getFabricObject: function () {

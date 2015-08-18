@@ -151,6 +151,10 @@
     <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508171709463_ExternalEvent_Migration.cs" />
+    <Compile Include="Migrations\201508171709463_ExternalEvent_Migration.Designer.cs">
+      <DependentUpon>201508171709463_ExternalEvent_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListType.cs" />
@@ -525,6 +529,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508171709463_ExternalEvent_Migration.resx">
+      <DependentUpon>201508171709463_ExternalEvent_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

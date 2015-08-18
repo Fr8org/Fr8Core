@@ -393,6 +393,7 @@
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
+    <Content Include="Content\img\ProcessBuilder\action-add-small.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-bg.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-bottom.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-top.png" />

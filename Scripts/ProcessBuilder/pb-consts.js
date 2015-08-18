@@ -68,6 +68,7 @@
         addActionNodeTextSize: 15,
         addActionNodeTextFill: '#566B7F',
         addActionNodeTextFont: 'Tahoma',
+        addActionNodeAddImage: '/Content/img/ProcessBuilder/action-add-small.png',
 
         // ActionNode (single action that was added by user) parameters.
         actionNodePadding: 8,

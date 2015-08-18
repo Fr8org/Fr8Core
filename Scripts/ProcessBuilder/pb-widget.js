@@ -167,7 +167,6 @@
                 actionNode: null
             };
 
-            
             actionDescr.actionNode = this._factory.createActionNode(
                 action.name || ('Action #' + action.id.toString())
             );
@@ -178,7 +177,6 @@
                     this.fire('actionNode:click', e, criteria.id, action.id);
                 }, this)
             );
-
 
             this._canvas.add(actionDescr.actionNode);
             criteria.actions.push(actionDescr);
