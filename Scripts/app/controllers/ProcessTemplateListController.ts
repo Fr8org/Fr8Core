@@ -25,7 +25,7 @@ module dockyard.controllers {
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private $scope: interfaces.IProcessTemplatesScope,
-            private ProcessTemplateService: services.IProcessTemplateVMService,
+            private ProcessTemplateService: services.IProcessTemplateService,
             private $modal,
             private $filter) {
 

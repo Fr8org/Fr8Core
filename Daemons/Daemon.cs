@@ -13,6 +13,7 @@ namespace Daemons
     public abstract class Daemon
     {
         public abstract bool Start();
+
         public abstract void Stop();
 
         public abstract int WaitTimeBetweenExecution { get; }

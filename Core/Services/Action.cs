@@ -66,6 +66,13 @@ namespace Core.Services
             }
         }
 
+        public ActionDO GetById(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.ActionRepository.GetByKey(id);
+            }
+        }
         public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
             ActionDO curActionDO = new ActionDO();
@@ -79,8 +86,21 @@ namespace Core.Services
             return curActionDO;
         }
 
+        public void Delete(int Id)
+        {
+            ActionDO entity = new ActionDO() { Id = Id };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionRepository.Attach(entity);
+                uow.ActionRepository.Remove(entity);
+                uow.SaveChanges();
+            }
+        }
+
         public async Task Process(ActionDO curAction)
         {
+            EventManager.ActionStarted(curAction);
             await Dispatch(curAction);
         }
 
@@ -98,7 +118,7 @@ namespace Core.Services
             var pluginClient = ObjectFactory.GetInstance<IPluginClient>(); 
             pluginClient.BaseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
             await pluginClient.PostActionAsync(curAction.ActionType, curActionDTO);
-            EventManager.EventActionDispatched(curAction);
+            EventManager.ActionDispatched(curAction);
         }
     }
 }

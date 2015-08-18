@@ -35,7 +35,24 @@ namespace UtilitiesTesting.Fixtures
             return curActionDO;
         }
 
-        public static ActionDO TestAction3()
+        public ActionDO TestAction3()
+        {
+            var origActionDO = new ActionDO()
+            {
+                ActionListId = null,
+                ActionType = "type 1",
+                Id = 34,
+                ConfigurationSettings = "config settings",
+                FieldMappingSettings = "fieldMappingSettings",
+                UserLabel = "my test action",
+                Ordering = 3
+            };
+
+            return origActionDO;
+        }
+
+
+        public static ActionDO TestAction4()
         {
             var curActionDO = new ActionDO
             {
@@ -44,7 +61,7 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
-        public static ActionDO TestAction4()
+        public static ActionDO TestAction6()
         {
             var curActionDO = new ActionDO
             {

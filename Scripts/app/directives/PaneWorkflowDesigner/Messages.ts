@@ -99,13 +99,13 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class UpdateActionEventArgs extends ActionEventArgsBase {
-        public actionName: string;
+        public userLabel: string;
         public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean, userLabel: string) {
             super(criteriaId, actionId);
             this.isTempId = isTempId;
-            this.actionName = actionName;
+            this.userLabel = userLabel;
         }
     }
 

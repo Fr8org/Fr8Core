@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Utilities;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -35,12 +37,12 @@ namespace Core.Services
             if (string.IsNullOrEmpty(xmlPayload))
                 throw new ArgumentNullException("xmlPayload");
 
-            List<DocuSignEventDO> curEvents;
+            List<DocuSignEventDO> curExternalEvents;
             string curEnvelopeId;
-            Parse(xmlPayload, out curEvents, out curEnvelopeId);
-            ProcessEvents(curEvents);
+            Parse(xmlPayload, out curExternalEvents, out curEnvelopeId);
+            ProcessEvents(curExternalEvents, userId);
 
-            _alertReporter.DocusignNotificationReceived(userId, curEnvelopeId);
+            EventManager.DocuSignNotificationReceived();
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
@@ -65,22 +67,22 @@ namespace Core.Services
             }
         }
 
-        private void ProcessEvents(IEnumerable<DocuSignEventDO> curEvents)
+        private void ProcessEvents(IEnumerable<DocuSignEventDO> curEvents, string curUserID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 foreach (var curEvent in curEvents)
                 {
-                    var @event = curEvent;
+                    //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventRegistrationRepository.GetQuery()
-                            .Where(s => s.EventType == @event.ExternalEventType)
+                        uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ProcessTemplate)
+                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
                     var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
 
                     foreach (var subscription in subscriptions)
                     {
-                        _processTemplate.LaunchProcess(subscription.ProcessTemplateId, curEnvelope);
+                        _processTemplate.LaunchProcess(subscription.ProcessTemplate, curEnvelope);
                     }
                 }
             }

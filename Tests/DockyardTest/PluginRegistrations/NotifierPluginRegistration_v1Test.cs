@@ -81,8 +81,8 @@ namespace DockyardTest.PluginRegistrations
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void CanGetConfigurationSettings()
         {
-            ActionDO curActionForEmail = FixtureData.TestAction3();
-            ActionDO curActionForMessage = FixtureData.TestAction4();
+            ActionDO curActionForEmail = FixtureData.TestAction4();
+            ActionDO curActionForMessage = FixtureData.TestAction5();
             _notifierPluginRegistration_v1.GetConfigurationSettings(null);
             Assert.AreEqual(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForEmail),emailAction);
             Assert.AreEqual(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForMessage), textMessageAction);
@@ -92,7 +92,7 @@ namespace DockyardTest.PluginRegistrations
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public void GetConfigurationSettings_CheckForAcitonIsNullOrEmpy()
         {
-            ActionDO curActionUserLableEmpty = FixtureData.TestAction5();
+            ActionDO curActionUserLableEmpty = FixtureData.TestAction6();
             _notifierPluginRegistration_v1.GetConfigurationSettings(curActionUserLableEmpty);
         }
 

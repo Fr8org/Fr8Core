@@ -3,8 +3,11 @@
         id: number;
         isTempId: boolean;
         criteriaId: number;
-        name: string;
-        actionTypeId: number;
+        actionType: string;
+        actionListId: number
+        configurationSettings: string;
+        fieldMappingSettings: string;
+        userLabel: string
 
         constructor(id: number, isTempId: boolean, criteriaId: number) {
             this.criteriaId = criteriaId;
@@ -14,9 +17,10 @@
 
         clone(): Action {
             var result = new Action(this.id, this.isTempId, this.criteriaId);
-            result.name = this.name;
-            result.actionTypeId = this.actionTypeId;
+            result.userLabel = this.userLabel;
+            result.actionType = this.actionType;
 
+            result.userLabel = this.userLabel;
             return result;
         }
     }
