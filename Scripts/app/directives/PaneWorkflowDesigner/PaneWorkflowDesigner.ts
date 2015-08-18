@@ -17,8 +17,8 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.addCriteria(eventArgs.criteria);
 
             scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
-                new CriteriaSelectedEventArgs(eventArgs.criteria.id)
+                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelecting],
+                new CriteriaSelectingEventArgs(eventArgs.criteria.id)
             );
         };
 
@@ -36,8 +36,8 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action);
 
             scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                new ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id)
+                MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
+                new ActionSelectingEventArgs(eventArgs.criteriaId, eventArgs.action.id)
             );
         };
 
@@ -60,8 +60,8 @@ module dockyard.directives.paneWorkflowDesigner {
 
                 widget.on('startNode:click', function () {
                     scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_TemplateSelected],
-                        new TemplateSelectedEventArgs()
+                        MessageType[MessageType.PaneWorkflowDesigner_TemplateSelecting],
+                        new TemplateSelectingEventArgs()
                     );
                 });
 
@@ -74,8 +74,8 @@ module dockyard.directives.paneWorkflowDesigner {
 
                 widget.on('criteriaNode:click', function (e, criteriaId) {
                     scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
-                        new CriteriaSelectedEventArgs(criteriaId)
+                        MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelecting],
+                        new CriteriaSelectingEventArgs(criteriaId)
                     );
                 });
 
@@ -88,8 +88,8 @@ module dockyard.directives.paneWorkflowDesigner {
 
                 widget.on('actionNode:click', function (e, criteriaId, actionId) {
                     scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                        new ActionSelectedEventArgs(criteriaId, actionId)
+                        MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
+                        new ActionSelectingEventArgs(criteriaId, actionId)
                     );
                 });
 
