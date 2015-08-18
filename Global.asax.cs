@@ -90,7 +90,7 @@ namespace Web
 
             Logger.GetLogger().Warn("Dockyard  starting...");
             var docusign = new DocusignPackager();
-            //string baseURL = docusign.Login();
+            string baseURL = docusign.Login();
             ConfigureValidationEngine();
 
         }
