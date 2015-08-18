@@ -1,9 +1,12 @@
-﻿namespace Utilities
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Data.Interfaces.DataTransferObjects
 {
-    /// <summary>
-    /// Envelope data of dockyard.
-    /// </summary>
-    public class EnvelopeData
+    public class EnvelopeDataDTO
     {
         public string Name { get; set; }
 
