@@ -32,7 +32,7 @@ namespace Web.Controllers
                 return Ok();
             }
 
-            throw new InvalidOperationException("Plugin incident and event are handled.");
+            throw new InvalidOperationException("Only plugin incidents and events are handled.");
         }
     }
 }

@@ -16,48 +16,65 @@ namespace DockyardTest.Controllers
     [TestFixture]
     public class EventControllerTest : BaseTest
     {
+        private EventController _eventController;
+        private EventReporter _eventReporter;
+        private IncidentReporter _incidentReporter;
+
+
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+            _eventController = new EventController();
+            _eventReporter = new EventReporter();
+            _incidentReporter = new IncidentReporter();
+        }
+
         [Test]
         [Category("Controllers.EventController.Event")]
         public void EventController_Event_WithPluginIncident_ReturnsOK()
         {
             //Arrange with plugin incident
-            new IncidentReporter().SubscribeToAlerts();
+            _incidentReporter.SubscribeToAlerts();
             var eventDto = FixtureData.TestPluginIncidentDto();
 
             //Act
-            var controller = new EventController();
-            var result = controller.Event(eventDto);
+          
+            var result = _eventController.Event(eventDto);
 
             //Assert
             Assert.IsTrue(result is OkResult);
 
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            var redfsasult = uow.IncidentRepository.GetAll();
+
             Assert.AreEqual(1, uow.IncidentRepository.GetAll().Count());
         }
 
-        //[Test]
-        //[Category("Controllers.EventController.Event")]
-        //public void EventController_Event_WithPluginEvent_ReturnsOK()
-        //{
-        //    //Arrange with plugin event
-        //    new EventReporter().SubscribeToAlerts();
-        //    var eventDto = FixtureData.TestPluginEventDto();
+        [Test]
+        [Category("Controllers.EventController.Event")]
+        public void EventController_Post_WithPluginEvent_ReturnsOK()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange with plugin event
+                _eventReporter.SubscribeToAlerts();
 
-        //    //Act
-        //    var controller = new EventController();
-        //    var result = controller.Event(eventDto);
+                var curEventDTO = FixtureData.TestPluginEventDto();
 
-        //    //Assert
-        //    Assert.IsTrue(result is OkResult);
+                //Act
+                var result = _eventController.Event(curEventDTO);
 
-        //    var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-        //    List<FactDO> savedFactDoList=uow.FactRepository.GetAll().ToList();
-        //    Assert.AreEqual(1, savedFactDoList.Count());
-        //    Assert.AreEqual(eventDto.Data.PrimaryCategory, savedFactDoList[0].PrimaryCategory);
-        //    Assert.AreEqual(eventDto.Data.SecondaryCategory, savedFactDoList[0].SecondaryCategory);
-        //    uow.FactRepository.Remove(savedFactDoList[0]);
-        //    uow.SaveChanges();
+                //Assert
+                Assert.IsTrue(result is OkResult);
 
-        //}
+                List<FactDO> savedFactDoList = uow.FactRepository.GetAll().ToList();
+                Assert.AreEqual(1, savedFactDoList.Count());
+                Assert.AreEqual(curEventDTO.Data.PrimaryCategory, savedFactDoList[0].PrimaryCategory);
+                Assert.AreEqual(curEventDTO.Data.SecondaryCategory, savedFactDoList[0].SecondaryCategory);
+                _eventReporter.UnsubscribeFromAlerts();
+            }
+
+        }
     }
 }

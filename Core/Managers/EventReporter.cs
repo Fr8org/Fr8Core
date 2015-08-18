@@ -720,7 +720,7 @@ namespace Core.Managers
 
         private void LogPluginEvent(EventData eventData)
         {
-            var currentEvent = new FactDO
+            var fact = new FactDO
             {
                 ObjectId = eventData.ObjectId,
                 CustomerId = eventData.CustomerId,
@@ -730,27 +730,8 @@ namespace Core.Managers
                 Activity = eventData.Activity
             };
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.FactRepository.Add(currentEvent);
-                uow.SaveChanges();
-
-                GenerateLogData(currentEvent);
-            }
+            SaveAndLogFact(fact);
         }
-
-        private void GenerateLogData(HistoryItemDO currentEvent)
-        {
-            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
-                currentEvent.PrimaryCategory,
-                currentEvent.SecondaryCategory,
-                currentEvent.Activity,
-                currentEvent.ObjectId,
-                currentEvent.CustomerId);
-
-            Logger.GetLogger().Info(logData);
-        }
-
 
 
         private enum EventType

@@ -23,6 +23,21 @@ namespace PluginUtilities
         /// <param name="pluginName"></param>
         private static void ReportStartUp(string pluginName)
         {
+            SendEventOrIncidentReport(pluginName,  "Plugin Incident");
+        }
+
+        
+        /// <summary>
+        /// Reports event when process an action
+        /// </summary>
+        /// <param name="pluginName"></param>
+        private static void ReportEvent(string pluginName)
+        {
+            SendEventOrIncidentReport(pluginName, "Plugin Event");
+        }﻿
+
+        private static void SendEventOrIncidentReport(string pluginName, string eventType)
+        {
             //SF DEBUG -- Skip this event call for local testing
             //return;
 
@@ -35,7 +50,7 @@ namespace PluginUtilities
                 new
                 {
                     Source = pluginName,
-                    EventType = "Plugin Incident",
+                    EventType = eventType,
                     Data = new
                     {
                         ObjectId = pluginName,
@@ -46,36 +61,8 @@ namespace PluginUtilities
                         Activity = "system startup",
                     }
                 }).Wait();
+
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="pluginName"></param>
-        private static void ReportEvent(string pluginName)
-        {
-            //make Post call
-            var restClient = PrepareRestClient();
-            const string eventWebServerUrl = "EventWebServerUrl";
-            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
-            restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                new
-                {
-                    Source = pluginName,
-                    EventType = "Plugin Event",
-                    Data = new
-                    {
-                        ObjectId = pluginName,
-                        CustomerId = "not_applicable",
-                        Data = "service_start_up",
-                        PrimaryCategory = "Operations",
-                        SecondaryCategory = "System Action",
-                        Activity = "system action",
-                    }
-                }).Wait();
-        }﻿
-
-
 
         /// <summary>
         /// Initializes a new rest call
