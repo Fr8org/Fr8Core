@@ -46,6 +46,9 @@ namespace Core.Services
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
+
+                processNode.ParentProcessId = curProcessDO.Id;
+                uow.SaveChanges();
             }
             return curProcessDO;
         }

@@ -151,6 +151,7 @@ namespace DockyardTest.Services
 
                 var processNode = uow.ProcessNodeRepository.GetByKey(process.CurrentProcessNodeId);
                 processNode.ParentProcessId = process.Id;
+                uow.ProcessNodeRepository.Add(processNode);
                 uow.SaveChanges();
                 //_processService.Launch(processTemplate, envelope);
 
