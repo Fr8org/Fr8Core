@@ -1,18 +1,21 @@
-﻿using System.Collections.Generic;
-
-using Data.Interfaces;
-
+﻿using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Utilities;
 
-namespace Core.Services
+namespace Data.Wrappers
 {
-    public class Envelope : DocuSign.Integrations.Client.Envelope, IEnvelope
+    public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IEnvelope
     {
-        private string _baseUrl;
+         private string _baseUrl;
         private readonly ITab _tab;
         private readonly ISigner _signer;
 
-        public Envelope()
+        public DocuSignEnvelope()
         {
             //TODO change baseUrl later. Remove it to constructor parameter etc.
             _baseUrl = string.Empty; 
@@ -31,7 +34,7 @@ namespace Core.Services
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public List<EnvelopeData> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
+        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
@@ -42,8 +45,7 @@ namespace Core.Services
                 }
             }
 
-            return new List<EnvelopeData>();
+            return new List<EnvelopeDataDTO>();
         }
-
     }
 }

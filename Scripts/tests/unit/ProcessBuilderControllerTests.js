@@ -111,14 +111,6 @@ var dockyard;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], incomingEventArgs);
                     expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
                 });
-                //Rule #9
-                it("When PaneConfigureAction_Cancelled is sent, PaneConfigureMapping_Hide " +
-                    "and PaneSelectAction_Hide should be received with no args", function () {
-                    var incomingEventArgs = new pca.CancelledEventArgs(1, 2, false);
-                    _$scope.$emit("PaneConfigureAction_Cancelled", incomingEventArgs);
-                    expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Hide");
-                    expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneSelectAction_Hide");
-                });
             });
         })(controller = tests.controller || (tests.controller = {}));
     })(tests = dockyard.tests || (dockyard.tests = {}));

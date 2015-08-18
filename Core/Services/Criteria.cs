@@ -38,7 +38,7 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
-        public bool Evaluate(string criteria, int processId,  IEnumerable<EnvelopeData> envelopeData)
+        public bool Evaluate(string criteria, int processId,  IEnumerable<EnvelopeDataDTO> envelopeData)
         {
             return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
@@ -60,13 +60,13 @@ namespace Core.Services
         }
 
 
-        public IQueryable<EnvelopeData> Filter(string criteria, int processId, 
-            IQueryable<EnvelopeData> envelopeData)
+        public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId, 
+            IQueryable<EnvelopeDataDTO> envelopeData)
         {
             EventManager.CriteriaEvaluationStarted(processId);
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
-            IQueryable<EnvelopeData> results =
-                envelopeData.Provider.CreateQuery<EnvelopeData>(filterExpression);
+            IQueryable<EnvelopeDataDTO> results =
+                envelopeData.Provider.CreateQuery<EnvelopeDataDTO>(filterExpression);
             return results;
         }
 
