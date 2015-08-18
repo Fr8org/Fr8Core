@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
@@ -78,17 +79,21 @@ namespace Core.Services
             }
         }
 
-        public void LaunchProcess(int curProcessTemplateId, EnvelopeDO curEnvelope)
+        public void LaunchProcess(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateId);
                 if (curProcessTemplate == null)
-                    throw new EntityNotFoundException(curProcessTemplateId);
+                    throw new EntityNotFoundException(curProcessTemplate);
 
                 if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
                 {
-                    _process.Execute(curProcessTemplate, curEnvelope);
+                    _process.Launch(curProcessTemplate, curEnvelope);
+                    ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
+                        process =>
+                            process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEnvelope.Id.ToString()) &&
+                            process.ProcessState == ProcessState.Executing);
+                    EventManager.ProcessLaunched(launchedProcess);
                 }
             }
         }

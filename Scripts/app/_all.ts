@@ -53,7 +53,6 @@
 
 /// <reference path="directives/querybuilderwidget.ts" />
 
-
 /*
     CONTROLLERS
 */
@@ -62,6 +61,10 @@
 /// <reference path="controllers/processtemplatelistcontroller.ts" />
 
 
+/*
+    LIBRARIES    
+*/
+/// <reference path="../typings/jquery/jquery.d.ts" />
 
 
 

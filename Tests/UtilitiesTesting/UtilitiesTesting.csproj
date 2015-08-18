@@ -88,9 +88,9 @@
     <Compile Include="BaseTest.cs" />
     <Compile Include="DocusignTools\DocusignApiHelper.cs" />
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
-    <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
+    <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignAccount.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
@@ -132,6 +132,10 @@
     <ProjectReference Include="..\..\PluginUtilities\PluginUtilities.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

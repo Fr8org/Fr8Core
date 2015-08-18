@@ -18,7 +18,7 @@ namespace Data.Repositories
         {
             base.Add(entity);
             //AddDefaultCalendar(entity);
-            AddDefaultProfile(entity);
+            //AddDefaultProfile(entity);
         }
 
         public DockyardAccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)

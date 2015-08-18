@@ -45,6 +45,14 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
             EventManager.AlertTokenRevoked += OnAlertTokenRevoked;
+
+            EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
+            EventManager.EventProcessLaunched += LogEventProcessLaunched;
+            EventManager.EventProcessNodeCreated += LogEventProcessNodeCreated;
+            EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
+            EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
+            EventManager.EventActionStarted += LogEventActionStarted;
+            EventManager.EventActionDispatched += LogEventActionDispatched;
         }
 
         public void UnsubscribeFromAlerts()
@@ -70,6 +78,14 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
+            
+            EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
+            EventManager.EventProcessLaunched -= LogEventProcessLaunched;
+            EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
+            EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
+            EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
+            EventManager.EventActionStarted -= LogEventActionStarted;
+            EventManager.EventActionDispatched -= LogEventActionDispatched;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -443,6 +459,12 @@ namespace Core.Managers
             }
         }
 
+        private void SaveAndLogFact(FactDO fact)
+        {
+            SaveFact(fact);
+            LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
+        }
+
         public void UserRegistered(DockyardAccountDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -553,6 +575,143 @@ namespace Core.Managers
         private void OnAlertTokenRevoked(string userId)
         {
             AddFactOnToken(userId, "Revoked");
+        }
+
+        private void LogDocuSignNotificationReceived()
+        {
+            var fact = new FactDO
+            {
+                CustomerId = null,
+                Data = "DocuSign Notificaiton Received",
+                ObjectId = null,
+                PrimaryCategory = "External Event",
+                SecondaryCategory = "DocuSign",
+                Activity = "Received"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
+        private void LogEventProcessLaunched(ProcessDO launchedProcess)
+        {
+            var fact = new FactDO
+            {
+                CustomerId = launchedProcess.DockyardAccountId,
+                Data = launchedProcess.Id.ToStr(),
+                ObjectId = launchedProcess.Id.ToStr(),
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Process",
+                Activity = "Launched"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
+        private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
+        {
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                processInExecution = uow.ProcessRepository.GetByKey(processNode.ParentProcessId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = processNode.Id.ToStr(),
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Process Node",
+                Activity = "Created"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
+        private void LogEventCriteriaEvaluationStarted(int processId)
+        {
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                processInExecution = uow.ProcessRepository.GetByKey(processId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = null,
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Criteria Evaluation",
+                Activity = "Started"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
+        private void LogEventCriteriaEvaluationFinished(int curProcessId)
+        {
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                processInExecution = uow.ProcessRepository.GetByKey(curProcessId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = null,
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Criteria Evaluation",
+                Activity = "Finished"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
+        private void LogEventActionStarted(ActionDO curAction)
+        {
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int? processId = uow.ActionListRepository.GetByKey(curAction.ActionListId).ProcessID;
+                processInExecution = uow.ProcessRepository.GetByKey(processId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = curAction.Id.ToStr(),
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Action",
+                Activity = "Started"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
+        private void LogEventActionDispatched(ActionDO curAction)
+        {
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int? processId = uow.ActionListRepository.GetByKey(curAction.ActionListId).ProcessID;
+                processInExecution = uow.ProcessRepository.GetByKey(processId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = curAction.Id.ToStr(),
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Action",
+                Activity = "Dispatched"
+            };
+
+            SaveAndLogFact(fact);
         }
 
         private enum EventType

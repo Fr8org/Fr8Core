@@ -13,4 +13,8 @@ module dockyard.interfaces {
         ProcessState: ProcessState;
     }
 
+    export interface IActionVM extends ng.resource.IResource<IAction>, IAction {
+
+    }
+
 }

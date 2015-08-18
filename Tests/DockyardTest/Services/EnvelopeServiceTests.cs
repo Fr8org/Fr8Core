@@ -39,7 +39,7 @@ namespace DockyardTest.Services
 
             Assert.IsTrue(envelope.RestError == null, "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
-            IEnvelope envelopeService = new Core.Services.Envelope();
+            IEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
             List<EnvelopeData> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 
             Assert.IsNotNull(envelopeDatas);
@@ -53,7 +53,7 @@ namespace DockyardTest.Services
 
             RestSettings.Instance.RestTracing = true;
 
-            var envelopeDatas = (new Core.Services.Envelope())
+            var envelopeDatas = (new Data.Wrappers.DocuSignEnvelope())
                                 .GetEnvelopeData(FixtureData.TestTeamplateId).ToList();
 
             Assert.IsNotNull(envelopeDatas);

@@ -1,30 +1,30 @@
-using Data.Entities;
-using Data.Infrastructure.StructureMap;
-using Data.Repositories;
-using Core.Interfaces;
+using AutoMapper;
 using Core.ExternalServices;
-using Core.ExternalServices.REST;
+using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Authorizers;
+using Core.Managers.APIManagers.Authorizers.Docusign;
 using Core.Managers.APIManagers.Authorizers.Google;
 using Core.Managers.APIManagers.Packagers;
 using Core.Managers.APIManagers.Packagers.SegmentIO;
 using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
+using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Core.Security;
 using Core.Services;
+using Data.Entities;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.Repositories;
+using Data.Wrappers;
+using DocuSign.Integrations.Client;
 using Moq;
 using SendGrid;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using AutoMapper;
-using Core.Managers.APIManagers.Authorizers.Docusign;
 using Utilities;
-using System;
-using Core.Utilities;
-using Data.Interfaces;
-using Action = Core.Services.Action;
 
 namespace Core.StructureMap
 {
@@ -82,7 +82,8 @@ namespace Core.StructureMap
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
-                For<IRestfullCall>().Use<RestfulCallWrapper>();
+                For<IRestfulServiceClient>().Use<RestfulServiceClient>();
+                For<IPluginClient>().Use<PluginClient>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcess>().Use<Process>();
@@ -92,9 +93,8 @@ namespace Core.StructureMap
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
-                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
-                For<IEnvelope>().Use<Envelope>();
-
+                For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
+                For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IEvent>().Use<Event>();
             }
         }
@@ -119,7 +119,8 @@ namespace Core.StructureMap
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
-                For<IRestfullCall>().Use<RestfulCallWrapper>();
+                For<IRestfulServiceClient>().Use<RestfulServiceClient>();
+                For<IPluginClient>().Use<PluginClient>();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
@@ -131,14 +132,13 @@ namespace Core.StructureMap
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
-                For<IEnvelope>().Use<Envelope>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
-
-                For<IPluginRegistration>().Use<AzureSqlPluginRegistration>().Named("AzureSql");
+                For<IEnvelope>().Use<DocuSignEnvelope>();
+                For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
             }
         }

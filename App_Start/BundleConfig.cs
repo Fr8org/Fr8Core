@@ -118,11 +118,11 @@ namespace Web.App_Start
                ));
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
-                .IncludeDirectory("~/Scripts/tests/mocks/", "*.js", true)
+                .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/unit/", "*.js", true));
 
             bundles.Add(new ScriptBundle("~/bundles/jsintegrationtests")
-                .IncludeDirectory("~/Scripts/tests/mocks/", "*.js", true)
+                .IncludeDirectory("~/Scripts/tests/utils/", "*.js", true)
                 .IncludeDirectory("~/Scripts/tests/integration/", "*.js", true));
 
             //bundles.Add(new StyleBundle("~/bundles/css/temp").Include(

@@ -22,19 +22,19 @@ namespace DockyardTest.Entities
             const EnvelopeDO.EnvelopeState updatedStatus = EnvelopeDO.EnvelopeState.Delivered;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.EnvelopeRepository.Add(new EnvelopeDO { Id = 1, Status = newStatus, DocusignEnvelopeId = "23" });
+                uow.EnvelopeRepository.Add(new EnvelopeDO { Id = 1, EnvelopeStatus = newStatus, DocusignEnvelopeId = "23" });
                 uow.SaveChanges();
 
                 var createdEnvelope = uow.EnvelopeRepository.GetQuery().FirstOrDefault();
                 Assert.NotNull(createdEnvelope);
-                Assert.AreEqual(newStatus, createdEnvelope.Status);
+                Assert.AreEqual(newStatus, createdEnvelope.EnvelopeStatus);
 
-                createdEnvelope.Status = updatedStatus;
+                createdEnvelope.EnvelopeStatus = updatedStatus;
                 uow.SaveChanges();
 
                 var updatedEnvelope = uow.EnvelopeRepository.GetQuery().FirstOrDefault();
                 Assert.NotNull(updatedEnvelope);
-                Assert.AreEqual(updatedStatus, updatedEnvelope.Status);
+                Assert.AreEqual(updatedStatus, updatedEnvelope.EnvelopeStatus);
             }
         }
     }

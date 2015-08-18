@@ -26,8 +26,8 @@ namespace DockyardTest.Integration
             // SETUP
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fixtureData = new FixtureData(uow);
-                var userDO = fixtureData.TestUser1();
+               
+                var userDO = FixtureData.TestUser1();
                 uow.UserRepository.Add(userDO);
                 uow.SaveChanges();
                 id = userDO.Id;

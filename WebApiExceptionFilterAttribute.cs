@@ -10,6 +10,8 @@ using System.Web.Http.Filters;
 using Core.Managers;
 using Newtonsoft.Json;
 using StructureMap;
+using Utilities;
+using PluginUtilities;
 
 namespace Web
 {
@@ -35,11 +37,19 @@ namespace Web
             // if debugging enabled send back the details of exception as well
             if (HttpContext.Current.IsDebuggingEnabled)
             {
-                var detailedMessage =
-                    JsonConvert.SerializeObject(new {title = errorMessage, exception = context.Exception});
+                if (ex is PluginCodedException) {
+                    var pluginEx = (PluginCodedException)ex;
+                    var pluginError = JsonConvert.SerializeObject(new { errorCode = pluginEx.ErrorCode, message = pluginEx.ErrorCode.GetEnumDescription() });
+                    context.Response.Content = new StringContent(pluginError, Encoding.UTF8, "application/json");
+                    return;
+                }
+                else {
+                    var detailedMessage =
+                        JsonConvert.SerializeObject(new { title = errorMessage, exception = context.Exception });
 
-                context.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
-                return;
+                    context.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");
+                    return;
+                }
             }
             context.Response.Content = new StringContent(errorMessage);
             

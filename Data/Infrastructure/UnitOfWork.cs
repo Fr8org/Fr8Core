@@ -58,36 +58,7 @@ namespace Data.Infrastructure
                 return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
-
-        //private BookingRequestRepository _bookingRequestRepository;
-
-        //public BookingRequestRepository BookingRequestRepository
-        //{
-        //    get
-        //    {
-        //        return _bookingRequestRepository ?? (_bookingRequestRepository = new BookingRequestRepository(this));
-        //    }
-        //}
-
-        //private BookingRequestStatusRepository _bookingRequestStatusRepository;
-
-        //public BookingRequestStatusRepository BookingRequestStatusRepository
-        //{
-        //    get
-        //    {
-        //        return _bookingRequestStatusRepository ?? (_bookingRequestStatusRepository = new BookingRequestStatusRepository(this));
-        //    }
-        //}
-
-        //private CalendarRepository _calendarRepository;
-
-        //public CalendarRepository CalendarRepository
-        //{
-        //    get
-        //    {
-        //        return _calendarRepository ?? (_calendarRepository = new CalendarRepository(this));
-        //    }
-        //}
+        
 
         private SlipRepository _SlipRepository;
 
@@ -119,15 +90,6 @@ namespace Data.Infrastructure
             }
         }
 
-        //private RemoteCalendarLinkRepository _remoteCalendarLinkRepository;
-
-        //public RemoteCalendarLinkRepository RemoteCalendarLinkRepository
-        //{
-        //    get
-        //    {
-        //        return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
-        //    }
-        //}
         
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
@@ -190,15 +152,6 @@ namespace Data.Infrastructure
             }
         }
 
-        //private EventRepository _eventRepository;
-
-        //public EventRepository EventRepository
-        //{
-        //    get
-        //    {
-        //        return _eventRepository ?? (_eventRepository = new EventRepository(this));
-        //    }
-        //}
 
         private EventStatusRepository _eventStatusRepository;
 
@@ -230,15 +183,7 @@ namespace Data.Infrastructure
             }
         }
 
-        //private InvitationResponseRepository _invitationResponseRepository;
-
-        //public InvitationResponseRepository InvitationResponseRepository
-        //{
-        //    get
-        //    {
-        //        return _invitationResponseRepositorya ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
-        //    }
-        //}
+    
 
         private StoredFileRepository _storedFileRepository;
 
@@ -537,6 +482,29 @@ namespace Data.Infrastructure
                 return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
             }
         }
+
+
+        private PluginRepository _pluginRepository;
+
+        public IPluginRepository PluginRepository
+        {
+            get
+            {
+                return _pluginRepository ?? (_pluginRepository = new PluginRepository(this));
+            }
+        }
+
+
+        private SubscriptionRepository _subscriptionRepository;
+
+        public ISubscriptionRepository SubscriptionRepository
+        {
+            get
+            {
+                return _subscriptionRepository ?? (_subscriptionRepository = new SubscriptionRepository(this));
+            }
+        }
+
 
 	    public void Save()
         {

@@ -7,6 +7,7 @@ using Data.Entities;
 using Web.ViewModels;
 using Web.ViewModels.JsonConverters;
 using Utilities.AutoMapper;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Web.App_Start
 {
@@ -73,7 +74,8 @@ namespace Web.App_Start
             //    .ForMember(br => br.EmailAddress, opts => opts.ResolveUsing(e => e.From.Address))
             //    .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived))
             //    .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
-
+            Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
             Mapper.CreateMap<UserVM, DockyardAccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))

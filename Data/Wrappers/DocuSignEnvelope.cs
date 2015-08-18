@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections;
+﻿using Data.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using Data.Interfaces;
+using System.Text;
+using System.Threading.Tasks;
 using DocuSign.Integrations.Client;
-using Newtonsoft.Json.Linq;
 using Utilities;
 
-namespace Core.Services
+namespace Data.Wrappers
 {
-    public class Envelope : DocuSign.Integrations.Client.Envelope, IEnvelope
+    public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IEnvelope
     {
-        private string _baseUrl;
+         private string _baseUrl;
         private readonly ITab _tab;
         private readonly ISigner _signer;
 
-        public Envelope()
+        public DocuSignEnvelope()
         {
             //TODO change baseUrl later. Remove it to constructor parameter etc.
-            _baseUrl = string.Empty;
+            _baseUrl = string.Empty; 
 
             //TODO move ioc container.
             _tab = new Tab();
