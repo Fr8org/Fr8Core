@@ -80,7 +80,7 @@ namespace Core.PluginRegistrations
             return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionRegistrationDO.ParentPluginRegistration, curActionRegistrationDO.Version);
         }
 
-        public Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)
+        public virtual Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)
         {
             throw new NotImplementedException();
         }
