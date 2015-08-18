@@ -17,8 +17,8 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.addCriteria(eventArgs.criteria);
 
             scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
-                new CriteriaSelectedEventArgs(eventArgs.criteria.id)
+                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelecting],
+                new CriteriaSelectingEventArgs(eventArgs.criteria.id)
             );
         };
 
@@ -36,8 +36,8 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action);
 
             scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                new ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id)
+                MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
+                new ActionSelectingEventArgs(eventArgs.criteriaId, eventArgs.action.id)
             );
         };
 
@@ -59,38 +59,48 @@ module dockyard.directives.paneWorkflowDesigner {
                     element.children()[0], factory, attrs.width, attrs.height);
 
                 widget.on('startNode:click', function () {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_TemplateSelected],
-                        new TemplateSelectedEventArgs()
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_TemplateSelected],
+                            new TemplateSelectedEventArgs()
+                        );
+                    });
                 });
 
                 widget.on('addCriteriaNode:click', function () {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_CriteriaAdding],
-                        new CriteriaAddingEventArgs()
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_CriteriaAdding],
+                            new CriteriaAddingEventArgs()
+                        );
+                    });
                 });
 
                 widget.on('criteriaNode:click', function (e, criteriaId) {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
-                        new CriteriaSelectedEventArgs(criteriaId)
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelecting],
+                            new CriteriaSelectingEventArgs(criteriaId)
+                        );
+                    });
                 });
 
                 widget.on('addActionNode:click', function (e, criteriaId) {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_ActionAdding],
-                        new ActionAddingEventArgs(criteriaId)
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_ActionAdding],
+                            new ActionAddingEventArgs(criteriaId)
+                        );
+                    });
                 });
 
                 widget.on('actionNode:click', function (e, criteriaId, actionId) {
-                    scope.$emit(
-                        MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                        new ActionSelectedEventArgs(criteriaId, actionId)
-                    );
+                    scope.$apply(function () {
+                        scope.$emit(
+                            MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
+                            new ActionSelectingEventArgs(criteriaId, actionId)
+                        );
+                    });
                 });
 
                 scope.widget = widget;

@@ -64,14 +64,13 @@ module dockyard.directives.paneSelectTemplate {
                     return;
                 });
 
-                var triggers = $resource(urlPrefix + "/processtemplate/triggersettings").query(() => {
-                    loadedTriggers = true;
-                    resetLoadingMessage();
-                    $scope.triggers = triggers;
+                // var triggers = $resource(urlPrefix + "/processtemplate/triggersettings").query(() => {
+                //     loadedTriggers = true;
+                //     resetLoadingMessage();
+                //     $scope.triggers = triggers;
+                // });
 
-                });
-
-                $scope.doneLoading = () => loadedDocuTemplates && loadedTriggers;
+                $scope.doneLoading = () => loadedDocuTemplates; // && loadedTriggers;
 
                 $scope.loadingMessage = "Loading Templates .....";
 

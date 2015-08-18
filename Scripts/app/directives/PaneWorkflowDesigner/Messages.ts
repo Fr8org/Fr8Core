@@ -8,11 +8,11 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_TemplateSelected,
         PaneWorkflowDesigner_CriteriaAdding,
         PaneWorkflowDesigner_CriteriaAdded,
-        PaneWorkflowDesigner_CriteriaSelected,
+        PaneWorkflowDesigner_CriteriaSelecting,
         PaneWorkflowDesigner_CriteriaRemoved,
         PaneWorkflowDesigner_ActionAdding,
         PaneWorkflowDesigner_ActionAdded,
-        PaneWorkflowDesigner_ActionSelected,
+        PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
         PaneWorkflowDesigner_UpdateAction,
@@ -33,7 +33,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class CriteriaSelectedEventArgs {
+    export class CriteriaSelectingEventArgs {
         public criteriaId: number;
 
         constructor(criteriaId: number) {
@@ -75,7 +75,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ActionSelectedEventArgs {
+    export class ActionSelectingEventArgs {
         public criteriaId: number;
         public actionId: number;
 
