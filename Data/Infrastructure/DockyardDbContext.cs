@@ -292,10 +292,6 @@ namespace Data.Infrastructure
                 .HasForeignKey(a => a.FromID)
                 .WillCascadeOnDelete(false);
 
-            //modelBuilder.Entity<ProcessNodeDO>()
-            //    .HasRequired(p => p.ParentProcess)
-            //    .WithRequiredDependent()
-            //    .WillCascadeOnDelete(false);
             modelBuilder.Entity<ProcessNodeDO>()
                 .HasRequired<ProcessDO>(pn => pn.ParentProcess)
                 .WithMany(p => p.ProcessNodes)

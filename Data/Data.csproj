@@ -164,6 +164,10 @@
     <Compile Include="Migrations\201508182114281_mergetest.Designer.cs">
       <DependentUpon>201508182114281_mergetest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508192132284_Update_Process_ProcessNode_Relation.cs" />
+    <Compile Include="Migrations\201508192132284_Update_Process_ProcessNode_Relation.Designer.cs">
+      <DependentUpon>201508192132284_Update_Process_ProcessNode_Relation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListType.cs" />
@@ -549,6 +553,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508182114281_mergetest.resx">
       <DependentUpon>201508182114281_mergetest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508192132284_Update_Process_ProcessNode_Relation.resx">
+      <DependentUpon>201508192132284_Update_Process_ProcessNode_Relation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -46,8 +46,8 @@ namespace Core.Services
                 uow.SaveChanges();
 
                 //then create process node
-                var processNode = _processNode.Create(uow, curProcessDO, "process node");
-                curProcessDO.ProcessNodes.Add(processNode);
+                var curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
+                curProcessDO.ProcessNodes.Add(curProcessNode);
                 uow.SaveChanges();
             }
             return curProcessDO;
@@ -64,14 +64,7 @@ namespace Core.Services
             curProcessDO.ProcessState = ProcessState.Executing;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ProcessNodeDO curProcessNode;
-                //if (curProcessDO.CurrentProcessNodeId == 0)
-                //{
-                //    curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
-                //    uow.SaveChanges();
-                //}
-                curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
-
+                ProcessNodeDO curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
                 Execute(curEnvelope, curProcessNode);
             }
         }
