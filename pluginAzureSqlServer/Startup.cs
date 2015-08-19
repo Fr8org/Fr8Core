@@ -15,7 +15,7 @@ namespace pluginAzureSqlServer
     {
         public void Configuration(IAppBuilder app)
         {
-            PluginBase.AfterStartup("azure_sql_server_plugin");
+            PluginBase.AfterStartup("plugin_azure_sql_server");
         }
     }
 }

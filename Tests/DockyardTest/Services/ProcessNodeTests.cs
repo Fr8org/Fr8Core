@@ -7,6 +7,7 @@ using UtilitiesTesting.Fixtures;
 using Moq;
 using System.Collections.Generic;
 using Utilities;
+using Data.Interfaces.DataTransferObjects;
 
 namespace DockyardTest.Services
 {
@@ -46,7 +47,7 @@ namespace DockyardTest.Services
             string envelopeId = "fake envelopeID";
             var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<int>(), (List<EnvelopeData>)It.IsAny<object>()))
+                .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<int>(), (List<EnvelopeDataDTO>)It.IsAny<object>()))
                 .Returns(true);
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
 

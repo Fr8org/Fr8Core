@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 
 namespace Utilities
@@ -171,6 +174,189 @@ namespace Utilities
                 return "Invalid Selection";
             }
             return validDatetime.ToString("MM/dd/yyyy HH:mm");
+        }
+    }
+
+    public static class EnumExtensions 
+    {
+        public static string GetEnumDescription(this Enum value, string defaultValue = null) {
+            return value.GetEnumAttribute<DescriptionAttribute>(a => a.Description, defaultValue);
+        }
+        public static string GetEnumDisplayName(this Enum value, string defaultValue = null) {
+            return value.GetEnumAttribute<DisplayNameAttribute>(a => a.DisplayName, defaultValue);
+        }
+        private static string GetEnumAttribute<TAttr>(this Enum value, Func<TAttr, string> expr, string defaultValue = null) where TAttr : Attribute {
+            FieldInfo fi = value.GetType().GetField(value.ToString());
+            var attributes = fi.GetCustomAttributes<TAttr>(false).ToArray();
+            return (attributes != null && attributes.Length > 0) ? expr(attributes.First()) : (defaultValue ?? value.ToString());
+        }
+    }
+
+
+    public static class TypeExtensions 
+    {
+        /// <summary>
+        /// Retrieves all assemblies active in the current application
+        /// WARNING: This will return EVERY assembly in your current domain, this is a costly operation and should only be used
+        /// during initialization
+        /// </summary>
+        private static IList<Assembly> Environment {
+            get { return AppDomain.CurrentDomain.GetAssemblies().ToList(); }
+        }
+        /// <summary>
+        /// Retrieves just the Base.NET framework assembly
+        /// </summary>
+        private static Assembly Base {
+            get { return Assembly.GetExecutingAssembly(); }
+        }
+
+        /// <summary>
+        /// Returns all types INTERNALLY within the Base.NET assembly only.
+        /// </summary>
+        /// <typeparam name="TBase"></typeparam>
+        /// <param name="includeBase">Includes the provided TBase type in the list</param>        
+        /// <returns>A list of all types that implement the interface or inherit from the class</returns>
+        public static Type[] GetInternalTypes<TBase>(params Type[] excludeTypes) {
+            if (typeof(TBase).IsInterface) {
+                return Base.GetTypes()
+                           .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t))
+                           .ToArray();
+            }
+            else {
+                return Base.GetTypes()
+                           .Where(t => typeof(TBase).IsAssignableFrom(t) && !excludeTypes.Contains(t) && t.IsClass && !t.IsAbstract)
+                           .ToArray();
+            }
+        }
+        /// <summary>
+        /// Returns all types of TBase within the Base.NET assembly only and creates each search result as it's generic type instance
+        /// </summary>
+        /// <typeparam name="TBase">The base type to search for (all inherited class types of TBase will be matched)</typeparam>
+        /// <param name="excludeTypes">Types to exclude from the results</param>
+        /// <returns>A list of instances from the search results as type TBase</returns>
+        public static TBase[] GetInternalTypesAsInstance<TBase>(params Type[] excludeTypes) {
+            if (typeof(TBase).IsInterface) {
+                return Base.GetTypes()
+                                    .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t))
+                                    .Select(t => (TBase)Activator.CreateInstance(t))
+                                    .ToArray();
+            }
+            else {
+                return Base.GetTypes()
+                                    .Where(t => typeof(TBase).IsAssignableFrom(t) && !excludeTypes.Contains(t) && t.IsClass && !t.IsAbstract)
+                                    .Select(t => (TBase)Activator.CreateInstance(t))
+                                    .ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Finds all types that have custom attributes of type TAttr within the Base.NET assembly only
+        /// </summary>
+        /// <typeparam name="TAttr">The attributes to find in which classes are utilizing</typeparam>
+        /// <param name="inherit">Use inheritance in the search result</param>
+        /// <param name="excludeTypes">Exclude types in this enumerable list</param>
+        /// <returns>All types that contain the specified attribute</returns>
+        public static Type[] GetInternalTypesWithAttribute<TAttr>(bool inherit = false, params Type[] excludeTypes) {
+            return Base.GetTypes().Where(t => t.GetCustomAttributes(typeof(TAttr), inherit).Length > 0 && !excludeTypes.Contains(t)).ToArray();
+        }
+
+        /// <summary>
+        /// Fetches all types from all assemblies in the current app domain
+        /// NOTE: Requires a long search through all executing assemblies, can be very costly if used too often.
+        /// </summary>
+        /// <typeparam name="TBase">The base type class or interface from which types returned in the list inherit from or implement.</typeparam>
+        /// <param name="excludeTypes">Exclude types in this enumerable list</param>
+        /// <returns>An array of matched types</returns>
+        public static Type[] GetTypes<TBase>(params Type[] excludeTypes) {
+            List<Type> tlist = new List<Type>();
+            foreach (Assembly a in Environment) {
+                try {
+                    if (typeof(TBase).IsInterface) {
+                        tlist.AddRange(a.GetTypes()
+                                            .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t) && t.IsClass && !t.IsAbstract)
+                                            .ToList());
+                    }
+                    else {
+                        tlist.AddRange(a.GetTypes()
+                                            .Where(t => typeof(TBase).IsAssignableFrom(t) && !excludeTypes.Contains(t) && t.IsClass && !t.IsAbstract)
+                                            .ToArray());
+                    }
+                }
+                catch (Exception ex) {
+                    //TODO:: Log failed type reflections
+                }
+            }
+            return tlist.ToArray();
+        }
+
+        /// <summary>
+        /// Returns all types of TBase within the Base.NET assembly only and creates each search result as it's generic type instance
+        /// </summary>
+        /// <typeparam name="TBase">The base type to search for (all inherited class types of TBase will be matched)</typeparam>
+        /// <param name="excludeTypes">Exclude types in this enumerable list</param>
+        /// <returns>An array of instances that inherit or implement the matched type</returns>
+        public static TBase[] GetTypesAsInstance<TBase>(params Type[] excludeTypes) {
+            List<TBase> inst = new List<TBase>();
+            foreach (Assembly a in Environment) {
+                try {
+                    if (typeof(TBase).IsInterface) {
+                        inst.AddRange(a.GetTypes()
+                                       .Where(t => t.GetInterfaces().Contains(typeof(TBase)) && !excludeTypes.Contains(t))
+                                       .Select(t => (TBase)Activator.CreateInstance(t))
+                                       .ToList());
+                    }
+                    else {
+                        inst.AddRange(a.GetTypes()
+                                       .Where(t => typeof(TBase).IsAssignableFrom(t) && !excludeTypes.Contains(t) && t.IsClass && !t.IsAbstract)
+                                       .Select(t => (TBase)Activator.CreateInstance(t))
+                                       .ToArray());
+                    }
+                }
+                catch (Exception ex) {
+                    //TODO:: Log failed type reflections
+                }
+            }
+            return inst.ToArray();
+        }
+
+
+        /// <summary>
+        /// Retrieves all types in the current application (searches ALL assemblies) that contain the specified attribute type
+        /// </summary>
+        /// <typeparam name="TAttr">The type of attribute to match classes</typeparam>
+        /// <param name="inherit">Use inheritance in the search</param>
+        /// <param name="excludeTypes">Exclude these types from the search results</param>
+        /// <returns>A list of types that contain the specified attribute type</returns>
+        public static Type[] GetTypesWithAttribute<TAttr>(bool inherit = false, params Type[] excludeTypes) {
+            List<Type> tlist = new List<Type>();
+            foreach (Assembly a in Environment) {
+                try {
+                    tlist.AddRange(a.GetTypes().Where(t => t.GetCustomAttributes(typeof(TAttr), inherit).Length > 0 && !excludeTypes.Contains(t))
+                                    .ToList());
+                }
+                catch (Exception ex) {
+                    //TODO:: Log failed type reflections
+                }
+            }
+            return tlist.ToArray();
+        }
+
+        public static Type[] GetBestGenericArgs(this Type t) {
+            Type[] args = t.GetGenericArguments();
+            Type[] cnst = args.SelectMany(x => x.GetGenericArguments()).ToArray();
+            return (cnst.Length > 0) ? cnst.Take(cnst.Length)
+                                           .Union(cnst.Skip(cnst.Length)
+                                                      .Select(y => (t.ContainsGenericParameters) ? t.MakeGenericType(args.Select(z => typeof(object)).ToArray()) : t))
+                                           .ToArray()
+                                     : args.Select(x => (t.ContainsGenericParameters) ? t.MakeGenericType(args.Select(z => typeof(object)).ToArray()) : t)
+                                           .ToArray();
+        }
+
+        public static bool IsActionDelegate(this Type t) {
+            if (t.IsSubclassOf(typeof(MulticastDelegate)) &&
+               t.GetMethod("Invoke").ReturnType == typeof(void))
+                return true;
+            return false;
         }
     }
 }

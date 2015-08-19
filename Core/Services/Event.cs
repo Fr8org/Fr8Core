@@ -15,5 +15,11 @@ namespace Core.Services
         {
             EventManager.ReportPluginIncident(incident);
         }
+
+
+        public void HandlePluginEvent(EventData eventData)
+        {
+            EventManager.ReportPluginEvent(eventData);
+        }
     }
 }
