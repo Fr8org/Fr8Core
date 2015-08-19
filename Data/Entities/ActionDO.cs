@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Data.States.Templates;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
@@ -26,5 +27,10 @@ namespace Data.Entities
         /// This property defines the permanent postion of Actions in ActionList.
         /// </summary>
         public int Ordering  { get; set; }
+
+        [ForeignKey("ActionStateTemplate")]
+        public string ActionState { get; set; }
+
+        public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
 	}
 }

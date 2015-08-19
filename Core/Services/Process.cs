@@ -4,7 +4,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
-
+using Newtonsoft.Json;
+using Core.Helper;
+using System.Collections.Generic;
+using System.Linq;
 namespace Core.Services
 {
     public class Process : IProcess
@@ -57,7 +60,7 @@ namespace Core.Services
             var curProcessDO = Create(curProcessTemplate.Id, curEnvelope.Id);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-
+            
             curProcessDO.ProcessState = ProcessState.Executing;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -75,7 +78,26 @@ namespace Core.Services
 
         public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
-            _processNode.Execute(curEnvelope, curProcessNode);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                while (curProcessNode != null)
+                {
+                    string nodeTransitionKey = _processNode.Execute(curEnvelope, curProcessNode);
+                    if (nodeTransitionKey != string.Empty)
+                    {
+                        var nodeTransitions = JsonConvert.DeserializeObject<List<TransitionKeyData>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
+                        string nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().Id;
+                        if (nodeTransitions != null && String.IsNullOrEmpty(nodeID) != true)
+                        {
+                            curProcessNode = uow.ProcessNodeRepository.GetByKey(nodeID);
+                        }
+                        else
+                        {
+                            throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
+                        }
+                    }
+                }
+            }
         }
     }
 }
