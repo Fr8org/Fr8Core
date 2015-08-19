@@ -11,7 +11,8 @@ namespace Data.Entities
 
         public string Name { get; set; }
 
-        public int? ParentProcessId { get; set; }
+        [ForeignKey("ParentProcess")]
+        public int ParentProcessId { get; set; }
 
         public virtual ProcessDO ParentProcess { get; set; }
 

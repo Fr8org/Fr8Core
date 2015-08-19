@@ -19,10 +19,6 @@ namespace Data.Entities
         public string DockyardAccountId { get; set; }
         public string EnvelopeId { get; set; }
 
-        [ForeignKey("CurrentProcessNode")]
-        public int? CurrentProcessNodeId { get; set; }
-        public virtual ProcessNodeDO CurrentProcessNode { get; set; }
-
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             
         [Required]

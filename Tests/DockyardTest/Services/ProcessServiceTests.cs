@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Services;
+using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using NUnit.Framework;
@@ -136,10 +137,11 @@ namespace DockyardTest.Services
 		}
 
         [Test]
-        public void Process_CanAccessCurrentProcessNode()
+        public void Process_CanAccessProcessNodes()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //Arrange
                 var envelope = FixtureData.TestEnvelope1();
                 var processTemplate = FixtureData.TestProcessTemplate1();
 
@@ -147,15 +149,35 @@ namespace DockyardTest.Services
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.SaveChanges();
 
-                var process = _processService.Create(processTemplate.Id, envelope.Id);
+                //Act
+                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.Id);
 
-                var processNode = uow.ProcessNodeRepository.GetByKey(process.CurrentProcessNodeId);
-                processNode.ParentProcessId = process.Id;
-                uow.ProcessNodeRepository.Add(processNode);
+                //Assert
+                int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
+                int actualprocessNodeCount = curProcess.ProcessNodes.Count;
+                Assert.AreEqual(expectedProcessNodeCount, actualprocessNodeCount);
+            }
+        }
+
+        public void ProcessNode_CanAccessParentProcess()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                var envelope = FixtureData.TestEnvelope1();
+                var processTemplate = FixtureData.TestProcessTemplate1();
+
+                uow.EnvelopeRepository.Add(envelope);
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.SaveChanges();
-                //_processService.Launch(processTemplate, envelope);
 
-                process = uow.ProcessRepository.GetByKey(process.Id);
+                //Act
+                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.Id);
+
+                //Assert
+                int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
+                int actualprocessId = uow.ProcessNodeRepository.GetByKey(curProcess.ProcessNodes.First().Id).Id;
+                Assert.AreEqual(expectedProcessId, actualprocessId);
             }
         }
 

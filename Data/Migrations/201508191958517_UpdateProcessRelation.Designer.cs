@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class Update_Process_ProcessNode_Relation : IMigrationMetadata
+    public sealed partial class UpdateProcessRelation : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Update_Process_ProcessNode_Relation));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateProcessRelation));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508181507000_Update_Process_ProcessNode_Relation"; }
+            get { return "201508191958517_UpdateProcessRelation"; }
         }
         
         string IMigrationMetadata.Source

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.Entity;
+using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
@@ -39,15 +41,13 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Unstarted;
                 curProcessDO.EnvelopeId = envelopeId.ToString();
 
-                var processNode = _processNode.Create(uow, curProcessDO, "process node");
-                uow.SaveChanges();
-
-                curProcessDO.CurrentProcessNodeId = processNode.Id;
-
+                //create process
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
-                processNode.ParentProcessId = curProcessDO.Id;
+                //then create process node
+                var processNode = _processNode.Create(uow, curProcessDO, "process node");
+                curProcessDO.ProcessNodes.Add(processNode);
                 uow.SaveChanges();
             }
             return curProcessDO;
@@ -65,12 +65,12 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ProcessNodeDO curProcessNode;
-                if (curProcessDO.CurrentProcessNodeId == 0)
-                {
-                    curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
-                    uow.SaveChanges();
-                }
-                curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.CurrentProcessNodeId);
+                //if (curProcessDO.CurrentProcessNodeId == 0)
+                //{
+                //    curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
+                //    uow.SaveChanges();
+                //}
+                curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
 
                 Execute(curEnvelope, curProcessNode);
             }
