@@ -235,9 +235,12 @@ namespace DockyardTest.Controllers
         {
             //Arrange 
             string pluginName =
-                "Core.PluginRegistrations.AzureSqlPluginRegistration, Core, Version = 1.0.0.0, Culture = neutral, PublicKeyToken = null";
+                "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
             var cntroller = new ActionController();
-            cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
-         }
+            //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
+            
+            var task = cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
+            await task;
+        }
     }
 }

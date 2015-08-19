@@ -15,7 +15,7 @@ namespace Core.PluginRegistrations
 
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 #if DEBUG
-        public const string baseUrl = "http://localhost:23432";
+        public const string baseUrl = "http://localhost:46281";
 #else
         public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
 #endif

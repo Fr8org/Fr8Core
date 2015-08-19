@@ -50,7 +50,7 @@ namespace Data.Wrappers
             return new List<EnvelopeDataDTO>();
         }
 
-        public IEnumerable<EnvelopeData> GetEnvelopeData(string templateId)
+        public IEnumerable<EnvelopeDataDTO> GetEnvelopeData(string templateId)
         {
 
             var username = ConfigurationManager.AppSettings["username"];
@@ -101,9 +101,9 @@ namespace Data.Wrappers
 
         }
 
-        private EnvelopeData CreateEnvelopeData(dynamic tab, string value)
+        private EnvelopeDataDTO CreateEnvelopeData(dynamic tab, string value)
         {
-            return new EnvelopeData()
+            return new EnvelopeDataDTO()
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,

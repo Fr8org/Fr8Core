@@ -104,7 +104,7 @@ namespace Core.Services
             if (pluginType == null)
                 throw new ApplicationException("Plugin Not Found");
 
-            var pluginInstance = Activator.CreateInstance(pluginType, ObjectFactory.GetInstance<IAction>()) as IPluginRegistration;
+            var pluginInstance = Activator.CreateInstance(pluginType) as IPluginRegistration;
             if (pluginInstance == null)
                 throw new ApplicationException("Plugin Not Found");
 
