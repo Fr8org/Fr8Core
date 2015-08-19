@@ -88,7 +88,7 @@ namespace Web.Controllers
             }
 
             var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
-            curProcessTemplateDO.UserId = User.Identity.Name;
+            curProcessTemplateDO.DockyardAccount.Id =  User.Identity.Name;
             processTemplateDto.Id = _processTemplate.CreateOrUpdate(curProcessTemplateDO);
 
             return Ok(processTemplateDto);

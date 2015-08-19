@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using DocuSign.Integrations.Client;
 
-using Utilities;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces
 {
@@ -17,7 +17,8 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        List<EnvelopeData> GetEnvelopeData(Envelope envelope);
+        List<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
+        
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -28,6 +29,6 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IEnumerable<EnvelopeData> GetEnvelopeData(string templateId);
+        IEnumerable<EnvelopeDataDTO> GetEnvelopeData(string templateId);
     }
 }
