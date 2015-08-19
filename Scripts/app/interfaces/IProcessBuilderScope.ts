@@ -5,7 +5,12 @@ module dockyard.interfaces {
         processTemplateId: number,
         processNodeTemplates: Array<model.ProcessNodeTemplate>,
         fields: Array<model.Field>,
-        currentProcessNodeTemplate: model.ProcessNodeTemplate,
+
+        // Identity of currently selected processNodeTemplate.
+        curNodeId: number,
+        // Flag, that indicates if currently selected processNodeTemplate has temporary identity.
+        curNodeIsTempId: boolean,
+
         currentAction: IActionVM,
         Save: Function,
         Cancel: Function

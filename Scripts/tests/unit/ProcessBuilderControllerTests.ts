@@ -117,7 +117,7 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction==null " +
             "Save method on ProcessTemplateService should NOT be called", () => {
-                var incomingEventArgs = new pwd.ProcessNodeTemplateSelectingEventArgs(1);
+                var incomingEventArgs = new pwd.ProcessNodeTemplateSelectingEventArgs(1, true);
 
                 _$scope.currentAction = null;
 
@@ -127,7 +127,7 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ProcessNodeTemplateSelecting is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
-                var incomingEventArgs = new pwd.ProcessNodeTemplateSelectingEventArgs(1);
+                var incomingEventArgs = new pwd.ProcessNodeTemplateSelectingEventArgs(1, true);
                 var currentAction = <any>new model.Action(1, false, 1);
                 _$scope.currentAction = currentAction;
 

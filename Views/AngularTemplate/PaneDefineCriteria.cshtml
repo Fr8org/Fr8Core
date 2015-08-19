@@ -20,18 +20,18 @@
             <div class="radio">
                 <label>
                     <input type="radio"
-                           name="executionMode"
+                           name="executionType"
                            value="1"
-                           ng-model="processNodeTemplate.criteria.executionMode" />
+                           ng-model="processNodeTemplate.criteria.executionType" />
                     <span>Filter conditions are met</span>
                 </label>
             </div>
             <div class="radio">
                 <label>
                     <input type="radio"
-                           name="executionMode"
+                           name="executionType"
                            value="2"
-                           ng-model="processNodeTemplate.criteria.executionMode" />
+                           ng-model="processNodeTemplate.criteria.executionType" />
                     <span>No criteria - just execute the actions!</span>
                 </label>
             </div>
@@ -42,7 +42,7 @@
                                   rows="processNodeTemplate.criteria.conditions"
                                   operators="operators"
                                   default-operator="defaultOperator"
-                                  ng-show="processNodeTemplate.criteria.executionMode == 1">
+                                  ng-show="processNodeTemplate.criteria.executionType == 1">
             </query-builder-widget>
         </div>
 

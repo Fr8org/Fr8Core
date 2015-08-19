@@ -10,13 +10,13 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ProcessNodeTemplateAdded,
         PaneWorkflowDesigner_ProcessNodeTemplateSelecting,
         PaneWorkflowDesigner_ProcessNodeTemplateRemoved,
+        PaneWorkflowDesigner_ProcessNodeTemplateNameUpdated,
         PaneWorkflowDesigner_ActionAdding,
         PaneWorkflowDesigner_ActionAdded,
         PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
         PaneWorkflowDesigner_UpdateAction,
-        PaneWorkflowDesigner_UpdateCriteriaName,
         PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced
     }
 
@@ -27,36 +27,44 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ProcessNodeTemplateAddedEventArgs {
-        public processNodeTemplate: model.ProcessNodeTemplate;
+        public id: number;
+        public isTempId: boolean;
+        public name: string;
 
-        constructor(processNodeTemplate: model.ProcessNodeTemplate) {
-            this.processNodeTemplate = processNodeTemplate;
+        constructor(id: number, isTempId: boolean, name: string) {
+            this.id = id;
+            this.isTempId = isTempId;
+            this.name = name;
         }
     }
 
     export class ProcessNodeTemplateSelectingEventArgs {
-        public processNodeTemplateId: number;
-
-        constructor(processNodeTemplateId: number) {
-            this.processNodeTemplateId = processNodeTemplateId;
-        }
-    }
-
-    export class ProcessNodeTemplateRemovedEventArgs {
-        public criteriaId: number;
+        public id: number;
         public isTempId: boolean;
 
-        constructor(criteriaId: number, isTempId: boolean) {
-            this.criteriaId = criteriaId;
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
             this.isTempId = isTempId;
         }
     }
 
-    export class UpdateCriteriaNameEventArgs extends CriteriaEventArgsBase {
-        public criteriaId: number;
+    export class ProcessNodeTemplateRemovedEventArgs {
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number) {
-            super(criteriaId);
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class ProcessNodeTemplateNameUpdatedEventArgs {
+        public id: number;
+        public text: string;
+
+        constructor(id: number, text: string) {
+            this.id = id;
+            this.text = text;
         }
     }
 

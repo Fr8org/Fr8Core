@@ -11,11 +11,25 @@
 
     export class RenderEventArgs {
         public fields: Array<model.Field>;
-        public processNodeTemplate: model.ProcessNodeTemplate;
+        public processTemplateId: number;
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(fields: Array<model.Field>, processNodeTemplate: model.ProcessNodeTemplate) {
+        constructor(fields: Array<model.Field>, processTemplateId: number,
+            id: number, isTempId: boolean) {
+
             this.fields = fields;
-            this.processNodeTemplate = processNodeTemplate;
+            this.processTemplateId = processTemplateId;
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class SaveEventArgs {
+        public callback: () => void;
+
+        constructor(callback: () => void) {
+            this.callback = callback;
         }
     }
 
