@@ -370,6 +370,7 @@
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\toolbar.min.css" />
+    <Content Include="Content\DO-823.sql" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
     <Content Include="Content\img\backgrounds\cup-and-coffe-bg.png" />
@@ -3759,7 +3760,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
-    <Folder Include="Content\NewFolder1\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />

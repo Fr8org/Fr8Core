@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using System.Data.SqlClient;
 using System.Data;
+using pluginAzureSqlServer.Actions;
 using PluginUtilities;
 
 
@@ -24,10 +25,20 @@ namespace pluginAzureSqlServer.Controllers
     {       
         //public const string Version = "1.0";
 
-        private readonly AzureSqlServerActionHandler _actionHandler;
+        private readonly Write_To_Sql_Server_v1 _actionHandler;
 
         public ActionController() {
-            _actionHandler = ObjectFactory.GetInstance<AzureSqlServerActionHandler>();
+            _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
+        }
+
+        [HttpPost]
+        [Route("write_to_sql_server/{path}")]
+        public string Process(string path, ActionDTO curActionDTO)
+        {
+            //Redirects to the action handler with fallback in case of a null retrn
+            return JsonConvert.SerializeObject(
+                _actionHandler.WriteToSqlServerAction(path, Mapper.Map<ActionDO>(curActionDTO)) ?? new { }
+            );
         }
 
         //private readonly IDbProvider _dbProvider;
@@ -64,14 +75,7 @@ namespace pluginAzureSqlServer.Controllers
         //}
 
 
-        [HttpPost]
-        [Route("write_to_sql_server/{path}")]
-        public string WriteToSqlServer(string path, ActionDTO curActionDTO) {            
-            //Redirects to the action handler with fallback in case of a null retrn
-            return JsonConvert.SerializeObject(
-                _actionHandler.WriteToSqlServerAction(path, Mapper.Map<ActionDO>(curActionDTO)) ?? new { }
-            );
-        }
+
 
     }
 }

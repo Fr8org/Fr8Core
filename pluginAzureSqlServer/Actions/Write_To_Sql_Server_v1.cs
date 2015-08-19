@@ -1,22 +1,20 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using System.Data;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using pluginAzureSqlServer.Infrastructure;
 using PluginUtilities.Infrastructure;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web;
 
-namespace pluginAzureSqlServer.Infrastructure {
+namespace pluginAzureSqlServer.Actions {
     
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
 
     //Action container class
-    public class AzureSqlServerActionHandler : ActionHandler {        
+    public class Write_To_Sql_Server_v1 : ActionHandler {        
 
         //Public entry point, maps to actions from the controller
         public object WriteToSqlServerAction(string path, ActionDO curActionDO) {
