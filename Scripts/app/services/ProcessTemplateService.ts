@@ -17,7 +17,7 @@ module dockyard.services {
     }
 
     app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessTemplateService =>
-        <IProcessTemplateService> $resource(urlPrefix + '/ProcessTemplate/:id', { id: '@id' })
+        <IProcessTemplateService> $resource(urlPrefix + '/processTemplate/:id', { id: '@id' })
     ]);
 
     app.factory('ProcessNodeTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessNodeTemplateService =>

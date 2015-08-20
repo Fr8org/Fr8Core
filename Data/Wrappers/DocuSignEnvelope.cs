@@ -1,4 +1,5 @@
 ﻿using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +34,7 @@ namespace Data.Wrappers
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public List<EnvelopeData> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
+        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
@@ -44,7 +45,7 @@ namespace Data.Wrappers
                 }
             }
 
-            return new List<EnvelopeData>();
+            return new List<EnvelopeDataDTO>();
         }
     }
 }

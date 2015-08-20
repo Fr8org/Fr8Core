@@ -179,7 +179,7 @@ module dockyard.directives.paneDefineCriteria {
             scope: IPaneDefineCriteriaScope,
             http: ng.IHttpService,
             urlPrefix: string,
-            callback: () => void
+            callback: (args: SaveCallbackArgs) => void
             ) {
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
@@ -213,7 +213,7 @@ module dockyard.directives.paneDefineCriteria {
                                 console.log('DefineCriteriaPane::save succeded');
 
                                 // Invoke callback, after all asynchronous HTTP operations were completed.
-                                callback();
+                                callback(new SaveCallbackArgs(processNodeTemplateResult.Id, processNodeTemplateTempId));
                             });
                     });
                 });
@@ -224,7 +224,7 @@ module dockyard.directives.paneDefineCriteria {
             scope: IPaneDefineCriteriaScope,
             http: ng.IHttpService,
             urlPrefix: string,
-            callback: () => void
+            callback: (args: SaveCallbackArgs) => void
             ) {
             // Call REST api to update ProcessNodeTemplate entity on server.
             http.put(getProcessNodeTemplateUrl(urlPrefix), scope.processNodeTemplate)
@@ -246,7 +246,7 @@ module dockyard.directives.paneDefineCriteria {
                             console.log('DefineCriteriaPane update succeded');
 
                             // Invoke callback, after all asynchronous HTTP operations were completed.
-                            callback();
+                            callback(new SaveCallbackArgs(scope.processNodeTemplate.id, null));
                         });
                 });
         };
@@ -257,7 +257,7 @@ module dockyard.directives.paneDefineCriteria {
             scope: IPaneDefineCriteriaScope,
             http: ng.IHttpService,
             urlPrefix: string,
-            callback: () => void
+            callback: (args: SaveCallbackArgs) => void
             ) {
 
             // In case of newly created object (i.e. isTempId === true).

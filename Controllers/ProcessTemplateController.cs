@@ -76,22 +76,30 @@ namespace Web.Controllers
 
         public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
         {
-
-            if (string.IsNullOrEmpty(processTemplateDto.Name))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ModelState.AddModelError("Name", "Name cannot be null");
+                if (string.IsNullOrEmpty(processTemplateDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
+
+                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
+                var curUserName = User.Identity.Name;
+                curProcessTemplateDO.DockyardAccount = uow.UserRepository
+                    .GetQuery()
+                    .Single(x => x.UserName == curUserName);
+
+                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO);
+
+                uow.SaveChanges();
+
+                return Ok(processTemplateDto);
             }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Some of the request data is invalid");
-            }
-
-            var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
-            curProcessTemplateDO.UserId = User.Identity.Name;
-            processTemplateDto.Id = _processTemplate.CreateOrUpdate(curProcessTemplateDO);
-
-            return Ok(processTemplateDto);
         }
 
         [HttpPost]
@@ -105,8 +113,13 @@ namespace Web.Controllers
 
         public IHttpActionResult Delete(int id)
         {
-            _processTemplate.Delete(id);
-            return Ok(id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _processTemplate.Delete(uow, id);
+
+                uow.SaveChanges();
+                return Ok(id);
+            }
         }
     }
 }

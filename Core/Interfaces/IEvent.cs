@@ -11,5 +11,11 @@ namespace Core.Interfaces
         /// Handles Plugin Incident
         /// </summary>
         void HandlePluginIncident(EventData incident);
+        
+        /// <summary>
+        /// Handles Plugin Event 
+        /// </summary>
+        /// <param name="eventData"></param>
+        void HandlePluginEvent(EventData eventData);
     }
 }

@@ -113,7 +113,7 @@ module dockyard.controllers {
             return null;
         }
 
-        private saveProcessNodeTemplate(callback: () => void) {
+        private saveProcessNodeTemplate(callback: (args: pdc.SaveCallbackArgs) => void) {
             if (this._scope.curNodeId != null) {
                 this._scope.$broadcast(
                     pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Save],
@@ -123,7 +123,7 @@ module dockyard.controllers {
                 this._scope.curNodeIsTempId = false;
             }
             else {
-                callback();
+                callback(null);
             }
         }
 
@@ -272,27 +272,25 @@ module dockyard.controllers {
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var self = this;
-            this.saveProcessNodeTemplate(function () {
+            this.saveProcessNodeTemplate(function (args: pdc.SaveCallbackArgs) {
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
+
+                debugger;
 
                 // Create action object.
                 var action = new model.Action(
                     id,
                     true,
-                    eventArgs.criteriaId
+                    args == null ? eventArgs.criteriaId : args.id
                     );
 
                 action.userLabel = 'New Action #' + Math.abs(id).toString();
 
-                // Add action to criteria.
-                var processNodeTemplate = self.findProcessNodeTemplate(eventArgs.criteriaId);
-                processNodeTemplate.actions.push(action);
-
                 // Add action to Workflow Designer.
                 self._scope.$broadcast(
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdded],
-                    new pwd.ActionAddedEventArgs(eventArgs.criteriaId, action.clone())
+                    new pwd.ActionAddedEventArgs(action.criteriaId, action.clone())
                     );
             });
         }

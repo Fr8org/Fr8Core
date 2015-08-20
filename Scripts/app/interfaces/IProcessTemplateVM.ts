@@ -2,15 +2,15 @@
 
 module dockyard.interfaces {
     export enum ProcessState {
-        Inactive,
-        Active 
+        Inactive = 1,
+        Active = 2 
     }
 
     export interface IProcessTemplateVM extends ng.resource.IResource<IProcessTemplateVM> {
         Id: number;
         Name: string;
         Description: string;
-        ProcessState: ProcessState;
+        ProcessTemplateState: ProcessState;
     }
 
     export interface IProcessNodeTemplateVM extends ng.resource.IResource<IProcessNodeTemplateVM> {

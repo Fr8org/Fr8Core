@@ -46,7 +46,7 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.ProcessTemplateRepository.
-                    GetQuery().SingleOrDefault(pt => pt.UserId == testUserId && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == testUserId && pt.Name == processTemplateDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(processTemplateDto.Description, ptdo.Description);
             }
@@ -94,15 +94,25 @@ namespace DockyardTest.Controllers
         {
             //Arrange
             var testUserId = "testuser1";
-
             var processTemplateController = CreateProcessTemplateController(testUserId);
-
-
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < 2; i++)
             {
                 var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
+                // Commented out by yakov.gnusin:
+                // Do we really need to provider DockyardAccountDO inside ProcessTemplateDTO?
+                // We do override DockyardAccountDO in ProcessTemplateController.Post action.
+                // switch (i)
+                // {
+                //     case 0:
+                //         processTemplateDto.DockyardAccount = FixtureData.TestDockyardAccount1();
+                //         break;
+                //     case 1:
+                //         processTemplateDto.DockyardAccount = FixtureData.TestDockyardAccount2();
+                //         break;
+                //     default:
+                //         break;
+                // }
                 processTemplateController.Post(processTemplateDto);
-
             }
 
             //Act
@@ -110,8 +120,7 @@ namespace DockyardTest.Controllers
 
             //Assert
             Assert.NotNull(actionResult);
-            Assert.AreEqual(4, actionResult.Content.Count());
-
+            Assert.AreEqual(2, actionResult.Content.Count());
         }
 
         [Test]

@@ -2,27 +2,27 @@
 
 using DocuSign.Integrations.Client;
 
-using Utilities;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Wrappers
 {
     public interface ITab
     {
-        List<EnvelopeData> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner);
+        List<EnvelopeDataDTO> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner);
     }
 
     public class Tab : DocuSign.Integrations.Client.Tab, ITab
     {
-        public List<EnvelopeData> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner)
+        public List<EnvelopeDataDTO> ExtractEnvelopeData(DocuSign.Integrations.Client.Envelope envelope, Signer curSigner)
         {
-            List<EnvelopeData> curEnvelopeDataSet = new List<EnvelopeData>();
+            List<EnvelopeDataDTO> curEnvelopeDataSet = new List<EnvelopeDataDTO>();
 
             Tabs curTabsSet = curSigner.tabs;
             if (curTabsSet != null)
             {
                 foreach (TextTab curTextTab in curTabsSet.textTabs)
                 {
-                    EnvelopeData curEnvelopeData = new EnvelopeData
+                    EnvelopeDataDTO curEnvelopeData = new EnvelopeDataDTO
                                                    {
                                                        RecipientId = curSigner.recipientId,
                                                        EnvelopeId = envelope.EnvelopeId,

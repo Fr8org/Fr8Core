@@ -26,10 +26,20 @@
     }
 
     export class SaveEventArgs {
-        public callback: () => void;
+        public callback: (args: SaveCallbackArgs) => void;
 
-        constructor(callback: () => void) {
+        constructor(callback: (args: SaveCallbackArgs) => void) {
             this.callback = callback;
+        }
+    }
+
+    export class SaveCallbackArgs {
+        public id: number;
+        public tempId: number;
+
+        constructor(id: number, tempId: number) {
+            this.id = id;
+            this.tempId = tempId;
         }
     }
 
