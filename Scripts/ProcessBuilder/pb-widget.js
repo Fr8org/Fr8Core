@@ -167,7 +167,6 @@
                 actionNode: null
             };
 
-            
             actionDescr.actionNode = this._factory.createActionNode(
                 action.name || ('Action #' + action.id.toString())
             );
@@ -178,7 +177,6 @@
                     this.fire('actionNode:click', e, criteria.id, action.id);
                 }, this)
             );
-
 
             this._canvas.add(actionDescr.actionNode);
             criteria.actions.push(actionDescr);
@@ -542,7 +540,7 @@
         _placeActionNode: function (criteria, action, prevAction) {
             var topOffset;
             if (!prevAction) {
-                topOffset = this._getAddActionNodeBottomPoint(criteria);
+                topOffset = criteria.addActionNode.getTop();
             }
             else {
                 topOffset = this._getActionNodeBottomPoint(prevAction);
@@ -553,6 +551,9 @@
             action.actionNode.setLeft(criteria.addActionNode.getLeft());
             action.actionNode.setTop(topOffset);
             action.actionNode.relayout();
+
+            criteria.addActionNode.setTop(topOffset + action.actionNode.getHeight() + ns.WidgetConsts.actionNodePadding);
+            criteria.addActionNode.relayout();
         },
 
         // Get bottom Y point of user defined action.

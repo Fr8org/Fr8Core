@@ -152,17 +152,9 @@
     <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508171449101_merge1.cs" />
-    <Compile Include="Migrations\201508171449101_merge1.Designer.cs">
-      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508180255327_FixEnvelopeDO.cs" />
-    <Compile Include="Migrations\201508180255327_FixEnvelopeDO.Designer.cs">
-      <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508182114281_mergetest.cs" />
-    <Compile Include="Migrations\201508182114281_mergetest.Designer.cs">
-      <DependentUpon>201508182114281_mergetest.cs</DependentUpon>
+    <Compile Include="Migrations\201508200010514_EventRegistration.cs" />
+    <Compile Include="Migrations\201508200010514_EventRegistration.Designer.cs">
+      <DependentUpon>201508200010514_EventRegistration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201508192132284_Update_Process_ProcessNode_Relation.cs" />
     <Compile Include="Migrations\201508192132284_Update_Process_ProcessNode_Relation.Designer.cs">
@@ -545,14 +537,8 @@
     <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508171449101_merge1.resx">
-      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508180255327_FixEnvelopeDO.resx">
-      <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508182114281_mergetest.resx">
-      <DependentUpon>201508182114281_mergetest.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508200010514_EventRegistration.resx">
+      <DependentUpon>201508200010514_EventRegistration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508192132284_Update_Process_ProcessNode_Relation.resx">
       <DependentUpon>201508192132284_Update_Process_ProcessNode_Relation.cs</DependentUpon>
