@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace Core.Managers.APIManagers.Transmitters.Plugin
 {
-    class PluginClient : RestfulServiceClient, IPluginClient
+    class PluginTransmitter : RestfulServiceClient, IPluginTransmitter
     {
         /// <summary>
         /// Posts ActionDTO object to "/actions/&lt;actionType&gt;"
@@ -21,11 +21,11 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
         /// <param name="actionDTO"></param>
         /// <remarks>Uses <paramref name="actionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task PostActionAsync(string actionType, ActionDTO actionDTO)
+        public async Task PostActionAsync(string actionType, ActionPayloadDTO actionPayloadDTO)
         {
             var action = Regex.Replace(actionType, @"[^-_\w\d]", "_");
             var requestUri = new Uri(string.Format("actions/{0}", action), UriKind.Relative);
-            await PostAsync(requestUri, actionDTO);
+            await PostAsync(requestUri, actionPayloadDTO);
         }
     }
 }

@@ -27,7 +27,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities;
-
+using Data.Wrappers;
 
 namespace Core.Services
 {
@@ -52,7 +52,7 @@ namespace Core.Services
                 if (curCriteria == null)
                     throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
 
-                DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = null; //should just change GetEnvelopeData to pass an EnvelopeDO
+                DocuSignEnvelope curDocuSignEnvelope = null; //should just change GetEnvelopeData to pass an EnvelopeDO
 
 
                 return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));

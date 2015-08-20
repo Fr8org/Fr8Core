@@ -51,9 +51,9 @@ namespace Web.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
-        public ActionDTO Get(int id)
+        public ActionDesignDTO Get(int id)
         {
-            return Mapper.Map<ActionDTO>(_service.GetById(id)); 
+            return Mapper.Map<ActionDesignDTO>(_service.GetById(id)); 
         }
 
         /// <summary>
@@ -69,15 +69,15 @@ namespace Web.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        public IEnumerable<ActionDTO> Save(ActionDTO actionVm)
+        public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO actionVm)
         {
             ActionDO actionDo = Mapper.Map<ActionDO>(actionVm);
             if (_service.SaveOrUpdateAction(actionDo))
             {
                 actionVm.Id = actionDo.Id;
-                return new List<ActionDTO> { actionVm };
+                return new List<ActionDesignDTO> { actionVm };
             }
-            return new List<ActionDTO>();
+            return new List<ActionDesignDTO>();
         }
 
         [HttpGet]

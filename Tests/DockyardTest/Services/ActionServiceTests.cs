@@ -13,6 +13,8 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json.Linq;
 
 namespace DockyardTest.Services
 {
@@ -93,5 +95,37 @@ namespace DockyardTest.Services
                 action.Delete(actionDO.Id);
             }
         }
+
+        [Test]
+        public void CanParsePayload()
+        {
+            Core.Services.Action action = new Core.Services.Action();
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
+                payloadMappings = FixtureData.PayloadMappings1;
+
+            List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
+
+            string result = action.ParsePayloadMappings(payloadMappings, envelopeId, envelopeData);
+
+            var obj = JObject.Parse(result)["payload"];
+            Assert.AreEqual("Johnson", obj["Doctor"].Value<string>());
+            Assert.AreEqual("Marthambles", obj["Condition"].Value<string>());
+        }
+
+        [Test]
+        public void CanLogIncidentWhenFieldIsMissing()
+        {
+            Core.Services.Action action = new Core.Services.Action();
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
+                payloadMappings = FixtureData.PayloadMappings2; //Wrong mappings
+
+            List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
+            string result = action.ParsePayloadMappings(payloadMappings, envelopeId, envelopeData);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.IsTrue(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
+            }
+        } 
     }
 }

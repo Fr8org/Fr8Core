@@ -53,5 +53,17 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 2
             };
         }
+
+        public static ActionListDO TestActionListMedical()
+        {
+            var curActionListDO = new ActionListDO
+            {
+                Id = 4,
+                TemplateId = 1,
+                Name = "list1",
+                ActionListType = ActionListType.Immediate,                    
+            };
+            return curActionListDO;
+        }
     }
 }

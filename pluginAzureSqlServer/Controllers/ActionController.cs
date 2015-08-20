@@ -66,7 +66,7 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("write_to_sql_server/{path}")]
-        public string WriteToSqlServer(string path, ActionDTO curActionDTO) {            
+        public string WriteToSqlServer(string path, ActionDesignDTO curActionDTO) {            
             //Redirects to the action handler with fallback in case of a null retrn
             return JsonConvert.SerializeObject(
                 _actionHandler.WriteToSqlServerAction(path, Mapper.Map<ActionDO>(curActionDTO)) ?? new { }

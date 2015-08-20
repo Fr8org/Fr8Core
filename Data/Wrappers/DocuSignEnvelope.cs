@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Data.Wrappers
 {
     public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IEnvelope
     {
-         private string _baseUrl;
+        private string _baseUrl;
         private readonly ITab _tab;
         private readonly ISigner _signer;
 
@@ -25,6 +26,11 @@ namespace Data.Wrappers
             _signer = new Signer();
         }
 
+        public DocuSignEnvelope(DocuSign.Integrations.Client.Envelope envelope)
+        {
+
+        }
+
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
         /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
@@ -34,7 +40,7 @@ namespace Data.Wrappers
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
+        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
@@ -46,6 +52,31 @@ namespace Data.Wrappers
             }
 
             return new List<EnvelopeDataDTO>();
+        }
+
+        /// <summary>
+        /// Get Envelope Data from a docusign envelope. 
+        /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
+        /// </summary>
+        /// <param name="curEnvelopeId">DocuSign.Integrations.Client.Envelope envelope id.</param>
+        /// <returns>
+        /// List of Envelope Data.
+        /// It returns empty list of envelope data if tab and signers not found.
+        /// </returns>
+        public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
+        {
+            if (String.IsNullOrEmpty(curEnvelopeId))
+            {
+                throw new ArgumentNullException("envelopeId");
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curDocusignEnvelope = new DocuSignEnvelope();
+                curDocusignEnvelope.EnvelopeId = curEnvelopeId;
+                curDocusignEnvelope.GetRecipients();
+                return GetEnvelopeData(curDocusignEnvelope);
+            }
         }
     }
 }

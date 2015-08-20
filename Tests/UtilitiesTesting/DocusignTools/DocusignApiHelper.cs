@@ -5,6 +5,7 @@ using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 
 using UtilitiesTesting.DocusignTools.Interfaces;
+using Data.Wrappers;
 
 namespace UtilitiesTesting.DocusignTools
 {
@@ -46,7 +47,7 @@ namespace UtilitiesTesting.DocusignTools
         /// <param name="fullPathToExampleDocument">Full file path to document that will be signed.</param>
         /// <param name="tabCollection">Docusign tab collection.</param>
         /// <returns>Envelope of Docusign.</returns>
-        public Envelope CreateAndFillEnvelope(Account account, Envelope envelope, string fullPathToExampleDocument, TabCollection tabCollection)
+        public DocuSignEnvelope CreateAndFillEnvelope(Account account, DocuSignEnvelope envelope, string fullPathToExampleDocument, TabCollection tabCollection)
         {
             // create a new DocuSign envelope...
             envelope.Create(fullPathToExampleDocument);

@@ -16,7 +16,9 @@ using Core.Security;
 using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
 using Data.Repositories;
+using Data.Wrappers;
 using Moq;
 using SendGrid;
 using StructureMap;
@@ -80,7 +82,7 @@ namespace Core.StructureMap
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
-                For<IPluginClient>().Use<PluginClient>();
+                For<IPluginTransmitter>().Use<PluginTransmitter>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcess>().Use<Process>();
@@ -117,7 +119,7 @@ namespace Core.StructureMap
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
-                For<IPluginClient>().Use<PluginClient>();
+                For<IPluginTransmitter>().Use<PluginTransmitter>();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
@@ -137,6 +139,7 @@ namespace Core.StructureMap
 
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
+                For<IEnvelope>().Use<DocuSignEnvelope>();
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using DocuSign.Integrations.Client;
+﻿using Data.Wrappers;
+using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.DocusignTools.Interfaces
 {
@@ -14,13 +15,13 @@ namespace UtilitiesTesting.DocusignTools.Interfaces
         Account LoginDocusign(Account account, RestSettings restSettings);
 
         /// <summary>
-        /// Create envelope with fill it with data, and return it back.
+        /// Create envelope wrapper with fill it with data, and return it back.
         /// </summary>
         /// <param name="account">Docusign account that includes login info.</param>
         /// <param name="envelope">Docusign envelope.</param>
         /// <param name="fullPathToExampleDocument">Full file path to document that will be signed.</param>
         /// <param name="tabCollection">Docusign tab collection.</param>
         /// <returns>Envelope of Docusign.</returns>
-        Envelope CreateAndFillEnvelope(Account account, Envelope envelope, string fullPathToExampleDocument, TabCollection tabCollection);
+        DocuSignEnvelope CreateAndFillEnvelope(Account account, DocuSignEnvelope envelope, string fullPathToExampleDocument, TabCollection tabCollection);
     }
 }

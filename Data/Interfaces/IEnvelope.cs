@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DocuSign.Integrations.Client;
 
 using Data.Interfaces.DataTransferObjects;
+using Data.Wrappers;
 
 namespace Data.Interfaces
 {
@@ -17,6 +18,18 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        List<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
+        List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope);
+
+        /// <summary>
+        /// Get Envelope Data from a docusign envelope. 
+        /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
+        /// </summary>
+        /// <param name="envelope">DocuSign.Integrations.Client.Envelope envelope id.</param>
+        /// <returns>
+        /// List of Envelope Data.
+        /// It returns empty list of envelope data if tab and signers not found.
+        /// </returns>
+        List<EnvelopeDataDTO> GetEnvelopeData(string envelopeId);
+
     }
 }

@@ -26,5 +26,8 @@ namespace Data.Entities
         /// This property defines the permanent postion of Actions in ActionList.
         /// </summary>
         public int Ordering  { get; set; }
-	}
+
+        public string PayloadMappings { get; set; }
+
+    }
 }
