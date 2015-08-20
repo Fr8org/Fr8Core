@@ -231,16 +231,25 @@ namespace DockyardTest.Controllers
 
 
         [Test]
-        public async  void Can_Create_Instance()
+        public async  void Can_Get_FieldMappingTargets()
         {
             //Arrange 
             string pluginName =
                 "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
+            string dataSource =
+                "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
             var cntroller = new ActionController();
             //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
             
-            var task = cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
+            var task = cntroller.GetFieldMappingTargets(new ActionDTO()
+            {
+                ParentPluginRegistration = pluginName ,
+                ConfigurationSettings = "{\"connection_string\":\""+ dataSource + "\"}"
+            });
             await task;
+            Assert.NotNull(task.Result);
+            Assert.Greater(task.Result.Count(),0);
+            task.Result.ToList().ForEach(Console.WriteLine);
         }
     }
 }

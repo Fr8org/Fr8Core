@@ -5,19 +5,17 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    public class TemplateController :ApiController
+    public class FieldsController :ApiController
     {
         private ITemplate _template;
-        public TemplateController()
+        public FieldsController()
         {
             _template = ObjectFactory.GetInstance<ITemplate>();
         }
 
-        [Route("Fields")]
-        [HttpGet]
-        public IHttpActionResult GetFields(string templateId)
+        public IHttpActionResult Get(string id)
         {
-            return Ok(_template.GetMappableSourceFields(templateId));
+            return Ok(_template.GetMappableSourceFields(id));
         }
     }
 }

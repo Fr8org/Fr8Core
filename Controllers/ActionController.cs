@@ -90,7 +90,9 @@ namespace Web.Controllers
             return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
         }
 
+        // has to be post, since we are passing a JSON Object that is 
         [Route("fieldmappings")]
+        [HttpPost]
         public async Task<IEnumerable<string>> GetFieldMappingTargets(ActionDTO curAction)
         {
             return await _service.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(curAction));
