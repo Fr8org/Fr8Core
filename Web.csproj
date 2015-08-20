@@ -263,7 +263,6 @@
     <Compile Include="Controllers\ProcessTemplateController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
-    <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\DocuSignNotificationController .cs" />
     <Compile Include="Controllers\ProcessController.cs" />
