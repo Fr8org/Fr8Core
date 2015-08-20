@@ -152,13 +152,9 @@
     <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508171449101_merge1.cs" />
-    <Compile Include="Migrations\201508171449101_merge1.Designer.cs">
-      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508180255327_FixEnvelopeDO.cs" />
-    <Compile Include="Migrations\201508180255327_FixEnvelopeDO.Designer.cs">
-      <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
+    <Compile Include="Migrations\201508200010514_EventRegistration.cs" />
+    <Compile Include="Migrations\201508200010514_EventRegistration.Designer.cs">
+      <DependentUpon>201508200010514_EventRegistration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -537,11 +533,8 @@
     <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
       <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508171449101_merge1.resx">
-      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508180255327_FixEnvelopeDO.resx">
-      <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508200010514_EventRegistration.resx">
+      <DependentUpon>201508200010514_EventRegistration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

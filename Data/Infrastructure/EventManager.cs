@@ -1,4 +1,4 @@
-﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
+﻿﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
 using System;
 using Data.Entities;
@@ -125,6 +125,9 @@ namespace Data.Infrastructure
 
         public delegate void EventActionDispatchedHandler(ActionDO curAction);
         public static event EventActionDispatchedHandler EventActionDispatched;
+
+        public delegate void PluginEventHandler(EventData eventData);
+        public static event PluginEventHandler PluginEventReported;
 
         #region Method
 
@@ -370,6 +373,13 @@ namespace Data.Infrastructure
             var handler = EventActionDispatched;
             if (handler != null) handler(curAction);
         }
+
+        public static void ReportPluginEvent(EventData eventData)
+        {
+            PluginEventHandler handler = PluginEventReported;
+            if (handler != null) handler(eventData);
+        }
+
 
         #endregion
     }
