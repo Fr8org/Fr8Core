@@ -7,16 +7,17 @@ namespace Data.Entities
 {
     public class ProcessDO : BaseDO
     {
+        public ProcessDO()
+        {
+            ProcessNodes = new List<ProcessNodeDO>();
+        }
+
         [Key]
         public int Id { get; set; }
 
         public string Name { get; set; }
         public string DockyardAccountId { get; set; }
         public string EnvelopeId { get; set; }
-
-        [ForeignKey("CurrentProcessNode")]
-        public int? CurrentProcessNodeId { get; set; }
-        public virtual ProcessNodeDO CurrentProcessNode { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             

@@ -13,6 +13,7 @@ using Core.Services;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
+using Data.Interfaces.DataTransferObjects;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -53,6 +54,7 @@ namespace Core.Managers
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted += LogEventActionStarted;
             EventManager.EventActionDispatched += LogEventActionDispatched;
+            EventManager.PluginEventReported += LogPluginEvent;
         }
 
         public void UnsubscribeFromAlerts()
@@ -86,6 +88,7 @@ namespace Core.Managers
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted -= LogEventActionStarted;
             EventManager.EventActionDispatched -= LogEventActionDispatched;
+            EventManager.PluginEventReported -= LogPluginEvent;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -549,7 +552,8 @@ namespace Core.Managers
                 fact.ObjectId,
                 fact.Data);
 
-            switch (eventType) {
+            switch (eventType)
+            {
                 case EventType.Info:
                     Logger.GetLogger().Info(message);
                     break;
@@ -713,6 +717,22 @@ namespace Core.Managers
 
             SaveAndLogFact(fact);
         }
+
+        private void LogPluginEvent(EventData eventData)
+        {
+            var fact = new FactDO
+            {
+                ObjectId = eventData.ObjectId,
+                CustomerId = eventData.CustomerId,
+                Data = eventData.Data,
+                PrimaryCategory = eventData.PrimaryCategory,
+                SecondaryCategory = eventData.SecondaryCategory,
+                Activity = eventData.Activity
+            };
+
+            SaveAndLogFact(fact);
+        }
+
 
         private enum EventType
         {
