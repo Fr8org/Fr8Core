@@ -330,7 +330,7 @@
         },
 
         init: function () {
-            var label = new fabric.Text('Add action', {
+            var label = new fabric.Text('Add Action', {
                 fontSize: ns.WidgetConsts.addActionNodeTextSize,
                 fontFamily: ns.WidgetConsts.addActionNodeTextFont,
                 fill: ns.WidgetConsts.addActionNodeTextFill,
