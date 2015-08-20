@@ -6,7 +6,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ProcessNodeTemplateDO
+    public class ProcessNodeTemplateDO : BaseDO
     {
         public ProcessNodeTemplateDO()
         {
