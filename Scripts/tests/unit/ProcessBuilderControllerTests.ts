@@ -34,6 +34,9 @@ module dockyard.tests.controller {
                 _$state = {
                     data: {
                         pageSubTitle: ""
+                    },
+                    params: {
+                        id: 1
                     }
                 };
 

@@ -28,6 +28,9 @@ var dockyard;
                         _$state = {
                             data: {
                                 pageSubTitle: ""
+                            },
+                            params: {
+                                id: 1
                             }
                         };
                         //Create a mock for ProcessTemplateService
