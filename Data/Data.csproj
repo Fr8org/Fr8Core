@@ -128,6 +128,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\TemplateListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
@@ -155,6 +156,10 @@
     <Compile Include="Migrations\201508200010514_EventRegistration.cs" />
     <Compile Include="Migrations\201508200010514_EventRegistration.Designer.cs">
       <DependentUpon>201508200010514_EventRegistration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508200500039_DocuSignTemplate.cs" />
+    <Compile Include="Migrations\201508200500039_DocuSignTemplate.Designer.cs">
+      <DependentUpon>201508200500039_DocuSignTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -432,6 +437,7 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
+    <Compile Include="Wrappers\DocuSignTemplate.cs" />
     <Compile Include="Wrappers\DocuSignEnvelope.cs" />
     <Compile Include="Wrappers\Signer.cs" />
     <Compile Include="Wrappers\Tab.cs" />
@@ -535,6 +541,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508200010514_EventRegistration.resx">
       <DependentUpon>201508200010514_EventRegistration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508200500039_DocuSignTemplate.resx">
+      <DependentUpon>201508200500039_DocuSignTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
