@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Data.Entity;
+using System.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
@@ -39,16 +41,19 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Unstarted;
                 curProcessDO.EnvelopeId = envelopeId.ToString();
 
-                var processNode = _processNode.Create(uow, curProcessDO, "process node");
+                //create process
+                uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
-                curProcessDO.CurrentProcessNodeId = processNode.Id;
-
-                uow.ProcessRepository.Add(curProcessDO);
+                //then create process node
+                var curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
+                curProcessDO.ProcessNodes.Add(curProcessNode);
                 uow.SaveChanges();
             }
             return curProcessDO;
         }
+
+
 
         public void Launch(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
         {
@@ -59,16 +64,14 @@ namespace Core.Services
             curProcessDO.ProcessState = ProcessState.Executing;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ProcessNodeDO curProcessNode;
-                if (curProcessDO.CurrentProcessNodeId == 0)
-                {
-                    curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
-                    uow.SaveChanges();
-                }
-                curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.CurrentProcessNodeId);
-
-                _processNode.Execute(curEnvelope, curProcessNode);
+                ProcessNodeDO curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
+                Execute(curEnvelope, curProcessNode);
             }
+        }
+
+        public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        {
+            _processNode.Execute(curEnvelope, curProcessNode);
         }
     }
 }

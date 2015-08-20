@@ -80,7 +80,7 @@ namespace Core.Managers
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
             EventManager.AlertTokenRevoked -= OnAlertTokenRevoked;
-
+            
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventProcessLaunched -= LogEventProcessLaunched;
             EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
