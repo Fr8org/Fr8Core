@@ -293,9 +293,9 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ProcessNodeDO>()
-                .HasRequired(p => p.Process)
-                .WithMany()
-                .HasForeignKey(p => p.ParentProcessId)
+                .HasRequired<ProcessDO>(pn => pn.ParentProcess)
+                .WithMany(p => p.ProcessNodes)
+                .HasForeignKey(pn => pn.ParentProcessId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DockyardAccountDO>()
