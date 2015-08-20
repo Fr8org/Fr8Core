@@ -23,7 +23,7 @@ namespace PluginUtilities
         /// <param name="pluginName"></param>
         private static void ReportStartUp(string pluginName)
         {
-            SendEventOrIncidentReport(pluginName,  "Plugin Incident");
+            //SendEventOrIncidentReport(pluginName,  "Plugin Incident");
         }
 
         
