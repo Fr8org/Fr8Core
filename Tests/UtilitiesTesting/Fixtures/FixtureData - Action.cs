@@ -57,7 +57,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 3,
-                UserLabel = "Send an Email"
+                ActionType = "Send an Email"
             };
             return curActionDO;
         }
@@ -66,7 +66,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 4,
-                UserLabel = "Send a Text (SMS) Message"
+                ActionType = "Send a Text (SMS) Message"
             };
             return curActionDO;
         }
@@ -75,7 +75,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 5,
-                UserLabel = ""
+                ActionType = ""
             };
             return curActionDO;
         }

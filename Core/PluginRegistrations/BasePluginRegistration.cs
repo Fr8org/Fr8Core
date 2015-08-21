@@ -39,10 +39,19 @@ namespace Core.PluginRegistrations
         {
             get
             {
-               // return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
-                  //  new JsonSerializerSettings());
-                IEnumerable<ActionRegistrationDO> curActionRegistration = null;
-               return Mapper.Map(availableActions, curActionRegistration);
+                // return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
+                //  new JsonSerializerSettings());
+                var curActionRegistrations = new List<ActionRegistrationDO>();
+                //IEnumerable<ActionRegistrationDO> curActionRegistrations;
+                //return Mapper.Map(availableActions, curActionRegistrations);
+                
+                foreach (var item in availableActions.ActionNames)
+                {
+                    var curActionRegistratoin = new ActionRegistrationDO();
+                    Mapper.Map(item,curActionRegistratoin);
+                    curActionRegistrations.Add(curActionRegistratoin);
+                }
+                return curActionRegistrations;
             }
         }
 

@@ -8,6 +8,10 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ConfigurationSettingsDTO
     {
+        public ConfigurationSettingsDTO()
+        {
+            FieldDefinitions = new List<FieldDefinitionDTO>();
+        }
         public List<FieldDefinitionDTO> FieldDefinitions { get; set; }
     }
 }

@@ -28,11 +28,11 @@ namespace Core.PluginRegistrations
         private static ActionNameListDTO InitAvailableActions()
         {
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
-            curActionNameList.ActionNames.Add(new ActionNameDTO
-            {
-                ActionType = "Write",
-                Version = "1.0"
-            });
+            ActionNameDTO curActionName = new ActionNameDTO();
+
+            curActionName.ActionType = "Write";
+            curActionName.Version = "1";
+            curActionNameList.ActionNames.Add(curActionName);
             return curActionNameList;
         }
 

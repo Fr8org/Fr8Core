@@ -1,9 +1,11 @@
 ﻿using Core.PluginRegistrations;
 using Data.Entities;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using UtilitiesTesting;
@@ -13,54 +15,13 @@ namespace DockyardTest.PluginRegistrations
 {
     [TestFixture]
     [Category("NotifierPluginRegistration_v1")]
-    public class NotifierPluginRegistration_v1Test: BaseTest
+    public class NotifierPluginRegistration_v1Test : BaseTest
     {
         private NotifierPluginRegistration_v1 _notifierPluginRegistration_v1;
-        #region configuration setting Json
-        private const string emailAction = @"{""configurationSettings"":
-                                                        [   {""textField"": 
-                                                                {""name"": ""Email Address"",
-                                                                ""required"":true,""value"":"""",
-                                                                ""fieldLabel"":"""",
-                                                                }
-                                                            },
-                                                            {""textField"": 
-                                                                {""name"": ""Friendly Name"",
-                                                                ""required"":true,""value"":"""",
-                                                                ""fieldLabel"":"""",
-                                                                }
-                                                            },
-                                                            {""textField"": 
-                                                                {""name"": ""Subject"",
-                                                                ""required"":true,""value"":"""",
-                                                                ""fieldLabel"":"""",
-                                                                }
-                                                            },
-                                                            {""textArea"": 
-                                                                {""name"": ""Body"",
-                                                                ""required"":true,""value"":"""",
-                                                                ""fieldLabel"":"""",
-                                                                }
-                                                            },
-                                                        ]
-                                                    }";
-
-        private const string textMessageAction = @"{""configurationSettings"":
-                                                        [   {""textField"": 
-                                                                {""name"": ""Phone Number"",
-                                                                ""required"":true,""value"":"""",
-                                                                ""fieldLabel"":"""",
-                                                                }
-                                                            },
-                                                            {""textArea"": 
-                                                                {""name"": ""Message"",
-                                                                ""required"":true,""value"":"""",
-                                                                ""fieldLabel"":"""",
-                                                                }
-                                                            },
-                                                        ]
-                                                    }";
-        #endregion
+#region configuration setting Json
+        private const string emailAction = @"{""FieldDefinitions"":[{""Name"":""Email Address"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Friendly Name"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Subject"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Body"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""}]}";
+        private const string textMessageAction = @"{""FieldDefinitions"":[{""Name"":""Phone Number"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Message"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""}]}";
+#endregion
 
         [SetUp]
         public override void SetUp()
@@ -72,20 +33,20 @@ namespace DockyardTest.PluginRegistrations
         [Test]
         public void CanGetAvailableActions()
         {
-            Assert.AreEqual(_notifierPluginRegistration_v1.GetAvailableActions().Count, 2);
-            Assert.AreEqual(_notifierPluginRegistration_v1.GetAvailableActions()[0].UserLabel, "Send an Email");
-            Assert.AreEqual(_notifierPluginRegistration_v1.GetAvailableActions()[1].UserLabel, "Send a Text (SMS) Message");
+            Assert.AreEqual(_notifierPluginRegistration_v1.AvailableActions.Count(), 2);
+            Assert.AreEqual(((List<ActionRegistrationDO>)_notifierPluginRegistration_v1.AvailableActions)[0].ActionType, "Send an Email");
+            Assert.AreEqual(((List<ActionRegistrationDO>)_notifierPluginRegistration_v1.AvailableActions)[1].ActionType, "Send a Text (SMS) Message");
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void CanGetConfigurationSettings()
         {
             ActionDO curActionForEmail = FixtureData.TestAction4();
             ActionDO curActionForMessage = FixtureData.TestAction5();
-            _notifierPluginRegistration_v1.GetConfigurationSettings(null);
-            Assert.AreEqual(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForEmail),emailAction);
-            Assert.AreEqual(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForMessage), textMessageAction);
+            string resultJsonEmail = JsonConvert.SerializeObject(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForEmail));
+            string resultJsonMessage = JsonConvert.SerializeObject(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForMessage));
+            Assert.AreEqual(resultJsonEmail, emailAction);
+            Assert.AreEqual(resultJsonMessage, textMessageAction);
         }
 
         [Test]
@@ -99,7 +60,8 @@ namespace DockyardTest.PluginRegistrations
         [Test]
         public void GetFieldMappingTargets_IsNull()
         {
-            Assert.IsNull(_notifierPluginRegistration_v1.GetFieldMappingTargets(string.Empty,string.Empty));
+            Assert.IsNull(_notifierPluginRegistration_v1.GetFieldMappingTargets(string.Empty, string.Empty));
         }
     }
 }
+

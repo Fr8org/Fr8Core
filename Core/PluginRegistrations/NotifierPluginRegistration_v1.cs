@@ -11,27 +11,18 @@ namespace Core.PluginRegistrations
     public class NotifierPluginRegistration_v1 : BasePluginRegistration
     {
         public const string baseUrl = "Notifier.BaseUrl";
-        //private ActionNameListDTO availableActions = InitAvailableActions();//@"[{ ""ActionType"" : """" , ""Version"": ""1.0""}]";
+        //private ActionNameListDTO availableActions = InitAvailableActions();//@"[{ ""ActionType"" : """" , ""Version"": ""1.0""},{ ""ActionType"" : """" , ""Version"": ""1.0""}]";
        // ActionNameListDTO availableActions = InitAvailableActions();
         public NotifierPluginRegistration_v1()
             : base(InitAvailableActions(), baseUrl)
         {
         }
 
-     
-        public List<ActionDO> GetAvailableActions()
-        {
-            List<ActionDO> curActions = new List<ActionDO>();
-           // curActions.Add(FillAction(1, "Send an Email"));
-           // curActions.Add(FillAction(2, "Send a Text (SMS) Message"));
-            return curActions;
-        }
-
         public ConfigurationSettingsDTO GetConfigurationSettings(ActionDO curAction)
         {
             if(curAction == null)
                 throw new ArgumentNullException("curAction");
-            if (string.IsNullOrEmpty(curAction.UserLabel))
+            if (string.IsNullOrEmpty(curAction.ActionType))
                 throw new NullReferenceException("curAction.UserLabel");
             return InitConfigurationSettings(curAction.ActionType);
         }

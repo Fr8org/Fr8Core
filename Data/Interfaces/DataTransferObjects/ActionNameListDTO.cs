@@ -8,6 +8,10 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionNameListDTO
     {
+        public ActionNameListDTO()
+        {
+            ActionNames = new List<ActionNameDTO>();
+        }
         public List<ActionNameDTO> ActionNames { get; set; }
     }
 }
