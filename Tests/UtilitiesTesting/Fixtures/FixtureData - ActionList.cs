@@ -65,5 +65,25 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionListDO;
         }
+
+        public static ActionListDO TestActionList3()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                CurrentAction = TestActionList2(),
+                ActionListState = ActionListState.Inprocess
+            };
+        }
+
+        public static ActionListDO TestActionList4()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                CurrentAction = TestActionList2(),
+                ActionListState = ActionListState.Unstarted
+            };
+        }
     }
 }

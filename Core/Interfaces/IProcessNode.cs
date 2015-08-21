@@ -7,6 +7,6 @@ namespace Core.Interfaces
 	{
 		ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name);
 		void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode);
-		void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode);
+		string Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode);
 	}
 }

@@ -14,6 +14,8 @@ using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Core.PluginRegistrations;
+using Data.States;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Core.Services
@@ -23,6 +25,7 @@ namespace Core.Services
         private readonly ISubscription _subscription;
         IPluginRegistration _pluginRegistration;
         IEnvelope _envelope;
+        private Task curAction;
 
         public Action()
         {
@@ -101,15 +104,48 @@ namespace Core.Services
             }
         }
 
-        public async Task Process(ActionDO curActionDO)
+        public async Task<string> Process(ActionDO curAction)
         {
-            EventManager.ActionStarted(curActionDO);
-            var pluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
-            Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-            await Dispatch(curActionDO, baseUri);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+                if (curAction.ActionState == ActionState.Unstarted)
+                {
+                    curAction.ActionState = ActionState.Inprocess;
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+
+
+                    EventManager.ActionStarted(curAction);
+                    var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
+                    Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+                    var jsonResult = await Dispatch(curAction, baseUri);
+
+                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, ErrorDTO>>(jsonResult);
+                    if (jsonDeserialized.Count == 0 || jsonDeserialized.Where(k => k.Key.ToLower().Contains("error")).Any())
+                    {
+                        curAction.ActionState = ActionState.Error;
+                    }
+                    else
+                    {
+                        curAction.ActionState = ActionState.Completed;
+                    }
+
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+                }
+                else
+                {
+                    curAction.ActionState = ActionState.Error;
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+                    throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
+                }
+            }
+            return curAction.ActionState.ToString();
         }
 
-        public async Task Dispatch(ActionDO curActionDO, Uri baseUri)
+        public async Task<string> Dispatch(ActionDO curActionDO, Uri baseUri)
         {
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
@@ -117,8 +153,9 @@ namespace Core.Services
             pluginClient.BaseUri = baseUri;
             var actionPayloadDto = Mapper.Map<ActionPayloadDTO>(curActionDO);
             actionPayloadDto.PayloadMappings = CreateActionPayload(curActionDO, actionPayloadDto.EnvelopeId);
-            await pluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
+            var jsonResult = await pluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
             EventManager.ActionDispatched(actionPayloadDto);
+            return jsonResult;
         }
 
         public string CreateActionPayload(ActionDO curActionDO, string envelopeId)

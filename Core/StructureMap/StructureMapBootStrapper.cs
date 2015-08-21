@@ -97,6 +97,7 @@ namespace Core.StructureMap
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
 
                 For<IEvent>().Use<Event>();
+                For<IEnvelope>().Use<DocuSignEnvelope>();
             }
         }
 
@@ -139,7 +140,7 @@ namespace Core.StructureMap
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
-                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<object>(null));
+                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
 
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");

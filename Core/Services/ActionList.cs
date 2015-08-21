@@ -2,6 +2,7 @@
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -62,10 +63,57 @@ namespace Core.Services
         public void Process(ActionListDO curActionListDO)
         {
             if (curActionListDO.CurrentAction == null)
+            {
                 throw new ArgumentNullException("ActionList is missing a CurrentAction");
+            }
             else
             {
-                //here we will call Action#Process(curActionListDO.CurrentAction curAction);
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+                    if(curActionListDO.ActionListState == ActionListState.Unstarted)
+                    {
+                        curActionListDO.ActionListState = ActionListState.Inprocess;
+                        uow.ActionListRepository.Attach(curActionListDO);
+                        uow.SaveChanges();
+
+                        var _curAction = ObjectFactory.GetInstance<IAction>();
+                        foreach (var action in curActionListDO.Actions.OrderBy(o => o.Ordering))
+                        {
+                            //if return string is "completed", it sets the CurrentAction to the next Action in the list
+                            //if not complete set actionlistdo to error
+                            try
+                            {
+                                var curStatus = _curAction.Process(action).Result;
+                                if(ActionState.MapActionState(curStatus) == ActionState.Completed)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    throw new Exception();
+                                }
+                            }
+                            catch(Exception)
+                            {
+
+                                curActionListDO.ActionListState = ActionListState.Error;
+                                uow.ActionListRepository.Attach(curActionListDO);
+                                uow.SaveChanges();
+
+                                throw new Exception(string.Format("Error occurred trying to process ActionList Id: {0}", curActionListDO.Id));
+                            }
+                        }
+
+                        curActionListDO.ActionListState = ActionListState.Completed;
+                        uow.ActionListRepository.Attach(curActionListDO);
+                        uow.SaveChanges();
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("Action List ID: {0} status is not unstarted.", curActionListDO.Id));
+                    }
+                }
             }
         }
     }

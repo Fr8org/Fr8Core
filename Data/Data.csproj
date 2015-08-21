@@ -134,6 +134,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
@@ -163,6 +164,10 @@
     <Compile Include="Migrations\201508200530298_UpdateProcessProcessNode.Designer.cs">
       <DependentUpon>201508200530298_UpdateProcessProcessNode.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.cs" />
+    <Compile Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.Designer.cs">
+      <DependentUpon>201508201325363_201508202025_ActionListDOActionDo_ActionState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201508201655408_forcemerge.cs" />
     <Compile Include="Migrations\201508201655408_forcemerge.Designer.cs">
       <DependentUpon>201508201655408_forcemerge.cs</DependentUpon>
@@ -185,7 +190,9 @@
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
+    <Compile Include="States\ActionState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -357,7 +364,9 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
     <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
@@ -566,6 +575,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508200530298_UpdateProcessProcessNode.resx">
       <DependentUpon>201508200530298_UpdateProcessProcessNode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.resx">
+      <DependentUpon>201508201325363_201508202025_ActionListDOActionDo_ActionState.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508201655408_forcemerge.resx">
       <DependentUpon>201508201655408_forcemerge.cs</DependentUpon>

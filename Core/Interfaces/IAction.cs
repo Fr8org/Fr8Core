@@ -16,6 +16,6 @@ namespace Core.Interfaces
         //void Register(string ActionType, string PluginRegistration, string Version);
         ActionDO GetById(int id);
         void Delete(int id);
-        Task Process(ActionDO curActionDO);
+        Task<string> Process(ActionDO curAction);
     }
 }

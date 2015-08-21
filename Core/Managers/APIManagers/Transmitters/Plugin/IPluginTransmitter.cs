@@ -12,6 +12,6 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
         /// <param name="actionType">Action type</param>
         /// <param name="actionDTO">Action Payload DTO</param>
         /// <returns></returns>
-        Task PostActionAsync(string actionType, ActionPayloadDTO actionPayloadDTO);
+        Task<string> PostActionAsync(string actionType, ActionPayloadDTO actionPayloadDTO);
     }
 }

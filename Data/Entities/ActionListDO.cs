@@ -46,5 +46,10 @@ namespace Data.Entities
         [ForeignKey("CurrentAction")]
         public int? CurrentActionID { get; set; }
         public virtual ActionDO CurrentAction  { get; set; }
+
+        [ForeignKey("ActionListStateTemplate")]
+        public int? ActionListState { get; set; }
+
+        public virtual _ActionListStateTemplate ActionListStateTemplate { get; set; }
 	}
 }

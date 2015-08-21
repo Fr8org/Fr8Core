@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Data.States.Templates;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
@@ -27,7 +28,12 @@ namespace Data.Entities
         /// </summary>
         public int Ordering  { get; set; }
 
+        [ForeignKey("ActionStateTemplate")]
+        public int? ActionState { get; set; }
+
+        public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
+
         public string PayloadMappings { get; set; }
 
-    }
+	}
 }
