@@ -85,7 +85,7 @@ namespace Core.Services
                             try
                             {
                                 var curStatus = _curAction.Process(action).Result;
-                                if(curStatus == ActionState.Completed)
+                                if(ActionState.MapActionState(curStatus) == ActionState.Completed)
                                 {
                                     continue;
                                 }

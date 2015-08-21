@@ -82,7 +82,7 @@ namespace Core.Services
                     if (nodeTransitionKey != string.Empty)
                     {
                         var nodeTransitions = JsonConvert.DeserializeObject<List<TransitionKeyData>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
-                        string nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault().Id;
+                        string nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new TransitionKeyData()).FirstOrDefault().Id;
                         if (nodeTransitions != null && String.IsNullOrEmpty(nodeID) != true)
                         {
                             curProcessNode = uow.ProcessNodeRepository.GetByKey(nodeID);

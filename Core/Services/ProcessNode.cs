@@ -69,7 +69,7 @@ namespace Core.Services
             evaluationResult = result.ToString();
 
             return evaluationResult;
-;
+
         }
 
         /// <summary>

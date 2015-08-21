@@ -200,6 +200,7 @@
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ActionListServiceTests.cs" />
     <Compile Include="Services\ActionServiceTests.cs" />
     <Compile Include="Services\BasePluginRegistrationTests.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />

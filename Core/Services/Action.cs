@@ -115,7 +115,7 @@ namespace Core.Services
                     EventManager.ActionStarted(curAction);
                     var jsonResult = await Dispatch(curAction);
 
-                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonResult);
+                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, ErrorDTO>>(jsonResult);
                     if (jsonDeserialized.Count == 0 || jsonDeserialized.Where(k => k.Key.ToLower().Contains("error")).Any())
                     {
                         curAction.ActionState = ActionState.Error;
@@ -136,7 +136,7 @@ namespace Core.Services
                     throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
                 }
             }
-            return curAction.ActionState;
+            return curAction.ActionState.ToString();
         }
 
         public async Task<string> Dispatch(ActionDO curAction)

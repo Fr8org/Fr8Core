@@ -131,6 +131,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
@@ -159,6 +160,10 @@
     <Compile Include="Migrations\201508200530298_UpdateProcessProcessNode.cs" />
     <Compile Include="Migrations\201508200530298_UpdateProcessProcessNode.Designer.cs">
       <DependentUpon>201508200530298_UpdateProcessProcessNode.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.cs" />
+    <Compile Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.Designer.cs">
+      <DependentUpon>201508201325363_201508202025_ActionListDOActionDo_ActionState.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -546,6 +551,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508200530298_UpdateProcessProcessNode.resx">
       <DependentUpon>201508200530298_UpdateProcessProcessNode.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.resx">
+      <DependentUpon>201508201325363_201508202025_ActionListDOActionDo_ActionState.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
