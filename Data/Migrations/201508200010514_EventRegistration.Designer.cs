@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class mergetest : IMigrationMetadata
+    public sealed partial class EventRegistration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(mergetest));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(EventRegistration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508182114281_mergetest"; }
+            get { return "201508200010514_EventRegistration"; }
         }
         
         string IMigrationMetadata.Source

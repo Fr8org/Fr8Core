@@ -263,7 +263,6 @@
     <Compile Include="Services\ProcessNodeTemplate.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
-    <Compile Include="Services\Slip.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Template.cs" />

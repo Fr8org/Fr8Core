@@ -40,7 +40,7 @@ namespace Core.Services
         public void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode)
         {
             var keys =
-                JsonConvert.DeserializeObject<List<TransitionKeyData>>(sourcePNode.ProcessNodeTemplate.TransitionKey);
+                JsonConvert.DeserializeObject<List<TransitionKeyData>>(sourcePNode.ProcessNodeTemplate.NodeTransitions);
 
             if (!this.IsCorrectKeysCountValid(keys))
                 throw new ArgumentException("There should only be one key with false.");
@@ -48,7 +48,7 @@ namespace Core.Services
             var key = keys.First(k => k.Flag.Equals("false", StringComparison.OrdinalIgnoreCase));
             key.Id = targetPNode.Id.ToString();
 
-            sourcePNode.ProcessNodeTemplate.TransitionKey = JsonConvert.SerializeObject(keys, Formatting.None);
+            sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
         public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)

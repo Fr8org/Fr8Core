@@ -1,25 +1,23 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using System.Data;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using pluginAzureSqlServer.Infrastructure;
 using PluginUtilities.Infrastructure;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web;
 
-namespace pluginAzureSqlServer.Infrastructure {
+namespace pluginAzureSqlServer.Actions {
     
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
 
     //Action container class
-    public class AzureSqlServerActionHandler : ActionHandler {        
+    public class Write_To_Sql_Server_v1 : ActionHandler {        
 
         //Public entry point, maps to actions from the controller
-        public object WriteToSqlServerAction(string path, ActionDO curActionDO) {
+        public object Process(string path, ActionDO curActionDO) {
             switch (path) {
                 case "execute":               return Execute(curActionDO);
                 case "field_mappings":        return GetFieldMappings(curActionDO);
@@ -95,6 +93,40 @@ namespace pluginAzureSqlServer.Infrastructure {
         //[Route("configurationsettings")]
         private object GetConfigurationSettings(ActionDO curActionDO) {
             return null;
-        }      
+        }
+
+        //private readonly IDbProvider _dbProvider;
+        //private readonly JsonSerializer _serializer;
+
+        //public ActionController(IDbProvider dbProvider, JsonSerializer serializer) {
+        //    _dbProvider = dbProvider;
+        //    _serializer = serializer;
+        //}
+
+        /// <summary>
+        /// Insert user data to remote database tables.
+        /// </summary>
+        //[HttpPost]
+        //[Route("writeSQL")]
+        //public CommandResponse Write(JObject data)
+        //{                 
+        //    try
+        //    {
+        //        // Creating ExtrationHelper and parsing WriteCommandArgs.
+        //        var parser = new DbServiceJsonParser();
+        //        var writeArgs = parser.ExtractWriteCommandArgs(data);
+
+        //        // Creating DbService and running WriteCommand logic.
+        //        var dbService = new DbService();
+        //        dbService.WriteCommand(writeArgs);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return CommandResponse.ErrorResponse(ex.Message);
+        //    }
+
+        //    return CommandResponse.SuccessResponse();
+        //}
+
     }
 }
