@@ -14,6 +14,8 @@ using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Core.PluginRegistrations;
+using Data.States;
+using Newtonsoft.Json;
 
 namespace Core.Services
 {
@@ -98,13 +100,46 @@ namespace Core.Services
             }
         }
 
-        public async Task Process(ActionDO curAction)
+        public async Task<string> Process(ActionDO curAction)
         {
-            EventManager.ActionStarted(curAction);
-            await Dispatch(curAction);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+                if (curAction.ActionState == ActionState.Unstarted)
+                {
+                    curAction.ActionState = ActionState.Inprocess;
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+
+
+                    EventManager.ActionStarted(curAction);
+                    var jsonResult = await Dispatch(curAction);
+
+                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, ErrorDTO>>(jsonResult);
+                    if (jsonDeserialized.Count == 0 || jsonDeserialized.Where(k => k.Key.ToLower().Contains("error")).Any())
+                    {
+                        curAction.ActionState = ActionState.Error;
+                    }
+                    else
+                    {
+                        curAction.ActionState = ActionState.Completed;
+                    }
+
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+                }
+                else
+                {
+                    curAction.ActionState = ActionState.Error;
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+                    throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
+                }
+            }
+            return curAction.ActionState.ToString();
         }
 
-        public async Task Dispatch(ActionDO curAction)
+        public async Task<string> Dispatch(ActionDO curAction)
         {
             if (curAction == null)
                 throw new ArgumentNullException("curAction");
@@ -117,8 +152,9 @@ namespace Core.Services
             var curActionDTO = Mapper.Map<ActionDTO>(curAction);
             var pluginClient = ObjectFactory.GetInstance<IPluginClient>(); 
             pluginClient.BaseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-            await pluginClient.PostActionAsync(curAction.ActionType, curActionDTO);
+            var jsonResult = await pluginClient.PostActionAsync(curAction.ActionType, curActionDTO);
             EventManager.ActionDispatched(curAction);
+            return jsonResult;
         }
     }
 }

@@ -38,21 +38,21 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
-        public bool Evaluate(string criteria, int processId,  IEnumerable<EnvelopeDataDTO> envelopeData)
+        public bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
         {
             return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
 
         public bool Evaluate(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        {
+            {
                 var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplate.Id == curProcessNode.Id);
                 if (curCriteria == null)
                     throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
 
-                DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = null; //should just change GetEnvelopeData to pass an EnvelopeDO
+                DocuSign.Integrations.Client.Envelope curDocuSignEnvelope = new DocuSign.Integrations.Client.Envelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
 
 
                 return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));
@@ -60,7 +60,7 @@ namespace Core.Services
         }
 
 
-        public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId, 
+        public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId,
             IQueryable<EnvelopeDataDTO> envelopeData)
         {
             EventManager.CriteriaEvaluationStarted(processId);

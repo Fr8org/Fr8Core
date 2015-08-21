@@ -16,7 +16,9 @@ using Core.Security;
 using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
 using Data.Repositories;
+using Data.Wrappers;
 using Moq;
 using SendGrid;
 using StructureMap;
@@ -93,6 +95,7 @@ namespace Core.StructureMap
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
 
                 For<IEvent>().Use<Event>();
+                For<IEnvelope>().Use<DocuSignEnvelope>();
             }
         }
 
@@ -134,9 +137,9 @@ namespace Core.StructureMap
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
-
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
+                For<IEnvelope>().Use<DocuSignEnvelope>();
             }
         }
 
