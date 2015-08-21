@@ -13,7 +13,7 @@ namespace Data.Validations
             {
                 RuleFor(pntDO => pntDO.Id).GreaterThan(0).WithMessage("Id must be a positive int");
                 RuleFor(pntDO => pntDO.Name).NotEmpty().WithMessage("Name is Required");
-                RuleFor(pntDO => pntDO.TransitionKey).NotEmpty().WithMessage("TransitionKey is Required");
+                RuleFor(pntDO => pntDO.NodeTransitions).NotEmpty().WithMessage("NodeTransitions is Required");
 
                 RuleFor(pntDO => pntDO.ParentTemplateId).GreaterThan(0)
                     .Must(id => uow.ProcessNodeRepository.GetByKey(id) != null)
