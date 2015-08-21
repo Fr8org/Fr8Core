@@ -2,8 +2,8 @@
   "Framework": "jasmine",
   "References": [
     {
-      "Path": "../../bower_components/angular/angular.min.js",
-      "IsTestFrameworkFile": true
+        "Path": "../../bower_components/angular/angular.min.js",
+        "IsTestFrameworkFile": true
     },
     {
       "Path": "../../bower_components/angular-resource/angular-resource.min.js"

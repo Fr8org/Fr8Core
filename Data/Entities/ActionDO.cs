@@ -29,7 +29,7 @@ namespace Data.Entities
         public int Ordering  { get; set; }
 
         [ForeignKey("ActionStateTemplate")]
-        public int ActionState { get; set; }
+        public int? ActionState { get; set; }
 
         public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
 	}

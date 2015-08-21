@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json.Linq;
 
@@ -10,9 +12,12 @@ namespace Data.Entities
 		[ Key ]
 		public int Id{ get; set; }
 
-		private readonly Template _docusignTemplate;
+		private readonly DocuSignTemplate _docusignTemplate;
 
-		public TemplateDO( Template docusignTemplate )
+        [NotMapped]
+        public DocuSignTemplate DocuSignTemplate { get; set; }
+
+        public TemplateDO( DocuSignTemplate docusignTemplate )
 		{
 			this._docusignTemplate = docusignTemplate;
 		}
