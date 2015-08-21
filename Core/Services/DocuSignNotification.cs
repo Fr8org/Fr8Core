@@ -82,9 +82,11 @@ namespace Core.Services
 
                     foreach (var subscription in subscriptions)
                     {
-                        _processTemplate.LaunchProcess(subscription.ProcessTemplate, curEnvelope);
+                        _processTemplate.LaunchProcess(uow, subscription.ProcessTemplate, curEnvelope);
                     }
                 }
+
+                uow.SaveChanges();
             }
         }
     }

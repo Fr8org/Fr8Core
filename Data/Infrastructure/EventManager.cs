@@ -27,7 +27,7 @@ namespace Data.Infrastructure
 
         //public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         //public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
-
+        
         //public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
         //public static event ConversationmatchedHandler AlertConversationMatched;
 
@@ -168,7 +168,7 @@ namespace Data.Infrastructure
             if (AlertTrackablePropertyUpdated != null)
                 AlertTrackablePropertyUpdated(entityName, propertyName, id, value);
         }
-
+        
         //public static void ConversationMemberAdded(int bookingRequestID)
         //{
         //    if (AlertConversationMemberAdded != null)
@@ -207,7 +207,7 @@ namespace Data.Infrastructure
         //    if (AlertBookingRequestCreated != null)
         //        AlertBookingRequestCreated(bookingRequestId);
         //}
-
+            
         public static void EmailReceived(int emailId, string customerId)
         {
             if (AlertEmailReceived != null)
@@ -223,7 +223,7 @@ namespace Data.Infrastructure
             if (AlertEmailSent != null)
                 AlertEmailSent(emailId, customerId);
         }
-
+                
         public static void EmailProcessingFailure(string dateReceived, string errorMessage)
         {
             if (AlertEmailProcessingFailure != null)

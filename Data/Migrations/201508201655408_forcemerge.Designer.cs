@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class FixEnvelopeDO : IMigrationMetadata
+    public sealed partial class forcemerge : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(FixEnvelopeDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(forcemerge));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508180255327_FixEnvelopeDO"; }
+            get { return "201508201655408_forcemerge"; }
         }
         
         string IMigrationMetadata.Source

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using Data.Wrappers;
 using DocuSign.Integrations.Client;
 
 using Newtonsoft.Json;
@@ -21,7 +21,7 @@ namespace UtilitiesTesting.DocusignTools
         /// <param name="account">Docusign account.</param>
         /// <param name="restSettings">Docusign restsettings instance.</param>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        public Account LoginDocusign(Account account, RestSettings restSettings)
+        public DocuSignAccount LoginDocusign(DocuSignAccount account, RestSettings restSettings)
         {
             // make the Login API call
             bool result = account.Login();

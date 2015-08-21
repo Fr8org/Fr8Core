@@ -83,7 +83,7 @@ namespace Core.Services
             {
                 string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
                 curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
-            }
+            } 
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
             return curActionDO;

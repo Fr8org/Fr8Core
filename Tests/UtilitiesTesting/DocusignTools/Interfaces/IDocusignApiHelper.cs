@@ -12,7 +12,7 @@ namespace UtilitiesTesting.DocusignTools.Interfaces
         /// <param name="account">Docusign account.</param>
         /// <param name="restSettings">Docusign restsettings instance.</param>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        Account LoginDocusign(Account account, RestSettings restSettings);
+        DocuSignAccount LoginDocusign(DocuSignAccount account, RestSettings restSettings);
 
         /// <summary>
         /// Create envelope wrapper with fill it with data, and return it back.
