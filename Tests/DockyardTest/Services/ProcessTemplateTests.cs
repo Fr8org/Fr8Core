@@ -1,5 +1,6 @@
 ﻿using Core.Interfaces;
 using Data.Exceptions;
+using Data.Interfaces;
 using Data.Migrations;
 using NUnit.Framework;
 using StructureMap;
@@ -25,9 +26,12 @@ namespace DockyardTest.Services
 		[ExpectedException(typeof (EntityNotFoundException))]
 		public void ProcessTemplateService_CanNot_LaunchProcess()
 		{
-			var envelope = FixtureData.TestEnvelope1();
-            Data.Entities.ProcessTemplateDO processTemplate = null;
-            _processTemplateService.LaunchProcess(processTemplate, envelope);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var envelope = FixtureData.TestEnvelope1();
+                Data.Entities.ProcessTemplateDO processTemplate = null;
+                _processTemplateService.LaunchProcess(uow, processTemplate, envelope);
+            }
 		}
 	}
 }

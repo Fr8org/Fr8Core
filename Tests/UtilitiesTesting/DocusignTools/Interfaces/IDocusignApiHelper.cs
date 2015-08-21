@@ -1,4 +1,5 @@
-﻿using DocuSign.Integrations.Client;
+﻿using Data.Wrappers;
+using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.DocusignTools.Interfaces
 {
@@ -11,7 +12,7 @@ namespace UtilitiesTesting.DocusignTools.Interfaces
         /// <param name="account">Docusign account.</param>
         /// <param name="restSettings">Docusign restsettings instance.</param>
         /// <returns>Logged account object ( Docusign.Integrations.Client.Account ).</returns>
-        Account LoginDocusign(Account account, RestSettings restSettings);
+        DocuSignAccount LoginDocusign(DocuSignAccount account, RestSettings restSettings);
 
         /// <summary>
         /// Create envelope with fill it with data, and return it back.
