@@ -188,6 +188,10 @@
     <Compile Include="Migrations\201508210223236_changeDocuSignAccountIdToString.Designer.cs">
       <DependentUpon>201508210223236_changeDocuSignAccountIdToString.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.cs" />
+    <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.Designer.cs">
+      <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -593,6 +597,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508210223236_changeDocuSignAccountIdToString.resx">
       <DependentUpon>201508210223236_changeDocuSignAccountIdToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508212307273_forcemerge_actionliststate.resx">
+      <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
