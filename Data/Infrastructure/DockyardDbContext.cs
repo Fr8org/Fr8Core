@@ -254,7 +254,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<DockyardAccountDO>().ToTable("Users");
-            modelBuilder.Entity<DocusignAccountDO>().ToTable("DocusignAccounts");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");

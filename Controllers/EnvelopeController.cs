@@ -10,11 +10,11 @@ namespace Web.Controllers
 {
     public class EnvelopeController : Controller
     {
-        private DocusignPackager _API;
+        private DocuSignPackager _API;
 
         public EnvelopeController()
         {
-            _API = new DocusignPackager();
+            _API = new DocuSignPackager();
         }
 
         // GET: Envelope
