@@ -31,5 +31,6 @@ namespace Data.Interfaces
         /// </returns>
         List<EnvelopeDataDTO> GetEnvelopeData(string envelopeId);
 
+        List<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
     }
 }

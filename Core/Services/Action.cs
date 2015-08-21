@@ -116,7 +116,7 @@ namespace Core.Services
             var pluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             pluginClient.BaseUri = baseUri;
             var actionPayloadDto = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            curActionDO.PayloadMappings = CreateActionPayload(curActionDO, actionPayloadDto.EnvelopeId);
+            actionPayloadDto.PayloadMappings = CreateActionPayload(curActionDO, actionPayloadDto.EnvelopeId);
             await pluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
             EventManager.ActionDispatched(actionPayloadDto);
         }

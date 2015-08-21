@@ -58,6 +58,9 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ProcessTemplateDO, FullProcessTemplateDTO>()
                 .ConvertUsing<ProcessTemplateDOFullConverter>();
+
+            Mapper.CreateMap<DocuSign.Integrations.Client.Signer, Data.Wrappers.Signer>();
+
         }
     }
 }

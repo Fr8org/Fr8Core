@@ -27,7 +27,7 @@ namespace Data.Wrappers
                                                        RecipientId = curSigner.recipientId,
                                                        EnvelopeId = envelope.EnvelopeId,
                                                        DocumentId = curTextTab.documentId,
-                                                       Name = curTextTab.name,
+                                                       Name = curTextTab.tabLabel,
                                                        TabId = curTextTab.tabId,
                                                        Value = curTextTab.value
                                                    };

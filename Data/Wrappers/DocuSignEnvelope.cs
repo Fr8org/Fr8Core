@@ -1,5 +1,6 @@
 ﻿using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using DocuSign.Integrations.Client;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -19,16 +20,40 @@ namespace Data.Wrappers
         public DocuSignEnvelope()
         {
             //TODO change baseUrl later. Remove it to constructor parameter etc.
-            _baseUrl = string.Empty; 
+            _baseUrl = string.Empty;
 
             //TODO move ioc container.
             _tab = new Tab();
             _signer = new Signer();
+
+            Login = EnsureLogin();
         }
 
-        public DocuSignEnvelope(DocuSign.Integrations.Client.Envelope envelope)
+        private DocuSign.Integrations.Client.Account EnsureLogin()
         {
+            var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+            string username = appSettings["username"] ?? "Not Found";
+            string password = appSettings["password"] ?? "Not Found";
+            string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";
 
+            // configure application's integrator key and webservice url
+            RestSettings.Instance.IntegratorKey = appSettings["IntegratorKey"];
+            RestSettings.Instance.DocuSignAddress = appSettings["environment"];
+            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
+
+            // credentials for sending account
+            Account account = new Account();
+            account.Email = username;
+            account.Password = password;
+
+            // make the Login API call
+            bool result = account.Login();
+
+            if (!result)
+            {
+                throw new InvalidOperationException("Cannot log in to DocuSign. Please check the authentication information on web.config.");
+            }
+            return account;
         }
 
         /// <summary>
@@ -69,14 +94,38 @@ namespace Data.Wrappers
             {
                 throw new ArgumentNullException("envelopeId");
             }
+            EnvelopeId = curEnvelopeId;
+            GetRecipients(true, true);
+            return GetEnvelopeData(this);
+        }
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        private List<EnvelopeDataDTO> GetEnvelopeData()
+        {
+            Signer[] curSignersSet = _signer.GetFromRecipients(this);
+            if (curSignersSet != null)
             {
-                var curDocusignEnvelope = new DocuSignEnvelope();
-                curDocusignEnvelope.EnvelopeId = curEnvelopeId;
-                curDocusignEnvelope.GetRecipients();
-                return GetEnvelopeData(curDocusignEnvelope);
+                foreach (Signer curSigner in curSignersSet)
+                {
+                    return _tab.ExtractEnvelopeData(this, curSigner);
+                }
             }
+
+            return new List<EnvelopeDataDTO>();
+        }
+
+
+        public List<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope)
+        {
+            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
+            if (curSignersSet != null)
+            {
+                foreach (Signer curSigner in curSignersSet)
+                {
+                    return _tab.ExtractEnvelopeData(envelope, curSigner);
+                }
+            }
+
+            return new List<EnvelopeDataDTO>();
         }
     }
 }
