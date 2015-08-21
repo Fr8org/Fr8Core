@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Ajax.Utilities;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
@@ -55,7 +56,7 @@ namespace Web.Controllers
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin),id);
 
             if (curProcessTemplates.Any())
             {
@@ -76,22 +77,30 @@ namespace Web.Controllers
 
         public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
         {
-
-            if (string.IsNullOrEmpty(processTemplateDto.Name))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ModelState.AddModelError("Name", "Name cannot be null");
+                if (string.IsNullOrEmpty(processTemplateDto.Name))
+                {
+                    ModelState.AddModelError("Name", "Name cannot be null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Some of the request data is invalid");
+                }
+
+                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
+                var curUserId = User.Identity.GetUserId();
+                curProcessTemplateDO.DockyardAccount = uow.UserRepository
+                    .GetQuery()
+                    .Single(x => x.Id == curUserId);
+
+                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO);
+
+                uow.SaveChanges();
+
+                return Ok(processTemplateDto);
             }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Some of the request data is invalid");
-            }
-
-            var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
-            curProcessTemplateDO.DockyardAccount.Id =  User.Identity.Name;
-            processTemplateDto.Id = _processTemplate.CreateOrUpdate(curProcessTemplateDO);
-
-            return Ok(processTemplateDto);
         }
 
         [HttpPost]
@@ -105,8 +114,13 @@ namespace Web.Controllers
 
         public IHttpActionResult Delete(int id)
         {
-            _processTemplate.Delete(id);
-            return Ok(id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _processTemplate.Delete(uow, id);
+
+                uow.SaveChanges();
+                return Ok(id);
+            }
         }
     }
 }

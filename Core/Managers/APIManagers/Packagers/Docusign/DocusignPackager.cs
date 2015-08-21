@@ -10,30 +10,44 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Web.Mvc;
+using DocuSign.Integrations.Client;
+using Microsoft.WindowsAzure;
 
 namespace Core.Managers.APIManagers.Packagers.Docusign
 {
-    public class DocusignPackager
+    public class DocuSignPackager
     {
+
+        public string Email;  //these are used to populate the Login object in the DocuSign Library
+        public string ApiPassword;
+
+        public DocuSignPackager()
+        {
+            ConfigureDocuSignIntegration();
+        }
 
         public string Login()
         {
             return MakeRequest("");
         } // 
+        public void ConfigureDocuSignIntegration()
+        {
+            RestSettings.Instance.DistributorCode = CloudConfigurationManager.GetSetting("DocuSignDistributorCode");
+            RestSettings.Instance.DistributorPassword = CloudConfigurationManager.GetSetting("DocuSignDistributorPassword");
+            RestSettings.Instance.IntegratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
 
+            Email = CloudConfigurationManager.GetSetting("DocuSignLoginEmail");
+            ApiPassword = CloudConfigurationManager.GetSetting("DocuSignLoginPassword");
+        }
 
         public string MakeRequest(string resource)
         {
-
+ 
+            string username = Email ?? "Not Found";
+            string password = ApiPassword ?? "Not Found";
+            string integratorKey = RestSettings.Instance.IntegratorKey ?? "Not Found";
 
             var appSettings = ConfigurationManager.AppSettings;
-            string username = appSettings["username"] ?? "Not Found";
-            string password = appSettings["password"] ?? "Not Found";
-            string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";
-
-            string envelopeId = "***";			// valid envelopeId of an envelope in your account
-            //---------------------------------------------------------------------------------------------------
-
             string baseURL = appSettings["BaseUrL"];
             string requestURL = baseURL + resource;
 

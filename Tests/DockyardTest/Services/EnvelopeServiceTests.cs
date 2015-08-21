@@ -30,7 +30,7 @@ namespace DockyardTest.Services
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData()
         {
-            Account account = docusignApiHelper.LoginDocusign(FixtureData.TestAccount1(),
+            Account account = docusignApiHelper.LoginDocusign(FixtureData.TestDocuSignAccount1(),
                                                               FixtureData.TestRestSettings1());
 
             Envelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
