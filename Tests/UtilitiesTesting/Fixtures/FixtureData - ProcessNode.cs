@@ -11,7 +11,7 @@ namespace UtilitiesTesting.Fixtures
 			processNode.Id = 50;
 			processNode.ParentProcessId = 49;
 			processNode.ProcessNodeState = ProcessNodeState.Unstarted;
-			processNode.Process = TestProcess1();
+			processNode.ParentProcess = TestProcess1();
 
 			return processNode;
 		}

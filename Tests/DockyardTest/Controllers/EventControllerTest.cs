@@ -40,7 +40,7 @@ namespace DockyardTest.Controllers
 
             //Act
           
-            var result = _eventController.Event(eventDto);
+            var result = _eventController.Post(eventDto);
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -63,7 +63,7 @@ namespace DockyardTest.Controllers
                 var curEventDTO = FixtureData.TestPluginEventDto();
 
                 //Act
-                var result = _eventController.Event(curEventDTO);
+                var result = _eventController.Post(curEventDTO);
 
                 //Assert
                 Assert.IsTrue(result is OkResult);

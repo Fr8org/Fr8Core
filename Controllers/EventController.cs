@@ -19,7 +19,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult Event(EventDTO submittedEvent)
+        public IHttpActionResult Post(EventDTO submittedEvent)
         {
             if (submittedEvent.EventType.Equals("Plugin Incident"))
             {

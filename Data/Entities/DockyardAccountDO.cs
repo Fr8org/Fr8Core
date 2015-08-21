@@ -42,7 +42,8 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
-        public int? DocusignAccountId { get; set; }
+        public string DocusignAccountId { get; set; }
+
         [NotMapped]
         public DocuSignAccount DocuSignAccount { get; set; }
 
