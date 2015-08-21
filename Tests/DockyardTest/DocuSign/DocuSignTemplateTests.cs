@@ -30,28 +30,25 @@ namespace DockyardTest.DocuSign
             _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
         }
 
-        [Test, Ignore]
-        [Category("DocuSignIntegration")]
-        public void Template_Can_Get_Template()
-        {
-            DocuSignAccount account = docusignApiHelper.LoginDocusign(FixtureData.TestDocuSignAccount1(),
-                                                              FixtureData.TestRestSettings1());
+        //[Test, Ignore]
+        //[Category("DocuSignIntegration")]
+        //public void Template_Can_Get_Template()
+        //{
+        //    DocuSignAccount account = docusignApiHelper.LoginDocusign(FixtureData.TestDocuSignAccount1(),
+        //                                                      FixtureData.TestRestSettings1());
 
-            TemplateInfo curTemplateInfo = FixtureData.TestDocuSignTemplateInfo1();         
-            //post the template to the test account
-            TemplateInfo createdTemplateInfo = _docusignTemplate.Create(curTemplateInfo);
+        //    TemplateInfo curTemplateInfo = FixtureData.TestDocuSignTemplateInfo1();         
+        //    //post the template to the test account
+        //    TemplateInfo createdTemplateInfo = _docusignTemplate.Create(curTemplateInfo);
 
+        //    //get it
+        //    //TemplateInfo retrievedTemplateInfo = _docusignTemplate.GetTemplate(createdTemplateInfo.Id);
 
-            //get it
-            //TemplateInfo retrievedTemplateInfo = _docusignTemplate.GetTemplate(createdTemplateInfo.Id);
+        //    //verify
+        //    //delete it
 
-            //verify
-            //delete it
-
-
-
-            Assert.IsNotNull(account); //Todo orkan: remove back when you completed the EnvelopeService.
-        }
+        //    Assert.IsNotNull(account); //Todo orkan: remove back when you completed the EnvelopeService.
+        //}
 
     }
 }
