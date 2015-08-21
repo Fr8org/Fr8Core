@@ -5,6 +5,9 @@
 module dockyard.directives.PaneFieldMapping {
     'use strict';
 
+    declare var Base64: any;
+    declare var LZString: any;
+
     export enum MessageType {
         PaneConfigureMapping_ActionUpdated,
         PaneConfigureMapping_Render,
@@ -23,6 +26,8 @@ module dockyard.directives.PaneFieldMapping {
         public scope = {
             mode: "@"
         };
+
+
 
         public controller = ["$scope", "$resource", "urlPrefix", ($scope, $resource, urlPrefix) => {
 
@@ -54,7 +59,11 @@ module dockyard.directives.PaneFieldMapping {
                 var loadedFields = false;
                 $scope.mappedValue = mappedValue;
 
-                var returnedParams = $resource(urlPrefix + "/actionparams").query(() => {
+               
+                var connectionString = LZString.compressToUTF16("Data Source= s79ifqsqga.database.windows.net; database = demodb_health; User ID= alexeddodb; Password = Thales89");
+                var pluginName = LZString.compressToUTF16("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core");
+
+                var returnedParams = $resource(urlPrefix + "/actions/fieldmapping/" + connectionString + "/" + pluginName + "/").query(() => {
                     loadedActions = true;
                     returnedParams.forEach((actionParam) => {
                         actionParam.type = "actionparam";
@@ -72,17 +81,22 @@ module dockyard.directives.PaneFieldMapping {
                     return;
                 });
 
-                var docFields = $resource(urlPrefix + "/actionparams").query(() => {
+                
+                
+
+                var docFields = $resource(urlPrefix + "/fields/" + "b5abd63a-c12c-4856-b9f4-989200e41a6f" ).query(() => {
                     loadedFields = true;
+                    var tempToBeMapped = [];
                     docFields.forEach((docField) => {
-                        docField.type = "docusignfield";
+                        tempToBeMapped.push({ 'type' : "docusignfield", 'name': docField });
                     });
+
                     if ($scope.mode === "param") {
-                        $scope.toBeMappedFrom = docFields;
+                        $scope.toBeMappedFrom = tempToBeMapped;
                         transform();
                         return;
                     }
-                    $scope.toBeMappedTo = docFields;
+                    $scope.toBeMappedTo = tempToBeMapped;
 
                 });
 
@@ -113,7 +127,7 @@ module dockyard.directives.PaneFieldMapping {
 
             var onUpdate = () => { };
 
-            //onRender();
+            onRender();
 
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Hide], onHide);
@@ -124,33 +138,33 @@ module dockyard.directives.PaneFieldMapping {
         public static factory = () => new PaneFieldMapping();
     }
 
-    app.run([
-        "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
+    //app.run([
+    //    "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
 
-            var actions = [
-                { Name: "Action Param1", Id: 11 },
-                { Name: 'Action Param2', Id: 12 },
-                { Name: 'Action Param3', Id: 13 },
-                { Name: 'Action Param4', Id: 14 }
-            ];
+    //        var actions = [
+    //            { Name: "Action Param1", Id: 11 },
+    //            { Name: 'Action Param2', Id: 12 },
+    //            { Name: 'Action Param3', Id: 13 },
+    //            { Name: 'Action Param4', Id: 14 }
+    //        ];
 
-            var documentFields = [
-                { Name: "Field1", Id: 21 },
-                { Name: "Field2", Id: 22 },
-                { Name: "Field3", Id: 23 },
-                { Name: "Field4", Id: 24 },
-                { Name: "Field5", Id: 25 },
-                { Name: "Field6", Id: 26 }
-            ];
+    //        var documentFields = [
+    //            { Name: "Field1", Id: 21 },
+    //            { Name: "Field2", Id: 22 },
+    //            { Name: "Field3", Id: 23 },
+    //            { Name: "Field4", Id: 24 },
+    //            { Name: "Field5", Id: 25 },
+    //            { Name: "Field6", Id: 26 }
+    //        ];
 
-            httpBackend
-                .whenGET(urlPrefix + "/actionparams")
-                .respond(actions);
+    //        httpBackend
+    //            .whenGET(urlPrefix + "/actionparams")
+    //            .respond(actions);
 
-            httpBackend
-                .whenGET(urlPrefix + "/documentfields")
-                .respond(documentFields);
-        }
-    ]);
+    //        httpBackend
+    //            .whenGET(urlPrefix + "/documentfields")
+    //            .respond(documentFields);
+    //    }
+    //]);
     app.directive("paneFieldParamMapper", <any>PaneFieldMapping.factory);
 }

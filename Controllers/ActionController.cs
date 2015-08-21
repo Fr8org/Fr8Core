@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using Core.Helper;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Core.Interfaces;
@@ -21,7 +24,7 @@ namespace Web.Controllers
 
         public ActionController()
         {
-			_service = ObjectFactory.GetInstance<IAction>();
+            _service = ObjectFactory.GetInstance<IAction>();
         }
 
         public ActionController(IAction service)
@@ -54,7 +57,7 @@ namespace Web.Controllers
         [HttpGet]
         public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDTO>(_service.GetById(id)); 
+            return Mapper.Map<ActionDTO>(_service.GetById(id));
         }
 
         /// <summary>
@@ -63,7 +66,7 @@ namespace Web.Controllers
         [HttpDelete]
         public void Delete(int id)
         {
-            _service.Delete(id); 
+            _service.Delete(id);
         }
 
         /// <summary>
@@ -90,12 +93,29 @@ namespace Web.Controllers
             return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
         }
 
-        // has to be post, since we are passing a JSON Object that is 
-        [Route("fieldmappings")]
-        [HttpPost]
-        public async Task<IEnumerable<string>> GetFieldMappingTargets(ActionDTO curAction)
+        [HttpGet]
+        [Route("fieldmapping/{connstring}/{pluginName}")]
+        public async Task<IEnumerable<string>> GetFieldMapping(string connstring, string pluginName)
         {
-            return await _service.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(curAction));
+            var actionDto = new ActionDTO() { ParentPluginRegistration = LZString.decompressFromUTF16(pluginName)
+                , ConfigurationSettings = "{\"connection_string\":\"" + LZString.decompressFromUTF16(connstring) + "\"}" };
+            return await _service.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(actionDto));
+        }
+
+        private string DecodeBase64UrlSafe(string returnValue)
+        {
+            string incoming = returnValue.Replace('_', '/').Replace('-', '+');
+            switch (returnValue.Length%4)
+            {
+                case 2:
+                    incoming += "==";
+                    break;
+                case 3:
+                    incoming += "=";
+                    break;
+            }
+            byte[] bytes = Convert.FromBase64String(incoming);
+            return Encoding.ASCII.GetString(bytes);
         }
     }
 }

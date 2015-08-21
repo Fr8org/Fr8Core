@@ -488,6 +488,7 @@
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="Scripts\lib\lz-string.min.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />

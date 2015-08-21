@@ -230,9 +230,24 @@ namespace DockyardTest.Controllers
         }
 
 
+        private string ConvertBase64UrlSafe(string input)
+        {
+            char[] padding = { '=' };
+
+            return System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(input))
+                                    .TrimEnd(padding).Replace('+', '-').Replace('/', '_');
+        }
+
         [Test]
+        [Ignore]
+        // To run and pass this test 
+        // pluginAzureSqlServer should be running 
+        // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
+        // make sure that the endpoint is running 
+        // in azure db you need a db demodb_health
         public async  void Can_Get_FieldMappingTargets()
         {
+            
             //Arrange 
             string pluginName =
                 "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
@@ -240,12 +255,15 @@ namespace DockyardTest.Controllers
                 "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
             var cntroller = new ActionController();
             //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
-            
-            var task = cntroller.GetFieldMappingTargets(new ActionDTO()
-            {
-                ParentPluginRegistration = pluginName ,
-                ConfigurationSettings = "{\"connection_string\":\""+ dataSource + "\"}"
-            });
+
+
+            string pluginEncoded = ConvertBase64UrlSafe(pluginName);
+            string connectionStringEncoded = ConvertBase64UrlSafe(dataSource);
+
+
+            var task = cntroller.GetFieldMapping(connectionStringEncoded, pluginEncoded);
+
+          
             await task;
             Assert.NotNull(task.Result);
             Assert.Greater(task.Result.Count(),0);

@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActionRegistration.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\TransitionKeyData.cs" />
