@@ -276,8 +276,6 @@ module dockyard.controllers {
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
 
-                debugger;
-
                 // Create action object.
                 var action = new model.Action(
                     id,

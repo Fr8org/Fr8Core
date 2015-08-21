@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Microsoft.Ajax.Utilities;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
@@ -55,7 +56,7 @@ namespace Web.Controllers
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.Name, User.IsInRole(Roles.Admin),id);
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin),id);
 
             if (curProcessTemplates.Any())
             {
@@ -89,10 +90,10 @@ namespace Web.Controllers
                 }
 
                 var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
-                var curUserName = User.Identity.Name;
+                var curUserId = User.Identity.GetUserId();
                 curProcessTemplateDO.DockyardAccount = uow.UserRepository
                     .GetQuery()
-                    .Single(x => x.UserName == curUserName);
+                    .Single(x => x.Id == curUserId);
 
                 processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO);
 
