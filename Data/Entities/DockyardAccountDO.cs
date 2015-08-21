@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using Data.Interfaces;
 using StructureMap;
 using Data.States.Templates;
+using Data.Wrappers;
 
 namespace Data.Entities
 {
@@ -40,9 +41,11 @@ namespace Data.Entities
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
-        [ForeignKey("DocusignAccount")]
-        public int? DocusignAccountId { get; set; }
-        public virtual DocusignAccountDO DocusignAccount { get; set; }
+        //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
+        public string DocusignAccountId { get; set; }
+
+        [NotMapped]
+        public DocuSignAccount DocuSignAccount { get; set; }
 
         [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]
         public int? State { get; set; }

@@ -67,7 +67,7 @@ namespace Core.Services
             }
 
             curProcessNodeTemplate.Name = processNodeTemplate.Name;
-            curProcessNodeTemplate.TransitionKey = processNodeTemplate.TransitionKey;
+            curProcessNodeTemplate.NodeTransitions = processNodeTemplate.NodeTransitions;
         }
 
         /// <summary>
