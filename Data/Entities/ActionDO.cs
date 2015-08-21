@@ -32,5 +32,8 @@ namespace Data.Entities
         public int? ActionState { get; set; }
 
         public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
+
+        public string PayloadMappings { get; set; }
+
 	}
 }

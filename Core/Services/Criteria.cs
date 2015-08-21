@@ -27,7 +27,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities;
-
+using Data.Wrappers;
 
 namespace Core.Services
 {
@@ -45,9 +45,9 @@ namespace Core.Services
 
         public bool Evaluate(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
-
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+        {
                 var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplate.Id == curProcessNode.Id);
                 if (curCriteria == null)
                     throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
@@ -60,7 +60,7 @@ namespace Core.Services
         }
 
 
-        public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId,
+        public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId, 
             IQueryable<EnvelopeDataDTO> envelopeData)
         {
             EventManager.CriteriaEvaluationStarted(processId);

@@ -106,7 +106,7 @@ namespace Web.Controllers
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
-        public IHttpActionResult PutAction(ActionDTO actionDto)
+        public IHttpActionResult PutAction(ActionDesignDTO actionDto)
         {
             //A stub until the functionaltiy is ready
             return Ok();

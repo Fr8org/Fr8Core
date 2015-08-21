@@ -8,6 +8,7 @@ using Utilities;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
+using Data.Wrappers;
 
 namespace Core.Services
 {
@@ -19,7 +20,7 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
         }
-        public List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelope)
+        public List<string> GetMappableSourceFields(DocuSignEnvelope envelope)
         {
             List<EnvelopeDataDTO> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
             List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
