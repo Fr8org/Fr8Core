@@ -17,6 +17,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using Data.States;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers;
 
 namespace DockyardTest.Services
 {
@@ -117,6 +118,9 @@ namespace DockyardTest.Services
         [Test]
         public void CanLogIncidentWhenFieldIsMissing()
         {
+            IncidentReporter incidentReporter = new IncidentReporter();
+            incidentReporter.SubscribeToAlerts();
+
             Core.Services.Action action = new Core.Services.Action();
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
                 payloadMappings = FixtureData.PayloadMappings2; //Wrong mappings

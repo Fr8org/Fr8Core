@@ -19,12 +19,6 @@ namespace UtilitiesTesting
             MockedDBContext.WipeMockedDatabase();
             AutoMapperBootStrapper.ConfigureAutoMapper();
 
-            EventReporter curReporter = new EventReporter();
-            curReporter.SubscribeToAlerts();
-
-            IncidentReporter incidentReporter = new IncidentReporter();
-            incidentReporter.SubscribeToAlerts();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
         }
