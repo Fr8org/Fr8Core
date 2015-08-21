@@ -268,7 +268,8 @@
             ns.FabricJsCriteriaNode.super.constructor.call(this);
 
             this._criteriaName = criteriaName;
-            this._object = this;
+            this._label = null;
+            this._object = null;
         },
 
         init: function () {
@@ -301,7 +302,12 @@
 
             group.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
 
+            this._label = label;
             this._object = group;
+        },
+
+        setText: function (text) {
+            this._label.setText(text);
         },
 
         getFabricObject: function () {

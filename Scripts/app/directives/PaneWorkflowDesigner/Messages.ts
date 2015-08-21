@@ -5,55 +5,66 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export enum MessageType {
         PaneWorkflowDesigner_Render,
-        PaneWorkflowDesigner_TemplateSelected,
-        PaneWorkflowDesigner_CriteriaAdding,
-        PaneWorkflowDesigner_CriteriaAdded,
-        PaneWorkflowDesigner_CriteriaSelected,
-        PaneWorkflowDesigner_CriteriaRemoved,
+        PaneWorkflowDesigner_TemplateSelecting,
+        PaneWorkflowDesigner_ProcessNodeTemplateAdding,
+        PaneWorkflowDesigner_ProcessNodeTemplateAdded,
+        PaneWorkflowDesigner_ProcessNodeTemplateSelecting,
+        PaneWorkflowDesigner_ProcessNodeTemplateRemoved,
+        PaneWorkflowDesigner_ProcessNodeTemplateNameUpdated,
         PaneWorkflowDesigner_ActionAdding,
         PaneWorkflowDesigner_ActionAdded,
-        PaneWorkflowDesigner_ActionSelected,
+        PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
         PaneWorkflowDesigner_UpdateAction,
-        PaneWorkflowDesigner_UpdateCriteriaName
+        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced
     }
 
     export class RenderEventArgs {
     }
 
-    export class CriteriaAddingEventArgs {
+    export class ProcessNodeTemplateAddingEventArgs {
     }
 
-    export class CriteriaAddedEventArgs {
-        public criteria: model.Criteria;
+    export class ProcessNodeTemplateAddedEventArgs {
+        public id: number;
+        public isTempId: boolean;
+        public name: string;
 
-        constructor(criteria: model.Criteria) {
-            this.criteria = criteria;
+        constructor(id: number, isTempId: boolean, name: string) {
+            this.id = id;
+            this.isTempId = isTempId;
+            this.name = name;
         }
     }
 
-    export class CriteriaSelectedEventArgs {
-        public criteriaId: number;
+    export class ProcessNodeTemplateSelectingEventArgs {
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number) {
-            this.criteriaId = criteriaId;
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
         }
     }
 
-    export class CriteriaRemovedEventArgs {
-        public criteriaId: number;
+    export class ProcessNodeTemplateRemovedEventArgs {
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number) {
-            this.criteriaId = criteriaId;
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
         }
     }
 
-    export class UpdateCriteriaNameEventArgs extends CriteriaEventArgsBase {
-        public criteriaId: number;
+    export class ProcessNodeTemplateNameUpdatedEventArgs {
+        public id: number;
+        public text: string;
 
-        constructor(criteriaId: number) {
-            super(criteriaId);
+        constructor(id: number, text: string) {
+            this.id = id;
+            this.text = text;
         }
     }
 
@@ -75,7 +86,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ActionSelectedEventArgs {
+    export class ActionSelectingEventArgs {
         public criteriaId: number;
         public actionId: number;
 
@@ -95,7 +106,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class TemplateSelectedEventArgs {
+    export class TemplateSelectingEventArgs {
     }
 
     export class UpdateActionEventArgs extends ActionEventArgsBase {
@@ -106,6 +117,16 @@ module dockyard.directives.paneWorkflowDesigner {
             super(criteriaId, actionId);
             this.isTempId = isTempId;
             this.userLabel = userLabel;
+        }
+    }
+
+    export class ProcessNodeTemplateTempIdReplacedEventArgs {
+        public tempId: number;
+        public id: number;
+
+        constructor(tempId: number, id: number) {
+            this.tempId = tempId;
+            this.id = id;
         }
     }
 
