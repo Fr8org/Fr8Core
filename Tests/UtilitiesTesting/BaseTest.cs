@@ -1,4 +1,5 @@
-﻿using Core.StructureMap;
+﻿using Core.Managers;
+using Core.StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using NUnit.Framework;

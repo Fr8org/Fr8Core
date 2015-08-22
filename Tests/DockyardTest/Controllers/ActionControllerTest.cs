@@ -215,9 +215,9 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates a new Action with the given actiond ID
         /// </summary>
-        private ActionDTO CreateActionWithId(int actionId)
+        private ActionDesignDTO CreateActionWithId(int actionId)
         {
-            return new ActionDTO
+            return new ActionDesignDTO
             {
                 Id = actionId,
                 UserLabel = "AzureSqlAction",

@@ -194,8 +194,8 @@
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginClient.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Plugin\PluginClient.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginTransmitter.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Plugin\PluginTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\IRestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
@@ -236,6 +236,7 @@
     <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
+    <Compile Include="PluginRegistrations\NotifierPluginRegistration_v1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
