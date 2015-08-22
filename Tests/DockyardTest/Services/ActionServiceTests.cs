@@ -199,7 +199,7 @@ namespace DockyardTest.Services
         [Test]
         public void Process_ActionListNotUnstarted_ThrowException()
         {
-            ActionDO actionDo = FixtureData.TestAction4();
+            ActionDO actionDo = FixtureData.TestAction7();
             Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
 
             Assert.AreEqual("Action ID: 2 status is not unstarted.", _action.Process(actionDo).Exception.InnerException.Message);

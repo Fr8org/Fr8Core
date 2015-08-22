@@ -9,15 +9,17 @@ using System;
 using System.Reflection;
 using Data.Interfaces;
 using System.Linq;
+using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
 namespace Core.PluginRegistrations
 {
     public class BasePluginRegistration : IPluginRegistration
     {
-        private readonly string availableActions;
+        private readonly ActionNameListDTO availableActions;
         private readonly string baseUrl;
         // private readonly IAction _action;
 
-        protected BasePluginRegistration(string curAvailableActions, string curBaseUrl)
+        protected BasePluginRegistration(ActionNameListDTO curAvailableActions, string curBaseUrl)
         {
             //AutoMapperBootStrapper.ConfigureAutoMapper();
 
@@ -37,8 +39,19 @@ namespace Core.PluginRegistrations
         {
             get
             {
-                return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
-                    new JsonSerializerSettings());
+                // return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
+                //  new JsonSerializerSettings());
+                var curActionRegistrations = new List<ActionRegistrationDO>();
+                //IEnumerable<ActionRegistrationDO> curActionRegistrations;
+                //return Mapper.Map(availableActions, curActionRegistrations);
+                
+                foreach (var item in availableActions.ActionNames)
+                {
+                    var curActionRegistratoin = new ActionRegistrationDO();
+                    Mapper.Map(item,curActionRegistratoin);
+                    curActionRegistrations.Add(curActionRegistratoin);
+                }
+                return curActionRegistrations;
             }
         }
 
