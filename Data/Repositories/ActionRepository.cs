@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 
 namespace Data.Repositories
 {
@@ -13,6 +14,7 @@ namespace Data.Repositories
 
         public new void Add(ActionDO entity)
         {
+            entity.ActionState = ActionState.Unstarted;
             base.Add(entity);
         }
     }

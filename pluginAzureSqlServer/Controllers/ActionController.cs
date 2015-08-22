@@ -33,7 +33,7 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public string Process(string path, ActionDTO curActionDTO)
+        public string Process(string path, ActionDO curActionDTO)
         {
 
             ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);

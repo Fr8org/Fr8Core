@@ -12,18 +12,28 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlServerPluginRegistration_v1 : BasePluginRegistration
     {
-
-        private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
+       // private readonly ActionNameListDTO availableActions;
+        //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 #if DEBUG
         public const string baseUrl = "http://localhost:23432";
 #else
         public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
 #endif
         public AzureSqlServerPluginRegistration_v1()
-
-            : base(availableActions, baseUrl)
+            : base(InitAvailableActions(), baseUrl)
         {
 
+        }
+
+        private static ActionNameListDTO InitAvailableActions()
+        {
+            ActionNameListDTO curActionNameList = new ActionNameListDTO();
+            ActionNameDTO curActionName = new ActionNameDTO();
+
+            curActionName.ActionType = "Write";
+            curActionName.Version = "1";
+            curActionNameList.ActionNames.Add(curActionName);
+            return curActionNameList;
         }
 
         public string GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
@@ -39,7 +49,7 @@ namespace Core.PluginRegistrations
                 client.BaseAddress = new Uri(baseUrl);
                 client.DefaultRequestHeaders.Accept.Clear();
 
-                var curActionDto = new ActionDTO();
+                var curActionDto = new ActionDesignDTO();
                 Mapper.Map(curAction, curActionDto);
 
                 var contentPost = new StringContent(JsonConvert.SerializeObject(curActionDto), Encoding.UTF8, "application/json");
