@@ -5,6 +5,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
+using pluginAzureSqlServer.Services;
 using PluginUtilities.Infrastructure;
 using StructureMap;
 
@@ -31,6 +32,13 @@ namespace pluginAzureSqlServer.Actions {
         private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols" +
                                                  @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols" +
                                                  @"ORDER BY tbls.name, cols.COLUMN_NAME";
+
+        private const string InsertHealthCustomerData = @"USE [demodb_health]" +
+                                                        "GO" +
+                                                        @"INSERT INTO [dbo].[Customer]([Physician],[CurrentMedicalCondition])" +
+                                                        @"VALUES" +
+                                                        @"('test ph' ,'cond')" +
+                                                        "GO";
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
         private object GetFieldMappings(ActionDO curActionDO) {
@@ -62,8 +70,19 @@ namespace pluginAzureSqlServer.Actions {
         //The original method still exists at the top of the plugin code
         //[HttpPost]
         //[Route("write_to_sql_server/execute")]
-        private object Execute(ActionDO curActionDO) {
-            return null;
+        private object Execute(ActionDO curActionDO)
+        {
+            var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.FieldMappingSettings);
+            var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
+            var connString = settings.Value<string>("connection_string");
+            var curProvider = ObjectFactory.GetInstance<IDbProvider>();
+
+            return curProvider.ConnectToSql(connString, (command) =>
+            {
+                command.CommandText = InsertHealthCustomerData;
+                return null;
+            });
+
             //try {
             //    // Creating ExtrationHelper and parsing WriteCommandArgs.
             //    var parser = new DbServiceJsonParser();
