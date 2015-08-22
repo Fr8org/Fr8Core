@@ -19,12 +19,21 @@ namespace Core.Services
         public Template()
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
+
+
+        }
+
+        //TODO: merge these
+        public IEnumerable<string> GetMappableSourceFields(int templateId)
+        {
+            return _envelope.GetEnvelopeData(templateId.ToString()).Select(r => r.Name);
+
         }
         public List<string> GetMappableSourceFields(DocuSignEnvelope envelope)
         {
             List<EnvelopeDataDTO> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
             List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
-            if (curLstDistinctDocIds.Count == 1) 
+            if (curLstDistinctDocIds.Count == 1)
             {
                 return curLstEnvelopeData.Select(x => x.Name).ToList();
             }
@@ -41,7 +50,7 @@ namespace Core.Services
                 }
                 return curLstMappableSourceFields;
             }
-            else 
+            else
             {
                 return null;
             }

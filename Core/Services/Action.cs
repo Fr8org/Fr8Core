@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -15,6 +16,7 @@ using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Core.PluginRegistrations;
 using Data.States;
+using Data.Wrappers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,15 +25,19 @@ namespace Core.Services
     public class Action : IAction
     {
         private readonly ISubscription _subscription;
-        IPluginRegistration _pluginRegistration;
-        IEnvelope _envelope;
+        private IPluginRegistration _pluginRegistration;
+        private IEnvelope _envelope;
+        private ITemplate _template;  //TODO: switch to wrappers
         private Task curAction;
+        private IPluginRegistration _basePluginRegistration;
 
         public Action()
         {
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
+            _template = ObjectFactory.GetInstance<ITemplate>();
+            _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -195,6 +201,21 @@ namespace Core.Services
 
             JObject result = new JObject(new JProperty("payload", payload));
             return result.ToString();
+        }
+
+        //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
+
+        public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
+        {
+           return _template.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id);
+        }
+
+        //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
+
+        public  Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
+        {
+            var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
+            return  _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
     }
 }
