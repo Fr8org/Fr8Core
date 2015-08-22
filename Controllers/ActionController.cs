@@ -121,7 +121,7 @@ namespace Web.Controllers
         {
             //var actionDto = new ActionDTO() { ParentPluginRegistration = LZString.decompressFromUTF16(pluginName)
             //    , ConfigurationSettings = "{\"connection_string\":\"" + LZString.decompressFromUTF16(connstring) + "\"}" };
-            return await _service.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(actionDto));
+            return await _action.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(actionDto));
         }
 
        

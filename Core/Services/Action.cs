@@ -123,7 +123,7 @@ namespace Core.Services
             return await pluginInstance.GetFieldMappingTargets(actionDo);
         }
 
-        public async Task Process(ActionDO curAction)
+        public async Task<string> Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -20,7 +20,6 @@ namespace Core.Interfaces
         //void Register(string ActionType, string PluginRegistration, string Version);
         ActionDO GetById(int id);
         void Delete(int id);
-        Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO actionDo);
         Task<string> Process(ActionDO curAction);
     }
 }
