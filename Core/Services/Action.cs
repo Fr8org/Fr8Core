@@ -27,7 +27,7 @@ namespace Core.Services
         private readonly ISubscription _subscription;
         private IPluginRegistration _pluginRegistration;
         private IEnvelope _envelope;
-        private ITemplate _template;  //TODO: switch to wrappers
+        private IDocuSignTemplate _docusignTemplate;  //TODO: switch to wrappers
         private Task curAction;
         private IPluginRegistration _basePluginRegistration;
 
@@ -36,7 +36,7 @@ namespace Core.Services
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
-            _template = ObjectFactory.GetInstance<ITemplate>();
+            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
             _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
         }
 
@@ -207,7 +207,7 @@ namespace Core.Services
 
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
-           return _template.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id);
+           return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id);
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
