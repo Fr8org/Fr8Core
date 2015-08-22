@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -13,7 +14,6 @@ namespace pluginAzureSqlServer.Actions {
     
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
-
     //Action container class
     public class Write_To_Sql_Server_v1 : ActionHandler {        
 
@@ -28,17 +28,12 @@ namespace pluginAzureSqlServer.Actions {
             }
         }
 
+        private const string ProviderName = "System.Data.SqlClient";
                
         private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols" +
                                                  @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols" +
                                                  @"ORDER BY tbls.name, cols.COLUMN_NAME";
 
-        private const string InsertHealthCustomerData = @"USE [demodb_health]" +
-                                                        "GO" +
-                                                        @"INSERT INTO [dbo].[Customer]([Physician],[CurrentMedicalCondition])" +
-                                                        @"VALUES" +
-                                                        @"('test ph' ,'cond')" +
-                                                        "GO";
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
         private object GetFieldMappings(ActionDO curActionDO) {
@@ -66,36 +61,41 @@ namespace pluginAzureSqlServer.Actions {
             });
         }
 
-        //TODO - SF - Not sure how to handle this method since the Command stuff is supposedly outdated
         //The original method still exists at the top of the plugin code
         //[HttpPost]
         //[Route("write_to_sql_server/execute")]
         private object Execute(ActionDO curActionDO)
         {
-            var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.FieldMappingSettings);
-            var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
-            var connString = settings.Value<string>("connection_string");
-            var curProvider = ObjectFactory.GetInstance<IDbProvider>();
+            var curCommandArgs = CreateCommandArgs(curActionDO);
+            var dbService = new DbService();
 
-            return curProvider.ConnectToSql(connString, (command) =>
+            dbService.WriteCommand(curCommandArgs);
+
+            return true;
+        }
+
+        private WriteCommandArgs CreateCommandArgs(ActionDO curActionDO)
+        {
+            var parser = new DbServiceJsonParser();
+            var curConnStringObject = parser.ExtractConnectionString(curActionDO);
+            var curCustomerData = ExtractCustomerData(curActionDO, parser);
+
+            return new WriteCommandArgs(ProviderName, curConnStringObject, curCustomerData);
+        }
+
+        private IEnumerable<Table> ExtractCustomerData(ActionDO curActionDO,DbServiceJsonParser parser)
+        {
+            var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
+            var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
+            
+            if (payloadArray.Count == 0)
             {
-                command.CommandText = InsertHealthCustomerData;
-                return null;
-            });
+                throw new Exception("\"payload\" data is empty");
+            }
 
-            //try {
-            //    // Creating ExtrationHelper and parsing WriteCommandArgs.
-            //    var parser = new DbServiceJsonParser();
-            //    var writeArgs = parser.ExtractWriteCommandArgs(curActionDO.);
+            var table = parser.CreateTable(payloadArray);
 
-            //    // Creating DbService and running WriteCommand logic.
-            //    var dbService = new DbService();                
-            //    dbService.WriteCommand(writeArgs);
-            //}
-            //catch (Exception ex) {
-            //    return CommandResponse.ErrorResponse(ex.Message);
-            //}
-            //return CommandResponse.SuccessResponse();
+            return new List<Table> {table};
         }
 
         //[HttpGet]
@@ -132,7 +132,7 @@ namespace pluginAzureSqlServer.Actions {
         //    try
         //    {
         //        // Creating ExtrationHelper and parsing WriteCommandArgs.
-        //        var parser = new DbServiceJsonParser();
+                //var parser = new DbServiceJsonParser();
         //        var writeArgs = parser.ExtractWriteCommandArgs(data);
 
         //        // Creating DbService and running WriteCommand logic.

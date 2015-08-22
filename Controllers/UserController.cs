@@ -16,6 +16,7 @@ using System.Linq;
 using Utilities;
 using Core.Services;
 using AutoMapper;
+using AutoMapper.Internal;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Web.Controllers
