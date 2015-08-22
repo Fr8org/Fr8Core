@@ -95,7 +95,7 @@ namespace Core.StructureMap
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
-
+                For<ITemplate>().Use<Template>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
             }
