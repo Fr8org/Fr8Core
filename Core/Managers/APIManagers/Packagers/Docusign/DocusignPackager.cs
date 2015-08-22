@@ -34,7 +34,7 @@ namespace Core.Managers.APIManagers.Packagers.Docusign
             string integratorKey = RestSettings.Instance.IntegratorKey ?? "Not Found";
 
             var appSettings = ConfigurationManager.AppSettings;
-            string baseURL = appSettings["BaseUrL"];
+            string baseURL = appSettings["BaseUrl"];
             string requestURL = baseURL + resource;
 
             // set request url, method, and headers.  No body needed for login api call
