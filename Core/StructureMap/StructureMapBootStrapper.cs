@@ -16,11 +16,15 @@ using Core.Security;
 using Core.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
+using Data.Wrappers;
 using Moq;
 using SendGrid;
 using StructureMap;
 using StructureMap.Configuration.DSL;
+using System.Threading.Tasks;
 using Utilities;
 
 namespace Core.StructureMap
@@ -80,7 +84,7 @@ namespace Core.StructureMap
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
-                For<IPluginClient>().Use<PluginClient>();
+                For<IPluginTransmitter>().Use<PluginTransmitter>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcess>().Use<Process>();
@@ -93,6 +97,7 @@ namespace Core.StructureMap
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
 
                 For<IEvent>().Use<Event>();
+                For<IEnvelope>().Use<DocuSignEnvelope>();
             }
         }
 
@@ -117,7 +122,6 @@ namespace Core.StructureMap
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
-                For<IPluginClient>().Use<PluginClient>();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
@@ -135,8 +139,13 @@ namespace Core.StructureMap
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
 
+                var pluginTransmitterMock = new Mock<IPluginTransmitter>();
+                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
+                For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
+
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
+                For<IEnvelope>().Use<DocuSignEnvelope>();
             }
         }
 
