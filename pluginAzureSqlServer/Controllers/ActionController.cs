@@ -32,12 +32,13 @@ namespace pluginAzureSqlServer.Controllers
         }
 
         [HttpPost]
+        [Route("Write_To_Sql_Server/{path}")]
         public string Process(string path, ActionDTO curActionDTO)
         {
 
             ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
-            string[] curPathSplitArray = path.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            string curAssemblyName = string.Format("pluginAzureSqlServer.{0}_v{1}", curPathSplitArray[curPathSplitArray.Length - 1], "1");
+            string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
             //extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
             //instantiate the class corresponding to that action by:
             //   a) Capitalizing each word
@@ -48,13 +49,14 @@ namespace pluginAzureSqlServer.Controllers
 
 
             //Redirects to the action handler with fallback in case of a null retrn
+
             Type calledType = Type.GetType(curAssemblyName);
             MethodInfo curMethodInfo = calledType.GetMethod("Process");
             object curObject = Activator.CreateInstance(calledType);
 
             return JsonConvert.SerializeObject(
                 //_actionHandler.Process(path, curAction) ?? new { }
-                (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDTO }) ?? new { }
+                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curActionDTO }) ?? new { }
             );
         }
 
