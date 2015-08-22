@@ -28,8 +28,8 @@ namespace pluginAzureSqlServer.Actions {
         }
 
                
-        private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols" +
-                                                 @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols" +
+        private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols " +
+                                                 @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
                                                  @"ORDER BY tbls.name, cols.COLUMN_NAME";
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
