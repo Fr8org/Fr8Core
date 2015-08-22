@@ -42,7 +42,7 @@ namespace Data.Infrastructure.AutoMapper
                         {
                             ActionList = Mapper.Map<ActionListDTO>(y),
                             Actions = y.Actions
-                                .Select(z => Mapper.Map<ActionDTO>(z))
+                                .Select(z => Mapper.Map<ActionDesignDTO>(z))
                                 .ToList()
                         })
                         .ToList()

@@ -1,4 +1,7 @@
-﻿namespace Data.Wrappers
+﻿using AutoMapper;
+using System.Collections.Generic;
+
+namespace Data.Wrappers
 {
     public interface ISigner
     {
@@ -9,11 +12,16 @@
     {
         public Signer[] GetFromRecipients(DocuSign.Integrations.Client.Envelope envelope)
         {
+            List<Signer> signers = new List<Signer>();
+
             if (envelope.Recipients != null)
             {
-                return envelope.Recipients.signers as Signer[];
+                foreach (var signer in envelope.Recipients.signers)
+                {
+                    signers.Add(Mapper.Map<Signer>(signer));
+                }
+                return signers.ToArray();
             }
-
             return null;
         }
     }

@@ -25,6 +25,7 @@ namespace Core.Managers
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             EventManager.PluginIncidentReported += LogPluginIncident;
+            EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
         }
 
         private void LogPluginIncident(EventData incidentItem)
@@ -276,8 +277,6 @@ namespace Core.Managers
             }
         }
 
-
-
         public void BookingRequestMerged(int originalBRId, int targetBRId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -305,7 +304,21 @@ namespace Core.Managers
                 uow.SaveChanges();
             }
         }
+
+        public void IncidentDocuSignFieldMissing(string envelopeId, string fieldName)
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Envelope";
+                incidentDO.SecondaryCategory = "";
+                incidentDO.ObjectId = envelopeId;
+                incidentDO.Activity = "Processing action";
+                incidentDO.Data = String.Format("IncidentDocuSignFieldMissing: Envelope id: {0}, Field name: {1}", envelopeId, fieldName);
+                _uow.IncidentRepository.Add(incidentDO);
+                Logger.GetLogger().Warn(incidentDO.Data);
+                _uow.SaveChanges();
+            }
+        }
     }
-
-
 }

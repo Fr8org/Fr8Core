@@ -1,6 +1,6 @@
 ﻿namespace Data.Interfaces.DataTransferObjects
 {
-    public class ActionDTO : ActionDTOBase
+    public class ActionDesignDTO : ActionDTOBase
     {
         public string UserLabel { get; set; }
 

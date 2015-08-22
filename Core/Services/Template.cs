@@ -10,17 +10,20 @@ using Utilities;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
+using Data.Wrappers;
 
 
 namespace Core.Services
 {
-    public class Template : ITemplate
+    public class DocuSignxTemplate 
     {
         private readonly IEnvelope _envelope;
 
-        public Template()
+        public DocuSignxTemplate()
         {
-            _envelope = ObjectFactory.GetInstance<IEnvelope>();
+            //_envelope = ObjectFactory.GetInstance<IEnvelope>();
+
+
         }
 
         public IEnumerable<string> GetMappableSourceFields(string templateId)

@@ -32,7 +32,7 @@ namespace Data.Interfaces.DataTransferObjects
         /// <summary>
         /// List of Action DTOs.
         /// </summary>
-        public List<ActionDTO> Actions { get; set; }
+        public List<ActionDesignDTO> Actions { get; set; }
     }
 
     /// <summary>

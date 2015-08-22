@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -14,18 +15,29 @@ using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Core.PluginRegistrations;
+using Data.States;
+using Data.Wrappers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
         private readonly ISubscription _subscription;
-        IPluginRegistration _pluginRegistration;
+        private IPluginRegistration _pluginRegistration;
+        private IEnvelope _envelope;
+        private IDocuSignTemplate _docusignTemplate;  //TODO: switch to wrappers
+        private Task curAction;
+        private IPluginRegistration _basePluginRegistration;
 
         public Action()
         {
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+            _envelope = ObjectFactory.GetInstance<IEnvelope>();
+            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+            _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -76,7 +88,7 @@ namespace Core.Services
         public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
             ActionDO curActionDO = new ActionDO();
-            if(curActionRegistrationDO != null)
+            if (curActionRegistrationDO != null)
             {
                 string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
                 curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
@@ -113,25 +125,110 @@ namespace Core.Services
 
         public async Task Process(ActionDO curAction)
         {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+                if (curAction.ActionState == ActionState.Unstarted)
+                {
+                    curAction.ActionState = ActionState.Inprocess;
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+
+
             EventManager.ActionStarted(curAction);
-            await Dispatch(curAction);
+                    var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
+                    Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+                    var jsonResult = await Dispatch(curAction, baseUri);
+
+                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, ErrorDTO>>(jsonResult);
+                    if (jsonDeserialized.Count == 0 || jsonDeserialized.Where(k => k.Key.ToLower().Contains("error")).Any())
+                    {
+                        curAction.ActionState = ActionState.Error;
+        }
+                    else
+                    {
+                        curAction.ActionState = ActionState.Completed;
+                    }
+
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+                }
+                else
+        {
+                    curAction.ActionState = ActionState.Error;
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
+                    throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
+                }
+            }
+            return curAction.ActionState.ToString();
         }
 
-        public async Task Dispatch(ActionDO curAction)
+        public async Task<string> Dispatch(ActionDO curActionDO, Uri baseUri)
         {
-            if (curAction == null)
+            if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
-            var pluginRegistrationType = Type.GetType(curAction.ParentPluginRegistration);
-            if (pluginRegistrationType == null)
-                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
-            var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
-            if (pluginRegistration == null)
-                throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
-            var curActionDTO = Mapper.Map<ActionDTO>(curAction);
-            var pluginClient = ObjectFactory.GetInstance<IPluginClient>(); 
-            pluginClient.BaseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-            await pluginClient.PostActionAsync(curAction.ActionType, curActionDTO);
-            EventManager.ActionDispatched(curAction);
+            var pluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
+            pluginClient.BaseUri = baseUri;
+            var actionPayloadDto = Mapper.Map<ActionPayloadDTO>(curActionDO);
+            actionPayloadDto.PayloadMappings = CreateActionPayload(curActionDO, actionPayloadDto.EnvelopeId);
+            var jsonResult = await pluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
+            EventManager.ActionDispatched(actionPayloadDto);
+            return jsonResult;
+        }
+
+        public string CreateActionPayload(ActionDO curActionDO, string envelopeId)
+        {
+            var envelopeData = _envelope.GetEnvelopeData(envelopeId);
+            if (String.IsNullOrEmpty(curActionDO.FieldMappingSettings))
+            {
+                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
+            }
+            return ParsePayloadMappings(curActionDO.FieldMappingSettings, envelopeId, envelopeData);
+        }
+
+        public string ParsePayloadMappings(string payloadMappings, string envelopeId, IList<EnvelopeDataDTO> envelopeData)
+        {
+            string name, value;
+
+            JObject mappings = JObject.Parse(payloadMappings)["field_mappings"] as JObject;
+            JObject payload = new JObject();
+
+            foreach (JProperty prop in mappings.Properties())
+            {
+                name = prop.Name;
+                value = prop.Value.ToString();
+                JProperty propMapping;
+
+                var newValue = envelopeData.Where(e => e.Name == name).Select(e => e.Value).SingleOrDefault();
+                if (newValue == null)
+                {
+                    EventManager.DocuSignFieldMissing(envelopeId, name);
+                }
+                else
+                {
+                    propMapping = new JProperty(name, newValue);
+                    payload.Add(propMapping);
+                }
+            }
+
+            JObject result = new JObject(new JProperty("payload", payload));
+            return result.ToString();
+        }
+
+        //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
+
+        public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
+        {
+           return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id);
+        }
+
+        //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
+
+        public  Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
+        {
+            var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
+            return  _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
     }
 }

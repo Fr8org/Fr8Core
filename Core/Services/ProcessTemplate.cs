@@ -40,66 +40,58 @@ namespace Core.Services
             }
         }
 
-        public int CreateOrUpdate(ProcessTemplateDO ptdo)
+        public int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo)
         {
             var creating = ptdo.Id == 0;
             try
             {
-                using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+                if (creating)
                 {
-                    if (creating)
-                    {
-                        ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
-                        unitOfWork.ProcessTemplateRepository.Add(ptdo);
-                    }
-                    else
-                    {
-                        var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(ptdo.Id);
-                        if (curProcessTemplate == null)
-                            throw new EntityNotFoundException();
-                        curProcessTemplate.Name = ptdo.Name;
-                        curProcessTemplate.Description = ptdo.Description;
-                    }
-                    unitOfWork.SaveChanges();
+                    ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
+                    uow.ProcessTemplateRepository.Add(ptdo);
+                }
+                else
+                {
+                    var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(ptdo.Id);
+                    if (curProcessTemplate == null)
+                        throw new EntityNotFoundException();
+                    curProcessTemplate.Name = ptdo.Name;
+                    curProcessTemplate.Description = ptdo.Description;
                 }
             }
             catch (Exception ex)
             {
                 throw;
             }
+
+            uow.SaveChanges();
+
             return ptdo.Id;
         }
 
-        public void Delete(int id)
+        public void Delete(IUnitOfWork uow, int id)
         {
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(id);
+            if (curProcessTemplate == null)
             {
-                var curProcessTemplate = unitOfWork.ProcessTemplateRepository.GetByKey(id);
-                if (curProcessTemplate == null)
-                {
-                    throw new EntityNotFoundException<ProcessTemplateDO>(id);
-                }
-                unitOfWork.ProcessTemplateRepository.Remove(curProcessTemplate);
-                unitOfWork.SaveChanges();
+                throw new EntityNotFoundException<ProcessTemplateDO>(id);
             }
+            uow.ProcessTemplateRepository.Remove(curProcessTemplate);
         }
 
-        public void LaunchProcess(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
+        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (curProcessTemplate == null)
-                    throw new EntityNotFoundException(curProcessTemplate);
+            if (curProcessTemplate == null)
+                throw new EntityNotFoundException(curProcessTemplate);
 
-                if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
-                {
-                    _process.Launch(curProcessTemplate, curEnvelope);
-                    ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
-                        process =>
-                            process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEnvelope.Id.ToString()) &&
-                            process.ProcessState == ProcessState.Executing);
-                    EventManager.ProcessLaunched(launchedProcess);
-                }
+            if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
+            {
+                _process.Launch(curProcessTemplate, curEnvelope);
+                ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
+                    process =>
+                        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEnvelope.Id.ToString()) &&
+                        process.ProcessState == ProcessState.Executing);
+                EventManager.ProcessLaunched(launchedProcess);
             }
         }
     }

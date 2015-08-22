@@ -51,6 +51,12 @@ namespace Web.App_Start
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
                 .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
 
+            Mapper.CreateMap<ActionNameDTO, ActionRegistrationDO>()
+                  .ForMember(actionRegistrationDO => actionRegistrationDO.ActionType, opts => opts.ResolveUsing(e => e.ActionType))
+                  .ForMember(actionRegistrationDO => actionRegistrationDO.Version, opts => opts.ResolveUsing(e => e.Version));
+               // .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
+              //  .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
+
             //Mapper.CreateMap<EventDO, RelatedItemShowVM>()
             //    .ForMember(ri => ri.id, opts => opts.ResolveUsing(e => e.Id))
             //    .ForMember(ri => ri.Type, opts => opts.UseValue("Event"))
@@ -84,7 +90,6 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO {Address = e.EmailAddress}))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
                 //.ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
-
           //Mapper.CreateMap< ActionDO, ActionVM >()
           //    .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
           //    .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );

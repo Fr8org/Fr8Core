@@ -696,7 +696,7 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActionDispatched(ActionDO curAction)
+        private void LogEventActionDispatched(ActionPayloadDTO curAction)
         {
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

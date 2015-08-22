@@ -19,6 +19,10 @@ namespace Data.Entities
         public string DockyardAccountId { get; set; }
         public string EnvelopeId { get; set; }
 
+        public int ParentProcessTemplateId { get; set; }
+
+        public virtual ProcessTemplateDO ParentProcessTemplate { get; set; }
+
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             
         [Required]
