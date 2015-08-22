@@ -72,7 +72,7 @@ namespace Core.StructureMap
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.SendGridHander);
 
                 For<IEmailAddress>().Use<EmailAddress>();
-                For<INotification>().Use<Notification>();
+                For<INotification>().Use<Core.Services.Notification>();
 
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
@@ -102,7 +102,7 @@ namespace Core.StructureMap
                 For<IActionRegistration>().Use<ActionRegistration>();
 
 
-                For<ITemplate>().Use<Services.Template>();
+                //For<ITemplate>().Use<Services.Template>();
             }
         }
 
@@ -116,7 +116,7 @@ namespace Core.StructureMap
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.SendGridHander);
 
                 For<IEmailAddress>().Use<EmailAddress>();
-                For<INotification>().Use<Notification>();
+                For<INotification>().Use<Core.Services.Notification>();
 
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
@@ -154,7 +154,7 @@ namespace Core.StructureMap
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
-                For<ITemplate>().Use<Services.Template>();
+                //For<ITemplate>().Use<Services.Template>();
 
             }
         }

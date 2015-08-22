@@ -5,6 +5,9 @@ using NUnit.Core;
 using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Data.Entities;
+using Core.Services;
+using Data.Wrappers;
 
 namespace DockyardTest
 {
@@ -29,8 +32,8 @@ namespace DockyardTest
 
         public void Can_Return_List_Of_Fields()
         {
-            var fields = (new Core.Services.Template())
-                                .GetMappableSourceFields(FixtureData.TestTeamplateId).ToList();
+            var fields = (new DocuSignTemplate())
+                                .GetMappableSourceFields(FixtureData.TestTemplateId).ToList();
 
             Assert.IsNotNull(fields);
             Console.Write(JsonConvert.SerializeObject(fields));

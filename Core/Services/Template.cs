@@ -28,7 +28,7 @@ namespace Core.Services
 
         public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
-            return _envelope.GetEnvelopeData(templateId).Select(r=>r.Name);
+            return _envelope.GetEnvelopeDataByTemplate(templateId).Select(r=>r.Name);
 
         }
 

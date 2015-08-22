@@ -43,6 +43,6 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        IEnumerable<EnvelopeDataDTO> GetEnvelopeData(string templateId);
+        IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId);
     }
 }

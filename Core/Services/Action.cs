@@ -110,18 +110,6 @@ namespace Core.Services
             }
         }
 
-        public async Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO actionDo)
-        {
-            var pluginType = Type.GetType(actionDo.ParentPluginRegistration);
-            if (pluginType == null)
-                throw new ApplicationException("Plugin Not Found");
-
-            var pluginInstance = Activator.CreateInstance(pluginType) as IPluginRegistration;
-            if (pluginInstance == null)
-                throw new ApplicationException("Plugin Not Found");
-
-            return await pluginInstance.GetFieldMappingTargets(actionDo);
-        }
 
         public async Task<string> Process(ActionDO curAction)
         {
@@ -220,7 +208,7 @@ namespace Core.Services
 
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
-           return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id);
+           return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id.ToString());
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
@@ -230,5 +218,7 @@ namespace Core.Services
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return  _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
+
+
     }
 }

@@ -61,12 +61,22 @@ namespace Data.Wrappers
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
         /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
-        /// </summary>
-        /// <param name="envelope">DocuSign.Integrations.Client.Envelope envelope domain.</param>
-        /// <returns>
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
+        /// 
+        /// 
+        public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
+        {
+            if (String.IsNullOrEmpty(curEnvelopeId))
+            {
+                throw new ArgumentNullException("envelopeId");
+            }
+            EnvelopeId = curEnvelopeId;
+            GetRecipients(true, true);
+            return GetEnvelopeData(this);
+        }
+
         public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
@@ -81,25 +91,6 @@ namespace Data.Wrappers
             return new List<EnvelopeDataDTO>();
         }
 
-        /// <summary>
-        /// Get Envelope Data from a docusign envelope. 
-        /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
-        /// </summary>
-        /// <param name="curEnvelopeId">DocuSign.Integrations.Client.Envelope envelope id.</param>
-        /// <returns>
-        /// List of Envelope Data.
-        /// It returns empty list of envelope data if tab and signers not found.
-        /// </returns>
-        public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
-        {
-            if (String.IsNullOrEmpty(curEnvelopeId))
-            {
-                throw new ArgumentNullException("envelopeId");
-            }
-            EnvelopeId = curEnvelopeId;
-            GetRecipients(true, true);
-            return GetEnvelopeData(this);
-        }
 
         private List<EnvelopeDataDTO> GetEnvelopeData()
         {
@@ -130,7 +121,7 @@ namespace Data.Wrappers
             return new List<EnvelopeDataDTO>();
         }
 
-        public IEnumerable<EnvelopeDataDTO> GetEnvelopeData(string templateId)
+        public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
 
             var username = ConfigurationManager.AppSettings["username"];

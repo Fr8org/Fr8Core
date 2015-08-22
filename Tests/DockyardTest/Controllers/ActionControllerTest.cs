@@ -258,7 +258,7 @@ namespace DockyardTest.Controllers
             var cntroller = new ActionController();
             //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
 
-            var task = cntroller.GetFieldMapping(new ActionDTO()
+            var task = cntroller.GetFieldMapping(new ActionDesignDTO()
             {
                 ParentPluginRegistration = pluginName,
                 ConfigurationSettings = "{\"connection_string\":\"" + dataSource + "\"}"
