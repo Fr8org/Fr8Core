@@ -132,10 +132,14 @@
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
@@ -188,6 +192,14 @@
     <Compile Include="Migrations\201508210223236_changeDocuSignAccountIdToString.cs" />
     <Compile Include="Migrations\201508210223236_changeDocuSignAccountIdToString.Designer.cs">
       <DependentUpon>201508210223236_changeDocuSignAccountIdToString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.cs" />
+    <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.Designer.cs">
+      <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508221814236_foo.cs" />
+    <Compile Include="Migrations\201508221814236_foo.Designer.cs">
+      <DependentUpon>201508221814236_foo.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -594,6 +606,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508210223236_changeDocuSignAccountIdToString.resx">
       <DependentUpon>201508210223236_changeDocuSignAccountIdToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508212307273_forcemerge_actionliststate.resx">
+      <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508221814236_foo.resx">
+      <DependentUpon>201508221814236_foo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

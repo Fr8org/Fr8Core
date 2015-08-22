@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
@@ -16,22 +17,24 @@ namespace Web.Controllers
     [RoutePrefix("api/actions")]
     public class ActionController : ApiController
     {
-        private readonly IAction _service;
+        private readonly IAction _action;
+        private readonly IActionRegistration _actionRegistration;
 
         public ActionController()
         {
-			_service = ObjectFactory.GetInstance<IAction>();
+			_action = ObjectFactory.GetInstance<IAction>();
+            _actionRegistration = ObjectFactory.GetInstance<IActionRegistration>();
         }
 
         public ActionController(IAction service)
         {
-            _service = service;
+            _action = service;
         }
 
         /*
-                public IEnumerable< ActionVM > Get()
+                public IEnumerable< curActionDesignDTO > Get()
                 {
-                    return this._service.GetAllActions();
+                    return this._action.GetAllActions();
                 }
         */
 
@@ -43,7 +46,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var account = uow.UserRepository.GetByKey(userId);
-                return _service.GetAvailableActions(account);
+                return _action.GetAvailableActions(account);
             }
         }
 
@@ -53,7 +56,7 @@ namespace Web.Controllers
         [HttpGet]
         public ActionDesignDTO Get(int id)
         {
-            return Mapper.Map<ActionDesignDTO>(_service.GetById(id)); 
+            return Mapper.Map<ActionDesignDTO>(_action.GetById(id)); 
         }
 
         /// <summary>
@@ -62,20 +65,20 @@ namespace Web.Controllers
         [HttpDelete]
         public void Delete(int id)
         {
-            _service.Delete(id); 
+            _action.Delete(id); 
         }
 
         /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
-        public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO actionVm)
+        public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO curActionDesignDTO)
         {
-            ActionDO actionDo = Mapper.Map<ActionDO>(actionVm);
-            if (_service.SaveOrUpdateAction(actionDo))
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            if (_action.SaveOrUpdateAction(curActionDO))
             {
-                actionVm.Id = actionDo.Id;
-                return new List<ActionDesignDTO> { actionVm };
+                curActionDesignDTO.Id = curActionDO.Id;
+                return new List<ActionDesignDTO> { curActionDesignDTO };
             }
             return new List<ActionDesignDTO>();
         }
@@ -84,9 +87,34 @@ namespace Web.Controllers
         [Route("actions/configuration")]
         public string GetConfigurationSettings(int curActionRegistrationId)
         {
-            IActionRegistration _actionRegistration = new ActionRegistration();
+            
             ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
-            return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
+            return _action.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
         }
+
+
+        //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
+        [HttpPost]
+        [Route("actions/field_data_sources")]
+        public IEnumerable<string> GetFieldDataSources(ActionDesignDTO curActionDesignDTO)
+        {
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            return _action.GetFieldDataSources(curActionDO);
+        }
+
+        //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
+        [HttpPost]
+        [Route("actions/field_mapping_targets")]
+        public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
+        {
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            return _action.GetFieldMappingTargets(curActionDO);
+        }
+
+
+
+
+
+
     }
 }
