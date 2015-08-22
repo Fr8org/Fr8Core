@@ -9,6 +9,7 @@ using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
 using Core.Services;
+using Data.States;
 
 namespace DockyardTest.Controllers
 {
@@ -91,7 +92,8 @@ namespace DockyardTest.Controllers
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
-                Ordering = 1
+                Ordering = 1,
+                ActionState = ActionState.Unstarted
             };
         }
 

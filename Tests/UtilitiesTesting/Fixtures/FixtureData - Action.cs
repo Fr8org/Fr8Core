@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.States;
 using Data.Wrappers;
 using DocuSign.Integrations.Client;
 
@@ -50,6 +51,15 @@ namespace UtilitiesTesting.Fixtures
             };
 
             return origActionDO;
+        }
+
+        public static ActionDO TestAction7()
+        {
+            return new ActionDO
+            {
+                Id = 2,
+                ActionState = ActionState.Inprocess
+            };
         }
 
 

@@ -49,7 +49,7 @@ namespace Core.PluginRegistrations
                 client.BaseAddress = new Uri(baseUrl);
                 client.DefaultRequestHeaders.Accept.Clear();
 
-                var curActionDto = new ActionDTO();
+                var curActionDto = new ActionDesignDTO();
                 Mapper.Map(curAction, curActionDto);
 
                 var contentPost = new StringContent(JsonConvert.SerializeObject(curActionDto), Encoding.UTF8, "application/json");

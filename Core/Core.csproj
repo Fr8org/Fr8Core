@@ -194,8 +194,8 @@
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginClient.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Plugin\PluginClient.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginTransmitter.cs" />
+    <Compile Include="Managers\APIManagers\Transmitters\Plugin\PluginTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\IRestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />

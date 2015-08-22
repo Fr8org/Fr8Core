@@ -55,6 +55,17 @@ namespace Core.PluginRegistrations
             }
         }
 
+        public static IPluginRegistration GetPluginType(ActionDO curAction)
+        {
+            var pluginRegistrationType = Type.GetType(curAction.ParentPluginRegistration);
+            if (pluginRegistrationType == null)
+                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
+            if (pluginRegistration == null)
+                throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            return pluginRegistration;
+        }
+
         public void RegisterActions()
         {
             IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableActions;
@@ -85,8 +96,6 @@ namespace Core.PluginRegistrations
             object curObject = Activator.CreateInstance(calledType);
             return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionRegistrationDO });
         }
-
-
 
         public string AssembleName(Data.Entities.ActionRegistrationDO curActionRegistrationDO)
         {

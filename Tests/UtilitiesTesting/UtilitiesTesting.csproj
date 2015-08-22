@@ -93,6 +93,7 @@
     <Compile Include="Fixtures\FixtureData - ActionNameDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionNameListDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
+    <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
@@ -104,6 +105,7 @@
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
+    <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />

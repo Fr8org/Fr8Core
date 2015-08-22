@@ -11,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Moq;
 
 namespace DockyardTest.Services
 {
@@ -23,6 +24,8 @@ namespace DockyardTest.Services
 		private DockyardAccount _userService;
 		private string _testUserId = "testuser";
 		private string _xmlPayloadFullPath;
+        EnvelopeDO envelopeDO;
+        ProcessNodeDO processNodeDO;
 
 		[SetUp]
 		public override void SetUp()
@@ -35,6 +38,10 @@ namespace DockyardTest.Services
 			_xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
 			if (_xmlPayloadFullPath == string.Empty)
 				throw new Exception("XML payload file for testing DocuSign notification is not found.");
+
+            envelopeDO = FixtureData.TestEnvelope1();
+            processNodeDO = FixtureData.TestProcessNode();
+            processNodeDO.ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
 		}
 
 		[Test]
@@ -214,6 +221,7 @@ namespace DockyardTest.Services
 		}
 
 		[Test]
+        [Ignore("Too broad for a unit test")]
 		public void ProcessService_Can_ExecuteWithoutExceptions()
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -228,5 +236,19 @@ namespace DockyardTest.Services
 				_processService.Launch(template, envelope);
 			}
 		}
+
+        [Test]
+        [ExpectedException(ExpectedMessage = "ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera")]
+        public void Execute_NoMatchedNodeTransition_ThrowExceptionProcessNodeTransitions()
+        {
+            //setup criteria for Evaluate method on veryfing processnodetemplate ID
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+               uow.CriteriaRepository.Add(FixtureData.TestCriteria1());
+               uow.SaveChanges();
+            };
+            _processService.Execute(envelopeDO, processNodeDO);
+        }
+
 	}
 }
