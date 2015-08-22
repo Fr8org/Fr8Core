@@ -56,7 +56,7 @@ module dockyard.directives.paneSelectTemplate {
                 };
 
 
-                var docusignTemplates = $resource(urlPrefix + "/docusigntemplates").query(() => {
+                var docusignTemplates = $resource(urlPrefix + "/templates/dockyard_account").query(() => {
                     loadedDocuTemplates = true;
                     $scope.docusignTemplates = docusignTemplates;
                     $scope.DataModel.SelectedDocuSignTemplate = _.sample(docusignTemplates);
