@@ -19,9 +19,17 @@ namespace DockyardTest.Controllers
     [TestFixture]
     public class ActionControllerTest : BaseTest
     {
+
+        private IAction _action;
+
+        public ActionControllerTest()
+        {
+            
+        }
         public override void SetUp()
         {
             base.SetUp();
+            _action = ObjectFactory.GetInstance<IAction>();
             CreateEmptyActionList();
         }
 
@@ -114,9 +122,9 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curActionRegistration = FixtureData.TestActionRegistrationDO1();
-                var _service = new Core.Services.Action();
+                
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+                Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
             }
         }
 
@@ -213,7 +221,7 @@ namespace DockyardTest.Controllers
         }
 
         /// <summary>
-        /// Creates a new Action with the given actiond ID
+        /// Creates a new Action with the given action ID
         /// </summary>
         private ActionDesignDTO CreateActionWithId(int actionId)
         {
@@ -224,7 +232,7 @@ namespace DockyardTest.Controllers
                 ActionType = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
-                FieldMappingSettings = "JSON Field Mapping Settings",
+                FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ParentPluginRegistration = "AzureSql"
             };
         }

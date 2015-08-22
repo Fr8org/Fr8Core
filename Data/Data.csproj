@@ -124,7 +124,7 @@
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionRegistrationDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
@@ -140,6 +140,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
@@ -195,6 +196,10 @@
     <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.cs" />
     <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.Designer.cs">
       <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508221814236_foo.cs" />
+    <Compile Include="Migrations\201508221814236_foo.Designer.cs">
+      <DependentUpon>201508221814236_foo.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -604,6 +609,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508212307273_forcemerge_actionliststate.resx">
       <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508221814236_foo.resx">
+      <DependentUpon>201508221814236_foo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

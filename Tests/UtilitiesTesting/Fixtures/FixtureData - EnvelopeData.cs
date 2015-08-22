@@ -41,14 +41,14 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static string PayloadMappings1
+        public static string FieldMappings
         {
             get
             {
                 return "{\"field_mappings\": { \"Doctor\" : \"[Customer].physician_string\", \"Condition\" : \"[Customer].medical_condition\"} }";
             }
         }
-        public static string PayloadMappings2
+        public static string FieldMappings2
         {
             get
             {
