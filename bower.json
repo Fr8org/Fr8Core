@@ -39,8 +39,7 @@
     "fabric": "~1.5.0",
     "awesome-bootstrap-checkbox": "~0.3.4",
     "font-awesome": "~4.4.0",
-    "spin.js": "~2.3.2",
-    "js-base64": "~2.1.9"
+    "spin.js": "~2.3.2"
   },
   "resolutions": {
     "angular": "~1.4.3",

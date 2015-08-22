@@ -93,29 +93,15 @@ namespace Web.Controllers
             return _service.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
         }
 
-        [HttpGet]
-        [Route("fieldmapping/{connstring}/{pluginName}")]
-        public async Task<IEnumerable<string>> GetFieldMapping(string connstring, string pluginName)
+        [HttpPost]
+        [Route("getfieldmapping")]
+        public async Task<IEnumerable<string>> GetFieldMapping(ActionDTO actionDto)
         {
-            var actionDto = new ActionDTO() { ParentPluginRegistration = LZString.decompressFromUTF16(pluginName)
-                , ConfigurationSettings = "{\"connection_string\":\"" + LZString.decompressFromUTF16(connstring) + "\"}" };
+            //var actionDto = new ActionDTO() { ParentPluginRegistration = LZString.decompressFromUTF16(pluginName)
+            //    , ConfigurationSettings = "{\"connection_string\":\"" + LZString.decompressFromUTF16(connstring) + "\"}" };
             return await _service.GetFieldMappingTargets(Mapper.Map<ActionDTO, ActionDO>(actionDto));
         }
 
-        private string DecodeBase64UrlSafe(string returnValue)
-        {
-            string incoming = returnValue.Replace('_', '/').Replace('-', '+');
-            switch (returnValue.Length%4)
-            {
-                case 2:
-                    incoming += "==";
-                    break;
-                case 3:
-                    incoming += "=";
-                    break;
-            }
-            byte[] bytes = Convert.FromBase64String(incoming);
-            return Encoding.ASCII.GetString(bytes);
-        }
+       
     }
 }

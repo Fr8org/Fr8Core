@@ -230,13 +230,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        private string ConvertBase64UrlSafe(string input)
-        {
-            char[] padding = { '=' };
-
-            return System.Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(input))
-                                    .TrimEnd(padding).Replace('+', '-').Replace('/', '_');
-        }
+        
 
         [Test]
         [Ignore]
@@ -256,12 +250,11 @@ namespace DockyardTest.Controllers
             var cntroller = new ActionController();
             //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
 
-
-            string pluginEncoded = ConvertBase64UrlSafe(pluginName);
-            string connectionStringEncoded = ConvertBase64UrlSafe(dataSource);
-
-
-            var task = cntroller.GetFieldMapping(connectionStringEncoded, pluginEncoded);
+            var task = cntroller.GetFieldMapping(new ActionDTO()
+            {
+                ParentPluginRegistration = pluginName,
+                ConfigurationSettings = "{\"connection_string\":\"" + dataSource + "\"}"
+            });
 
           
             await task;
