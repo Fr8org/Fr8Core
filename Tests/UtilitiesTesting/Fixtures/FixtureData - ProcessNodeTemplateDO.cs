@@ -18,5 +18,18 @@ namespace UtilitiesTesting.Fixtures
             };
             return ProcessNodeTemplateDO;
         }
+        public static ProcessNodeTemplateDO TestProcessNodeTemplateDO()
+        {
+            ProcessNodeTemplateDO ProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            {
+                Id = 50,
+                Name = "TestName",
+                NodeTransitions = "[{'Flag':'x','Id':'1'},{'Flag':'x','Id':'2'}]",
+                ParentTemplateId = TestProcessTemplate1().Id,
+                
+            };
+            
+            return ProcessNodeTemplateDO;
+        }
     }
 }
