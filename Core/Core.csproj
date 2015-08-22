@@ -210,7 +210,7 @@
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Docusign\DocusignPackager.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Docusign\DocuSignPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />

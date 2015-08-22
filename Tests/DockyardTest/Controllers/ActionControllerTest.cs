@@ -213,7 +213,7 @@ namespace DockyardTest.Controllers
         }
 
         /// <summary>
-        /// Creates a new Action with the given actiond ID
+        /// Creates a new Action with the given action ID
         /// </summary>
         private ActionDesignDTO CreateActionWithId(int actionId)
         {
@@ -224,7 +224,7 @@ namespace DockyardTest.Controllers
                 ActionType = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
-                FieldMappingSettings = "JSON Field Mapping Settings",
+                FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ParentPluginRegistration = "AzureSql"
             };
         }
