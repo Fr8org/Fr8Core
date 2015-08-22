@@ -125,6 +125,8 @@ namespace Core.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
+                For<IActionRegistration>().Use<ActionRegistration>();
+                For<ITemplate>().Use<Template>();
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
