@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Data.Infrastructure;
-using Data.States;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Collections.Generic;
 using Data.Interfaces;
-using StructureMap;
+using Data.States;
 using Data.States.Templates;
-using Data.Wrappers;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Data.Entities
 {
@@ -44,8 +42,8 @@ namespace Data.Entities
         //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
         public string DocusignAccountId { get; set; }
 
-        [NotMapped]
-        public DocuSignAccount DocuSignAccount { get; set; }
+        //[NotMapped]
+        //public DocuSignAccount DocuSignAccount { get; set; }
 
         [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]
         public int? State { get; set; }

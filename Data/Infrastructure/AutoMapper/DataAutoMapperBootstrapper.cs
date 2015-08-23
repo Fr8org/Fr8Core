@@ -61,7 +61,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<DocuSign.Integrations.Client.Signer, Data.Wrappers.Signer>();
 
-            Mapper.CreateMap<DocuSign.Integrations.Client.Account, Data.Wrappers.DocuSignAccount>();
+            //Mapper.CreateMap<DocuSign.Integrations.Client.Account, Core.Services.DocuSignAccount>();
         }
     }
 }

@@ -44,11 +44,11 @@ namespace Web.Controllers
     [DockyardAuthorize]
     public class AccountController : Controller
     {
-        private readonly Account _account;
+        private readonly DockyardAccount _account;
 
         public AccountController()
         {
-            _account = ObjectFactory.GetInstance<Account>();
+            _account = ObjectFactory.GetInstance<DockyardAccount>();
         }
 
         [AllowAnonymous]
@@ -152,7 +152,7 @@ namespace Web.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus = await new Account().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus = await new DockyardAccount().ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:

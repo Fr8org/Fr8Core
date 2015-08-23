@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using System.Web.Mvc;
+using Core.Services;
 using DocuSign.Integrations.Client;
 using Microsoft.WindowsAzure;
-using Data.Wrappers;
+using Account = DocuSign.Integrations.Client.Account;
 
 namespace Core.Managers.APIManagers.Packagers.Docusign
 {
@@ -123,7 +120,7 @@ namespace Core.Managers.APIManagers.Packagers.Docusign
         public static void addRequestBody(HttpWebRequest request, string requestBody)
         {
             // create byte array out of request body and add to the request object
-            byte[] body = System.Text.Encoding.UTF8.GetBytes(requestBody);
+            byte[] body = Encoding.UTF8.GetBytes(requestBody);
             Stream dataStream = request.GetRequestStream();
             dataStream.Write(body, 0, requestBody.Length);
             dataStream.Close();

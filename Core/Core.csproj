@@ -255,6 +255,7 @@
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
+    <Compile Include="Services\DocuSignAccount.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />

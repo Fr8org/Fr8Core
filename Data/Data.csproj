@@ -491,7 +491,6 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
-    <Compile Include="Wrappers\DocuSignAccount.cs" />
     <Compile Include="Wrappers\DocuSignTemplate.cs" />
     <Compile Include="Wrappers\DocuSignEnvelope.cs" />
     <Compile Include="Wrappers\Signer.cs" />
