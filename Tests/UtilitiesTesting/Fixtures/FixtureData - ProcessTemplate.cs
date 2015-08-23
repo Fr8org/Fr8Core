@@ -58,7 +58,7 @@ namespace UtilitiesTesting.Fixtures
                 healthWriteAction.ConfigurationSettings = JsonConvert.SerializeObject(configuration_settings);
 
             //add a subscription to a specific template on the docusign platform
-            var health_DocuSignTemplateSubscription = FixtureData.TestDocuSignTemplateSubscription_medical_form_v2();
+            var health_DocuSignTemplateSubscription = FixtureData.TestExternalEventSubscription_medical_form_v2();
             health_DocuSignTemplateSubscription.ProcessTemplate = healthProcessTemplate;
 
 
