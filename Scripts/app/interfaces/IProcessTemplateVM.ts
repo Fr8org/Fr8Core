@@ -25,8 +25,7 @@ module dockyard.interfaces {
         Conditions: Array<model.Condition>;
     }
 
-    export interface IActionVM extends ng.resource.IResource<IAction>, IAction {
-
-    }
-
+    export interface IActionVM extends ng.resource.IResource<IAction>, IAction { }
+    export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
+    export interface IDocuSignTriggerVM extends ng.resource.IResource<IDocuSignTemplate> { }
 }

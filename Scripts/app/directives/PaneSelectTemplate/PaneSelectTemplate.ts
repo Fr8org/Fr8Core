@@ -28,10 +28,15 @@ module dockyard.directives.paneSelectTemplate {
         }
     }
 
-    export class HideEventArgs extends EventArgsBase {
-        constructor() {
-            super();
-        }
+    export class HideEventArgs extends EventArgsBase { }
+
+    export interface IPaneSelectTemplateScope extends ng.IScope {
+        visible: boolean,
+        processName: string,
+        docuSignTemplates: ng.resource.IResourceArray<interfaces.IDocuSignTemplateVM>,
+        docuSignTriggers: ng.resource.IResourceArray<interfaces.IDocuSignTriggerVM>,
+        loadingMessage: string,
+        doneLoading: () => boolean;
     }
 
 
@@ -40,61 +45,55 @@ module dockyard.directives.paneSelectTemplate {
     class PaneSelectTemplate implements ng.IDirective {
         public templateUrl = "/Views/AngularTemplate/PaneSelectTemplate.html";
         public restrict = "E";
+        public scope = {};
+        public controller: ($scope: IPaneSelectTemplateScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => void;
 
-        public controller = ["$scope", "$resource", "urlPrefix", ($scope, $resource, urlPrefix) => {
-            $scope.Visible = true;
-            $scope.DataModel = {};
-            $scope.DataModel.ProcessName = "My Process";
-            function init() {
+        constructor(
+            private DocuSignTemplateService: ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM>,
+            private DocuSignTriggerService: ng.resource.IResourceClass<interfaces.IDocuSignTriggerVM>) {
 
-                var loadedDocuTemplates = false;
-                var loadedTriggers = false;
+            PaneSelectTemplate.prototype.controller = (
+                $scope: IPaneSelectTemplateScope,
+                $element: ng.IAugmentedJQuery,
+                $attrs: ng.IAttributes) => {
+                 
+                $scope.$on(MessageType[MessageType.PaneSelectTemplate_Render], this.onRender);
+                $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], this.onHide);
+            };
+        }
 
-                var resetLoadingMessage = () => {
-                    if (loadedDocuTemplates && loadedTriggers)
-                        $scope.loadingMessage = null;
-                };
+        private init(scope: IPaneSelectTemplateScope) {
+            var resetLoadingMessage = () => {
+                if (scope.doneLoading)
+                    scope.loadingMessage = null;
+            };
+            scope.doneLoading = () => scope.docuSignTemplates.$resolved && scope.docuSignTriggers.$resolved;
+            scope.loadingMessage = "Loading Templates .....";
+            scope.docuSignTemplates = this.DocuSignTemplateService.query();
+            scope.docuSignTemplates.$promise.then(() => resetLoadingMessage());
 
+            scope.docuSignTriggers = this.DocuSignTriggerService.query();
+            scope.docuSignTriggers.$promise.then(() => resetLoadingMessage()); 
+        }
 
-                var docusignTemplates = $resource(urlPrefix + "/templates/dockyard_account").query(() => {
-                    loadedDocuTemplates = true;
-                    $scope.docusignTemplates = docusignTemplates;
-                    $scope.DataModel.SelectedDocuSignTemplate = _.sample(docusignTemplates);
-                    resetLoadingMessage();
-                    return;
-                });
+        private onRender = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
+            var scope = (<IPaneSelectTemplateScope> event.currentScope)
+            scope.visible = true;
+            this.init(scope);
+        }
 
-                var triggers = $resource(urlPrefix + "/processtemplate/triggersettings").query(() => {
-                    loadedTriggers = true;
-                    resetLoadingMessage();
-                    $scope.triggers = triggers;
+        private onHide = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
+            (<IPaneSelectTemplateScope> event.currentScope).visible = false;
+        };
 
-                });
-
-                $scope.doneLoading = () => loadedDocuTemplates && loadedTriggers;
-
-                $scope.loadingMessage = "Loading Templates .....";
-
-            }
-
-            var onRender = () => {
-                $scope.Visible = true;
-                init();
-            }
-
-            var onHide = () => {
-                $scope.Visible = false;
+        public static Factory() {
+            var directive = (DocuSignTemplateService, DocuSignTriggerService) => {
+                return new PaneSelectTemplate(DocuSignTemplateService, DocuSignTriggerService);
             };
 
-            onRender();
-
-            $scope.$on(MessageType[MessageType.PaneSelectTemplate_Render], onRender);
-            $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], onHide);
-
-
-        }];
-
-        public static factory = () => new PaneSelectTemplate();
+            directive["$inject"] = ['DocuSignTemplateService', 'DocuSignTriggerService'];
+            return directive;
+        }
     }
 
     app.run([
@@ -115,7 +114,7 @@ module dockyard.directives.paneSelectTemplate {
                 { Name: "Lease", Id: 25 },
                 { Name: "Aggreement", Id: 26 }
             ];
-            
+
             httpBackend
                 .whenGET(urlPrefix + "/processtemplate/triggersettings")
                 .respond(triggerSettings);
@@ -125,5 +124,5 @@ module dockyard.directives.paneSelectTemplate {
                 .respond(docuSignTemplates);
         }
     ]);
-    app.directive("paneSelectTemplate", <any>PaneSelectTemplate.factory);
+    app.directive("paneSelectTemplate", PaneSelectTemplate.Factory());
 }
