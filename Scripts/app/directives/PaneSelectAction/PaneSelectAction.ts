@@ -15,12 +15,16 @@ module dockyard.directives.paneSelectAction {
         public actionType: string;
         public isTempId: boolean;
         public actionName: string;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number, actionId: number, isTempId: boolean, actionType: string, actionName: string) {
+        constructor(criteriaId: number, actionId: number, isTempId: boolean,
+            actionType: string, actionName: string, actionListType: model.ActionListType) {
+
             super(criteriaId, actionId);
             this.isTempId = isTempId;
             this.actionType = actionType;
             this.actionName = actionName;
+            this.actionListType = actionListType;
         }
     }
 
@@ -35,12 +39,19 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class RenderEventArgs extends ActionEventArgsBase {
+    export class RenderEventArgs {
+        public processNodeTemplateId: number;
+        public id: number;
         public isTempId: boolean;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number, actionId: number, isTemp: boolean) {
-            super(criteriaId, actionId);
+        constructor(processNodeTemplateId: number, id: number,
+            isTemp: boolean, actionListType: model.ActionListType) {
+
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.id = id;
             this.isTempId = isTemp;
+            this.actionListType = actionListType;
         }
     }
 
@@ -83,11 +94,12 @@ module dockyard.directives.paneSelectAction {
 
                 $scope.ActionTypeSelected = () => {
                     var eventArgs = new ActionTypeSelectedEventArgs(
-                        $scope.action.criteriaId,
+                        $scope.action.processNodeTemplateId,
                         $scope.action.id,
                         $scope.action.isTempId,
                         $scope.action.actionType,
-                        $scope.action.userLabel);
+                        $scope.action.userLabel,
+                        $scope.action.actionListType);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
                 }
@@ -107,9 +119,11 @@ module dockyard.directives.paneSelectAction {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
-                eventArgs.actionId,
+                eventArgs.id,
                 eventArgs.isTempId,
-                eventArgs.criteriaId);
+                eventArgs.processNodeTemplateId,
+                eventArgs.actionListType
+                );
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

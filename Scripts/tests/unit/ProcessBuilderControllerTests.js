@@ -78,15 +78,15 @@ var dockyard;
                 //Rule #8
                 it("When PaneSelectAction_ActionTypeSelected is sent, PaneConfigureMapping_Render " +
                     "and PaneConfigureAction_Render should be received with correct args", function () {
-                    var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, "myaction", "myaction"), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false);
+                    var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, "myaction", "myaction", dockyard.model.ActionListType.Immediate), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, dockyard.model.ActionListType.Immediate);
                     _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
                 });
                 it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
                     "Save method should be called on ProcessTemplateService", function () {
-                    var incomingEventArgs = new pwd.ActionSelectingEventArgs(1, 1);
-                    var currentAction = new dockyard.model.Action(1, false, 1);
+                    var incomingEventArgs = new pwd.ActionSelectingEventArgs(1, 1, dockyard.model.ActionListType.Immediate);
+                    var currentAction = new dockyard.model.Action(1, false, 1, dockyard.model.ActionListType.Immediate);
                     _$scope.currentAction = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting], incomingEventArgs);
                     expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
@@ -101,7 +101,7 @@ var dockyard;
                 it("When PaneWorkflowDesigner_ProcessNodeTemplateSelecting is sent and selectedAction!=null " +
                     "Save method should be called on ProcessTemplateService", function () {
                     var incomingEventArgs = new pwd.ProcessNodeTemplateSelectingEventArgs(1, true);
-                    var currentAction = new dockyard.model.Action(1, false, 1);
+                    var currentAction = new dockyard.model.Action(1, false, 1, dockyard.model.ActionListType.Immediate);
                     _$scope.currentAction = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting], incomingEventArgs);
                     expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
@@ -109,7 +109,7 @@ var dockyard;
                 it("When PaneWorkflowDesigner_TemplateSelected is sent and selectedAction!=null " +
                     "Save method should be called on ProcessTemplateService", function () {
                     var incomingEventArgs = new pwd.TemplateSelectingEventArgs();
-                    var currentAction = new dockyard.model.Action(1, false, 1);
+                    var currentAction = new dockyard.model.Action(1, false, 1, dockyard.model.ActionListType.Immediate);
                     _$scope.currentAction = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting], incomingEventArgs);
                     expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);

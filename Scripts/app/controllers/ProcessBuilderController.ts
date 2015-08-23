@@ -280,7 +280,8 @@ module dockyard.controllers {
                 var action = new model.Action(
                     id,
                     true,
-                    args == null ? eventArgs.criteriaId : args.id
+                    eventArgs.processNodeTemplateId,
+                    eventArgs.actionListType
                     );
 
                 action.userLabel = 'New Action #' + Math.abs(id).toString();
@@ -288,7 +289,7 @@ module dockyard.controllers {
                 // Add action to Workflow Designer.
                 self._scope.$broadcast(
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdded],
-                    new pwd.ActionAddedEventArgs(action.criteriaId, action.clone())
+                    new pwd.ActionAddedEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
                     );
             });
         }
@@ -303,18 +304,18 @@ module dockyard.controllers {
             this.saveProcessNodeTemplate(function () {
                 self.SaveAction();
 
+                self._scope.currentAction = self.ActionService.get({ id: eventArgs.criteriaId });
+
                 //Render Select Action Pane
                 var eArgs = new psa.RenderEventArgs(
                     eventArgs.criteriaId,
                     eventArgs.actionId,
-                    false); // eventArgs.isTempId,
+                    false,
+                    eventArgs.actionListType);
 
-                self._scope.currentAction = self.ActionService.get({ id: eventArgs.criteriaId });
-
-                var scope = self._scope;
-                scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
-                scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
-                scope.$broadcast(
+                self._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
+                self._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
+                self._scope.$broadcast(
                     psa.MessageType[psa.MessageType.PaneSelectAction_Render],
                     eArgs
                     );
@@ -369,20 +370,21 @@ module dockyard.controllers {
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
             //Render Pane Configure Action 
-            var eArgs = new pca.RenderEventArgs(
+            var pcaEventArgs = new pca.RenderEventArgs(
                 eventArgs.criteriaId,
                 eventArgs.actionId,
-                eventArgs.isTempId); //is it a temporary id
+                eventArgs.isTempId,
+                eventArgs.actionListType); //is it a temporary id
                 
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
 
             //Render Pane Configure Mapping 
-            eArgs = new pcm.RenderEventArgs(
+            var pcmEventArgs = new pcm.RenderEventArgs(
                 eventArgs.criteriaId,
                 eventArgs.actionId,
                 eventArgs.isTempId); //is it a temporary id
 
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], eArgs);
+            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
         }
          
         /*

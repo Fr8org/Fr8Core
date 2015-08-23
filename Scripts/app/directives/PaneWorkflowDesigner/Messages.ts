@@ -69,30 +69,42 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ActionAddingEventArgs {
-        public criteriaId: number;
+        public processNodeTemplateId: number;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number) {
-            this.criteriaId = criteriaId;
+        constructor(processNodeTemplateId: number, actionListType: model.ActionListType) {
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.actionListType = actionListType;
         }
     }
 
     export class ActionAddedEventArgs {
         public criteriaId: number;
         public action: model.Action;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number, action: model.Action) {
+        constructor(criteriaId: number,
+            action: model.Action,
+            actionListType: model.ActionListType) {
+
             this.criteriaId = criteriaId;
             this.action = action;
+            this.actionListType = actionListType;
         }
     }
 
     export class ActionSelectingEventArgs {
         public criteriaId: number;
         public actionId: number;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number, actionId: number) {
+        constructor(criteriaId: number,
+            actionId: number,
+            actionListType: model.ActionListType) {
+
             this.criteriaId = criteriaId;
             this.actionId = actionId;
+            this.actionListType = actionListType;
         }
     }
 

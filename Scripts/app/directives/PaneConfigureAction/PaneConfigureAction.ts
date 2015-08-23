@@ -11,7 +11,21 @@ module dockyard.directives.paneConfigureAction {
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
 
-    export class RenderEventArgs extends RenderEventArgsBase { }
+    export class RenderEventArgs {
+        public processNodeTemplateId: number;
+        public actionId: number;
+        public isTempId: boolean;
+        public actionListType: model.ActionListType;
+
+        constructor(processNodeTemplateId: number, actionId: number,
+            isTempId: boolean, actionListType: model.ActionListType) {
+
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.actionId = actionId;
+            this.isTempId = isTempId;
+            this.actionListType = actionListType;
+        }
+    }
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
@@ -56,7 +70,9 @@ module dockyard.directives.paneConfigureAction {
             scope.action = new model.Action(
                 eventArgs.actionId,
                 eventArgs.isTempId,
-                1);
+                eventArgs.processNodeTemplateId,
+                eventArgs.actionListType
+                );
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

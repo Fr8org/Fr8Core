@@ -86,7 +86,7 @@
             criteriaDescr.addActionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('addActionNode:click', e, criteriaDescr.id);
+                    this.fire('addActionNode:click', e, criteriaDescr.id, ns.ActionType.immediate);
                 }, this)
             );
 
@@ -186,9 +186,13 @@
         // Parameters:
         //     criteriaId - id of criteria
         //     action - object to define action; minimum required set of properties: { id: 'someId' }
-        addAction: function (criteriaId, action) {
+        addAction: function (criteriaId, action, actionType) {
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
+            }
+
+            if (actionType !== ns.ActionType.immediate) {
+                throw 'Only immediate action types are supported so far.';
             }
 
             var criteria = this._findCriteria(criteriaId);
@@ -196,6 +200,7 @@
 
             var actionDescr = {
                 id: action.id,
+                actionType: actionType,
                 data: action,
                 actionNode: null
             };
@@ -207,7 +212,7 @@
             actionDescr.actionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('actionNode:click', e, criteria.id, action.id);
+                    this.fire('actionNode:click', e, criteria.id, action.id, actionDescr.actionType);
                 }, this)
             );
 
@@ -221,13 +226,15 @@
         // Parameters:
         //     criteriaId - id of criteria.
         //     actionId - id of action.
-        removeAction: function (criteriaId, actionId) {
+        removeAction: function (criteriaId, actionId, actionType) {
             var criteria = this._findCriteria(criteriaId);
             if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
 
             var i;
             for (i = 0; i < criteria.actions.length; ++i) {
-                if (criteria.actions[i].id === actionId) {
+                if (criteria.actions[i].id === actionId
+                    && criteria.actions[i].actionType === actionType) {
+
                     this._canvas.remove(criteria.actions[i].actionNode);
                     criteria.actions.splice(i, 1);
 
