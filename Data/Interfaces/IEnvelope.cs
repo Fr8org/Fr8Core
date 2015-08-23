@@ -50,5 +50,17 @@ namespace Data.Interfaces
         /// <param name="envelopeId">Envelope id which is being processed.</param>
         /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
         PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string envelopeId, IList<EnvelopeDataDTO> curEnvelopeData);
+        
+
+        /// <summary>
+        /// Get Envelope Data from a docusign envelope. 
+        /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
+        /// </summary>
+        /// <param name="templateId">templateId</param>
+        /// <returns>
+        /// List of Envelope Data.
+        /// It returns empty list of envelope data if tab and signers not found.
+        /// </returns>
+        IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId);
     }
 }

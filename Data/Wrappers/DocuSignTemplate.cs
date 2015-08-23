@@ -18,7 +18,7 @@ namespace Data.Wrappers
     public interface IDocuSignTemplate
     {
         List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
-        IEnumerable<string> GetMappableSourceFields(int templateId);
+        IEnumerable<string> GetMappableSourceFields(string templateId);
         IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
     }
 
@@ -45,26 +45,27 @@ namespace Data.Wrappers
         {
             //TODO: implement getting templates by the specified account.
             return GetTemplates().Select(t => AutoMapper.Mapper.Map<DocuSignTemplateDTO>(t));
-        }   
+        }
 
         //TODO: merge these
-        public IEnumerable<string> GetMappableSourceFields(int templateId)
+        public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
-            return _docusignEnvelope.GetEnvelopeData(templateId.ToString()).Select(r => r.Name);
+            return _docusignEnvelope.GetEnvelopeDataByTemplate(templateId).Select(r => r.Name);
 
         }
         public List<string> GetMappableSourceFields(DocuSignEnvelope envelope)
         {
-            List<EnvelopeDataDTO> curLstEnvelopeData = _docusignEnvelope.GetEnvelopeData(envelope);
-            List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
-            if (curLstDistinctDocIds.Count == 1)
+            List<EnvelopeDataDTO> curEnvelopeDataList = _docusignEnvelope.GetEnvelopeData(envelope);
+            List<int> curDistinctDocIds = curEnvelopeDataList.Select(x => x.DocumentId).Distinct().ToList();
+            if (curDistinctDocIds.Count == 1)
             {
-                return curLstEnvelopeData.Select(x => x.Name).ToList();
+                return curEnvelopeDataList.Select(x => x.Name).ToList();
             }
-            else if (curLstDistinctDocIds.Count > 1)
+            else if (curDistinctDocIds.Count > 1)
             {
+                //add the document name as a suffix if there's more than one document involved
                 List<string> curLstMappableSourceFields = new List<string>();
-                foreach (EnvelopeDataDTO curEnvelopeData in curLstEnvelopeData)
+                foreach (EnvelopeDataDTO curEnvelopeData in curEnvelopeDataList)
                 {
                     DocuSign.Integrations.Client.EnvelopeDocuments curEnvelopDocuments = envelope.GetEnvelopeDocumentInfo(curEnvelopeData.EnvelopeId);
                     List<DocuSign.Integrations.Client.EnvelopeDocument> curLstenvelopDocuments = curEnvelopDocuments

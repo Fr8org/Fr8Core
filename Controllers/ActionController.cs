@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
+using Core.Helper;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Core.Interfaces;
@@ -112,9 +116,6 @@ namespace Web.Controllers
         }
 
 
-
-
-
-
+       
     }
 }
