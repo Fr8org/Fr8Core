@@ -36,15 +36,14 @@ module dockyard.interfaces {
     }
 
     export interface IDocuSignTemplate {
-        id: string,
+        id: number,
         name: string,
         description: string
     }
 
-    export interface IDocuSignTrigger {
-        id: string,
+    export interface IDocuSignExternalEvent {
+        id: number,
         name: string,
         description: string
     }
-
 }

@@ -75,7 +75,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
+        public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -89,13 +89,13 @@ namespace Web.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
+                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = User.Identity.GetUserId();
                 curProcessTemplateDO.DockyardAccount = uow.UserRepository
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
-                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO);
+                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
 
                 uow.SaveChanges();
 

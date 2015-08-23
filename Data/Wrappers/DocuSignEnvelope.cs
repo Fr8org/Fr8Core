@@ -19,7 +19,6 @@ namespace Data.Wrappers
         private string _baseUrl;
         private readonly ITab _tab;
         private readonly ISigner _signer;
-        private readonly DocuSignAccount _login;
 
         public DocuSignEnvelope()
         {
@@ -31,7 +30,7 @@ namespace Data.Wrappers
             _signer = new Signer();
 
             var packager = new DocuSignPackager();
-            _login = packager.Login();
+            Login = packager.Login();
         }
 
 

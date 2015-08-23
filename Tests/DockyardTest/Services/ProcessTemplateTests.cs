@@ -1,9 +1,11 @@
 ﻿using Core.Interfaces;
+using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces;
 using Data.Migrations;
 using NUnit.Framework;
 using StructureMap;
+using System.Collections.Generic;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -33,5 +35,15 @@ namespace DockyardTest.Services
                 _processTemplateService.LaunchProcess(uow, processTemplate, envelope);
             }
 		}
-	}
+
+		[Test]
+        public void TemplateRegistrationCollections_ShouldMakeIdentical()
+        {
+            var curSubscriptions = FixtureData.DocuSignTemplateSubscriptionList1();
+            var newSubscriptions = FixtureData.DocuSignTemplateSubscriptionList2();
+
+            _processTemplateService.MakeCollectionEqual<DocuSignTemplateSubscriptionDO>(curSubscriptions, newSubscriptions);
+            CollectionAssert.AreEquivalent(newSubscriptions, curSubscriptions);
+        }
+    }
 }

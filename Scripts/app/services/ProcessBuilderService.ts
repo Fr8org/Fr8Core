@@ -5,11 +5,9 @@
 */
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {}
-
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {}
-
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
-    export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignTriggerVM> { }
+    export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
 
     app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessTemplateService =>
         <IProcessTemplateService> $resource(urlPrefix + '/processTemplate/:id', { id: '@id' })

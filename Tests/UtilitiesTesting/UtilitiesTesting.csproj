@@ -106,6 +106,7 @@
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />
+    <Compile Include="Fixtures\FixtureData - DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />

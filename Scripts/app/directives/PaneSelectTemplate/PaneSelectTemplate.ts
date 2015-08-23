@@ -12,9 +12,6 @@ module dockyard.directives.paneSelectTemplate {
     }
 
     export class RenderEventArgs extends EventArgsBase {
-        constructor() {
-            super();
-        }
     }
 
     export class ProcessTemplateUpdatedEventArgs extends EventArgsBase {
@@ -32,14 +29,16 @@ module dockyard.directives.paneSelectTemplate {
 
     export interface IPaneSelectTemplateScope extends ng.IScope {
         visible: boolean,
-        processName: string,
-        docuSignTemplates: ng.resource.IResourceArray<interfaces.IDocuSignTemplateVM>,
-        docuSignTriggers: ng.resource.IResourceArray<interfaces.IDocuSignTriggerVM>,
-        loadingMessage: string,
-        doneLoading: () => boolean;
+        docuSignTemplates: ng.resource.IResourceArray<interfaces.IDocuSignTemplateVM>;
+        docuSignExternalEvents: ng.resource.IResourceArray<interfaces.IDocuSignExternalEventVM>;
+        loadingMessage: string;
+        doneLoading: boolean;
+        processTemplate: interfaces.IProcessTemplateVM;
+        save: (curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>;
+        cancel: (curScope: IPaneSelectTemplateScope) => void;
+        docuSignTemplateId: string;            
     }
-
-
+    
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneSelectTemplate implements ng.IDirective {
@@ -49,31 +48,50 @@ module dockyard.directives.paneSelectTemplate {
         public controller: ($scope: IPaneSelectTemplateScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => void;
 
         constructor(
-            private DocuSignTemplateService: ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM>,
-            private DocuSignTriggerService: ng.resource.IResourceClass<interfaces.IDocuSignTriggerVM>) {
+            private $q: ng.IQService,
+            private $stateParams: ng.ui.IStateParamsService,
+            private DocuSignTemplateService: services.IDocuSignTemplateService,
+            private DocuSignTriggerService: services.IDocuSignTriggerService,
+            private ProcessTemplateService: services.IProcessTemplateService) {
 
             PaneSelectTemplate.prototype.controller = (
                 $scope: IPaneSelectTemplateScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
-                 
+
+                $scope.doneLoading = false;
                 $scope.$on(MessageType[MessageType.PaneSelectTemplate_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], this.onHide);
+
+                $scope.cancel = <(curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>>
+                    angular.bind(this, this.cancel);
+                $scope.save = <(curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>>
+                    angular.bind(this, this.save);
             };
         }
 
         private init(scope: IPaneSelectTemplateScope) {
-            var resetLoadingMessage = () => {
-                if (scope.doneLoading)
-                    scope.loadingMessage = null;
-            };
-            scope.doneLoading = () => scope.docuSignTemplates.$resolved && scope.docuSignTriggers.$resolved;
-            scope.loadingMessage = "Loading Templates .....";
-            scope.docuSignTemplates = this.DocuSignTemplateService.query();
-            scope.docuSignTemplates.$promise.then(() => resetLoadingMessage());
 
-            scope.docuSignTriggers = this.DocuSignTriggerService.query();
-            scope.docuSignTriggers.$promise.then(() => resetLoadingMessage()); 
+            scope.loadingMessage = "Loading Templates .....";
+
+            scope.processTemplate = this.ProcessTemplateService.get({id: this.$stateParams["id"]});
+            scope.docuSignTemplates = this.DocuSignTemplateService.query();
+            scope.docuSignExternalEvents = this.DocuSignTriggerService.query();
+
+            this.$q.all([
+                scope.docuSignTemplates.$promise,
+                scope.docuSignExternalEvents.$promise,
+                scope.processTemplate.$promise]
+            ).then(
+                () => {
+                    console.log(scope.processTemplate);
+                    if (scope.processTemplate && scope.processTemplate.SubscribedDocuSignTemplates.length > 0)
+                    {
+                        scope.docuSignTemplateId = scope.processTemplate.SubscribedDocuSignTemplates[0];
+                    }
+                    scope.doneLoading = true
+                }
+            );
         }
 
         private onRender = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
@@ -86,12 +104,40 @@ module dockyard.directives.paneSelectTemplate {
             (<IPaneSelectTemplateScope> event.currentScope).visible = false;
         };
 
+        public save(curScope: IPaneSelectTemplateScope) {
+            if (curScope.processTemplate != null) {
+                console.log(curScope.processTemplate);
+                //Add selected DocuSign template
+                curScope.processTemplate.SubscribedDocuSignTemplates.splice(0, 1, curScope.docuSignTemplateId);
+                return this.ProcessTemplateService.save(
+                    {
+                           updateRegistrations: true //update template and trigger registrations
+                    },
+                    curScope.processTemplate).$promise;
+            }
+        }
+
+        public cancel(curScope: IPaneSelectTemplateScope) {
+            curScope.visible = false;
+        }
+
         public static Factory() {
-            var directive = (DocuSignTemplateService, DocuSignTriggerService) => {
-                return new PaneSelectTemplate(DocuSignTemplateService, DocuSignTriggerService);
+            var directive = (
+                $q: ng.IQService,
+                $stateParams: ng.ui.IStateParamsService,
+                DocuSignTemplateService: services.IDocuSignTemplateService,
+                DocuSignTriggerService: services.IDocuSignTriggerService,
+                ProcessTemplateService: services.IProcessTemplateService) =>
+            {
+                return new PaneSelectTemplate(
+                    $q,
+                    $stateParams,
+                    DocuSignTemplateService,
+                    DocuSignTriggerService,
+                    ProcessTemplateService);
             };
 
-            directive["$inject"] = ['DocuSignTemplateService', 'DocuSignTriggerService'];
+            directive["$inject"] = ['$q', '$stateParams', 'DocuSignTemplateService', 'DocuSignTriggerService', 'ProcessTemplateService'];
             return directive;
         }
     }
