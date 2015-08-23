@@ -9,18 +9,17 @@ namespace UtilitiesTesting.Fixtures
             return new ConfigurationSettingsDTO
             {
                 FieldDefinitions =  {
-                    TestConnectionString()
+                    TestConnectionString1()
                 }
             };
         }
 
-        public static FieldDefinitionDTO TestConnectionString()
+        public static FieldDefinitionDTO TestConnectionString1()
         {
             return new FieldDefinitionDTO
             {
                 Name = "Connection_String",
-                Value = @"Server = tcp:s79ifqsqga.database.windows.net,
-                1433; Database = dockyard_azure_db_server1; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; " 
+                Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = dockyard_azure_db_server1; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; " 
 
             };
         }
