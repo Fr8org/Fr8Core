@@ -107,6 +107,7 @@ namespace Core.Services
             }
         }
 
+
         public async Task<string> Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -168,14 +169,14 @@ namespace Core.Services
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
             }
             return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
-        }
+            }
 
 
         //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
 
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
-            return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id);
+           return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id.ToString());
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
@@ -185,5 +186,7 @@ namespace Core.Services
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
+
+
     }
 }
