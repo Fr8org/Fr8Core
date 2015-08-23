@@ -85,8 +85,8 @@ namespace pluginAzureSqlServer.Infrastructure
                 foreach (var value in values)
                 {
                     var valueParam = cmd.CreateParameter();
-                    valueParam.ParameterName = "@param_" + i.ToString();
-                    valueParam.Value = value.Value;
+                    valueParam.ParameterName = "@param_" + i;
+                    valueParam.Value = value.Value.ToString();
                     cmd.Parameters.Add(valueParam);
 
                     ++i;
