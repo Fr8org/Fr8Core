@@ -272,7 +272,6 @@
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
-    <Compile Include="Controllers\FieldsController.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
     <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
     <Compile Include="NotificationQueues\NotificationQueue.cs" />
