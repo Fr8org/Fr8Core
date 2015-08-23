@@ -115,14 +115,6 @@ namespace Web.Controllers
             return _action.GetFieldMappingTargets(curActionDO);
         }
 
-        [HttpPost]
-        [Route("getfieldmapping")]
-        public async Task<IEnumerable<string>> GetFieldMapping(ActionDesignDTO actionDto)
-        {
-            //var actionDto = new ActionDTO() { ParentPluginRegistration = LZString.decompressFromUTF16(pluginName)
-            //    , ConfigurationSettings = "{\"connection_string\":\"" + LZString.decompressFromUTF16(connstring) + "\"}" };
-            return await _action.GetFieldMappingTargets(Mapper.Map<ActionDesignDTO, ActionDO>(actionDto));
-        }
 
        
     }
