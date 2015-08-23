@@ -27,20 +27,20 @@
 
                 </div>
                 <div class="form-group">
-                    <label class=" col-sm-5 ">Docusign Events :</label>
-                    <div class="col-sm-7">
+                    <!--<label class=" col-sm-5 ">Docusign Events :</label>-->
+                    <!--<div class="col-sm-7">
                         <div class="checkbox checkbox-primary  " ng-repeat="trigger in triggers">
                             <input id="trigger_{{trigger.Id}}" type="checkbox" value="{{trigger.Id}}">
                             <label for="trigger_{{trigger.Id}}"> {{trigger.Name}}</label>
                         </div>
 
-                    </div>
+                    </div>-->
                 </div>
             </form>
             <div class="row">
                 <div class="col-sm-12">
                     <button class="btn btn-primary btn-large btn-long" indi-click="save(this)">Save</button>
-                    <button class="btn btn-danger btn-large" ng-click="cancel()">Cancel</button>
+                    <button class="btn btn-danger btn-large" ng-click="cancel(this)">Cancel</button>
                 </div>
             </div>
         </div>

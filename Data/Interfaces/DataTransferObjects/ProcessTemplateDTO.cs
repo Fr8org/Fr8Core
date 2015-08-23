@@ -11,6 +11,8 @@ namespace Data.Interfaces.DataTransferObjects
             //     SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
             //     SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
             //     DockyardAccount = new DockyardAccountDO();
+            SubscribedDocuSignTemplates = new List<string>();
+            SubscribedExternalEvents = new List<string>();
         }
 
         public int Id { get; set; }

@@ -47,8 +47,11 @@ module dockyard.directives.paneSelectTemplate {
         public scope = {};
         public controller: ($scope: IPaneSelectTemplateScope, $element: ng.IAugmentedJQuery, $attrs: ng.IAttributes) => void;
 
+        private _$scope: IPaneSelectTemplateScope;
+
         constructor(
             private $q: ng.IQService,
+            private $timeout: ng.ITimeoutService,
             private $stateParams: ng.ui.IStateParamsService,
             private DocuSignTemplateService: services.IDocuSignTemplateService,
             private DocuSignTriggerService: services.IDocuSignTriggerService,
@@ -59,6 +62,7 @@ module dockyard.directives.paneSelectTemplate {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
+                this._$scope = $scope;
                 $scope.doneLoading = false;
                 $scope.$on(MessageType[MessageType.PaneSelectTemplate_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], this.onHide);
@@ -70,50 +74,56 @@ module dockyard.directives.paneSelectTemplate {
             };
         }
 
-        private init(scope: IPaneSelectTemplateScope) {
+        private init(curScope: IPaneSelectTemplateScope) {
 
-            scope.loadingMessage = "Loading Templates .....";
+            curScope.loadingMessage = "Loading Templates .....";
 
-            scope.processTemplate = this.ProcessTemplateService.get({id: this.$stateParams["id"]});
-            scope.docuSignTemplates = this.DocuSignTemplateService.query();
-            scope.docuSignExternalEvents = this.DocuSignTriggerService.query();
+            curScope.processTemplate = this.ProcessTemplateService.get({id: this.$stateParams["id"]});
+            curScope.docuSignTemplates = this.DocuSignTemplateService.query();
+            curScope.docuSignExternalEvents = this.DocuSignTriggerService.query();
 
             this.$q.all([
-                scope.docuSignTemplates.$promise,
-                scope.docuSignExternalEvents.$promise,
-                scope.processTemplate.$promise]
+                curScope.docuSignTemplates.$promise,
+                curScope.docuSignExternalEvents.$promise,
+                curScope.processTemplate.$promise]
             ).then(
                 () => {
-                    console.log(scope.processTemplate);
-                    if (scope.processTemplate && scope.processTemplate.SubscribedDocuSignTemplates.length > 0)
+                    console.log(curScope.processTemplate);
+                    if (curScope.processTemplate && curScope.processTemplate.SubscribedDocuSignTemplates.length > 0)
                     {
-                        scope.docuSignTemplateId = scope.processTemplate.SubscribedDocuSignTemplates[0];
+                        curScope.docuSignTemplateId = curScope.processTemplate.SubscribedDocuSignTemplates[0];
                     }
-                    scope.doneLoading = true
+                    curScope.doneLoading = true
                 }
             );
         }
 
         private onRender = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
-            var scope = (<IPaneSelectTemplateScope> event.currentScope)
-            scope.visible = true;
-            this.init(scope);
+            var curScope = (<IPaneSelectTemplateScope> event.currentScope)
+            curScope.visible = true;
+            this.init(curScope);
         }
 
         private onHide = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
-            (<IPaneSelectTemplateScope> event.currentScope).visible = false;
+            var curScope = <IPaneSelectTemplateScope> event.currentScope;
+            curScope.visible = false;
+            this.save(curScope);
         };
 
-        public save(curScope: IPaneSelectTemplateScope) {
-            if (curScope.processTemplate != null) {
-                console.log(curScope.processTemplate);
+        public save(scope) {
+            if (this._$scope.processTemplate != null) {
+                console.log(this._$scope.processTemplate);
                 //Add selected DocuSign template
-                curScope.processTemplate.SubscribedDocuSignTemplates.splice(0, 1, curScope.docuSignTemplateId);
+                debugger;
+                this._$scope.processTemplate.SubscribedDocuSignTemplates.splice(
+                    0,
+                    1,
+                    $('#docuSignTemplate').val().replace('string:', '')); //a hack required since $scope contained old value when save is triggered by 'Hide' message
                 return this.ProcessTemplateService.save(
                     {
                            updateRegistrations: true //update template and trigger registrations
                     },
-                    curScope.processTemplate).$promise;
+                    this._$scope.processTemplate).$promise;
             }
         }
 
@@ -124,6 +134,7 @@ module dockyard.directives.paneSelectTemplate {
         public static Factory() {
             var directive = (
                 $q: ng.IQService,
+                $timeout: ng.ITimeoutService,
                 $stateParams: ng.ui.IStateParamsService,
                 DocuSignTemplateService: services.IDocuSignTemplateService,
                 DocuSignTriggerService: services.IDocuSignTriggerService,
@@ -131,13 +142,14 @@ module dockyard.directives.paneSelectTemplate {
             {
                 return new PaneSelectTemplate(
                     $q,
+                    $timeout,
                     $stateParams,
                     DocuSignTemplateService,
                     DocuSignTriggerService,
                     ProcessTemplateService);
             };
 
-            directive["$inject"] = ['$q', '$stateParams', 'DocuSignTemplateService', 'DocuSignTriggerService', 'ProcessTemplateService'];
+            directive["$inject"] = ['$q', '$timeout', '$stateParams', 'DocuSignTemplateService', 'DocuSignTriggerService', 'ProcessTemplateService'];
             return directive;
         }
     }

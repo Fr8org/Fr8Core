@@ -22,6 +22,9 @@ namespace Data.Infrastructure.AutoMapper
         public IList<DocuSignTemplateSubscriptionDO> Convert(ResolutionContext context)
         {
             var source = (IList<string>)context.SourceValue;
+            if (source == null)
+                return new List<DocuSignTemplateSubscriptionDO>();
+
             int processTermplateId = System.Convert.ToInt32(context.Options.Items["ptid"]);
             return source.Select(a =>
             {
