@@ -30,10 +30,9 @@ module dockyard.controllers {
                 // initialize core components
                 Metronic.initAjax();
             });
-
             //Load detailed information
             var id : string = $stateParams.id;
-            if (/^[0-9]+$/.test(id) && parseInt(id) > 1) {
+            if (/^[0-9]+$/.test(id) && parseInt(id) > 0) {
                 $scope.ptvm = ProcessTemplateService.get({ id: $stateParams.id });
             }
 
