@@ -100,9 +100,10 @@ namespace Utilities
         {
             return Convert.ToString(value);
         }
-
-          
-       
+		  public static string format(this string msg, params object[] args)
+		  {
+			  return string.Format(msg, args);
+		  }
     }
 
     public static class UriExtensions

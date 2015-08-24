@@ -40,12 +40,22 @@ namespace Core.Services
         }
         public bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
         {
+			  if (criteria == null)
+				  throw new ArgumentNullException("criteria");
+			  if (criteria == string.Empty)
+				  throw new ArgumentException("criteria is empty", "criteria");
+			  if (envelopeData == null)
+				  throw new ArgumentNullException("envelopeData");
+
             return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
 
         public bool Evaluate(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
-            
+			  if (curEnvelope == null)
+				  throw new ArgumentNullException("curEnvelope");
+			  if (curProcessNode == null)
+				  throw new ArgumentNullException("curProcessNode");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
         {
                 var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplate.Id == curProcessNode.Id);
@@ -63,6 +73,13 @@ namespace Core.Services
         public IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId, 
             IQueryable<EnvelopeDataDTO> envelopeData)
         {
+			  if (criteria == null)
+				  throw new ArgumentNullException("criteria");
+			  if (criteria == string.Empty)
+				  throw new ArgumentException("criteria is empty", "criteria");
+			  if (envelopeData == null)
+				  throw new ArgumentNullException("envelopeData");
+
             EventManager.CriteriaEvaluationStarted(processId);
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
             IQueryable<EnvelopeDataDTO> results =
