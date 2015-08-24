@@ -97,8 +97,6 @@ namespace Web.Controllers
 
                 processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
 
-                uow.SaveChanges();
-
                 return Ok(processTemplateDto);
             }
         }
@@ -122,7 +120,5 @@ namespace Web.Controllers
                 return Ok(id);
             }
         }
-
-
     }
 }

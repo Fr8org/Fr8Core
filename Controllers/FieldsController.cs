@@ -10,12 +10,14 @@ namespace Web.Controllers
         private ITemplate _template;
         public FieldsController()
         {
-            _template = ObjectFactory.GetInstance<ITemplate>();
+            //_template = ObjectFactory.GetInstance<ITemplate>();
         }
 
         public IHttpActionResult Get(string id)
         {
-            return Ok(_template.GetMappableSourceFields(id));
+            return Ok();
+            //@alexavrutin: Uncomment when Template service is back.
+            //return Ok(_template.GetMappableSourceFields(id));
         }
     }
 }

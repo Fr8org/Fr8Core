@@ -12,7 +12,7 @@ namespace Data.Interfaces.DataTransferObjects
             //     SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
             //     DockyardAccount = new DockyardAccountDO();
             SubscribedDocuSignTemplates = new List<string>();
-            SubscribedExternalEvents = new List<string>();
+            SubscribedExternalEvents = new List<int>();
         }
 
         public int Id { get; set; }
@@ -25,7 +25,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public IList<string> SubscribedDocuSignTemplates { get; set; }
 
-        public IList<string> SubscribedExternalEvents { get; set; }
+        public IList<int> SubscribedExternalEvents { get; set; }
 
 
         // Commented out by yakov.gnusin:

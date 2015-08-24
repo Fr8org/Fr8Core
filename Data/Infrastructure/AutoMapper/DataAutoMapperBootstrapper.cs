@@ -48,8 +48,8 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<IList<DocuSignTemplateSubscriptionDO>, IList<string>>().ConvertUsing<DocuSignTemplateSubscriptionToStringConverter>();
             Mapper.CreateMap<IList<string>, IList<DocuSignTemplateSubscriptionDO>>().ConvertUsing<StringToDocuSignTemplateSubscriptionConverter>();
-            Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<string>>().ConvertUsing<ExternalEventSubscriptionToStringConverter>();
-            Mapper.CreateMap<IList<string>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<StringToExternalEventSubscriptionConverter>();
+            Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
+            Mapper.CreateMap<IList<int>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
 
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
 

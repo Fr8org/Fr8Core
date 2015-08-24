@@ -27,14 +27,13 @@
 
                 </div>
                 <div class="form-group">
-                    <!--<label class=" col-sm-5 ">Docusign Events :</label>-->
-                    <!--<div class="col-sm-7">
-                        <div class="checkbox checkbox-primary  " ng-repeat="trigger in triggers">
-                            <input id="trigger_{{trigger.Id}}" type="checkbox" value="{{trigger.Id}}">
-                            <label for="trigger_{{trigger.Id}}"> {{trigger.Name}}</label>
+                    <label class=" col-sm-5 ">Docusign Events :</label>
+                    <div class="col-sm-7">
+                        <div class="checkbox checkbox-primary" ng-repeat="event in docuSignExternalEvents">
+                            <input type="checkbox" id="extEvent_{{event.Id}}" checkbox-group array="processTemplate.SubscribedExternalEvents" id-field='Id' item-object='event' />
+                            <label for="extEvent_{{event.Id}}">{{event.Name}}</label>
                         </div>
-
-                    </div>-->
+                    </div>
                 </div>
             </form>
             <div class="row">

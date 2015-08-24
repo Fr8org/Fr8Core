@@ -8,29 +8,29 @@ using Data.Entities;
 
 namespace Data.Infrastructure.AutoMapper
 {
-    public class ExternalEventSubscriptionToStringConverter : ITypeConverter<IList<ExternalEventSubscriptionDO>, IList<string>>
+    public class ExternalEventSubscriptionToIntConverter : ITypeConverter<IList<ExternalEventSubscriptionDO>, IList<int>>
     {
-        public IList<string> Convert(ResolutionContext context)
+        public IList<int> Convert(ResolutionContext context)
         {
             var source = (IList<ExternalEventSubscriptionDO>)context.SourceValue;
-            return source.Select(a => a.ExternalEvent.ToString()).ToList();
+            return source.Select(a => a.ExternalEvent).ToList();
         }
     }
 
-    public class StringToExternalEventSubscriptionConverter : ITypeConverter<IList<string>, IList<ExternalEventSubscriptionDO>>
+    public class IntToExternalEventSubscriptionConverter : ITypeConverter<IList<int>, IList<ExternalEventSubscriptionDO>>
     {
         public IList<ExternalEventSubscriptionDO> Convert(ResolutionContext context)
         {
-            var source = (IList<string>)context.SourceValue;
+            var source = (IList<int>)context.SourceValue;
             if (source == null)
                 return new List<ExternalEventSubscriptionDO>();
 
-            int processTermplateId = System.Convert.ToInt32(context.Options.Items["ptid"]);
+            int processTermplateId = (int)context.Options.Items["ptid"];
             return source.Select(a =>
             {
                 return new ExternalEventSubscriptionDO()
                 {
-                    ExternalEvent = int.Parse(a),
+                    ExternalEvent = a,
                     ProcessTemplateId = processTermplateId
                 };
             }).ToList();

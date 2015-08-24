@@ -88,7 +88,7 @@ module dockyard.directives.paneSelectTemplate {
                 curScope.processTemplate.$promise]
             ).then(
                 () => {
-                    console.log(curScope.processTemplate);
+                    console.log(curScope);
                     if (curScope.processTemplate && curScope.processTemplate.SubscribedDocuSignTemplates.length > 0)
                     {
                         curScope.docuSignTemplateId = curScope.processTemplate.SubscribedDocuSignTemplates[0];
@@ -114,7 +114,6 @@ module dockyard.directives.paneSelectTemplate {
             if (this._$scope.processTemplate != null) {
                 console.log(this._$scope.processTemplate);
                 //Add selected DocuSign template
-                debugger;
                 this._$scope.processTemplate.SubscribedDocuSignTemplates.splice(
                     0,
                     1,
@@ -158,28 +157,17 @@ module dockyard.directives.paneSelectTemplate {
         "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
 
             var triggerSettings = [
-                { Name: "Envelope Sent", Id: 11 },
-                { Name: "Envelope Delivered", Id: 12 },
-                { Name: "Envelope Signed", Id: 13 },
-                { Name: "Envelope Completed", Id: 14 }
+                { Name: "Envelope Sent", Id: 1 },
+                { Name: "Envelope Delivered", Id: 2 },
+                { Name: "Envelope Signed", Id: 3 },
+                { Name: "Envelope Completed", Id: 4 }
             ];
 
-            var docuSignTemplates = [
-                { Name: "Contract", Id: 21 },
-                { Name: "Invoice", Id: 22 },
-                { Name: "Letter of Approval", Id: 23 },
-                { Name: "Deed", Id: 24 },
-                { Name: "Lease", Id: 25 },
-                { Name: "Aggreement", Id: 26 }
-            ];
 
             httpBackend
-                .whenGET(urlPrefix + "/processtemplate/triggersettings")
+                .whenGET("/apimocks/processtemplate/triggersettings")
                 .respond(triggerSettings);
 
-            httpBackend
-                .whenGET(urlPrefix + "/docusigntemplates")
-                .respond(docuSignTemplates);
         }
     ]);
     app.directive("paneSelectTemplate", PaneSelectTemplate.Factory());

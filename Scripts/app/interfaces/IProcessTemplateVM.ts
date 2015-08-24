@@ -12,7 +12,7 @@ module dockyard.interfaces {
         Description: string;
         ProcessTemplateState: ProcessState;
         SubscribedDocuSignTemplates: Array<string>;
-        ExternalEventSubscription: Array<string>; 
+        ExternalEventSubscription: Array<number>; 
     }
 
     export interface ISubscribedDocuSignTemplates {

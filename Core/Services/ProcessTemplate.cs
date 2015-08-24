@@ -16,6 +16,8 @@ namespace Core.Services
     {
         private readonly IProcess _process;
 
+        public object itemsToRemove { get; private set; }
+
         public ProcessTemplate()
         {
             _process = ObjectFactory.GetInstance<IProcess>();
@@ -63,13 +65,11 @@ namespace Core.Services
                 if (updateChildEntities)
                 {
                     //Update DocuSign template registration
-                    MakeCollectionEqual<DocuSignTemplateSubscriptionDO>(
-                        curProcessTemplate.SubscribedDocuSignTemplates,
+                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedDocuSignTemplates,
                         ptdo.SubscribedDocuSignTemplates);
 
                     //Update DocuSign trigger registration
-                    MakeCollectionEqual<ExternalEventSubscriptionDO>(
-                        curProcessTemplate.SubscribedExternalEvents,
+                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedExternalEvents,
                         ptdo.SubscribedExternalEvents);
                 }
             }
@@ -84,12 +84,53 @@ namespace Core.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="collectionToUpdate"></param>
         /// <param name="sourceCollection"></param>
-        public void MakeCollectionEqual<T>(IList<T> collectionToUpdate, IList<T> sourceCollection)
+        public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class
         {
+            List<T> itemsToAdd = new List<T>();
+            List<T> itemsToRemove = new List<T>();
+            bool found;
+
+            foreach (T entity in collectionToUpdate)
+            {
+                found = false;
+                foreach (T entityToCompare in sourceCollection)
+                {
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    itemsToRemove.Add(entity);
+                }
+            }
+            itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
+            
+            foreach (T entity in sourceCollection)
+            {
+                found = false;
+                foreach (T entityToCompare in collectionToUpdate)
+                {
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    itemsToAdd.Add(entity);
+                }
+            }
+            itemsToAdd.ForEach(i => collectionToUpdate.Add(i));
+
+
             //identify deleted items and remove them from the collection
-            collectionToUpdate.Except(sourceCollection).ToList().ForEach(s => collectionToUpdate.Remove(s));
+            //collectionToUpdate.Except(sourceCollection).ToList().ForEach(s => collectionToUpdate.Remove(s));
             //identify added items and add them to the collection
-            sourceCollection.Except(collectionToUpdate).ToList().ForEach(s => collectionToUpdate.Add(s));
+            //sourceCollection.Except(collectionToUpdate).ToList().ForEach(s => collectionToUpdate.Add(s));
         }
 
         public void Delete(IUnitOfWork uow, int id)

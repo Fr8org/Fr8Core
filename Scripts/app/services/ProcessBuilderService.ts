@@ -18,7 +18,7 @@ module dockyard.services {
     ]);
 
     app.factory('DocuSignTriggerService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/triggersettings')
+        <IDocuSignTriggerService> $resource('/apimocks/processtemplate/triggersettings')
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
