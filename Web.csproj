@@ -387,7 +387,6 @@
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
-    <Content Include="Content\img\forms\try-kwasant-btn.png" />
     <Content Include="Content\img\googleCalendar.png" />
     <Content Include="Content\img\icloud-logo.png" />
     <Content Include="Content\img\icons\sort_asc.png" />
@@ -395,7 +394,6 @@
     <Content Include="Content\img\icons\sort_both.png" />
     <Content Include="Content\img\icons\sort_desc.png" />
     <Content Include="Content\img\icons\sort_desc_disabled.png" />
-    <Content Include="Content\img\icons\watch-video-label.png" />
     <Content Include="Content\img\Management\alexhead.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
@@ -3771,6 +3769,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
+    <Folder Include="Content\img\forms\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
