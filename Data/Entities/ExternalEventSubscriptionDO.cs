@@ -13,6 +13,8 @@ namespace Data.Entities
         [ForeignKey("EventStatusTemplate")]
         public int ExternalEvent { get; set; }
 
+        public string DocuSignTemplateId { get; set; }
+
         public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
 
         [ForeignKey("ProcessTemplate")]
