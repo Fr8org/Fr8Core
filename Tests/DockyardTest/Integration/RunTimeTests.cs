@@ -108,21 +108,6 @@ namespace DockyardTest.Integration
         }
 
 
-        [Test]
-        public void ITest_CanProcessHealthDemoForm()
-        {
-            //Arrange 
-
-
-            //Act
-           
-            //Assert
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();
-                Assert.IsNotNull(fact);
-            }
-        }
     }
 }
 

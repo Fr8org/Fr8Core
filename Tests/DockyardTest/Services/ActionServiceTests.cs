@@ -134,7 +134,7 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test]
+        [Test,Ignore]
         public void CanProcessDocuSignTemplate()
         {
             Core.Services.Action action = new Core.Services.Action();
