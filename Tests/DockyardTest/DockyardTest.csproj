@@ -234,7 +234,6 @@
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
-    <Compile Include="TemplateTests.cs" />
     <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
   </ItemGroup>
