@@ -9,11 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using System.Web.Mvc;
 using DocuSign.Integrations.Client;
 using Microsoft.WindowsAzure;
-
-namespace Core.Managers.APIManagers.Packagers.Docusign
+using Data.Wrappers;
+namespace Data.Wrappers
 {
     public class DocuSignPackager
     {
@@ -26,40 +25,32 @@ namespace Core.Managers.APIManagers.Packagers.Docusign
             ConfigureDocuSignIntegration();
         }
 
-        public string Login()
+        public DocuSignAccount Login(string resource = "")
         {
-            return MakeRequest("");
-        } // 
-        public void ConfigureDocuSignIntegration()
-        {
-            RestSettings.Instance.DistributorCode = CloudConfigurationManager.GetSetting("DocuSignDistributorCode");
-            RestSettings.Instance.DistributorPassword = CloudConfigurationManager.GetSetting("DocuSignDistributorPassword");
-            RestSettings.Instance.IntegratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
-
-            Email = CloudConfigurationManager.GetSetting("DocuSignLoginEmail");
-            ApiPassword = CloudConfigurationManager.GetSetting("DocuSignLoginPassword");
-        }
-
-        public string MakeRequest(string resource)
-        {
- 
             string username = Email ?? "Not Found";
             string password = ApiPassword ?? "Not Found";
-            string integratorKey = RestSettings.Instance.IntegratorKey ?? "Not Found";
-
-            var appSettings = ConfigurationManager.AppSettings;
-            string baseURL = appSettings["BaseUrL"];
-            string requestURL = baseURL + resource;
 
             // set request url, method, and headers.  No body needed for login api call
-            HttpWebRequest request = initializeRequest(requestURL, "GET", null, username, password, integratorKey);
+            //HttpWebRequest request = initializeRequest(requestURL, "GET", null, username, password, integratorKey);
 
             // read the http response
-            string response = getResponseBody(request);
+            // string response = getResponseBody(request);
             //--- display results
-            Debug.Print("\nAPI Call Result: \n\n" + prettyPrintXml(response));
+            //Debug.Print("\nAPI Call Result: \n\n" + prettyPrintXml(response));
 
-            return response;
+            // credentials for sending account
+            Account account = new Account();
+            account.Email = username;
+            account.Password = password;
+
+            // make the Login API call
+            bool result = account.Login();
+
+            if (!result)
+            {
+                throw new InvalidOperationException("Cannot log in to DocuSign. Please check the authentication information on web.config.");
+            }
+            return DocuSignAccount.Create(account);
 
             //}
             //catch (WebException e)
@@ -77,14 +68,23 @@ namespace Core.Managers.APIManagers.Packagers.Docusign
             //}
         } // 
 
-        public string GetEnvelope(Dictionary<string,string> queryParams )
+        public void ConfigureDocuSignIntegration()
         {
-            string paramString = "?from_date=" + queryParams["from_date"];
-            return MakeRequest("envelopes" + paramString);
+            RestSettings.Instance.DistributorCode = CloudConfigurationManager.GetSetting("DocuSignDistributorCode");
+            RestSettings.Instance.DistributorPassword = CloudConfigurationManager.GetSetting("DocuSignDistributorPassword");
+            RestSettings.Instance.IntegratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            RestSettings.Instance.DocuSignAddress = CloudConfigurationManager.GetSetting("environment");
+            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
+
+            Email = CloudConfigurationManager.GetSetting("DocuSignLoginEmail");
+            ApiPassword = CloudConfigurationManager.GetSetting("DocuSignLoginPassword");
         }
 
-
-
+        //public string GetEnvelope(Dictionary<string,string> queryParams)
+        //{
+        //    string paramString = "?from_date=" + queryParams["from_date"];
+        //    return Login("envelopes" + paramString);
+        //}
 
         //***********************************************************************************************
         // --- HELPER FUNCTIONS ---

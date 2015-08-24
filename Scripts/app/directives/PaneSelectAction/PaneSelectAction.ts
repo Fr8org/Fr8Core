@@ -102,7 +102,6 @@ module dockyard.directives.paneSelectAction {
 
         }
 
-
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;

@@ -12,5 +12,7 @@ namespace Data.Interfaces
     public interface ITemplate
     {
         List<string> GetMappableSourceFields(DocuSignEnvelope envelop);
+
+        IEnumerable<string> GetMappableSourceFields(string templateId);
     }
 }

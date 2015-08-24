@@ -82,6 +82,8 @@ namespace Web.App_Start
             //    .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
+            Mapper.CreateMap<UserVM, EmailAddressDO>()
+                .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
             Mapper.CreateMap<UserVM, DockyardAccountDO>()
                 .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
@@ -96,3 +98,14 @@ namespace Web.App_Start
         }
     }
 }
+//Missing type map configuration or unsupported mapping.
+
+//Mapping types:
+//UserVM -> EmailAddressDO
+//Web.ViewModels.UserVM -> Data.Entities.EmailAddressDO
+
+//Destination path:
+//DockyardAccountDO
+
+//Source value:
+//Web.ViewModels.UserVM

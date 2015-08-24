@@ -119,7 +119,6 @@ module dockyard.directives.paneDefineCriteria {
             http: ng.IHttpService,
             urlPrefix: string,
             LocalIdentityGenerator: services.LocalIdentityGenerator) {
-
             console.log('PaneDefineCriteria::onRender', eventArgs);
 
             // If we deal with newly created object (i.e. isTempId === true),
@@ -259,6 +258,9 @@ module dockyard.directives.paneDefineCriteria {
             urlPrefix: string,
             callback: (args: SaveCallbackArgs) => void
             ) {
+
+            //don't save anything if there is no criteria is selected
+            if (!scope.processNodeTemplate) return;
 
             // In case of newly created object (i.e. isTempId === true).
             if (scope.processNodeTemplate.isTempId) {
