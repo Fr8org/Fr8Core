@@ -82,6 +82,7 @@ namespace Core.Services
 
                     foreach (var subscription in subscriptions)
                     {
+                        //checkpoint: figure out why the processnode is not the "50" one that was configured
                         _processTemplate.LaunchProcess(uow, subscription.ProcessTemplate, curEvent);
                     }
                 }

@@ -29,8 +29,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "HealthDemoIntegrationTest",
                 ProcessTemplateState = ProcessTemplateState.Active,
 
-                //UserId = "testUser1"
-                //DockyardAccount = FixtureData.TestDockyardAccount1()
             };
 
 

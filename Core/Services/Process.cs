@@ -34,22 +34,21 @@ namespace Core.Services
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ProcessDO Create(int processTemplateId, int envelopeId)
+        public ProcessDO Create(int processTemplateId, string envelopeId)
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var template = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-                var envelope = uow.EnvelopeRepository.GetByKey(envelopeId);
+                
 
                 if (template == null)
                     throw new ArgumentNullException("processTemplateId");
-                if (envelope == null)
-                    throw new ArgumentNullException("envelopeId");
+              
 
                 curProcessDO.Name = template.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.EnvelopeId = envelopeId.ToString();
+                curProcessDO.EnvelopeId = envelopeId;
 
                 //create process
                 uow.ProcessRepository.Add(curProcessDO);
@@ -67,7 +66,7 @@ namespace Core.Services
 
         public void Launch(ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent)
         {
-            var curProcessDO = Create(curProcessTemplate.Id, curEvent.EnvelopeId.ToInt());
+            var curProcessDO = Create(curProcessTemplate.Id, curEvent.EnvelopeId);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
             

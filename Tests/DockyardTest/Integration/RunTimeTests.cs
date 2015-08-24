@@ -29,7 +29,7 @@ namespace DockyardTest.Integration
     public class RunTimeTests : BaseTest
     {
 
-        [Test]
+        [Test,Ignore]
         [Category("IntegrationTests")]
         public async void ITest_CanProcessHealthDemo()
         {
@@ -77,7 +77,7 @@ namespace DockyardTest.Integration
 
             //add criteria to processnode
             var healthCriteria = FixtureData.TestCriteriaHealthDemo();
-            healthCriteria.ProcessNodeTemplate = healthProcessNodeTemplateDO;
+            healthCriteria.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
             uow.CriteriaRepository.Add(healthCriteria);
 
             //add actionlist to processnode

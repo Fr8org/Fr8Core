@@ -30,7 +30,7 @@ namespace UtilitiesTesting.Fixtures
                 ExecutionType = 2,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
                 LastUpdated = DateTime.Now,
-                //ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1()
+                
             };
             return criteriaDO;
         }
