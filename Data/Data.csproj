@@ -133,7 +133,7 @@
   <ItemGroup>
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToStringConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionRegistrationDO.cs" />
