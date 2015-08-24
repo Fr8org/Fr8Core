@@ -127,7 +127,7 @@ module dockyard.directives.paneSelectTemplate {
         }
 
         public cancel(curScope: IPaneSelectTemplateScope) {
-            curScope.visible = false;
+            this._$scope.visible = false;
         }
 
         public static Factory() {
