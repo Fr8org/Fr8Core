@@ -176,7 +176,7 @@ namespace Core.Services
 
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
-           return _docusignTemplate.GetMappableSourceFields(curActionDO.ActionList.Process.ParentProcessTemplate.Id.ToString());
+           return _docusignTemplate.GetMappableSourceFields(curActionDO.DocuSignTemplateId);
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
