@@ -23,7 +23,7 @@ namespace DockyardTest.Services
 		private IDocuSignNotification _docuSignNotificationService;
 		private DockyardAccount _userService;
 		private string _testUserId = "testuser";
-		private string _xmlPayloadFullPath;
+		private string xmlPayloadFullPath;
         EnvelopeDO envelopeDO;
         ProcessNodeDO processNodeDO;
 
@@ -35,8 +35,8 @@ namespace DockyardTest.Services
 			_userService = ObjectFactory.GetInstance<DockyardAccount>();
 			_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
-			_xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
-			if (_xmlPayloadFullPath == string.Empty)
+			xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, null);
+			if (xmlPayloadFullPath == string.Empty)
 				throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
             envelopeDO = FixtureData.TestEnvelope1();
@@ -49,7 +49,7 @@ namespace DockyardTest.Services
 		public void ProcessService_ThrowsIfXmlInvalid()
 		{
 			_docuSignNotificationService.Process(_testUserId,
-				File.ReadAllText(_xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
+				File.ReadAllText(xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
 		}
 
 		[Test]
@@ -70,7 +70,7 @@ namespace DockyardTest.Services
 		    new EventReporter().SubscribeToAlerts();
 
             //Act
-			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
+			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
 
             //Assert
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -115,7 +115,7 @@ namespace DockyardTest.Services
 			}
 
 			//Act
-			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
+			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
 
 			//Assert
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
