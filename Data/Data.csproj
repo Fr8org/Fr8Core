@@ -159,7 +159,6 @@
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
-    <Compile Include="Interfaces\ITemplate.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
     <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
       <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>

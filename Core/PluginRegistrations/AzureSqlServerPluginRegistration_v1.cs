@@ -55,7 +55,7 @@ namespace Core.PluginRegistrations
                 Mapper.Map(curAction, curActionDto);
 
                 var contentPost = new StringContent(JsonConvert.SerializeObject(curActionDto), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(baseUrl + "/actions/write_to_sql_server/field_mappings", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
+                var response = await client.PostAsync(baseUrl + "/actions/Write_To_Sql_Server/field_mappings", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
 
                 var curMappingTargets = await response.Content.ReadAsStringAsync();
                 return JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());

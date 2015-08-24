@@ -2,7 +2,6 @@
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
-using Microsoft.WindowsAzure;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using System;
@@ -31,12 +30,35 @@ namespace Data.Wrappers
             _tab = new Tab();
             _signer = new Signer();
 
-            var packager = new DocuSignPackager();
-            packager.Email = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
-            packager.ApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
-            Login = packager.Login();
+            Login = EnsureLogin();
         }
 
+        private Account EnsureLogin()
+        {
+            var appSettings = System.Configuration.ConfigurationManager.AppSettings;
+            string username = appSettings["DocuSignLoginEmail"] ?? "Not Found";
+            string password = appSettings["DocuSignLoginPassword"] ?? "Not Found";
+            string integratorKey = appSettings["DocuSignIntegratorKey"] ?? "Not Found";
+
+            // configure application's integrator key and webservice url
+            RestSettings.Instance.IntegratorKey = appSettings["DocuSignIntegratorKey"];
+            RestSettings.Instance.DocuSignAddress = appSettings["environment"];
+            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
+
+            // credentials for sending account
+            Account account = new Account();
+            account.Email = username;
+            account.Password = password;
+
+            // make the Login API call
+            bool result = account.Login();
+
+            if (!result)
+            {
+                throw new InvalidOperationException("Cannot log in to DocuSign. Please check the authentication information on web.config.");
+            }
+            return account;
+        }
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -125,7 +147,6 @@ namespace Data.Wrappers
 
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
-
 
             var username = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
             var password = ConfigurationManager.AppSettings["DocuSignLoginPassword"];

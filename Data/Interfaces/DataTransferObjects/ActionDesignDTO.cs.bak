@@ -8,13 +8,13 @@
 
         public int? ActionListId { get; set; }
 
+        public string DocuTemplateId { get; set; }
+
+
         public string ConfigurationSettings { get; set; }
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
         public string ParentPluginRegistration { get; set; }
-
-	    public string DocuSignTemplateId { get; set; }
-
     }
 }
