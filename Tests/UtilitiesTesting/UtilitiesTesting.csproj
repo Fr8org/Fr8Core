@@ -95,6 +95,7 @@
     <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
+    <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignTemplateSubscription.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />

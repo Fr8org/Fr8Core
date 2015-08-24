@@ -4,8 +4,8 @@ namespace Core.Interfaces
 {
     public interface IProcess
     {
-        ProcessDO Create(int processTemplateId, int envelopeId);
-        void Launch(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope);
-        void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode);
+        ProcessDO Create(int processTemplateId, string envelopeId);
+        void Launch(ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent);
+        void Execute(DocuSignEventDO curEvent, ProcessNodeDO curProcessNode);
     }
 }

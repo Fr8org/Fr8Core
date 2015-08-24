@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using System.Data.Entity;
 using StructureMap;
@@ -143,17 +144,19 @@ namespace Core.Services
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
         }
 
-        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
+        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent)
         {
             if (curProcessTemplate == null)
                 throw new EntityNotFoundException(curProcessTemplate);
 
             if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
             {
-                _process.Launch(curProcessTemplate, curEnvelope);
+                _process.Launch(curProcessTemplate, curEvent);
+
+                //todo: what does this do?
                 ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
                     process =>
-                        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEnvelope.Id.ToString()) &&
+                        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEvent.EnvelopeId.ToString()) &&
                         process.ProcessState == ProcessState.Executing);
                 EventManager.ProcessLaunched(launchedProcess);
             }

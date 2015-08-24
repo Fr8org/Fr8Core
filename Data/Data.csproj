@@ -220,6 +220,10 @@
     <Compile Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.Designer.cs">
       <DependentUpon>201508232336299_DocusignExternalEventGetsTemplateId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.cs" />
+    <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.Designer.cs">
+      <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -635,6 +639,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.resx">
       <DependentUpon>201508232336299_DocusignExternalEventGetsTemplateId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508240346507_removeTemplateFromActionList.resx">
+      <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

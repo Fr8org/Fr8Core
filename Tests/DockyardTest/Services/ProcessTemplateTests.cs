@@ -30,9 +30,9 @@ namespace DockyardTest.Services
 		{
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var envelope = FixtureData.TestEnvelope1();
+                var curEvent = FixtureData.TestDocuSignEvent1();
                 Data.Entities.ProcessTemplateDO processTemplate = null;
-                _processTemplateService.LaunchProcess(uow, processTemplate, envelope);
+                _processTemplateService.LaunchProcess(uow, processTemplate, curEvent);
             }
 		}
 
