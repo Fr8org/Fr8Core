@@ -38,7 +38,7 @@ namespace Data.Infrastructure.StructureMap
 
             SetPrimaryKey<DockyardAccountDO, String>(u => u.Id);
 
-            MigrationConfiguration.Seed(new UnitOfWork(this));
+            MigrationConfiguration.SeedIntoMockDb(new UnitOfWork(this));
         }
 
         private readonly Dictionary<Type, PropertyInfo> _forcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();

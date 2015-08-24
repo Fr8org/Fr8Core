@@ -10,6 +10,6 @@ namespace Core.Interfaces
 
 		int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo);
 		void Delete(IUnitOfWork uow, int id);
-        void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope);
+        void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent);
 	}
 }

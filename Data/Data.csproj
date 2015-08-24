@@ -35,12 +35,9 @@
     <Reference Include="Analytics.NET">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
     </Reference>
-    <Reference Include="AutoMapper, Version=3.3.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.dll</HintPath>
-    </Reference>
-    <Reference Include="AutoMapper.Net4">
-      <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
       <HintPath>..\packages\DocuSign.Integration.Client.dll.1.6.1\lib\DocuSign.Integration.Client.dll</HintPath>
@@ -97,20 +94,35 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.0\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="Zlib.Portable">
@@ -122,7 +134,8 @@
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionRegistrationDO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
@@ -130,9 +143,15 @@
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
@@ -161,6 +180,10 @@
     <Compile Include="Migrations\201508200530298_UpdateProcessProcessNode.Designer.cs">
       <DependentUpon>201508200530298_UpdateProcessProcessNode.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.cs" />
+    <Compile Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.Designer.cs">
+      <DependentUpon>201508201325363_201508202025_ActionListDOActionDo_ActionState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201508201655408_forcemerge.cs" />
     <Compile Include="Migrations\201508201655408_forcemerge.Designer.cs">
       <DependentUpon>201508201655408_forcemerge.cs</DependentUpon>
@@ -181,9 +204,27 @@
     <Compile Include="Migrations\201508210223236_changeDocuSignAccountIdToString.Designer.cs">
       <DependentUpon>201508210223236_changeDocuSignAccountIdToString.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.cs" />
+    <Compile Include="Migrations\201508212307273_forcemerge_actionliststate.Designer.cs">
+      <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508221814236_foo.cs" />
+    <Compile Include="Migrations\201508221814236_foo.Designer.cs">
+      <DependentUpon>201508221814236_foo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.cs" />
+    <Compile Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.Designer.cs">
+      <DependentUpon>201508232336299_DocusignExternalEventGetsTemplateId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.cs" />
+    <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.Designer.cs">
+      <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
+    <Compile Include="States\ActionState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -355,7 +396,9 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
     <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
@@ -565,6 +608,9 @@
     <EmbeddedResource Include="Migrations\201508200530298_UpdateProcessProcessNode.resx">
       <DependentUpon>201508200530298_UpdateProcessProcessNode.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508201325363_201508202025_ActionListDOActionDo_ActionState.resx">
+      <DependentUpon>201508201325363_201508202025_ActionListDOActionDo_ActionState.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508201655408_forcemerge.resx">
       <DependentUpon>201508201655408_forcemerge.cs</DependentUpon>
     </EmbeddedResource>
@@ -579,6 +625,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508210223236_changeDocuSignAccountIdToString.resx">
       <DependentUpon>201508210223236_changeDocuSignAccountIdToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508212307273_forcemerge_actionliststate.resx">
+      <DependentUpon>201508212307273_forcemerge_actionliststate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508221814236_foo.resx">
+      <DependentUpon>201508221814236_foo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.resx">
+      <DependentUpon>201508232336299_DocusignExternalEventGetsTemplateId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508240346507_removeTemplateFromActionList.resx">
+      <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

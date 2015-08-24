@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
+using pluginAzureSqlServer.Services;
 using PluginUtilities.Infrastructure;
 using StructureMap;
 
@@ -12,7 +14,6 @@ namespace pluginAzureSqlServer.Actions {
     
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
-
     //Action container class
     public class Write_To_Sql_Server_v1 : ActionHandler {        
 
@@ -27,10 +28,12 @@ namespace pluginAzureSqlServer.Actions {
             }
         }
 
+        private const string ProviderName = "System.Data.SqlClient";
                
-        private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols" +
-                                                 @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols" +
+        private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols " +
+                                                 @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
                                                  @"ORDER BY tbls.name, cols.COLUMN_NAME";
+
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
         private object GetFieldMappings(ActionDO curActionDO) {
@@ -58,25 +61,41 @@ namespace pluginAzureSqlServer.Actions {
             });
         }
 
-        //TODO - SF - Not sure how to handle this method since the Command stuff is supposedly outdated
         //The original method still exists at the top of the plugin code
         //[HttpPost]
         //[Route("write_to_sql_server/execute")]
-        private object Execute(ActionDO curActionDO) {
-            return null;
-            //try {
-            //    // Creating ExtrationHelper and parsing WriteCommandArgs.
-            //    var parser = new DbServiceJsonParser();
-            //    var writeArgs = parser.ExtractWriteCommandArgs(curActionDO.);
+        private object Execute(ActionDO curActionDO)
+        {
+            var curCommandArgs = CreateCommandArgs(curActionDO);
+            var dbService = new DbService();
 
-            //    // Creating DbService and running WriteCommand logic.
-            //    var dbService = new DbService();                
-            //    dbService.WriteCommand(writeArgs);
-            //}
-            //catch (Exception ex) {
-            //    return CommandResponse.ErrorResponse(ex.Message);
-            //}
-            //return CommandResponse.SuccessResponse();
+            dbService.WriteCommand(curCommandArgs);
+
+            return true;
+        }
+
+        private WriteCommandArgs CreateCommandArgs(ActionDO curActionDO)
+        {
+            var parser = new DbServiceJsonParser();
+            var curConnStringObject = parser.ExtractConnectionString(curActionDO);
+            var curCustomerData = ExtractCustomerData(curActionDO, parser);
+
+            return new WriteCommandArgs(ProviderName, curConnStringObject, curCustomerData);
+        }
+
+        private IEnumerable<Table> ExtractCustomerData(ActionDO curActionDO,DbServiceJsonParser parser)
+        {
+            var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
+            var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
+            
+            if (payloadArray.Count == 0)
+            {
+                throw new Exception("\"payload\" data is empty");
+            }
+
+            var table = parser.CreateTable(payloadArray);
+
+            return new List<Table> {table};
         }
 
         //[HttpGet]
@@ -113,7 +132,7 @@ namespace pluginAzureSqlServer.Actions {
         //    try
         //    {
         //        // Creating ExtrationHelper and parsing WriteCommandArgs.
-        //        var parser = new DbServiceJsonParser();
+                //var parser = new DbServiceJsonParser();
         //        var writeArgs = parser.ExtractWriteCommandArgs(data);
 
         //        // Creating DbService and running WriteCommand logic.

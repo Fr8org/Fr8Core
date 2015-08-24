@@ -13,6 +13,12 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json.Linq;
+using Data.States;
+using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers;
+using Data.Wrappers;
 
 namespace DockyardTest.Services
 {
@@ -92,6 +98,111 @@ namespace DockyardTest.Services
                 //Delete
                 action.Delete(actionDO.Id);
             }
+        }
+
+        [Test]
+        public void CanParsePayload()
+        {
+           var envelope = new DocuSignEnvelope();
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
+                payloadMappings = FixtureData.FieldMappings;
+
+            List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
+
+            var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
+
+            Assert.AreEqual("Johnson", result.Where(p => p.Name == "Doctor").Single().Value);
+            Assert.AreEqual("Marthambles", result.Where(p => p.Name == "Condition").Single().Value);
+        }
+
+        [Test]
+        public void CanLogIncidentWhenFieldIsMissing()
+        {
+            IncidentReporter incidentReporter = new IncidentReporter();
+            incidentReporter.SubscribeToAlerts();
+
+            var envelope = new DocuSignEnvelope();
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
+                payloadMappings = FixtureData.FieldMappings2; //Wrong mappings
+
+            List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
+            var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.IsTrue(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
+            }
+        }
+
+        [Test]
+        public void CanProcessDocuSignTemplate()
+        {
+            Core.Services.Action action = new Core.Services.Action();
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
+                payloadMappings = FixtureData.FieldMappings;
+
+            var processDo = new ProcessDO()
+            {
+                Id = 1,
+                EnvelopeId = envelopeId,
+                ProcessState = 1
+            };
+
+            var actionListDo = new ActionListDO()
+            {
+                Process = processDo,
+                ProcessID = ProcessState.Unstarted,
+                Id = 1,
+                ActionListType = ActionListType.Immediate
+            };
+
+            var actionDo = new ActionDO()
+            {
+                ActionList = actionListDo,
+                ActionListId = 1,
+                ActionType = "testaction",
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
+                FieldMappingSettings = FixtureData.FieldMappings,
+                Id = 1
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionRepository.Add(actionDo);
+                uow.ActionListRepository.Add(actionListDo);
+                uow.ProcessRepository.Add(processDo);
+                uow.SaveChanges();
+            }
+
+            action.Process(actionDo).Wait();
+
+            //Ensure that no Incidents were registered
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.IsFalse(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
+            }
+
+            //We use a mock of IPluginTransmitter. Get that mock and check that 
+            //PostActionAsync was called with the correct attributes
+            var transmitter = ObjectFactory.GetInstance<IPluginTransmitter>(); //it is configured as a singleton so we get the "used" instance
+            var mock = Mock.Get<IPluginTransmitter>(transmitter);
+            mock.Verify(e => e.PostActionAsync(It.Is<string>(s => s == "testaction"), 
+                It.Is<ActionPayloadDTO>(a => IsPayloadValid(a))));
+        }
+
+        private bool IsPayloadValid(ActionPayloadDTO dto)
+        {
+            return (dto.PayloadMappings.Any(m => m.Name == "Doctor" && m.Value == "Johnson") &&
+                dto.PayloadMappings.Any(m => m.Name == "Condition" && m.Value == "Marthambles"));
+        }
+
+        [Test]
+        public void Process_ActionListNotUnstarted_ThrowException()
+        {
+            ActionDO actionDo = FixtureData.TestAction7();
+            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+
+            Assert.AreEqual("Action ID: 2 status is not unstarted.", _action.Process(actionDo).Exception.InnerException.Message);
         }
     }
 }

@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using DocuSign.Integrations.Client;
 using Utilities;
+using Data.Wrappers;
 
 namespace Data.Interfaces
 {
     public interface ITemplate
     {
-        List<string> GetMappableSourceFields(DocuSign.Integrations.Client.Envelope envelop);
+        List<string> GetMappableSourceFields(DocuSignEnvelope envelop);
+
+        IEnumerable<string> GetMappableSourceFields(string templateId);
     }
 }

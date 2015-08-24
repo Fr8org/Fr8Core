@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities.Logging;
 using pluginAzureSqlServer.Infrastructure;
+using Utilities.Logging;
 
 namespace pluginAzureSqlServer.Services
 {
@@ -90,7 +87,8 @@ namespace pluginAzureSqlServer.Services
                 string message;
                 if (!string.IsNullOrEmpty(table.SchemaName))
                 {
-                    message = string.Format("No table \"{0}.{1}\" found on remote database", table.SchemaName, table.TableName);
+                    message = string.Format("No table \"{0}.{1}\" found on remote database", table.SchemaName,
+                        table.TableName);
                 }
                 else
                 {

@@ -5,17 +5,31 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+
+        public static ActionListDO TestActionListHealth1()
+        {
+            return new ActionListDO
+            {
+                Id = 88,
+                Name = "list1",
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = 50
+            };
+
+        }
+
+
         public static ActionListDO TestActionList()
         {
             var curActionListDO = new ActionListDO
             {
                 Id = 1,
-                TemplateId = 1,
+                ProcessNodeTemplateID = 1,
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Actions.Add(TestActionList1());
-            curActionListDO.Actions.Add(TestActionList2());
+            curActionListDO.Actions.Add(TestAction20());
+            curActionListDO.Actions.Add(TestAction21());
 
             return curActionListDO;
         }
@@ -25,32 +39,44 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
                 Id = 4,
-                TemplateId = 1,
+                ProcessNodeTemplateID = 1,
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
             return curActionListDO;
         }
 
-        public static ActionDO TestActionList1()
+      
+
+        public static ActionListDO TestActionListMedical()
         {
-            return new ActionDO
+            var curActionListDO = new ActionListDO
             {
-                Id = 1,
-                UserLabel = "Action 1",
-                ActionListId = 1,
-                Ordering = 1
+                Id = 4,
+                ProcessNodeTemplateID = 1,
+                Name = "list1",
+                ActionListType = ActionListType.Immediate,                    
+            };
+            return curActionListDO;
+        }
+
+        public static ActionListDO TestActionList3()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                CurrentAction = TestAction21(),
+                ActionListState = ActionListState.Inprocess
             };
         }
 
-        public static ActionDO TestActionList2()
+        public static ActionListDO TestActionList4()
         {
-            return new ActionDO
+            return new ActionListDO
             {
                 Id = 2,
-                UserLabel = "Action 2",
-                ActionListId = 1,
-                Ordering = 2
+                CurrentAction = TestAction21(),
+                ActionListState = ActionListState.Unstarted
             };
         }
     }

@@ -16,7 +16,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
-            Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
                 .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
@@ -24,13 +24,25 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
-            Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActionDesignDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
                 .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
+
+            Mapper.CreateMap<ActionDO, ActionPayloadDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
+                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
+                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
+                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
+                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration))
+                .ForMember(a => a.PayloadMappings, opts => opts.ResolveUsing(ad => ad.PayloadMappings))
+                .ForMember(a => a.EnvelopeId, opts => opts.ResolveUsing(ad => ad.ActionList.Process.EnvelopeId));
+
+
+            Mapper.CreateMap<ActionPayloadDTO, ActionDO>();
 
             Mapper.CreateMap<ActionListDO, ActionListDTO>();
 
@@ -49,6 +61,10 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ProcessTemplateDO, FullProcessTemplateDTO>()
                 .ConvertUsing<ProcessTemplateDOFullConverter>();
+
+            Mapper.CreateMap<DocuSign.Integrations.Client.Signer, Data.Wrappers.Signer>();
+
+            Mapper.CreateMap<DocuSign.Integrations.Client.Account, Data.Wrappers.DocuSignAccount>();
         }
     }
 }
