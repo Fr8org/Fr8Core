@@ -254,7 +254,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<DockyardAccountDO>().ToTable("Users");
-            modelBuilder.Entity<DocusignAccountDO>().ToTable("DocusignAccounts");
             modelBuilder.Entity<HistoryItemDO>().ToTable("History");
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
@@ -284,6 +283,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
             modelBuilder.Entity<ActionRegistrationDO>().ToTable("ActionRegistration");
+            modelBuilder.Entity<DocuSignTemplateSubscriptionDO>().ToTable("DocuSignTemplateSubscriptions");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
@@ -292,9 +292,9 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ProcessNodeDO>()
-                .HasRequired(p => p.Process)
-                .WithMany()
-                .HasForeignKey(p => p.ParentProcessId)
+                .HasRequired<ProcessDO>(pn => pn.ParentProcess)
+                .WithMany(p => p.ProcessNodes)
+                .HasForeignKey(pn => pn.ParentProcessId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<DockyardAccountDO>()

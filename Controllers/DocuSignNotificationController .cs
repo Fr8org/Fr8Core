@@ -30,7 +30,7 @@ namespace Web.Controllers
         /// <returns>HTTP 200 if notification is successfully processed, 
         /// HTTP 400 if request does not contain all expected data or malformed.</returns>
         [HttpPost]
-        public async Task<IHttpActionResult> HandleDocuSignNotification([FromUri] string userId)
+        public async Task<IHttpActionResult> Post([FromUri] string userId)
         {
             var xmlPayload = await Request.Content.ReadAsStringAsync();
 

@@ -3,56 +3,57 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
-using pluginAzureSqlServer.Messages;
 using pluginAzureSqlServer.Services;
 using PluginUtilities.Infrastructure;
+using AutoMapper;
+using Data.Entities;
+//using Utilities.Serializers.Json;
+using System.Collections.Generic;
+using Newtonsoft.Json;
+using StructureMap;
+using System.Data.SqlClient;
+using System.Data;
+using pluginAzureSqlServer.Actions;
+using PluginUtilities;
+
 
 namespace pluginAzureSqlServer.Controllers
-{
+{    
+    [RoutePrefix("plugin_azure_sql_server/actions")]
     public class ActionController : ApiController
-    {
-        public const string Version = "1.0";
-        public const string AvailableActions = "{'type_name':'write to azure sql server','version':4.3}";
+    {       
+        //public const string Version = "1.0";
 
-        /// <summary>
-        /// Insert user data to remote database tables.
-        /// </summary>
+        private readonly Write_To_Sql_Server_v1 _actionHandler;
+
+        public ActionController() {
+            _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>(); //remove this initialization once Process is modified, below
+        }
+
         [HttpPost]
-        [Route("writeSQL")]
-        public CommandResponse Write(JObject data)
+        public string Process(string path, ActionDTO curActionDTO)
         {
-            try
-            {
-                // Creating ExtrationHelper and parsing WriteCommandArgs.
-                var parser = new DbServiceJsonParser();
-                var writeArgs = parser.ExtractWriteCommandArgs(data);
 
-                // Creating DbService and running WriteCommand logic.
-                var dbService = new DbService();
-                dbService.WriteCommand(writeArgs);
-            }
-            catch (Exception ex)
-            {
-                return CommandResponse.ErrorResponse(ex.Message);
-            }
+            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
 
-            return CommandResponse.SuccessResponse();
+            //extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
+            //instantiate the class corresponding to that action by:
+            //   a) Capitalizing each word
+            //   b) adding "_v1" onto the end (this will get smarter later)
+            //   c) Create an instance. probably create a Type using the string and then use ObjectFactory.GetInstance<T>. you want to end up with this:
+            //            "_actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();"
+            //   d) call that instance's Process method, passing it the remainder of the path and an ActionDO
+
+
+            //Redirects to the action handler with fallback in case of a null retrn
+            return JsonConvert.SerializeObject(
+                _actionHandler.Process(path, curAction) ?? new { }
+            );
         }
 
-        [HttpGet]
-        [Route("available")]
-        public string GetAvailable()
-        {
-            Validations.ValidateDtoString<ActionTypeListDTO>(AvailableActions);
+       
 
-            return AvailableActions;
-        }
 
-        [HttpGet]
-        [Route("configurationsettings")]
-        public string GetConfigurationSettings()
-        {
-            return string.Empty;
-        }
+
     }
 }

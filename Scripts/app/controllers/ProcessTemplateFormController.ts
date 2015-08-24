@@ -22,7 +22,7 @@ module dockyard.controllers {
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private $scope: interfaces.IProcessTemplateScope,
-            private ProcessTemplateService: services.IProcessTemplateVMService,
+            private ProcessTemplateService: services.IProcessTemplateService,
             private $stateParams: any,
             private StringService: services.IStringService) {
 
@@ -40,10 +40,17 @@ module dockyard.controllers {
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    ProcessTemplateService.save($scope.ptvm).$promise
+                    if (!$scope.ptvm.ProcessTemplateState) {
+                        $scope.ptvm.ProcessTemplateState = dockyard.interfaces.ProcessState.Inactive;
+                    }
+
+                    var result = ProcessTemplateService.save($scope.ptvm);
+
+                    result.$promise
                         .finally(function () {
+                            console.log(result);
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes/' + id + '/builder';
+                            window.location.href = '#processes/' + result.Id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {

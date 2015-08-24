@@ -9,6 +9,7 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Web.ViewModels;
 
@@ -41,8 +42,8 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(id);
-                var curCriteria = curProcessNodeTemplate.Criteria;
+                var curCriteria = uow.CriteriaRepository.GetQuery()
+                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id);
 
                 return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
             };
@@ -69,7 +70,6 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="dto">ProcessNodeTemplate data transfer object.</param>
         /// <returns>Created ProcessNodeTemplate with global id.</returns>
-        [ResponseType(typeof(int))]
         public IHttpActionResult Post(ProcessNodeTemplateDTO dto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -79,7 +79,7 @@ namespace Web.Controllers
 
                 uow.SaveChanges();
 
-                return Ok(processNodeTemplate.Id);
+                return Ok(new { Id = processNodeTemplate.Id });
             }
         }
 

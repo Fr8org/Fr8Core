@@ -189,7 +189,7 @@
                     height: ns.WidgetConsts.startNodeHeight
                 });
             
-            var label = new fabric.Text('START', {
+            var label = new fabric.Text('Choose Template...', {
                 fontSize: ns.WidgetConsts.startNodeTextSize,
                 fontFamily: ns.WidgetConsts.startNodeTextFont,
                 fontWeight: ns.WidgetConsts.startNodeTextWeight,
@@ -268,7 +268,8 @@
             ns.FabricJsCriteriaNode.super.constructor.call(this);
 
             this._criteriaName = criteriaName;
-            this._object = this;
+            this._label = null;
+            this._object = null;
         },
 
         init: function () {
@@ -301,7 +302,12 @@
 
             group.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
 
+            this._label = label;
             this._object = group;
+        },
+
+        setText: function (text) {
+            this._label.setText(text);
         },
 
         getFabricObject: function () {
@@ -445,16 +451,32 @@
         },
 
         init: function () {
-            var label = new fabric.Text('Add action', {
+            var imagePath = ns.ImageLoader.instance.getImage(ns.WidgetConsts.addActionNodeAddImage)
+            var image = new fabric.Image(imagePath, {
+                left: 75,
+                top: 0  
+            });
+
+            var label = new fabric.Text('Add Action', {
                 fontSize: ns.WidgetConsts.addActionNodeTextSize,
                 fontFamily: ns.WidgetConsts.addActionNodeTextFont,
                 fill: ns.WidgetConsts.addActionNodeTextFill,
                 selectable: false
             });
 
-            label.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
+            var line = new fabric.Line([ns.WidgetConsts.actionsNodeWidth - ns.WidgetConsts.actionsNodeCornerRadius, 0, 10, 0], {
+                left: 0,
+                top: label.getTop() - ns.WidgetConsts.actionsNodeBottomHeight,
+                stroke: ns.WidgetConsts.arrowStroke
+            });
 
-            this._object = label;
+            var group = new fabric.Group([label, image, line], {
+                selectable: false
+            });
+
+            group.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
+
+            this._object = group;
         },
 
         getFabricObject: function () {

@@ -2,8 +2,11 @@
 using System.IO;
 using System.Linq;
 using Core.Interfaces;
+using Core.Managers;
 using Core.Services;
+using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -45,8 +48,24 @@ namespace DockyardTest.Services
 		[Test]
 		public void ProcessService_NotificationReceivedAlertCreated()
 		{
+            //Arrange 
+            //create a test process
+		    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+		    {
+		        var process = FixtureData.TestProcess1();
+		        process.EnvelopeId = "0aa561b8-b4d9-47e0-a615-2367971f876b";
+		        process.ProcessState = ProcessState.Executing;
+		        uow.ProcessRepository.Add(process);
+		        uow.SaveChanges();
+		    }
+
+            //subscribe the events
+		    new EventReporter().SubscribeToAlerts();
+
+            //Act
 			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
 
+            //Assert
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();
@@ -117,6 +136,51 @@ namespace DockyardTest.Services
 			}
 		}
 
+        [Test]
+        public void Process_CanAccessProcessNodes()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                var envelope = FixtureData.TestEnvelope1();
+                var processTemplate = FixtureData.TestProcessTemplate1();
+
+                uow.EnvelopeRepository.Add(envelope);
+                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.SaveChanges();
+
+                //Act
+                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.Id);
+
+                //Assert
+                int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
+                int actualprocessNodeCount = curProcess.ProcessNodes.Count;
+                Assert.AreEqual(expectedProcessNodeCount, actualprocessNodeCount);
+            }
+        }
+
+        public void ProcessNode_CanAccessParentProcess()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                var envelope = FixtureData.TestEnvelope1();
+                var processTemplate = FixtureData.TestProcessTemplate1();
+
+                uow.EnvelopeRepository.Add(envelope);
+                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.SaveChanges();
+
+                //Act
+                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.Id);
+
+                //Assert
+                int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
+                int actualprocessId = uow.ProcessNodeRepository.GetByKey(curProcess.ProcessNodes.First().Id).Id;
+                Assert.AreEqual(expectedProcessId, actualprocessId);
+            }
+        }
+
 		[Test]
 		[ExpectedException(typeof (ArgumentNullException))]
 		public void ProcessService_CanNot_CreateProcessWithIncorrectEnvelope()
@@ -161,7 +225,7 @@ namespace DockyardTest.Services
 				uow.ProcessTemplateRepository.Add(template);
 				uow.SaveChanges();
 
-				_processService.Execute(template, envelope);
+				_processService.Launch(template, envelope);
 			}
 		}
 	}

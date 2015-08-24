@@ -58,6 +58,10 @@
     <Reference Include="DayPilot.Web.Mvc">
       <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
+      <HintPath>packages\DocuSign.Integration.Client.dll.1.6.1\lib\DocuSign.Integration.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -263,7 +267,6 @@
     <Compile Include="Controllers\ProcessTemplateController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
-    <Compile Include="Controllers\MetaflowController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\DocuSignNotificationController .cs" />
     <Compile Include="Controllers\ProcessController.cs" />
@@ -314,14 +317,8 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MvcHandleErrorAttribute.cs" />
-    <Compile Include="ViewModels\ActionDTOBase.cs" />
-    <Compile Include="ViewModels\ActionListDTO.cs" />
-    <Compile Include="ViewModels\ActionDTO.cs" />
-    <Compile Include="ViewModels\AutoMapper\ProcessTemplateDOFullConverter.cs" />
-    <Compile Include="ViewModels\CriteriaDTO.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
-    <Compile Include="ViewModels\FullProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
@@ -337,8 +334,6 @@
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
-    <Compile Include="ViewModels\ProcessNodeTemplateDTO.cs" />
-    <Compile Include="ViewModels\ProcessTemplateDTO.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
@@ -378,6 +373,7 @@
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\toolbar.min.css" />
+    <Content Include="Content\DO-823.sql" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
     <Content Include="Content\img\backgrounds\cup-and-coffe-bg.png" />
@@ -401,6 +397,7 @@
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
+    <Content Include="Content\img\ProcessBuilder\action-add-small.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-bg.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-bottom.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-top.png" />
@@ -671,11 +668,16 @@
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
+    <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\tests\integration\processtemplatecontroller_tests.js" />
+    <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneFieldParamMapper\PaneFieldParamMapper.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
-    <TypeScriptCompile Include="Scripts\tests\mocks\TypedScopeFactory.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixtures.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
@@ -3830,6 +3832,10 @@
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneFieldParamMapper.html" />
+    <Content Include="Scripts\tests\Chutzpah.json" />
+    <Content Include="RunFrontEndTests - With Web Server.ps1" />
+    <Content Include="RunFrontEndTests.ps1" />
+    <None Include="Properties\PublishProfiles\test.pubxml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -3937,7 +3943,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
-    <Folder Include="Content\NewFolder1\" />
     <Folder Include="Content\templates\metronic\assets\global\plugins\angularjs\plugins\angular-file-upload\uploads\" />
     <Folder Include="Content\templates\metronic\demo\" />
     <Folder Include="Controllers\Templates\" />
@@ -3965,10 +3970,17 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="PluginUtilities\PluginUtilities.csproj">
+      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
+      <Name>PluginUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'alexlocal|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -4033,5 +4045,23 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+    CustomCollectFiles;
+    $(CopyAllFilesToSingleFolderForPackageDependsOn);
+  </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+    CustomCollectFiles;
+    $(CopyAllFilesToSingleFolderForPackageDependsOn);
+  </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="CustomCollectFiles">
+    <ItemGroup>
+      <_CustomFiles Include=".\bower_components\**\*" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>bower_components\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
   </Target>
 </Project>

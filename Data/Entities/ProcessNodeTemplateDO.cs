@@ -6,10 +6,11 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ProcessNodeTemplateDO
+    public class ProcessNodeTemplateDO : BaseDO
     {
         public ProcessNodeTemplateDO()
         {
+            this.Criteria = new List<CriteriaDO>();
             this.ActionLists = new List<ActionListDO>();
         }
 
@@ -28,9 +29,9 @@ namespace Data.Entities
         /// this is a JSON structure that is a array of key-value pairs that represent possible transitions. Example:
         ///[{'Flag':'true','Id':'234kljdf'},{'Flag':'false','Id':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.
         /// </summary>
-        public string TransitionKey { get; set; }
+        public string NodeTransitions { get; set; }
 
-        public virtual CriteriaDO Criteria { get; set; }
+        public virtual List<CriteriaDO> Criteria { get; set; }
 
         public virtual List<ActionListDO> ActionLists { get; set; }
 

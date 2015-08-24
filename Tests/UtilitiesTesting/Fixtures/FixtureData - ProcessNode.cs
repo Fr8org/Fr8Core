@@ -5,13 +5,13 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-		public ProcessNodeDO TestProcessNode()
+		public static ProcessNodeDO TestProcessNode()
 		{
 			var processNode = new ProcessNodeDO();
 			processNode.Id = 50;
 			processNode.ParentProcessId = 49;
 			processNode.ProcessNodeState = ProcessNodeState.Unstarted;
-			processNode.Process = TestProcess1();
+			processNode.ParentProcess = TestProcess1();
 
 			return processNode;
 		}

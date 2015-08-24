@@ -1,5 +1,6 @@
 using System.Data.Entity;
 using Data.Entities;
+using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using StructureMap.Configuration.DSL;
 
@@ -21,7 +22,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));                
             }
         }
 
@@ -31,6 +32,8 @@ namespace Data.Infrastructure.StructureMap
             {
                 For<DbContext>().Use<DockyardDbContext>();
                 For<IDBContext>().Use<DockyardDbContext>();
+
+                DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
 
@@ -39,6 +42,8 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IDBContext>().Use<MockedDBContext>();
+
+                DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
     }

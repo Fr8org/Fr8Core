@@ -19,15 +19,20 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult Event(EventDTO submittedEvent)
+        public IHttpActionResult Post(EventDTO submittedEvent)
         {
             if (submittedEvent.EventType.Equals("Plugin Incident"))
             {
                 _event.HandlePluginIncident(submittedEvent.Data);
                 return Ok();
             }
+            else if (submittedEvent.EventType.Equals("Plugin Event"))
+            {
+                _event.HandlePluginEvent(submittedEvent.Data);
+                return Ok();
+            }
 
-            throw new InvalidOperationException("Only plugin incidents are handled at this moment.");
+            throw new InvalidOperationException("Only plugin incidents and events are handled.");
         }
     }
 }

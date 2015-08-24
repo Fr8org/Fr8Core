@@ -1,6 +1,7 @@
-﻿
+
+using System;
 using System.Configuration;
-using Core.ExternalServices.REST;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Utilities;
 
 namespace PluginUtilities
@@ -22,41 +23,53 @@ namespace PluginUtilities
         /// <param name="pluginName"></param>
         private static void ReportStartUp(string pluginName)
         {
-            //prepare the event information
-            var json = string.Format(
-                @"{{
-                    ""Source"":""{0}"",
-                    ""EventType"":""Plugin Incident"",
-                    ""Data"":
-                        {{
-                            ""ObjectId"":""{0}"",
-                            ""CustomerId"":""not_applicable"",
-                            ""Data"":""service_start_up"",
-                            ""PrimaryCategory"":""Operations"",
-                            ""SecondaryCategory"":""System Startup"",
-                            ""Activity"":""system startup""                                
-                        }}
-                }}", 
-                pluginName);
+            //SendEventOrIncidentReport(pluginName,  "Plugin Incident");
+        }
+
+        
+        /// <summary>
+        /// Reports event when process an action
+        /// </summary>
+        /// <param name="pluginName"></param>
+        private static void ReportEvent(string pluginName)
+        {
+            SendEventOrIncidentReport(pluginName, "Plugin Event");
+        }﻿
+
+        private static void SendEventOrIncidentReport(string pluginName, string eventType)
+        {
+            //SF DEBUG -- Skip this event call for local testing
+            //return;
+
 
             //make Post call
-            RestfulCallWrapper restCall = PrepareRestCall();
-            restCall.AddBody(json, "application/json");
-            restCall.Execute();
+            var restClient = PrepareRestClient();
+            const string eventWebServerUrl = "EventWebServerUrl";
+            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            restClient.PostAsync(new Uri(url, UriKind.Absolute),
+                new
+                {
+                    Source = pluginName,
+                    EventType = eventType,
+                    Data = new
+                    {
+                        ObjectId = pluginName,
+                        CustomerId = "not_applicable",
+                        Data = "service_start_up",
+                        PrimaryCategory = "Operations",
+                        SecondaryCategory = "System Startup",
+                        Activity = "system startup",
+                    }
+                }).Wait();
+
         }
 
         /// <summary>
         /// Initializes a new rest call
         /// </summary>
-        private static RestfulCallWrapper PrepareRestCall()
+        private static IRestfulServiceClient PrepareRestClient()
         {
-            const string eventWebServerUrl = "EventWebServerUrl";
-
-            var restCall = new RestfulCallWrapper();
-
-            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
-            restCall.Initialize(url, string.Empty, Method.POST);
-
+            var restCall = new RestfulServiceClient();
             return restCall;
         }
     }

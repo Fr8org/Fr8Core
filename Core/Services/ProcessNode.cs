@@ -4,6 +4,7 @@ using System.Linq;
 using Core.Helper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using Newtonsoft.Json;
@@ -16,16 +17,17 @@ namespace Core.Services
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess)
+        public ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name="ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
-                //ProcessNodeTemplate = 
+                Name = name,
                 ParentProcessId = parentProcess.Id
             };
 
             uow.ProcessNodeRepository.Add(processNode);
+            EventManager.ProcessNodeCreated(processNode);
 
             return processNode;
         }
@@ -38,7 +40,7 @@ namespace Core.Services
         public void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode)
         {
             var keys =
-                JsonConvert.DeserializeObject<List<TransitionKeyData>>(sourcePNode.ProcessNodeTemplate.TransitionKey);
+                JsonConvert.DeserializeObject<List<TransitionKeyData>>(sourcePNode.ProcessNodeTemplate.NodeTransitions);
 
             if (!this.IsCorrectKeysCountValid(keys))
                 throw new ArgumentException("There should only be one key with false.");
@@ -46,12 +48,16 @@ namespace Core.Services
             var key = keys.First(k => k.Flag.Equals("false", StringComparison.OrdinalIgnoreCase));
             key.Id = targetPNode.Id.ToString();
 
-            sourcePNode.ProcessNodeTemplate.TransitionKey = JsonConvert.SerializeObject(keys, Formatting.None);
+            sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
-        public void Execute(ProcessDO parentProcess, EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
         {
             //TODO: implement
+           
+
+            //if Criteria#Evaluate then ActionList#Process
+            
         }
 
         /// <summary>

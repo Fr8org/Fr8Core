@@ -9,7 +9,8 @@
                 ns.WidgetConsts.criteriaNodeBgImage,
                 ns.WidgetConsts.actionsNodeTopImage,
                 ns.WidgetConsts.actionsNodeBottomImage,
-                ns.WidgetConsts.actionsNodeBgImage
+                ns.WidgetConsts.actionsNodeBgImage,
+                ns.WidgetConsts.addActionNodeAddImage
             ];
 
             this._images = {};

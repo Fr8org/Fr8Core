@@ -15,6 +15,8 @@ using StructureMap;
 using Utilities.Logging;
 using Core.PluginRegistrations;
 using Core.Interfaces;
+using Core.Managers.APIManagers.Packagers.Docusign;
+using DocuSign.Integrations.Client;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -28,6 +30,9 @@ namespace Web
             ConfigureAuth(app);
             ConfigureCommunicationConfigs();
             RegisterPluginActions();
+
+            DocuSignPackager _docusignPackager = new DocuSignPackager(); //this configures the login credentials for DocuSign
+
         }
 
 
@@ -63,6 +68,7 @@ namespace Web
         }
 
 
+
         private static void ConfigureDaemons()
         {
             DaemonSettings daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
@@ -95,13 +101,12 @@ namespace Web
             }
         }
 
-        private void RegisterPluginActions()
+        public void RegisterPluginActions()
         {
-            IAction _action = ObjectFactory.GetInstance<IAction>();
             IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
                 .Assembly.GetTypes()
                 .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t, _action));
+                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
             foreach (var plugin in plugins)
             {
                 plugin.RegisterActions();

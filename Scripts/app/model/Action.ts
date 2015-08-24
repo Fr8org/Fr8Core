@@ -1,22 +1,26 @@
 ﻿module dockyard.model {
-    export class Action implements interfaces.IAction {
+    export class Action {
         id: number;
-        tempId: number;
+        isTempId: boolean;
         criteriaId: number;
-        name: string;
-        actionTypeId: number;
+        actionType: string;
+        actionListId: number
+        configurationSettings: string;
+        fieldMappingSettings: string;
+        userLabel: string
 
-        constructor(id: number, tempId: number, criteriaId: number) {
+        constructor(id: number, isTempId: boolean, criteriaId: number) {
             this.criteriaId = criteriaId;
             this.id = id;
-            this.tempId = tempId;
+            this.isTempId = isTempId;
         }
 
         clone(): Action {
-            var result = new Action(this.id, this.tempId, this.criteriaId);
-            result.name = this.name;
-            result.actionTypeId = this.actionTypeId;
+            var result = new Action(this.id, this.isTempId, this.criteriaId);
+            result.userLabel = this.userLabel;
+            result.actionType = this.actionType;
 
+            result.userLabel = this.userLabel;
             return result;
         }
     }

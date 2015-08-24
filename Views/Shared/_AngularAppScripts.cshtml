@@ -13,8 +13,6 @@
 @if (Request.IsLocal)
 {
     <script src="~/bower_components/angular-mocks/angular-mocks.js"></script>
-    
-
 }
 <!-- END CORE ANGULARJS PLUGINS -->
 <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
@@ -34,6 +32,7 @@
 <script src="~/Scripts/app/model/Condition.js"></script>
 <script src="~/Scripts/app/model/Criteria.js"></script>
 <script src="~/Scripts/app/model/Field.js"></script>
+<script src="~/Scripts/app/model/ProcessNodeTemplate.js"></script>
 
 <!-- SERVICES -->
 <script src="~/Scripts/app/services/ProcessTemplateService.js"></script>
@@ -46,6 +45,7 @@
 <!-- DIRECTIVES -->
 <script src="~/Scripts/app/directives/EventArgsBase.js"></script>
 <script type="text/javascript" src="~/Scripts/app/directives/directives.js"></script>
+<script src="~/Scripts/app/directives/indiClick.js"></script>
 
 <!-- pane-workflow-designer -->
 <script src="~/Scripts/app/directives/PaneWorkflowDesigner/Messages.js"></script>
@@ -71,9 +71,8 @@
 <!-- pane-configure-mapping -->
 <script src="~/Scripts/app/directives/PaneConfigureMapping/PaneConfigureMapping.js"></script>
 
-<!-- pane-field-mapping -->
+<!-- pane-field-param-mapper -->
 <script src="~/Scripts/app/directives/PaneFieldParamMapper/PaneFieldParamMapper.js"></script>
-
 <!-- CONTROLLERS -->
 <script src="~/Scripts/app/controllers/ProcessBuilderController.js"></script>
 <script src="~/Scripts/app/controllers/ProcessTemplateFormController.js"></script>

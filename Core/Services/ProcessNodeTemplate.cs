@@ -21,29 +21,31 @@ namespace Core.Services
             {
                 throw new Exception("Creating logic was passed a null ProcessNodeTemplateDO");
             }
+            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
 
+            // Saving criteria entity in repository.
             var criteria = new CriteriaDO()
             {
+                ProcessNodeTemplate = processNodeTemplate,
                 ExecutionType = CriteriaExecutionType.WithoutConditions
             };
             uow.CriteriaRepository.Add(criteria);
 
-            processNodeTemplate.Criteria = criteria;
-            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
-
+            // Saving immediate action list entity in repository.
             var immediateActionList = new ActionListDO()
             {
                 Name = "Immediate",
                 ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplateID = processNodeTemplate.Id
+                ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(immediateActionList);
 
+            // Saving scheduled action list entity in repository.
             var scheduledActionList = new ActionListDO()
             {
                 Name = "Scheduled",
                 ActionListType = ActionListType.Scheduled,
-                ProcessNodeTemplateID = processNodeTemplate.Id
+                ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(scheduledActionList);
         }
@@ -65,7 +67,7 @@ namespace Core.Services
             }
 
             curProcessNodeTemplate.Name = processNodeTemplate.Name;
-            curProcessNodeTemplate.TransitionKey = processNodeTemplate.TransitionKey;
+            curProcessNodeTemplate.NodeTransitions = processNodeTemplate.NodeTransitions;
         }
 
         /// <summary>
@@ -98,10 +100,17 @@ namespace Core.Services
 
             uow.SaveChanges();
 
-            // Remove Criteria and ProcessNoteTemplate
-            uow.CriteriaRepository.Remove(processNodeTemplate.Criteria);
-            uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
+            // Remove Criteria.
+            uow.CriteriaRepository
+                .GetQuery()
+                .Where(x => x.ProcessNodeTemplateID == id)
+                .ToList()
+                .ForEach(x => uow.CriteriaRepository.Remove(x));
 
+            uow.SaveChanges();
+
+            // Remove ProcessNodeTemplate.
+            uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
             uow.SaveChanges();
         }
     }
