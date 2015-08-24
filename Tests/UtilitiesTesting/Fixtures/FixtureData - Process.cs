@@ -70,7 +70,7 @@ namespace UtilitiesTesting.Fixtures
 		/// </summary>
 		/// <param name="physLocation"></param>
 		/// <returns></returns>
-		public static string FindXmlPayloadFullPath(string physLocation, string filepath= "DockyardTest\\Content\\DocusignXmlPayload.xml")
+		public static string FindXmlPayloadFullPath(string physLocation, string filepath="DockyardTest\\Content\\DocusignXmlPayload.xml")
 		{
 			if (string.IsNullOrEmpty(physLocation))
 				return string.Empty;

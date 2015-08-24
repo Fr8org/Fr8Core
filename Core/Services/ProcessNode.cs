@@ -6,6 +6,7 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
@@ -52,11 +53,11 @@ namespace Core.Services
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
-        public string Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
             string evaluationResult = "";
             var _criteria = ObjectFactory.GetInstance<ICriteria>();
-            bool result = _criteria.Evaluate(curEnvelope, curProcessNode);
+            bool result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
                 var _curActionList = ObjectFactory.GetInstance<IActionList>();

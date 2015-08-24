@@ -35,7 +35,7 @@ namespace DockyardTest.Services
 			_userService = ObjectFactory.GetInstance<DockyardAccount>();
 			_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
-			xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, null);
+			xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
 			if (xmlPayloadFullPath == string.Empty)
 				throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
@@ -227,13 +227,13 @@ namespace DockyardTest.Services
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				var template = FixtureData.TestProcessTemplate1();
-				var envelope = FixtureData.TestEnvelope1();
+				var curEvent = FixtureData.TestDocuSignEvent1();
 
-				uow.EnvelopeRepository.Add(envelope);
+               
 				uow.ProcessTemplateRepository.Add(template);
 				uow.SaveChanges();
 
-				_processService.Launch(template, envelope);
+				_processService.Launch(template, curEvent);
 			}
 		}
 
@@ -247,7 +247,8 @@ namespace DockyardTest.Services
                uow.CriteriaRepository.Add(FixtureData.TestCriteria1());
                uow.SaveChanges();
             };
-            _processService.Execute(envelopeDO, processNodeDO);
+            var curEvent = FixtureData.TestDocuSignEvent1();
+            _processService.Execute(curEvent, processNodeDO);
         }
 
 	}

@@ -1,5 +1,7 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -7,6 +9,6 @@ namespace Core.Interfaces
 	{
 		ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name);
 		void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode);
-		string Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode);
+		string Execute(List<EnvelopeDataDTO> curEnvelopeData, ProcessNodeDO curProcessNode);
 	}
 }

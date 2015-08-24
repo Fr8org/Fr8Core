@@ -10,15 +10,22 @@ using Newtonsoft.Json;
 using Core.Helper;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Interfaces.DataTransferObjects;
+using Data.Wrappers;
+using DocuSign.Integrations.Client;
+using Utilities;
+
 namespace Core.Services
 {
     public class Process : IProcess
     {
         private readonly IProcessNode _processNode;
+        private readonly DocuSignEnvelope _envelope ;
 
         public Process()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
+            _envelope = new DocuSignEnvelope();
         }
 
         /// <summary>
@@ -58,9 +65,9 @@ namespace Core.Services
 
 
 
-        public void Launch(ProcessTemplateDO curProcessTemplate, EnvelopeDO curEnvelope)
+        public void Launch(ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent)
         {
-            var curProcessDO = Create(curProcessTemplate.Id, curEnvelope.Id);
+            var curProcessDO = Create(curProcessTemplate.Id, curEvent.EnvelopeId.ToInt());
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
             
@@ -68,17 +75,21 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ProcessNodeDO curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
-                Execute(curEnvelope, curProcessNode);
+                Execute(curEvent, curProcessNode);
             }
         }
 
-        public void Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        public void Execute(DocuSignEventDO curEvent, ProcessNodeDO curProcessNode)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                DocuSignEnvelope curDocuSignEnvelope = new DocuSignEnvelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
+                List<EnvelopeDataDTO> curEnvelopeData = _envelope.GetEnvelopeData(curDocuSignEnvelope);
+
+
                 while (curProcessNode != null)
                 {
-                    string nodeTransitionKey = _processNode.Execute(curEnvelope, curProcessNode);
+                    string nodeTransitionKey = _processNode.Execute(curEnvelopeData, curProcessNode);
                     if (nodeTransitionKey != string.Empty)
                     {
                         var nodeTransitions = JsonConvert.DeserializeObject<List<TransitionKeyData>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
