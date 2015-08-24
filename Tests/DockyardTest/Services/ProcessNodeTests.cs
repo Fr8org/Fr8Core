@@ -38,8 +38,8 @@ namespace DockyardTest.Services
             //verify that, when Execute is called, true is returned
             //SETUP
             var sampleNode = FixtureData.TestProcessNode();
-            var sampleEnvelope = FixtureData.TestEnvelope1();
-            
+		    var sampleEnvelope = FixtureData.TestEnvelopeDataList1();
+
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
             string criteria = "fake criteria";

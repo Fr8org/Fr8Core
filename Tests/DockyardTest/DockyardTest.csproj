@@ -295,6 +295,9 @@
     <Folder Include="Timeslots\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\DocusignXmlPayload_healthdemo.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Content\DocusignXmlPayload_invalid.xml">
       <SubType>Designer</SubType>
     </Content>
