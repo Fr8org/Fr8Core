@@ -12,7 +12,7 @@
 
         public string ParentPluginRegistration { get; set; }
 
-        public string PayloadMappings { get; set; }
+        public PayloadMappingsDTO PayloadMappings { get; set; }
 
         public string EnvelopeId { get; set; }
     }

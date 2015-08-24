@@ -41,6 +41,9 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.PayloadMappings, opts => opts.ResolveUsing(ad => ad.PayloadMappings))
                 .ForMember(a => a.EnvelopeId, opts => opts.ResolveUsing(ad => ad.ActionList.Process.EnvelopeId));
 
+
+            Mapper.CreateMap<ActionPayloadDTO, ActionDO>();
+
             Mapper.CreateMap<ActionListDO, ActionListDTO>();
 
             Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
@@ -61,6 +64,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<DocuSign.Integrations.Client.Signer, Data.Wrappers.Signer>();
 
+            Mapper.CreateMap<DocuSign.Integrations.Client.Account, Data.Wrappers.DocuSignAccount>();
         }
     }
 }

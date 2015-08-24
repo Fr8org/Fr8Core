@@ -19,9 +19,17 @@ namespace DockyardTest.Controllers
     [TestFixture]
     public class ActionControllerTest : BaseTest
     {
+
+        private IAction _action;
+
+        public ActionControllerTest()
+        {
+            
+        }
         public override void SetUp()
         {
             base.SetUp();
+            _action = ObjectFactory.GetInstance<IAction>();
             CreateEmptyActionList();
         }
 
@@ -114,9 +122,9 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curActionRegistration = FixtureData.TestActionRegistrationDO1();
-                var _service = new Core.Services.Action();
+                
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_service.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+                Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
             }
         }
 
@@ -213,7 +221,7 @@ namespace DockyardTest.Controllers
         }
 
         /// <summary>
-        /// Creates a new Action with the given actiond ID
+        /// Creates a new Action with the given action ID
         /// </summary>
         private ActionDesignDTO CreateActionWithId(int actionId)
         {
@@ -224,10 +232,43 @@ namespace DockyardTest.Controllers
                 ActionType = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
-                FieldMappingSettings = "JSON Field Mapping Settings",
+                FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ParentPluginRegistration = "AzureSql"
             };
         }
 
+
+        
+
+        [Test]
+        [Ignore]
+        // To run and pass this test 
+        // pluginAzureSqlServer should be running 
+        // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
+        // make sure that the endpoint is running 
+        // in azure db you need a db demodb_health
+        public async  void Can_Get_FieldMappingTargets()
+        {
+            
+            //Arrange 
+            string pluginName =
+                "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
+            string dataSource =
+                "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+            var cntroller = new ActionController();
+            //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
+
+            var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
+            {
+                ParentPluginRegistration = pluginName,
+                ConfigurationSettings = "{\"connection_string\":\"" + dataSource + "\"}"
+            });
+
+          
+            await task;
+            Assert.NotNull(task.Result);
+            Assert.Greater(task.Result.Count(),0);
+            task.Result.ToList().ForEach(Console.WriteLine);
+        }
     }
 }

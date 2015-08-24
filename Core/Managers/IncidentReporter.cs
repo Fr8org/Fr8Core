@@ -313,7 +313,7 @@ namespace Core.Managers
                 incidentDO.PrimaryCategory = "Envelope";
                 incidentDO.SecondaryCategory = "";
                 incidentDO.ObjectId = envelopeId;
-                incidentDO.Activity = "Processing action";
+                incidentDO.Activity = "Action processing";
                 incidentDO.Data = String.Format("IncidentDocuSignFieldMissing: Envelope id: {0}, Field name: {1}", envelopeId, fieldName);
                 _uow.IncidentRepository.Add(incidentDO);
                 Logger.GetLogger().Warn(incidentDO.Data);
