@@ -13,17 +13,19 @@ module dockyard.directives.paneConfigureAction {
 
     export class RenderEventArgs {
         public processNodeTemplateId: number;
-        public actionId: number;
+        public id: number;
         public isTempId: boolean;
-        public actionListType: model.ActionListType;
+        public actionListId: number;
 
-        constructor(processNodeTemplateId: number, actionId: number,
-            isTempId: boolean, actionListType: model.ActionListType) {
+        constructor(
+            processNodeTemplateId: number,
+            id: number,
+            isTempId: boolean,
+            actionListId: number) {
 
-            this.processNodeTemplateId = processNodeTemplateId;
-            this.actionId = actionId;
+            this.actionListId = actionListId;
+            this.id = id;
             this.isTempId = isTempId;
-            this.actionListType = actionListType;
         }
     }
 
@@ -68,10 +70,10 @@ module dockyard.directives.paneConfigureAction {
             var scope = (<interfaces.IPaneConfigureActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
-                eventArgs.actionId,
-                eventArgs.isTempId,
                 eventArgs.processNodeTemplateId,
-                eventArgs.actionListType
+                eventArgs.id,
+                eventArgs.isTempId,
+                eventArgs.actionListId
                 );
         }
 

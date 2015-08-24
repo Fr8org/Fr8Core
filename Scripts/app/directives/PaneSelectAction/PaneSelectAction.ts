@@ -11,20 +11,28 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_ActionTypeSelected
     }
 
-    export class ActionTypeSelectedEventArgs extends ActionEventArgsBase {
-        public actionType: string;
+    export class ActionTypeSelectedEventArgs {
+        public processNodeTemplateId: number;
+        public id: number;
         public isTempId: boolean;
+        public actionListId: number;
+        public actionType: string;
         public actionName: string;
-        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number, actionId: number, isTempId: boolean,
-            actionType: string, actionName: string, actionListType: model.ActionListType) {
+        constructor(
+            processNodeTemplateId: number,
+            id: number,
+            isTempId: boolean,
+            actionListId: number,
+            actionType: string,
+            actionName: string) {
 
-            super(criteriaId, actionId);
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.id = id;
             this.isTempId = isTempId;
+            this.actionListId = actionListId;
             this.actionType = actionType;
             this.actionName = actionName;
-            this.actionListType = actionListType;
         }
     }
 
@@ -43,15 +51,18 @@ module dockyard.directives.paneSelectAction {
         public processNodeTemplateId: number;
         public id: number;
         public isTempId: boolean;
-        public actionListType: model.ActionListType;
+        public actionListId: number;
 
-        constructor(processNodeTemplateId: number, id: number,
-            isTemp: boolean, actionListType: model.ActionListType) {
+        constructor(
+            processNodeTemplateId: number,
+            id: number,
+            isTemp: boolean,
+            actionListId: number) {
 
             this.processNodeTemplateId = processNodeTemplateId;
             this.id = id;
             this.isTempId = isTemp;
-            this.actionListType = actionListType;
+            this.actionListId = actionListId;
         }
     }
 
@@ -97,9 +108,9 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.processNodeTemplateId,
                         $scope.action.id,
                         $scope.action.isTempId,
+                        $scope.action.actionListId,
                         $scope.action.actionType,
-                        $scope.action.userLabel,
-                        $scope.action.actionListType);
+                        $scope.action.userLabel);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
                 }
@@ -119,10 +130,10 @@ module dockyard.directives.paneSelectAction {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
             scope.action = new model.Action(
+                eventArgs.processNodeTemplateId,
                 eventArgs.id,
                 eventArgs.isTempId,
-                eventArgs.processNodeTemplateId,
-                eventArgs.actionListType
+                eventArgs.actionListId
                 );
         }
 

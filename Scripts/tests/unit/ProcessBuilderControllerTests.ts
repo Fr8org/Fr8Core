@@ -98,9 +98,9 @@ module dockyard.tests.controller {
         //Rule #8
         it("When PaneSelectAction_ActionTypeSelected is sent, PaneConfigureMapping_Render " +
             "and PaneConfigureAction_Render should be received with correct args", () => {
-                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, "myaction", "myaction", model.ActionListType.Immediate),
+                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, 3, "myaction", "myaction"),
                     outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false),
-                    outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, model.ActionListType.Immediate);
+                    outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, 3);
 
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
 
@@ -110,8 +110,8 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
-                var incomingEventArgs = new pwd.ActionSelectingEventArgs(1, 1, model.ActionListType.Immediate);
-                var currentAction = <any>new model.Action(1, false, 1, model.ActionListType.Immediate);
+                var incomingEventArgs = new pwd.ActionSelectingEventArgs(1, 1, 1);
+                var currentAction = <any>new model.Action(1, 1, false, 1);
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting], incomingEventArgs);
@@ -131,7 +131,7 @@ module dockyard.tests.controller {
         it("When PaneWorkflowDesigner_ProcessNodeTemplateSelecting is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.ProcessNodeTemplateSelectingEventArgs(1, true);
-                var currentAction = <any>new model.Action(1, false, 1, model.ActionListType.Immediate);
+                var currentAction = <any>new model.Action(1, 1, false, 1);
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting], incomingEventArgs);
@@ -141,7 +141,7 @@ module dockyard.tests.controller {
         it("When PaneWorkflowDesigner_TemplateSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.TemplateSelectingEventArgs();
-                var currentAction = <any>new model.Action(1, false, 1, model.ActionListType.Immediate);
+                var currentAction = <any>new model.Action(1, 1, false, 1);
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting], incomingEventArgs);
