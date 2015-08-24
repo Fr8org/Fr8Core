@@ -5,6 +5,20 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+
+        public static ActionListDO TestActionListHealth1()
+        {
+            return new ActionListDO
+            {
+                Id = 88,
+                TemplateId = 1,
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
+            };
+
+        }
+
+
         public static ActionListDO TestActionList()
         {
             var curActionListDO = new ActionListDO
@@ -14,8 +28,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Actions.Add(TestActionList1());
-            curActionListDO.Actions.Add(TestActionList2());
+            curActionListDO.Actions.Add(TestAction20());
+            curActionListDO.Actions.Add(TestAction21());
 
             return curActionListDO;
         }
@@ -32,27 +46,7 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 
-        public static ActionDO TestActionList1()
-        {
-            return new ActionDO
-            {
-                Id = 1,
-                UserLabel = "Action 1",
-                ActionListId = 1,
-                Ordering = 1
-            };
-        }
-
-        public static ActionDO TestActionList2()
-        {
-            return new ActionDO
-            {
-                Id = 2,
-                UserLabel = "Action 2",
-                ActionListId = 1,
-                Ordering = 2
-            };
-        }
+      
 
         public static ActionListDO TestActionListMedical()
         {
@@ -71,7 +65,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestActionList2(),
+                CurrentAction = TestAction21(),
                 ActionListState = ActionListState.Inprocess
             };
         }
@@ -81,7 +75,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestActionList2(),
+                CurrentAction = TestAction21(),
                 ActionListState = ActionListState.Unstarted
             };
         }

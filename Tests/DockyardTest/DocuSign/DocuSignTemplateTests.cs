@@ -26,8 +26,8 @@ namespace DockyardTest.DocuSign
 
         public DocuSignTemplateTests()
         {
-            docusignApiHelper = new DocusignApiHelper();
-            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+            //docusignApiHelper = new DocusignApiHelper();
+            //_docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
         }
 
         //[Test, Ignore]
