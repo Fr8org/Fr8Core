@@ -6,6 +6,7 @@ using Data.States;
 using Data.States.Templates;
 using Data.Validations;
 
+using FluentValidation;
 namespace Data.Entities
 {
     public class ProcessNodeTemplateDO : BaseDO
@@ -47,14 +48,16 @@ namespace Data.Entities
 
                         
             ProcessNodeTemplatetValidator pntValidator = new ProcessNodeTemplatetValidator();
-            FluentValidation.Results.ValidationResult results = pntValidator.Validate(this);
-            if (!results.IsValid)
-            {
-                foreach (var failure in results.Errors)
-                {
-                    throw new Exception("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
-                }
-            }
+            pntValidator.ValidateAndThrow(this);
+
+            //FluentValidation.Results.ValidationResult results = pntValidator.Validate(this);
+            //if (!results.IsValid)
+            //{
+            //    foreach (var failure in results.Errors)
+            //    {
+            //        throw new Exception("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
+            //    }
+            //}
         }
     }
 }

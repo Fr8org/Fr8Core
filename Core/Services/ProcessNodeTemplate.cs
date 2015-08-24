@@ -21,8 +21,9 @@ namespace Core.Services
             {
                 throw new Exception("Creating logic was passed a null ProcessNodeTemplateDO");
             }
-            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
 
+            uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
+            uow.SaveChanges();
             // Saving criteria entity in repository.
             var criteria = new CriteriaDO()
             {
@@ -30,7 +31,7 @@ namespace Core.Services
                 ExecutionType = CriteriaExecutionType.WithoutConditions
             };
             uow.CriteriaRepository.Add(criteria);
-
+            uow.SaveChanges();
             // Saving immediate action list entity in repository.
             var immediateActionList = new ActionListDO()
             {
@@ -39,7 +40,7 @@ namespace Core.Services
                 ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(immediateActionList);
-
+            uow.SaveChanges();
             // Saving scheduled action list entity in repository.
             var scheduledActionList = new ActionListDO()
             {
@@ -48,6 +49,7 @@ namespace Core.Services
                 ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(scheduledActionList);
+            uow.SaveChanges();
         }
 
         /// <summary>
@@ -68,6 +70,7 @@ namespace Core.Services
 
             curProcessNodeTemplate.Name = processNodeTemplate.Name;
             curProcessNodeTemplate.NodeTransitions = processNodeTemplate.NodeTransitions;
+            uow.SaveChanges();
         }
 
         /// <summary>

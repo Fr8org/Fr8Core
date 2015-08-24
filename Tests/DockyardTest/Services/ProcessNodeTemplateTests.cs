@@ -27,7 +27,14 @@ namespace DockyardTest.Services
 		{
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var processTemplate = FixtureData.TestProcessTemplate2();
+                uow.ProcessTemplateRepository.Add(processTemplate);
+
+                //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestProcessNodeTemplateDO();
+                sampleNodeTemplate.ParentTemplateId = processTemplate.Id;
+                
+
                 // Create
                 _processNodeTemplateService.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
@@ -39,7 +46,14 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var processTemplate = FixtureData.TestProcessTemplate2();
+                uow.ProcessTemplateRepository.Add(processTemplate);
+
+                //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestProcessNodeTemplateDO();
+                sampleNodeTemplate.ParentTemplateId = processTemplate.Id;
+                
+
                 // Create
                 _processNodeTemplateService.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
@@ -57,7 +71,13 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var processTemplate = FixtureData.TestProcessTemplate2();
+                uow.ProcessTemplateRepository.Add(processTemplate);
+
+                //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestProcessNodeTemplateDO();
+                sampleNodeTemplate.ParentTemplateId = processTemplate.Id;
+                
                 // Create
                 _processNodeTemplateService.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
