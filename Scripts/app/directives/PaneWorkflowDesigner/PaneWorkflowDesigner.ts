@@ -37,7 +37,7 @@ module dockyard.directives.paneWorkflowDesigner {
         var onActionAdded = function (eventArgs: ActionAddedEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
 
-            scope.widget.addAction(eventArgs.criteriaId, eventArgs.action);
+            scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
 
             scope.$emit(
                 MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
