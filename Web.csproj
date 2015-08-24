@@ -262,6 +262,7 @@
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\CriteriaController.cs" />
+    <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
@@ -539,7 +540,7 @@
     <TypeScriptCompile Include="Scripts\app\services\LocalIdentityGenerator.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateVM.ts" />
-    <TypeScriptCompile Include="Scripts\app\services\ProcessTemplateService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ProcessBuilderService.ts" />
     <Content Include="Scripts\lib\jquery-ui.js" />
     <Content Include="Scripts\_legacy\custom.js" />
     <Content Include="Scripts\_legacy\main.js" />
@@ -3776,6 +3777,7 @@
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
+    <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
     <Folder Include="Views\Process\" />
     <Folder Include="Webhooks\" />
@@ -3846,7 +3848,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>0</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:30643/</IISUrl>
+          <IISUrl>http://localhost:50617/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

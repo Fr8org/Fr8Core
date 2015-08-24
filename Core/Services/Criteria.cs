@@ -25,7 +25,7 @@ namespace Core.Services
             return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
 
-        public bool Evaluate(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        public bool Evaluate(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -34,10 +34,9 @@ namespace Core.Services
                 if (curCriteria == null)
                     throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
 
-                Envelope curDocuSignEnvelope = new Envelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
+               
 
-
-                return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, _envelope.GetEnvelopeData(curDocuSignEnvelope));
+                return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, curEventData);
             };
         }
 

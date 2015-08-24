@@ -12,6 +12,6 @@ namespace Core.Interfaces
     {
         bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData);
 
-        bool Evaluate(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode);
+        bool Evaluate(List<EnvelopeDataDTO> curEnvelopeData, ProcessNodeDO curProcessNode);
     }
 }

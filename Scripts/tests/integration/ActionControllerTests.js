@@ -42,7 +42,6 @@ var dockyard;
                         returnedData = data;
                         console.log("Got it Sucessfully");
                         console.log(returnedData);
-                        //Delete after get
                         deleteInvoker(data, done);
                     }).fail(function (response) {
                         errorHandler(response, done);
@@ -58,7 +57,6 @@ var dockyard;
                     }).done(function (data, status) {
                         console.log("Saved it Sucessfully");
                         console.log(data);
-                        // Then GET, 
                         getInvoker(data, done);
                     }).fail(function (response) {
                         errorHandler(response, done);

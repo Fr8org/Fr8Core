@@ -124,6 +124,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.Serialization" />
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
@@ -132,10 +133,12 @@
   <ItemGroup>
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
+    <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionRegistrationDO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
@@ -147,6 +150,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
@@ -215,6 +219,10 @@
     <Compile Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.cs" />
     <Compile Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.Designer.cs">
       <DependentUpon>201508232336299_DocusignExternalEventGetsTemplateId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.cs" />
+    <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.Designer.cs">
+      <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -496,6 +504,7 @@
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
     <Compile Include="Wrappers\DocuSignAccount.cs" />
+    <Compile Include="Wrappers\DocuSignPackager.cs" />
     <Compile Include="Wrappers\DocuSignTemplate.cs" />
     <Compile Include="Wrappers\DocuSignEnvelope.cs" />
     <Compile Include="Wrappers\Signer.cs" />
@@ -630,6 +639,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508232336299_DocusignExternalEventGetsTemplateId.resx">
       <DependentUpon>201508232336299_DocusignExternalEventGetsTemplateId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508240346507_removeTemplateFromActionList.resx">
+      <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

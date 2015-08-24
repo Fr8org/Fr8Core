@@ -11,9 +11,9 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 88,
-                TemplateId = 1,
                 Name = "list1",
-                ActionListType = ActionListType.Immediate
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = 50
             };
 
         }
@@ -24,7 +24,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
                 Id = 1,
-                TemplateId = 1,
+                ProcessNodeTemplateID = 1,
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
@@ -39,7 +39,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
                 Id = 4,
-                TemplateId = 1,
+                ProcessNodeTemplateID = 1,
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
@@ -53,7 +53,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
                 Id = 4,
-                TemplateId = 1,
+                ProcessNodeTemplateID = 1,
                 Name = "list1",
                 ActionListType = ActionListType.Immediate,                    
             };

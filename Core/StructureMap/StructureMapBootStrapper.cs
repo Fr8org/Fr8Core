@@ -100,6 +100,7 @@ namespace Core.StructureMap
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IActionRegistration>().Use<ActionRegistration>();
+                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
 
 
                 //For<ITemplate>().Use<Services.Template>();
@@ -154,6 +155,7 @@ namespace Core.StructureMap
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
+                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 //For<ITemplate>().Use<Services.Template>();
 
             }
