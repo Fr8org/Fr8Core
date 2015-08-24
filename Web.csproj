@@ -272,7 +272,6 @@
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
-    <Compile Include="Controllers\FieldsController.cs" />
     <Compile Include="NotificationQueues\UserNotificationData.cs" />
     <Compile Include="NotificationQueues\UserNotificationQueue.cs" />
     <Compile Include="NotificationQueues\NotificationQueue.cs" />
@@ -374,7 +373,9 @@
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\toolbar.min.css" />
+    <Content Include="Content\Databases\DO-823.sql" />
     <Content Include="Content\DO-823.sql" />
+    <Content Include="Content\documents\Medical_Form_v2.xml" />
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
     <Content Include="Content\img\backgrounds\cup-and-coffe-bg.png" />
@@ -3582,6 +3583,9 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\uniform\README.md" />
     <Content Include="Content\medical_intake_form.pdf" />
     <Content Include="Content\Sample Excel Contact List.xlsx" />
+    <Content Include="Content\documents\field_trip_permission_form.docx" />
+    <Content Include="Content\documents\medical_intake_form.pdf" />
+    <Content Include="Content\documents\Sample Excel Contact List.xlsx" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
