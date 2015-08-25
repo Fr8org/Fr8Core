@@ -165,6 +165,32 @@ namespace DockyardTest.Services
                 It.Is<ActionPayloadDTO>(a => IsPayloadValid(a))));
         }
 
+        [Test]
+        public void CanSavePayloadMappingToActionTabe()
+        {
+            Core.Services.Action action = new Core.Services.Action();
+            var payloadMappings = FixtureData.FieldMappings;
+            var actionDo = FixtureData.IntegrationTestAction();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionRepository.Add(actionDo);
+                uow.ActionListRepository.Add(actionDo.ActionList);
+                uow.ProcessRepository.Add(actionDo.ActionList.Process);
+                uow.SaveChanges();
+            }
+
+            action.Process(actionDo).Wait();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionDo = uow.ActionRepository.FindOne((a) => true);
+                Assert.NotNull(curActionDo);
+                var curActionDto = AutoMapper.Mapper.Map<ActionPayloadDTO>(curActionDo);
+                Assert.IsTrue(IsPayloadValid(curActionDto));                
+            }
+        }
+
         private bool IsPayloadValid(ActionPayloadDTO dto)
         {
             return (dto.PayloadMappings.Any(m => m.Name == "Doctor" && m.Value == "Johnson") &&
