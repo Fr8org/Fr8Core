@@ -7,9 +7,9 @@ namespace UtilitiesTesting.Fixtures
 {
 	partial class FixtureData
 	{
-		private static string _xmlPayLoadLocation = "DockyardTest\\Content\\DocusignXmlPayload.xml";
-
-		public static ProcessDO TestProcess1()
+		private  const string _xmlPayLoadLocation = "DockyardTest\\Content\\DocusignXmlPayload.xml";
+        
+        public static ProcessDO TestProcess1()
 		{
 			var process = new ProcessDO();
 			process.Id = 49;
@@ -18,7 +18,16 @@ namespace UtilitiesTesting.Fixtures
 			return process;
 		}
 
-		public static IList<ProcessDO> GetProcesses()
+        public static ProcessDO TestHealthDemoProcess1()
+        {
+            var process = new ProcessDO();
+            process.Id = 49;
+            process.ProcessState = ProcessState.Executing;
+            process.ProcessNodes.Add(TestProcessNode1());
+            return process;
+        }
+
+        public static IList<ProcessDO> GetProcesses()
 		{
 			IList<ProcessDO> processList = new List<ProcessDO>();
 			processList.Add(new ProcessDO()
@@ -61,14 +70,14 @@ namespace UtilitiesTesting.Fixtures
 		/// </summary>
 		/// <param name="physLocation"></param>
 		/// <returns></returns>
-		public static string FindXmlPayloadFullPath(string physLocation)
+		public static string FindXmlPayloadFullPath(string physLocation, string filepath="DockyardTest\\Content\\DocusignXmlPayload.xml")
 		{
 			if (string.IsNullOrEmpty(physLocation))
 				return string.Empty;
 
-			string path = Path.Combine(physLocation, _xmlPayLoadLocation);
+			string path = Path.Combine(physLocation, filepath);
 			if (!File.Exists(path))
-				path = FindXmlPayloadFullPath(UpNLevels(physLocation, 1));
+				path = FindXmlPayloadFullPath(UpNLevels(physLocation, 1), filepath);
 			return path;
 		}
 

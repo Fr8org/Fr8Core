@@ -206,18 +206,22 @@ namespace DockyardTest.Controllers
                
 
                 //Add a template
-                var template = FixtureData.TestTemplate1();
-                var templates = uow.Db.Set<TemplateDO>();
-                templates.Add(template);
-                uow.Db.SaveChanges();
+                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+                uow.SaveChanges();
 
                 var actionList = FixtureData.TestEmptyActionList();
                 actionList.Id = 1;
                 actionList.ActionListType = 1;
+                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
 
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();
             }
+
+
+
+
         }
 
         /// <summary>
@@ -258,7 +262,7 @@ namespace DockyardTest.Controllers
             var cntroller = new ActionController();
             //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
 
-            var task = cntroller.GetFieldMapping(new ActionDesignDTO()
+            var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
             {
                 ParentPluginRegistration = pluginName,
                 ConfigurationSettings = "{\"connection_string\":\"" + dataSource + "\"}"

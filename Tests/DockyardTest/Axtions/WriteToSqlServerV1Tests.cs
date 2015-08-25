@@ -24,7 +24,7 @@ namespace DockyardTest.Axtions
                 ConfigurationManager.ConnectionStrings["HealthDB"].ConnectionString;
         }
 
-        [Test]
+        [Test,Ignore]
         [Category("Write_To_Sql_Server_v1.Execute")]
         public void WriteToSqlServerV1_CanWriteData()
         {

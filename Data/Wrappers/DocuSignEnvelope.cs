@@ -2,6 +2,7 @@
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Microsoft.WindowsAzure;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using System;
@@ -30,35 +31,12 @@ namespace Data.Wrappers
             _tab = new Tab();
             _signer = new Signer();
 
-            Login = EnsureLogin();
+            var packager = new DocuSignPackager();
+            packager.Email = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
+            packager.ApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
+            Login = packager.Login();
         }
 
-        private Account EnsureLogin()
-        {
-            var appSettings = System.Configuration.ConfigurationManager.AppSettings;
-            string username = appSettings["username"] ?? "Not Found";
-            string password = appSettings["password"] ?? "Not Found";
-            string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";
-
-            // configure application's integrator key and webservice url
-            RestSettings.Instance.IntegratorKey = appSettings["IntegratorKey"];
-            RestSettings.Instance.DocuSignAddress = appSettings["environment"];
-            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
-
-            // credentials for sending account
-            Account account = new Account();
-            account.Email = username;
-            account.Password = password;
-
-            // make the Login API call
-            bool result = account.Login();
-
-            if (!result)
-            {
-                throw new InvalidOperationException("Cannot log in to DocuSign. Please check the authentication information on web.config.");
-            }
-            return account;
-        }
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -148,9 +126,10 @@ namespace Data.Wrappers
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
 
-            var username = ConfigurationManager.AppSettings["username"];
-            var password = ConfigurationManager.AppSettings["password"];
-            var integratorKey = ConfigurationManager.AppSettings["IntegratorKey"];
+
+            var username = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
+            var password = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
+            var integratorKey = ConfigurationManager.AppSettings["DocuSignIntegratorKey"];
             var baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
 
             if (username == null

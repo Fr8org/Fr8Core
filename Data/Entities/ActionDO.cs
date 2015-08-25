@@ -1,6 +1,7 @@
 ﻿using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Wrappers;
 
 namespace Data.Entities
 {
@@ -35,5 +36,7 @@ namespace Data.Entities
 
         public string PayloadMappings { get; set; }
 
+        [NotMapped]
+	    public string DocuSignTemplateId { get; set; }
 	}
 }
