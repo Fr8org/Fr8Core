@@ -35,6 +35,8 @@ namespace Data.Entities
         public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
 
         public string PayloadMappings { get; set; }
-	    public DocuSignEnvelope DocuSignTemplateId { get; set; }
+
+        [NotMapped]
+	    public string DocuSignTemplateId { get; set; }
 	}
 }
