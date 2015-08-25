@@ -27,7 +27,7 @@ namespace Web
         {
             ConfigureDaemons();
             ConfigureAuth(app);
-            ConfigureCommunicationConfigs();
+            //ConfigureCommunicationConfigs();
             RegisterPluginActions();
         }
 
