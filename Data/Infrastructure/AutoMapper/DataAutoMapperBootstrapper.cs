@@ -38,7 +38,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration))
-                .ForMember(a => a.PayloadMappings, opts => opts.ResolveUsing(ad => ad.PayloadMappings))
+                .ForMember(a => a.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>())
                 .ForMember(a => a.EnvelopeId, opts => opts.ResolveUsing(ad => ad.ActionList.Process.EnvelopeId));
 
 
@@ -70,6 +70,19 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<DocuSign.Integrations.Client.Account, Data.Wrappers.DocuSignAccount>();
             Mapper.CreateMap<DocuSign.Integrations.Client.TemplateInfo, DocuSignTemplateDTO>();
+        }
+    }
+
+    internal class PayloadMappingResolver : ValueResolver<ActionDO, PayloadMappingsDTO>
+    {
+        protected override PayloadMappingsDTO ResolveCore(ActionDO source)
+        {
+            if (string.IsNullOrEmpty(source.PayloadMappings))
+                return null;
+
+            var payloadMappingDto = new PayloadMappingsDTO();
+            payloadMappingDto.Deserialize(source.PayloadMappings);
+            return payloadMappingDto;
         }
     }
 }
