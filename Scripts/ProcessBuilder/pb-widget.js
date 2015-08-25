@@ -200,6 +200,7 @@
 
             var actionDescr = {
                 id: action.id,
+                isTempId: !!action.isTempId,
                 actionType: actionType,
                 data: action,
                 actionNode: null
@@ -212,7 +213,7 @@
             actionDescr.actionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('actionNode:click', e, criteria.id, action.id, actionDescr.actionType);
+                    this.fire('actionNode:click', e, criteria.id, actionDescr.id, actionDescr.actionType);
                 }, this)
             );
 
@@ -224,25 +225,54 @@
 
         // Remove action from specified criteria.
         // Parameters:
-        //     criteriaId - id of criteria.
         //     actionId - id of action.
-        removeAction: function (criteriaId, actionId, actionType) {
-            var criteria = this._findCriteria(criteriaId);
-            if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
+        //     isTempId - flag.
+        removeAction: function (actionId, isTempId) {
+            debugger;
 
-            var i;
-            for (i = 0; i < criteria.actions.length; ++i) {
-                if (criteria.actions[i].id === actionId
-                    && criteria.actions[i].actionType === actionType) {
+            var i, j, criteria, foundFlag;
+            for (i = 0; i < this._criteria.length; ++i) {
+                var criteria = this._criteria[i];
 
-                    this._canvas.remove(criteria.actions[i].actionNode);
-                    criteria.actions.splice(i, 1);
+                foundFlag = false;
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    debugger;
 
+                    if (criteria.actions[j].id == actionId
+                        && criteria.actions[j].isTempId == isTempId) {
+
+                        this._canvas.remove(criteria.actions[j].actionNode);
+                        criteria.actions.splice(j, 1);
+
+                        foundFlag = true;
+                        break;
+                    }
+                }
+
+                if (foundFlag) {
                     break;
                 }
             }
 
             this.relayout();
+        },
+
+        // Replace temporary ID with global ID.
+        replaceActionTempId: function (tempId, id) {
+            var i, j, criteria;
+            for (i = 0; i < this._criteria.length; ++i) {
+                criteria = this._criteria[i];
+
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    if (criteria.actions[j].id === tempId
+                        && criteria.actions[j].isTempId) {
+                        criteria.actions[j].id = id;
+                        criteria.actions[j].isTempId = false;
+
+                        return;
+                    }
+                }
+            }
         },
 
         // Relayout StartNode.

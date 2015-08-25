@@ -20,7 +20,8 @@ module dockyard.services {
                 id: '@id'
             },
             {
-                'save': { method: 'POST', isArray: true }
+                'save': { method: 'POST', isArray: true },
+                'delete': { method: 'DELETE' }
             })
     ]);
 }

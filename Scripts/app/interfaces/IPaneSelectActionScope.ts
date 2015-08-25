@@ -7,5 +7,6 @@ module dockyard.interfaces {
         isVisible: boolean;
         sampleActionTypes: Array<{ name: string, value: string }>;
         ActionTypeSelected: () => void;
+        RemoveAction: () => void;
     }
 }

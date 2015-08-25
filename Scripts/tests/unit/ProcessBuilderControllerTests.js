@@ -19,9 +19,9 @@ var dockyard;
                         $httpBackend.whenGET().passThrough();
                     }
                 ]);
-                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _$q;
+                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _$q, _$http, _urlPrefix;
                 beforeEach(function () {
-                    inject(function ($controller, $rootScope, $q) {
+                    inject(function ($controller, $rootScope, $q, $http) {
                         _actionServiceMock = new tests.utils.ActionServiceMock($q);
                         _$q = $q;
                         _$scope = tests.utils.Factory.GetProcessBuilderScope($rootScope);
@@ -33,6 +33,8 @@ var dockyard;
                                 id: 1
                             }
                         };
+                        _$http = $http;
+                        _urlPrefix = '/api';
                         //Create a mock for ProcessTemplateService
                         _controller = $controller("ProcessBuilderController", {
                             $rootScope: $rootScope,
@@ -40,7 +42,9 @@ var dockyard;
                             stringService: null,
                             LocalIdentityGenerator: null,
                             $state: _$state,
-                            ActionService: _actionServiceMock
+                            ActionService: _actionServiceMock,
+                            $http: _$http,
+                            urlPrefix: _urlPrefix
                         });
                     });
                     spyOn(_$scope, "$broadcast");
@@ -65,6 +69,8 @@ var dockyard;
                 it("When PaneSelectAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
                     "should be received with correct args", function () {
                     var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, true, "testaction"), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, true, "testaction");
+                    console.log(incomingEventArgs);
+                    console.log(outgoingEventArgs);
                     _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated], incomingEventArgs);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
                 });

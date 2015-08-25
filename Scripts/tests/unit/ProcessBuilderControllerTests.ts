@@ -24,10 +24,12 @@ module dockyard.tests.controller {
             _controller: any,
             _$state: ng.ui.IState,
             _actionServiceMock: utils.ActionServiceMock,
-            _$q: ng.IQService
+            _$q: ng.IQService,
+            _$http: ng.IHttpService,
+            _urlPrefix: string;
 
         beforeEach(() => {
-            inject(($controller, $rootScope, $q) => {
+            inject(($controller, $rootScope, $q, $http) => {
                 _actionServiceMock = new utils.ActionServiceMock($q);
                 _$q = $q;
                 _$scope = tests.utils.Factory.GetProcessBuilderScope($rootScope);
@@ -39,6 +41,8 @@ module dockyard.tests.controller {
                         id: 1
                     }
                 };
+                _$http = $http;
+                _urlPrefix = '/api';
 
                 //Create a mock for ProcessTemplateService
                 _controller = $controller("ProcessBuilderController",
@@ -48,7 +52,9 @@ module dockyard.tests.controller {
                         stringService: null,
                         LocalIdentityGenerator: null,
                         $state: _$state,
-                        ActionService: _actionServiceMock
+                        ActionService: _actionServiceMock,
+                        $http: _$http,
+                        urlPrefix: _urlPrefix
                     });
             });
             spyOn(_$scope, "$broadcast");
@@ -79,6 +85,9 @@ module dockyard.tests.controller {
             "should be received with correct args", () => {
                 var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, true, "testaction"),
                     outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, true, "testaction");
+
+                console.log(incomingEventArgs);
+                console.log(outgoingEventArgs);
 
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated], incomingEventArgs);
 

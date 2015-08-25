@@ -17,7 +17,8 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ActionRemoved,
         // PaneWorkflowDesigner_RefreshElement,
         PaneWorkflowDesigner_UpdateAction,
-        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced
+        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced,
+        PaneWorkflowDesigner_ActionTempIdReplaced
     }
 
     export class RenderEventArgs {
@@ -110,12 +111,12 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ActionRemovedEventArgs {
-        public criteriaId: number;
-        public actionId: number;
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number) {
-            this.criteriaId = criteriaId;
-            this.actionId = actionId;
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
         }
     }
 
@@ -134,6 +135,16 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ProcessNodeTemplateTempIdReplacedEventArgs {
+        public tempId: number;
+        public id: number;
+
+        constructor(tempId: number, id: number) {
+            this.tempId = tempId;
+            this.id = id;
+        }
+    }
+
+    export class ActionTempIdReplacedEventArgs {
         public tempId: number;
         public id: number;
 
