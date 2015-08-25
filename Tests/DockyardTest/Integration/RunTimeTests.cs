@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
@@ -29,7 +29,7 @@ namespace DockyardTest.Integration
     public class RunTimeTests : BaseTest
     {
 
-        [Test,Ignore]
+        [Test, Ignore]
         [Category("IntegrationTests")]
         public async void ITest_CanProcessHealthDemo()
         {
@@ -39,8 +39,8 @@ namespace DockyardTest.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //create a registered account
-                Account _account = new Account();              
-                var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User"); 
+                Account _account = new Account();
+                var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User");
                 uow.UserRepository.Add(registeredAccount);
                 uow.SaveChanges();
 
@@ -108,21 +108,6 @@ namespace DockyardTest.Integration
         }
 
 
-        [Test, Ignore]
-        public void ITest_CanProcessHealthDemoForm()
-        {
-            //Arrange 
-
-
-            //Act
-           
-            //Assert
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();
-                Assert.IsNotNull(fact);
-            }
-        }
     }
 }
 
@@ -147,4 +132,3 @@ namespace DockyardTest.Integration
 //serverConnection = new ServerConnection(connection);
 //server = new Server(serverConnection);
 //server.ConnectionContext.ExecuteNonQuery("CREATE TABLE New (NewId int)");
-         
