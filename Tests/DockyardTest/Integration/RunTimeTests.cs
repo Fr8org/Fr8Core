@@ -1,27 +1,13 @@
 ﻿﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Core.Managers;
-using Data.Interfaces;
-using Core.Services;
-using Data.Entities;
-using Data.States;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
-using NUnit.Framework;
-using StructureMap;
-using Utilities;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using Microsoft.SqlServer.Management.Common;
-using Newtonsoft.Json;
-using NUnit.Core;
-using Server = Microsoft.SqlServer.Management.Smo.Server;
+﻿using System.IO;
+﻿using Core.Services;
+﻿using Data.Entities;
+﻿using Data.Interfaces;
+﻿using Newtonsoft.Json;
+﻿using NUnit.Framework;
+﻿using StructureMap;
+﻿using UtilitiesTesting;
+﻿using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Integration
 {
@@ -75,9 +61,12 @@ namespace DockyardTest.Integration
             healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
             uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
 
+            //specify that this process node is the starting process node of the template
+            healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+
             //add criteria to processnode
             var healthCriteria = FixtureData.TestCriteriaHealthDemo();
-            healthCriteria.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            healthCriteria.ProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
             uow.CriteriaRepository.Add(healthCriteria);
 
             //add actionlist to processnode

@@ -272,6 +272,10 @@
     <Compile Include="Migrations\201508251736009_merge2.Designer.cs">
       <DependentUpon>201508251736009_merge2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508252248370_ProcessTemplateAndProcessaddl.cs" />
+    <Compile Include="Migrations\201508252248370_ProcessTemplateAndProcessaddl.Designer.cs">
+      <DependentUpon>201508252248370_ProcessTemplateAndProcessaddl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -696,6 +700,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508251736009_merge2.resx">
       <DependentUpon>201508251736009_merge2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508252248370_ProcessTemplateAndProcessaddl.resx">
+      <DependentUpon>201508252248370_ProcessTemplateAndProcessaddl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

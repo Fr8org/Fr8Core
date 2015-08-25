@@ -27,7 +27,7 @@ namespace Core.Services
             var criteria = new CriteriaDO()
             {
                 ProcessNodeTemplate = processNodeTemplate,
-                ExecutionType = CriteriaExecutionType.WithoutConditions
+                CriteriaExecutionType = CriteriaExecutionType.WithoutConditions
             };
             uow.CriteriaRepository.Add(criteria);
 
@@ -103,7 +103,7 @@ namespace Core.Services
             // Remove Criteria.
             uow.CriteriaRepository
                 .GetQuery()
-                .Where(x => x.ProcessNodeTemplateID == id)
+                .Where(x => x.ProcessNodeTemplateId == id)
                 .ToList()
                 .ForEach(x => uow.CriteriaRepository.Remove(x));
 
