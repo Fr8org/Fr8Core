@@ -29,7 +29,7 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionRegistrationDO> _pr1Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO(){ ActionType = "Write", Version = "1.0"}, new ActionRegistrationDO(){ ActionType = "Read", Version = "1.0"} };
+        private readonly IEnumerable<ActionRegistrationDO> _pr1Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActionRegistrationDO> _pr2Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "SQL Read", Version = "1.0" } };
 
 
@@ -103,7 +103,7 @@ namespace DockyardTest.Services
         [Test]
         public void CanParsePayload()
         {
-           var envelope = new DocuSignEnvelope();
+            var envelope = new DocuSignEnvelope();
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
                 payloadMappings = FixtureData.FieldMappings;
 
@@ -134,43 +134,18 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test,Ignore]
+        [Test]
         public void CanProcessDocuSignTemplate()
         {
             Core.Services.Action action = new Core.Services.Action();
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
-                payloadMappings = FixtureData.FieldMappings;
-
-            var processDo = new ProcessDO()
-            {
-                Id = 1,
-                EnvelopeId = envelopeId,
-                ProcessState = 1
-            };
-
-            var actionListDo = new ActionListDO()
-            {
-                Process = processDo,
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate
-            };
-
-            var actionDo = new ActionDO()
-            {
-                ActionList = actionListDo,
-                ActionListId = 1,
-                ActionType = "testaction",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
-                FieldMappingSettings = FixtureData.FieldMappings,
-                Id = 1
-            };
+            var payloadMappings = FixtureData.FieldMappings;
+            var actionDo = FixtureData.IntegrationTestAction();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionListDo);
-                uow.ProcessRepository.Add(processDo);
+                uow.ActionListRepository.Add(actionDo.ActionList);
+                uow.ProcessRepository.Add(actionDo.ActionList.Process);
                 uow.SaveChanges();
             }
 
@@ -186,8 +161,34 @@ namespace DockyardTest.Services
             //PostActionAsync was called with the correct attributes
             var transmitter = ObjectFactory.GetInstance<IPluginTransmitter>(); //it is configured as a singleton so we get the "used" instance
             var mock = Mock.Get<IPluginTransmitter>(transmitter);
-            mock.Verify(e => e.PostActionAsync(It.Is<string>(s => s == "testaction"), 
+            mock.Verify(e => e.PostActionAsync(It.Is<string>(s => s == "testaction"),
                 It.Is<ActionPayloadDTO>(a => IsPayloadValid(a))));
+        }
+
+        [Test]
+        public void CanSavePayloadMappingToActionTabe()
+        {
+            Core.Services.Action action = new Core.Services.Action();
+            var payloadMappings = FixtureData.FieldMappings;
+            var actionDo = FixtureData.IntegrationTestAction();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionRepository.Add(actionDo);
+                uow.ActionListRepository.Add(actionDo.ActionList);
+                uow.ProcessRepository.Add(actionDo.ActionList.Process);
+                uow.SaveChanges();
+            }
+
+            action.Process(actionDo).Wait();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionDo = uow.ActionRepository.FindOne((a) => true);
+                Assert.NotNull(curActionDo);
+                var curActionDto = AutoMapper.Mapper.Map<ActionPayloadDTO>(curActionDo);
+                Assert.IsTrue(IsPayloadValid(curActionDto));                
+            }
         }
 
         private bool IsPayloadValid(ActionPayloadDTO dto)
