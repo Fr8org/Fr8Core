@@ -18,6 +18,7 @@ namespace Core.Services
     public class DocuSignxTemplate 
     {
         private readonly IEnvelope _envelope;
+        private readonly IDocuSignTemplate _template;
 
         public DocuSignxTemplate()
         {
@@ -28,7 +29,7 @@ namespace Core.Services
 
         public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
-            return _envelope.GetEnvelopeDataByTemplate(templateId).Select(r=>r.Name);
+            return _template.GetEnvelopeDataByTemplate(templateId).Select(r=>r.Name);
 
         }
 
