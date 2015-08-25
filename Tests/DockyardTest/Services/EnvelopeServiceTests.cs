@@ -56,7 +56,7 @@ namespace DockyardTest.Services
 
             RestSettings.Instance.RestTracing = true;
 
-            var envelopeDatas = (new Data.Wrappers.DocuSignEnvelope())
+            var envelopeDatas = (new Data.Wrappers.DocuSignTemplate())
                                 .GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
 
             Assert.IsNotNull(envelopeDatas);
