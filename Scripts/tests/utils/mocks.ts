@@ -22,6 +22,9 @@
             this.save = jasmine.createSpy('save').and.callFake(() => {
                 var def: any = $q.defer();
                 def.resolve();
+
+                def.promise.$promise = def.promise;
+
                 return def.promise;
             });
 

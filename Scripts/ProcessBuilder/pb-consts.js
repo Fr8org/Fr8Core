@@ -1,5 +1,10 @@
 ﻿(function (ns) {
 
+    ns.ActionType = {
+        immediate: 1,
+        scheduled: 2
+    };
+
     // Style constants.
     ns.WidgetConsts = {
         // Padding from canvas edge.

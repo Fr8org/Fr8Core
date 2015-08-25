@@ -38,7 +38,7 @@ namespace Web.Controllers
         [ResponseType(typeof(CriteriaDTO))]
         [Route("criteria")]
         [HttpGet]
-        public IHttpActionResult GetByProcessNodeTemplateId(int id)
+        public IHttpActionResult GetCriteriaByProcessNodeTemplateId(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -47,6 +47,20 @@ namespace Web.Controllers
 
                 return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
             };
+        }
+
+        [ResponseType(typeof(ActionListDTO))]
+        [Route("actionList")]
+        [HttpGet]
+        public IHttpActionResult GetActionListByProcessNodeTemplateId(int id, int actionListType)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionList = uow.ActionListRepository.GetQuery()
+                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id && x.ActionListType == actionListType);
+
+                return Ok(Mapper.Map<ActionListDTO>(curActionList));
+            }
         }
 
         /// <summary>
