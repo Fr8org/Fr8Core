@@ -141,6 +141,9 @@
                
             }
 
+            tableToHide.hide();
+            tableToWrite.show();
+
             table = tableToWrite.DataTable({
                 destroy: true,
                 searching: false,
@@ -163,8 +166,6 @@
             });
              
         }
-        tableToHide.hide();
-        tableToWrite.show();
 
         
     }
