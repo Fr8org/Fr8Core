@@ -33,7 +33,7 @@ namespace Core.Services
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
-            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+           
             _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
         }
 
@@ -189,6 +189,7 @@ namespace Core.Services
 
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
+            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
             return _docusignTemplate.GetMappableSourceFields(curActionDO.DocuSignTemplateId);
         }
 

@@ -268,9 +268,9 @@
     <Compile Include="Migrations\201508240346507_removeTemplateFromActionList.Designer.cs">
       <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508251038389_ActionDO_PayloadMappings.cs" />
-    <Compile Include="Migrations\201508251038389_ActionDO_PayloadMappings.Designer.cs">
-      <DependentUpon>201508251038389_ActionDO_PayloadMappings.cs</DependentUpon>
+    <Compile Include="Migrations\201508251736009_merge2.cs" />
+    <Compile Include="Migrations\201508251736009_merge2.Designer.cs">
+      <DependentUpon>201508251736009_merge2.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -694,8 +694,8 @@
     <EmbeddedResource Include="Migrations\201508240346507_removeTemplateFromActionList.resx">
       <DependentUpon>201508240346507_removeTemplateFromActionList.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508251038389_ActionDO_PayloadMappings.resx">
-      <DependentUpon>201508251038389_ActionDO_PayloadMappings.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508251736009_merge2.resx">
+      <DependentUpon>201508251736009_merge2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
