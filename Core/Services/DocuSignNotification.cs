@@ -78,11 +78,12 @@ namespace Core.Services
                         uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ProcessTemplate)
                             .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
-                    var curEnvelope = uow.EnvelopeRepository.GetByKey(curEvent.Id);
+                   
 
                     foreach (var subscription in subscriptions)
                     {
-                        _processTemplate.LaunchProcess(uow, subscription.ProcessTemplate, curEnvelope);
+                        //checkpoint: figure out why the processnode is not the "50" one that was configured
+                        _processTemplate.LaunchProcess(uow, subscription.ProcessTemplate, curEvent);
                     }
                 }
 

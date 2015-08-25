@@ -99,7 +99,7 @@ namespace Web.Controllers
 
         //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
         [HttpPost]
-        [Route("actions/field_data_sources")]
+        [Route("field_data_sources")]
         public IEnumerable<string> GetFieldDataSources(ActionDesignDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
@@ -108,7 +108,7 @@ namespace Web.Controllers
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
         [HttpPost]
-        [Route("actions/field_mapping_targets")]
+        [Route("field_mapping_targets")]
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);

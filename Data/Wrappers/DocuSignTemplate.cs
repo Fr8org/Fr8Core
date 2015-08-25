@@ -19,6 +19,7 @@ namespace Data.Wrappers
     {
         List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
         IEnumerable<string> GetMappableSourceFields(string templateId);
+        IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
     }
 
     public class DocuSignTemplate : DocuSign.Integrations.Client.Template, IDocuSignTemplate
@@ -27,6 +28,8 @@ namespace Data.Wrappers
 
         public DocuSignTemplate()
         {
+            var packager = new DocuSignPackager();
+           Login = packager.Login();
             _docusignEnvelope = new DocuSignEnvelope();
         }
 
@@ -38,13 +41,11 @@ namespace Data.Wrappers
             return submissionData; 
         }
 
-        public IEnumerable<TemplateInfo> GetByAccount(DockyardAccountDO curDockyardAccount)
+        public IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount)
         {
-            Template curTemplate = new DocuSignTemplate();
-            //curTemplate.Login = 
-            return new List<TemplateInfo>();
+            //TODO: implement getting templates by the specified account.
+            return GetTemplates().Select(t => AutoMapper.Mapper.Map<DocuSignTemplateDTO>(t));
         }
-
 
         //TODO: merge these
         public IEnumerable<string> GetMappableSourceFields(string templateId)

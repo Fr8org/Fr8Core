@@ -218,7 +218,6 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_ProcessNodeTemplateSelecting(eventArgs: pwd.ProcessNodeTemplateSelectingEventArgs) {
             console.log("ProcessBuilderController::PaneWorkflowDesigner_CriteriaSelected", eventArgs);
-
             var self = this;
             this.saveProcessNodeTemplate(function () {
                 self.SaveAction(function () {

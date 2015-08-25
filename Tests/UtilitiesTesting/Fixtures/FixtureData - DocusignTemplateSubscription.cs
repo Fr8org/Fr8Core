@@ -8,7 +8,7 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static ExternalEventSubscriptionDO TestExternalEventSubscription_medical_form_v2()
+        public static ExternalEventSubscriptionDO TestExternalEventSubscription_medical_form_v1()
         {
             return new ExternalEventSubscriptionDO
             {

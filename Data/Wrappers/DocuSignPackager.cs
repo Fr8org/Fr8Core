@@ -9,12 +9,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using System.Web.Mvc;
 using DocuSign.Integrations.Client;
 using Microsoft.WindowsAzure;
 using Data.Wrappers;
-
-namespace Core.Managers.APIManagers.Packagers.Docusign
+namespace Data.Wrappers
 {
     public class DocuSignPackager
     {
@@ -31,19 +29,14 @@ namespace Core.Managers.APIManagers.Packagers.Docusign
         {
             string username = Email ?? "Not Found";
             string password = ApiPassword ?? "Not Found";
-            string integratorKey = RestSettings.Instance.IntegratorKey ?? "Not Found";
-
-            var appSettings = ConfigurationManager.AppSettings;
-            string baseURL = appSettings["BaseUrl"];
-            string requestURL = baseURL + resource;
 
             // set request url, method, and headers.  No body needed for login api call
-            HttpWebRequest request = initializeRequest(requestURL, "GET", null, username, password, integratorKey);
+            //HttpWebRequest request = initializeRequest(requestURL, "GET", null, username, password, integratorKey);
 
             // read the http response
-            string response = getResponseBody(request);
+            // string response = getResponseBody(request);
             //--- display results
-            Debug.Print("\nAPI Call Result: \n\n" + prettyPrintXml(response));
+            //Debug.Print("\nAPI Call Result: \n\n" + prettyPrintXml(response));
 
             // credentials for sending account
             Account account = new Account();

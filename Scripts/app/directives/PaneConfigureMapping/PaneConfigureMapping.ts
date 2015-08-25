@@ -66,7 +66,7 @@ module dockyard.directives.paneConfigureMapping {
                     ParentPluginRegistration: "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core"
                 }
 
-                $http.post(urlPrefix + "/actions/getfieldmapping/", actionDto).then((returnedParams) => {
+                $http.post(urlPrefix + "/actions/field_mapping_targets/", actionDto).then((returnedParams) => {
                     loadedActions = true;
                     var tempToBeMapped = [];
 
@@ -88,9 +88,10 @@ module dockyard.directives.paneConfigureMapping {
                 });
 
 
+                var actionWithProcess = { DocuSignTemplateId: "b5abd63a-c12c-4856-b9f4-989200e41a6f" };
 
 
-                $http.get(urlPrefix + "/fields/" + "b5abd63a-c12c-4856-b9f4-989200e41a6f")
+                $http.post(urlPrefix + "/actions/field_data_sources/", actionWithProcess )
                     .then((docFields) => {
                         loadedFields = true;
                         var tempToBeMapped = [];

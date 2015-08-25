@@ -6,8 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Core.Managers;
 using Data.Interfaces;
 using Core.Services;
+using Data.Entities;
+using Data.States;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using NUnit.Framework;
@@ -16,6 +19,8 @@ using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Microsoft.SqlServer.Management.Common;
+using Newtonsoft.Json;
+using NUnit.Core;
 using Server = Microsoft.SqlServer.Management.Smo.Server;
 
 namespace DockyardTest.Integration
@@ -24,7 +29,7 @@ namespace DockyardTest.Integration
     public class RunTimeTests : BaseTest
     {
 
-        [Test]
+        [Test,Ignore]
         [Category("IntegrationTests")]
         public async void ITest_CanProcessHealthDemo()
         {
@@ -33,27 +38,22 @@ namespace DockyardTest.Integration
             // SETUP
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //create a registered account
+                Account _account = new Account();              
+                var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User"); 
+                uow.UserRepository.Add(registeredAccount);
+                uow.SaveChanges();
 
-                var healthProcessTemplateDO = FixtureData.TestProcessTemplateHealthDemo();
+                //create a process template linked to that account
+                var healthProcessTemplate = CreateProcessTemplate_healthdemo(uow, registeredAccount);
+                string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
 
-                //flush database, creating it if necessary.
-                string connectionString = FixtureData.TestConnectionString1().Value;
-                string script = FixtureData.TestSqlScript_healthdemo();
-
-                //SqlConnection conn = new SqlConnection(healthdemo_ConnectionString);
-                //Server sqlServer = new Server(new ServerConnection(conn));
-                //sqlServer.ConnectionContext.ExecuteNonQuery(script);
+                var xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, healthPayloadPath);
+                DocuSignNotification _docuSignNotification = ObjectFactory.GetInstance<DocuSignNotification>();
+                _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
 
 
-
-
-
-                //string connectionString = "Server=tcp:XXXXX.database.windows.net;Database=XXXXXX;User ID=XXXXXX;Password=XXXXX;Trusted_Connection=False;Encrypt=True;trustservercertificate=true";
-                SqlConnection connection = new SqlConnection(connectionString);
-                // do not explicitly open connection, it will be opened when Server is initialized
-                // connection.Open();
-
-             }
+            }
 
             // EXECUTE
 
@@ -63,6 +63,51 @@ namespace DockyardTest.Integration
             //Assert.IsTrue(result.Succeeded, string.Join(", ", result.Errors));
 
         }
+
+        public ProcessTemplateDO CreateProcessTemplate_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
+        {
+            var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
+            healthProcessTemplate.DockyardAccount = registeredAccount;
+            uow.ProcessTemplateRepository.Add(healthProcessTemplate);
+
+            //add processnode to process
+            var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
+            healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
+            uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
+
+            //add criteria to processnode
+            var healthCriteria = FixtureData.TestCriteriaHealthDemo();
+            healthCriteria.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            uow.CriteriaRepository.Add(healthCriteria);
+
+            //add actionlist to processnode
+            var healthActionList = FixtureData.TestActionListHealth1();
+            healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            uow.ActionListRepository.Add(healthActionList);
+
+            //add write action to actionlist
+            var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
+            healthWriteAction.ActionListId = healthActionList.Id;
+
+            //add field mappings to write action
+            var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
+            healthWriteAction.FieldMappingSettings = health_FieldMappings.Serialize();
+
+            //add configuration settings to write action
+            var configuration_settings = FixtureData.TestConfigurationSettings_healthdemo();
+            healthWriteAction.ConfigurationSettings = JsonConvert.SerializeObject(configuration_settings);
+            uow.ActionRepository.Add(healthWriteAction);
+
+            //add a subscription to a specific template on the docusign platform
+            var health_ExternalEventSubscription = FixtureData.TestExternalEventSubscription_medical_form_v1();
+            health_ExternalEventSubscription.ProcessTemplate = healthProcessTemplate;
+            uow.ExternalEventRegistrationRepository.Add(health_ExternalEventSubscription);
+
+            uow.SaveChanges();
+            return healthProcessTemplate;
+        }
+
+
     }
 }
 
