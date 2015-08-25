@@ -14,8 +14,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Actions.Add(TestActionList1());
-            curActionListDO.Actions.Add(TestActionList2());
+            curActionListDO.Actions.Add(FixtureData.TestAction1());
+            curActionListDO.Actions.Add(FixtureData.TestAction2());
 
             return curActionListDO;
         }
@@ -43,23 +43,12 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestActionList2()
-        {
-            return new ActionDO
-            {
-                Id = 2,
-                UserLabel = "Action 2",
-                ActionListId = 1,
-                Ordering = 2
-            };
-        }
-
         public static ActionListDO TestActionList3()
         {
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestActionList2(),
+                CurrentAction = FixtureData.TestAction2(),
                 ActionListState = ActionListState.Inprocess
             };
         }
@@ -69,8 +58,14 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestActionList2(),
-                ActionListState = ActionListState.Unstarted
+                CurrentAction = FixtureData.TestAction6(),
+                ActionListState = ActionListState.Unstarted,
+                Actions = new System.Collections.Generic.List<ActionDO>() 
+                { 
+                    FixtureData.TestAction5(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
             };
         }
     }

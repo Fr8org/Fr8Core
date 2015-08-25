@@ -362,7 +362,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(processId);
         }
 
-        public static void ActionStarted(ActionDO action)
+        public static void ActionProcessingStarted(ActionDO action)
         {
             var handler = EventActionStarted;
             if (handler != null) handler(action);

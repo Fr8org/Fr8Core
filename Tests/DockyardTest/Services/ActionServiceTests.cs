@@ -95,7 +95,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Process_ActionListNotUnstarted_ThrowException()
+        public void Process_ActionNotUnstarted_ThrowException()
         {
             ActionDO actionDo = FixtureData.TestAction4();
             Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();

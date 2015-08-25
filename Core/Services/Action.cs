@@ -12,8 +12,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Core.PluginRegistrations;
 using Data.States;
 using Newtonsoft.Json;
 
@@ -100,23 +98,23 @@ namespace Core.Services
             }
         }
 
-        public async Task<string> Process(ActionDO curAction)
+        public async Task Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState == ActionState.Unstarted)
+                if (curAction.ActionState != ActionState.Completed && curAction.ActionState != ActionState.Error)
                 {
-                    curAction.ActionState = ActionState.Inprocess;
+                    curAction.ActionState = ActionState.InProcess;
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
 
-
-                    EventManager.ActionStarted(curAction);
+                    EventManager.ActionProcessingStarted(curAction);
                     var jsonResult = await Dispatch(curAction);
 
-                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, ErrorDTO>>(jsonResult);
-                    if (jsonDeserialized.Count == 0 || jsonDeserialized.Where(k => k.Key.ToLower().Contains("error")).Any())
+                    string jsonDeserialized = JsonConvert.DeserializeObject<string>(jsonResult);
+                    //check if the returned JSON is Error
+                    if (jsonDeserialized.ToLower().Contains("error"))
                     {
                         curAction.ActionState = ActionState.Error;
                     }
@@ -124,19 +122,18 @@ namespace Core.Services
                     {
                         curAction.ActionState = ActionState.Completed;
                     }
-
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
                 }
                 else
                 {
                     curAction.ActionState = ActionState.Error;
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
-                    throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
+                    throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
+
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
             }
-            return curAction.ActionState.ToString();
         }
 
         public async Task<string> Dispatch(ActionDO curAction)

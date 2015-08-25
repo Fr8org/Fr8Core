@@ -12,7 +12,8 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 1,
-                UserLabel = "Action 1"
+                UserLabel = "Action 1",
+                ActionListId = null
             };
             return curActionDO;
         }
@@ -29,12 +30,13 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestAction2()
         {
-            var curActionDO = new ActionDO
+            return new ActionDO
             {
                 Id = 2,
-                UserLabel = "Action 2"
+                UserLabel = "Action 2",
+                ActionListId = null,
+                Ordering = 2
             };
-            return curActionDO;
         }
 
         public ActionDO TestAction3()
@@ -58,9 +60,56 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 2,
-                ActionState = ActionState.Inprocess
+                ActionState = ActionState.InProcess
             };
         }
 
+        public static ActionDO TestAction5()
+        {
+            return new ActionDO
+            {
+                Id = 5,
+                UserLabel = "Action 5",
+                ActionListId = 1,
+                Ordering = 1,
+                ActionState = ActionState.Unstarted
+            };
+        }
+
+        public static ActionDO TestAction6()
+        {
+            return new ActionDO
+            {
+                Id = 6,
+                UserLabel = "Action 6",
+                ActionListId = 1,
+                Ordering = 2,
+                ActionState = ActionState.Unstarted
+            };
+        }
+
+        public static ActionDO TestAction7()
+        {
+            return new ActionDO
+            {
+                Id = 7,
+                UserLabel = "Action 7",
+                ActionListId = 1,
+                Ordering = 3,
+                ActionState = ActionState.Unstarted
+            };
+        }
+
+        public static ActionDO TestAction8()
+        {
+            return new ActionDO
+            {
+                Id = 8,
+                UserLabel = "Action 8",
+                ActionListId = 1,
+                Ordering = 4,
+                ActionState = ActionState.Unstarted
+            };
+        }
     }
 }

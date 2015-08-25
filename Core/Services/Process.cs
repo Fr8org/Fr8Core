@@ -81,19 +81,21 @@ namespace Core.Services
                     string nodeTransitionKey = _processNode.Execute(curEnvelope, curProcessNode);
                     if (nodeTransitionKey != string.Empty)
                     {
-                        var nodeTransitions = JsonConvert.DeserializeObject<List<TransitionKeyData>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
-                        string nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new TransitionKeyData()).FirstOrDefault().Id;
-                        if (nodeTransitions != null && String.IsNullOrEmpty(nodeID) != true)
-                        {
-                            curProcessNode = uow.ProcessNodeRepository.GetByKey(nodeID);
-                        }
-                        else
-                        {
-                            throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
-                        }
+                        List<ProcessNodeTransition> nodeTransitions = JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
+                        curProcessNode = uow.ProcessNodeRepository.GetByKey(GetNextProcessNodeId(nodeTransitions, nodeTransitionKey));
                     }
                 }
             }
+        }
+
+        private string GetNextProcessNodeId(List<ProcessNodeTransition> nodeTransitions, string nodeTransitionKey)
+        {
+            string nodeID = nodeTransitions.Where(k => k.TransitionKey.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new ProcessNodeTransition()).FirstOrDefault().ProcessNodeId;
+            if (nodeTransitions == null)
+            {
+                throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
+            }
+            return nodeID;
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Core.Interfaces;
 using Core.Services;
+using Core.StructureMap;
 using Data.Entities;
 using Data.States;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
 using System;
@@ -18,6 +20,16 @@ namespace DockyardTest.Services
     [Category("ActionListService")]
     public class ActionListServiceTests : BaseTest
     {
+        private IActionList _actionList;
+        private Mock<IAction> actionMock;
+        [SetUp]
+        public override void SetUp()
+        {
+ 	        base.SetUp();
+           _actionList = ObjectFactory.GetInstance<IActionList>();
+        }
+        
+
         [Test]
         [ExpectedException(ExpectedMessage = "Action List ID: 2 status is not unstarted.")]
         public void Process_ActionListNotUnstarted_ThrowException()
@@ -37,6 +49,20 @@ namespace DockyardTest.Services
             _actionList.Process(actionListDo);
 
             Assert.AreEqual(ActionListState.Completed, actionListDo.ActionListState);
+        }
+
+        [Test]
+        public void Process_CurrentActionInLastList_SetToComplete()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList4();
+
+            actionMock = new Mock<IAction>();
+            actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(actionMock.Object));
+            
+            _actionList.Process(actionListDO);
+
+            Assert.AreEqual(ActionState.Completed, actionListDO.CurrentAction.ActionState);
         }
     }
 }
