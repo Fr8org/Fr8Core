@@ -17,10 +17,16 @@ module dockyard.directives.paneSelectTemplate {
     export class ProcessTemplateUpdatedEventArgs extends EventArgsBase {
         public processTemplateId: number;
         public processTemplateName: string;
+        public subscribedDocuSignTemplates: Array<string>;
 
-        constructor(processTemplateId: number, processTemplateName: string) {
+        constructor(
+            processTemplateId: number,
+            processTemplateName: string,
+            subscribedDocuSignTemplates: Array<string>) {
+
             this.processTemplateId = processTemplateId;
             this.processTemplateName = processTemplateName;
+            this.subscribedDocuSignTemplates = subscribedDocuSignTemplates;
             super();
         }
     }
@@ -36,7 +42,7 @@ module dockyard.directives.paneSelectTemplate {
         processTemplate: interfaces.IProcessTemplateVM;
         save: (curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>;
         cancel: (curScope: IPaneSelectTemplateScope) => void;
-        docuSignTemplateId: string;            
+        docuSignTemplateId: string;
     }
     
     //More detail on creating directives in TypeScript: 
@@ -68,9 +74,10 @@ module dockyard.directives.paneSelectTemplate {
                 $scope.$on(MessageType[MessageType.PaneSelectTemplate_Hide], this.onHide);
 
                 $scope.cancel = <(curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>>
-                    angular.bind(this, this.cancel);
+                angular.bind(this, this.cancel);
                 $scope.save = <(curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>>
-                    angular.bind(this, this.save);
+                angular.bind(this, this.save);
+
             };
         }
 
@@ -78,7 +85,7 @@ module dockyard.directives.paneSelectTemplate {
 
             curScope.loadingMessage = "Loading Templates .....";
 
-            curScope.processTemplate = this.ProcessTemplateService.get({id: this.$stateParams["id"]});
+            curScope.processTemplate = this.ProcessTemplateService.get({ id: this.$stateParams["id"] });
             curScope.docuSignTemplates = this.DocuSignTemplateService.query();
             curScope.docuSignExternalEvents = this.DocuSignTriggerService.query();
 
@@ -86,16 +93,15 @@ module dockyard.directives.paneSelectTemplate {
                 curScope.docuSignTemplates.$promise,
                 curScope.docuSignExternalEvents.$promise,
                 curScope.processTemplate.$promise]
-            ).then(
-                () => {
-                    console.log(curScope);
-                    if (curScope.processTemplate && curScope.processTemplate.SubscribedDocuSignTemplates.length > 0)
-                    {
-                        curScope.docuSignTemplateId = curScope.processTemplate.SubscribedDocuSignTemplates[0];
+                ).then(
+                    () => {
+                        console.log(curScope);
+                        if (curScope.processTemplate && curScope.processTemplate.SubscribedDocuSignTemplates.length > 0) {
+                            curScope.docuSignTemplateId = curScope.processTemplate.SubscribedDocuSignTemplates[0];
+                        }
+                        curScope.doneLoading = true
                     }
-                    curScope.doneLoading = true
-                }
-            );
+                    );
         }
 
         private onRender = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
@@ -118,12 +124,23 @@ module dockyard.directives.paneSelectTemplate {
                     0,
                     1,
                     $('#docuSignTemplate').val().replace('string:', '')); //a hack required since $scope contained old value when save is triggered by 'Hide' message
+                
+                //Notify controller of template change
+                this._$scope.$emit(
+                    MessageType[MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
+                    new ProcessTemplateUpdatedEventArgs(
+                        this._$scope.processTemplate.Id,
+                        this._$scope.processTemplate.Name,
+                        this._$scope.processTemplate.SubscribedDocuSignTemplates)
+                    );
+                
+                //Save and return promise 
                 return this.ProcessTemplateService.save(
                     {
-                           updateRegistrations: true //update template and trigger registrations
+                        updateRegistrations: true //update template and trigger registrations
                     },
                     this._$scope.processTemplate).$promise;
-            }
+            }   
         }
 
         public cancel(curScope: IPaneSelectTemplateScope) {
@@ -137,8 +154,7 @@ module dockyard.directives.paneSelectTemplate {
                 $stateParams: ng.ui.IStateParamsService,
                 DocuSignTemplateService: services.IDocuSignTemplateService,
                 DocuSignTriggerService: services.IDocuSignTriggerService,
-                ProcessTemplateService: services.IProcessTemplateService) =>
-            {
+                ProcessTemplateService: services.IProcessTemplateService) => {
                 return new PaneSelectTemplate(
                     $q,
                     $timeout,

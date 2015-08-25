@@ -69,7 +69,7 @@ module dockyard.tests.controller {
         //Rule #5
         it("When PaneSelectTemplate_ProcessTemplateUpdated is sent, state data (template name) must be updated", () => {
             var templateName = "testtemplate";
-            var incomingEventArgs = new pst.ProcessTemplateUpdatedEventArgs(1, "testtemplate");
+            var incomingEventArgs = new pst.ProcessTemplateUpdatedEventArgs(1, "testtemplate", ['test']);
             _$scope.$emit(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated], incomingEventArgs);
             expect(_$state.data.pageSubTitle).toBe(templateName);
         });

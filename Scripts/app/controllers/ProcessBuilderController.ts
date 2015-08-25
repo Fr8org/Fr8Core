@@ -28,7 +28,8 @@ module dockyard.controllers {
             'LocalIdentityGenerator',
             '$state',
             'ActionService',
-            '$q'
+            '$q',
+            'ProcessTemplateService'
         ];
 
         private _scope: interfaces.IProcessBuilderScope;
@@ -40,10 +41,12 @@ module dockyard.controllers {
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
-            private $q: ng.IQService
+            private $q: ng.IQService,
+            private ProcessTemplateService: services.IProcessTemplateService
         ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
+
 
             this._scope.processNodeTemplates = [];
             this._scope.fields = [
@@ -53,11 +56,11 @@ module dockyard.controllers {
 
             this._scope.curNodeId = null;
             this._scope.curNodeIsTempId = false;
-
             this._scope.Cancel = angular.bind(this, this.Cancel);
             this._scope.Save = angular.bind(this, this.SaveAction);
 
             this.setupMessageProcessing();
+            this.loadProcessTemplate();
         }
 
         /*
@@ -88,6 +91,10 @@ module dockyard.controllers {
             //Process Configure Action Pane events
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+            
+            //Select Template Pane events
+            this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
+                (event: ng.IAngularEvent, eventArgs: pst.ProcessTemplateUpdatedEventArgs) => this.PaneSelectTemplate_ProcessTemplateUpdated(eventArgs));
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
@@ -95,11 +102,14 @@ module dockyard.controllers {
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
 
-            //Process Select Template Pane events
-            this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
-                (event: ng.IAngularEvent, eventArgs: pst.ProcessTemplateUpdatedEventArgs) => {
-                    this.$state.data.pageSubTitle = eventArgs.processTemplateName
-                });
+            //DEMO (remove before production): watching currentProcessTemplate
+            this._scope.$watch('currentProcessTemplate', (newValue, oldValue, scope) => {
+                console.log('currentProcessTemplate changed:' + (<any>newValue).SubscribedDocuSignTemplates);
+            }, true);
+        }
+
+        private loadProcessTemplate() {
+            this._scope.currentProcessTemplate = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
         }
          
         // Find criteria by Id.
@@ -395,6 +405,24 @@ module dockyard.controllers {
                 eventArgs.isTempId,
                 eventArgs.actionName);
             this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
+        }
+
+        private PaneSelectTemplate_ProcessTemplateUpdated(eventArgs: pst.ProcessTemplateUpdatedEventArgs) {
+            console.log('changed');
+
+            //Update scope variable
+            var currentProcessTemplate = this._scope.currentProcessTemplate || <interfaces.IProcessTemplateVM>{}
+            currentProcessTemplate.Name = eventArgs.processTemplateName;
+            currentProcessTemplate.SubscribedDocuSignTemplates = eventArgs.subscribedDocuSignTemplates;
+
+            //Relay the message to all other panes
+            this._scope.$broadcast(
+                pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
+                new pst.ProcessTemplateUpdatedEventArgs(
+                    this._scope.currentProcessTemplate.Id,
+                    this._scope.currentProcessTemplate.Name,
+                    this._scope.currentProcessTemplate.SubscribedDocuSignTemplates)
+                );
         }
 
         public SaveAction() {
