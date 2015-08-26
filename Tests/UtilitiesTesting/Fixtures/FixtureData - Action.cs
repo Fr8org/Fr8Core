@@ -154,7 +154,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionListId = 1,
                 ActionState = ActionState.Unstarted,
                 ActionType = "testaction",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
+                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FixtureData.FieldMappings,
                 Id = 1
             };
