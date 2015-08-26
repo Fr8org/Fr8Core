@@ -33,7 +33,7 @@ namespace Core.Services
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
-            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+           
             _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
         }
 
@@ -89,7 +89,7 @@ namespace Core.Services
             {
                 string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
                 curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
-            } 
+            }
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
             return curActionDO;
@@ -150,14 +150,35 @@ namespace Core.Services
 
         public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
         {
+            PayloadMappingsDTO mappings;
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
-            var actionPayloadDto = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDto.PayloadMappings = CreateActionPayload(curActionDO, actionPayloadDto.EnvelopeId);
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
-            EventManager.ActionDispatched(actionPayloadDto);
+            var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
+            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; 
+            
+            //this is currently null because ProcessId isn't being written to ActionList.
+            //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
+            //that's because an ActionList is essentially a template that's part of a processnodetemplate, from which N different Processes can be spawned
+            //the confusion stems from design flaws that will be addressed in 921.   
+            //in the short run, modify ActionList#Process to write the current processid into the ActionListDo, just to unblock this.                                                                    
+            
+            
+            //If no existing payload, created and save it
+            if (actionPayloadDTO.PayloadMappings.Count() == 0)
+            {
+                mappings = CreateActionPayload(curActionDO, actionPayloadDTO.EnvelopeId);
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    curActionDO.PayloadMappings = mappings.Serialize();
+                    uow.SaveChanges();
+                }
+                actionPayloadDTO.PayloadMappings = mappings;
+            }
+
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDTO);
+            EventManager.ActionDispatched(actionPayloadDTO);
             return jsonResult;
         }
 
@@ -169,14 +190,15 @@ namespace Core.Services
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
             }
             return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
-            }
+        }
 
 
         //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
 
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
-           return _docusignTemplate.GetMappableSourceFields(curActionDO.DocuSignTemplateId);
+            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+            return _docusignTemplate.GetMappableSourceFields(curActionDO.DocuSignTemplateId);
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder

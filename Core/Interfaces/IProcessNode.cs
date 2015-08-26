@@ -7,8 +7,9 @@ namespace Core.Interfaces
 {
 	public interface IProcessNode
 	{
-		ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name);
-		void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode);
+	    ProcessNodeDO Create(IUnitOfWork uow, int parentProcessId, int processNodeTemplateId, string name);
+
+        void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode);
 		string Execute(List<EnvelopeDataDTO> curEnvelopeData, ProcessNodeDO curProcessNode);
 	}
 }

@@ -31,7 +31,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curCriteria = uow.CriteriaRepository.GetQuery()
-                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id);
+                    .SingleOrDefault(x => x.ProcessNodeTemplateId == id);
 
                 return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
             };

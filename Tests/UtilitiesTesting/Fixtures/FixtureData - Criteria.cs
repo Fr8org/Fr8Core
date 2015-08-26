@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             CriteriaDO criteriaDO = new CriteriaDO()
             {
                 Id = 1,
-                ExecutionType = 1,
+                CriteriaExecutionType = 1,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
                 LastUpdated = DateTime.Now,
                 ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1()
@@ -27,7 +27,7 @@ namespace UtilitiesTesting.Fixtures
             CriteriaDO criteriaDO = new CriteriaDO()
             {
                 Id = 78,
-                ExecutionType = 2,
+                CriteriaExecutionType = 2,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
                 LastUpdated = DateTime.Now,
                 
