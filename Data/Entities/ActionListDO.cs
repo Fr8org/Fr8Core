@@ -22,9 +22,6 @@ namespace Data.Entities
         public int? ProcessNodeTemplateID { get; set; }
         public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
 
-		[ForeignKey("Template")]
-		public int? TemplateId{ get; set; }
-		public virtual TemplateDO Template{ get; set; }
 
 		[ForeignKey("Process")]
 		public int? ProcessID{ get; set; }
@@ -46,5 +43,10 @@ namespace Data.Entities
         [ForeignKey("CurrentAction")]
         public int? CurrentActionID { get; set; }
         public virtual ActionDO CurrentAction  { get; set; }
+
+        [ForeignKey("ActionListStateTemplate")]
+        public int? ActionListState { get; set; }
+
+        public virtual _ActionListStateTemplate ActionListStateTemplate { get; set; }
 	}
 }

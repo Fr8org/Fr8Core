@@ -1,5 +1,10 @@
 ﻿(function (ns) {
 
+    ns.ActionType = {
+        immediate: 1,
+        scheduled: 2
+    };
+
     // Style constants.
     ns.WidgetConsts = {
         // Padding from canvas edge.
@@ -68,9 +73,10 @@
         addActionNodeTextSize: 15,
         addActionNodeTextFill: '#566B7F',
         addActionNodeTextFont: 'Tahoma',
+        addActionNodeAddImage: '/Content/img/ProcessBuilder/action-add-small.png',
 
         // ActionNode (single action that was added by user) parameters.
-        actionNodePadding: 8,
+        actionNodePadding: 5,
         actionNodeHeight: 30,
         actionNodeTextSize: 15,
         actionNodeTextFill: 'black',

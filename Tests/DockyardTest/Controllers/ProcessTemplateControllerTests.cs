@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Metadata.W3cXsd2001;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Web.Http.Results;
 using NUnit.Framework;
@@ -21,22 +22,43 @@ namespace DockyardTest.Controllers
     [Category("Controllers.Api.ProcessTemplateService")]
     public class ProcessTemplateControllerTests : BaseTest
     {
+        private DockyardAccountDO _testUserAccount;
+
+
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
+
+            _testUserAccount = FixtureData.TestUser1();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.UserRepository.Add(_testUserAccount);
+                uow.SaveChanges();
+            }
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetQuery()
+                    .SingleOrDefault(x => x.Id == _testUserAccount.Id);
+
+                uow.UserRepository.Remove(curUser);
+                uow.SaveChanges();
+            }
         }
 
         [Test]
         public void ProcessTemplateController_CanAddNewProcessTemplate()
         {
             //Arrange 
-            string testUserId = "testuser";
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
 
-
             //Act
-            ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
+            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(processTemplateDto);
 
             //Assert
@@ -46,7 +68,7 @@ namespace DockyardTest.Controllers
             {
                 Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
                 var ptdo = uow.ProcessTemplateRepository.
-                    GetQuery().SingleOrDefault(pt => pt.UserId == testUserId && pt.Name == processTemplateDto.Name);
+                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
                 Assert.IsNotNull(ptdo);
                 Assert.AreEqual(processTemplateDto.Description, ptdo.Description);
             }
@@ -56,13 +78,11 @@ namespace DockyardTest.Controllers
         public void ProcessTemplateController_Will_Return_BadResult_If_Name_Is_Empty()
         {
             //Arrange 
-            string testUserId = "testuser";
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             processTemplateDto.Name = String.Empty;
 
-
             //Act
-            ProcessTemplateController ptc = CreateProcessTemplateController(testUserId);
+            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
             var response = ptc.Post(processTemplateDto);
 
             //Assert
@@ -74,17 +94,10 @@ namespace DockyardTest.Controllers
         [Test]
         public void ProcessTemplateController_Will_ReturnEmptyOkResult_If_No_ProcessTemplate_Found()
         {
-            //Arrange 
-            string testUserId = "testuser";
-
-
-
             //Act
-            ProcessTemplateController processTemplateController = CreateProcessTemplateController(testUserId);
-
+            ProcessTemplateController processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
-
             var postResult = processTemplateController.Get(55);
             Assert.IsNull(postResult as OkNegotiatedContentResult<ProcessTemplateDO>);
         }
@@ -93,16 +106,25 @@ namespace DockyardTest.Controllers
         public void ProcessController_Will_Return_All_When_Get_Invoked_With_Null()
         {
             //Arrange
-            var testUserId = "testuser1";
-
-            var processTemplateController = CreateProcessTemplateController(testUserId);
-
-
-            for (var i = 0; i < 4; i++)
+            var processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            for (var i = 0; i < 2; i++)
             {
                 var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
+                // Commented out by yakov.gnusin:
+                // Do we really need to provider DockyardAccountDO inside ProcessTemplateDTO?
+                // We do override DockyardAccountDO in ProcessTemplateController.Post action.
+                // switch (i)
+                // {
+                //     case 0:
+                //         processTemplateDto.DockyardAccount = FixtureData.TestDockyardAccount1();
+                //         break;
+                //     case 1:
+                //         processTemplateDto.DockyardAccount = FixtureData.TestDockyardAccount2();
+                //         break;
+                //     default:
+                //         break;
+                // }
                 processTemplateController.Post(processTemplateDto);
-
             }
 
             //Act
@@ -110,20 +132,16 @@ namespace DockyardTest.Controllers
 
             //Assert
             Assert.NotNull(actionResult);
-            Assert.AreEqual(4, actionResult.Content.Count());
-
+            Assert.AreEqual(2, actionResult.Content.Count());
         }
 
         [Test]
         public void ProcessController_Will_Return_One_When_Get_Invoked_With_Id()
         {
             //Arrange
-            var testUserId = "testuser4";
-            var processTemplateController = CreateProcessTemplateController(testUserId);
+            var processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             processTemplateController.Post(processTemplateDto);
-
-
 
             //Act
             var actionResult = processTemplateController.Get(processTemplateDto.Id) as OkNegotiatedContentResult<ProcessTemplateDTO>;
@@ -139,12 +157,9 @@ namespace DockyardTest.Controllers
         public void ProcessTemplateController_CanDelete()
         {
             //Arrange 
-            string testUserId = "testuser3";
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
 
-
-
-            ProcessTemplateController processTemplateController = CreateProcessTemplateController(testUserId);
+            ProcessTemplateController processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<ProcessTemplateDTO>;
 
             Assert.NotNull(postResult);
@@ -166,12 +181,11 @@ namespace DockyardTest.Controllers
         public void ProcessController_CannotCreateIfProcessNameIsEmpty()
         {
             //Arrange 
-            string testUserId = "testuser";
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             processTemplateDto.Name = String.Empty;
 
             //Act
-            ProcessTemplateController processTemplateController = CreateProcessTemplateController(testUserId);
+            ProcessTemplateController processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             processTemplateController.Post(processTemplateDto);
 
             //Assert
@@ -182,9 +196,8 @@ namespace DockyardTest.Controllers
         public void ProcessController_CanEditProcess()
         {
             //Arrange 
-            string testUserId = "testuser2";
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
-            var processTemplateController = CreateProcessTemplateController(testUserId);
+            var processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             
             //Save First
             var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<ProcessTemplateDTO>;
@@ -208,21 +221,59 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(postEditGetResult.Content.Name,postEditNameValue);
             Assert.AreEqual(postEditGetResult.Content.Id,editResult.Content.Id);
             Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Id);
-            Assert.AreEqual(postEditGetResult.Content.Id, getResult.Content.Id);
-            
+            Assert.AreEqual(postEditGetResult.Content.Id, getResult.Content.Id);            
         }
 
-
-
-       
-
-        private static ProcessTemplateController CreateProcessTemplateController(string testUserId)
+        [Test]
+        public void ProcessController_CanUpdateDocuSignTemplate()
         {
+            //Arrange
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
+
+            var docuSignTemplateList = new List<string>();
+            docuSignTemplateList.Add("58521204-58af-4e65-8a77-4f4b51fef626");
+
+            var externalEventList = new List<int>();
+            externalEventList.AddRange(new int[] { 1, 3 });
+
+            //Act: first add a process template, then modify it. 
+            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var response = ptc.Post(processTemplateDto);
+            processTemplateDto.Name = "updated";
+            processTemplateDto.SubscribedDocuSignTemplates = docuSignTemplateList;
+            processTemplateDto.SubscribedExternalEvents = externalEventList;
+            response = ptc.Post(processTemplateDto, true);
+
+            //Assert
+            var okResult = response as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.NotNull(okResult);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
+                var ptdo = uow.ProcessTemplateRepository.
+                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
+                Assert.IsNotNull(ptdo);
+                Assert.AreEqual(processTemplateDto.Name, ptdo.Name);
+                Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates.Count(), 1);
+                Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates[0], docuSignTemplateList[0]);
+                Assert.AreEqual(processTemplateDto.SubscribedExternalEvents, externalEventList);
+            }
+        }
+
+        private static ProcessTemplateController CreateProcessTemplateController(string userId, string email)
+        {
+            var claims = new List<Claim>();
+            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
+            claims.Add(new Claim(ClaimTypes.Name, email));
+            claims.Add(new Claim(ClaimTypes.Email, email));
+
+            var identity = new ClaimsIdentity(claims);
 
             var ptc = new ProcessTemplateController
             {
-                User = new GenericPrincipal(new GenericIdentity(testUserId, "Forms"), new[] { "USers" })
+                User = new GenericPrincipal(identity, new[] { "USers" })
             };
+
             return ptc;
         }
     }

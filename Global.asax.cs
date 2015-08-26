@@ -27,9 +27,10 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
-using Core.Managers.APIManagers.Packagers.Docusign;
+using Data.Wrappers;
 using System.Web.Http;
 using FluentValidation.WebApi;
+using System.Net.Http.Formatting;
 
 namespace Web
 {
@@ -44,6 +45,10 @@ namespace Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            //Configure formatters
+            GlobalConfiguration.Configuration.Formatters.Clear();
+            GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
 
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
@@ -89,8 +94,8 @@ namespace Web
             SetServerUrl();
 
             Logger.GetLogger().Warn("Dockyard  starting...");
-            var docusign = new DocusignPackager();
-            //string baseURL = docusign.Login();
+            var docusign = new DocuSignPackager();
+            docusign.Login();
             ConfigureValidationEngine();
 
         }

@@ -32,96 +32,154 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Analytics.NET">
+    <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper, Version=3.3.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.dll</HintPath>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="AutoMapper.Net4">
-      <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
-    </Reference>
-    <Reference Include="DocuSign.Integration.Client">
-      <HintPath>..\packages\DocuSign.Integration.Client.dll.1.5.1\lib\DocuSign.Integration.Client.dll</HintPath>
+    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocuSign.Integration.Client.dll.1.6.1\lib\DocuSign.Integration.Client.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="FluentValidation">
       <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Core">
+    <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.0.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Threading.Tasks">
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions">
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.Net4.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Extensions">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="System.Net.Http.Primitives">
-      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.Serialization" />
-    <Reference Include="Zlib.Portable">
+    <Reference Include="Zlib.Portable, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
+    <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
+    <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionRegistrationDO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
     <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
@@ -130,49 +188,36 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionRegistrationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
-    <Compile Include="Interfaces\ITemplate.cs" />
-    <Compile Include="Migrations\201508110909400_Criteria_Migration.cs" />
-    <Compile Include="Migrations\201508110909400_Criteria_Migration.Designer.cs">
-      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508130055069_ActionRegistration.cs" />
-    <Compile Include="Migrations\201508130055069_ActionRegistration.Designer.cs">
-      <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.cs" />
-    <Compile Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.Designer.cs">
-      <DependentUpon>201508131250520_CriteriaForeignKey_Move_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.cs" />
-    <Compile Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.Designer.cs">
-      <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508171449101_merge1.cs" />
-    <Compile Include="Migrations\201508171449101_merge1.Designer.cs">
-      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508180255327_FixEnvelopeDO.cs" />
-    <Compile Include="Migrations\201508180255327_FixEnvelopeDO.Designer.cs">
-      <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
+    <Compile Include="Migrations\201508252259417_InitialMigration.cs" />
+    <Compile Include="Migrations\201508252259417_InitialMigration.Designer.cs">
+      <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
+    <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
+    <Compile Include="States\ActionState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
-    <Compile Include="Entities\DocusignAccountDO.cs" />
     <Compile Include="Entities\DocuSignEventDO.cs" />
     <Compile Include="Entities\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
     <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
     <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
-    <Compile Include="Entities\EnvelopeDataDO.cs" />
     <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\MailerDO.cs" />
@@ -203,98 +248,6 @@
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginDO.cs" />
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
-    <Compile Include="Migrations\201507140439113_Initial_Migration.cs" />
-    <Compile Include="Migrations\201507140439113_Initial_Migration.Designer.cs">
-      <DependentUpon>201507140439113_Initial_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507162011371_AddAuthorizationTokenDOTokenProperty.cs" />
-    <Compile Include="Migrations\201507162011371_AddAuthorizationTokenDOTokenProperty.Designer.cs">
-      <DependentUpon>201507162011371_AddAuthorizationTokenDOTokenProperty.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507162035026_Envelope_Migration.cs" />
-    <Compile Include="Migrations\201507162035026_Envelope_Migration.Designer.cs">
-      <DependentUpon>201507162035026_Envelope_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507180853106_Merge_0718.cs" />
-    <Compile Include="Migrations\201507180853106_Merge_0718.Designer.cs">
-      <DependentUpon>201507180853106_Merge_0718.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507200133405_add-process.cs" />
-    <Compile Include="Migrations\201507200133405_add-process.Designer.cs">
-      <DependentUpon>201507200133405_add-process.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507200152106_fixup.cs" />
-    <Compile Include="Migrations\201507200152106_fixup.Designer.cs">
-      <DependentUpon>201507200152106_fixup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507200156445_fixup2.cs" />
-    <Compile Include="Migrations\201507200156445_fixup2.Designer.cs">
-      <DependentUpon>201507200156445_fixup2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507222138309_ProcessDO.cs" />
-    <Compile Include="Migrations\201507222138309_ProcessDO.Designer.cs">
-      <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507211417084_Actions_Migration.cs" />
-    <Compile Include="Migrations\201507211417084_Actions_Migration.Designer.cs">
-      <DependentUpon>201507211417084_Actions_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507231732158_mergefix.cs" />
-    <Compile Include="Migrations\201507231732158_mergefix.Designer.cs">
-      <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.cs" />
-    <Compile Include="Migrations\201507242025144_RemoveUnwantedTables.Designer.cs">
-      <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507252017207_AddDocksignAccount.cs" />
-    <Compile Include="Migrations\201507252017207_AddDocksignAccount.Designer.cs">
-      <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507240005258_ProcessTemplateDO.cs" />
-    <Compile Include="Migrations\201507240005258_ProcessTemplateDO.Designer.cs">
-      <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507261559104_ProcessTemplate.cs" />
-    <Compile Include="Migrations\201507261559104_ProcessTemplate.Designer.cs">
-      <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507281801505_ProcessNode_Migration.cs" />
-    <Compile Include="Migrations\201507281801505_ProcessNode_Migration.Designer.cs">
-      <DependentUpon>201507281801505_ProcessNode_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201507292245379_ProcessServices_Migration.cs" />
-    <Compile Include="Migrations\201507292245379_ProcessServices_Migration.Designer.cs">
-      <DependentUpon>201507292245379_ProcessServices_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508011853584_UpdateActionDo.cs" />
-    <Compile Include="Migrations\201508011853584_UpdateActionDo.Designer.cs">
-      <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.cs" />
-    <Compile Include="Migrations\201508051711123_ProcessFlow_Migration.Designer.cs">
-      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.cs" />
-    <Compile Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.Designer.cs">
-      <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.cs" />
-    <Compile Include="Migrations\201508061339318_AddSubscriptionAndPlugin.Designer.cs">
-      <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508081609195_blank_migration.cs" />
-    <Compile Include="Migrations\201508081609195_blank_migration.Designer.cs">
-      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508081752116_AddMailerDO.cs" />
-    <Compile Include="Migrations\201508081752116_AddMailerDO.Designer.cs">
-      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508110145235_merge.cs" />
-    <Compile Include="Migrations\201508110145235_merge.Designer.cs">
-      <DependentUpon>201508110145235_merge.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
@@ -336,7 +289,9 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
+    <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
     <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
@@ -437,6 +392,9 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
+    <Compile Include="Wrappers\DocuSignAccount.cs" />
+    <Compile Include="Wrappers\DocuSignPackager.cs" />
+    <Compile Include="Wrappers\DocuSignTemplate.cs" />
     <Compile Include="Wrappers\DocuSignEnvelope.cs" />
     <Compile Include="Wrappers\Signer.cs" />
     <Compile Include="Wrappers\Tab.cs" />
@@ -457,106 +415,22 @@
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201507140439113_Initial_Migration.resx">
-      <DependentUpon>201507140439113_Initial_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507162011371_AddAuthorizationTokenDOTokenProperty.resx">
-      <DependentUpon>201507162011371_AddAuthorizationTokenDOTokenProperty.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507162035026_Envelope_Migration.resx">
-      <DependentUpon>201507162035026_Envelope_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507180853106_Merge_0718.resx">
-      <DependentUpon>201507180853106_Merge_0718.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507200133405_add-process.resx">
-      <DependentUpon>201507200133405_add-process.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507200152106_fixup.resx">
-      <DependentUpon>201507200152106_fixup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507200156445_fixup2.resx">
-      <DependentUpon>201507200156445_fixup2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507222138309_ProcessDO.resx">
-      <DependentUpon>201507222138309_ProcessDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507211417084_Actions_Migration.resx">
-      <DependentUpon>201507211417084_Actions_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507231732158_mergefix.resx">
-      <DependentUpon>201507231732158_mergefix.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507240005258_ProcessTemplateDO.resx">
-      <DependentUpon>201507240005258_ProcessTemplateDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507242025144_RemoveUnwantedTables.resx">
-      <DependentUpon>201507242025144_RemoveUnwantedTables.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507252017207_AddDocksignAccount.resx">
-      <DependentUpon>201507252017207_AddDocksignAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507261559104_ProcessTemplate.resx">
-      <DependentUpon>201507261559104_ProcessTemplate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507281801505_ProcessNode_Migration.resx">
-      <DependentUpon>201507281801505_ProcessNode_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507292245379_ProcessServices_Migration.resx">
-      <DependentUpon>201507292245379_ProcessServices_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508011853584_UpdateActionDo.resx">
-      <DependentUpon>201508011853584_UpdateActionDo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508051711123_ProcessFlow_Migration.resx">
-      <DependentUpon>201508051711123_ProcessFlow_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508040322410_ProcessTemplateDOUserIdAdd.resx">
-      <DependentUpon>201508040322410_ProcessTemplateDOUserIdAdd.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508061339318_AddSubscriptionAndPlugin.resx">
-      <DependentUpon>201508061339318_AddSubscriptionAndPlugin.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508081609195_blank_migration.resx">
-      <DependentUpon>201508081609195_blank_migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508081752116_AddMailerDO.resx">
-      <DependentUpon>201508081752116_AddMailerDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508110145235_merge.resx">
-      <DependentUpon>201508110145235_merge.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508110909400_Criteria_Migration.resx">
-      <DependentUpon>201508110909400_Criteria_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508130055069_ActionRegistration.resx">
-      <DependentUpon>201508130055069_ActionRegistration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508131250520_CriteriaForeignKey_Move_Migration.resx">
-      <DependentUpon>201508131250520_CriteriaForeignKey_Move_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508141007124_Process_DocusignTemplates_Migration.resx">
-      <DependentUpon>201508141007124_Process_DocusignTemplates_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508171449101_merge1.resx">
-      <DependentUpon>201508171449101_merge1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508180255327_FixEnvelopeDO.resx">
-      <DependentUpon>201508180255327_FixEnvelopeDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508252259417_InitialMigration.resx">
+      <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
-  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
-    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
-    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
-  </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

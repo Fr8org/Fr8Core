@@ -1,15 +1,15 @@
 USE master
 GO
-IF NOT EXISTS(SELECT 1 FROM SYSDATABASES WHERE name='healthdemoDb')
+IF NOT EXISTS(SELECT 1 FROM SYSDATABASES WHERE name='demodb_health')
 BEGIN
-	PRINT 'Creating database ''healthdemoDb''...'
+	PRINT 'Creating database ''demodb_health''...'
 
-	CREATE DATABASE healthdemoDb
+	CREATE DATABASE demodb_health
 
-	PRINT 'Database ''healthdemoDb'' created successfully'
+	PRINT 'Database ''demodb_health'' created successfully'
 END
 GO
-USE healthdemoDb
+USE demodb_health
 GO
 IF EXISTS(SELECT 1 FROM SYSOBJECTS O WHERE O.name=N'Patients' AND O.type=N'U')
 BEGIN

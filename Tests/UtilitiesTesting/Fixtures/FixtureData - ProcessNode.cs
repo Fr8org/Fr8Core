@@ -10,8 +10,10 @@ namespace UtilitiesTesting.Fixtures
 			var processNode = new ProcessNodeDO();
 			processNode.Id = 50;
 			processNode.ParentProcessId = 49;
+		    processNode.ProcessNodeTemplateId = 50;
+		    processNode.ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
 			processNode.ProcessNodeState = ProcessNodeState.Unstarted;
-			processNode.Process = TestProcess1();
+			processNode.ParentProcess = TestProcess1();
 
 			return processNode;
 		}

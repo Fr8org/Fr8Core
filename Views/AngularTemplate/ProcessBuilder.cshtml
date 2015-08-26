@@ -37,17 +37,19 @@
             <pane-define-criteria></pane-define-criteria>
         </div>
         <div class="col-md-6 col-sm-6">
+            <pane-select-template></pane-select-template>
+        </div>        
+        <div class="col-md-6 col-sm-6">
             <pane-select-action id="paneSelectAction"></pane-select-action>
         </div>
         <div class="col-md-6 col-sm-6">
             <pane-configure-action id="paneConfigureAction"></pane-configure-action>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-field-param-mapper id="paneConfigureAction" mode="field" ></pane-field-param-mapper>
+            <pane-configure-mapping id="paneConfigureAction" mode="field" ></pane-configure-mapping>
         </div>
-        <div class="col-md-6 col-sm-6">
-            <pane-select-template ></pane-select-template>
-        </div>
+
+
         <div class="col-md-4 col-sm-4" ng-show="currentAction">
             <div class="form-group">
                 <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>

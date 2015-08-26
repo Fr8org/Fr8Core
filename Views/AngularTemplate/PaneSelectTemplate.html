@@ -1,41 +1,47 @@
-﻿<div class="portlet row light " ng-if="Visible">
+﻿<div class="portlet light" ng-if="visible">
     <div class="portlet-title">
         <div class="caption caption-md">
             <i class="icon-bar-chart font-green-haze hide"></i>
             <span class="caption-subject font-green-haze bold uppercase">General Process Information</span>
         </div>
     </div>
-    <div class=" " ng-if="!doneLoading()">
-        <h4 class="bold">{{ loadingMessage }}</h4>
+    <div class=" " ng-if="!doneLoading">
+        <h5 class="bold">{{ loadingMessage }}</h5>
     </div>
-
-    <form ng-if="doneLoading()" class="form-horizontal">
-        <div class="form-group">
-            <label for="processName" class="col-sm-4 bold control-label text-left">Process Name :</label>
-            <div class="col-sm-8">
-                <input type="text" class="form-control" id="processName" placeholder="Process Name" ng-model="DataModel.ProcessName">
-            </div>
-        </div>
-        <h4 for="processName" class="control-label bold  text-left">Triggers</h4>
-        <div class="form-group margin-top-10">
-            <label for="docuSignTemplate" class=" col-sm-4 control-label bold text-left">Docusign Template :</label>
-            <div class="col-sm-8">
-                <select class="form-control" ng-options="dt as dt.Name for dt in docusignTemplates"
-                        ng-model="DataModel.SelectedDocuSignTemplate" id="docuSignTemplate"></select>
-            </div>
-
-        </div>
-        <div class="form-group">
-            <label class="bold col-sm-5 ">Docusign Events :</label>
-            <div class="col-sm-7">
-                <div class="checkbox checkbox-primary  " ng-repeat="trigger in triggers">
-                    <input id="trigger_{{trigger.Id}}" type="checkbox" value="{{trigger.Id}}">
-                    <label for="trigger_{{trigger.Id}}"> {{trigger.Name}}</label>
+    <div class="portlet-body form">
+        <div ng-if="doneLoading">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="processName" class="col-sm-4 control-label">Process Name :</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="processName" placeholder="Process Name" ng-model="processTemplate.Name">
+                    </div>
                 </div>
+                <h4 for="processName" class="control-label text-left">Triggers</h4>
+                <div class="form-group margin-top-10">
+                    <label for="docuSignTemplate" class=" col-sm-4 control-label text-left">Docusign Template :</label>
+                    <div class="col-sm-8">
+                        <select class="form-control" ng-options="dt.Id as dt.Name for dt in docuSignTemplates"
+                                ng-model="docuSignTemplateId" id="docuSignTemplate"></select>
+                    </div>
 
+                </div>
+                <div class="form-group">
+                    <label class=" col-sm-5 ">Docusign Events :</label>
+                    <div class="col-sm-7">
+                        <div class="checkbox checkbox-primary" ng-repeat="event in docuSignExternalEvents">
+                            <input type="checkbox" id="extEvent_{{event.Id}}" checkbox-group array="processTemplate.SubscribedExternalEvents" id-field='Id' item-object='event' />
+                            <label for="extEvent_{{event.Id}}">{{event.Name}}</label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-sm-12">
+                    <button class="btn btn-primary btn-large btn-long" indi-click="save(this)">Save</button>
+                    <button class="btn btn-danger btn-large" ng-click="cancel(this)">Cancel</button>
+                </div>
             </div>
         </div>
-
-</form>
-
+    </div>
 </div>

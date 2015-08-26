@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Linq;
 using Data.Interfaces;
 
 using DocuSign.Integrations.Client;
@@ -12,6 +12,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.DocusignTools;
 using UtilitiesTesting.DocusignTools.Interfaces;
 using UtilitiesTesting.Fixtures;
+using Data.Interfaces.DataTransferObjects;
+using Data.Wrappers;
 
 namespace DockyardTest.Services
 {
@@ -29,10 +31,10 @@ namespace DockyardTest.Services
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData()
         {
-            Account account = docusignApiHelper.LoginDocusign(FixtureData.TestAccount1(),
+            Account account = docusignApiHelper.LoginDocusign(FixtureData.TestDocuSignAccount1(),
                                                               FixtureData.TestRestSettings1());
 
-            Envelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
+            DocuSignEnvelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
                                                                         FixtureData.TestEnvelope2(account),
                                                                         FixtureData.TestRealPdfFile1(),
                                                                         FixtureData.TestTabCollection1());
@@ -40,10 +42,24 @@ namespace DockyardTest.Services
             Assert.IsTrue(envelope.RestError == null, "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
             IEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
-            List<EnvelopeData> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
+            var env = new Data.Wrappers.DocuSignEnvelope();
+            List <EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 
             Assert.IsNotNull(envelopeDatas);
             //Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.
+        }
+
+        [Test,Ignore] //use a mock for this instead of actually connecting 
+        [Category("Envelope")]
+        public void Envelope_Can_Normalize_EnvelopeData_Using_TemplateId()
+        {
+
+            RestSettings.Instance.RestTracing = true;
+
+            var envelopeDatas = (new Data.Wrappers.DocuSignTemplate())
+                                .GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
+
+            Assert.IsNotNull(envelopeDatas);
         }
 
     }

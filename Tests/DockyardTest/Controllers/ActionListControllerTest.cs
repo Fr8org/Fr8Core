@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
+using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
+using Core.Services;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
-using Core.Services;
+using DockyardTest.Controllers.Api;
 
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    public class ActionListControllerTest : BaseTest
+    public class ActionListControllerTest : ApiControllerTestBase
     {
+        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private ActionListDO _curActionList;
 
         public override void SetUp()
         {
@@ -76,6 +82,25 @@ namespace DockyardTest.Controllers
             }
         }
 
+        [Test]
+        [Category("ActionListController.GetByProcessNodeTemplateId")]
+        public void ActionListController_GetByProcessNodeTemplateId()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var controller = CreateController<ActionListController>();
+
+                var actionResult = controller.GetByProcessNodeTemplateId(
+                    _curProcessNodeTemplate.Id, ActionListType.Immediate);
+
+                var okResult = actionResult as OkNegotiatedContentResult<ActionListDTO>;
+
+                Assert.IsNotNull(okResult);
+                Assert.IsNotNull(okResult.Content);
+                Assert.AreEqual(okResult.Content.Id, _curActionList.Id);
+            }
+        }
+
         #region Private methods
         /// <summary>
         /// Creates a new Action with the given actiond ID
@@ -91,26 +116,26 @@ namespace DockyardTest.Controllers
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
-                Ordering = 1
+                Ordering = 1,
+                ActionState = ActionState.Unstarted
             };
         }
 
-        void InitializeActionList()
+        private void InitializeActionList()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-
                 //Add a template
-                var template = FixtureData.TestTemplate1();
-                var templates = uow.Db.Set<TemplateDO>();
-                templates.Add(template);
-                uow.Db.SaveChanges();
+                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+                uow.SaveChanges();
 
-                var actionList = FixtureData.TestActionList();
-                actionList.ActionListType = 1;
-                actionList.CurrentAction = null;
-                uow.ActionListRepository.Add(actionList);
+                _curActionList = FixtureData.TestActionList();
+                _curActionList.ActionListType = ActionListType.Immediate;
+                _curActionList.CurrentAction = null;
+                _curActionList.ProcessNodeTemplateID = _curProcessNodeTemplate.Id;
+
+                uow.ActionListRepository.Add(_curActionList);
                 uow.SaveChanges();
             }
         }

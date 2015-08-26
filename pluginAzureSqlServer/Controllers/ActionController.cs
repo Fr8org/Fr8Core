@@ -3,7 +3,6 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
-using pluginAzureSqlServer.Messages;
 using pluginAzureSqlServer.Services;
 using PluginUtilities.Infrastructure;
 using AutoMapper;
@@ -14,7 +13,9 @@ using Newtonsoft.Json;
 using StructureMap;
 using System.Data.SqlClient;
 using System.Data;
+using pluginAzureSqlServer.Actions;
 using PluginUtilities;
+using System.Reflection;
 
 
 namespace pluginAzureSqlServer.Controllers
@@ -24,54 +25,44 @@ namespace pluginAzureSqlServer.Controllers
     {       
         //public const string Version = "1.0";
 
-        private readonly AzureSqlServerActionHandler _actionHandler;
+        //private readonly Write_To_Sql_Server_v1 _actionHandler;
 
         public ActionController() {
-            _actionHandler = ObjectFactory.GetInstance<AzureSqlServerActionHandler>();
+            //_actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>(); //remove this initialization once Process is modified, below
         }
-
-        //private readonly IDbProvider _dbProvider;
-        //private readonly JsonSerializer _serializer;
-
-        //public ActionController(IDbProvider dbProvider, JsonSerializer serializer) {
-        //    _dbProvider = dbProvider;
-        //    _serializer = serializer;
-        //}
-
-        /// <summary>
-        /// Insert user data to remote database tables.
-        /// </summary>
-        //[HttpPost]
-        //[Route("writeSQL")]
-        //public CommandResponse Write(JObject data)
-        //{                 
-        //    try
-        //    {
-        //        // Creating ExtrationHelper and parsing WriteCommandArgs.
-        //        var parser = new DbServiceJsonParser();
-        //        var writeArgs = parser.ExtractWriteCommandArgs(data);
-
-        //        // Creating DbService and running WriteCommand logic.
-        //        var dbService = new DbService();
-        //        dbService.WriteCommand(writeArgs);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return CommandResponse.ErrorResponse(ex.Message);
-        //    }
-
-        //    return CommandResponse.SuccessResponse();
-        //}
-
 
         [HttpPost]
-        [Route("write_to_sql_server/{path}")]
-        public string WriteToSqlServer(string path, ActionDTO curActionDTO) {            
+        [Route("Write_To_Sql_Server/{path}")]
+        public string Process(string path, ActionDO curActionDTO)
+        {
+
+            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+            string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
+            //extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
+            //instantiate the class corresponding to that action by:
+            //   a) Capitalizing each word
+            //   b) adding "_v1" onto the end (this will get smarter later)
+            //   c) Create an instance. probably create a Type using the string and then use ObjectFactory.GetInstance<T>. you want to end up with this:
+            //            "_actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();"
+            //   d) call that instance's Process method, passing it the remainder of the path and an ActionDO
+
+
             //Redirects to the action handler with fallback in case of a null retrn
+
+            Type calledType = Type.GetType(curAssemblyName);
+            MethodInfo curMethodInfo = calledType.GetMethod("Process");
+            object curObject = Activator.CreateInstance(calledType);
+
             return JsonConvert.SerializeObject(
-                _actionHandler.WriteToSqlServerAction(path, Mapper.Map<ActionDO>(curActionDTO)) ?? new { }
+                //_actionHandler.Process(path, curAction) ?? new { }
+                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curActionDTO }) ?? new { }
             );
         }
+
+       
+
+
 
     }
 }

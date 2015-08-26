@@ -32,24 +32,6 @@ namespace Web.Controllers
         }
 
         /// <summary>
-        /// Retrieve criteria by ProcessNodeTemplate.Id.
-        /// </summary>
-        /// <param name="id">ProcessNodeTemplate.id.</param>
-        [ResponseType(typeof(CriteriaDTO))]
-        [Route("criteria")]
-        [HttpGet]
-        public IHttpActionResult GetByProcessNodeTemplateId(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(id);
-                var curCriteria = curProcessNodeTemplate.Criteria;
-
-                return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
-            };
-        }
-
-        /// <summary>
         /// Retrieve ProcessNodeTemplate by id.
         /// </summary>
         /// <param name="id">ProcessNodeTemplate id.</param>
@@ -70,7 +52,6 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="dto">ProcessNodeTemplate data transfer object.</param>
         /// <returns>Created ProcessNodeTemplate with global id.</returns>
-        [ResponseType(typeof(int))]
         public IHttpActionResult Post(ProcessNodeTemplateDTO dto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -80,7 +61,7 @@ namespace Web.Controllers
 
                 uow.SaveChanges();
 
-                return Ok(processNodeTemplate.Id);
+                return Ok(new { Id = processNodeTemplate.Id });
             }
         }
 

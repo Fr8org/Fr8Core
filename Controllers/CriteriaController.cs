@@ -20,6 +20,24 @@ namespace Web.Controllers
     public class CriteriaController : ApiController
     {
         /// <summary>
+        /// Retrieve criteria by ProcessNodeTemplate.Id.
+        /// </summary>
+        /// <param name="id">ProcessNodeTemplate.id.</param>
+        [ResponseType(typeof(CriteriaDTO))]
+        [Route("byProcessNodeTemplate")]
+        [HttpGet]
+        public IHttpActionResult GetByProcessNodeTemplateId(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curCriteria = uow.CriteriaRepository.GetQuery()
+                    .SingleOrDefault(x => x.ProcessNodeTemplateId == id);
+
+                return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
+            };
+        }
+
+        /// <summary>
         /// Recieve criteria with global id, update criteria,
         /// and return updated criteria.
         /// </summary>

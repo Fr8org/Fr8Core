@@ -60,6 +60,7 @@
 
             var criteriaDescr = {
                 id: criteria.id,
+                isTempId: criteria.isTempId || false,
                 data: criteria,
                 actions: [],
                 criteriaNode: null,
@@ -75,7 +76,7 @@
             criteriaDescr.criteriaNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('criteriaNode:click', e, criteria.id);
+                    this.fire('criteriaNode:click', e, criteriaDescr.id, criteriaDescr.isTempId);
                 }, this)
             );
 
@@ -85,7 +86,7 @@
             criteriaDescr.addActionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('addActionNode:click', e, criteria.id);
+                    this.fire('addActionNode:click', e, criteriaDescr.id, ns.ActionType.immediate);
                 }, this)
             );
 
@@ -102,10 +103,12 @@
         // Remove criteria from ProcessBuilder canvas.
         // Parameters:
         //     id - criteriaId
-        removeCriteria: function (id) {
+        removeCriteria: function (id, isTempId) {
             var i, j;
             for (i = 0; i < this._criteria.length; ++i) {
-                if (this._criteria[i].id === id) {
+                if (this._criteria[i].id === id
+                    && this._criteria[i].isTempId === isTempId) {
+
                     this._canvas.remove(this._criteria[i].addActionNode);
                     this._canvas.remove(this._criteria[i].actionsNode);
                     this._canvas.remove(this._criteria[i].criteriaNode);
@@ -131,6 +134,36 @@
             this.relayout();
         },
 
+        // Rename criteria with global ID.
+        renameCriteria: function (id, text) {
+            var i;
+            for (i = 0; i < this._criteria.length; ++i) {
+                if (this._criteria[i].id == id
+                    && !this._criteria[i].isTempId) {
+
+                    this._criteria[i].criteriaNode.setText(text);
+
+                    this.relayout();
+                    return;
+                }
+            }
+        },
+
+        // Replace temporary ID with global ID.
+        replaceCriteriaTempId: function (tempId, id) {
+            var i;
+            for (i = 0; i < this._criteria.length; ++i) {
+                if (this._criteria[i].id == tempId
+                    && this._criteria[i].isTempId) {
+                    
+                    this._criteria[i].isTempId = false;
+                    this._criteria[i].id = id;
+
+                    return;
+                }
+            }
+        },
+
         // Search criteria by id.
         // Parameters:
         //     criteriaId - criteria id.
@@ -153,9 +186,13 @@
         // Parameters:
         //     criteriaId - id of criteria
         //     action - object to define action; minimum required set of properties: { id: 'someId' }
-        addAction: function (criteriaId, action) {
+        addAction: function (criteriaId, action, actionType) {
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
+            }
+
+            if (actionType !== ns.ActionType.immediate) {
+                throw 'Only immediate action types are supported so far.';
             }
 
             var criteria = this._findCriteria(criteriaId);
@@ -163,11 +200,12 @@
 
             var actionDescr = {
                 id: action.id,
+                isTempId: action.isTempId || false,
+                actionType: actionType,
                 data: action,
                 actionNode: null
             };
 
-            
             actionDescr.actionNode = this._factory.createActionNode(
                 action.name || ('Action #' + action.id.toString())
             );
@@ -175,10 +213,9 @@
             actionDescr.actionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('actionNode:click', e, criteria.id, action.id);
+                    this.fire('actionNode:click', e, criteria.id, actionDescr.id, actionDescr.actionType);
                 }, this)
             );
-
 
             this._canvas.add(actionDescr.actionNode);
             criteria.actions.push(actionDescr);
@@ -188,23 +225,54 @@
 
         // Remove action from specified criteria.
         // Parameters:
-        //     criteriaId - id of criteria.
         //     actionId - id of action.
-        removeAction: function (criteriaId, actionId) {
-            var criteria = this._findCriteria(criteriaId);
-            if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
+        //     isTempId - flag.
+        removeAction: function (actionId, isTempId) {
+            debugger;
 
-            var i;
-            for (i = 0; i < criteria.actions.length; ++i) {
-                if (criteria.actions[i].id === actionId) {
-                    this._canvas.remove(criteria.actions[i].actionNode);
-                    criteria.actions.splice(i, 1);
+            var i, j, criteria, foundFlag;
+            for (i = 0; i < this._criteria.length; ++i) {
+                var criteria = this._criteria[i];
 
+                foundFlag = false;
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    debugger;
+
+                    if (criteria.actions[j].id == actionId
+                        && criteria.actions[j].isTempId == isTempId) {
+
+                        this._canvas.remove(criteria.actions[j].actionNode);
+                        criteria.actions.splice(j, 1);
+
+                        foundFlag = true;
+                        break;
+                    }
+                }
+
+                if (foundFlag) {
                     break;
                 }
             }
 
             this.relayout();
+        },
+
+        // Replace temporary ID with global ID.
+        replaceActionTempId: function (tempId, id) {
+            var i, j, criteria;
+            for (i = 0; i < this._criteria.length; ++i) {
+                criteria = this._criteria[i];
+
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    if (criteria.actions[j].id === tempId
+                        && criteria.actions[j].isTempId) {
+                        criteria.actions[j].id = id;
+                        criteria.actions[j].isTempId = false;
+
+                        return;
+                    }
+                }
+            }
         },
 
         // Relayout StartNode.
@@ -542,7 +610,7 @@
         _placeActionNode: function (criteria, action, prevAction) {
             var topOffset;
             if (!prevAction) {
-                topOffset = this._getAddActionNodeBottomPoint(criteria);
+                topOffset = criteria.addActionNode.getTop();
             }
             else {
                 topOffset = this._getActionNodeBottomPoint(prevAction);
@@ -553,6 +621,9 @@
             action.actionNode.setLeft(criteria.addActionNode.getLeft());
             action.actionNode.setTop(topOffset);
             action.actionNode.relayout();
+
+            criteria.addActionNode.setTop(topOffset + action.actionNode.getHeight() + ns.WidgetConsts.actionNodePadding);
+            criteria.addActionNode.relayout();
         },
 
         // Get bottom Y point of user defined action.

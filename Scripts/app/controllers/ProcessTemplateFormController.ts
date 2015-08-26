@@ -30,20 +30,26 @@ module dockyard.controllers {
                 // initialize core components
                 Metronic.initAjax();
             });
-
             //Load detailed information
             var id : string = $stateParams.id;
-            if (/^[0-9]+$/.test(id) && parseInt(id) > 1) {
+            if (/^[0-9]+$/.test(id) && parseInt(id) > 0) {
                 $scope.ptvm = ProcessTemplateService.get({ id: $stateParams.id });
             }
 
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    ProcessTemplateService.save($scope.ptvm).$promise
+                    if (!$scope.ptvm.ProcessTemplateState) {
+                        $scope.ptvm.ProcessTemplateState = dockyard.interfaces.ProcessState.Inactive;
+                    }
+
+                    var result = ProcessTemplateService.save($scope.ptvm);
+
+                    result.$promise
                         .finally(function () {
+                            console.log(result);
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes/' + id + '/builder';
+                            window.location.href = '#processes/' + result.Id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {
