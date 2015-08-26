@@ -12,18 +12,12 @@ namespace Core.Services
     /// </summary>
     public class FileArchive : IFileArchive
     {
-        public FileArchive()
-        {
-            
-        }
-
         /// <see cref="IFileArchive.WriteFile"/>
         public void WriteFile(FileDO fileDo, FileStream file, string fileName)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string remoteFileUrl =
-                    uow.FileRepository.SaveRemoteFile(file, fileName);
+                string remoteFileUrl = uow.FileRepository.SaveRemoteFile(file, fileName);
 
                 fileDo.CloudStorageUrl = remoteFileUrl;
 
@@ -54,6 +48,7 @@ namespace Core.Services
                     uow.SaveChanges();
                     return true;
                 }
+
                 return false;
             }
         }
