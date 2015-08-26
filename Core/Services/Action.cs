@@ -156,7 +156,15 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; //this is currently null because ProcessId isn't being written to ActionList. Fix for now, but 921 will eliminate this issue
+            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; 
+            
+            //this is currently null because ProcessId isn't being written to ActionList.
+            //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
+            //that's because an ActionList is essentially a template that's part of a processnodetemplate, from which N different Processes can be spawned
+            //the confusion stems from design flaws that will be addressed in 921.   
+            //in the short run, modify ActionList#Process to write the current processid into the ActionListDo, just to unblock this.                                                                    
+            
+            
             //If no existing payload, created and save it
             if (actionPayloadDTO.PayloadMappings.Count() == 0)
             {
