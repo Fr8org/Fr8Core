@@ -172,7 +172,6 @@ namespace Data.Wrappers
                     yield return CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString());
                 }
             }
-
         }
 
         private EnvelopeDataDTO CreateEnvelopeData(dynamic tab, string value)

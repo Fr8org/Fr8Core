@@ -60,7 +60,7 @@
 
             var criteriaDescr = {
                 id: criteria.id,
-                isTempId: !!criteria.isTempId,
+                isTempId: criteria.isTempId || false,
                 data: criteria,
                 actions: [],
                 criteriaNode: null,
@@ -200,7 +200,7 @@
 
             var actionDescr = {
                 id: action.id,
-                isTempId: !!action.isTempId,
+                isTempId: action.isTempId || false,
                 actionType: actionType,
                 data: action,
                 actionNode: null

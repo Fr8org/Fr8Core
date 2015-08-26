@@ -259,7 +259,7 @@ module dockyard.controllers {
 
                 var processNodeTemplateId = (args ? args.id : eventArgs.processNodeTemplateId);
                 var url = self.urlPrefix
-                    + '/processNodeTemplate/actionList/?id=' + processNodeTemplateId.toString()
+                    + '/actionList/byProcessNodeTemplate/?id=' + processNodeTemplateId.toString()
                     + '&actionListType=' + eventArgs.actionListType.toString();
 
                 self.$http.get(url)
