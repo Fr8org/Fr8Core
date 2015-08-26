@@ -82,14 +82,12 @@ namespace UtilitiesTesting.Fixtures
         }
         public static ActionDO TestAction5()
         {
-            return new ActionDO
+            var curActionDO = new ActionDO
             {
-                Id = 5,
-                UserLabel = "Action 5",
-                ActionListId = 1,
-                Ordering = 1,
-                ActionState = ActionState.Unstarted
+                Id = 4,
+                ActionType = "Send a Text (SMS) Message"
             };
+            return curActionDO;
         }
 
         public static ActionDO TestAction6()
@@ -128,6 +126,18 @@ namespace UtilitiesTesting.Fixtures
                 ActionList = FixtureData.TestActionList6(),
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 PayloadMappings = "x"
+            };
+        }
+
+        public static ActionDO TestAction10()
+        {
+            return new ActionDO
+            {
+                Id = 5,
+                UserLabel = "Action 5",
+                ActionListId = 1,
+                Ordering = 1,
+                ActionState = ActionState.Unstarted
             };
         }
 

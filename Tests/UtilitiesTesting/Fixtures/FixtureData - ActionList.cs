@@ -90,7 +90,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionListState = ActionListState.Unstarted,
                 Actions = new System.Collections.Generic.List<ActionDO>() 
                 { 
-                    FixtureData.TestAction5(),
+                    FixtureData.TestAction10(),
                     FixtureData.TestAction7(),
                     FixtureData.TestAction8()             
                 }
@@ -119,7 +119,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionListState = ActionListState.Unstarted,
                 Actions = new System.Collections.Generic.List<ActionDO>() 
                 { 
-                    FixtureData.TestAction5(),
+                    FixtureData.TestAction10(),
                     FixtureData.TestAction7(),
                     FixtureData.TestAction8()             
                 }
