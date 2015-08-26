@@ -12,12 +12,12 @@ namespace Core.Interfaces
         /// <summary>
         /// Writes the file into file repository
         /// </summary>
-        void WriteFile(FileStream file);
+        void WriteFile(FileDO fileDo, FileStream file, string fileName);
 
         /// <summary>
         /// Reads file from repository
         /// </summary>
-        FileStream ReadFile(FileDO curFile);
+        byte[] ReadFile(FileDO curFile);
 
         /// <summary>
         /// Deletes file from repository
