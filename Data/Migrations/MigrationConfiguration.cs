@@ -251,7 +251,10 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
-     
+            CreateAdmin("kevin.gilliard8415@gmail.com", "123qwe", unitOfWork);
+
+            //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
+            //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
         /// <summary>

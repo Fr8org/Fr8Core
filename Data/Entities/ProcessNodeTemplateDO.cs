@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States;
 using Data.States.Templates;
+using Data.Validations;
 
+using FluentValidation;
 namespace Data.Entities
 {
     public class ProcessNodeTemplateDO : BaseDO
@@ -38,6 +41,16 @@ namespace Data.Entities
         public override string ToString()
         {
             return this.Name;
+        }
+        public override void BeforeSave()
+        {
+            base.BeforeSave();
+
+
+            ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
+            curValidator.ValidateAndThrow(this);
+
+            
         }
     }
 }
