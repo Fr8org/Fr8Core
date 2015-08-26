@@ -369,6 +369,7 @@ namespace Data.Infrastructure
             //    .WillCascadeOnDelete(true);
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
+            modelBuilder.Entity<FileDO>().ToTable("Files");
 
             base.OnModelCreating(modelBuilder);
         }

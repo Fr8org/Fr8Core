@@ -483,6 +483,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private FileRepository _fileRepository;
+
+        public IFileRepository FileRepository
+        {
+            get
+            {
+                return _fileRepository ?? (_fileRepository = new FileRepository(this));
+            }
+        }
+
 
         private PluginRepository _pluginRepository;
 
