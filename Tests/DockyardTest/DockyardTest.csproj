@@ -206,6 +206,7 @@
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
     <Compile Include="Controllers\ReportControllerTest.cs" />
+    <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />

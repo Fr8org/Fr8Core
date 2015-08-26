@@ -17,7 +17,7 @@ module dockyard.directives.paneDefineCriteria {
 
         // Get url for fetching criteria by ProcessNodeTemplate.Id.
         var getCriteriaIdUrl = function (urlPrefix, pntId) {
-            return urlPrefix + '/processNodeTemplate/criteria?id=' + pntId;
+            return urlPrefix + '/criteria/byProcessNodeTemplate?id=' + pntId;
         };
 
         // Get url for criteria update operation.
