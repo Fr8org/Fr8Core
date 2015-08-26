@@ -46,18 +46,11 @@ namespace Data.Entities
         {
             base.BeforeSave();
 
-                        
-            ProcessNodeTemplatetValidator pntValidator = new ProcessNodeTemplatetValidator();
-            pntValidator.ValidateAndThrow(this);
 
-            //FluentValidation.Results.ValidationResult results = pntValidator.Validate(this);
-            //if (!results.IsValid)
-            //{
-            //    foreach (var failure in results.Errors)
-            //    {
-            //        throw new Exception("Property " + failure.PropertyName + " failed validation. Error was: " + failure.ErrorMessage);
-            //    }
-            //}
+            ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
+            curValidator.ValidateAndThrow(this);
+
+            
         }
     }
 }

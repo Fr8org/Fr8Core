@@ -23,7 +23,7 @@ namespace Core.Services
             }
 
             uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
-            uow.SaveChanges();
+            
             // Saving criteria entity in repository.
             var criteria = new CriteriaDO()
             {
@@ -31,7 +31,7 @@ namespace Core.Services
                 CriteriaExecutionType = CriteriaExecutionType.WithoutConditions
             };
             uow.CriteriaRepository.Add(criteria);
-            uow.SaveChanges();
+            
             // Saving immediate action list entity in repository.
             var immediateActionList = new ActionListDO()
             {
@@ -40,7 +40,7 @@ namespace Core.Services
                 ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(immediateActionList);
-            uow.SaveChanges();
+            
             // Saving scheduled action list entity in repository.
             var scheduledActionList = new ActionListDO()
             {

@@ -1,6 +1,8 @@
-﻿using Core.Interfaces;
+﻿using System;
+using Core.Interfaces;
 using Data.Exceptions;
 using Data.Interfaces;
+using Data.Entities;
 using Data.Migrations;
 using NUnit.Framework;
 using StructureMap;
@@ -10,20 +12,20 @@ using UtilitiesTesting.Fixtures;
 namespace DockyardTest.Services
 {
 	[TestFixture]
-	[Category("ProcessNodeTemplateService")]
+	[Category("ProcessNodeTemplate")]
 	public class ProcessNodeTemplateTests : BaseTest
 	{
-		private IProcessNodeTemplate _processNodeTemplateService;
+		private IProcessNodeTemplate _processNodeTemplate;
 
 		[SetUp]
 		public override void SetUp()
 		{
 			base.SetUp();
-            _processNodeTemplateService = ObjectFactory.GetInstance<IProcessNodeTemplate>();
+            _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
 		}
 
 		[Test]
-		public void ProcessNodeTemplateService_Create()
+		public void ProcessNodeTemplateService_CanCreate()
 		{
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -36,13 +38,19 @@ namespace DockyardTest.Services
                 
 
                 // Create
-                _processNodeTemplateService.Create(uow, sampleNodeTemplate);
+                _processNodeTemplate.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
+
+                if (uow.ProcessNodeTemplateRepository.GetByKey(sampleNodeTemplate.Id) == null)
+                {
+                    throw new Exception("Creating logic was passed a null ProcessNodeTemplateDO");
+                }
+
             }
 		}
 
         [Test]
-        public void ProcessNodeTemplateService_Update()
+        public void ProcessNodeTemplateService_CanUpdate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -55,19 +63,26 @@ namespace DockyardTest.Services
                 
 
                 // Create
-                _processNodeTemplateService.Create(uow, sampleNodeTemplate);
+                _processNodeTemplate.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 sampleNodeTemplate.Name = "UpdateTest";
 
                 // Update
-                _processNodeTemplateService.Update(uow, sampleNodeTemplate);
+                _processNodeTemplate.Update(uow, sampleNodeTemplate);
                 //will throw exception if it fails
+
+                if (uow.ProcessNodeTemplateRepository.GetByKey(sampleNodeTemplate.Id).Name != "UpdateTest")
+                {
+                    throw new Exception("ProcessNodeTemplateDO updating logic was failed.");
+                }
+
+
             }
         }
 
         [Test]
-        public void ProcessNodeTemplateService_Delete()
+        public void ProcessNodeTemplateService_CanDelete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -79,12 +94,17 @@ namespace DockyardTest.Services
                 sampleNodeTemplate.ParentTemplateId = processTemplate.Id;
                 
                 // Create
-                _processNodeTemplateService.Create(uow, sampleNodeTemplate);
+                _processNodeTemplate.Create(uow, sampleNodeTemplate);
                 //will throw exception if it fails
 
                 // Delete
-                _processNodeTemplateService.Delete(uow, sampleNodeTemplate.Id);
+                _processNodeTemplate.Delete(uow, sampleNodeTemplate.Id);
                 //will throw exception if it fails
+
+                if (uow.ProcessNodeTemplateRepository.GetByKey(sampleNodeTemplate.Id) != null)
+                {
+                    throw new Exception("ProcessNodeTemplateDO deleting logic was failed.");
+                }
             }
         }
 	}
