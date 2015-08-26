@@ -10,6 +10,7 @@ using Utilities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
+using Data.Interfaces;
 
 namespace DockyardTest.Services
 {
@@ -40,8 +41,8 @@ namespace DockyardTest.Services
             //verify that, when Execute is called, true is returned
             //SETUP
             var sampleNode = FixtureData.TestProcessNode();
-            var sampleEnvelope = FixtureData.TestEnvelope1();
-            
+		    var sampleEnvelope = FixtureData.TestEnvelopeDataList1();
+
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
             string criteria = "fake criteria";
@@ -66,14 +67,14 @@ namespace DockyardTest.Services
             var mockCriteria = new Mock<ICriteria>();
             var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
                 .Returns(false);
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             var processNodeDO = FixtureData.TestProcessNode();
-            var envelopeDO = FixtureData.TestEnvelope1();
+            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
 
-            string nextTransitionKey =_processNode.Execute(envelopeDO, processNodeDO);
+            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
 
             Assert.AreEqual("false", nextTransitionKey);
         }
@@ -85,7 +86,7 @@ namespace DockyardTest.Services
             var mockCriteria = new Mock<ICriteria>();
             var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
                 .Returns(true);
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
             //setup mock IActionList
@@ -93,11 +94,17 @@ namespace DockyardTest.Services
             actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
             ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
-            
-            var processNodeDO = FixtureData.TestProcessNode2();
-            var envelopeDO = FixtureData.TestEnvelope1();
 
-            string nextTransitionKey = _processNode.Execute(envelopeDO, processNodeDO);
+            var processNodeDO = FixtureData.TestProcessNode4();
+            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
+                uow.SaveChanges();
+            }
+
+            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
 
             Assert.AreEqual("true", nextTransitionKey);
         }
@@ -109,7 +116,7 @@ namespace DockyardTest.Services
             var mockCriteria = new Mock<ICriteria>();
             var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
                 .Returns(true);
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
             //setup mock IActionList
@@ -118,10 +125,16 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
 
-            var processNodeDO = FixtureData.TestProcessNode2();
-            var envelopeDO = FixtureData.TestEnvelope1();
+            var processNodeDO = FixtureData.TestProcessNode4();
+            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
 
-            string nextTransitionKey = _processNode.Execute(envelopeDO, processNodeDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
+                uow.SaveChanges();
+            }
+
+            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
 
             actionListMock.Verify(v => v.Process((ActionListDO)It.IsAny<object>()));
         }

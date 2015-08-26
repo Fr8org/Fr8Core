@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Data.Interfaces;
 
 using DocuSign.Integrations.Client;
@@ -14,6 +15,7 @@ using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using Data.Migrations;
 using Data.Wrappers;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace DockyardTest.DocuSign
@@ -22,13 +24,21 @@ namespace DockyardTest.DocuSign
     public class DocuSignTemplateTests : BaseTest
     {
         private readonly IDocusignApiHelper docusignApiHelper;
-        private readonly IDocuSignTemplate _docusignTemplate;
+        private  IDocuSignTemplate _docusignTemplate;
 
         public DocuSignTemplateTests()
         {
-            docusignApiHelper = new DocusignApiHelper();
+            //docusignApiHelper = new DocusignApiHelper();
+            //_docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+        }
+
+
+        [SetUp]
+        public void TestSetup()
+        {
             _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
         }
+
 
         //[Test, Ignore]
         //[Category("DocuSignIntegration")]
@@ -49,6 +59,26 @@ namespace DockyardTest.DocuSign
 
         //    Assert.IsNotNull(account); //Todo orkan: remove back when you completed the EnvelopeService.
         //}
+
+
+        [Test]
+        [Ignore]
+        // This is more of an integration test
+        // test this to make sure docusign is returning values
+        // Template id is "b5abd63a-c12c-4856-b9f4-989200e41a6f"
+        // <add key = "DocuSignLoginEmail" value="a@thakral.in" />
+        // <add key = "DocuSignLoginPassword" value="foobar1" />
+        // <add key = "DocuSignIntegratorKey" value="TEST-ddb13d45-cc4f-4573-9c37-f75712565ed1" />
+        // <add key = "environment" value="https://demo.docusign.net/" />
+        // <add key = "endpoint" value="https://demo.docusign.net/restapi/v2/" />
+        // <add key = "BaseUrl" value="https://demo.docusign.net/restapi/v2/accounts/1142188/" />
+        public void Can_Return_List_Of_Fields()
+        {
+            var fields = _docusignTemplate.GetMappableSourceFields(FixtureData.TestTeamplateId).ToList();
+
+            Assert.IsNotNull(fields);
+            Console.Write(JsonConvert.SerializeObject(fields));
+        }
 
     }
 }

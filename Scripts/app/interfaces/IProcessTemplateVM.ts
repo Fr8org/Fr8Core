@@ -11,6 +11,20 @@ module dockyard.interfaces {
         Name: string;
         Description: string;
         ProcessTemplateState: ProcessState;
+        SubscribedDocuSignTemplates: Array<string>;
+        ExternalEventSubscription: Array<number>; 
+    }
+
+    export interface ISubscribedDocuSignTemplates {
+        ProcessTemplateId?: number;
+        Id: number;
+        DocuSignTemplateId: string;
+    }
+
+    export interface IExternalEventSubscription {
+        Id: number;
+        ExternalEvent: number;
+        ProcessTemplateId: number;
     }
 
     export interface IProcessNodeTemplateVM extends ng.resource.IResource<IProcessNodeTemplateVM> {
@@ -25,8 +39,7 @@ module dockyard.interfaces {
         Conditions: Array<model.Condition>;
     }
 
-    export interface IActionVM extends ng.resource.IResource<IAction>, IAction {
-
-    }
-
+    export interface IActionVM extends ng.resource.IResource<IAction>, IAction { }
+    export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
+    export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
 }

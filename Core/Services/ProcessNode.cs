@@ -6,6 +6,8 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Repositories;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
@@ -16,6 +18,7 @@ namespace Core.Services
     {
         private readonly ICriteria _criteria;
         private readonly IActionList _actionList;
+        private IProcessNodeTemplateRepository _processNodeTemplateRepository;
         public ProcessNode()
         {
             _criteria = ObjectFactory.GetInstance<ICriteria>();
@@ -26,14 +29,16 @@ namespace Core.Services
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name="ProcessNode")
+        public ProcessNodeDO Create(IUnitOfWork uow, int parentProcessId, int processNodeTemplateId, string name="ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
                 Name = name,
-                ParentProcessId = parentProcess.Id
+                ParentProcessId = parentProcessId
             };
+
+            processNode.ProcessNodeTemplateId = processNodeTemplateId;
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -60,16 +65,24 @@ namespace Core.Services
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
-        public string Execute(EnvelopeDO curEnvelope, ProcessNodeDO curProcessNode)
+        public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
             string nextTransitionKey = "";
-            bool result = _criteria.Evaluate(curEnvelope, curProcessNode);
+            bool result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
-                var immediateActionLists = curProcessNode.ProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate);
-                foreach (var curActionList in immediateActionLists)
+                var _curActionList = ObjectFactory.GetInstance<IActionList>();
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    _actionList.Process(curActionList);
+                    var curProcessNodeTemplate =
+                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+
+
+                    List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
+                    foreach (var actionList in actionListSet)
+                    {
+                        _curActionList.Process(actionList);
+                    }
                 }
 
                 nextTransitionKey = "true";

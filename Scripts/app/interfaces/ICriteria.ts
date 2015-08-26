@@ -15,7 +15,7 @@ module dockyard.interfaces {
     export interface IAction {
         id: number,
         isTempId: boolean, 
-        criteriaId: number,
+        processNodeTemplateId: number,
         userLabel: string,
         actionListId: number,
         actionType: string;
@@ -33,5 +33,17 @@ module dockyard.interfaces {
     export interface IField {
         key: string,
         name: string
+    }
+
+    export interface IDocuSignTemplate {
+        id: number,
+        name: string,
+        description: string
+    }
+
+    export interface IDocuSignExternalEvent {
+        id: number,
+        name: string,
+        description: string
     }
 }

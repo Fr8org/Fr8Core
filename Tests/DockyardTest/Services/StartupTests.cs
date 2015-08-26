@@ -14,6 +14,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
 using Web;
+using Data.Interfaces.DataTransferObjects;
 
 namespace DockyardTest.Services
 {
@@ -46,9 +47,22 @@ namespace DockyardTest.Services
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 
         public TestPluginRegistration()
-            : base(availableActions, baseUrl)
+            : base(InitAvailableActions(), baseUrl)
         {
 
         }
+
+        private static ActionNameListDTO InitAvailableActions()
+        {
+            ActionNameListDTO curActionNameList = new ActionNameListDTO();
+            curActionNameList.ActionNames.Add(new ActionNameDTO
+            {
+                ActionType = "Write",
+                Version = "1.0"
+            });
+            return curActionNameList;
+        }
+
+
     }
 }

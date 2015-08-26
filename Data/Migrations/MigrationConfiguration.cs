@@ -57,23 +57,17 @@ namespace Data.Migrations
             }
 
             var uow = new UnitOfWork(context);
-            Seed(uow);
+            SeedIntoMockDb(uow);
 
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            //AddBookingRequest(uow);
-
-            //AddCalendars(uow);
-
             AddProfiles(uow);
-            //AddEvents(uow);
-
             AddPlugins(uow);
         }
 
         //Method to let us seed into memory as well
-        public static void Seed(IUnitOfWork uow)
+        public static void SeedIntoMockDb(IUnitOfWork uow)
         {
             SeedConstants(uow);
             SeedInstructions(uow);
@@ -257,6 +251,8 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("kevin.gilliard8415@gmail.com", "123qwe", unitOfWork);
+
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
@@ -269,6 +265,7 @@ namespace Data.Migrations
         private static void AddDockyardAccounts(IUnitOfWork unitOfWork)
         {
             CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
+            CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
         }
 
         /// <summary>

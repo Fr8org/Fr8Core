@@ -24,7 +24,7 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
-        public int StartingProcessNodeTemplate { get; set; }
+        public int StartingProcessNodeTemplateId { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplateStateTemplate")]
@@ -39,5 +39,8 @@ namespace Data.Entities
 
         [InverseProperty("ProcessTemplate")]
         public virtual IList<ExternalEventSubscriptionDO> SubscribedExternalEvents { get; set; }
+
+        [InverseProperty("ProcessTemplate")]
+        public virtual ICollection<ProcessDO> Processes { get; set; }
     }
 }

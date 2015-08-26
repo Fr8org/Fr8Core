@@ -42,7 +42,7 @@ namespace DockyardTest.Services
         [Test]
         public void Process_CurrentActionInLastList_SetToComplete()
         {
-            ActionListDO actionListDO = FixtureData.TestActionList4();
+            ActionListDO actionListDO = FixtureData.TestActionList7();
             _actionMock = new Mock<IAction>();
             _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
@@ -58,7 +58,7 @@ namespace DockyardTest.Services
         [Test]
         public void Process_CurrentActionInLastList_EqualToCurrentAction()
         {
-            ActionListDO actionListDO = FixtureData.TestActionList4();
+            ActionListDO actionListDO = FixtureData.TestActionList7();
             ActionDO lastActionDO = actionListDO.Actions.OrderByDescending(o => o.Ordering).FirstOrDefault();
             _actionMock = new Mock<IAction>();
             _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
@@ -75,7 +75,7 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedMessage = "Action List ID: 2. Action status returned: 4")]
         public void Process_ActionListCurrentActionNotCompletedAndInProcess_ThrowException()
         {
-            ActionListDO actionListDO = FixtureData.TestActionList4();
+            ActionListDO actionListDO = FixtureData.TestActionList7();
             actionListDO.ActionListState = ActionListState.Unstarted;
             actionListDO.CurrentAction.ActionState = ActionState.Completed;
             _actionMock = new Mock<IAction>();

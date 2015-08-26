@@ -12,6 +12,8 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Moq;
+using Data.Interfaces.DataTransferObjects;
+using System.Collections.Generic;
 
 namespace DockyardTest.Services
 {
@@ -23,9 +25,9 @@ namespace DockyardTest.Services
 		private IDocuSignNotification _docuSignNotificationService;
 		private DockyardAccount _userService;
 		private string _testUserId = "testuser";
-		private string _xmlPayloadFullPath;
-        EnvelopeDO _envelopeDO;
-        ProcessNodeDO _processNodeDO;
+		private string xmlPayloadFullPath;
+        DocuSignEventDO docusignEventDO;
+        ProcessNodeDO processNodeDO;
 
 		[SetUp]
 		public override void SetUp()
@@ -35,12 +37,12 @@ namespace DockyardTest.Services
 			_userService = ObjectFactory.GetInstance<DockyardAccount>();
 			_docuSignNotificationService = ObjectFactory.GetInstance<IDocuSignNotification>();
 
-			_xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
-			if (_xmlPayloadFullPath == string.Empty)
+			xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
+			if (xmlPayloadFullPath == string.Empty)
 				throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
-            _envelopeDO = FixtureData.TestEnvelope1();
-            _processNodeDO = FixtureData.TestProcessNode2();
+            docusignEventDO = FixtureData.TestDocuSignEvent1();
+            processNodeDO = FixtureData.TestProcessNode2();
 		}
 
 		[Test]
@@ -48,7 +50,7 @@ namespace DockyardTest.Services
 		public void ProcessService_ThrowsIfXmlInvalid()
 		{
 			_docuSignNotificationService.Process(_testUserId,
-				File.ReadAllText(_xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
+				File.ReadAllText(xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
 		}
 
 		[Test]
@@ -69,7 +71,7 @@ namespace DockyardTest.Services
 		    new EventReporter().SubscribeToAlerts();
 
             //Act
-			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
+			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
 
             //Assert
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -114,7 +116,7 @@ namespace DockyardTest.Services
 			}
 
 			//Act
-			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(_xmlPayloadFullPath));
+			_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
 
 			//Assert
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -136,7 +138,7 @@ namespace DockyardTest.Services
 				uow.ProcessTemplateRepository.Add(processTemplate);
 				uow.SaveChanges();
 
-				var process = _processService.Create(processTemplate.Id, envelope.Id);
+				var process = _processService.Create(processTemplate.Id, envelope.DocusignEnvelopeId);
 				Assert.IsNotNull(process);
 				Assert.IsTrue(process.Id > 0);
 			}
@@ -156,7 +158,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.Id);
+                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.DocusignEnvelopeId);
 
                 //Assert
                 int expectedProcessNodeCount = uow.ProcessNodeRepository.GetAll().Count();
@@ -178,7 +180,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
 
                 //Act
-                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.Id);
+                ProcessDO curProcess = _processService.Create(processTemplate.Id, envelope.DocusignEnvelopeId);
 
                 //Assert
                 int expectedProcessId = curProcess.ProcessNodes.First().ParentProcessId;
@@ -187,21 +189,6 @@ namespace DockyardTest.Services
             }
         }
 
-		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
-		public void ProcessService_CanNot_CreateProcessWithIncorrectEnvelope()
-		{
-			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			{
-				const int incorrectEnvelopeId = 2;
-
-				var processTemplate = FixtureData.TestProcessTemplate1();
-
-				uow.ProcessTemplateRepository.Add(processTemplate);
-				uow.SaveChanges();
-				_processService.Create(processTemplate.Id, incorrectEnvelopeId);
-			}
-		}
 
 		[Test]
 		[ExpectedException(typeof (ArgumentNullException))]
@@ -215,7 +202,7 @@ namespace DockyardTest.Services
 
 				uow.EnvelopeRepository.Add(envelope);
 				uow.SaveChanges();
-				_processService.Create(incorrectProcessTemplateId, envelope.Id);
+				_processService.Create(incorrectProcessTemplateId, envelope.DocusignEnvelopeId);
 			}
 		}
 
@@ -226,13 +213,13 @@ namespace DockyardTest.Services
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				var template = FixtureData.TestProcessTemplate1();
-				var envelope = FixtureData.TestEnvelope1();
+				var curEvent = FixtureData.TestDocuSignEvent1();
 
-				uow.EnvelopeRepository.Add(envelope);
+
 				uow.ProcessTemplateRepository.Add(template);
 				uow.SaveChanges();
 
-				_processService.Launch(template, envelope);
+				_processService.Launch(template, curEvent);
 			}
 		}
 
@@ -240,18 +227,18 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedMessage = "ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera")]
         public void Execute_NoMatchedNodeTransition_ThrowExceptionProcessNodeTransitions()
         {
-            _envelopeDO = FixtureData.TestEnvelope1();
-            _processNodeDO = FixtureData.TestProcessNode3();
+            docusignEventDO = FixtureData.TestDocuSignEvent1();
+            processNodeDO = FixtureData.TestProcessNode3();
             //mock processnode
             var processNodeMock = new Mock<IProcessNode>();
             processNodeMock
-                .Setup(c => c.Execute(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
                 .Returns("true1");
             ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
 
             _processService = ObjectFactory.GetInstance<IProcess>();
 
-            _processService.Execute(_envelopeDO, _processNodeDO);
+            _processService.Execute(docusignEventDO, processNodeDO);
         }
 
         [Test]
@@ -260,7 +247,7 @@ namespace DockyardTest.Services
             //mock processnode
             var processNodeMock = new Mock<IProcessNode>();
             processNodeMock
-                .Setup(c => c.Execute(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
                 .Returns("true");
             ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
             //setup the next transition node during lookup key
@@ -271,15 +258,15 @@ namespace DockyardTest.Services
                 uow.ProcessRepository.Add(FixtureData.TestProcess1());
                 uow.SaveChanges();
                 uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());
-                uow.SaveChanges();
+               uow.SaveChanges();
             }
             _processService = ObjectFactory.GetInstance<IProcess>();
 
-            var envelopeDO = FixtureData.TestEnvelope1();
+            docusignEventDO = FixtureData.TestDocuSignEvent1();
             var processNodeDO = FixtureData.TestProcessNode3();
 
 
-            _processService.Execute(envelopeDO, processNodeDO);
+            _processService.Execute(docusignEventDO, processNodeDO);
 
             Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
         }

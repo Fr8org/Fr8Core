@@ -1,4 +1,4 @@
-﻿﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
+﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
 using System;
 using Data.Entities;
@@ -27,7 +27,7 @@ namespace Data.Infrastructure
 
         //public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         //public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
-        
+
         //public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
         //public static event ConversationmatchedHandler AlertConversationMatched;
 
@@ -123,12 +123,14 @@ namespace Data.Infrastructure
         public delegate void EventActionStartedHandler(ActionDO action);
         public static event EventActionStartedHandler EventActionStarted;
 
-        public delegate void EventActionDispatchedHandler(ActionDO curAction);
+        public delegate void EventActionDispatchedHandler(ActionPayloadDTO curAction);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
         public delegate void PluginEventHandler(EventData eventData);
         public static event PluginEventHandler PluginEventReported;
 
+        public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
+        public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
         #region Method
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
@@ -166,7 +168,7 @@ namespace Data.Infrastructure
             if (AlertTrackablePropertyUpdated != null)
                 AlertTrackablePropertyUpdated(entityName, propertyName, id, value);
         }
-        
+
         //public static void ConversationMemberAdded(int bookingRequestID)
         //{
         //    if (AlertConversationMemberAdded != null)
@@ -205,7 +207,7 @@ namespace Data.Infrastructure
         //    if (AlertBookingRequestCreated != null)
         //        AlertBookingRequestCreated(bookingRequestId);
         //}
-            
+
         public static void EmailReceived(int emailId, string customerId)
         {
             if (AlertEmailReceived != null)
@@ -221,7 +223,7 @@ namespace Data.Infrastructure
             if (AlertEmailSent != null)
                 AlertEmailSent(emailId, customerId);
         }
-                
+
         public static void EmailProcessingFailure(string dateReceived, string errorMessage)
         {
             if (AlertEmailProcessingFailure != null)
@@ -362,13 +364,13 @@ namespace Data.Infrastructure
             if (handler != null) handler(processId);
         }
 
-        public static void ActionProcessingStarted(ActionDO action)
+        public static void ActionStarted(ActionDO action)
         {
             var handler = EventActionStarted;
             if (handler != null) handler(action);
         }
 
-        public static void ActionDispatched(ActionDO curAction)
+        public static void ActionDispatched(ActionPayloadDTO curAction)
         {
             var handler = EventActionDispatched;
             if (handler != null) handler(curAction);
@@ -380,7 +382,11 @@ namespace Data.Infrastructure
             if (handler != null) handler(eventData);
         }
 
-
+        public static void DocuSignFieldMissing(string envelopeId, string fieldName)
+        {
+            var handler = IncidentDocuSignFieldMissing;
+            if (handler != null) handler(envelopeId, fieldName);
+        }
         #endregion
     }
 

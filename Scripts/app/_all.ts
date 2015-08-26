@@ -28,7 +28,7 @@
     SERVICES
 */
 /// <reference path="services/localidentitygenerator.ts" />
-/// <reference path="services/processtemplateservice.ts" />
+/// <reference path="services/processbuilderservice.ts" />
 /// <reference path="services/stringservice.ts" />
 
 /*

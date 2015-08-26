@@ -84,7 +84,7 @@ namespace Core.Services
                             curActionListDO.ActionListState = ActionListState.Inprocess;
                             uow.ActionListRepository.Attach(curActionListDO);
                             uow.SaveChanges();
-                            
+
                             int maxOrdering = curActionListDO.Actions.Select(o => o.Ordering).Max();
                             for (int i = 1; i < maxOrdering; i++)
                             {
