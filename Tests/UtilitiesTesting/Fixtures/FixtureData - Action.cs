@@ -70,15 +70,6 @@ namespace UtilitiesTesting.Fixtures
             return origActionDO;
         }
 
-        public static ActionDO TestAction7()
-        {
-            return new ActionDO
-            {
-                Id = 2,
-                ActionState = ActionState.Inprocess
-            };
-        }
-
 
         public static ActionDO TestAction4()
         {
@@ -98,15 +89,68 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
+
         public static ActionDO TestAction6()
         {
-            var curActionDO = new ActionDO
+            return new ActionDO
+            {
+                Id = 6,
+                UserLabel = "Action 6",
+                ActionListId = 1,
+                Ordering = 2,
+                ActionState = ActionState.Unstarted
+            };
+        }
+
+        public static ActionDO TestAction7()
+        {
+            return new ActionDO
+            {
+                Id = 7,
+                UserLabel = "Action 7",
+                ActionListId = 1,
+                Ordering = 3,
+                ActionState = ActionState.Unstarted
+            };
+        }
+
+        public static ActionDO TestAction8()
+        {
+            return new ActionDO
+            {
+                Id = 8,
+                UserLabel = "Action 8",
+                ActionListId = 1,
+                Ordering = 4,
+                ActionState = ActionState.Unstarted,
+                ActionList = FixtureData.TestActionList6(),
+                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                PayloadMappings = "x"
+            };
+        }
+
+        public static ActionDO TestAction10()
+        {
+            return new ActionDO
             {
                 Id = 5,
-                ActionType = ""
+                UserLabel = "Action 5",
+                ActionListId = 1,
+                Ordering = 1,
+                ActionState = ActionState.Unstarted
             };
-            return curActionDO;
         }
+
+        public static ActionDO TestAction9()
+        {
+            return new ActionDO
+            {
+                Id = 2,
+                ActionState = ActionState.Error
+            };
+        }
+
+
         public static ActionDO TestAction20()
         {
             return new ActionDO

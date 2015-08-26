@@ -14,6 +14,12 @@ namespace Core.Services
 {
     public class ActionList : IActionList
     {
+        private readonly IAction _action;
+        public ActionList()
+        {
+            _action = ObjectFactory.GetInstance<IAction>();
+        }
+
         public IEnumerable<ActionListDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -71,47 +77,51 @@ namespace Core.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                    if(curActionListDO.ActionListState == ActionListState.Unstarted)
+                    try
                     {
-                        curActionListDO.ActionListState = ActionListState.Inprocess;
-                        uow.ActionListRepository.Attach(curActionListDO);
-                        uow.SaveChanges();
-
-                        var _curAction = ObjectFactory.GetInstance<IAction>();
-                        foreach (var action in curActionListDO.Actions.OrderBy(o => o.Ordering))
+                        if (curActionListDO.ActionListState == ActionListState.Unstarted)
                         {
-                            //if return string is "completed", it sets the CurrentAction to the next Action in the list
-                            //if not complete set actionlistdo to error
-                            try
+                            curActionListDO.ActionListState = ActionListState.Inprocess;
+                            uow.ActionListRepository.Attach(curActionListDO);
+                            uow.SaveChanges();
+
+                            int maxOrdering = curActionListDO.Actions.Select(o => o.Ordering).Max();
+                            for (int i = 1; i < maxOrdering; i++)
                             {
-                                var curStatus = _curAction.Process(action).Result;
-                                if(ActionState.MapActionState(curStatus) == ActionState.Completed)
+                                //if return string is "completed", it sets the CurrentAction to the next Action in the list
+                                //if not complete set actionlistdo to error
+                                _action.Process(curActionListDO.CurrentAction);
+                                if (curActionListDO.CurrentAction.ActionState == ActionState.Completed || curActionListDO.CurrentAction.ActionState == ActionState.InProcess)
                                 {
-                                    continue;
+                                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
+                                        .Where(o => o.Ordering > curActionListDO.CurrentAction.Ordering).DefaultIfEmpty(null).FirstOrDefault();
+
+                                    if (actionDO != null)
+                                        curActionListDO.CurrentAction = actionDO;
                                 }
                                 else
                                 {
-                                    throw new Exception();
+                                    throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, curActionListDO.CurrentAction.ActionState));
                                 }
                             }
-                            catch(Exception e)
-                            {
 
-                                curActionListDO.ActionListState = ActionListState.Error;
-                                uow.ActionListRepository.Attach(curActionListDO);
-                                uow.SaveChanges();
 
-                                throw new Exception(string.Format("Error occurred trying to process ActionList Id: {0}  " + e.Message, curActionListDO.Id));
-                            }
+                            curActionListDO.ActionListState = ActionListState.Completed;
+                            uow.ActionListRepository.Attach(curActionListDO);
+                            uow.SaveChanges();
                         }
-
-                        curActionListDO.ActionListState = ActionListState.Completed;
+                        else
+                        {
+                            throw new Exception(string.Format("Action List ID: {0} status is not unstarted.", curActionListDO.Id));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        curActionListDO.ActionListState = ActionListState.Error;
                         uow.ActionListRepository.Attach(curActionListDO);
                         uow.SaveChanges();
-                    }
-                    else
-                    {
-                        throw new Exception(string.Format("Action List ID: {0} status is not unstarted.", curActionListDO.Id));
+
+                        throw new Exception(ex.Message);
                     }
                 }
             }

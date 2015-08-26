@@ -30,7 +30,7 @@ namespace Data.Entities
 
         /// <summary>
         /// this is a JSON structure that is a array of key-value pairs that represent possible transitions. Example:
-        ///[{'Flag':'true','Id':'234kljdf'},{'Flag':'false','Id':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.
+        ///[{'TransitionKey':'true','ProcessNodeId':'234kljdf'},{'TransitionKey':'false','ProcessNodeId':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.
         /// </summary>
         public string NodeTransitions { get; set; }
 
