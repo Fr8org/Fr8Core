@@ -60,7 +60,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 2,
-                ActionState = ActionState.InProcess
+                ActionState = ActionState.Error
             };
         }
 
@@ -108,7 +108,8 @@ namespace UtilitiesTesting.Fixtures
                 UserLabel = "Action 8",
                 ActionListId = 1,
                 Ordering = 4,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1"
             };
         }
     }

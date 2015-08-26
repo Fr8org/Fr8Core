@@ -82,7 +82,8 @@ namespace Core.Services
                     if (nodeTransitionKey != string.Empty)
                     {
                         List<ProcessNodeTransition> nodeTransitions = JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
-                        curProcessNode = uow.ProcessNodeRepository.GetByKey(GetNextProcessNodeId(nodeTransitions, nodeTransitionKey));
+                        string nodeID = GetNextProcessNodeId(nodeTransitions, nodeTransitionKey);
+                        curProcessNode = uow.ProcessNodeRepository.GetByKey(Convert.ToInt32(nodeID));
                     }
                 }
             }
@@ -91,7 +92,7 @@ namespace Core.Services
         private string GetNextProcessNodeId(List<ProcessNodeTransition> nodeTransitions, string nodeTransitionKey)
         {
             string nodeID = nodeTransitions.Where(k => k.TransitionKey.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new ProcessNodeTransition()).FirstOrDefault().ProcessNodeId;
-            if (nodeTransitions == null)
+            if (nodeID == null)
             {
                 throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
             }

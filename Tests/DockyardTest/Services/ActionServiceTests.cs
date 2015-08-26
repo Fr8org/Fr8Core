@@ -13,6 +13,9 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using Core.Managers.APIManagers.Transmitters.Plugin;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
 
 namespace DockyardTest.Services
 {
@@ -25,7 +28,6 @@ namespace DockyardTest.Services
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActionRegistrationDO> _pr1Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO(){ ActionType = "Write", Version = "1.0"}, new ActionRegistrationDO(){ ActionType = "Read", Version = "1.0"} };
         private readonly IEnumerable<ActionRegistrationDO> _pr2Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "SQL Read", Version = "1.0" } };
-
 
         [SetUp]
         public override void SetUp()
@@ -95,12 +97,40 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Process_ActionNotUnstarted_ThrowException()
+        public void Process_ActionNotUnstartedAndInprocess_ThrowException()
         {
             ActionDO actionDo = FixtureData.TestAction4();
             Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
 
-            Assert.AreEqual("Action ID: 2 status is not unstarted.", _action.Process(actionDo).Exception.InnerException.Message);
+            Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo).Exception.InnerException.Message);
+        }
+
+        [Test]
+        public void Process_ReturnJSONDispatchError_ActionStateError()
+        {
+            ActionDO actionDO = FixtureData.TestAction8();
+            var pluginClientMock = new Mock<IPluginClient>();
+            pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(),(ActionDTO)It.IsAny<object>())).ReturnsAsync(@"{ ""error"" : { ""ErrorCode"": ""0000"" }}");
+            ObjectFactory.Configure(cfg => cfg.For<IPluginClient>().Use(pluginClientMock.Object));
+            _action = ObjectFactory.GetInstance<IAction>();
+
+            _action.Process(actionDO);
+
+            Assert.AreEqual(ActionState.Error, actionDO.ActionState);
+        }
+
+        [Test]
+        public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()
+        {
+            ActionDO actionDO = FixtureData.TestAction8();
+            var pluginClientMock = new Mock<IPluginClient>();
+            pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), (ActionDTO)It.IsAny<object>())).ReturnsAsync(@"{ ""success"" : { ""ID"": ""0000"" }}");
+            ObjectFactory.Configure(cfg => cfg.For<IPluginClient>().Use(pluginClientMock.Object));
+            _action = ObjectFactory.GetInstance<IAction>();
+
+            _action.Process(actionDO);
+
+            Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
         }
     }
 }

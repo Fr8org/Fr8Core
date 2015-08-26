@@ -24,8 +24,8 @@ namespace DockyardTest.Services
 		private DockyardAccount _userService;
 		private string _testUserId = "testuser";
 		private string _xmlPayloadFullPath;
-        EnvelopeDO envelopeDO;
-        ProcessNodeDO processNodeDO;
+        EnvelopeDO _envelopeDO;
+        ProcessNodeDO _processNodeDO;
 
 		[SetUp]
 		public override void SetUp()
@@ -39,9 +39,8 @@ namespace DockyardTest.Services
 			if (_xmlPayloadFullPath == string.Empty)
 				throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
-            envelopeDO = FixtureData.TestEnvelope1();
-            processNodeDO = FixtureData.TestProcessNode();
-            processNodeDO.ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+            _envelopeDO = FixtureData.TestEnvelope1();
+            _processNodeDO = FixtureData.TestProcessNode2();
 		}
 
 		[Test]
@@ -241,14 +240,48 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedMessage = "ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera")]
         public void Execute_NoMatchedNodeTransition_ThrowExceptionProcessNodeTransitions()
         {
-            //setup criteria for Evaluate method on veryfing processnodetemplate ID
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-               uow.CriteriaRepository.Add(FixtureData.TestCriteria1());
-               uow.SaveChanges();
-            };
-            _processService.Execute(envelopeDO, processNodeDO);
+            _envelopeDO = FixtureData.TestEnvelope1();
+            _processNodeDO = FixtureData.TestProcessNode3();
+            //mock processnode
+            var processNodeMock = new Mock<IProcessNode>();
+            processNodeMock
+                .Setup(c => c.Execute(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Returns("true1");
+            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
+
+            _processService = ObjectFactory.GetInstance<IProcess>();
+
+            _processService.Execute(_envelopeDO, _processNodeDO);
         }
 
+        [Test]
+        public void Execute_MatchedNodeTransition_ProcessNodeNull()
+        {
+            //mock processnode
+            var processNodeMock = new Mock<IProcessNode>();
+            processNodeMock
+                .Setup(c => c.Execute(It.IsAny<EnvelopeDO>(), It.IsAny<ProcessNodeDO>()))
+                .Returns("true");
+            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
+            //setup the next transition node during lookup key
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionListRepository.Add(FixtureData.TestActionList6());
+                uow.SaveChanges();
+                uow.ProcessRepository.Add(FixtureData.TestProcess1());
+                uow.SaveChanges();
+                uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());
+                uow.SaveChanges();
+            }
+            _processService = ObjectFactory.GetInstance<IProcess>();
+
+            var envelopeDO = FixtureData.TestEnvelope1();
+            var processNodeDO = FixtureData.TestProcessNode3();
+
+
+            _processService.Execute(envelopeDO, processNodeDO);
+
+            Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
+        }
 	}
 }

@@ -84,25 +84,26 @@ namespace Core.Services
                             curActionListDO.ActionListState = ActionListState.Inprocess;
                             uow.ActionListRepository.Attach(curActionListDO);
                             uow.SaveChanges();
-
-                            do
+                            
+                            int maxOrdering = curActionListDO.Actions.Select(o => o.Ordering).Max();
+                            for (int i = 1; i < maxOrdering; i++)
                             {
                                 //if return string is "completed", it sets the CurrentAction to the next Action in the list
                                 //if not complete set actionlistdo to error
                                 _action.Process(curActionListDO.CurrentAction);
                                 if (curActionListDO.CurrentAction.ActionState == ActionState.Completed || curActionListDO.CurrentAction.ActionState == ActionState.InProcess)
                                 {
-                                    if (curActionListDO.CurrentAction.ActionState == ActionState.Completed)
-                                    {
-                                        curActionListDO.CurrentAction = curActionListDO.Actions.OrderBy(o => o.Ordering)
-                                            .Where(o => o.Ordering > curActionListDO.CurrentAction.Ordering).DefaultIfEmpty(null).FirstOrDefault();
-                                    }
+                                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
+                                        .Where(o => o.Ordering > curActionListDO.CurrentAction.Ordering).DefaultIfEmpty(null).FirstOrDefault();
+
+                                    if (actionDO != null)
+                                        curActionListDO.CurrentAction = actionDO;
                                 }
                                 else
                                 {
                                     throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, curActionListDO.CurrentAction.ActionState));
                                 }
-                            } while (curActionListDO.CurrentAction != null);
+                            }
 
 
                             curActionListDO.ActionListState = ActionListState.Completed;

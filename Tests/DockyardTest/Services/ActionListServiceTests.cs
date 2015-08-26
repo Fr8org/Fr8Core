@@ -21,12 +21,11 @@ namespace DockyardTest.Services
     public class ActionListServiceTests : BaseTest
     {
         private IActionList _actionList;
-        private Mock<IAction> actionMock;
+        private Mock<IAction> _actionMock;
         [SetUp]
         public override void SetUp()
         {
  	        base.SetUp();
-           _actionList = ObjectFactory.GetInstance<IActionList>();
         }
         
 
@@ -35,34 +34,56 @@ namespace DockyardTest.Services
         public void Process_ActionListNotUnstarted_ThrowException()
         {
             ActionListDO actionListDo = FixtureData.TestActionList3();
-            ActionList _actionList = ObjectFactory.GetInstance<ActionList>();
-            
-            _actionList.Process(actionListDo);
-        }
-
-        [Test]
-        public void Process_ActionListUnstarted_SetToComplete()
-        {
-            ActionListDO actionListDo = FixtureData.TestActionList4();
-            ActionList _actionList = ObjectFactory.GetInstance<ActionList>();
+            _actionList = ObjectFactory.GetInstance<IActionList>();
 
             _actionList.Process(actionListDo);
-
-            Assert.AreEqual(ActionListState.Completed, actionListDo.ActionListState);
         }
 
         [Test]
         public void Process_CurrentActionInLastList_SetToComplete()
         {
             ActionListDO actionListDO = FixtureData.TestActionList4();
-
-            actionMock = new Mock<IAction>();
-            actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
-            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(actionMock.Object));
+            _actionMock = new Mock<IAction>();
+            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
+            _actionList = ObjectFactory.GetInstance<IActionList>();
             
             _actionList.Process(actionListDO);
 
             Assert.AreEqual(ActionState.Completed, actionListDO.CurrentAction.ActionState);
+            Assert.AreEqual(ActionListState.Completed, actionListDO.ActionListState);
+        }
+
+
+        [Test]
+        public void Process_CurrentActionInLastList_EqualToCurrentAction()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList4();
+            ActionDO lastActionDO = actionListDO.Actions.OrderByDescending(o => o.Ordering).FirstOrDefault();
+            _actionMock = new Mock<IAction>();
+            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+
+            _actionList.Process(actionListDO);
+
+
+            Assert.AreEqual(actionListDO.CurrentAction.Id, lastActionDO.Id);
+        }
+
+        [Test]
+        [ExpectedException(ExpectedMessage = "Action List ID: 2. Action status returned: 4")]
+        public void Process_ActionListCurrentActionNotCompletedAndInProcess_ThrowException()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList4();
+            actionListDO.ActionListState = ActionListState.Unstarted;
+            actionListDO.CurrentAction.ActionState = ActionState.Completed;
+            _actionMock = new Mock<IAction>();
+            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Error; });
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+
+            _actionList.Process(actionListDO);
         }
     }
 }

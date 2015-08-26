@@ -103,7 +103,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState != ActionState.Completed && curAction.ActionState != ActionState.Error)
+                if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
                 {
                     curAction.ActionState = ActionState.InProcess;
                     uow.ActionRepository.Attach(curAction);
@@ -112,9 +112,8 @@ namespace Core.Services
                     EventManager.ActionProcessingStarted(curAction);
                     var jsonResult = await Dispatch(curAction);
 
-                    string jsonDeserialized = JsonConvert.DeserializeObject<string>(jsonResult);
                     //check if the returned JSON is Error
-                    if (jsonDeserialized.ToLower().Contains("error"))
+                    if (jsonResult.ToLower().Contains("error"))
                     {
                         curAction.ActionState = ActionState.Error;
                     }
@@ -122,6 +121,9 @@ namespace Core.Services
                     {
                         curAction.ActionState = ActionState.Completed;
                     }
+
+                    uow.ActionRepository.Attach(curAction);
+                    uow.SaveChanges();
                 }
                 else
                 {
@@ -130,9 +132,6 @@ namespace Core.Services
                     uow.SaveChanges();
                     throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
-
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
             }
         }
 

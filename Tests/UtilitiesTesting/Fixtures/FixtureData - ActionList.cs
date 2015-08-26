@@ -68,5 +68,32 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
         }
+
+        public static ActionListDO TestActionList5()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                ActionListType = ActionListType.Immediate,
+                CurrentAction = FixtureData.TestAction6(),
+                ActionListState = ActionListState.Unstarted,
+                Actions = new System.Collections.Generic.List<ActionDO>() 
+                { 
+                    FixtureData.TestAction5(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
+            };
+        }
+
+        public static ActionListDO TestActionList6()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                ActionListType = ActionListType.Immediate,
+                ActionListState = ActionListState.Unstarted
+            };
+        }
     }
 }
