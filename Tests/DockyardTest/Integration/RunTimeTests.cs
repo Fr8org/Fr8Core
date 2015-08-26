@@ -15,7 +15,7 @@ namespace DockyardTest.Integration
     public class RunTimeTests : BaseTest
     {
 
-        [Test, Ignore]
+        [Test]
         [Category("IntegrationTests")]
         public async void ITest_CanProcessHealthDemo()
         {
@@ -72,11 +72,13 @@ namespace DockyardTest.Integration
             //add actionlist to processnode
             var healthActionList = FixtureData.TestActionListHealth1();
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            
             uow.ActionListRepository.Add(healthActionList);
 
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
             healthWriteAction.ActionListId = healthActionList.Id;
+            healthActionList.CurrentAction = healthWriteAction;
 
             //add field mappings to write action
             var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();

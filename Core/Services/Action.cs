@@ -155,22 +155,22 @@ namespace Core.Services
                 throw new ArgumentNullException("curAction");
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
-            var actionPayloadDto = Mapper.Map<ActionPayloadDTO>(curActionDO);
-
+            var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
+            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; //this is currently null because ProcessId isn't being written to ActionList. Fix for now, but 921 will eliminate this issue
             //If no existing payload, created and save it
-            if (actionPayloadDto.PayloadMappings.Count() == 0)
+            if (actionPayloadDTO.PayloadMappings.Count() == 0)
             {
-                mappings = CreateActionPayload(curActionDO, actionPayloadDto.EnvelopeId);
+                mappings = CreateActionPayload(curActionDO, actionPayloadDTO.EnvelopeId);
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActionDO.PayloadMappings = mappings.Serialize();
                     uow.SaveChanges();
                 }
-                actionPayloadDto.PayloadMappings = mappings;
+                actionPayloadDTO.PayloadMappings = mappings;
             }
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
-            EventManager.ActionDispatched(actionPayloadDto);
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDTO);
+            EventManager.ActionDispatched(actionPayloadDTO);
             return jsonResult;
         }
 

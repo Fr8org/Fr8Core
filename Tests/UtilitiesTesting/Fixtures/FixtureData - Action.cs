@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 54,
                 UserLabel = "Save to Sql Server",
                 ActionType = "Write to Sql Server",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_V1",
+                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ConfigurationSettings = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",

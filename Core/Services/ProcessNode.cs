@@ -69,11 +69,21 @@ namespace Core.Services
             if (result)
             {
                 var _curActionList = ObjectFactory.GetInstance<IActionList>();
-                List<ActionListDO> actionListSet = curProcessNode.ProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
-                foreach (var actionList in actionListSet)
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    _curActionList.Process(actionList);
+                    var curProcessNodeTemplate =
+                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+
+
+                    List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
+                    foreach (var actionList in actionListSet)
+                    {
+                        _curActionList.Process(actionList);
+                    }
                 }
+
+                
             }
             evaluationResult = result.ToString();
 

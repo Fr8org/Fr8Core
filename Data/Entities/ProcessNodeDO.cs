@@ -22,6 +22,7 @@ namespace Data.Entities
         public virtual _ProcessNodeStatusTemplate ProcessNodeStatusTemplate { get; set; }
 
         public int ProcessNodeTemplateId { get; set; }
+
         public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
     }
 }

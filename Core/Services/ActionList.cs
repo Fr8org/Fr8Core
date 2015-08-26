@@ -94,14 +94,14 @@ namespace Core.Services
                                     throw new Exception();
                                 }
                             }
-                            catch(Exception)
+                            catch(Exception e)
                             {
 
                                 curActionListDO.ActionListState = ActionListState.Error;
                                 uow.ActionListRepository.Attach(curActionListDO);
                                 uow.SaveChanges();
 
-                                throw new Exception(string.Format("Error occurred trying to process ActionList Id: {0}", curActionListDO.Id));
+                                throw new Exception(string.Format("Error occurred trying to process ActionList Id: {0}  " + e.Message, curActionListDO.Id));
                             }
                         }
 

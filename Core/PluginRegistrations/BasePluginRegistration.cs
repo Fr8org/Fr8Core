@@ -57,7 +57,7 @@ namespace Core.PluginRegistrations
 
         public static IPluginRegistration GetPluginType(ActionDO curAction)
         {
-            var pluginRegistrationType = Type.GetType(curAction.ParentPluginRegistration);
+            var pluginRegistrationType = Type.GetType("Core.PluginRegistrations." + curAction.ParentPluginRegistration);
             if (pluginRegistrationType == null)
                 throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
             var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
