@@ -39,23 +39,21 @@ namespace Core.Services
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var template = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-                
-
-                if (template == null)
+                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);              
+                if (curProcessTemplate == null)
                     throw new ArgumentNullException("processTemplateId");
-              
+                curProcessDO.ProcessTemplate = curProcessTemplate;
 
-                curProcessDO.Name = template.Name;
+                curProcessDO.Name = curProcessTemplate.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.EnvelopeId = envelopeId;
+                curProcessDO.EnvelopeId = envelopeId;              
 
-                //create process
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
                 //then create process node
-                var curProcessNode = _processNode.Create(uow, curProcessDO, "process node");
+                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
+                var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
                 uow.SaveChanges();
             }
@@ -88,11 +86,11 @@ namespace Core.Services
 
                 while (curProcessNode != null)
                 {
-                    string nodeTransitionKey = _processNode.Execute(curEnvelopeData, curProcessNode);
-                    if (nodeTransitionKey != string.Empty)
+                    string nodeExecutionResultKey = _processNode.Execute(curEnvelopeData, curProcessNode);
+                    if (nodeExecutionResultKey != string.Empty)
                     {
                         var nodeTransitions = JsonConvert.DeserializeObject<List<TransitionKeyData>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
-                        string nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new TransitionKeyData()).FirstOrDefault().Id;
+                        string nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeExecutionResultKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new TransitionKeyData()).FirstOrDefault().Id;
                         if (nodeTransitions != null && String.IsNullOrEmpty(nodeID) != true)
                         {
                             curProcessNode = uow.ProcessNodeRepository.GetByKey(nodeID);

@@ -7,6 +7,9 @@
     </div>
     <div class="portlet-body">
         <div class="form-group">
+            <a href class="btn btn-danger" ng-hide="action.isTempId" ng-click="RemoveAction()">Remove action</a>
+        </div>
+        <div class="form-group">
             <label class="control-label">Criteria Name</label>
             <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
                     required size="20" maxlength="20" ng-model="action.name" />

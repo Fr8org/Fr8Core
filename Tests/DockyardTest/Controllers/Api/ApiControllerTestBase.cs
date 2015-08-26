@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,15 +22,34 @@ namespace DockyardTest.Controllers.Api
         /// <typeparam name="TController">API controller type</typeparam>
         /// <param name="userId">User ID. Null or empty if no authorization context needed.</param>
         /// <param name="userRoles">User roles</param>
+        /// <param name="claimValues">Claim values to create proper ClaimsIdentity for Identity Framework.</param>
         /// <returns></returns>
-        protected static TController CreateController<TController>(string userId = null, string[] userRoles = null)
-            where TController : ApiController, new()
+        protected static TController CreateController<TController>(
+                string userId = null,
+                string[] userRoles = null,
+                Tuple<string, string>[] claimValues = null
+            ) where TController : ApiController, new()
         {
             var controller = new TController();
+            
             if (!string.IsNullOrEmpty(userId))
             {
-                controller.User = new GenericPrincipal(new GenericIdentity(userId, "Forms"), userRoles);
+                var claims = new List<Claim>();
+
+                claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
+
+                if (claimValues != null)
+                {
+                    foreach (var claimValue in claimValues)
+                    {
+                        claims.Add(new Claim(claimValue.Item1, claimValue.Item2));
+                    }
+                }
+
+                var identity = new ClaimsIdentity(claims);
+                controller.User = new GenericPrincipal(identity, userRoles);
             }
+
             return controller;
         }
     }

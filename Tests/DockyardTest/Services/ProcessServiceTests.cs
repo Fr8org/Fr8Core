@@ -229,9 +229,13 @@ namespace DockyardTest.Services
             //setup criteria for Evaluate method on veryfing processnodetemplate ID
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               uow.CriteriaRepository.Add(FixtureData.TestCriteria1());
+                var curCriteria = FixtureData.TestCriteria1();
+                curCriteria.ProcessNodeTemplateId = FixtureData.TestProcessNode().ProcessNodeTemplateId;
+                uow.CriteriaRepository.Add(curCriteria);
+
                uow.SaveChanges();
             };
+            processNodeDO = FixtureData.TestProcessNode();
             var curEvent = FixtureData.TestDocuSignEvent1();
             _processService.Execute(curEvent, processNodeDO);
         }

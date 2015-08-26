@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Repositories;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
@@ -15,18 +16,25 @@ namespace Core.Services
 {
     public class ProcessNode : IProcessNode
     {
+        private IProcessNodeTemplateRepository _processNodeTemplateRepository;
+
+        public ProcessNode()
+        {
+                  }
         /// <summary>
         /// Creates ProcessNode Object
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
-        public ProcessNodeDO Create(IUnitOfWork uow, ProcessDO parentProcess, string name="ProcessNode")
+        public ProcessNodeDO Create(IUnitOfWork uow, int parentProcessId, int processNodeTemplateId, string name="ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
                 ProcessNodeState = ProcessNodeState.Unstarted,
                 Name = name,
-                ParentProcessId = parentProcess.Id
+                ParentProcessId = parentProcessId
             };
+
+            processNode.ProcessNodeTemplateId = processNodeTemplateId;
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -61,11 +69,21 @@ namespace Core.Services
             if (result)
             {
                 var _curActionList = ObjectFactory.GetInstance<IActionList>();
-                var actionListType = curProcessNode.ProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate);
-                foreach (var action in actionListType)
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    _curActionList.Process(action);
+                    var curProcessNodeTemplate =
+                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+
+
+                    List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
+                    foreach (var actionList in actionListSet)
+                    {
+                        _curActionList.Process(actionList);
+                    }
                 }
+
+                
             }
             evaluationResult = result.ToString();
 

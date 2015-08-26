@@ -37,6 +37,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="DayPilot.Web.Mvc, Version=7.7.5664.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DayPilot.Web.Mvc.dll</HintPath>
@@ -201,6 +205,8 @@
     <Compile Include="Controllers\ActionListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
+    <Compile Include="Controllers\ReportControllerTest.cs" />
+    <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />
