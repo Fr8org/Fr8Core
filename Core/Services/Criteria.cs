@@ -64,9 +64,10 @@ namespace Core.Services
             foreach (var jCriterion in jCriterions.OfType<JObject>())
             {
                 var propName = (string)jCriterion.Property("field").Value;
+                var propInfo = typeof(T).GetProperty(propName);
                 var op = (string)jCriterion.Property("operator").Value;
-                var value = (string)jCriterion.Property("value").Value;
-                Expression left = Expression.Property(pe, propName);
+                var value = ((JValue)jCriterion.Value<object>("value")).ToObject(propInfo.PropertyType);
+                Expression left = Expression.Property(pe, propInfo);
                 Expression right = Expression.Constant(value);
                 Expression criterionExpression;
                 switch (op)
