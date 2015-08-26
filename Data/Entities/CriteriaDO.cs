@@ -15,7 +15,7 @@ namespace Data.Entities
 
         [Required]
         [ForeignKey("ProcessNodeTemplate")]
-        public int ProcessNodeTemplateID { get; set; }
+        public int ProcessNodeTemplateId { get; set; }
 
         /// <summary>
         /// Reference to parent ProcessTemplateNode.
@@ -28,7 +28,7 @@ namespace Data.Entities
         //the criteria execution type reflects the radio button choice: apply criteria? or execute without worrying about the criteria?
         [Required]
         [ForeignKey("ExecutionTypeTemplate")]
-        public int ExecutionType { get; set; }
+        public int CriteriaExecutionType { get; set; }
 
         /// <summary>
         /// Execute when conditions are satisfied,      

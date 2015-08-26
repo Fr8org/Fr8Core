@@ -20,6 +20,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
 using Data.Wrappers;
+using DocuSign.Integrations.Client;
 using Moq;
 using SendGrid;
 using StructureMap;
@@ -59,6 +60,8 @@ namespace Core.StructureMap
             {
 
             }
+
+
         }
 
         public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
@@ -71,7 +74,7 @@ namespace Core.StructureMap
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.SendGridHander);
 
                 For<IEmailAddress>().Use<EmailAddress>();
-                For<INotification>().Use<Notification>();
+                For<INotification>().Use<Core.Services.Notification>();
 
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
@@ -99,6 +102,9 @@ namespace Core.StructureMap
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IActionRegistration>().Use<ActionRegistration>();
+                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+                For<IActionList>().Use<ActionList>();
+
 
             }
         }
@@ -107,13 +113,14 @@ namespace Core.StructureMap
         {
             public TestMode()
             {
+              
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.SendGridHander);
 
                 For<IEmailAddress>().Use<EmailAddress>();
-                For<INotification>().Use<Notification>();
+                For<INotification>().Use<Core.Services.Notification>();
 
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
@@ -142,6 +149,7 @@ namespace Core.StructureMap
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
+                For<IEnvelope>().Use<DocuSignEnvelope>();
 
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
                 pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
@@ -150,6 +158,9 @@ namespace Core.StructureMap
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
+                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+                //For<ITemplate>().Use<Services.Template>();
+                For<IActionList>().Use<ActionList>();
             }
         }
 

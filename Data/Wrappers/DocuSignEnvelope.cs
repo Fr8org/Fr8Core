@@ -2,13 +2,16 @@
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Microsoft.WindowsAzure;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocuSign.Integrations.Client;
 using Utilities;
 
 namespace Data.Wrappers
@@ -28,45 +31,32 @@ namespace Data.Wrappers
             _tab = new Tab();
             _signer = new Signer();
 
-            Login = EnsureLogin();
+            var packager = new DocuSignPackager();
+            packager.Email = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
+            packager.ApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
+            Login = packager.Login();
         }
 
-        private Account EnsureLogin()
-        {
-            var appSettings = System.Configuration.ConfigurationManager.AppSettings;
-            string username = appSettings["username"] ?? "Not Found";
-            string password = appSettings["password"] ?? "Not Found";
-            string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";
-
-            // configure application's integrator key and webservice url
-            RestSettings.Instance.IntegratorKey = appSettings["IntegratorKey"];
-            RestSettings.Instance.DocuSignAddress = appSettings["environment"];
-            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
-
-            // credentials for sending account
-            Account account = new Account();
-            account.Email = username;
-            account.Password = password;
-
-            // make the Login API call
-            bool result = account.Login();
-
-            if (!result)
-            {
-                throw new InvalidOperationException("Cannot log in to DocuSign. Please check the authentication information on web.config.");
-            }
-            return account;
-        }
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
         /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
-        /// </summary>
-        /// <param name="envelope">DocuSign.Integrations.Client.Envelope envelope domain.</param>
-        /// <returns>
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
+        /// 
+        /// 
+        public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
+        {
+            if (String.IsNullOrEmpty(curEnvelopeId))
+            {
+                throw new ArgumentNullException("envelopeId");
+            }
+            EnvelopeId = curEnvelopeId;
+            GetRecipients(true, true);
+            return GetEnvelopeData(this);
+        }
+
         public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
@@ -81,25 +71,6 @@ namespace Data.Wrappers
             return new List<EnvelopeDataDTO>();
         }
 
-        /// <summary>
-        /// Get Envelope Data from a docusign envelope. 
-        /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
-        /// </summary>
-        /// <param name="curEnvelopeId">DocuSign.Integrations.Client.Envelope envelope id.</param>
-        /// <returns>
-        /// List of Envelope Data.
-        /// It returns empty list of envelope data if tab and signers not found.
-        /// </returns>
-        public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
-        {
-            if (String.IsNullOrEmpty(curEnvelopeId))
-            {
-                throw new ArgumentNullException("envelopeId");
-            }
-            EnvelopeId = curEnvelopeId;
-            GetRecipients(true, true);
-            return GetEnvelopeData(this);
-        }
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 

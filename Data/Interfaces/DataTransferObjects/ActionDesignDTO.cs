@@ -13,5 +13,8 @@
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
         public string ParentPluginRegistration { get; set; }
+
+	    public string DocuSignTemplateId { get; set; }
+
     }
 }

@@ -15,7 +15,6 @@ using StructureMap;
 using Utilities.Logging;
 using Core.PluginRegistrations;
 using Core.Interfaces;
-using Core.Managers.APIManagers.Packagers.Docusign;
 using DocuSign.Integrations.Client;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
@@ -28,11 +27,8 @@ namespace Web
         {
             ConfigureDaemons();
             ConfigureAuth(app);
-            ConfigureCommunicationConfigs();
+            //ConfigureCommunicationConfigs();
             RegisterPluginActions();
-
-            DocuSignPackager _docusignPackager = new DocuSignPackager(); //this configures the login credentials for DocuSign
-
         }
 
 

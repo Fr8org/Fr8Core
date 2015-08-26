@@ -19,6 +19,40 @@ app.directive('autoFocus', function ($timeout) {
     };
 });
 
+app.directive("checkboxGroup", function () {
+    return {
+        restrict: "A",
+        scope: {
+            array: '=',
+            itemObject: '@',
+            idField: '@'
+        },
+        link: function (scope: any, elem, attrs) {
+            // Determine initial checked boxes
+            if (scope.array.indexOf(scope.$parent[scope.itemObject][scope.idField]) !== -1) {
+                elem[0].checked = true;
+            }
+
+            // Update array on click
+            elem.bind('click', function () {
+                var index = scope.array.indexOf(scope.$parent[scope.itemObject][scope.idField]);
+                // Add if checked
+                if (elem[0].checked) {
+                    if (index === -1) scope.array.push(scope.$parent[scope.itemObject][scope.idField]);
+                }
+                // Remove if unchecked
+                else {
+                    if (index !== -1) scope.array.splice(index, 1);
+                }
+                // Sort and update DOM display
+                scope.$apply(scope.array.sort(function (a, b) {
+                    return a - b
+                }));
+            });
+        }
+    }
+});
+
 // Route State Load Spinner(used on page or content load)
 app.directive('ngSpinnerBar', ['$rootScope',
     function ($rootScope) {

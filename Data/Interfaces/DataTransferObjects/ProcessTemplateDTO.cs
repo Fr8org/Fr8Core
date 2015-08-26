@@ -6,12 +6,14 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ProcessTemplateDTO
     {
-        // public ProcessTemplateDTO()
-        // {
-        //     SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
-        //     SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
-        //     DockyardAccount = new DockyardAccountDO();
-        // }
+        public ProcessTemplateDTO()
+        {
+            //     SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
+            //     SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
+            //     DockyardAccount = new DockyardAccountDO();
+            SubscribedDocuSignTemplates = new List<string>();
+            SubscribedExternalEvents = new List<int>();
+        }
 
         public int Id { get; set; }
 
@@ -20,6 +22,11 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Description { get; set; }
         public int ProcessTemplateState { get; set; }
+
+        public IList<string> SubscribedDocuSignTemplates { get; set; }
+
+        public IList<int> SubscribedExternalEvents { get; set; }
+
 
         // Commented out by yakov.gnusin:
         // Do we really need to provider DockyardAccountDO inside ProcessTemplateDTO?

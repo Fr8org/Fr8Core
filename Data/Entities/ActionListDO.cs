@@ -22,9 +22,6 @@ namespace Data.Entities
         public int? ProcessNodeTemplateID { get; set; }
         public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
 
-		[ForeignKey("Template")]
-		public int? TemplateId{ get; set; }
-		public virtual TemplateDO Template{ get; set; }
 
 		[ForeignKey("Process")]
 		public int? ProcessID{ get; set; }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-
+using System.Linq;
 using Data.Interfaces;
 
 using DocuSign.Integrations.Client;
@@ -47,6 +47,19 @@ namespace DockyardTest.Services
 
             Assert.IsNotNull(envelopeDatas);
             //Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.
+        }
+
+        [Test,Ignore] //use a mock for this instead of actually connecting 
+        [Category("Envelope")]
+        public void Envelope_Can_Normalize_EnvelopeData_Using_TemplateId()
+        {
+
+            RestSettings.Instance.RestTracing = true;
+
+            var envelopeDatas = (new Data.Wrappers.DocuSignTemplate())
+                                .GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
+
+            Assert.IsNotNull(envelopeDatas);
         }
 
     }
