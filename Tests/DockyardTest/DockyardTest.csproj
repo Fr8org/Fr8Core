@@ -233,6 +233,7 @@
     <Compile Include="Services\BasePluginRegistrationTests.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\EnvelopeServiceTests.cs" />
+    <Compile Include="Services\FileArchiveTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\ProcessTemplateTests.cs" />
