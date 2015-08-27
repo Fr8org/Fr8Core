@@ -59,10 +59,10 @@ namespace Core.PluginRegistrations
         {
             var pluginRegistrationType = Type.GetType("Core.PluginRegistrations." + curAction.ParentPluginRegistration);
             if (pluginRegistrationType == null)
-                throw new ArgumentException($"Can't find plugin registration type: {curAction.ParentPluginRegistration}", nameof(curAction));
+                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
             var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
             if (pluginRegistration == null)
-                throw new ArgumentException($"Can't find a valid plugin registration type: {curAction.ParentPluginRegistration}", nameof(curAction));
+                throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
             return pluginRegistration;
         }
 
