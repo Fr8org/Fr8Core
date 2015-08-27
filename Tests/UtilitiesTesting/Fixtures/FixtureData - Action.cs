@@ -181,6 +181,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 EnvelopeId = envelopeId,
+                ProcessTemplateId = TestProcessTemplate2().Id,
                 ProcessState = 1
             };
 
