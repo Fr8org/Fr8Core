@@ -13,31 +13,16 @@ namespace Data.Wrappers
         List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
         IEnumerable<string> GetMappableSourceFields(string templateId);
         IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
-
-        /// <summary>
-        /// Get Envelope Data from a docusign envelope. 
-        /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
-        /// </summary>
-        /// <param name="templateId">templateId</param>
-        /// <returns>
-        /// List of Envelope Data.
-        /// It returns empty list of envelope data if tab and signers not found.
-        /// </returns>
-        IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId);
-
     }
 
     public class DocuSignTemplate : Template, IDocuSignTemplate
     {
         private readonly DocuSignEnvelope _docusignEnvelope;
-        private DocuSignTemplate _docusignTemplate;
-        private DocuSignAccount _account;
 
         public DocuSignTemplate()
         {
             var packager = new DocuSignPackager();
-            //_account = packager.Login();
-            //Login = _account;
+
             Login = packager.LoginAsDockyardService();
             _docusignEnvelope = new DocuSignEnvelope();
         }
@@ -59,8 +44,7 @@ namespace Data.Wrappers
         //TODO: merge these
         public IEnumerable<string> GetMappableSourceFields(string templateId)
         {
-            return GetEnvelopeDataByTemplate(templateId).Select(r => r.Name);
-
+            return _docusignEnvelope.GetEnvelopeDataByTemplate(templateId).Select(r => r.Name);
         }
 
         public List<string> GetMappableSourceFields(DocuSignEnvelope envelope)
@@ -71,24 +55,21 @@ namespace Data.Wrappers
             {
                 return curEnvelopeDataList.Select(x => x.Name).ToList();
             }
-            else if (curDistinctDocIds.Count > 1)
-            {
-                //add the document name as a suffix if there's more than one document involved
-                List<string> curLstMappableSourceFields = new List<string>();
-                foreach (EnvelopeDataDTO curEnvelopeData in curEnvelopeDataList)
-                {
-                    EnvelopeDocuments curEnvelopDocuments = envelope.GetEnvelopeDocumentInfo(curEnvelopeData.EnvelopeId);
-                    List<EnvelopeDocument> curLstenvelopDocuments = curEnvelopDocuments
-                        .envelopeDocuments.ToList()
-                        .Where(x => Convert.ToInt32(x.documentId) == curEnvelopeData.DocumentId).ToList();
-                    curLstMappableSourceFields.Add(curEnvelopeData.Name + " from " + curLstenvelopDocuments[0].name);
-                }
-                return curLstMappableSourceFields;
-            }
-            else
-            {
+
+            if (curDistinctDocIds.Count <= 1) 
                 return null;
+
+            //add the document name as a suffix if there's more than one document involved
+            var curLstMappableSourceFields = new List<string>();
+            foreach (var curEnvelopeData in curEnvelopeDataList)
+            {
+                EnvelopeDocuments curEnvelopDocuments = envelope.GetEnvelopeDocumentInfo(curEnvelopeData.EnvelopeId);
+                List<EnvelopeDocument> curLstenvelopDocuments = curEnvelopDocuments
+                    .envelopeDocuments.ToList()
+                    .Where(x => Convert.ToInt32(x.documentId) == curEnvelopeData.DocumentId).ToList();
+                curLstMappableSourceFields.Add(curEnvelopeData.Name + " from " + curLstenvelopDocuments[0].name);
             }
+            return curLstMappableSourceFields;
         }
     }
 }
