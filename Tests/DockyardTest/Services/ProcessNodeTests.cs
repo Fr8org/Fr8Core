@@ -96,9 +96,11 @@ namespace DockyardTest.Services
 
             var processNodeDO = FixtureData.TestProcessNode4();
             var docusignEventDO = FixtureData.TestEnvelopeDataList1();
+            var processTemplate = FixtureData.TestProcessTemplate2();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
                 uow.SaveChanges();
             }
@@ -126,9 +128,10 @@ namespace DockyardTest.Services
 
             var processNodeDO = FixtureData.TestProcessNode4();
             var docusignEventDO = FixtureData.TestEnvelopeDataList1();
-
+            var processTemplate = FixtureData.TestProcessTemplate2();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
                 uow.SaveChanges();
             }
