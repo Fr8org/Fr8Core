@@ -16,11 +16,15 @@ namespace Core.Services
 {
     public class ProcessNode : IProcessNode
     {
+        private readonly ICriteria _criteria;
+        private readonly IActionList _actionList;
         private IProcessNodeTemplateRepository _processNodeTemplateRepository;
-
         public ProcessNode()
         {
-                  }
+            _criteria = ObjectFactory.GetInstance<ICriteria>();
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+        }
+
         /// <summary>
         /// Creates ProcessNode Object
         /// </summary>
@@ -50,26 +54,24 @@ namespace Core.Services
         public void CreateTruthTransition(ProcessNodeDO sourcePNode, ProcessNodeDO targetPNode)
         {
             var keys =
-                JsonConvert.DeserializeObject<List<TransitionKeyData>>(sourcePNode.ProcessNodeTemplate.NodeTransitions);
+                JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(sourcePNode.ProcessNodeTemplate.NodeTransitions);
 
             if (!this.IsCorrectKeysCountValid(keys))
                 throw new ArgumentException("There should only be one key with false.");
 
-            var key = keys.First(k => k.Flag.Equals("false", StringComparison.OrdinalIgnoreCase));
-            key.Id = targetPNode.Id.ToString();
+            var key = keys.First(k => k.TransitionKey.Equals("false", StringComparison.OrdinalIgnoreCase));
+            key.ProcessNodeId = targetPNode.Id.ToString();
 
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            string evaluationResult = "";
-            var _criteria = ObjectFactory.GetInstance<ICriteria>();
+            string nextTransitionKey = "";
             bool result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
                 var _curActionList = ObjectFactory.GetInstance<IActionList>();
-
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var curProcessNodeTemplate =
@@ -83,11 +85,14 @@ namespace Core.Services
                     }
                 }
 
-                
+                nextTransitionKey = "true";
             }
-            evaluationResult = result.ToString();
+            else
+            {
+                nextTransitionKey = "false";
+            }
 
-            return evaluationResult;
+            return nextTransitionKey;
 
         }
 
@@ -95,9 +100,9 @@ namespace Core.Services
         /// There will and should only be one key with false. if there's more than one, throw an exception.	
         /// </summary>
         /// <param name="keys">keys to be validated</param>
-        private bool IsCorrectKeysCountValid(IEnumerable<TransitionKeyData> keys)
+        private bool IsCorrectKeysCountValid(IEnumerable<ProcessNodeTransition> keys)
         {
-            var count = keys.Count(key => key.Flag.Equals("false", StringComparison.OrdinalIgnoreCase));
+            var count = keys.Count(key => key.TransitionKey.Equals("false", StringComparison.OrdinalIgnoreCase));
             return count == 1;
         }
     }

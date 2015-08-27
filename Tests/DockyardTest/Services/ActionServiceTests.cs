@@ -32,7 +32,6 @@ namespace DockyardTest.Services
         private readonly IEnumerable<ActionRegistrationDO> _pr1Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActionRegistrationDO> _pr2Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "SQL Read", Version = "1.0" } };
 
-
         [SetUp]
         public override void SetUp()
         {
@@ -138,11 +137,13 @@ namespace DockyardTest.Services
         public void CanProcessDocuSignTemplate()
         {
             Core.Services.Action action = new Core.Services.Action();
+            var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
                 uow.ActionListRepository.Add(actionDo.ActionList);
                 uow.ProcessRepository.Add(actionDo.ActionList.Process);
@@ -171,9 +172,10 @@ namespace DockyardTest.Services
             Core.Services.Action action = new Core.Services.Action();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
-
+            var processTemplate = FixtureData.TestProcessTemplate2();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
                 uow.ActionListRepository.Add(actionDo.ActionList);
                 uow.ProcessRepository.Add(actionDo.ActionList.Process);
@@ -200,10 +202,38 @@ namespace DockyardTest.Services
         [Test]
         public void Process_ActionListNotUnstarted_ThrowException()
         {
-            ActionDO actionDo = FixtureData.TestAction7();
+            ActionDO actionDo = FixtureData.TestAction9();
             Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
 
-            Assert.AreEqual("Action ID: 2 status is not unstarted.", _action.Process(actionDo).Exception.InnerException.Message);
+            Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo).Exception.InnerException.Message);
+        }
+
+        [Test]
+        public void Process_ReturnJSONDispatchError_ActionStateError()
+        {
+            ActionDO actionDO = FixtureData.IntegrationTestAction();
+            var pluginClientMock = new Mock<IPluginTransmitter>();
+            pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), (ActionPayloadDTO)It.IsAny<object>())).ReturnsAsync(@"{ ""error"" : { ""ErrorCode"": ""0000"" }}");
+            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
+            _action = ObjectFactory.GetInstance<IAction>();
+
+            _action.Process(actionDO);
+
+            Assert.AreEqual(ActionState.Error, actionDO.ActionState);
+        }
+
+        [Test]
+        public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()
+        {
+            ActionDO actionDO = FixtureData.IntegrationTestAction();
+            var pluginClientMock = new Mock<IPluginTransmitter>();
+            pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), (ActionPayloadDTO)It.IsAny<object>())).ReturnsAsync(@"{ ""success"" : { ""ID"": ""0000"" }}");
+            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
+            _action = ObjectFactory.GetInstance<IAction>();
+
+            _action.Process(actionDO);
+
+            Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
         }
     }
 }

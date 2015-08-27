@@ -94,12 +94,13 @@ module dockyard.directives.paneSelectAction {
         public templateUrl = '/AngularTemplate/PaneSelectAction';
         public controller: ($scope: ng.IScope, element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes, $http: ng.IHttpService, urlPrefix: string) => void;
-        public scope = {};
+        public scope = {
+            action: '='
+        };
         public restrict = 'E';
 
         constructor(
-            private $rootScope: interfaces.IAppRootScope,
-            private ActionService: services.IActionService
+            private $rootScope: interfaces.IAppRootScope
             ) {
 
             PaneSelectAction.prototype.link = (
@@ -117,7 +118,7 @@ module dockyard.directives.paneSelectAction {
                 $http: ng.IHttpService,
                 urlPrefix: string) => {
 
-                this.PupulateSampleData($scope);
+                this.PupulateData($scope, $http, urlPrefix);
 
                 $scope.$watch<model.Action>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
@@ -167,12 +168,6 @@ module dockyard.directives.paneSelectAction {
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
-            scope.action = new model.Action(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId,
-                eventArgs.actionListId
-                );
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -183,24 +178,32 @@ module dockyard.directives.paneSelectAction {
             (<any>$).notify("Greetings from Select Action Pane. I've got a message about my neighbor saving its data so I saved my data, too.", "success");
         }
 
-        private PupulateSampleData($scope: interfaces.IPaneSelectActionScope) {
-            $scope.sampleActionTypes = [
-                { name: "Action type 1", value: "1" },
-                { name: "Action type 2", value: "2" },
-                { name: "Action type 3", value: "3" }
-            ];
+        private PupulateData(
+            $scope: interfaces.IPaneSelectActionScope,
+            $http: ng.IHttpService,
+            urlPrefix: string) {
+
+            $scope.actionTypes = [];
+
+            $http.get(urlPrefix + '/actions/available')
+                .then(function (resp) {
+                    angular.forEach(resp.data, function (it) {
+                        console.log(it);
+
+                        $scope.actionTypes.push(new model.ActionType(it.id, it.actionType, {}));
+                    });
+                });
         }
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
             var directive = (
-                $rootScope: interfaces.IAppRootScope,
-                ActionService: services.IActionService) => {
+                $rootScope: interfaces.IAppRootScope) => {
 
-                return new PaneSelectAction($rootScope, ActionService);
+                return new PaneSelectAction($rootScope);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService'];
+            directive['$inject'] = ['$rootScope'];
             return directive;
         }
     }

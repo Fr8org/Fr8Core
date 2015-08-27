@@ -48,7 +48,11 @@ namespace Core.Services
         public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            return plugins.SelectMany(p => p.AvailableActions).OrderBy(s => s.ActionType);
+            var curActions = plugins
+                .SelectMany(p => p.AvailableActions)
+                .OrderBy(s => s.ActionType);
+
+            return curActions;
         }
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
@@ -89,7 +93,7 @@ namespace Core.Services
             {
                 string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
                 curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
-            }
+            } 
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
             return curActionDO;
@@ -107,15 +111,14 @@ namespace Core.Services
             }
         }
 
-
-        public async Task<string> Process(ActionDO curAction)
+        public async Task Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState == ActionState.Unstarted)
+                if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
                 {
-                    curAction.ActionState = ActionState.Inprocess;
+                    curAction.ActionState = ActionState.InProcess;
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
 
@@ -124,8 +127,8 @@ namespace Core.Services
                     Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
                     var jsonResult = await Dispatch(curAction, baseUri);
 
-                    var jsonDeserialized = JsonConvert.DeserializeObject<Dictionary<string, ErrorDTO>>(jsonResult);
-                    if (jsonDeserialized.Count == 0 || jsonDeserialized.Where(k => k.Key.ToLower().Contains("error")).Any())
+                    //check if the returned JSON is Error
+                    if (jsonResult.ToLower().Contains("error"))
                     {
                         curAction.ActionState = ActionState.Error;
                     }
@@ -142,10 +145,9 @@ namespace Core.Services
                     curAction.ActionState = ActionState.Error;
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
-                    throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
+                    throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
             }
-            return curAction.ActionState.ToString();
         }
 
         public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
