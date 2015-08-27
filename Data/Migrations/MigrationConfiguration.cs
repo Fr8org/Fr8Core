@@ -359,7 +359,7 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-            const string azureSqlPluginName = "AzureSqlServer";
+            const string azureSqlPluginName = "AzureSql";
 
             // Create test Dockaard account for plugin subscription.
             var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
@@ -374,7 +374,7 @@ namespace Data.Migrations
                 // Create plugin instance.
                 var azureSqlPlugin = new PluginDO()
                 {
-                    Name = "AzureSqlServer",
+                    Name = azureSqlPluginName,
                     PluginStatus = PluginStatus.Active
                 };
 

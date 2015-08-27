@@ -100,11 +100,18 @@ namespace Data.Wrappers
             foreach (var signer in templateDetails["recipients"]["signers"])
             {
                 if (signer["tabs"]["textTabs"] != null)
+                {
                     foreach (var textTab in signer["tabs"]["textTabs"])
                     {
                         yield return CreateEnvelopeData(textTab, textTab["value"].ToString());
                     }
-                if (signer["tabs"]["checkboxTabs"] == null) continue;
+                }
+
+                if (signer["tabs"]["checkboxTabs"] == null)
+                {
+                    continue;
+                }
+
                 foreach (var chekBoxTabs in signer["tabs"]["checkboxTabs"])
                 {
                     yield return CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString());

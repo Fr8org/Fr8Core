@@ -7,7 +7,7 @@
         actionType: string;
         configurationSettings: string;
         fieldMappingSettings: string;
-        userLabel: string
+        userLabel: string;
 
         constructor(
             processNodeTemplateId: number,
