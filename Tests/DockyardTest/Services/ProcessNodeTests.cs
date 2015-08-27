@@ -61,7 +61,7 @@ namespace DockyardTest.Services
 		}
 
         [Test]
-        public void Execute_CriteriaEvaluateFalse_ReturnFalse()
+        public void Execute_CriteriaEvaluatesToFalse_ReturnFalse()
         {
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
@@ -80,7 +80,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Execute_CriteriaEvaluateTrue_ReturnTrue()
+        public void Execute_CriteriaEvaluatesToTrue_ReturnTrue()
         {
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
@@ -112,7 +112,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Execute_ActionListTypeImmediate_CallProcess()
+        public void Execute_VerifyProcessCalled_ActionListTypeIsImmediate()
         {
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
