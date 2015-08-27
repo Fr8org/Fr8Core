@@ -15,9 +15,9 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ActionAdded,
         PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
-        // PaneWorkflowDesigner_RefreshElement,
-        PaneWorkflowDesigner_UpdateAction,
-        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced
+        PaneWorkflowDesigner_ActionNameUpdated,
+        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced,
+        PaneWorkflowDesigner_ActionTempIdReplaced
     }
 
     export class RenderEventArgs {
@@ -69,58 +69,80 @@ module dockyard.directives.paneWorkflowDesigner {
     }
 
     export class ActionAddingEventArgs {
-        public criteriaId: number;
+        public processNodeTemplateId: number;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number) {
-            this.criteriaId = criteriaId;
+        constructor(processNodeTemplateId: number, actionListType: model.ActionListType) {
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.actionListType = actionListType;
         }
     }
 
     export class ActionAddedEventArgs {
         public criteriaId: number;
         public action: model.Action;
+        public actionListType: model.ActionListType;
 
-        constructor(criteriaId: number, action: model.Action) {
+        constructor(criteriaId: number,
+            action: model.Action,
+            actionListType: model.ActionListType) {
+
             this.criteriaId = criteriaId;
             this.action = action;
+            this.actionListType = actionListType;
         }
     }
 
     export class ActionSelectingEventArgs {
-        public criteriaId: number;
+        public processNodeTemplateId: number;
         public actionId: number;
+        public actionListId: number;
 
-        constructor(criteriaId: number, actionId: number) {
-            this.criteriaId = criteriaId;
+        constructor(
+            processNodeTemplateId: number,
+            actionId: number,
+            actionListId: number) {
+
+            this.processNodeTemplateId = processNodeTemplateId;
             this.actionId = actionId;
+            this.actionListId = actionListId;
         }
     }
 
     export class ActionRemovedEventArgs {
-        public criteriaId: number;
-        public actionId: number;
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number) {
-            this.criteriaId = criteriaId;
-            this.actionId = actionId;
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
         }
     }
 
     export class TemplateSelectingEventArgs {
     }
 
-    export class UpdateActionEventArgs extends ActionEventArgsBase {
+    export class ActionNameUpdatedEventArgs {
+        public id: number;
         public userLabel: string;
-        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number, isTempId: boolean, userLabel: string) {
-            super(criteriaId, actionId);
-            this.isTempId = isTempId;
+        constructor(id: number, userLabel: string) {
+            this.id = id;
             this.userLabel = userLabel;
         }
     }
 
     export class ProcessNodeTemplateTempIdReplacedEventArgs {
+        public tempId: number;
+        public id: number;
+
+        constructor(tempId: number, id: number) {
+            this.tempId = tempId;
+            this.id = id;
+        }
+    }
+
+    export class ActionTempIdReplacedEventArgs {
         public tempId: number;
         public id: number;
 

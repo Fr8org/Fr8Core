@@ -12,6 +12,8 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Moq;
+using Data.Interfaces.DataTransferObjects;
+using System.Collections.Generic;
 
 namespace DockyardTest.Services
 {
@@ -24,7 +26,7 @@ namespace DockyardTest.Services
 		private DockyardAccount _userService;
 		private string _testUserId = "testuser";
 		private string xmlPayloadFullPath;
-        EnvelopeDO envelopeDO;
+        DocuSignEventDO docusignEventDO;
         ProcessNodeDO processNodeDO;
 
 		[SetUp]
@@ -39,9 +41,8 @@ namespace DockyardTest.Services
 			if (xmlPayloadFullPath == string.Empty)
 				throw new Exception("XML payload file for testing DocuSign notification is not found.");
 
-            envelopeDO = FixtureData.TestEnvelope1();
-            processNodeDO = FixtureData.TestProcessNode();
-            processNodeDO.ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+            docusignEventDO = FixtureData.TestDocuSignEvent1();
+            processNodeDO = FixtureData.TestProcessNode2();
 		}
 
 		[Test]
@@ -214,7 +215,7 @@ namespace DockyardTest.Services
 				var template = FixtureData.TestProcessTemplate1();
 				var curEvent = FixtureData.TestDocuSignEvent1();
 
-               
+
 				uow.ProcessTemplateRepository.Add(template);
 				uow.SaveChanges();
 
@@ -226,15 +227,48 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedMessage = "ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera")]
         public void Execute_NoMatchedNodeTransition_ThrowExceptionProcessNodeTransitions()
         {
-            //setup criteria for Evaluate method on veryfing processnodetemplate ID
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-               uow.CriteriaRepository.Add(FixtureData.TestCriteria1());
-               uow.SaveChanges();
-            };
-            var curEvent = FixtureData.TestDocuSignEvent1();
-            _processService.Execute(curEvent, processNodeDO);
+            docusignEventDO = FixtureData.TestDocuSignEvent1();
+            processNodeDO = FixtureData.TestProcessNode3();
+            //mock processnode
+            var processNodeMock = new Mock<IProcessNode>();
+            processNodeMock
+                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
+                .Returns("true1");
+            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
+
+            _processService = ObjectFactory.GetInstance<IProcess>();
+
+            _processService.Execute(docusignEventDO, processNodeDO);
         }
 
+        [Test]
+        public void Execute_MatchedNodeTransition_ProcessNodeNull()
+        {
+            //mock processnode
+            var processNodeMock = new Mock<IProcessNode>();
+            processNodeMock
+                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
+                .Returns("true");
+            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
+            //setup the next transition node during lookup key
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionListRepository.Add(FixtureData.TestActionList6());
+                uow.SaveChanges();
+                uow.ProcessRepository.Add(FixtureData.TestProcess1());
+                uow.SaveChanges();
+                uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());
+               uow.SaveChanges();
+            }
+            _processService = ObjectFactory.GetInstance<IProcess>();
+
+            docusignEventDO = FixtureData.TestDocuSignEvent1();
+            var processNodeDO = FixtureData.TestProcessNode3();
+
+
+            _processService.Execute(docusignEventDO, processNodeDO);
+
+            Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
+        }
 	}
 }

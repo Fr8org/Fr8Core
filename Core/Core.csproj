@@ -185,7 +185,7 @@
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActionRegistration.cs" />
     <Compile Include="Interfaces\IAction.cs" />
-    <Compile Include="Helper\TransitionKeyData.cs" />
+    <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />

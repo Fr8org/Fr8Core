@@ -73,7 +73,7 @@ module dockyard.tests.controller {
                 {
                     actionType: "test action type",
                     configurationSettings: "test",
-                    criteriaId: 1,
+                    processNodeTemplateId: 1,
                     isTempId: false,
                     id: null,
                     fieldMappingSettings: "test",

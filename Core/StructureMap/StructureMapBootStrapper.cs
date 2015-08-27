@@ -60,6 +60,8 @@ namespace Core.StructureMap
             {
 
             }
+
+
         }
 
         public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
@@ -101,9 +103,10 @@ namespace Core.StructureMap
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IActionRegistration>().Use<ActionRegistration>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+                For<IActionList>().Use<ActionList>();
                 For<IFileArchive>().Use<FileArchive>();
 
-                //For<ITemplate>().Use<Services.Template>();
+
             }
         }
 
@@ -111,6 +114,7 @@ namespace Core.StructureMap
         {
             public TestMode()
             {
+              
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
@@ -138,6 +142,7 @@ namespace Core.StructureMap
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
+
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
@@ -157,6 +162,7 @@ namespace Core.StructureMap
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 //For<ITemplate>().Use<Services.Template>();
+                For<IActionList>().Use<ActionList>();
                 For<IFileArchive>().Use<FileArchive>();
             }
         }

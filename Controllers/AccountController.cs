@@ -178,11 +178,13 @@ Please register first.");
                                 string getRole = _account.GetUserRole(username);
 
                                 if (getRole == "Admin")
-                                    return RedirectToAction("MyAccount", "User");
+                                    return RedirectToAction("Index", "Dashboard");
+                                   // return RedirectToAction("MyAccount", "User");
                                 else if (getRole == "Booker")
                                     return RedirectToAction("Index", "Booker");
 
-                                return RedirectToAction("MyAccount", "User");
+                                //return RedirectToAction("MyAccount", "User");
+                                return RedirectToAction("Index", "Dashboard");
                             }
                             break;
                     }

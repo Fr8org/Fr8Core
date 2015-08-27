@@ -14,7 +14,9 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlServerPluginRegistration_v1 : BasePluginRegistration
     {
-       // private readonly ActionNameListDTO availableActions;
+        //public const string baseUrl = "plugin_azure_sql_server";
+        //private readonly ActionNameListDTO availableActions;
+        // private const string availableActions = @"[{ ""ActionType"" : ""Write to Sql Server"" , ""Version"": ""1.0"", ""ParentPluginRegistration"": ""AzureSql""}]";
         //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 #if DEBUG
         public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
