@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddFileDo : DbMigration
+    public partial class AddFileDO : DbMigration
     {
         public override void Up()
         {

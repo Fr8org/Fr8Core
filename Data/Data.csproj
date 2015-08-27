@@ -230,9 +230,9 @@
     <Compile Include="Migrations\201508252259417_InitialMigration.Designer.cs">
       <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508261504115_AddFileDo.cs" />
-    <Compile Include="Migrations\201508261504115_AddFileDo.Designer.cs">
-      <DependentUpon>201508261504115_AddFileDo.cs</DependentUpon>
+    <Compile Include="Migrations\201508271601204_AddFileDO.cs" />
+    <Compile Include="Migrations\201508271601204_AddFileDO.Designer.cs">
+      <DependentUpon>201508271601204_AddFileDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -449,8 +449,8 @@
     <EmbeddedResource Include="Migrations\201508252259417_InitialMigration.resx">
       <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508261504115_AddFileDo.resx">
-      <DependentUpon>201508261504115_AddFileDo.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508271601204_AddFileDO.resx">
+      <DependentUpon>201508271601204_AddFileDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
