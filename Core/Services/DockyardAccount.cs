@@ -8,6 +8,7 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using Data.Wrappers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
@@ -354,6 +355,12 @@ namespace Core.Services
                     userRole = "Customer";
                 return userRole;
             }
+        }
+
+        public DocuSignAccount LoginToDocuSign()
+        {
+            var packager = new DocuSignPackager();
+            return packager.LoginAsDockyardService();
         }
     }
 }

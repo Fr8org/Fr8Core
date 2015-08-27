@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.States;
 using Core.Managers;
 using Core.Services;
+using Data.Wrappers;
 using Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;

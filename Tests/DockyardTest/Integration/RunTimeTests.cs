@@ -1,27 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Core.Managers;
-using Data.Interfaces;
 using Core.Services;
 using Data.Entities;
-using Data.States;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
+using Data.Interfaces;
+using Data.Wrappers;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Microsoft.SqlServer.Management.Common;
-using Newtonsoft.Json;
-using NUnit.Core;
-using Server = Microsoft.SqlServer.Management.Smo.Server;
 
 namespace DockyardTest.Integration
 {
@@ -39,7 +26,7 @@ namespace DockyardTest.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //create a registered account
-                Account _account = new Account();              
+                DockyardAccount _account = new DockyardAccount();              
                 var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User"); 
                 uow.UserRepository.Add(registeredAccount);
                 uow.SaveChanges();

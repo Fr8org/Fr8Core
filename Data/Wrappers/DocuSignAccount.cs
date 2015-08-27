@@ -1,4 +1,4 @@
-﻿namespace Core.Services
+﻿namespace Data.Wrappers
 {
     public class DocuSignAccount : DocuSign.Integrations.Client.Account
     {

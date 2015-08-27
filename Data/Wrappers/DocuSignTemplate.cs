@@ -29,7 +29,7 @@ namespace Data.Wrappers
         public DocuSignTemplate()
         {
             var packager = new DocuSignPackager();
-           Login = packager.Login();
+           Login = packager.LoginAsDockyardService();
             _docusignEnvelope = new DocuSignEnvelope();
         }
 

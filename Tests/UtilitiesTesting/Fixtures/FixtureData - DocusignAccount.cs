@@ -1,4 +1,4 @@
-﻿using Core.Services;
+﻿using Data.Wrappers;
 
 namespace UtilitiesTesting.Fixtures
 {

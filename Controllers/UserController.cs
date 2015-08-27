@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using AutoMapper;
+using AutoMapper.Internal;
+using Core.Managers;
+using Core.Managers.APIManagers.Authorizers;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Core.Managers;
-using Core.Managers.APIManagers.Authorizers;
-using Web.ViewModels;
-using Microsoft.Ajax.Utilities;
-using StructureMap;
-using Data.Validations;
-using System.Linq;
-using Utilities;
-using Core.Services;
-using AutoMapper;
-using AutoMapper.Internal;
+using Data.Wrappers;
 using Microsoft.AspNet.Identity.EntityFramework;
+using StructureMap;
+using Utilities;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -339,7 +338,7 @@ namespace Web.Controllers
                 var tuple = new Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);
 
                 var curManageUserVM =
-                    AutoMapper.Mapper.Map<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
+                    Mapper.Map<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
                 return View(curManageUserVM);
             }
         }

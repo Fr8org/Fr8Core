@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Configuration;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using System.Web.Mvc;
 using DocuSign.Integrations.Client;
 using Microsoft.WindowsAzure;
-using Account = DocuSign.Integrations.Client.Account;
+
 namespace Data.Wrappers
 {
     public class DocuSignPackager
@@ -25,8 +22,8 @@ namespace Data.Wrappers
 
         public DocuSignAccount Login(string resource = "")
         {
-            string username = Email ?? "Not Found";
-            string password = ApiPassword ?? "Not Found";
+            var username = Email ?? "Not Found";
+            var password = ApiPassword ?? "Not Found";
 
             // set request url, method, and headers.  No body needed for login api call
             //HttpWebRequest request = initializeRequest(requestURL, "GET", null, username, password, integratorKey);
@@ -87,20 +84,20 @@ namespace Data.Wrappers
         //***********************************************************************************************
         // --- HELPER FUNCTIONS ---
         //***********************************************************************************************
-        public static HttpWebRequest initializeRequest(string url, string method, string body, string email, string password, string intKey)
+        public static HttpWebRequest InitializeRequest(string url, string method, string body, string email, string password, string intKey)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.Method = method;
-            addRequestHeaders(request, email, password, intKey);
+            AddRequestHeaders(request, email, password, intKey);
             if (body != null)
-                addRequestBody(request, body);
+                AddRequestBody(request, body);
             return request;
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static void addRequestHeaders(HttpWebRequest request, string email, string password, string intKey)
+        public static void AddRequestHeaders(HttpWebRequest request, string email, string password, string intKey)
         {
             // authentication header can be in JSON or XML format.  XML used for this walkthrough:
-            string authenticateStr =
+            var authenticateStr =
                 "<DocuSignCredentials>" +
                     "<Username>" + email + "</Username>" +
                     "<Password>" + password + "</Password>" +
@@ -111,28 +108,30 @@ namespace Data.Wrappers
             request.ContentType = "application/xml";
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static void addRequestBody(HttpWebRequest request, string requestBody)
+        public static void AddRequestBody(HttpWebRequest request, string requestBody)
         {
             // create byte array out of request body and add to the request object
             byte[] body = Encoding.UTF8.GetBytes(requestBody);
-            Stream dataStream = request.GetRequestStream();
+            var dataStream = request.GetRequestStream();
+
             dataStream.Write(body, 0, requestBody.Length);
             dataStream.Close();
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static string getResponseBody(HttpWebRequest request)
+        public static string GetResponseBody(HttpWebRequest request)
         {
             // read the response stream into a local string
-            HttpWebResponse webResponse = (HttpWebResponse)request.GetResponse();
-            StreamReader sr = new StreamReader(webResponse.GetResponseStream());
-            string responseText = sr.ReadToEnd();
+            var webResponse = (HttpWebResponse)request.GetResponse();
+            var sr = new StreamReader(webResponse.GetResponseStream());
+            var responseText = sr.ReadToEnd();
+
             return responseText;
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static string parseDataFromResponse(string response, string searchToken)
+        public static string ParseDataFromResponse(string response, string searchToken)
         {
             // look for "searchToken" in the response body and parse its value
-            using (XmlReader reader = XmlReader.Create(new StringReader(response)))
+            using (var reader = XmlReader.Create(new StringReader(response)))
             {
                 while (reader.Read())
                 {
@@ -143,7 +142,7 @@ namespace Data.Wrappers
             return null;
         }
         /////////////////////////////////////////////////////////////////////////////////////////////////////////
-        public static string prettyPrintXml(string xml)
+        public static string PrettyPrintXml(string xml)
         {
             // print nicely formatted xml
             try
@@ -155,6 +154,25 @@ namespace Data.Wrappers
             {
                 return xml;
             }
+        }
+
+        public DocuSignAccount LoginAsDockyardService()
+        {
+            var email = Email ?? "Not Found";
+            var password = ApiPassword ?? "Not Found";
+
+            var curAccount = new Account
+            {
+                Email = email,
+                ApiPassword = password
+            };
+            var curDocuSignAccount = DocuSignAccount.Create(curAccount);
+
+            if (curDocuSignAccount.Login())
+                return curDocuSignAccount;
+
+            throw new InvalidOperationException(
+                "Cannot log in to DocuSign. Please check the authentication information on web.config.");
         }
     }
 }

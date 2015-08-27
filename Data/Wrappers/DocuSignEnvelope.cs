@@ -1,26 +1,21 @@
-﻿using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using DocuSign.Integrations.Client;
-using Microsoft.WindowsAzure;
-using Newtonsoft.Json.Linq;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Infrastructure;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
-using Utilities;
 
 namespace Data.Wrappers
 {
-    public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IEnvelope
+    public class DocuSignEnvelope : Envelope, IEnvelope
     {
         private string _baseUrl;
         private readonly ITab _tab;
         private readonly ISigner _signer;
+        //Can't use DockYardAccount here - circular dependency
+        private readonly DocuSignPackager _docuSignPackager;
 
         public DocuSignEnvelope()
         {
@@ -34,7 +29,9 @@ namespace Data.Wrappers
             var packager = new DocuSignPackager();
             packager.Email = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
             packager.ApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
-            Login = packager.Login();
+            Login = packager.LoginAsDockyardService();
+
+            _docuSignPackager = new DocuSignPackager();
         }
 
 
@@ -48,7 +45,7 @@ namespace Data.Wrappers
         /// 
         public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
         {
-            if (String.IsNullOrEmpty(curEnvelopeId))
+            if (string.IsNullOrEmpty(curEnvelopeId))
             {
                 throw new ArgumentNullException("envelopeId");
             }
@@ -62,7 +59,7 @@ namespace Data.Wrappers
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
             {
-                foreach (Signer curSigner in curSignersSet)
+                foreach (var curSigner in curSignersSet)
                 {
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
@@ -86,7 +83,7 @@ namespace Data.Wrappers
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
             {
-                foreach (Signer curSigner in curSignersSet)
+                foreach (var curSigner in curSignersSet)
                 {
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
@@ -102,7 +99,8 @@ namespace Data.Wrappers
         /// <param name="curFieldMappingsJSON">Field mappings created by user for an action.</param>
         /// <param name="curEnvelopeId">Envelope id which is being processed.</param>
         /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId, IList<EnvelopeDataDTO> curEnvelopeData)
+        public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId,
+            IList<EnvelopeDataDTO> curEnvelopeData)
         {
             var mappings = new FieldMappingSettingsDTO();
             mappings.Deserialize(curFieldMappingsJSON);
@@ -117,7 +115,7 @@ namespace Data.Wrappers
                 }
                 else
                 {
-                    payload.Add(new FieldMappingDTO() { Name = m.Name, Value = newValue });
+                    payload.Add(new FieldMappingDTO() {Name = m.Name, Value = newValue});
                 }
             });
             return payload;
@@ -125,40 +123,12 @@ namespace Data.Wrappers
 
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
-
-
-            var username = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
-            var password = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
-            var integratorKey = ConfigurationManager.AppSettings["DocuSignIntegratorKey"];
-            var baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
-
-            if (username == null
-                || password == null
-                || integratorKey == null
-                || baseUrl == null
-              )
-                throw new ApplicationException(" Web/App Config is missing Docusign values of "
-                                                + (username == null ? "username, " : "")
-                                                + (password == null ? "password, " : "")
-                                                + (integratorKey == null ? "IntegratorKey, " : "")
-                                                + (baseUrl == null ? "environment, " : ""));
-
-
-            RestSettings.Instance.IntegratorKey = integratorKey;
-
-
-            var template = new DocuSign.Integrations.Client.Template
+            var curDocuSignTemplate = new DocuSignTemplate
             {
-                Login = new DocuSign.Integrations.Client.Account
-                {
-                    Email = username,
-                    ApiPassword = password,
-                    BaseUrl = baseUrl
-                }
+                Login = _docuSignPackager.LoginAsDockyardService()
             };
 
-
-            var templateDetails = template.GetTemplate(templateId);
+            var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
             foreach (var signer in templateDetails["recipients"]["signers"])
             {
                 if (signer["tabs"]["textTabs"] != null)
@@ -172,12 +142,11 @@ namespace Data.Wrappers
                     yield return CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString());
                 }
             }
-
         }
 
         private EnvelopeDataDTO CreateEnvelopeData(dynamic tab, string value)
         {
-            return new EnvelopeDataDTO()
+            return new EnvelopeDataDTO
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,

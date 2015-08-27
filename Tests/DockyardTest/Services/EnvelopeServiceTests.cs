@@ -49,18 +49,15 @@ namespace DockyardTest.Services
             //Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.
         }
 
-        [Test,Ignore] //use a mock for this instead of actually connecting 
+        [Test] //use a mock for this instead of actually connecting 
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData_Using_TemplateId()
         {
-
             RestSettings.Instance.RestTracing = true;
 
-            var envelopeDatas = (new Data.Wrappers.DocuSignEnvelope())
-                                .GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
+            var envelopeDatas = (new DocuSignEnvelope()).GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
 
             Assert.IsNotNull(envelopeDatas);
         }
-
     }
 }
