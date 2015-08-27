@@ -52,9 +52,9 @@ namespace Web.Controllers
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var account = uow.UserRepository.GetByKey(userId);
+                var curDockyardAccount = uow.UserRepository.GetByKey(userId);
                 var availableActions = _action
-                    .GetAvailableActions(account)
+                    .GetAvailableActions(curDockyardAccount)
                     .Select(x => Mapper.Map<ActionRegistrationDTO>(x))
                     .ToList();
             

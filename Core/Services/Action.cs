@@ -48,11 +48,11 @@ namespace Core.Services
         public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            var result = plugins
+            var curActions = plugins
                 .SelectMany(p => p.AvailableActions)
                 .OrderBy(s => s.ActionType);
 
-            return result;
+            return curActions;
         }
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
