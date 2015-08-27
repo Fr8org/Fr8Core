@@ -394,12 +394,12 @@ module dockyard.controllers {
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
 
             //Render Pane Configure Mapping 
-            var pcmEventArgs = new pcm.RenderEventArgs(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId);
+            //var pcmEventArgs = new pcm.RenderEventArgs(
+            //    eventArgs.processNodeTemplateId,
+            //    eventArgs.id,
+            //    eventArgs.isTempId);
 
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
+            //this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
         }
          
         /*
