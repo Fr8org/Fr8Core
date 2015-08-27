@@ -13,6 +13,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
+using Moq;
 
 namespace DockyardTest.Services
 {
