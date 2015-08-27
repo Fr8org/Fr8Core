@@ -1,14 +1,14 @@
-﻿using System;
-using System.IO;
-using Core.Services;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Wrappers;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using StructureMap;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
+﻿﻿using System;
+﻿using System.IO;
+﻿using Core.Services;
+﻿using Data.Entities;
+using Data.States;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
+﻿using NUnit.Framework;
+﻿using StructureMap;
+﻿using UtilitiesTesting;
+﻿using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Integration
 {
@@ -16,7 +16,7 @@ namespace DockyardTest.Integration
     public class RunTimeTests : BaseTest
     {
 
-        [Test,Ignore]
+        [Test]
         [Category("IntegrationTests")]
         public async void ITest_CanProcessHealthDemo()
         {
@@ -27,7 +27,7 @@ namespace DockyardTest.Integration
             {
                 //create a registered account
                 DockyardAccount _account = new DockyardAccount();              
-                var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User"); 
+                var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User");
                 uow.UserRepository.Add(registeredAccount);
                 uow.SaveChanges();
 
@@ -37,7 +37,7 @@ namespace DockyardTest.Integration
 
                 var xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, healthPayloadPath);
                 DocuSignNotification _docuSignNotification = ObjectFactory.GetInstance<DocuSignNotification>();
-                _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
+               // _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
 
 
             }
@@ -62,19 +62,24 @@ namespace DockyardTest.Integration
             healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
             uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
 
+            //specify that this process node is the starting process node of the template
+            healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+
             //add criteria to processnode
             var healthCriteria = FixtureData.TestCriteriaHealthDemo();
-            healthCriteria.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            healthCriteria.ProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
             uow.CriteriaRepository.Add(healthCriteria);
 
             //add actionlist to processnode
             var healthActionList = FixtureData.TestActionListHealth1();
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            
             uow.ActionListRepository.Add(healthActionList);
 
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
             healthWriteAction.ActionListId = healthActionList.Id;
+            healthActionList.CurrentAction = healthWriteAction;
 
             //add field mappings to write action
             var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
@@ -119,4 +124,3 @@ namespace DockyardTest.Integration
 //serverConnection = new ServerConnection(connection);
 //server = new Server(serverConnection);
 //server.ConnectionContext.ExecuteNonQuery("CREATE TABLE New (NewId int)");
-         

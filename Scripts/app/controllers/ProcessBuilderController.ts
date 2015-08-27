@@ -28,7 +28,9 @@ module dockyard.controllers {
             'LocalIdentityGenerator',
             '$state',
             'ActionService',
-            '$q'
+            '$q',
+            '$http',
+            'urlPrefix'
         ];
 
         private _scope: interfaces.IProcessBuilderScope;
@@ -40,7 +42,9 @@ module dockyard.controllers {
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
-            private $q: ng.IQService
+            private $q: ng.IQService,
+            private $http: ng.IHttpService,
+            private urlPrefix: string
         ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -55,7 +59,7 @@ module dockyard.controllers {
             this._scope.curNodeIsTempId = false;
 
             this._scope.Cancel = angular.bind(this, this.Cancel);
-            this._scope.Save = angular.bind(this, this.SaveAction);
+            this._scope.Save = angular.bind(this, this.onSave);
 
             this.setupMessageProcessing();
         }
@@ -92,8 +96,11 @@ module dockyard.controllers {
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
-            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
-                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
+            // TODO: do we need this any more?
+            // this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
+            //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
+            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionRemoved],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionRemovedEventArgs) => this.PaneSelectAction_ActionRemoved(eventArgs));
 
             //Process Select Template Pane events
             this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
@@ -192,30 +199,6 @@ module dockyard.controllers {
         }
 
         /*
-            Handles message 'PaneDefineCriteria_CriteriaUpdating'
-        */
-        /*
-        private PaneDefineCriteria_ProcessNodeTemplateUpdated(eventArgs: pdc.ProcessNodeTemplateRemovingEventArgs) {
-            console.log('ProcessBuilderController::PaneDefineCriteria_CriteriaRemoving', eventArgs);
-
-            // Tell Workflow Designer to remove criteria.
-            // this._scope.$broadcast(
-            //     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_CriteriaRemoved],
-            //     new pwd.CriteriaRemovedEventArgs(eventArgs.criteriaId)
-            //     );
-
-            //Added by Alexei Avrutin
-            //An event to enable consistency with Design Document (part 3, rule 4)
-            var eArgs = new pwd.ProcessNodeTemplateNameUpdatedEventArgs(eventArgs.processNodeTemplateId)
-
-            this._scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateCriteriaName], eArgs);
-
-            // Hide Define Criteria pane.
-            this._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
-        }
-        */  
-        /*
             Handles message 'WorkflowDesignerPane_CriteriaAdding'
         */
         private PaneWorkflowDesigner_ProcessNodeTemplateAdding(eventArgs: pwd.ProcessNodeTemplateAddingEventArgs) {
@@ -238,29 +221,36 @@ module dockyard.controllers {
             console.log("ProcessBuilderController::PaneWorkflowDesigner_CriteriaSelected", eventArgs);
             var self = this;
             this.saveProcessNodeTemplate(function () {
-                self.SaveAction();
+                self.SaveAction(function () {
+                    if (self._scope.currentAction != null) {
+                        self._scope.$broadcast(
+                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                            );
+                    }
 
-                self._scope.currentAction = null; // the prev action is apparently unselected
+                    self._scope.currentAction = null; // the prev action is apparently unselected
 
-                // Set current Criteria to currently selected criteria.
-                self._scope.curNodeId = eventArgs.id;
-                self._scope.curNodeIsTempId = eventArgs.isTempId;
+                    // Set current Criteria to currently selected criteria.
+                    self._scope.curNodeId = eventArgs.id;
+                    self._scope.curNodeIsTempId = eventArgs.isTempId;
 
-                var scope = self._scope;
-                // Hide Select Template Pane
-                scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
+                    var scope = self._scope;
+                    // Hide Select Template Pane
+                    scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
 
-                // Show Define Criteria Pane
-                scope.$broadcast(
-                    pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Render],
-                    new pdc.RenderEventArgs(scope.fields, self._scope.processTemplateId, eventArgs.id, eventArgs.isTempId)
-                    );
+                    // Show Define Criteria Pane
+                    scope.$broadcast(
+                        pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Render],
+                        new pdc.RenderEventArgs(scope.fields, self._scope.processTemplateId, eventArgs.id, eventArgs.isTempId)
+                        );
 
-                // Hide Select Action Pane
-                scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                    // Hide Select Action Pane
+                    scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
                 
-                // Hide Configure Action Pane
-                scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+                    // Hide Configure Action Pane
+                    scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+                });
             });
         }
 
@@ -275,20 +265,34 @@ module dockyard.controllers {
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
 
-                // Create action object.
-                var action = new model.Action(
-                    id,
-                    true,
-                    args == null ? eventArgs.criteriaId : args.id
-                    );
+                var processNodeTemplateId = (args ? args.id : eventArgs.processNodeTemplateId);
+                var url = self.urlPrefix
+                    + '/actionList/byProcessNodeTemplate/?id=' + processNodeTemplateId.toString()
+                    + '&actionListType=' + eventArgs.actionListType.toString();
 
-                action.userLabel = 'New Action #' + Math.abs(id).toString();
+                self.$http.get(url)
+                    .then(function (resp) {
+                        var data = <any>resp.data;
+                        var actionListId = data.id;
 
-                // Add action to Workflow Designer.
-                self._scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdded],
-                    new pwd.ActionAddedEventArgs(action.criteriaId, action.clone())
-                    );
+                        // Create action object.
+                        var action = new model.Action(
+                            processNodeTemplateId,
+                            id,
+                            true,
+                            actionListId
+                            );
+
+                        action.userLabel = 'New Action #' + Math.abs(id).toString();
+
+                        self._scope.currentAction = action.toActionVM();
+
+                        // Add action to Workflow Designer.
+                        self._scope.$broadcast(
+                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdded],
+                            new pwd.ActionAddedEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
+                            );
+                    });
             });
         }
 
@@ -296,27 +300,47 @@ module dockyard.controllers {
             Handles message 'WorkflowDesignerPane_ActionSelecting'
         */
         private PaneWorkflowDesigner_ActionSelecting(eventArgs: pwd.ActionSelectingEventArgs) {
-            console.log("ProcessBuilderController: action selected");
+            console.log("ProcessBuilderController: action selected", eventArgs);
 
             var self = this;
-            this.saveProcessNodeTemplate(function () {
-                self.SaveAction();
 
-                //Render Select Action Pane
-                var eArgs = new psa.RenderEventArgs(
-                    eventArgs.criteriaId,
-                    eventArgs.actionId,
-                    false); // eventArgs.isTempId,
+            self.saveProcessNodeTemplate(function () {
+                var originalId = null;
+                if (self._scope.currentAction) {
+                    originalId = self._scope.currentAction.id;
+                }
 
-                self._scope.currentAction = self.ActionService.get({ id: eventArgs.criteriaId });
+                self.SaveAction(function (savedAction: any) {
+                    if (self._scope.currentAction != null) {
+                        self._scope.$broadcast(
+                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                            );
+                    }
 
-                var scope = self._scope;
-                scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
-                scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
-                scope.$broadcast(
-                    psa.MessageType[psa.MessageType.PaneSelectAction_Render],
-                    eArgs
-                    );
+                    var wasTemporaryAction = (originalId == eventArgs.actionId);
+
+                    var actionId = wasTemporaryAction && savedAction
+                        ? savedAction[0].id
+                        : eventArgs.actionId;
+
+                    var getData = { id: actionId };
+                    self._scope.currentAction = self.ActionService.get(getData);
+
+                    //Render Select Action Pane
+                    var eArgs = new psa.RenderEventArgs(
+                        eventArgs.processNodeTemplateId,
+                        actionId,
+                        false,
+                        eventArgs.actionListId);
+
+                    self._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
+                    self._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
+                    self._scope.$broadcast(
+                        psa.MessageType[psa.MessageType.PaneSelectAction_Render],
+                        eArgs
+                        );
+                });
             });
         }
 
@@ -325,24 +349,31 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_TemplateSelecting(eventArgs: pwd.TemplateSelectingEventArgs) {
             console.log("ProcessBuilderController: template selected");
-            var scope = this._scope;
-            this.SaveAction();
-            this._scope.currentAction = null; // action is apparently unselected
-            //this._scope.$apply(function () {
 
             var scope = this._scope;
-            //Show Select Template Pane
-            var eArgs = new directives.paneSelectTemplate.RenderEventArgs();
-            scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
+            this.SaveAction(function () {
+                if (scope.currentAction != null) {
+                    scope.$broadcast(
+                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.id, scope.currentAction.userLabel)
+                        );
+                }
 
-            //Hide Define Criteria Pane
-            scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
+                scope.currentAction = null; // action is apparently unselected
 
-            //Hide Select Action Pane
-            scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                //Show Select Template Pane
+                var eArgs = new directives.paneSelectTemplate.RenderEventArgs();
+                scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
+
+                //Hide Define Criteria Pane
+                scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
+
+                //Hide Select Action Pane
+                scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
                 
-            //Hide Configure Action Pane
-            scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+                //Hide Configure Action Pane
+                scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+            });
         }
 
         /*
@@ -350,17 +381,14 @@ module dockyard.controllers {
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
             //Force update on Select Action Pane (FOR DEMO ONLY, NOT IN DESIGN DOCUMENT)
-            var eArgs = new directives.paneSelectAction.UpdateActionEventArgs(
-                eventArgs.criteriaId, eventArgs.actionId, eventArgs.isTempId);
-            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_UpdateAction], eArgs);
-            //Update Action on Designer
-            eArgs = new pwd.UpdateActionEventArgs(
+            var psaArgs = new psa.UpdateActionEventArgs(
                 eventArgs.criteriaId,
                 eventArgs.actionId,
-                eventArgs.isTempId,
-                null);
+                eventArgs.isTempId);
 
-            this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
+            this._scope.$broadcast(
+                psa.MessageType[psa.MessageType.PaneSelectAction_UpdateAction],
+                psaArgs);
         }
 
         /*
@@ -368,41 +396,98 @@ module dockyard.controllers {
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
             //Render Pane Configure Action 
-            var eArgs = new pca.RenderEventArgs(
-                eventArgs.criteriaId,
-                eventArgs.actionId,
-                eventArgs.isTempId); //is it a temporary id
+            var pcaEventArgs = new pca.RenderEventArgs(
+                eventArgs.processNodeTemplateId,
+                eventArgs.id,
+                eventArgs.isTempId,
+                eventArgs.actionListId);
                 
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
 
             //Render Pane Configure Mapping 
-            eArgs = new pcm.RenderEventArgs(
-                eventArgs.criteriaId,
-                eventArgs.actionId,
-                eventArgs.isTempId); //is it a temporary id
+            var pcmEventArgs = new pcm.RenderEventArgs(
+                eventArgs.processNodeTemplateId,
+                eventArgs.id,
+                eventArgs.isTempId);
 
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], eArgs);
+            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
         }
          
+        // TODO: do we need this?
+        // /*
+        //     Handles message 'PaneSelectAction_ActionUpdated'
+        // */
+        // private PaneSelectAction_ActionUpdated(eventArgs: psa.ActionUpdatedEventArgs) {
+        //     //Update Pane Workflow Designer
+        //     var eArgs = new pwd.ActionNameUpdatedEventArgs(
+        //         eventArgs.actionId,
+        //         eventArgs.actionName);
+        //     this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated], eArgs);
+        // }
+
         /*
-            Handles message 'PaneSelectAction_ActionUpdated'
+            Handles message 'PaneSelectAction_ActionRemoved'
         */
-        private PaneSelectAction_ActionUpdated(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            //Update Pane Workflow Designer
-            var eArgs = new pwd.UpdateActionEventArgs(
-                eventArgs.criteriaId,
-                eventArgs.actionId,
-                eventArgs.isTempId,
-                eventArgs.actionName);
-            this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateAction], eArgs);
+        private PaneSelectAction_ActionRemoved(eventArgs: psa.ActionRemovedEventArgs) {
+            this._scope.$broadcast(
+                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],
+                new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
+                );
         }
 
-        public SaveAction() {
+        private onSave() {
+            var self = this;
+
+            return this.SaveAction(function () {
+                if (self._scope.currentAction != null) {
+                    self._scope.$broadcast(
+                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                        );
+                }
+            });
+        }
+
+        public SaveAction(callback: (data: interfaces.IAction) => void) {
+            var self = this;
+
             //If an action is selected, save it
-            if (this._scope.currentAction != null) {
-                return this.ActionService.save({
-                    id: this._scope.currentAction.id
-                }, this._scope.currentAction, null, null).$promise;
+            if (self._scope.currentAction != null) {
+                debugger;
+
+                var promise = self.ActionService.save(
+                    {
+                        id: self._scope.currentAction.id
+                    },
+                    self._scope.currentAction,
+                    null,
+                    null
+                    ).$promise;
+
+                promise.then(function (data: any) {
+                    if (self._scope.currentAction.isTempId) {
+                        self._scope.$broadcast(
+                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
+                            new pwd.ActionTempIdReplacedEventArgs(self._scope.currentAction.id, data[0].id)
+                            );
+
+                        if (data) {
+                            self._scope.currentAction.id = data[0].Id;
+                            self._scope.currentAction.isTempId = false;
+                        }
+                    }
+
+                    if (callback) {
+                        callback(data);
+                    }
+                });
+
+                return promise;
+            }
+            else {
+                if (callback) {
+                    callback(null);
+                }
             }
         }
 
@@ -429,7 +514,7 @@ module dockyard.controllers {
                 {
                     actionType: "test action type",
                     configurationSettings: "",
-                    criteriaId: 1,
+                    processNodeTemplateId: 1,
                     id: 1,
                     isTempId: false,
                     fieldMappingSettings: "",

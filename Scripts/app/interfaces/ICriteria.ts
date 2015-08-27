@@ -15,7 +15,7 @@ module dockyard.interfaces {
     export interface IAction {
         id: number,
         isTempId: boolean, 
-        criteriaId: number,
+        processNodeTemplateId: number,
         userLabel: string,
         actionListId: number,
         actionType: string;

@@ -120,8 +120,7 @@ namespace Data.Wrappers
             });
             return payload;
         }
-
-        public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
+public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
             var curDocuSignTemplate = new DocuSignTemplate
             {

@@ -60,7 +60,7 @@
 
             var criteriaDescr = {
                 id: criteria.id,
-                isTempId: !!criteria.isTempId,
+                isTempId: criteria.isTempId || false,
                 data: criteria,
                 actions: [],
                 criteriaNode: null,
@@ -86,7 +86,7 @@
             criteriaDescr.addActionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('addActionNode:click', e, criteriaDescr.id);
+                    this.fire('addActionNode:click', e, criteriaDescr.id, ns.ActionType.immediate);
                 }, this)
             );
 
@@ -186,9 +186,13 @@
         // Parameters:
         //     criteriaId - id of criteria
         //     action - object to define action; minimum required set of properties: { id: 'someId' }
-        addAction: function (criteriaId, action) {
+        addAction: function (criteriaId, action, actionType) {
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
+            }
+
+            if (actionType !== ns.ActionType.immediate) {
+                throw 'Only immediate action types are supported so far.';
             }
 
             var criteria = this._findCriteria(criteriaId);
@@ -196,6 +200,8 @@
 
             var actionDescr = {
                 id: action.id,
+                isTempId: action.isTempId || false,
+                actionType: actionType,
                 data: action,
                 actionNode: null
             };
@@ -207,7 +213,7 @@
             actionDescr.actionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('actionNode:click', e, criteria.id, action.id);
+                    this.fire('actionNode:click', e, criteria.id, actionDescr.id, actionDescr.actionType);
                 }, this)
             );
 
@@ -219,23 +225,77 @@
 
         // Remove action from specified criteria.
         // Parameters:
-        //     criteriaId - id of criteria.
         //     actionId - id of action.
-        removeAction: function (criteriaId, actionId) {
-            var criteria = this._findCriteria(criteriaId);
-            if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
+        //     isTempId - flag.
+        removeAction: function (actionId, isTempId) {
+            debugger;
 
-            var i;
-            for (i = 0; i < criteria.actions.length; ++i) {
-                if (criteria.actions[i].id === actionId) {
-                    this._canvas.remove(criteria.actions[i].actionNode);
-                    criteria.actions.splice(i, 1);
+            var i, j, criteria, foundFlag;
+            for (i = 0; i < this._criteria.length; ++i) {
+                var criteria = this._criteria[i];
 
+                foundFlag = false;
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    debugger;
+
+                    if (criteria.actions[j].id == actionId
+                        && criteria.actions[j].isTempId == isTempId) {
+
+                        this._canvas.remove(criteria.actions[j].actionNode);
+                        criteria.actions.splice(j, 1);
+
+                        foundFlag = true;
+                        break;
+                    }
+                }
+
+                if (foundFlag) {
                     break;
                 }
             }
 
             this.relayout();
+        },
+
+        // Replace temporary ID with global ID.
+        replaceActionTempId: function (tempId, id) {
+            debugger;
+
+            var i, j, criteria;
+            for (i = 0; i < this._criteria.length; ++i) {
+                criteria = this._criteria[i];
+
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    if (criteria.actions[j].id === tempId
+                        && criteria.actions[j].isTempId) {
+                        criteria.actions[j].id = id;
+                        criteria.actions[j].isTempId = false;
+
+                        return;
+                    }
+                }
+            }
+        },
+
+        // Rename action with global ID.
+        renameAction: function (id, text) {
+            debugger;
+
+            var i, j, criteria;
+            for (i = 0; i < this._criteria.length; ++i) {
+                criteria = this._criteria[i];
+
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    if (criteria.actions[j].id == id
+                        && !criteria.actions[j].isTempId) {
+
+                        criteria.actions[j].actionNode.setText(text);
+
+                        this.relayout();
+                        return;
+                    }
+                }
+            }
         },
 
         // Relayout StartNode.

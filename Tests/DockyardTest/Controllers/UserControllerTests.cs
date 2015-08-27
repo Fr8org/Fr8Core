@@ -78,7 +78,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(firstRoleName, firstRole);
         }
 
-        [Test,Ignore]
+        [Test]
         public void TestUpdateUserBasicDetails()
         {
             CreateUser("rjrudman@gmail.com");
@@ -104,7 +104,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual("Rob", firstUserModel.FirstName);
         }
 
-        [Test,Ignore]
+        [Test]
         public void TestUpdateUserRoleAdd()
         {
             const string roleName = "Customer";
@@ -134,7 +134,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(roleName, firstRole);
         }
 
-        [Test,Ignore]
+        [Test]
         public void TestUpdateUserRoleRemove()
         {
             const string roleName = "Admin";
@@ -166,7 +166,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
         }
 
-        [Test,Ignore]
+        [Test]
         public void TestUpdateUserRoleAddAndRemove()
         {
             const string firstRoleName = Roles.Admin;

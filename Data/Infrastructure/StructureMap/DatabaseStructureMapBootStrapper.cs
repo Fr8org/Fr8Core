@@ -21,7 +21,8 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetRolesDO>().Use<AspNetRolesDO>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));                
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
+
             }
         }
 

@@ -33,15 +33,29 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
-            Mapper.CreateMap<ActionDO, ActionPayloadDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
-                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
-                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
-                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration))
-                .ForMember(a => a.PayloadMappings, opts => opts.ResolveUsing(ad => ad.PayloadMappings))
-                .ForMember(a => a.EnvelopeId, opts => opts.ResolveUsing(ad => ad.ActionList.Process.EnvelopeId));
+            Mapper.CreateMap<ActionRegistrationDO, ActionRegistrationDTO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.ActionType, opts => opts.ResolveUsing(x => x.ActionType))
+                .ForMember(x => x.ParentPluginRegistration, opts => opts.ResolveUsing(x => x.ParentPluginRegistration))
+                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 
+            Mapper.CreateMap<ActionRegistrationDTO, ActionRegistrationDO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.ActionType, opts => opts.ResolveUsing(x => x.ActionType))
+                .ForMember(x => x.ParentPluginRegistration, opts => opts.ResolveUsing(x => x.ParentPluginRegistration))
+                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
+
+            Mapper.CreateMap<ActionDO, ActionPayloadDTO>()
+                .ForMember(dest => dest.Id, opts => opts.ResolveUsing(src => src.Id))
+                .ForMember(dest => dest.UserLabel, opts => opts.ResolveUsing(src => src.UserLabel))
+                .ForMember(dest => dest.ActionType, opts => opts.ResolveUsing(src => src.ActionType))
+                .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ActionListId))
+                .ForMember(dest => dest.ConfigurationSettings,
+                    opts => opts.ResolveUsing(src => src.ConfigurationSettings))
+                .ForMember(dest => dest.ParentPluginRegistration,
+                    opts => opts.ResolveUsing(src => src.ParentPluginRegistration))
+                .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());
+              
 
             Mapper.CreateMap<ActionPayloadDTO, ActionDO>();
 
@@ -71,6 +85,19 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
+        }
+    }
+
+    internal class PayloadMappingResolver : ValueResolver<ActionDO, PayloadMappingsDTO>
+    {
+        protected override PayloadMappingsDTO ResolveCore(ActionDO source)
+        {
+            if (string.IsNullOrEmpty(source.PayloadMappings))
+                return null;
+
+            var payloadMappingDto = new PayloadMappingsDTO();
+            payloadMappingDto.Deserialize(source.PayloadMappings);
+            return payloadMappingDto;
         }
     }
 }

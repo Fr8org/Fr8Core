@@ -94,6 +94,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
             data: { pageTitle: 'Process Builder', pageSubTitle: 'Configure your process here' },
+        })
+
+        .state('showUsageReport', {
+            url: "/showUsageReport",
+            templateUrl: "/Report/Index?type=usage",
+            data: { pageTitle: '', pageSubTitle: '' },
         });
 }]);
 

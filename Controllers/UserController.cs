@@ -173,7 +173,8 @@ namespace Web.Controllers
         [DockyardAuthorize(Roles = Roles.Admin)]
         public ActionResult ProcessAddUser(UserVM curCreateUserVM)
         {
-            DockyardAccountDO submittedDockyardAccountData = _mappingEngine.Map<DockyardAccountDO>(curCreateUserVM);
+            DockyardAccountDO submittedDockyardAccountData = new DockyardAccountDO();
+            Mapper.Map(curCreateUserVM, submittedDockyardAccountData);
             string userPassword = curCreateUserVM.NewPassword;
             bool sendConfirmation = curCreateUserVM.SendMail;
             string displayMessage;
