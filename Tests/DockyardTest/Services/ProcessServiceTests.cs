@@ -15,6 +15,8 @@ using Moq;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 
+using File = System.IO.File;
+
 namespace DockyardTest.Services
 {
 	[TestFixture]

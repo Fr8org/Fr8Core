@@ -1,13 +1,10 @@
-﻿
-using System;
-using System.Configuration;
+﻿using System;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
 
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Auth;
 using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Data.Repositories
@@ -19,20 +16,18 @@ namespace Data.Repositories
             
         }
 
-        /// <see cref="IFileRepository.SaveRemoteFile"/>
-        public string SaveRemoteFile(FileStream remoteFile, string fileName)
+        public string SaveRemoteFile(FileStream curRemoteFile, string curFileName)
         {
             var blobContainer = GetDefaultBlobContainer();
-            CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(fileName);
-            blockBlob.UploadFromStream(remoteFile);
+            CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(curFileName);
+            blockBlob.UploadFromStream(curRemoteFile);
 
             return blockBlob.Uri.AbsoluteUri;
         }
 
-        /// <see cref="IFileRepository.GetRemoteFile"/>
-        public byte[] GetRemoteFile(string blobUrl)
+        public byte[] GetRemoteFile(string curBlobUrl)
         {
-            var curBlob = new CloudBlockBlob(new Uri(blobUrl), GetDefaultBlobContainer().ServiceClient.Credentials);
+            var curBlob = new CloudBlockBlob(new Uri(curBlobUrl), GetDefaultBlobContainer().ServiceClient.Credentials);
             curBlob.FetchAttributes();
 
             byte[] content = new byte[curBlob.Properties.Length];
@@ -41,20 +36,21 @@ namespace Data.Repositories
             return content;
         }
 
-        /// <see cref="IFileRepository.DeleteRemoteFile"/>
-        public bool DeleteRemoteFile(string blobUrl)
+        public bool DeleteRemoteFile(string curBlobUrl)
         {
-            var curBlob = new CloudBlockBlob(new Uri(blobUrl), GetDefaultBlobContainer().ServiceClient.Credentials);
+            var curBlob = new CloudBlockBlob(new Uri(curBlobUrl), GetDefaultBlobContainer().ServiceClient.Credentials);
             return curBlob.DeleteIfExists();
         }
 
         private CloudBlobContainer GetDefaultBlobContainer()
         {
-            const string storageConnectionString = "PrimaryFileStorageConnectionString";
-            const string containerName = "container1";
+            const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";
+            const string defaultAzureStorageContainer = "DefaultAzureStorageContainer";
+
+            string containerName = CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
 
             CloudStorageAccount storageAccount =
-                CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(storageConnectionString));
+                CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
 
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             
@@ -62,33 +58,5 @@ namespace Data.Repositories
 
             return container;
         }
-    }
-
-    /// <summary>
-    /// Repository for FileDO
-    /// </summary>
-    public interface IFileRepository : IGenericRepository<FileDO>
-    {
-        /// <summary>
-        /// Saves a new BLOB in Azure Storage
-        /// </summary>
-        /// <param name="remoteFile">File Stream to be stored in remote Azure Storage</param>
-        /// <param name="fileName">Name of the BLOB</param>
-        /// <returns>Azure Storage URL of the saved file</returns>
-        string SaveRemoteFile(FileStream remoteFile, string fileName);
-
-        /// <summary>
-        /// Retrieves a file stream from the Azure Storage
-        /// </summary>
-        /// <param name="blobUrl">URL of the existing BLOB</param>
-        /// <returns>Bytes of the Blob File</returns>
-        byte[] GetRemoteFile(string blobUrl);
-
-        /// <summary>
-        /// Deletes BLOB in Azure Storage for the given URL
-        /// </summary>
-        /// <param name="blobUrl">URL of the BLOB to be deleted</param>
-        /// <returns>True if the BLOB is deleted, False otherwise</returns>
-        bool DeleteRemoteFile(string blobUrl);
     }
 }

@@ -8,26 +8,28 @@ using StructureMap;
 namespace Core.Services
 {
     /// <summary>
-    /// File Archive service
+    /// File service
     /// </summary>
-    public class FileArchive : IFileArchive
+    public class File : IFile
     {
-        /// <see cref="IFileArchive.WriteFile"/>
-        public void WriteFile(FileDO fileDo, FileStream file, string fileName)
+        /// <summary>
+        /// Stores the file into file repository
+        /// </summary>
+        /// <remarks>WARNING: THIS METHOD IS NOT TRANSACTIONAL. It is possible to successfuly save to the remote store and then have the FileDO update fail.</remarks>
+        public void Store(FileDO curFileDO, FileStream curFile, string curFileName)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string remoteFileUrl = uow.FileRepository.SaveRemoteFile(file, fileName);
+                string remoteFileUrl = uow.FileRepository.SaveRemoteFile(curFile, curFileName);
 
-                fileDo.CloudStorageUrl = remoteFileUrl;
+                curFileDO.CloudStorageUrl = remoteFileUrl;
 
-                uow.FileRepository.Add(fileDo);
+                uow.FileRepository.Add(curFileDO);
                 uow.SaveChanges();
             }
         }
 
-        /// <see cref="IFileArchive.ReadFile"/>
-        public byte[] ReadFile(FileDO curFile)
+        public byte[] Retrieve(FileDO curFile)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -35,8 +37,7 @@ namespace Core.Services
             }
         }
 
-        /// <see cref="IFileArchive.DeleteFile"/>
-        public bool DeleteFile(FileDO curFile)
+        public bool Delete(FileDO curFile)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

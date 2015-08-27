@@ -236,7 +236,7 @@
     <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\EnvelopeServiceTests.cs" />
     <Compile Include="Services\IPluginClient.cs" />
-    <Compile Include="Services\FileArchiveTests.cs" />
+    <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\ProcessNodeTemplateTests.cs" />

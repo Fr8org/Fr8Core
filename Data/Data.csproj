@@ -226,6 +226,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Migrations\201508252259417_InitialMigration.cs" />
     <Compile Include="Migrations\201508252259417_InitialMigration.Designer.cs">
       <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>

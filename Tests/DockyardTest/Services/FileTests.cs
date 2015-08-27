@@ -12,9 +12,9 @@ namespace DockyardTest.Services
 {
     [TestFixture]
     [Category("FileArchive")]
-    public class FileArchiveTests : BaseTest
+    public class FileTests : BaseTest
     {
-        private IFileArchive _fileArchive;
+        private IFile _file;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
 
@@ -23,71 +23,71 @@ namespace DockyardTest.Services
         {
             base.SetUp();
 
-            _fileArchive = ObjectFactory.GetInstance<IFileArchive>();
+            _file = ObjectFactory.GetInstance<IFile>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
         }
 
         [Test]
-        public void FileArchive_WriteFile_CanWriteFile()
+        public void File_Store_CanStoreFile()
         {
             //Arrange
-            FileDO curFileDo;
+            FileDO curFileDO;
             
             //Act
             WriteRemoteFile();
-            curFileDo = _uow.FileRepository.GetByKey(0);
+            curFileDO = _uow.FileRepository.GetByKey(0);
 
             //Assert
-            Assert.IsNotNull(curFileDo, "File is not uploaded to Azure Storage. The Files table is empty.");
-            Assert.IsNotNullOrEmpty(curFileDo.CloudStorageUrl, "File is not uploaded to Azure Storage. The Cloud URL is empty.");
-            Assert.IsTrue(curFileDo.CloudStorageUrl.EndsWith("small_pdf_file.pdf"), "File is not uploaded to Azure Storage. The BLOB names are not equal");
+            Assert.IsNotNull(curFileDO, "File is not uploaded to Azure Storage. The Files table is empty.");
+            Assert.IsNotNullOrEmpty(curFileDO.CloudStorageUrl, "File is not uploaded to Azure Storage. The Cloud URL is empty.");
+            Assert.IsTrue(curFileDO.CloudStorageUrl.EndsWith("small_pdf_file.pdf"), "File is not uploaded to Azure Storage. The BLOB names are not equal");
 
-            _uow.FileRepository.Remove(curFileDo);
+            _uow.FileRepository.Remove(curFileDO);
             _uow.SaveChanges();
         }
 
         [Test]
-        public void FileArchive_ReadFile_CanReadFile()
+        public void File_Retrieve_CanRetrieveFile()
         {
             //Arrange
             WriteRemoteFile();
-            FileDO curFileDo = _uow.FileRepository.GetByKey(0);
+            FileDO curFileDO = _uow.FileRepository.GetByKey(0);
 
             //Act
-            var curFile = _fileArchive.ReadFile(curFileDo);
+            var curFile = _file.Retrieve(curFileDO);
 
             //Assert
             Assert.IsNotNull(curFile, "File is not uploaded. Read attempt is failed.");
             Assert.IsTrue(curFile.Length>0, "File is not retireved properly. Read attempty is failed.");
 
-            _uow.FileRepository.Remove(curFileDo);
+            _uow.FileRepository.Remove(curFileDO);
             _uow.SaveChanges();
         }
 
         [Test]
-        public void FileArchive_DeleteFile_CanDeleteFile()
+        public void File_Delete_CanDeleteFile()
         {
             //Arrange
             WriteRemoteFile();
-            FileDO curFileDo = _uow.FileRepository.GetByKey(0);
+            FileDO curFileDO = _uow.FileRepository.GetByKey(0);
 
             //Act
-            bool isFileDeleted = _fileArchive.DeleteFile(curFileDo);
+            bool isFileDeleted = _file.Delete(curFileDO);
 
             //Assert
             Assert.IsTrue(isFileDeleted);
-            curFileDo = _uow.FileRepository.GetByKey(curFileDo.Id);
-            Assert.IsNull(curFileDo);
+            curFileDO = _uow.FileRepository.GetByKey(curFileDO.Id);
+            Assert.IsNull(curFileDO);
         }
 
         private void WriteRemoteFile()
         {
-            FileDO curFileDo = _fixtureData.TestFile1();
+            FileDO curFileDO = _fixtureData.TestFile1();
             FileStream curBlobFile = new FileStream(FixtureData.TestRealPdfFile1(), FileMode.Open);
             string curNameOfBlob = "small_pdf_file.pdf";
 
-            _fileArchive.WriteFile(curFileDo, curBlobFile, curNameOfBlob);
+            _file.Store(curFileDO, curBlobFile, curNameOfBlob);
 
             curBlobFile.Close();
         }
