@@ -85,8 +85,8 @@ namespace Core.Services
                             uow.ActionListRepository.Attach(curActionListDO);
                             uow.SaveChanges();
 
-                            int maxOrdering = curActionListDO.Actions.Select(o => o.Ordering).Max();
-                            for (int i = 1; i < maxOrdering; i++)
+                            var actionOrdering = curActionListDO.Actions.OrderBy(o => o.Ordering).Select(s => s.Ordering);
+                            foreach (var order in actionOrdering)
                             {
                                 //if return string is "completed", it sets the CurrentAction to the next Action in the list
                                 //if not complete set actionlistdo to error
@@ -104,7 +104,6 @@ namespace Core.Services
                                     throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, curActionListDO.CurrentAction.ActionState));
                                 }
                             }
-
 
                             curActionListDO.ActionListState = ActionListState.Completed;
                             uow.ActionListRepository.Attach(curActionListDO);
