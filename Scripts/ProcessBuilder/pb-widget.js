@@ -259,6 +259,8 @@
 
         // Replace temporary ID with global ID.
         replaceActionTempId: function (tempId, id) {
+            debugger;
+
             var i, j, criteria;
             for (i = 0; i < this._criteria.length; ++i) {
                 criteria = this._criteria[i];
@@ -269,6 +271,27 @@
                         criteria.actions[j].id = id;
                         criteria.actions[j].isTempId = false;
 
+                        return;
+                    }
+                }
+            }
+        },
+
+        // Rename action with global ID.
+        renameAction: function (id, text) {
+            debugger;
+
+            var i, j, criteria;
+            for (i = 0; i < this._criteria.length; ++i) {
+                criteria = this._criteria[i];
+
+                for (j = 0; j < criteria.actions.length; ++j) {
+                    if (criteria.actions[j].id == id
+                        && !criteria.actions[j].isTempId) {
+
+                        criteria.actions[j].actionNode.setText(text);
+
+                        this.relayout();
                         return;
                     }
                 }

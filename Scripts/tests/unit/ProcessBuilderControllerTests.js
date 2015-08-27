@@ -65,23 +65,21 @@ var dockyard;
                     _$scope.$emit(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated], incomingEventArgs);
                     expect(_$state.data.pageSubTitle).toBe(templateName);
                 });
+                // TODO: do we need this ?
                 //Rule #6
-                it("When PaneSelectAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
-                    "should be received with correct args", function () {
-                    var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, true, "testaction"), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, true, "testaction");
-                    console.log(incomingEventArgs);
-                    console.log(outgoingEventArgs);
-                    _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated], incomingEventArgs);
-                    expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
-                });
+                // it("When PaneSelectAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
+                //     "should be received with correct args", () => {
+                //         var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, true, "testaction"),
+                //             outgoingEventArgs = new pwd.ActionNameUpdatedEventArgs(2, "testaction");
+                // 
+                //         console.log(incomingEventArgs);
+                //         console.log(outgoingEventArgs);
+                // 
+                //         _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated], incomingEventArgs);
+                // 
+                //         expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
+                //     });
                 //Rule #7
-                it("When PaneConfigureAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
-                    "should be received with correct args", function () {
-                    var incomingEventArgs = new pca.ActionUpdatedEventArgs(1, 2, true), outgoingEventArgs = new pwd.UpdateActionEventArgs(1, 2, true, null);
-                    _$scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated], incomingEventArgs);
-                    expect(_$scope.$broadcast).toHaveBeenCalledWith('PaneWorkflowDesigner_UpdateAction', outgoingEventArgs);
-                });
-                //Rule #8
                 it("When PaneSelectAction_ActionTypeSelected is sent, PaneConfigureMapping_Render " +
                     "and PaneConfigureAction_Render should be received with correct args", function () {
                     var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, 3, "myaction", "myaction"), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, 3);

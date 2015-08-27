@@ -5,7 +5,7 @@ module dockyard.interfaces {
         onActionChanged: (newValue: model.Action, oldValue: model.Action, scope: IPaneSelectActionScope) => void;
         action: model.Action;
         isVisible: boolean;
-        actionTypes: Array<{ name: string, value: string }>;
+        actionTypes: Array<model.ActionType>;
         ActionTypeSelected: () => void;
         RemoveAction: () => void;
     }

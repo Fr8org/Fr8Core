@@ -15,8 +15,7 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ActionAdded,
         PaneWorkflowDesigner_ActionSelecting,
         PaneWorkflowDesigner_ActionRemoved,
-        // PaneWorkflowDesigner_RefreshElement,
-        PaneWorkflowDesigner_UpdateAction,
+        PaneWorkflowDesigner_ActionNameUpdated,
         PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced,
         PaneWorkflowDesigner_ActionTempIdReplaced
     }
@@ -123,13 +122,12 @@ module dockyard.directives.paneWorkflowDesigner {
     export class TemplateSelectingEventArgs {
     }
 
-    export class UpdateActionEventArgs extends ActionEventArgsBase {
+    export class ActionNameUpdatedEventArgs {
+        public id: number;
         public userLabel: string;
-        public isTempId: boolean;
 
-        constructor(criteriaId: number, actionId: number, isTempId: boolean, userLabel: string) {
-            super(criteriaId, actionId);
-            this.isTempId = isTempId;
+        constructor(id: number, userLabel: string) {
+            this.id = id;
             this.userLabel = userLabel;
         }
     }
