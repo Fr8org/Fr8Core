@@ -65,6 +65,7 @@ namespace DockyardTest.Services
 		        var process = FixtureData.TestProcess1();
 		        process.EnvelopeId = "0aa561b8-b4d9-47e0-a615-2367971f876b";
 		        process.ProcessState = ProcessState.Executing;
+                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
 		        uow.ProcessRepository.Add(process);
 		        uow.SaveChanges();
 		    }
@@ -89,6 +90,8 @@ namespace DockyardTest.Services
 			//Arrange 
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
+                var processTemplate = FixtureData.TestProcessTemplate2();
+                uow.ProcessTemplateRepository.Add(processTemplate);
 				foreach (var p in FixtureData.GetProcesses())
 				{
 					uow.ProcessRepository.Add(p);
@@ -255,8 +258,10 @@ namespace DockyardTest.Services
             //setup the next transition node during lookup key
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
                 uow.ActionListRepository.Add(FixtureData.TestActionList6());
                 uow.SaveChanges();
+                
                 uow.ProcessRepository.Add(FixtureData.TestProcess1());
                 uow.SaveChanges();
                 uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());

@@ -63,7 +63,7 @@ module dockyard.directives.paneConfigureMapping {
 
                 var actionDto = {
                     ConfigurationSettings: "{'connection_string':'Data Source= s79ifqsqga.database.windows.net; database = demodb_health; User ID= alexeddodb; Password = Thales89'}",
-                    ParentPluginRegistration: "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core"
+                    ParentPluginRegistration: "AzureSqlServerPluginRegistration_v1"
                 }
 
                 $http.post(urlPrefix + "/actions/field_mapping_targets/", actionDto).then((returnedParams) => {
@@ -88,7 +88,7 @@ module dockyard.directives.paneConfigureMapping {
                 });
 
 
-                var actionWithProcess = { DocuSignTemplateId: "b5abd63a-c12c-4856-b9f4-989200e41a6f" };
+                var actionWithProcess = { DocuSignTemplateId: "58521204-58AF-4E65-8A77-4F4B51FEF626" };
 
 
                 $http.post(urlPrefix + "/actions/field_data_sources/", actionWithProcess )
@@ -135,7 +135,7 @@ module dockyard.directives.paneConfigureMapping {
 
             var onUpdate = () => { };
 
-            onRender();
+            //onRender();
 
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Hide], onHide);
