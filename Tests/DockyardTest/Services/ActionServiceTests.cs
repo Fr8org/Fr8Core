@@ -137,11 +137,13 @@ namespace DockyardTest.Services
         public void CanProcessDocuSignTemplate()
         {
             Core.Services.Action action = new Core.Services.Action();
+            var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
                 uow.ActionListRepository.Add(actionDo.ActionList);
                 uow.ProcessRepository.Add(actionDo.ActionList.Process);
@@ -170,9 +172,10 @@ namespace DockyardTest.Services
             Core.Services.Action action = new Core.Services.Action();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
-
+            var processTemplate = FixtureData.TestProcessTemplate2();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
                 uow.ActionListRepository.Add(actionDo.ActionList);
                 uow.ProcessRepository.Add(actionDo.ActionList.Process);
