@@ -3,9 +3,9 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class ExternalEventRegistrationRepository : GenericRepository<ExternalEventSubscriptionDO>, IExternalEventRegistrationRepository
+    public class ExternalEventSubscriptionRepository : GenericRepository<ExternalEventSubscriptionDO>, IExternalEventSubscriptionRepository
     {
-        public ExternalEventRegistrationRepository(IUnitOfWork uow)
+        public ExternalEventSubscriptionRepository(IUnitOfWork uow)
             : base(uow)
         {
 
@@ -17,7 +17,7 @@ namespace Data.Repositories
         }
     }
 
-    public interface IExternalEventRegistrationRepository : IGenericRepository<ExternalEventSubscriptionDO>
+    public interface IExternalEventSubscriptionRepository : IGenericRepository<ExternalEventSubscriptionDO>
     {
 
     }
