@@ -94,7 +94,7 @@ namespace DockyardTest.Integration
 
             //add a subscription to a specific template on the docusign platform
             var health_ExternalEventSubscription = FixtureData.TestExternalEventSubscription_medical_form_v1();
-            health_ExternalEventSubscription.ProcessTemplate = healthProcessTemplate;
+            health_ExternalEventSubscription.ExternalProcessTemplate = healthProcessTemplate;
             uow.ExternalEventRegistrationRepository.Add(health_ExternalEventSubscription);
 
             uow.SaveChanges();

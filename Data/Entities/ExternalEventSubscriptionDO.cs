@@ -15,14 +15,14 @@ namespace Data.Entities
 
         public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
 
-        [ForeignKey("ProcessTemplate")]
-        public int ProcessTemplateId { get; set; }
+        [ForeignKey("ExternalProcessTemplate")]
+        public int ExternalProcessTemplateId { get; set; }
 
-        public virtual ProcessTemplateDO ProcessTemplate { get; set; }
+        public virtual ProcessTemplateDO ExternalProcessTemplate { get; set; }
 
         public bool Equals(ExternalEventSubscriptionDO other)
         {
-            return ProcessTemplateId == other.ProcessTemplateId && ExternalEvent == other.ExternalEvent;
+            return ExternalProcessTemplateId == other.ExternalProcessTemplateId && ExternalEvent == other.ExternalEvent;
         }
     }
 }
