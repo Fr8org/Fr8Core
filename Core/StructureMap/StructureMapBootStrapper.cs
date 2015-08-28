@@ -104,6 +104,7 @@ namespace Core.StructureMap
                 For<IActionRegistration>().Use<ActionRegistration>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IActionList>().Use<ActionList>();
+                For<IFile>().Use<File>();
 
 
             }
@@ -162,6 +163,7 @@ namespace Core.StructureMap
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IActionList>().Use<ActionList>();
+                For<IFile>().Use<File>();
             }
         }
 
