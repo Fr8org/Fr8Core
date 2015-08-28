@@ -6,7 +6,7 @@ module dockyard.interfaces {
         action: model.Action;
         isVisible: boolean;
         currentAction: IActionVM;
-        configurationSettings: ng.resource.IResource<string>, string;
+        configurationSettings: ng.resource.IResource<model.ConfigurationSettings>;
         cancel: (event: ng.IAngularEvent) => void;
         save: (event: ng.IAngularEvent) => void;
     }

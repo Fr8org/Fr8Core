@@ -15,6 +15,7 @@
 /// <reference path="interfaces/iprocesstemplatesscope.ts" />
 /// <reference path="interfaces/iprocesstemplatevm.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
+/// <reference path="interfaces/iconfigurationsettings.ts" />
 
 /*
     MODEL
@@ -23,6 +24,7 @@
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
+/// <reference path="model/configurationsettings.ts" />
 
 /*
     SERVICES

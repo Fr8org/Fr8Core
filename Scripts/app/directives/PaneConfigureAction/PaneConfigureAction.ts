@@ -31,6 +31,11 @@ module dockyard.directives.paneConfigureAction {
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
+    enum FieldType {
+        textField,
+        checkboxField
+    }
+
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
@@ -41,6 +46,7 @@ module dockyard.directives.paneConfigureAction {
             currentAction: '='
         };
         public restrict = 'E';
+        private _$element: ng.IAugmentedJQuery;
 
         constructor(private $rootScope: interfaces.IAppRootScope, private ActionService: services.IActionService) {
             PaneConfigureAction.prototype.link = (
@@ -55,12 +61,18 @@ module dockyard.directives.paneConfigureAction {
                 $scope: interfaces.IPaneConfigureActionScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
+                this._$element = $element;
 
                 //Controller goes here
+                $scope.isVisible = true;
 
                 $scope.$watch<model.Action>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], this.onRender);
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
+
+                //TODO: test code, remove later
+                $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
+                $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
         }
 
@@ -80,10 +92,27 @@ module dockyard.directives.paneConfigureAction {
             //for now ignore actions which were not saved on the database
             if (eventArgs.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
-            scope.configurationSettings = this.ActionService.getConfigurationSettings({ actionRegistrationId: 1 }); //TODO supply real actionRegistrationId 
-            scope.configurationSettings.$promise.then((result) => {
+            //TODO supply real actionRegistrationId 
+            this.ActionService.getConfigurationSettings({ id: 1 }).$promise.then((result) => {
                 console.log(result);
+                this.renderFields(result);
             })
+        }
+
+        private renderFields(configurationSettings: model.ConfigurationSettings) {
+            debugger;
+            for (var field of configurationSettings.fields) {
+                switch (field.type) {
+                    case FieldType[FieldType.textField]:
+                        (<model.TextField>field).render(this._$element);
+                        break;
+                    case FieldType[FieldType.checkboxField]:
+                        (<model.CheckboxField>field).render(this._$element);
+                        break;
+                    default:
+                        Error("Unsupported field type: " + field.type);
+                }
+            }
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -100,35 +129,33 @@ module dockyard.directives.paneConfigureAction {
             return directive;
         }
     }
-    app.directive('paneConfigureAction', PaneConfigureAction.Factory());
 
     app.run([
         "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
             var configuration = {
-                "configurationSettings":
+                "fields":
                 [
                     {
-                        "textField": {
-                            "name": "connection_string",
-                            "required": true,
-                            "value": "",
-                            "fieldLabel": "SQL Connection String",
-                        }
+                        type: "textField",
+                        "name": "connection_string",
+                        "required": true,
+                        "value": "",
+                        "fieldLabel": "SQL Connection String",
                     },
                     {
-                        "checkboxField": {
-                            "name": "log_transactions",
-                            "selected": false,
-                            "fieldLabel": "Log All Transactions?"
-                        }
+                        type: "checkboxField",
+                        "name": "log_transactions",
+                        "selected": false,
+                        "fieldLabel": "Log All Transactions?"
                     }
                 ]
             };
 
             httpBackend
-                .whenGET(urlPrefix + "/action/configuration")
+                .whenGET("/apimock/Action/configuration/1")
                 .respond(configuration);
         }
     ]);
+    app.directive('paneConfigureAction', PaneConfigureAction.Factory());
 
 }

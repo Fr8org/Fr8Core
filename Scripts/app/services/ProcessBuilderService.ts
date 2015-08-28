@@ -6,7 +6,7 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        getConfigurationSettings: (actionRegistrationId: { actionRegistrationId: number }) => ng.resource.IResource<string>, string;
+        getConfigurationSettings: (actionRegistrationId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationSettingsVM>;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
@@ -20,7 +20,7 @@ module dockyard.services {
     ]);
 
     app.factory('DocuSignTriggerService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource('/apimocks/processtemplate/triggersettings')
+        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/triggersettings')
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
@@ -36,10 +36,10 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',
-                    url: urlPrefix + '/Action/configuration/?:curActionRegistrationId',
-                    params: {
-                        curActionRegistrationId: '@actionRegistrationId'
-                    }
+                    url: '/apimock/Action/configuration/:id'
+                },
+                'params': {
+                    id: 'id'
                 }
             })
     ]);
