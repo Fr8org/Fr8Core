@@ -95,7 +95,7 @@ namespace Web
 
             Logger.GetLogger().Warn("Dockyard  starting...");
             var docusign = new DocuSignPackager();
-            docusign.LoginAsDockyardService();
+            docusign.Login();
             ConfigureValidationEngine();
 
         }

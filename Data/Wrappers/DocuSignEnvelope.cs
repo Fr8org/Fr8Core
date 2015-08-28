@@ -31,7 +31,7 @@ namespace Data.Wrappers
                 CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
                 CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
             };
-            Login = _docuSignPackager.LoginAsDockyardService();
+            Login = _docuSignPackager.Login();
         }
 
 

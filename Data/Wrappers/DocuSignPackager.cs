@@ -14,7 +14,7 @@ namespace Data.Wrappers
             ConfigureDocuSignIntegration();
         }
 
-        public DocuSignAccount LoginAsDockyardService()
+        public DocuSignAccount Login()
         {
            var curDocuSignAccount = new DocuSignAccount
             {
