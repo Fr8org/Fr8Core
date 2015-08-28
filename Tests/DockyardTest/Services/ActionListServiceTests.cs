@@ -50,7 +50,10 @@ namespace DockyardTest.Services
             
             _actionList.Process(actionListDO);
 
-            Assert.AreEqual(ActionState.Completed, actionListDO.CurrentAction.ActionState);
+            ActionDO actionDO = new ActionDO();
+            if (actionListDO.CurrentActivity is ActionDO)
+                actionDO = (ActionDO)actionListDO.CurrentActivity;
+            Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
             Assert.AreEqual(ActionListState.Completed, actionListDO.ActionListState);
         }
 
@@ -67,8 +70,10 @@ namespace DockyardTest.Services
 
             _actionList.Process(actionListDO);
 
-
-            Assert.AreEqual(actionListDO.CurrentAction.Id, lastActionDO.Id);
+            ActionDO actionDO = new ActionDO();
+            if (actionListDO.CurrentActivity is ActionDO)
+                actionDO = (ActionDO)actionListDO.CurrentActivity;
+            Assert.AreEqual(actionDO.Id, lastActionDO.Id);
         }
 
         [Test]
@@ -77,7 +82,9 @@ namespace DockyardTest.Services
         {
             ActionListDO actionListDO = FixtureData.TestActionList7();
             actionListDO.ActionListState = ActionListState.Unstarted;
-            actionListDO.CurrentAction.ActionState = ActionState.Completed;
+            var actionDO = (ActionDO)actionListDO.CurrentActivity;
+            actionDO.ActionState = ActionState.Completed;
+            actionListDO.CurrentActivity = actionDO;
             _actionMock = new Mock<IAction>();
             _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Error; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));

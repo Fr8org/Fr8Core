@@ -51,8 +51,8 @@ namespace Core.Services
             else
                 throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
             curActionList.Actions.Add(curActionDO);
-            if (curActionList.CurrentAction == null)
-                curActionList.CurrentAction = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
+            if (curActionList.CurrentActivity == null)
+                curActionList.CurrentActivity = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActionListRepository.Add(curActionList);
@@ -68,7 +68,7 @@ namespace Core.Services
 
         public void Process(ActionListDO curActionListDO)
         {
-            if (curActionListDO.CurrentAction == null)
+            if (curActionListDO.CurrentActivity == null)
             {
                 throw new ArgumentNullException("ActionList is missing a CurrentAction");
             }
@@ -90,18 +90,21 @@ namespace Core.Services
                             {
                                 //if return string is "completed", it sets the CurrentAction to the next Action in the list
                                 //if not complete set actionlistdo to error
-                                _action.Process(curActionListDO.CurrentAction);
-                                if (curActionListDO.CurrentAction.ActionState == ActionState.Completed || curActionListDO.CurrentAction.ActionState == ActionState.InProcess)
+                                if (curActionListDO.CurrentActivity is ActionDO)
                                 {
-                                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
-                                        .Where(o => o.Ordering > curActionListDO.CurrentAction.Ordering).DefaultIfEmpty(null).FirstOrDefault();
+                                    _action.Process((ActionDO)curActionListDO.CurrentActivity);
+                                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed || ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
+                                    {
+                                        ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
+                                            .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering).DefaultIfEmpty(null).FirstOrDefault();
 
-                                    if (actionDO != null)
-                                        curActionListDO.CurrentAction = actionDO;
-                                }
-                                else
-                                {
-                                    throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, curActionListDO.CurrentAction.ActionState));
+                                        if (actionDO != null)
+                                            curActionListDO.CurrentActivity = actionDO;
+                                    }
+                                    else
+                                    {
+                                        throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, ((ActionDO)curActionListDO.CurrentActivity).ActionState));
+                                    }
                                 }
                             }
 

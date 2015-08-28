@@ -5,7 +5,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-	public class ActionListDO: BaseDO
+	public class ActionListDO: ActivityDO
 	{
 		public ActionListDO()
 		{
@@ -40,9 +40,9 @@ namespace Data.Entities
         public int ActionListType { get; set; }
         public virtual _ActionListTypeTemplate ActionListTypeTemplate { get; set; }
 
-        [ForeignKey("CurrentAction")]
-        public int? CurrentActionID { get; set; }
-        public virtual ActionDO CurrentAction  { get; set; }
+        [ForeignKey("CurrentActivity")]
+        public int? CurrentActivityID { get; set; }
+        public virtual ActivityDO CurrentActivity { get; set; }
 
         [ForeignKey("ActionListStateTemplate")]
         public int? ActionListState { get; set; }

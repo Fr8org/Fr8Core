@@ -78,7 +78,7 @@ namespace DockyardTest.Integration
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
             healthWriteAction.ActionListId = healthActionList.Id;
-            healthActionList.CurrentAction = healthWriteAction;
+            healthActionList.CurrentActivity = healthWriteAction;
 
             //add field mappings to write action
             var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
