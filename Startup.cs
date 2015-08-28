@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Configuration;
 using Daemons;
 using Data.Entities;
@@ -16,6 +18,7 @@ using Utilities.Logging;
 using Core.PluginRegistrations;
 using Core.Interfaces;
 using DocuSign.Integrations.Client;
+using Utilities;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -29,8 +32,37 @@ namespace Web
             ConfigureAuth(app);
             //ConfigureCommunicationConfigs();
             RegisterPluginActions();
-        }
 
+            //var forwardingMiddleware = new 
+            app.Use(async (context, next) =>
+            {
+                if (string.Equals(context.Request.Method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(context.Request.Uri.AbsolutePath, "/api/DocuSignNotification", StringComparison.OrdinalIgnoreCase))
+                {
+                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    var notificationPortForwardsCsv = configRepository.Get("DocuSignNotificationPortForwards");
+                    var notificationPortForwards = !string.IsNullOrEmpty(notificationPortForwardsCsv)
+                        ? notificationPortForwardsCsv.Split(',')
+                        : new string[0];
+
+                    if (notificationPortForwards.Any())
+                    {
+                        using (var forwarder = new HttpClient())
+                        {
+                            foreach (var notificationPortForward in notificationPortForwards)
+                            {
+                                await
+                                    forwarder.PostAsync(
+                                        new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery)),
+                                        new StreamContent(context.Request.Body));
+                            }
+                        }
+                    }
+                }
+
+                await next();
+            });
+        }
 
         //SeedDatabases
         //Ensure that critical configuration information is present in the database

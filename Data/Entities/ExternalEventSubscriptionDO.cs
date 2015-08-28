@@ -5,15 +5,13 @@ using System;
 
 namespace Data.Entities
 {
-    public class ExternalEventSubscriptionDO : IEquatable<ExternalEventSubscriptionDO>
+    public class ExternalEventSubscriptionDO : BaseDO, IEquatable<ExternalEventSubscriptionDO>
     {
         [Key]
         public int Id { get; set; }
 
         [ForeignKey("EventStatusTemplate")]
         public int ExternalEvent { get; set; }
-
-        public string DocuSignTemplateId { get; set; }
 
         public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
 

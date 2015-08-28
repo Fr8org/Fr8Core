@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Interfaces;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Core.Interfaces;
-using Core.Services;
 using Segment;
 using Segment.Model;
 using StructureMap;
