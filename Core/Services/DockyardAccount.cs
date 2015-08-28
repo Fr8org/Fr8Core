@@ -360,7 +360,7 @@ namespace Core.Services
         public DocuSignAccount LoginToDocuSign()
         {
             var packager = new DocuSignPackager();
-            return packager.LoginAsDockyardService();
+            return packager.Login();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace Data.Wrappers
         {
             var packager = new DocuSignPackager();
 
-            Login = packager.LoginAsDockyardService();
+            Login = packager.Login();
             _docusignEnvelope = new DocuSignEnvelope();
         }
 
