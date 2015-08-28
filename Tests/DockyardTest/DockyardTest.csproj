@@ -227,6 +227,7 @@
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
+    <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
