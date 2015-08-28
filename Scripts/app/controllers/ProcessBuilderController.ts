@@ -35,17 +35,17 @@ module dockyard.controllers {
 
         private _scope: interfaces.IProcessBuilderScope;
 
-        constructor(
-            private $rootScope: interfaces.IAppRootScope,
-            private $scope: interfaces.IProcessBuilderScope,
-            private StringService: services.IStringService,
-            private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ng.ui.IState,
-            private ActionService: services.IActionService,
-            private $q: ng.IQService,
-            private $http: ng.IHttpService,
-            private urlPrefix: string
-        ) {
+            constructor(
+                private $rootScope: interfaces.IAppRootScope,
+                private $scope: interfaces.IProcessBuilderScope,
+                private StringService: services.IStringService,
+                private LocalIdentityGenerator: services.ILocalIdentityGenerator,
+                private $state: ng.ui.IState,
+                private ActionService: services.IActionService,
+                private $q: ng.IQService,
+                private $http: ng.IHttpService,
+                private urlPrefix: string
+            ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
 

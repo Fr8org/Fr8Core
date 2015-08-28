@@ -70,7 +70,7 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
 
-                //TODO: test code, remove later
+                //TODO: this is test code, remove later
                 $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
                 $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
@@ -89,25 +89,25 @@ module dockyard.directives.paneConfigureAction {
                 eventArgs.actionListId
                 );
 
-            //for now ignore actions which were not saved on the database
+            //for now ignore actions which were not saved in the database
             if (eventArgs.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
             //TODO supply real actionRegistrationId 
-            this.ActionService.getConfigurationSettings({ id: 1 }).$promise.then((result) => {
+            scope.configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });
+            scope.configurationSettings.$promise.then((result) => {
                 console.log(result);
                 this.renderFields(result);
             })
         }
 
         private renderFields(configurationSettings: model.ConfigurationSettings) {
-            debugger;
             for (var field of configurationSettings.fields) {
                 switch (field.type) {
                     case FieldType[FieldType.textField]:
-                        (<model.TextField>field).render(this._$element);
+                        dockyard.model.TextField.prototype.render.call(field, this._$element);
                         break;
                     case FieldType[FieldType.checkboxField]:
-                        (<model.CheckboxField>field).render(this._$element);
+                        dockyard.model.CheckboxField.prototype.render.call(field, this._$element);
                         break;
                     default:
                         Error("Unsupported field type: " + field.type);
@@ -136,14 +136,14 @@ module dockyard.directives.paneConfigureAction {
                 "fields":
                 [
                     {
-                        type: "textField",
+                        "type": "textField",
                         "name": "connection_string",
                         "required": true,
                         "value": "",
-                        "fieldLabel": "SQL Connection String",
+                        "fieldLabel": "SQL Connection String"
                     },
                     {
-                        type: "checkboxField",
+                        "type": "checkboxField",
                         "name": "log_transactions",
                         "selected": false,
                         "fieldLabel": "Log All Transactions?"
