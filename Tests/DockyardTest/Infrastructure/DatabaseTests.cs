@@ -43,6 +43,7 @@ namespace DockyardTest.Services
 
         //this tests whether all the migrations are in place
         [Test]
+        [Category("RequiresLocalDB")]
         public void Can_Initialize_Database()
         {
            // var curDbContext = new DbContext("name=DockyardDB");
