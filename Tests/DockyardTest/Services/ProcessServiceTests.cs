@@ -11,9 +11,9 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Moq;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
+using Moq;
 
 namespace DockyardTest.Services
 {

@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using Data.Wrappers;
 using StructureMap;
 
 namespace Core.Services
