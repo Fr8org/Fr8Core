@@ -41,12 +41,12 @@ namespace DockyardTest.Services
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
         }
 
-        //this tests whether all the migrations are in place
+        //this tests whether all the migrations are in place. if it's failing, check to see if they are, and make sure you're
+        //trying to run the service, as the service runs this code itself and will crash if this test fails.
         [Test]
         [Category("RequiresLocalDB")]
         public void Can_Initialize_Database()
         {
-           // var curDbContext = new DbContext("name=DockyardDB");
             var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
         }
