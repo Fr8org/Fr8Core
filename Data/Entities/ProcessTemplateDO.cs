@@ -34,10 +34,10 @@ namespace Data.Entities
 
         public virtual DockyardAccountDO DockyardAccount { get; set; }
 
-        [InverseProperty("ProcessTemplate")]
+        [InverseProperty("DocuSignProcessTemplate")]
         public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }
 
-        [InverseProperty("ProcessTemplate")]
+        [InverseProperty("ExternalProcessTemplate")]
         public virtual IList<ExternalEventSubscriptionDO> SubscribedExternalEvents { get; set; }
 
         [InverseProperty("ProcessTemplate")]

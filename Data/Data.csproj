@@ -205,6 +205,14 @@
     <Compile Include="Migrations\201508252259417_InitialMigration.Designer.cs">
       <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.cs" />
+    <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.Designer.cs">
+      <DependentUpon>201508282038003_DocuSignTemplateSubscription_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs" />
+    <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.Designer.cs">
+      <DependentUpon>201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -419,6 +427,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201508252259417_InitialMigration.resx">
       <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.resx">
+      <DependentUpon>201508282038003_DocuSignTemplateSubscription_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.resx">
+      <DependentUpon>201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

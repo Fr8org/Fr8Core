@@ -76,15 +76,15 @@ namespace Core.Services
                 {
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ProcessTemplate)
-                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ProcessTemplate.DockyardAccount.Id == curUserID)
+                        uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ExternalProcessTemplate)
+                            .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ExternalProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
                    
 
                     foreach (var subscription in subscriptions)
                     {
                         //checkpoint: figure out why the processnode is not the "50" one that was configured
-                        _processTemplate.LaunchProcess(uow, subscription.ProcessTemplate, curEvent);
+                        _processTemplate.LaunchProcess(uow, subscription.ExternalProcessTemplate, curEvent);
                     }
                 }
 
