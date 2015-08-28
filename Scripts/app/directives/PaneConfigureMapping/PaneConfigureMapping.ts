@@ -23,7 +23,7 @@ module dockyard.directives.paneConfigureMapping {
         public templateUrl = "/Views/AngularTemplate/PaneConfigureMapping.html";
         public restrict = "E";
 
-        // control works in two modes field (fields would be dropdown) or param (would be dropdown)
+        // control works in two modes field (fields would be dropdown) or param (would be dropdown) REWRITE THIS
         // if nothing is set it works as field mapper
         public scope = {
             mode: "@"
@@ -54,7 +54,7 @@ module dockyard.directives.paneConfigureMapping {
                 });
             };
 
-            function init() {
+            function render() {
 
 
                 var loadedActions = false;
@@ -76,14 +76,14 @@ module dockyard.directives.paneConfigureMapping {
 
                     if ($scope.mode === "param") {
                         $scope.toBeMappedTo = tempToBeMapped;
-                        $scope.HeadingRight = "Document Fields";
-                        $scope.HeadingLeft = "Action Params";
+                        $scope.HeadingRight = "Target Data";
+                        $scope.HeadingLeft = "Source Data";
                         return;
                     }
                     $scope.toBeMappedFrom = tempToBeMapped;
                     transform();
-                    $scope.HeadingLeft = "Document Fields";
-                    $scope.HeadingRight = "Action Params";
+                    $scope.HeadingLeft = "Source Data";
+                    $scope.HeadingRight = "Target Data";
                     return;
                 });
 
@@ -92,11 +92,11 @@ module dockyard.directives.paneConfigureMapping {
 
 
                 $http.post(urlPrefix + "/actions/field_data_sources/", actionWithProcess )
-                    .then((docFields) => {
+                    .then((dataSources) => {
                         loadedFields = true;
                         var tempToBeMapped = [];
-                        docFields.data.forEach((docField) => {
-                            tempToBeMapped.push({ 'type': "docusignfield", 'Name': docField });
+                        dataSources.data.forEach((docField) => {
+                            tempToBeMapped.push({ 'type': "docusignfield", 'Name': docField }); //should be renamed from docusignField to 'data source'
                         });
 
                         if ($scope.mode === "param") {
@@ -124,7 +124,7 @@ module dockyard.directives.paneConfigureMapping {
             }
 
             var onRender = () => {
-                init();
+                render();
                 transform();
             }
 
