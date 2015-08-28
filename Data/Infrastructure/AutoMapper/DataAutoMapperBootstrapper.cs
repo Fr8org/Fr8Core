@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using AutoMapper;
-using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Wrappers;
+using DocuSign.Integrations.Client;
+using Newtonsoft.Json.Linq;
 using Utilities.AutoMapper;
+using Signer = DocuSign.Integrations.Client.Signer;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -80,10 +81,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ProcessTemplateDO, FullProcessTemplateDTO>()
                 .ConvertUsing<ProcessTemplateDOFullConverter>();
 
-            Mapper.CreateMap<DocuSign.Integrations.Client.Signer, Data.Wrappers.Signer>();
+            Mapper.CreateMap<Signer, Wrappers.Signer>();
 
-            Mapper.CreateMap<DocuSign.Integrations.Client.Account, Data.Wrappers.DocuSignAccount>();
-            Mapper.CreateMap<DocuSign.Integrations.Client.TemplateInfo, DocuSignTemplateDTO>();
+            Mapper.CreateMap<Account, DocuSignAccount>();
+            Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
         }
     }
 

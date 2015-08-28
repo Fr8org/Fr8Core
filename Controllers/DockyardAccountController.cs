@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.States;
 using Core.Managers;
 using Core.Services;
+using Data.Wrappers;
 using Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -42,13 +43,13 @@ namespace Web.Controllers
     }
 
     [DockyardAuthorize]
-    public class AccountController : Controller
+    public class DockyardAccountController : Controller
     {
-        private readonly Account _account;
+        private readonly DockyardAccount _account;
 
-        public AccountController()
+        public DockyardAccountController()
         {
-            _account = ObjectFactory.GetInstance<Account>();
+            _account = ObjectFactory.GetInstance<DockyardAccount>();
         }
 
         [AllowAnonymous]
@@ -152,7 +153,7 @@ namespace Web.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus = await new Account().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus = await new DockyardAccount().ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:

@@ -1,6 +1,4 @@
-﻿using System;
-using Data.Wrappers;
-using DocuSign.Integrations.Client;
+﻿using Data.Wrappers;
 
 namespace UtilitiesTesting.Fixtures
 {

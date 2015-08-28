@@ -3,6 +3,9 @@
 ﻿using Core.Services;
 ﻿using Data.Entities;
 ﻿using Data.Interfaces;
+﻿using Data.States;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 ﻿using Newtonsoft.Json;
 ﻿using NUnit.Framework;
 ﻿using StructureMap;
@@ -25,7 +28,7 @@ namespace DockyardTest.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //create a registered account
-                Account _account = new Account();
+                DockyardAccount _account = new DockyardAccount();              
                 var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User");
                 uow.UserRepository.Add(registeredAccount);
                 uow.SaveChanges();
