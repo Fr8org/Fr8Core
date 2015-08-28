@@ -27,11 +27,12 @@ namespace Data.Repositories
 
         public byte[] GetRemoteFile(string curBlobUrl)
         {
-            var curBlob = new CloudBlockBlob(new Uri(curBlobUrl), GetDefaultBlobContainer().ServiceClient.Credentials);
+            CloudBlobClient curCloudBlobClient = GetDefaultBlobContainer().ServiceClient;
+            var curBlob = new CloudBlockBlob(new Uri(curBlobUrl), curCloudBlobClient.Credentials);
             curBlob.FetchAttributes();
 
             byte[] content = new byte[curBlob.Properties.Length];
-            curBlob.DownloadToByteArray(content, 0);
+            curBlob.DownloadToByteArray(content, 0, options: curCloudBlobClient.DefaultRequestOptions);
             
             return content;
         }
@@ -42,7 +43,7 @@ namespace Data.Repositories
             return curBlob.DeleteIfExists();
         }
 
-        private CloudBlobContainer GetDefaultBlobContainer()
+        protected virtual CloudBlobContainer GetDefaultBlobContainer()
         {
             const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";
             const string defaultAzureStorageContainer = "DefaultAzureStorageContainer";
