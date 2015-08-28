@@ -1,24 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AutoMapper;
 using Core.Interfaces;
+using Core.Managers;
+using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.PluginRegistrations;
+using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Data.Wrappers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json.Linq;
-using Data.States;
-using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers;
-using Data.Wrappers;
+using Action = Core.Services.Action;
 
 namespace DockyardTest.Services
 {
@@ -70,7 +68,7 @@ namespace DockyardTest.Services
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionService_NULL_ActionRegistration()
         {
-            var _service = new Core.Services.Action();
+            var _service = new Action();
             Assert.IsNotNull(_service.GetConfigurationSettings(null));
         }
 
@@ -79,7 +77,7 @@ namespace DockyardTest.Services
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IAction action = new Core.Services.Action();
+                IAction action = new Action();
                 var origActionDO = new FixtureData(uow).TestAction3();
 
                 //Add
@@ -136,7 +134,7 @@ namespace DockyardTest.Services
         [Test]
         public void CanProcessDocuSignTemplate()
         {
-            Core.Services.Action action = new Core.Services.Action();
+            Action action = new Action();
             var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
@@ -169,7 +167,7 @@ namespace DockyardTest.Services
         [Test]
         public void CanSavePayloadMappingToActionTabe()
         {
-            Core.Services.Action action = new Core.Services.Action();
+            Action action = new Action();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
             var processTemplate = FixtureData.TestProcessTemplate2();
@@ -188,7 +186,7 @@ namespace DockyardTest.Services
             {
                 var curActionDo = uow.ActionRepository.FindOne((a) => true);
                 Assert.NotNull(curActionDo);
-                var curActionDto = AutoMapper.Mapper.Map<ActionPayloadDTO>(curActionDo);
+                var curActionDto = Mapper.Map<ActionPayloadDTO>(curActionDo);
                 Assert.IsTrue(IsPayloadValid(curActionDto));                
             }
         }
@@ -203,7 +201,7 @@ namespace DockyardTest.Services
         public void Process_ActionListNotUnstarted_ThrowException()
         {
             ActionDO actionDo = FixtureData.TestAction9();
-            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            Action _action = ObjectFactory.GetInstance<Action>();
 
             Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo).Exception.InnerException.Message);
         }

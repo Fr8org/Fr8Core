@@ -43,11 +43,11 @@ namespace Web.Controllers
     }
 
     [DockyardAuthorize]
-    public class AccountController : Controller
+    public class DockyardAccountController : Controller
     {
         private readonly DockyardAccount _account;
 
-        public AccountController()
+        public DockyardAccountController()
         {
             _account = ObjectFactory.GetInstance<DockyardAccount>();
         }

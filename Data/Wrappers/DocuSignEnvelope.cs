@@ -26,12 +26,12 @@ namespace Data.Wrappers
             _tab = new Tab();
             _signer = new Signer();
 
-            var packager = new DocuSignPackager();
-            packager.Email = ConfigurationManager.AppSettings["DocuSignLoginEmail"];
-            packager.ApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"];
-            Login = packager.LoginAsDockyardService();
-
-            _docuSignPackager = new DocuSignPackager();
+            _docuSignPackager = new DocuSignPackager
+            {
+                CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
+                CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
+            };
+            Login = _docuSignPackager.LoginAsDockyardService();
         }
 
 
@@ -40,9 +40,7 @@ namespace Data.Wrappers
         /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
-        /// </returns>
-        /// 
-        /// 
+        /// </summary>
         public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
         {
             if (string.IsNullOrEmpty(curEnvelopeId))
@@ -123,10 +121,7 @@ namespace Data.Wrappers
 
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
-            var curDocuSignTemplate = new DocuSignTemplate
-            {
-                Login = _docuSignPackager.LoginAsDockyardService()
-            };
+            var curDocuSignTemplate = new DocuSignTemplate();
 
             var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
             foreach (var signer in templateDetails["recipients"]["signers"])
