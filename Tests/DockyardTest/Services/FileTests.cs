@@ -17,7 +17,7 @@ using UtilitiesTesting.Fixtures;
 namespace DockyardTest.Services
 {
     [TestFixture]
-    [Category("FileArchive")]
+    [Category("File")]
     public class FileTests : BaseTest
     {
         private FileStream _curBlobFile;
@@ -43,6 +43,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Store")]
         public void File_Store_CanStoreFile()
         {
             //Arrange
@@ -62,6 +63,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Store")]
         [ExpectedException(typeof(StorageException))]
         public void File_Store_WithTimeOutZero_ShouldThrowTimeOutExpcetion()
         {
@@ -82,6 +84,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Store")]
         [ExpectedException(typeof(StorageException))]
         public void File_Store_WithInvalidLogin_ShouldThrowTimeOutExpcetion()
         {
@@ -102,6 +105,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Retrieve")]
         public void File_Retrieve_CanRetrieveFile()
         {
             //Arrange
@@ -120,6 +124,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Retrieve")]
         [ExpectedException(typeof(StorageException))]
         public void File_Retrieve_WithTimeOutZero_ShouldThrowTimeOutException()
         {
@@ -142,6 +147,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Retrieve")]
         [ExpectedException(typeof(StorageException))]
         public void File_Retrieve_WithoutTargetFile_ShouldThrow404NotFound()
         {
@@ -164,6 +170,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        [Category("File.Delete")]
         public void File_Delete_CanDeleteFile()
         {
             //Arrange
