@@ -69,7 +69,7 @@ var dockyard;
                         configurationSettings: new dockyard.model.ConfigurationSettings(),
                         processNodeTemplateId: 1,
                         isTempId: false,
-                        id: null,
+                        actionId: null,
                         fieldMappingSettings: "test",
                         userLabel: "test",
                         tempId: 0,

@@ -271,7 +271,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventSubscriptions");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
-            modelBuilder.Entity<ActionRegistrationDO>().ToTable("ActionRegistration");
+            modelBuilder.Entity<ActionTemplateDO>().ToTable("ActionTemplate");
             modelBuilder.Entity<DocuSignTemplateSubscriptionDO>().ToTable("DocuSignTemplateSubscriptions");
 
             modelBuilder.Entity<EmailDO>()

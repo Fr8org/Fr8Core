@@ -75,7 +75,7 @@ module dockyard.tests.controller {
                     configurationSettings: new model.ConfigurationSettings(),
                     processNodeTemplateId: 1,
                     isTempId: false,
-                    id: null,
+                    actionId: null,
                     fieldMappingSettings: "test",
                     userLabel: "test",
                     tempId: 0,

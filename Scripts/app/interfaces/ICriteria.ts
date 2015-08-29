@@ -13,11 +13,11 @@ module dockyard.interfaces {
     }
 
     export interface IAction {
-        id: number;
-        isTempId: boolean; 
-        processNodeTemplateId: number;
-        userLabel: string;
-        actionListId: number;
+        actionId: number,
+        isTempId: boolean, 
+        processNodeTemplateId: number,
+        userLabel: string,
+        actionListId: number,
         actionType: string;
         configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;

@@ -1,7 +1,7 @@
 ﻿module dockyard.model {
     export class Action implements interfaces.IAction {
         processNodeTemplateId: number;
-        id: number;
+        actionId: number;
         isTempId: boolean;
         actionListId: number;
         actionType: string;
@@ -17,14 +17,14 @@
             actionListId: number
         ) {
             this.processNodeTemplateId = processNodeTemplateId;
-            this.id = id;
+            this.actionId = id;
             this.isTempId = isTempId;
             this.actionListId = actionListId;
         }
 
         toActionVM(): interfaces.IActionVM {
             return <interfaces.IActionVM> {
-                id: this.id,
+                actionId: this.actionId,
                 isTempId: this.isTempId,
                 processNodeTemplateId: this.processNodeTemplateId,
                 userLabel: this.userLabel,
@@ -36,7 +36,7 @@
         }
 
         clone(): Action {
-            var result = new Action(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
+            var result = new Action(this.processNodeTemplateId, this.actionId, this.isTempId, this.actionListId);
             result.userLabel = this.userLabel;
             result.actionType = this.actionType;
 

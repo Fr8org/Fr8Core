@@ -65,7 +65,7 @@ namespace DockyardTest.Controllers
                 ActionDO actionDO = CreateActionDO();
                 curService.AddAction(actionDO, "last");
                 Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
-                Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentAction.Ordering, 1);
+                Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentActivity.Ordering, 1);
             }
         }
 
@@ -132,7 +132,7 @@ namespace DockyardTest.Controllers
 
                 _curActionList = FixtureData.TestActionList();
                 _curActionList.ActionListType = ActionListType.Immediate;
-                _curActionList.CurrentAction = null;
+                _curActionList.CurrentActivity = null;
                 _curActionList.ProcessNodeTemplateID = _curProcessNodeTemplate.Id;
 
                 uow.ActionListRepository.Add(_curActionList);

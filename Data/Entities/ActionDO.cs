@@ -5,7 +5,7 @@ using Data.Wrappers;
 
 namespace Data.Entities
 {
-	public class ActionDO: BaseDO
+	public class ActionDO: ActivityDO
 	{
 		[ Key ]
 		public int Id{ get; set; }
@@ -23,11 +23,6 @@ namespace Data.Entities
         public string FieldMappingSettings { get; set; }
 
         public string ParentPluginRegistration { get; set; }
-
-        /// <summary>
-        /// This property defines the permanent postion of Actions in ActionList.
-        /// </summary>
-        public int Ordering  { get; set; }
 
         [ForeignKey("ActionStateTemplate")]
         public int? ActionState { get; set; }
