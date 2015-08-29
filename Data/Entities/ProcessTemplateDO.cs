@@ -41,6 +41,6 @@ namespace Data.Entities
         public virtual IList<ExternalEventSubscriptionDO> SubscribedExternalEvents { get; set; }
 
         [InverseProperty("ProcessTemplate")]
-        public virtual ICollection<ProcessDO> Processes { get; set; }
+        public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
     }
 }
