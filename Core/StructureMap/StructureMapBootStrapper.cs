@@ -105,7 +105,7 @@ namespace Core.StructureMap
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
-
+                For<ISMSMessage>().Use<SMSMessage>();
 
             }
         }
@@ -164,6 +164,7 @@ namespace Core.StructureMap
                 //For<ITemplate>().Use<Services.Template>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
+                For<ISMSMessage>().Use<SMSMessage>();
             }
         }
 
