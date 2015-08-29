@@ -31,11 +31,6 @@ module dockyard.directives.paneConfigureAction {
 
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
-    enum FieldType {
-        textField,
-        checkboxField
-    }
-
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
@@ -94,29 +89,11 @@ module dockyard.directives.paneConfigureAction {
             scope.isVisible = true;
             //TODO supply real actionRegistrationId 
             scope.configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });
-            scope.configurationSettings.$promise.then((result) => {
-                console.log(result);
-                this.renderFields(result);
-            })
-        }
-
-        private renderFields(configurationSettings: model.ConfigurationSettings) {
-            for (var field of configurationSettings.fields) {
-                switch (field.type) {
-                    case FieldType[FieldType.textField]:
-                        dockyard.model.TextField.prototype.render.call(field, this._$element);
-                        break;
-                    case FieldType[FieldType.checkboxField]:
-                        dockyard.model.CheckboxField.prototype.render.call(field, this._$element);
-                        break;
-                    default:
-                        Error("Unsupported field type: " + field.type);
-                }
-            }
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             (<interfaces.IPaneConfigureActionScope> event.currentScope).isVisible = false;
+            console.log('hide');
         }
 
         //The factory function returns Directive object as per Angular requirements

@@ -5,6 +5,7 @@
             <span class="caption-subject font-green-haze bold uppercase">Configure Action</span>
         </div>
     </div>
-    <div class="portlet-body field-placeholder">
+    <div ng-repeat="field in configurationSettings.fields">
+        <configuration-field field="field" />
     </div>
 </div>

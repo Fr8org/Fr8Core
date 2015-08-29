@@ -41,6 +41,7 @@
 /// <reference path="filters/processtemplatestate.ts" />
 
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
+/// <reference path="directives/paneconfigureaction/configurationfield.ts" />
 
 /// <reference path="directives/panedefinecriteria/ipanedefinecriteriascope.ts" />
 /// <reference path="directives/panedefinecriteria/messages.ts" />
@@ -54,6 +55,7 @@
 /// <reference path="directives/paneworkflowdesigner/paneworkflowdesigner.ts" />
 
 /// <reference path="directives/querybuilderwidget.ts" />
+
 
 /*
     CONTROLLERS

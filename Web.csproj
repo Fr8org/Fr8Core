@@ -551,6 +551,7 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IConfigurationSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationSettings.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
@@ -3732,6 +3733,7 @@
     <Content Include="RunFrontEndTests - With Web Server.ps1" />
     <Content Include="RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
+    <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
