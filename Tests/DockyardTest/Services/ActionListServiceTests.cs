@@ -142,7 +142,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [ExpectedException(ExpectedMessage = "ActionList is missing a CurrentActivity")]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ProcessNextActivity_NextActionListDONull_ThrowException()
         {
             ActionListDO actionListDO = FixtureData.TestActionList7();

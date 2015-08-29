@@ -70,7 +70,7 @@ namespace Core.Services
         {
             if (curActionListDO.CurrentActivity == null)
             {
-                throw new Exception("ActionList is missing a CurrentActivity");
+                throw new ArgumentNullException("ActionList is missing a CurrentActivity");
             }
             else
             {
