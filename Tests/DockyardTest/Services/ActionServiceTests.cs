@@ -60,14 +60,14 @@ namespace DockyardTest.Services
         [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+            var curActionTemplate = FixtureData.TestActionTemplateDO1();
             string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-            Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+            Assert.AreEqual(_action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings, curJsonResult);
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionService_NULL_ActionRegistration()
+        public void ActionService_NULL_ActionTemplate()
         {
             var _service = new Action();
             Assert.IsNotNull(_service.GetConfigurationSettings(null));
@@ -294,11 +294,11 @@ namespace DockyardTest.Services
             };
 
             Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            List<ActionRegistrationDO> curActionRegistrationDO = _action.GetAvailableActions(account).ToList();
+            List<ActionTemplateDO> curActionTemplateDO = _action.GetAvailableActions(account).ToList();
 
             //Assert
-            Assert.AreEqual(4, curActionRegistrationDO.Count);
-            Assert.That(curActionRegistrationDO, Is.Ordered.By("ActionType"));
+            Assert.AreEqual(4, curActionTemplateDO.Count);
+            Assert.That(curActionTemplateDO, Is.Ordered.By("ActionType"));
 
 
         }

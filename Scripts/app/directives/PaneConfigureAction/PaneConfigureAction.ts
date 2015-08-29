@@ -87,7 +87,7 @@ module dockyard.directives.paneConfigureAction {
             //for now ignore actions which were not saved in the database
             if (eventArgs.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
-            //TODO supply real actionRegistrationId 
+            //TODO supply real actionTemplateId 
             scope.configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });
         }
 

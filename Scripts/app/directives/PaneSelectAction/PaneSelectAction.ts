@@ -190,7 +190,7 @@ module dockyard.directives.paneSelectAction {
                     angular.forEach(resp.data, function (it) {
                         console.log(it);
 
-                        $scope.actionTypes.push(new model.ActionTemplate(it.id, it.actionType, {}));
+                        $scope.actionTypes.push(new model.ActionTemplate(it.actionId, it.actionType, ""));
                     });
                 });
         }

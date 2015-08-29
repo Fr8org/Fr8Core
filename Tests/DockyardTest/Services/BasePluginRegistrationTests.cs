@@ -65,7 +65,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void RegisterActions_RegisterNew_CreatesActionRegistrationDO()
+        public void RegisterActions_RegisterNew_CreatesActionTemplateDO()
         {
             var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
@@ -73,11 +73,11 @@ namespace DockyardTest.Services
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
             basePluginRegistration.RegisterActions();
 
-            var newActionRegistration = _uow.ActionRegistrationRepository.GetQuery()
+            var newActionTemplate = _uow.ActionTemplateRepository.GetQuery()
                 .FirstOrDefault(i => i.ActionType == actionType && i.Version == version);
 
-            Assert.AreEqual(actionType, newActionRegistration.ActionType);
-            Assert.AreEqual(version, newActionRegistration.Version);
+            Assert.AreEqual(actionType, newActionTemplate.ActionType);
+            Assert.AreEqual(version, newActionTemplate.Version);
         }
 
         [Test]
@@ -88,12 +88,12 @@ namespace DockyardTest.Services
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
             basePluginRegistration.RegisterActions();
-            int totalRecords = _uow.ActionRegistrationRepository.GetQuery().Count();
+            int totalRecords = _uow.ActionTemplateRepository.GetQuery().Count();
 
             basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
             basePluginRegistration.RegisterActions();
-            int totalRecordsAfterExistingRegister = _uow.ActionRegistrationRepository.GetQuery().Count();
+            int totalRecordsAfterExistingRegister = _uow.ActionTemplateRepository.GetQuery().Count();
 
             Assert.AreEqual(totalRecords, totalRecordsAfterExistingRegister);
         }

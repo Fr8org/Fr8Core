@@ -213,7 +213,7 @@
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionRegistrationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
@@ -253,7 +253,6 @@
     <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.Designer.cs">
       <DependentUpon>201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs</DependentUpon>
     </Compile>
-
     <Compile Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.cs" />
     <Compile Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.Designer.cs">
       <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
@@ -304,7 +303,7 @@
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
-    <Compile Include="Repositories\ActionRegistrationRepository.cs" />
+    <Compile Include="Repositories\ActionTemplateRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -488,7 +487,7 @@
     <EmbeddedResource Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.resx">
       <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
-	 <EmbeddedResource Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.resx">
+    <EmbeddedResource Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.resx">
       <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>

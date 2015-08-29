@@ -39,19 +39,19 @@ namespace Core.PluginRegistrations
         {
             get
             {
-                // return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
+                // return JsonConvert.DeserializeObject<IEnumerable<ActionTemplateDO>>(availableActions,
                 //  new JsonSerializerSettings());
-                var curActionRegistrations = new List<ActionTemplateDO>();
-                //IEnumerable<ActionRegistrationDO> curActionRegistrations;
-                //return Mapper.Map(availableActions, curActionRegistrations);
+                var curActionTemplates = new List<ActionTemplateDO>();
+                //IEnumerable<ActionTemplateDO> curActionTemplates;
+                //return Mapper.Map(availableActions, curActionTemplates);
                 
                 foreach (var item in availableActions.ActionNames)
                 {
                     var curActionRegistratoin = new ActionTemplateDO();
                     Mapper.Map(item,curActionRegistratoin);
-                    curActionRegistrations.Add(curActionRegistratoin);
+                    curActionTemplates.Add(curActionRegistratoin);
                 }
-                return curActionRegistrations;
+                return curActionTemplates;
             }
         }
 
@@ -74,13 +74,13 @@ namespace Core.PluginRegistrations
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     string curParentPluginRegistration = this.GetType().Name;
-                    if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
+                    if (!uow.ActionTemplateRepository.GetQuery().Where(a => a.ActionType == action.ActionType
                         && a.Version == action.Version && a.ParentPluginRegistration == curParentPluginRegistration).Any())
                     {
                         ActionTemplateDO actionTemplateDo = new ActionTemplateDO(action.ActionType,
                                                                         curParentPluginRegistration,
                                                                         action.Version);
-                        uow.ActionRegistrationRepository.Add(actionTemplateDo);
+                        uow.ActionTemplateRepository.Add(actionTemplateDo);
                         uow.SaveChanges();
                     }
                 }

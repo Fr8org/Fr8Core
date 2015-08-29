@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    public interface IActionRegistration
+    public interface IActionTemplate
     {
         IEnumerable<ActionTemplateDO> GetAll();
-        ActionTemplateDO GetByKey(int curActionRegistrationDOId);
-       // string AssemblePluginRegistrationName(ActionRegistrationDO curActionRegistrationDO);
+        ActionTemplateDO GetByKey(int curActionTemplateDOId);
+       // string AssemblePluginRegistrationName(ActionTemplateDO curActionTemplateDO);
     }
 }

@@ -97,7 +97,7 @@ namespace Core.Services
                         "GetConfigurationSettings", curActionTemplateDo);
             }
             else
-                throw new ArgumentNullException("ActionRegistrationDO");
+                throw new ArgumentNullException("ActionTemplateDO");
 
             return curActionDO;
         }

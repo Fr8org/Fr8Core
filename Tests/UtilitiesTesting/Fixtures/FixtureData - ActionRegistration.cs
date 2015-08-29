@@ -5,7 +5,7 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-        public static ActionTemplateDO TestActionRegistration1()
+        public static ActionTemplateDO TestActionTemplate1()
 		{
             ActionTemplateDO actionTemplateDo = new ActionTemplateDO
 			{
@@ -17,7 +17,7 @@ namespace UtilitiesTesting.Fixtures
             return actionTemplateDo;
 		}
 
-        public static ActionTemplateDO TestActionRegistration2()
+        public static ActionTemplateDO TestActionTemplate2()
         {
             ActionTemplateDO actionTemplateDo = new ActionTemplateDO
             {
@@ -26,7 +26,7 @@ namespace UtilitiesTesting.Fixtures
             };
             return actionTemplateDo;
         }
-        public static ActionTemplateDO TestActionRegistrationDO1()
+        public static ActionTemplateDO TestActionTemplateDO1()
         {
             var curActionDO = new ActionTemplateDO
             {

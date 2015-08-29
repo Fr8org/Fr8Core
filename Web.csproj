@@ -16,11 +16,15 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
-    <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -559,7 +563,7 @@
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
-    <TypeScriptCompile Include="Scripts\app\model\ActionRegistration.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionList.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionType.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
