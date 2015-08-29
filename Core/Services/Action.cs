@@ -43,7 +43,7 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
+        public IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);
             var curActions = plugins
@@ -86,15 +86,15 @@ namespace Core.Services
             }
         }
 
-        public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+        public ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
         {
             var curActionDO = new ActionDO();
-            if (curActionRegistrationDO != null)
+            if (curActionTemplateDo != null)
             {
-                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
+                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
                 curActionDO.ConfigurationSettings =
                     _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionRegistrationDO);
+                        "GetConfigurationSettings", curActionTemplateDo);
             }
             else
                 throw new ArgumentNullException("ActionRegistrationDO");

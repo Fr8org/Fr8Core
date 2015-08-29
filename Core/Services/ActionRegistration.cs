@@ -12,7 +12,7 @@ namespace Core.Services
 {
     public class ActionRegistration :IActionRegistration
     {
-        public IEnumerable<ActionRegistrationDO> GetAll()
+        public IEnumerable<ActionTemplateDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -20,7 +20,7 @@ namespace Core.Services
             }
         }
 
-        public ActionRegistrationDO GetByKey(int curActionRegistrationId)
+        public ActionTemplateDO GetByKey(int curActionRegistrationId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

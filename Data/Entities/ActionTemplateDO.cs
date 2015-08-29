@@ -3,11 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class ActionRegistrationDO : BaseDO
+    public class ActionTemplateDO : BaseDO
     {
-        public ActionRegistrationDO() { }
+        public ActionTemplateDO() { }
 
-        public ActionRegistrationDO(string actionType, string parentPluginRegistration, string version)
+        public ActionTemplateDO(string actionType, string parentPluginRegistration, string version)
         {
             this.ActionType = actionType;
             this.ParentPluginRegistration = parentPluginRegistration;

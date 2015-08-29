@@ -118,7 +118,7 @@ module dockyard.directives.paneSelectAction {
                 $http: ng.IHttpService,
                 urlPrefix: string) => {
 
-                this.PupulateData($scope, $http, urlPrefix);
+                this.PopulateData($scope, $http, urlPrefix);
 
                 $scope.$watch<model.Action>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
@@ -126,7 +126,7 @@ module dockyard.directives.paneSelectAction {
                 $scope.ActionTypeSelected = () => {
                     var eventArgs = new ActionTypeSelectedEventArgs(
                         $scope.action.processNodeTemplateId,
-                        $scope.action.id,
+                        $scope.action.actionId,
                         $scope.action.isTempId,
                         $scope.action.actionListId,
                         $scope.action.actionType,
@@ -138,13 +138,13 @@ module dockyard.directives.paneSelectAction {
                     var afterRemove = function () {
                         $scope.$emit(
                             MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                            new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
+                            new ActionRemovedEventArgs($scope.action.actionId, $scope.action.isTempId)
                             );
                     };
 
                     var self = this;
                     if (!$scope.action.isTempId) {
-                        var url = urlPrefix + '/Action/' + $scope.action.id;
+                        var url = urlPrefix + '/Action/' + $scope.action.actionId;
                         $http.delete(url)
                             .success(function () {
                                 afterRemove();
@@ -178,7 +178,7 @@ module dockyard.directives.paneSelectAction {
             (<any>$).notify("Greetings from Select Action Pane. I've got a message about my neighbor saving its data so I saved my data, too.", "success");
         }
 
-        private PupulateData(
+        private PopulateData(
             $scope: interfaces.IPaneSelectActionScope,
             $http: ng.IHttpService,
             urlPrefix: string) {
@@ -190,7 +190,7 @@ module dockyard.directives.paneSelectAction {
                     angular.forEach(resp.data, function (it) {
                         console.log(it);
 
-                        $scope.actionTypes.push(new model.ActionType(it.id, it.actionType, {}));
+                        $scope.actionTypes.push(new model.ActionTemplate(it.id, it.actionType, {}));
                     });
                 });
         }

@@ -60,8 +60,8 @@ namespace DockyardTest.Services
             //Assert.AreEqual(actionType, result.ToList()[0].ActionType);
             //Assert.AreEqual(version, result.ToList()[0].Version);
 
-            Assert.AreEqual(actionType, ((List<ActionRegistrationDO>)result)[0].ActionType);
-            Assert.AreEqual(version, ((List<ActionRegistrationDO>)result)[0].Version);
+            Assert.AreEqual(actionType, ((List<ActionTemplateDO>)result)[0].ActionType);
+            Assert.AreEqual(version, ((List<ActionTemplateDO>)result)[0].Version);
         }
 
         [Test]

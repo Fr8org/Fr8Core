@@ -93,8 +93,8 @@ namespace Web.Controllers
         [Route("actions/configuration")]
         public string GetConfigurationSettings(int curActionRegistrationId)
         {            
-            ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
-            return _action.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
+            ActionTemplateDO curActionTemplateDo = _actionRegistration.GetByKey(curActionRegistrationId);
+            return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
         }
 
 

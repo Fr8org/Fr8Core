@@ -35,19 +35,19 @@ namespace Core.PluginRegistrations
             set { }
         }
 
-        public IEnumerable<ActionRegistrationDO> AvailableActions
+        public IEnumerable<ActionTemplateDO> AvailableActions
         {
             get
             {
                 // return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
                 //  new JsonSerializerSettings());
-                var curActionRegistrations = new List<ActionRegistrationDO>();
+                var curActionRegistrations = new List<ActionTemplateDO>();
                 //IEnumerable<ActionRegistrationDO> curActionRegistrations;
                 //return Mapper.Map(availableActions, curActionRegistrations);
                 
                 foreach (var item in availableActions.ActionNames)
                 {
-                    var curActionRegistratoin = new ActionRegistrationDO();
+                    var curActionRegistratoin = new ActionTemplateDO();
                     Mapper.Map(item,curActionRegistratoin);
                     curActionRegistrations.Add(curActionRegistratoin);
                 }
@@ -68,7 +68,7 @@ namespace Core.PluginRegistrations
 
         public void RegisterActions()
         {
-            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableActions;
+            IEnumerable<ActionTemplateDO> curAvailableCommands = this.AvailableActions;
             foreach (var action in curAvailableCommands)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -77,10 +77,10 @@ namespace Core.PluginRegistrations
                     if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
                         && a.Version == action.Version && a.ParentPluginRegistration == curParentPluginRegistration).Any())
                     {
-                        ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(action.ActionType,
+                        ActionTemplateDO actionTemplateDo = new ActionTemplateDO(action.ActionType,
                                                                         curParentPluginRegistration,
                                                                         action.Version);
-                        uow.ActionRegistrationRepository.Add(actionRegistrationDO);
+                        uow.ActionRegistrationRepository.Add(actionTemplateDo);
                         uow.SaveChanges();
                     }
                 }
@@ -88,18 +88,18 @@ namespace Core.PluginRegistrations
         }
 
 
-        public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionRegistrationDO curActionRegistrationDO)
+        public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionTemplateDO curActionTemplateDo)
         {
             // Get the Type for the class
             Type calledType = Type.GetType(typeName);
             MethodInfo curMethodInfo = calledType.GetMethod(methodName);
             object curObject = Activator.CreateInstance(calledType);
-            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionRegistrationDO });
+            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionTemplateDo });
         }
 
-        public string AssembleName(Data.Entities.ActionRegistrationDO curActionRegistrationDO)
+        public string AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDo)
         {
-            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionRegistrationDO.ParentPluginRegistration, curActionRegistrationDO.Version);
+            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.ParentPluginRegistration, curActionTemplateDo.Version);
         }
 
         public virtual Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)

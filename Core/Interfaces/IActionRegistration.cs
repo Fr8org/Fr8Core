@@ -9,8 +9,8 @@ namespace Core.Interfaces
 {
     public interface IActionRegistration
     {
-        IEnumerable<ActionRegistrationDO> GetAll();
-        ActionRegistrationDO GetByKey(int curActionRegistrationDOId);
+        IEnumerable<ActionTemplateDO> GetAll();
+        ActionTemplateDO GetByKey(int curActionRegistrationDOId);
        // string AssemblePluginRegistrationName(ActionRegistrationDO curActionRegistrationDO);
     }
 }

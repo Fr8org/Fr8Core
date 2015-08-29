@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class ActionRegistrationRepository : GenericRepository<ActionRegistrationDO>, IActionRegistrationRepository
+    public class ActionRegistrationRepository : GenericRepository<ActionTemplateDO>, IActionRegistrationRepository
     {
         public ActionRegistrationRepository(IUnitOfWork uow)
             : base(uow)
@@ -11,13 +11,13 @@ namespace Data.Repositories
 
         }
 
-        public new void Add(ActionRegistrationDO entity)
+        public new void Add(ActionTemplateDO entity)
         {
             base.Add(entity);
         }
     }
 
-    public interface IActionRegistrationRepository : IGenericRepository<ActionRegistrationDO>
+    public interface IActionRegistrationRepository : IGenericRepository<ActionTemplateDO>
     {
 
     }

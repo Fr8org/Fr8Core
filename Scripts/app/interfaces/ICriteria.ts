@@ -13,7 +13,7 @@ module dockyard.interfaces {
     }
 
     export interface IAction {
-        id: number,
+        actionId: number,
         isTempId: boolean, 
         processNodeTemplateId: number,
         userLabel: string,

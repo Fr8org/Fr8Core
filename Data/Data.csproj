@@ -202,7 +202,7 @@
     <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
-    <Compile Include="Entities\ActionRegistrationDO.cs" />
+    <Compile Include="Entities\ActionTemplateDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
@@ -238,6 +238,10 @@
     <Compile Include="Migrations\201508282358100_merge.cs" />
     <Compile Include="Migrations\201508282358100_merge.Designer.cs">
       <DependentUpon>201508282358100_merge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs" />
+    <Compile Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.Designer.cs">
+      <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.cs" />
@@ -474,6 +478,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508282358100_merge.resx">
       <DependentUpon>201508282358100_merge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.resx">
+      <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
