@@ -8,6 +8,7 @@
         configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;
         userLabel: string;
+        actionTemplateId: number;
 
         constructor(
             processNodeTemplateId: number,
