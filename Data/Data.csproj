@@ -244,6 +244,10 @@
     <Compile Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.Designer.cs">
       <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508292010152_forcemerge.cs" />
+    <Compile Include="Migrations\201508292010152_forcemerge.Designer.cs">
+      <DependentUpon>201508292010152_forcemerge.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.Designer.cs">
@@ -489,6 +493,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.resx">
       <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508292010152_forcemerge.resx">
+      <DependentUpon>201508292010152_forcemerge.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
