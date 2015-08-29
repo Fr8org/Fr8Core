@@ -1,22 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Description;
 using AutoMapper;
-using Core.Helper;
-using Microsoft.AspNet.Identity;
-using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
-using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Web.ViewModels;
-using System.Web.Http.Description;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace Web.Controllers
 {

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -12,10 +10,10 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
 using Data.States;
 using Data.Wrappers;
 using Newtonsoft.Json;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -24,7 +22,7 @@ namespace Core.Services
         private readonly ISubscription _subscription;
         private IPluginRegistration _pluginRegistration;
         private IEnvelope _envelope;
-        private IDocuSignTemplate _docusignTemplate;  //TODO: switch to wrappers
+        private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPluginRegistration _basePluginRegistration;
 
@@ -75,6 +73,7 @@ namespace Core.Services
                     uow.ActionRepository.Add(currentActionDo);
                 }
                 uow.SaveChanges();
+
                 return true;
             }
         }
@@ -86,22 +85,26 @@ namespace Core.Services
                 return uow.ActionRepository.GetByKey(id);
             }
         }
+
         public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
         {
-            ActionDO curActionDO = new ActionDO();
+            var curActionDO = new ActionDO();
             if (curActionRegistrationDO != null)
             {
                 string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
-                curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
-            } 
+                curActionDO.ConfigurationSettings =
+                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
+                        "GetConfigurationSettings", curActionRegistrationDO);
+            }
             else
                 throw new ArgumentNullException("ActionRegistrationDO");
+
             return curActionDO;
         }
 
         public void Delete(int id)
         {
-            ActionDO entity = new ActionDO() { Id = id };
+            var entity = new ActionDO {Id = id};
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -124,7 +127,7 @@ namespace Core.Services
 
                     EventManager.ActionStarted(curAction);
                     var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
-                    Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+                    var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
                     var jsonResult = await Dispatch(curAction, baseUri);
 
                     //check if the returned JSON is Error
@@ -155,6 +158,7 @@ namespace Core.Services
             PayloadMappingsDTO mappings;
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
+
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
@@ -194,9 +198,7 @@ namespace Core.Services
             return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
-
         //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
-
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
             _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -204,13 +206,10 @@ namespace Core.Services
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
-
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
         {
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
-
-
     }
 }
