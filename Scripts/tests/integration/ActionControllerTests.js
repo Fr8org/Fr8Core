@@ -66,7 +66,7 @@ var dockyard;
                     // First POST, create a dummy entry
                     var actions = {
                         actionType: "test action type",
-                        configurationSettings: "test",
+                        configurationSettings: new dockyard.model.ConfigurationSettings(),
                         processNodeTemplateId: 1,
                         isTempId: false,
                         id: null,

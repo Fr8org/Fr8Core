@@ -72,7 +72,7 @@ module dockyard.tests.controller {
             var actions: interfaces.IAction =
                 {
                     actionType: "test action type",
-                    configurationSettings: "test",
+                    configurationSettings: new model.ConfigurationSettings(),
                     processNodeTemplateId: 1,
                     isTempId: false,
                     id: null,

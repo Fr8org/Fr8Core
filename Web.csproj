@@ -595,7 +595,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneConfigureActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\IPaneDefineCriteriaScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneScope.ts" />

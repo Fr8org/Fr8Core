@@ -5,7 +5,7 @@
         isTempId: boolean;
         actionListId: number;
         actionType: string;
-        configurationSettings: string;
+        configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;
         userLabel: string;
 

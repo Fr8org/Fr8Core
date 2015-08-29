@@ -6,7 +6,6 @@
 */
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
-/// <reference path="interfaces/ipaneconfigureactionscope.ts" />
 /// <reference path="interfaces/ipanescope.ts" />
 /// <reference path="interfaces/ipaneselectactionscope.ts" />
 /// <reference path="interfaces/iprocessbuildercontroller.ts" />

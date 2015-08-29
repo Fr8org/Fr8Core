@@ -29,14 +29,25 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
+    export interface IPaneConfigureActionScope extends ng.IScope {
+        onActionChanged: (newValue: model.Action, oldValue: model.Action, scope: IPaneConfigureActionScope) => void;
+        action: model.Action;
+        isVisible: boolean;
+        currentAction: interfaces.IActionVM;
+        configurationSettings: ng.resource.IResource<model.ConfigurationSettings> | model.ConfigurationSettings;
+        cancel: (event: ng.IAngularEvent) => void;
+        save: (event: ng.IAngularEvent) => void;
+    }
+
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
-        public link: (scope: interfaces.IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public link: (scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
-        public controller: ($scope: interfaces.IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public controller: ($scope: IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '='
         };
@@ -45,7 +56,7 @@ module dockyard.directives.paneConfigureAction {
 
         constructor(private $rootScope: interfaces.IAppRootScope, private ActionService: services.IActionService) {
             PaneConfigureAction.prototype.link = (
-                scope: interfaces.IPaneConfigureActionScope,
+                scope: IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
                 attrs: ng.IAttributes) => {
 
@@ -53,7 +64,7 @@ module dockyard.directives.paneConfigureAction {
             };
 
             PaneConfigureAction.prototype.controller = (
-                $scope: interfaces.IPaneConfigureActionScope,
+                $scope: IPaneConfigureActionScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
                 this._$element = $element;
@@ -61,7 +72,7 @@ module dockyard.directives.paneConfigureAction {
                 //Controller goes here
                 $scope.isVisible = true;
 
-                $scope.$watch<model.Action>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<model.Action>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
 
@@ -71,12 +82,12 @@ module dockyard.directives.paneConfigureAction {
             };
         }
 
-        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneConfigureActionScope) {
-
+        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: IPaneConfigureActionScope) {
+            model.ConfigurationSettings
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            var scope = (<interfaces.IPaneConfigureActionScope> event.currentScope);
+            var scope = (<IPaneConfigureActionScope> event.currentScope);
             scope.action = new model.Action(
                 eventArgs.processNodeTemplateId,
                 eventArgs.id,
@@ -86,14 +97,19 @@ module dockyard.directives.paneConfigureAction {
 
             //for now ignore actions which were not saved in the database
             if (eventArgs.isTempId || scope.currentAction == null) return;
-            scope.isVisible = true;
-            //TODO supply real actionRegistrationId 
-            scope.configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });
+            scope.isVisible = true;            
+
+
+            if (scope.currentAction.configurationSettings == null
+                || scope.currentAction.configurationSettings.fields == null
+                || scope.currentAction.configurationSettings.fields.length == 0) {
+
+                (<any>scope.currentAction).configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });  //TODO supply real actionRegistrationId 
+            }
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<interfaces.IPaneConfigureActionScope> event.currentScope).isVisible = false;
-            console.log('hide');
+            (<IPaneConfigureActionScope> event.currentScope).isVisible = false;
         }
 
         //The factory function returns Directive object as per Angular requirements
@@ -120,10 +136,35 @@ module dockyard.directives.paneConfigureAction {
                         "fieldLabel": "SQL Connection String"
                     },
                     {
+                        "type": "textField",
+                        "name": "query",
+                        "required": true,
+                        "value": "",
+                        "fieldLabel": "Custom SQL Query"
+                    },
+                    {
                         "type": "checkboxField",
                         "name": "log_transactions",
                         "selected": false,
                         "fieldLabel": "Log All Transactions?"
+                    },
+                    {
+                        "type": "checkboxField",
+                        "name": "log_transactions1",
+                        "selected": false,
+                        "fieldLabel": "Log Some Transactions?"
+                    },
+                    {
+                        "type": "checkboxField",
+                        "name": "log_transactions2",
+                        "selected": false,
+                        "fieldLabel": "Log No Transactions?"
+                    },
+                    {
+                        "type": "checkboxField",
+                        "name": "log_transactions3",
+                        "selected": false,
+                        "fieldLabel": "Log Failed Transactions?"
                     }
                 ]
             };
