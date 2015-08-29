@@ -1,13 +1,12 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using Core.Interfaces;
 using Core.Services;
+using Data.Interfaces.DataTransferObjects;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Moq;
-using System.Collections.Generic;
-using Utilities;
-using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
 using Data.Interfaces;

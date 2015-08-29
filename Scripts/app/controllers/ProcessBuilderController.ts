@@ -35,17 +35,17 @@ module dockyard.controllers {
 
         private _scope: interfaces.IProcessBuilderScope;
 
-        constructor(
-            private $rootScope: interfaces.IAppRootScope,
-            private $scope: interfaces.IProcessBuilderScope,
-            private StringService: services.IStringService,
-            private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ng.ui.IState,
-            private ActionService: services.IActionService,
-            private $q: ng.IQService,
-            private $http: ng.IHttpService,
-            private urlPrefix: string
-        ) {
+            constructor(
+                private $rootScope: interfaces.IAppRootScope,
+                private $scope: interfaces.IProcessBuilderScope,
+                private StringService: services.IStringService,
+                private LocalIdentityGenerator: services.ILocalIdentityGenerator,
+                private $state: ng.ui.IState,
+                private ActionService: services.IActionService,
+                private $q: ng.IQService,
+                private $http: ng.IHttpService,
+                private urlPrefix: string
+            ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
 
@@ -405,12 +405,12 @@ module dockyard.controllers {
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
 
             //Render Pane Configure Mapping 
-            var pcmEventArgs = new pcm.RenderEventArgs(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId);
+            //var pcmEventArgs = new pcm.RenderEventArgs(
+            //    eventArgs.processNodeTemplateId,
+            //    eventArgs.id,
+            //    eventArgs.isTempId);
 
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
+            //this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
         }
          
         // TODO: do we need this?

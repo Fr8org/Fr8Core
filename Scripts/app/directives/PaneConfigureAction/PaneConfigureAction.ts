@@ -34,13 +34,16 @@ module dockyard.directives.paneConfigureAction {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneConfigureAction implements ng.IDirective {
-        public link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public link: (scope: interfaces.IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public templateUrl = '/AngularTemplate/PaneConfigureAction';
-        public controller: ($scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public scope = {};
+        public controller: ($scope: interfaces.IPaneConfigureActionScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public scope = {
+            currentAction: '='
+        };
         public restrict = 'E';
+        private _$element: ng.IAugmentedJQuery;
 
-        constructor(private $rootScope: interfaces.IAppRootScope) {
+        constructor(private $rootScope: interfaces.IAppRootScope, private ActionService: services.IActionService) {
             PaneConfigureAction.prototype.link = (
                 scope: interfaces.IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
@@ -53,12 +56,18 @@ module dockyard.directives.paneConfigureAction {
                 $scope: interfaces.IPaneConfigureActionScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
+                this._$element = $element;
 
-                //Template function goes here
+                //Controller goes here
+                $scope.isVisible = true;
 
                 $scope.$watch<model.Action>((scope: interfaces.IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], this.onRender);
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
+
+                //TODO: this is test code, remove later
+                $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
+                $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
         }
 
@@ -68,28 +77,62 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<interfaces.IPaneConfigureActionScope> event.currentScope);
-            scope.isVisible = true;
             scope.action = new model.Action(
                 eventArgs.processNodeTemplateId,
                 eventArgs.id,
                 eventArgs.isTempId,
                 eventArgs.actionListId
                 );
+
+            //for now ignore actions which were not saved in the database
+            if (eventArgs.isTempId || scope.currentAction == null) return;
+            scope.isVisible = true;
+            //TODO supply real actionRegistrationId 
+            scope.configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             (<interfaces.IPaneConfigureActionScope> event.currentScope).isVisible = false;
+            console.log('hide');
         }
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = ($rootScope: interfaces.IAppRootScope) => {
-                return new PaneConfigureAction($rootScope);
+            var directive = ($rootScope: interfaces.IAppRootScope, ActionService) => {
+                return new PaneConfigureAction($rootScope, ActionService);
             };
 
-            directive['$inject'] = ['$rootScope'];
+            directive['$inject'] = ['$rootScope', 'ActionService'];
             return directive;
         }
     }
+
+    app.run([
+        "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
+            var configuration = {
+                "fields":
+                [
+                    {
+                        "type": "textField",
+                        "name": "connection_string",
+                        "required": true,
+                        "value": "",
+                        "fieldLabel": "SQL Connection String"
+                    },
+                    {
+                        "type": "checkboxField",
+                        "name": "log_transactions",
+                        "selected": false,
+                        "fieldLabel": "Log All Transactions?"
+                    }
+                ]
+            };
+
+            httpBackend
+                .whenGET("/apimock/Action/configuration/1")
+                .respond(configuration);
+        }
+    ]);
     app.directive('paneConfigureAction', PaneConfigureAction.Factory());
+
 }

@@ -54,6 +54,8 @@ namespace Data.Interfaces
         IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
 
+        IFileRepository FileRepository { get; }
+
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
 

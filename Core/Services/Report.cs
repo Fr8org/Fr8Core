@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Data.Entities;
 using Data.Interfaces;
+using Data.Wrappers;
 using Utilities;
 
 namespace Core.Services

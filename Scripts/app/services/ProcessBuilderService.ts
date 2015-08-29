@@ -4,8 +4,10 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {}
-    export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {}
+    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
+    export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
+        getConfigurationSettings: (actionRegistrationId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationSettingsVM>;
+    }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
 
@@ -18,7 +20,7 @@ module dockyard.services {
     ]);
 
     app.factory('DocuSignTriggerService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource('/apimocks/processtemplate/triggersettings')
+        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/triggersettings')
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
@@ -27,8 +29,18 @@ module dockyard.services {
                 id: '@id'
             },
             {
-                'save': { method: 'POST', isArray: true },
-                'delete': { method: 'DELETE' }
+                'save': {
+                    method: 'POST',
+                    isArray: true
+                },
+                'delete': { method: 'DELETE' },
+                'getConfigurationSettings': {
+                    method: 'GET',
+                    url: '/apimock/Action/configuration/:id'
+                },
+                'params': {
+                    id: 'id'
+                }
             })
     ]);
 }

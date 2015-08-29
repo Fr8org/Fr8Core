@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Data.Interfaces;
+﻿using System.Linq;
 using Core.Services;
+using Data.Interfaces;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -36,7 +31,7 @@ namespace DockyardTest.Integration
 
             // EXECUTE
             // generate a forgot password email
-            var account = ObjectFactory.GetInstance<Account>();
+            var account = ObjectFactory.GetInstance<DockyardAccount>();
             await account.ForgotPasswordAsync(email);
             // get callback url from generated email
             string callbackUrl;

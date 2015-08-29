@@ -1,16 +1,12 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using Core.Interfaces;
+using Core.Services;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Repositories;
 using Data.States;
-using Core.Interfaces;
-using Core.Managers.APIManagers.Packagers;
+using Data.Wrappers;
 using StructureMap;
-using Microsoft.WindowsAzure;
-using Core.Services;
 using Utilities;
 
 namespace Core.Managers
