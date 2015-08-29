@@ -233,5 +233,212 @@ namespace DockyardTest.Services
 
             Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
         }
+		  [Test]
+		  public void GetUpstreamActivities_ActionDOIsNull_ExpectedArgumentNullException()
+		  {
+			  var ex = Assert.Throws<ArgumentNullException>(() => _action.GetUpstreamActivities(null));
+			  Assert.AreEqual("actionDO", ex.ParamName);
+		  }
+		  [Test]
+		  public void GetUpstreamActivities_1Level_ShoudBeOk()
+		  {
+			  // Level 1
+			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
+			  l1_aList.Actions.Add(l1_a1);
+			  l1_a1.ActionList = l1_aList;
+			  l1_aList.Actions.Add(l1_a2);
+			  l1_a2.ActionList = l1_aList;
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  uow.ActionRepository.Add(l1_a1);
+				  uow.ActionRepository.Add(l1_a2);
+				  uow.ActionListRepository.Add(l1_aList);
+
+				  uow.SaveChanges();
+			  }
+			  var upstreamActivities = _action.GetUpstreamActivities(l1_a2);
+
+			  Assert.AreEqual(2, upstreamActivities.Count);
+			  Assert.AreEqual(l1_a1, upstreamActivities[0]);
+			  Assert.AreEqual(l1_aList, upstreamActivities[1]);
+		  }
+		  [Test]
+		  public void GetUpstreamActivities_2Levels_ShoudBeOk()
+		  {
+			  // Level 2
+			  ActionDO l2_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l2_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l2_aList = new ActionListDO() { Ordering = 2, ActionListType = ActionListType.Immediate };
+			  l2_aList.Actions.Add(l2_a1);
+			  l2_a1.ActionList = l2_aList;
+			  l2_aList.Actions.Add(l2_a2);
+			  l2_a2.ActionList = l2_aList;
+
+			  // Level 1
+			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
+			  l1_aList.Actions.Add(l1_a1);
+			  l1_a1.ActionList = l1_aList;
+			  l1_aList.Actions.Add(l1_a2);
+			  l1_a2.ActionList = l1_aList;
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  uow.ActionRepository.Add(l2_a1);
+				  uow.ActionRepository.Add(l2_a2);
+				  uow.ActionListRepository.Add(l2_aList);
+
+				  uow.ActionRepository.Add(l1_a1);
+				  uow.ActionRepository.Add(l1_a2);
+				  uow.ActionListRepository.Add(l1_aList);
+
+				  uow.SaveChanges();
+			  }
+			  var upstreamActivities = _action.GetUpstreamActivities(l2_a1);
+
+			  Assert.AreEqual(4, upstreamActivities.Count);
+			  Assert.AreEqual(l2_a1, upstreamActivities[0]);
+			  Assert.AreEqual(l2_aList, upstreamActivities[1]);
+			  Assert.AreEqual(l1_a1, upstreamActivities[2]);
+			  Assert.AreEqual(l1_aList, upstreamActivities[3]);
+		  }
+		  [Test]
+		  public void GetUpstreamActivities_3Levels_ShoudBeOk()
+		  {
+			  // Level 3
+			  ActionDO l3_a1 = new ActionDO() { Id = 1, };
+			  ActionDO l3_a2 = new ActionDO() { Id = 2, };
+			  ActionDO l3_a3 = new ActionDO() { Id = 3, };
+			  ActionListDO l3_aList = new ActionListDO() { Ordering = 3 , ActionListType = ActionListType.Immediate};
+			  l3_aList.Actions.Add(l3_a1);
+			  l3_a1.ActionList = l3_aList;
+			  l3_aList.Actions.Add(l3_a2);
+			  l3_a2.ActionList = l3_aList;
+			  l3_aList.Actions.Add(l3_a3);
+			  l3_a3.ActionList = l3_aList;
+
+			  // Level 2
+			  ActionDO l2_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l2_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l2_aList = new ActionListDO() { Ordering = 2, ActionListType = ActionListType.Immediate };
+			  l2_aList.Actions.Add(l2_a1);
+			  l2_a1.ActionList = l2_aList;
+			  l2_aList.Actions.Add(l2_a2);
+			  l2_a2.ActionList = l2_aList;
+
+			  // Level 1
+			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
+			  l1_aList.Actions.Add(l1_a1);
+			  l1_a1.ActionList = l1_aList;
+			  l1_aList.Actions.Add(l1_a2);
+			  l1_a2.ActionList = l1_aList;
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  uow.ActionRepository.Add(l3_a1);
+				  uow.ActionRepository.Add(l3_a2);
+				  uow.ActionRepository.Add(l3_a3);
+				  uow.ActionListRepository.Add(l3_aList);
+
+				  uow.ActionRepository.Add(l2_a1);
+				  uow.ActionRepository.Add(l2_a2);
+				  uow.ActionListRepository.Add(l2_aList);
+
+				  uow.ActionRepository.Add(l1_a1);
+				  uow.ActionRepository.Add(l1_a2);
+				  uow.ActionListRepository.Add(l1_aList);
+
+				  uow.SaveChanges();
+			  }
+			  var upstreamActivities = _action.GetUpstreamActivities(l3_a3);
+
+			  Assert.AreEqual(6, upstreamActivities.Count);
+			  Assert.AreEqual(l3_a1, upstreamActivities[0]);
+			  Assert.AreEqual(l3_aList, upstreamActivities[1]);
+			  Assert.AreEqual(l2_a1, upstreamActivities[2]);
+			  Assert.AreEqual(l2_aList, upstreamActivities[3]);
+			  Assert.AreEqual(l1_a1, upstreamActivities[4]);
+			  Assert.AreEqual(l1_aList, upstreamActivities[5]);
+		  }
+		  [Test]
+		  public void GetUpstreamActivities_4Levels_ShoudBeOk()
+		  {
+			  // Level 4
+			  ActionDO l4_a1 = new ActionDO() { Id = 1, };
+			  ActionDO l4_a2 = new ActionDO() { Id = 2, };
+			  ActionDO l4_a3 = new ActionDO() { Id = 3, };
+			  ActionListDO l4_aList = new ActionListDO() { Ordering = 4, ActionListType = ActionListType.Immediate };
+			  l4_aList.Actions.Add(l4_a1);
+			  l4_a1.ActionList = l4_aList;
+			  l4_aList.Actions.Add(l4_a2);
+			  l4_a2.ActionList = l4_aList;
+			  l4_aList.Actions.Add(l4_a3);
+			  l4_a3.ActionList = l4_aList;
+
+			  // Level 3
+			  ActionDO l3_a1 = new ActionDO() { Id = 1, };
+			  ActionDO l3_a2 = new ActionDO() { Id = 2, };
+			  ActionDO l3_a3 = new ActionDO() { Id = 3, };
+			  ActionListDO l3_aList = new ActionListDO() { Ordering = 3, ActionListType = ActionListType.Immediate };
+			  l3_aList.Actions.Add(l3_a1);
+			  l3_a1.ActionList = l3_aList;
+			  l3_aList.Actions.Add(l3_a2);
+			  l3_a2.ActionList = l3_aList;
+			  l3_aList.Actions.Add(l3_a3);
+			  l3_a3.ActionList = l3_aList;
+
+			  // Level 2
+			  ActionDO l2_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l2_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l2_aList = new ActionListDO() { Ordering = 2, ActionListType = ActionListType.Immediate };
+			  l2_aList.Actions.Add(l2_a1);
+			  l2_a1.ActionList = l2_aList;
+			  l2_aList.Actions.Add(l2_a2);
+			  l2_a2.ActionList = l2_aList;
+
+			  // Level 1
+			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
+			  l1_aList.Actions.Add(l1_a1);
+			  l1_a1.ActionList = l1_aList;
+			  l1_aList.Actions.Add(l1_a2);
+			  l1_a2.ActionList = l1_aList;
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  uow.ActionRepository.Add(l3_a1);
+				  uow.ActionRepository.Add(l3_a2);
+				  uow.ActionRepository.Add(l3_a3);
+				  uow.ActionListRepository.Add(l3_aList);
+
+				  uow.ActionRepository.Add(l2_a1);
+				  uow.ActionRepository.Add(l2_a2);
+				  uow.ActionListRepository.Add(l2_aList);
+
+				  uow.ActionRepository.Add(l1_a1);
+				  uow.ActionRepository.Add(l1_a2);
+				  uow.ActionListRepository.Add(l1_aList);
+
+				  uow.SaveChanges();
+			  }
+			  var upstreamActivities = _action.GetUpstreamActivities(l4_a3);
+
+			  Assert.AreEqual(8, upstreamActivities.Count);
+			  Assert.AreEqual(l4_a1, upstreamActivities[0]);
+			  Assert.AreEqual(l4_aList, upstreamActivities[1]);
+			  Assert.AreEqual(l3_a1, upstreamActivities[2]);
+			  Assert.AreEqual(l3_aList, upstreamActivities[3]);
+			  Assert.AreEqual(l2_a1, upstreamActivities[4]);
+			  Assert.AreEqual(l2_aList, upstreamActivities[5]);
+			  Assert.AreEqual(l1_a1, upstreamActivities[6]);
+			  Assert.AreEqual(l1_aList, upstreamActivities[7]);
+		  }
     }
 }
