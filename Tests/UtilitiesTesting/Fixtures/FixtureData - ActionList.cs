@@ -65,7 +65,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestAction21(),
+                CurrentActivity = TestAction21(),
                 ActionListState = ActionListState.Inprocess
             };
         }
@@ -75,7 +75,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestAction21(),
+                CurrentActivity = TestAction21(),
                 ActionListState = ActionListState.Unstarted
             };
         }
@@ -86,7 +86,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 ActionListType = ActionListType.Immediate,
-                CurrentAction = FixtureData.TestAction6(),
+                CurrentActivity = FixtureData.TestAction6(),
                 ActionListState = ActionListState.Unstarted,
                 Actions = new System.Collections.Generic.List<ActionDO>() 
                 { 
@@ -115,7 +115,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = FixtureData.TestAction6(),
+                CurrentActivity = FixtureData.TestAction6(),
                 ActionListState = ActionListState.Unstarted,
                 Actions = new System.Collections.Generic.List<ActionDO>() 
                 { 

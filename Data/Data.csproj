@@ -196,6 +196,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
@@ -251,6 +252,11 @@
     <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs" />
     <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.Designer.cs">
       <DependentUpon>201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs</DependentUpon>
+    </Compile>
+
+    <Compile Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.cs" />
+    <Compile Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.Designer.cs">
+      <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -481,6 +487,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.resx">
       <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+	 <EmbeddedResource Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.resx">
+      <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
