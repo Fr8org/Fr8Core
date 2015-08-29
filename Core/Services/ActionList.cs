@@ -70,7 +70,7 @@ namespace Core.Services
         {
             if (curActionListDO.CurrentActivity == null)
             {
-                throw new ArgumentNullException("ActionList is missing a CurrentAction");
+                throw new Exception("ActionList is missing a CurrentActivity");
             }
             else
             {
@@ -85,28 +85,9 @@ namespace Core.Services
                             uow.ActionListRepository.Attach(curActionListDO);
                             uow.SaveChanges();
 
-                            var actionOrdering = curActionListDO.Actions.OrderBy(o => o.Ordering).Select(s => s.Ordering);
-                            foreach (var order in actionOrdering)
-                            {
-                                //if return string is "completed", it sets the CurrentAction to the next Action in the list
-                                //if not complete set actionlistdo to error
-                                if (curActionListDO.CurrentActivity is ActionDO)
-                                {
-                                    _action.Process((ActionDO)curActionListDO.CurrentActivity);
-                                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed || ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
-                                    {
-                                        ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
-                                            .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering).DefaultIfEmpty(null).FirstOrDefault();
-
-                                        if (actionDO != null)
-                                            curActionListDO.CurrentActivity = actionDO;
-                                    }
-                                    else
-                                    {
-                                        throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, ((ActionDO)curActionListDO.CurrentActivity).ActionState));
-                                    }
-                                }
-                            }
+                            //if return string is "completed", it sets the CurrentAction to the next Action in the list
+                            //if not complete set actionlistdo to error
+                            ProcessNextActivity(curActionListDO);
 
                             curActionListDO.ActionListState = ActionListState.Completed;
                             uow.ActionListRepository.Attach(curActionListDO);
@@ -125,6 +106,43 @@ namespace Core.Services
 
                         throw new Exception(ex.Message);
                     }
+                }
+            }
+        }
+
+        public void ProcessNextActivity(ActionListDO curActionListDO)
+        {
+            if (curActionListDO.CurrentActivity is ActionListDO)
+            {
+                Process((ActionListDO)curActionListDO.CurrentActivity);
+            }
+            else if (curActionListDO.CurrentActivity is ActionDO)
+            {
+                var actionOrdering = curActionListDO.Actions.OrderBy(o => o.Ordering).Select(s => s.Ordering);
+                foreach (var order in actionOrdering)
+                {
+                    _action.Process((ActionDO)curActionListDO.CurrentActivity);
+
+                    SetCurrentActivityPointer(curActionListDO);
+                }
+            }
+        }
+
+        public void SetCurrentActivityPointer(ActionListDO curActionListDO)
+        {
+            if (curActionListDO.CurrentActivity is ActionDO)
+            {
+                if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed || ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
+                {
+                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
+                        .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering).DefaultIfEmpty(null).FirstOrDefault();
+
+                    if (actionDO != null)
+                        curActionListDO.CurrentActivity = actionDO;
+                }
+                else
+                {
+                    throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, ((ActionDO)curActionListDO.CurrentActivity).ActionState));
                 }
             }
         }

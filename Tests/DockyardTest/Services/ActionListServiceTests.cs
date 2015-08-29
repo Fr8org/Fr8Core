@@ -92,5 +92,70 @@ namespace DockyardTest.Services
 
             _actionList.Process(actionListDO);
         }
+
+        [Test]
+        [ExpectedException(ExpectedMessage = "Action List ID: 2. Action status returned: 4")]
+        public void SetCurrentActivityPointer_SetCurrentActivityStateNoCompletedAndInProcess_ThrowException()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList7();
+            var actionDO = (ActionDO)actionListDO.CurrentActivity;
+            actionDO.ActionState = ActionState.Error;
+            actionListDO.CurrentActivity = actionDO;
+
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+
+            _actionList.SetCurrentActivityPointer(actionListDO);
+        }
+
+        [Test]
+        public void SetCurrentActivityPointer_SetCurrentActivityStateCompletedAndInProcess_MoveToNextAction()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList7();
+            //CurrentAcvitityID = 6 and the next ActionID is 7
+            ((ActionDO)actionListDO.CurrentActivity).ActionState = ActionState.Completed;
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+
+            _actionList.SetCurrentActivityPointer(actionListDO);
+
+            ActionDO actionDO = new ActionDO();
+            if (actionListDO.CurrentActivity is ActionDO)
+                actionDO = (ActionDO)actionListDO.CurrentActivity;
+            Assert.AreEqual(actionDO.Id, 7);
+        }
+
+        [Test]
+        public void ProcessNextActivity_CheckLastActionOrder_EqualToCurrentActivity()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList7();
+            ActionDO lastActionDO = actionListDO.Actions.OrderByDescending(o => o.Ordering).FirstOrDefault();
+            _actionMock = new Mock<IAction>();
+            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+
+            _actionList.ProcessNextActivity(actionListDO);
+
+            ActionDO actionDO = new ActionDO();
+            if (actionListDO.CurrentActivity is ActionDO)
+                actionDO = (ActionDO)actionListDO.CurrentActivity;
+            Assert.AreEqual(actionDO.Id, lastActionDO.Id);
+        }
+
+        [Test]
+        [ExpectedException(ExpectedMessage = "ActionList is missing a CurrentActivity")]
+        public void ProcessNextActivity_NextActionListDONull_ThrowException()
+        {
+            ActionListDO actionListDO = FixtureData.TestActionList7();
+            ActionListDO actionListDONext = FixtureData.TestActionList7();
+            actionListDONext.CurrentActivity = null;
+            actionListDO.CurrentActivity = actionListDONext;
+
+            _actionMock = new Mock<IAction>();
+            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Completed; });
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+
+            _actionList.ProcessNextActivity(actionListDO);
+        }
     }
 }
