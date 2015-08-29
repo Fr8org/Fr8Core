@@ -51,8 +51,8 @@ namespace Core.Services
             else
                 throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
             curActionList.Actions.Add(curActionDO);
-            if (curActionList.CurrentAction == null)
-                curActionList.CurrentAction = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
+            if (curActionList.CurrentActivity == null)
+                curActionList.CurrentActivity = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActionListRepository.Add(curActionList);
@@ -68,9 +68,9 @@ namespace Core.Services
 
         public void Process(ActionListDO curActionListDO)
         {
-            if (curActionListDO.CurrentAction == null)
+            if (curActionListDO.CurrentActivity == null)
             {
-                throw new ArgumentNullException("ActionList is missing a CurrentAction");
+                throw new ArgumentNullException("ActionList is missing a CurrentActivity");
             }
             else
             {
@@ -81,33 +81,11 @@ namespace Core.Services
                     {
                         if (curActionListDO.ActionListState == ActionListState.Unstarted)
                         {
-                            curActionListDO.ActionListState = ActionListState.Inprocess;
-                            uow.ActionListRepository.Attach(curActionListDO);
-                            uow.SaveChanges();
+                            SetState(curActionListDO, ActionListState.Inprocess);
 
-                            var actionOrdering = curActionListDO.Actions.OrderBy(o => o.Ordering).Select(s => s.Ordering);
-                            foreach (var order in actionOrdering)
-                            {
-                                //if return string is "completed", it sets the CurrentAction to the next Action in the list
-                                //if not complete set actionlistdo to error
-                                _action.Process(curActionListDO.CurrentAction);
-                                if (curActionListDO.CurrentAction.ActionState == ActionState.Completed || curActionListDO.CurrentAction.ActionState == ActionState.InProcess)
-                                {
-                                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
-                                        .Where(o => o.Ordering > curActionListDO.CurrentAction.Ordering).DefaultIfEmpty(null).FirstOrDefault();
+                            ProcessNextActivity(curActionListDO);
 
-                                    if (actionDO != null)
-                                        curActionListDO.CurrentAction = actionDO;
-                                }
-                                else
-                                {
-                                    throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, curActionListDO.CurrentAction.ActionState));
-                                }
-                            }
-
-                            curActionListDO.ActionListState = ActionListState.Completed;
-                            uow.ActionListRepository.Attach(curActionListDO);
-                            uow.SaveChanges();
+                            SetState(curActionListDO, ActionListState.Completed);
                         }
                         else
                         {
@@ -116,12 +94,57 @@ namespace Core.Services
                     }
                     catch (Exception ex)
                     {
-                        curActionListDO.ActionListState = ActionListState.Error;
-                        uow.ActionListRepository.Attach(curActionListDO);
-                        uow.SaveChanges();
+                        SetState(curActionListDO, ActionListState.Error);
 
                         throw new Exception(ex.Message);
                     }
+                }
+            }
+        }
+
+        private void SetState(ActionListDO actionListDO, int actionListState)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                actionListDO.ActionListState = actionListState;
+                uow.ActionListRepository.Attach(actionListDO);
+                uow.SaveChanges();
+            }
+        }
+
+        public void ProcessNextActivity(ActionListDO curActionListDO)
+        {
+            if (curActionListDO.CurrentActivity is ActionListDO)
+            {
+                Process((ActionListDO)curActionListDO.CurrentActivity);
+            }
+            else if (curActionListDO.CurrentActivity is ActionDO)
+            {
+                var actionOrdering = curActionListDO.Actions.OrderBy(o => o.Ordering).Select(s => s.Ordering);
+                foreach (var order in actionOrdering)
+                {
+                    _action.Process((ActionDO)curActionListDO.CurrentActivity);
+
+                    UpdateCurrentActivityPointer(curActionListDO);
+                }
+            }
+        }
+
+        public void UpdateCurrentActivityPointer(ActionListDO curActionListDO)
+        {
+            if (curActionListDO.CurrentActivity is ActionDO)
+            {
+                if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed || ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
+                {
+                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
+                        .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering).DefaultIfEmpty(null).FirstOrDefault();
+
+                    if (actionDO != null)
+                        curActionListDO.CurrentActivity = actionDO;
+                }
+                else
+                {
+                    throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, ((ActionDO)curActionListDO.CurrentActivity).ActionState));
                 }
             }
         }
