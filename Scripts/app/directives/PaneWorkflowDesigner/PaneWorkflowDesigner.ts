@@ -69,7 +69,7 @@ module dockyard.directives.paneWorkflowDesigner {
         };
 
         var onActionRenamed = function (eventArgs: ActionNameUpdatedEventArgs, scope: IPaneWorkflowDesignerScope) {
-            scope.widget.renameAction(eventArgs.id, eventArgs.userLabel);
+            scope.widget.renameAction(eventArgs.id, eventArgs.name);
         };
 
         return {

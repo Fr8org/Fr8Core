@@ -33,5 +33,7 @@ namespace Data.Entities
         public int ActionTemplateId { get; set; }
         public virtual ActionTemplateDO ActionTemplate { get; set; }
 
+        [NotMapped]
+        public bool IsTempId { get; set; }
 	}
 }

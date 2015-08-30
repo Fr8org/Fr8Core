@@ -238,7 +238,7 @@ module dockyard.controllers {
                     if (self._scope.currentAction != null) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.name)
                             );
                     }
 
@@ -296,7 +296,7 @@ module dockyard.controllers {
                             actionListId
                     );
 
-                action.userLabel = 'New Action #' + Math.abs(id).toString();
+                action.name = 'New Action #' + Math.abs(id).toString();
 
                         self._scope.currentAction = action.toActionVM();
 
@@ -327,7 +327,7 @@ module dockyard.controllers {
                     if (self._scope.currentAction != null) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.name)
                             );
                     }
 
@@ -368,7 +368,7 @@ module dockyard.controllers {
                 if (scope.currentAction != null) {
                     scope.$broadcast(
                         pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.id, scope.currentAction.userLabel)
+                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.id, scope.currentAction.name)
                         );
                 }
 
@@ -461,7 +461,7 @@ module dockyard.controllers {
                 if (self._scope.currentAction != null) {
                     self._scope.$broadcast(
                         pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.name)
                         );
                 }
             });

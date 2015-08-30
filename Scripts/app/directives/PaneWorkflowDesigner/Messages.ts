@@ -124,11 +124,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class ActionNameUpdatedEventArgs {
         public id: number;
-        public userLabel: string;
+        public name: string;
 
-        constructor(id: number, userLabel: string) {
+        constructor(id: number, name: string) {
             this.id = id;
-            this.userLabel = userLabel;
+            this.name = name;
         }
     }
 

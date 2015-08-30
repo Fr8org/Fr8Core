@@ -58,9 +58,14 @@ namespace Core.Services
             ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (currentActionDo.Id != 0)
+                if (currentActionDo.Id > 0)
                 {
                     existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                }
+
+                if (currentActionDo.IsTempId)
+                {
+                    currentActionDo.Id = 0;
                 }
 
                 if (existingActionDo != null)

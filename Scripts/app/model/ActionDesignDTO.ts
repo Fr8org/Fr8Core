@@ -7,7 +7,6 @@
         name: string;
         configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;
-        userLabel: string;
         actionTemplateId: number;
 
         constructor(
@@ -27,7 +26,6 @@
                 id: this.id,
                 isTempId: this.isTempId,
                 processNodeTemplateId: this.processNodeTemplateId,
-                userLabel: this.userLabel,
                 actionListId: this.actionListId,
                 name: this.name,
                 configurationSettings: this.configurationSettings,
@@ -37,7 +35,6 @@
 
         clone(): ActionDesignDTO {
             var result = new ActionDesignDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
-            result.userLabel = this.userLabel;
             result.name = this.name;
 
             return result;
