@@ -66,7 +66,7 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
 
                 //TODO: this is test code, remove later
-                $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
+                $scope.currentAction = <interfaces.IActionVM> { actionId: 1, isTempId: false };
                 $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
         }
@@ -87,7 +87,7 @@ module dockyard.directives.paneConfigureAction {
             //for now ignore actions which were not saved in the database
             if (eventArgs.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
-            //TODO supply real actionRegistrationId 
+            //TODO supply real actionTemplateId 
             scope.configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });
         }
 

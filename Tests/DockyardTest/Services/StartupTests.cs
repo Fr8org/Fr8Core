@@ -35,7 +35,7 @@ namespace DockyardTest.Services
             Startup startup = new Startup();
             startup.RegisterPluginActions();
 
-            var recordCount = _uow.ActionRegistrationRepository.GetQuery().Count();
+            var recordCount = _uow.ActionTemplateRepository.GetQuery().Count();
 
             Assert.GreaterOrEqual(recordCount, 1);
         }

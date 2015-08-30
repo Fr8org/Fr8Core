@@ -104,7 +104,7 @@ namespace DockyardTest.Services
 
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.SetCurrentActivityPointer(actionListDO);
+            _actionList.UpdateCurrentActivityPointer(actionListDO);
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace DockyardTest.Services
             ((ActionDO)actionListDO.CurrentActivity).ActionState = ActionState.Completed;
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.SetCurrentActivityPointer(actionListDO);
+            _actionList.UpdateCurrentActivityPointer(actionListDO);
 
             ActionDO actionDO = new ActionDO();
             if (actionListDO.CurrentActivity is ActionDO)

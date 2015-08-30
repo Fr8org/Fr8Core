@@ -81,17 +81,11 @@ namespace Core.Services
                     {
                         if (curActionListDO.ActionListState == ActionListState.Unstarted)
                         {
-                            curActionListDO.ActionListState = ActionListState.Inprocess;
-                            uow.ActionListRepository.Attach(curActionListDO);
-                            uow.SaveChanges();
+                            SetState(curActionListDO, ActionListState.Inprocess);
 
-                            //if return string is "completed", it sets the CurrentAction to the next Action in the list
-                            //if not complete set actionlistdo to error
                             ProcessNextActivity(curActionListDO);
 
-                            curActionListDO.ActionListState = ActionListState.Completed;
-                            uow.ActionListRepository.Attach(curActionListDO);
-                            uow.SaveChanges();
+                            SetState(curActionListDO, ActionListState.Completed);
                         }
                         else
                         {
@@ -100,13 +94,21 @@ namespace Core.Services
                     }
                     catch (Exception ex)
                     {
-                        curActionListDO.ActionListState = ActionListState.Error;
-                        uow.ActionListRepository.Attach(curActionListDO);
-                        uow.SaveChanges();
+                        SetState(curActionListDO, ActionListState.Error);
 
                         throw new Exception(ex.Message);
                     }
                 }
+            }
+        }
+
+        private void SetState(ActionListDO actionListDO, int actionListState)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                actionListDO.ActionListState = actionListState;
+                uow.ActionListRepository.Attach(actionListDO);
+                uow.SaveChanges();
             }
         }
 
@@ -123,12 +125,12 @@ namespace Core.Services
                 {
                     _action.Process((ActionDO)curActionListDO.CurrentActivity);
 
-                    SetCurrentActivityPointer(curActionListDO);
+                    UpdateCurrentActivityPointer(curActionListDO);
                 }
             }
         }
 
-        public void SetCurrentActivityPointer(ActionListDO curActionListDO)
+        public void UpdateCurrentActivityPointer(ActionListDO curActionListDO)
         {
             if (curActionListDO.CurrentActivity is ActionDO)
             {

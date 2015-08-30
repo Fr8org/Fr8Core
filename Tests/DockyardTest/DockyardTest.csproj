@@ -250,6 +250,7 @@
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\ProcessNodeTemplateTests.cs" />
     <Compile Include="Services\ProcessTemplateTests.cs" />
+    <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />

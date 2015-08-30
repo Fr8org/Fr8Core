@@ -10,10 +10,10 @@ namespace Core.Interfaces
     public interface IAction
     {
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
-        IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount);
+        IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         //void Register(string ActionType, string PluginRegistration, string Version);
-        ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO);
+        ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo);
         IEnumerable<string> GetFieldDataSources(ActionDO curActionDO);
 
         Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO);
