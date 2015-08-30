@@ -136,7 +136,7 @@ namespace DockyardTest.Controllers
         public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            Assert.IsNotNull(curAction.GetConfigurationSettings(1));
+            Assert.IsNotNull(curAction.GetConfigurationSettings(2));
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionTemplateRepository.Add(FixtureData.ActionTemplate());
+                uow.ActionTemplateRepository.Add(FixtureData.TestActionTemplateDO1());
                 uow.SaveChanges();
             }
         }
