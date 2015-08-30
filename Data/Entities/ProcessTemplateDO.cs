@@ -24,7 +24,10 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
+        [ForeignKey("StartingProcessNodeTemplate")]
         public int StartingProcessNodeTemplateId { get; set; }
+
+        public virtual ProcessNodeTemplateDO StartingProcessNodeTemplate { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplateStateTemplate")]
