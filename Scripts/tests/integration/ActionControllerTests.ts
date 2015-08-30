@@ -72,15 +72,13 @@ module dockyard.tests.controller {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationSettings: new model.ConfigurationSettings(),
+                    configurationSettings: utils.Fixtures.configurationSettings,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
-                    actionId: null,
+                    id: 1,
                     fieldMappingSettings: "test",
-                    userLabel: "test",
-                    tempId: 0,
-                    actionListId: null
+                    actionListId: 1
                 };
 
             postInvoker(done, actions);
