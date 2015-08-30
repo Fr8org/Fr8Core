@@ -470,6 +470,9 @@ module dockyard.controllers {
         private PaneSelectTemplate_ProcessTemplateUpdated(eventArgs: pst.ProcessTemplateUpdatedEventArgs) {
             console.log('changed');
 
+            //Update page subtitle
+            this.$state.data.pageSubTitle = eventArgs.processTemplateName
+
             //Update scope variable
             var currentProcessTemplate = this._scope.currentProcessTemplate || <interfaces.IProcessTemplateVM>{}
             currentProcessTemplate.Name = eventArgs.processTemplateName;

@@ -106,6 +106,15 @@ module dockyard.tests.controller {
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
             });
 
+        it("When PaneConfigureAction_MapFieldsClicked is sent, " +
+            "PaneConfigureMapping_Render should be received with correct args", () => {
+                var incomingEventArgs = new pca.MapFieldsClickedEventArgs(new model.ActionDesignDTO(1, 1, false, 1)),
+                    outgoingEvent1Args = new pcm.RenderEventArgs(1, 1, false);
+
+                _$scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_MapFieldsClicked], incomingEventArgs);
+                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
+            });
+
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.ActionSelectingEventArgs(1, 1, 1);

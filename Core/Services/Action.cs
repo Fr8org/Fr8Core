@@ -55,13 +55,19 @@ namespace Core.Services
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
+            ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                if (currentActionDo.Id != 0)
+                {
+                    existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                }
+
                 if (existingActionDo != null)
                 {
                     existingActionDo.ActionList = currentActionDo.ActionList;
                     existingActionDo.ActionListId = currentActionDo.ActionListId;
+                    existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
