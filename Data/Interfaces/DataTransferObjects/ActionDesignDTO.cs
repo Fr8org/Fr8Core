@@ -4,9 +4,6 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDesignDTO : ActionDTOBase
     {
-        [JsonProperty("userLabel")]
-        public string UserLabel { get; set; }
-
         [JsonProperty("actionListId")]
         public int? ActionListId { get; set; }
 

@@ -249,7 +249,6 @@ namespace DockyardTest.Controllers
             return new ActionDesignDTO
             {
                 Id = actionId,
-                UserLabel = "AzureSqlAction",
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",

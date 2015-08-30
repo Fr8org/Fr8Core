@@ -124,7 +124,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 6,
-                Name = "Action 6",
                 ActionListId = 1,
                 Ordering = 2,
                 ActionState = ActionState.Unstarted,
