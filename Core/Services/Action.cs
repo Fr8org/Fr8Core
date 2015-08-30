@@ -224,13 +224,14 @@ namespace Core.Services
 				var aList = action.ActionList;
 				if (aList != null)
 				{
-					List<ActionListDO> descOrderedActionLists = uow.ActionListRepository.GetAll().OrderByDescending(x => x.Ordering).ToList();
+					List<ActionListDO> descOrderedActionLists = uow.ActionListRepository.GetAll().Where(y => y.ProcessNodeTemplateID == aList.ProcessNodeTemplateID)
+						.OrderByDescending(x => x.Ordering).ToList();
 					Stack<ActionListDO> stack = new Stack<ActionListDO>();
 					stack.Push(aList);
 					while (stack.Count != 0)
 					{
 						aList = stack.Pop();
-						var lowerAction = aList.Actions.OrderBy(x => x.Id).FirstOrDefault();
+						var lowerAction = aList.Actions.OrderBy(x => x.Ordering).FirstOrDefault();
 						if (lowerAction != null)
 							result.Add(lowerAction);
 						result.Add(aList);
@@ -254,19 +255,21 @@ namespace Core.Services
 				var aList = action.ActionList;
 				if (aList != null)
 				{
-					List<ActionListDO> orderedActionLists = uow.ActionListRepository.GetAll().OrderBy(x => x.Ordering).ToList();
-					Stack<ActionListDO> stack = new Stack<ActionListDO>();
-					stack.Push(aList);
-					while (stack.Count != 0)
+					var higherActions = aList.Actions.OrderBy(x => x.Id).Where(y => y.Id > action.Id);
+					result.AddRange(higherActions);
+					List<ActionListDO> orderedActionLists = uow.ActionListRepository.GetAll().OrderBy(x => x.Ordering).Where(y => y.Ordering > aList.Ordering).ToList();
+					Queue<ActionListDO> queue = new Queue<ActionListDO>(orderedActionLists);
+					queue.Enqueue(aList);
+					while (queue.Count != 0)
 					{
-						aList = stack.Pop();
-						var higherAction = aList.Actions.OrderBy(x => x.Id).LastOrDefault();
-						if (higherAction != null)
-							result.Add(higherAction);
+						aList = queue.Dequeue();
+						var actionsOrderedById = aList.Actions.OrderBy(x => x.Id);
+						if (actionsOrderedById.Count() != 0)
+							result.AddRange(actionsOrderedById);
 						var nextActionList = orderedActionLists.Where(x => x.Ordering > aList.Ordering).FirstOrDefault();
 						if (nextActionList != null)
 						{
-							stack.Push(nextActionList);
+							//queue.Push(nextActionList);
 							result.Add(nextActionList);
 						}
 					}
