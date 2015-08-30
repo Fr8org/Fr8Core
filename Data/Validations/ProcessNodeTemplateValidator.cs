@@ -31,7 +31,7 @@ namespace Data.Validations
                 .WithMessage("ParentTemplateId must be a valid Id for ProcessTemplate");
 
             RuleFor(pntDO => pntDO.Criteria).NotNull()
-                .Must(lst => lst.Count > 0 )
+                .Must(lst => lst.Count > 0)
                 .WithMessage("Must have at least one child Criteria");
 
             RuleFor(pntDO => pntDO.ActionLists).NotNull()

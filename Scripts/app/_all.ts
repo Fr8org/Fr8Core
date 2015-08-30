@@ -6,7 +6,6 @@
 */
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
-/// <reference path="interfaces/ipaneconfigureactionscope.ts" />
 /// <reference path="interfaces/ipanescope.ts" />
 /// <reference path="interfaces/ipaneselectactionscope.ts" />
 /// <reference path="interfaces/iprocessbuildercontroller.ts" />
@@ -20,7 +19,7 @@
 /*
     MODEL
 */
-/// <reference path="model/action.ts" />
+/// <reference path="model/actiondesigndto.ts" />
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />

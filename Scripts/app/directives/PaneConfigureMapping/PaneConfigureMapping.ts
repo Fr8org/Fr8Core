@@ -124,6 +124,7 @@ module dockyard.directives.paneConfigureMapping {
             }
 
             var onRender = () => {
+                debugger;
                 render();
                 transform();
             }

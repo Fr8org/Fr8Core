@@ -120,16 +120,16 @@ module dockyard.directives.paneSelectAction {
 
                 this.PopulateData($scope, $http, urlPrefix);
 
-                $scope.$watch<model.Action>(
+                $scope.$watch<model.ActionDesignDTO>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
                     var eventArgs = new ActionTypeSelectedEventArgs(
                         $scope.action.processNodeTemplateId,
-                        $scope.action.actionId,
+                        $scope.action.id,
                         $scope.action.isTempId,
                         $scope.action.actionListId,
-                        $scope.action.actionType,
+                        $scope.action.name,
                         $scope.action.userLabel);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                 }
@@ -138,13 +138,13 @@ module dockyard.directives.paneSelectAction {
                     var afterRemove = function () {
                         $scope.$emit(
                             MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                            new ActionRemovedEventArgs($scope.action.actionId, $scope.action.isTempId)
+                            new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
                             );
                     };
 
                     var self = this;
                     if (!$scope.action.isTempId) {
-                        var url = urlPrefix + '/Action/' + $scope.action.actionId;
+                        var url = urlPrefix + '/Action/' + $scope.action.id;
                         $http.delete(url)
                             .success(function () {
                                 afterRemove();
@@ -161,7 +161,7 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: interfaces.IPaneSelectActionScope) {
 
         }
 

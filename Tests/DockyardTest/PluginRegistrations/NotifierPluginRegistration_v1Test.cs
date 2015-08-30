@@ -16,8 +16,8 @@ namespace DockyardTest.PluginRegistrations
     {
         private NotifierPluginRegistration_v1 _notifierPluginRegistration_v1;
 #region configuration setting Json
-        private const string emailAction = @"{""FieldDefinitions"":[{""Name"":""Email Address"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Friendly Name"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Subject"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Body"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""}]}";
-        private const string textMessageAction = @"{""FieldDefinitions"":[{""Name"":""Phone Number"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""},{""Name"":""Message"",""Required"":""true"",""Value"":"""",""FieldLabel"":""""}]}";
+        private const string emailAction = @"{""Fields"":[{""Name"":""Email Address"",""Required"":true,""Value"":"""",""FieldLabel"":"""",""Type"":""textboxField"",""Selected"":false},{""Name"":""Friendly Name"",""Required"":true,""Value"":"""",""FieldLabel"":"""",""Type"":""textboxField"",""Selected"":false},{""Name"":""Subject"",""Required"":true,""Value"":"""",""FieldLabel"":"""",""Type"":""textboxField"",""Selected"":false},{""Name"":""Body"",""Required"":true,""Value"":"""",""FieldLabel"":"""",""Type"":""textboxField"",""Selected"":false}]}";
+        private const string textMessageAction = @"{""Fields"":[{""Name"":""Phone Number"",""Required"":true,""Value"":"""",""FieldLabel"":"""",""Type"":""textboxField"",""Selected"":false},{""Name"":""Message"",""Required"":true,""Value"":"""",""FieldLabel"":"""",""Type"":""textboxField"",""Selected"":false}]}";
 #endregion
 
         [SetUp]
@@ -50,8 +50,8 @@ namespace DockyardTest.PluginRegistrations
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public void GetConfigurationSettings_CheckForAcitonIsNullOrEmpy()
         {
-            ActionDO curActionUserLableEmpty = FixtureData.TestAction6();
-            _notifierPluginRegistration_v1.GetConfigurationSettings(curActionUserLableEmpty);
+            ActionDO curActionNameEmpty = FixtureData.TestAction6();
+            _notifierPluginRegistration_v1.GetConfigurationSettings(curActionNameEmpty);
         }
 
         [Test]

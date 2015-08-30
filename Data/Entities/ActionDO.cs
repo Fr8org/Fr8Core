@@ -5,11 +5,9 @@ using Data.Wrappers;
 
 namespace Data.Entities
 {
-	public class ActionDO: ActivityDO
+    public class ActionDO : ActivityDO
 	{
-        public string UserLabel{ get; set; }
-
-        public string ActionType { get; set; }
+        public string Name { get; set; }
 
         [ForeignKey("ActionList")]
         public int? ActionListId { get; set; }
@@ -30,5 +28,10 @@ namespace Data.Entities
 
         [NotMapped]
 	    public string DocuSignTemplateId { get; set; }
+
+        [ForeignKey("ActionTemplate")]
+        public int ActionTemplateId { get; set; }
+        public virtual ActionTemplateDO ActionTemplate { get; set; }
+
 	}
 }

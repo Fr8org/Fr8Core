@@ -55,18 +55,23 @@ namespace Core.Services
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
+            ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                if (currentActionDo.Id != 0)
+                {
+                    existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                }
+
                 if (existingActionDo != null)
                 {
                     existingActionDo.ActionList = currentActionDo.ActionList;
                     existingActionDo.ActionListId = currentActionDo.ActionListId;
-                    existingActionDo.ActionType = currentActionDo.ActionType;
+                    existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
+                    existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
-                    existingActionDo.UserLabel = currentActionDo.UserLabel;
                 }
                 else
                 {
@@ -183,7 +188,7 @@ namespace Core.Services
                 actionPayloadDTO.PayloadMappings = mappings;
             }
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDTO);
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
             return jsonResult;
         }
