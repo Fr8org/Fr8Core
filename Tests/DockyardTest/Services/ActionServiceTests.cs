@@ -60,9 +60,29 @@ namespace DockyardTest.Services
         [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
+            var expectedResult = new ConfigurationSettingsDTO()
+            {
+                Fields = new List<FieldDefinitionDTO>(){
+                    new FieldDefinitionDTO()
+                    {
+                        Type= "textField",
+                        FieldLabel = "SQL Connection String",
+                        Value = "",
+                        Name = "connection_string",
+                        Required = true,
+                        Selected = false
+                    }
+                }
+            };
+
             var curActionTemplate = FixtureData.TestActionTemplateDO1();
-            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-            Assert.AreEqual(_action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings, curJsonResult);
+            string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+            ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+            Assert.AreEqual(1, result.Fields.Count);
+            Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+            Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+            Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+            Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
         }
 
         [Test]

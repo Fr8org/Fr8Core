@@ -142,53 +142,10 @@ module dockyard.directives.paneConfigureAction {
 
     app.run([
         "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
-            var configuration = {
-                "fields":
-                [
-                    {
-                        "type": "textField",
-                        "name": "connection_string",
-                        "required": true,
-                        "value": "",
-                        "fieldLabel": "SQL Connection String"
-                    },
-                    {
-                        "type": "textField",
-                        "name": "query",
-                        "required": true,
-                        "value": "",
-                        "fieldLabel": "Custom SQL Query"
-                    },
-                    {
-                        "type": "checkboxField",
-                        "name": "log_transactions",
-                        "selected": false,
-                        "fieldLabel": "Log All Transactions?"
-                    },
-                    {
-                        "type": "checkboxField",
-                        "name": "log_transactions1",
-                        "selected": false,
-                        "fieldLabel": "Log Some Transactions?"
-                    },
-                    {
-                        "type": "checkboxField",
-                        "name": "log_transactions2",
-                        "selected": false,
-                        "fieldLabel": "Log No Transactions?"
-                    },
-                    {
-                        "type": "checkboxField",
-                        "name": "log_transactions3",
-                        "selected": false,
-                        "fieldLabel": "Log Failed Transactions?"
-                    }
-                ]
-            };
 
             httpBackend
                 .whenGET("/apimock/Action/configuration/1")
-                .respond(configuration);
+                .respond(tests.utils.Fixtures.configurationSettings);
         }
     ]);
     app.directive('paneConfigureAction', PaneConfigureAction.Factory());
