@@ -107,6 +107,8 @@ namespace DockyardTest.Controllers
         /// </summary>
         private ActionDO CreateActionDO()
         {
+            var actionTemplate = FixtureData.ActionTemplate();
+
             return new ActionDO
             {
                 Id = 10,
@@ -117,7 +119,10 @@ namespace DockyardTest.Controllers
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+
             };
         }
 

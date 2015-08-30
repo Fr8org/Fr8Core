@@ -10,6 +10,8 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionWriteSqlServer1()
         {
+            var actionTemplate = ActionTemplate();
+
             var curActionDO = new ActionDO
             {
                 Id = 54,
@@ -20,7 +22,9 @@ namespace UtilitiesTesting.Fixtures
                 FieldMappingSettings = "",
                 PayloadMappings = "",
                 Ordering = 1,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
             return curActionDO;
         }
@@ -41,10 +45,9 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             var curActionDO = new ActionDO
             {
-                Id = actionTemplate.Id,
                 UserLabel = "Action 1",
-                ActionTemplateId = 1,
-                ActionTemplate = actionTemplate
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate,
             };
             return curActionDO;
         }
@@ -61,16 +64,20 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestAction2()
         {
+            var actionTemplate = ActionTemplate();
             var curActionDO = new ActionDO
             {
                 Id = 2,
-                UserLabel = "Action 2"
+                UserLabel = "Action 2",
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
             return curActionDO;
         }
 
         public ActionDO TestAction3()
         {
+            var actionTemplate = ActionTemplate();
             var origActionDO = new ActionDO()
             {
                 ActionListId = null,
@@ -79,7 +86,9 @@ namespace UtilitiesTesting.Fixtures
                 ConfigurationSettings = "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 UserLabel = "my test action",
-                Ordering = 3
+                Ordering = 3,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
 
             return origActionDO;
@@ -88,49 +97,62 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestAction4()
         {
+            var actionTemplate = ActionTemplate();
             var curActionDO = new ActionDO
             {
                 Id = 3,
-                Name = "Send an Email"
+                Name = "Send an Email",
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
             return curActionDO;
         }
         public static ActionDO TestAction5()
         {
+            var actionTemplate = ActionTemplate();
             var curActionDO = new ActionDO
             {
                 Id = 4,
-                Name = "Send a Text (SMS) Message"
+                Name = "Send a Text (SMS) Message",
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
             return curActionDO;
         }
 
         public static ActionDO TestAction6()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 6,
                 UserLabel = "Action 6",
                 ActionListId = 1,
                 Ordering = 2,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
         public static ActionDO TestAction7()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 7,
                 UserLabel = "Action 7",
                 ActionListId = 1,
                 Ordering = 3,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
         public static ActionDO TestAction8()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 8,
@@ -140,57 +162,72 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.Unstarted,
                 ActionList = FixtureData.TestActionList6(),
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
-                PayloadMappings = "x"
+                PayloadMappings = "x",
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
         public static ActionDO TestAction10()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 5,
                 UserLabel = "Action 5",
                 ActionListId = 1,
                 Ordering = 1,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
         public static ActionDO TestAction9()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 2,
-                ActionState = ActionState.Error
+                ActionState = ActionState.Error,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
 
         public static ActionDO TestAction20()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 1,
                 UserLabel = "Action 1",
                 ActionListId = 1,
-                Ordering = 1
+                Ordering = 1,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
         public static ActionDO TestAction21()
         {
+            var actionTemplate = ActionTemplate();
             return new ActionDO
             {
                 Id = 2,
                 UserLabel = "Action 2",
                 ActionListId = 1,
-                Ordering = 2
+                Ordering = 2,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
         public static ActionDO IntegrationTestAction()
         {
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            var actionTemplate = ActionTemplate();
 
             var processDo = new ProcessDO()
             {
@@ -216,7 +253,9 @@ namespace UtilitiesTesting.Fixtures
                 Name = "testaction",
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FixtureData.FieldMappings,
-                Id = 1
+                Id = 1,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
 
             return actionDo;
@@ -224,6 +263,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestActionUnstarted()
         {
+            var actionTemplate = ActionTemplate();
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
             var processDo = new ProcessDO()
             {
@@ -247,7 +287,9 @@ namespace UtilitiesTesting.Fixtures
                 Name = "testaction",
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ActionList = actionListDo,
-                FieldMappingSettings = FixtureData.FieldMappings
+                FieldMappingSettings = FixtureData.FieldMappings,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
     }
