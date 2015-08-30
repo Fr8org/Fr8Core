@@ -13,10 +13,9 @@ module dockyard.interfaces {
     }
 
     export interface IActionDesignDTO {
-        actionId: number,
+        id: number,
         isTempId: boolean, 
         processNodeTemplateId: number,
-        userLabel: string,
         actionListId: number,
         name: string;
         configurationSettings: model.ConfigurationSettings;

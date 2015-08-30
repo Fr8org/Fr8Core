@@ -46,7 +46,7 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.$emit(
                 MessageType[MessageType.PaneWorkflowDesigner_ActionSelecting],
                 new ActionSelectingEventArgs(eventArgs.criteriaId,
-                    eventArgs.action.actionId, eventArgs.actionListType)
+                    eventArgs.action.id, eventArgs.actionListType)
                 );
         };
 

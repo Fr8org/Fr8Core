@@ -47,7 +47,7 @@ module dockyard.tests.controller {
             }).fail(function (response) {
                 errorHandler(response, done);
             });
-        };
+        }; 
 
         var postInvoker = function (done, dataToSave) {
             $.ajax({

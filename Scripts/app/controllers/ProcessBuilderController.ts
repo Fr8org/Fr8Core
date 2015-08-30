@@ -238,7 +238,7 @@ module dockyard.controllers {
                     if (self._scope.currentAction != null) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.actionId, self._scope.currentAction.userLabel)
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
                             );
                     }
 
@@ -320,14 +320,14 @@ module dockyard.controllers {
             self.saveProcessNodeTemplate(function () {
                 var originalId = null;
                 if (self._scope.currentAction) {
-                    originalId = self._scope.currentAction.actionId;
+                    originalId = self._scope.currentAction.id;
                 }
 
                 self.SaveAction(function (savedAction: any) {
                     if (self._scope.currentAction != null) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.actionId, self._scope.currentAction.userLabel)
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
                             );
                     }
 
@@ -368,7 +368,7 @@ module dockyard.controllers {
                 if (scope.currentAction != null) {
                     scope.$broadcast(
                         pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.actionId, scope.currentAction.userLabel)
+                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.id, scope.currentAction.userLabel)
                         );
                 }
 
@@ -396,7 +396,7 @@ module dockyard.controllers {
             //Render Pane Configure Mapping 
             var pcmEventArgs = new pcm.RenderEventArgs(
                 eventArgs.action.processNodeTemplateId,
-                eventArgs.action.actionId,
+                eventArgs.action.id,
                 eventArgs.action.isTempId);
             debugger;
             this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
@@ -461,7 +461,7 @@ module dockyard.controllers {
                 if (self._scope.currentAction != null) {
                     self._scope.$broadcast(
                         pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.actionId, self._scope.currentAction.userLabel)
+                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
                         );
                 }
             });
@@ -498,7 +498,7 @@ module dockyard.controllers {
 
                 var promise = self.ActionService.save(
                     {
-                        id: self._scope.currentAction.actionId
+                        id: self._scope.currentAction.id
                     },
                     self._scope.currentAction,
                     null,
@@ -509,11 +509,11 @@ module dockyard.controllers {
                     if (self._scope.currentAction.isTempId) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
-                            new pwd.ActionTempIdReplacedEventArgs(self._scope.currentAction.actionId, data[0].id)
+                            new pwd.ActionTempIdReplacedEventArgs(self._scope.currentAction.id, data[0].id)
                             );
 
                         if (data) {
-                            self._scope.currentAction.actionId = data[0].Id;
+                            self._scope.currentAction.id = data[0].Id;
                             self._scope.currentAction.isTempId = false;
                         }
                     }
@@ -557,7 +557,7 @@ module dockyard.controllers {
                     configurationSettings: new model.ConfigurationSettings(),
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
-                    actionId: 1,
+                    id: 1,
                     isTempId: false,
                     fieldMappingSettings: "",
                     userLabel: "test",

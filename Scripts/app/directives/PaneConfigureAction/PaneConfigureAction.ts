@@ -87,7 +87,7 @@ module dockyard.directives.paneConfigureAction {
                 
                 //TODO: this is test code, remove later
                 $scope.isVisible = true;
-                $scope.currentAction = <interfaces.IActionVM> { actionId: 1, isTempId: false };
+                $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
                 $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
         }

@@ -126,7 +126,7 @@ module dockyard.directives.paneSelectAction {
                 $scope.ActionTypeSelected = () => {
                     var eventArgs = new ActionTypeSelectedEventArgs(
                         $scope.action.processNodeTemplateId,
-                        $scope.action.actionId,
+                        $scope.action.id,
                         $scope.action.isTempId,
                         $scope.action.actionListId,
                         $scope.action.name,
@@ -138,13 +138,13 @@ module dockyard.directives.paneSelectAction {
                     var afterRemove = function () {
                         $scope.$emit(
                             MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                            new ActionRemovedEventArgs($scope.action.actionId, $scope.action.isTempId)
+                            new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
                             );
                     };
 
                     var self = this;
                     if (!$scope.action.isTempId) {
-                        var url = urlPrefix + '/Action/' + $scope.action.actionId;
+                        var url = urlPrefix + '/Action/' + $scope.action.id;
                         $http.delete(url)
                             .success(function () {
                                 afterRemove();

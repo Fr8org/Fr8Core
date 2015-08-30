@@ -1,7 +1,7 @@
 ﻿module dockyard.model {
     export class ActionDesignDTO implements interfaces.IActionDesignDTO {
         processNodeTemplateId: number;
-        actionId: number;
+        id: number;
         isTempId: boolean;
         actionListId: number;
         name: string;
@@ -17,14 +17,14 @@
             actionListId: number
         ) {
             this.processNodeTemplateId = processNodeTemplateId;
-            this.actionId = id;
+            this.id = id;
             this.isTempId = isTempId;
             this.actionListId = actionListId;
         }
 
         toActionVM(): interfaces.IActionVM {
             return <interfaces.IActionVM> {
-                actionId: this.actionId,
+                id: this.id,
                 isTempId: this.isTempId,
                 processNodeTemplateId: this.processNodeTemplateId,
                 userLabel: this.userLabel,
@@ -36,7 +36,7 @@
         }
 
         clone(): ActionDesignDTO {
-            var result = new ActionDesignDTO(this.processNodeTemplateId, this.actionId, this.isTempId, this.actionListId);
+            var result = new ActionDesignDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
             result.userLabel = this.userLabel;
             result.name = this.name;
 
