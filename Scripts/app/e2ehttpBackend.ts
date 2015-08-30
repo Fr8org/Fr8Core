@@ -5,7 +5,7 @@ app.constant('urlPrefix', '/api');
 app.run([
     '$httpBackend', httpBackend => {
         var validation = (url) => {
-            return url.indexOf("/apimocks") === -1;
+            return url.indexOf("/apimock") === -1;
         }
         httpBackend.whenGET(validation).passThrough();
         httpBackend.whenGET(validation).passThrough();

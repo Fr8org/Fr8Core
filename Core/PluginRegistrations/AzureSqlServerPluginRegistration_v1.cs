@@ -40,7 +40,7 @@ namespace Core.PluginRegistrations
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+        public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
         {
             return "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
         }

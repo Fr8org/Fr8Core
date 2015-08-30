@@ -5,30 +5,30 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-        public static ActionRegistrationDO TestActionRegistration1()
+        public static ActionTemplateDO TestActionTemplate1()
 		{
-            ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO
+            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
 			{
 				Id = 1,
                 ActionType = "Write to Sql Server",
                 ParentPluginRegistration = "pluginAzureSqlServer",
                 Version="v3"
 			};
-            return actionRegistrationDO;
+            return actionTemplateDo;
 		}
 
-        public static ActionRegistrationDO TestActionRegistration2()
+        public static ActionTemplateDO TestActionTemplate2()
         {
-            ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO
+            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
             {
                 Id = 1,
                 Version = "v4"                
             };
-            return actionRegistrationDO;
+            return actionTemplateDo;
         }
-        public static ActionRegistrationDO TestActionRegistrationDO1()
+        public static ActionTemplateDO TestActionTemplateDO1()
         {
-            var curActionDO = new ActionRegistrationDO
+            var curActionDO = new ActionTemplateDO
             {
                 Id = 1,
                 ActionType = "Type1",

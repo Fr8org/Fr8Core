@@ -206,5 +206,34 @@ namespace UtilitiesTesting.Fixtures
 
             return actionDo;
         }
+
+        public static ActionDO TestActionUnstarted()
+        {
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            var processDo = new ProcessDO()
+            {
+                Id = 1,
+                EnvelopeId = envelopeId,
+                ProcessState = 1
+            };
+
+            var actionListDo = new ActionListDO()
+            {
+                Process = processDo,
+                ProcessID = ProcessState.Unstarted,
+                Id = 1,
+                ActionListType = ActionListType.Immediate
+            };
+
+            return new ActionDO
+            {
+                Id = 1,
+                ActionState = ActionState.Unstarted,
+                ActionType = "testaction",
+                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ActionList = actionListDo,
+                FieldMappingSettings = FixtureData.FieldMappings
+            };
+        }
     }
 }

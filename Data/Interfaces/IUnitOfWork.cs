@@ -47,7 +47,7 @@ namespace Data.Interfaces
         IProcessTemplateRepository ProcessTemplateRepository { get; }
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
-        ActionRegistrationRepository ActionRegistrationRepository { get; }
+        ActionTemplateRepository ActionTemplateRepository { get; }
         ActionListRepository ActionListRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 

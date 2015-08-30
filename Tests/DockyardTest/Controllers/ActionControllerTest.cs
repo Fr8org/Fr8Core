@@ -121,17 +121,17 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+                var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+                Assert.AreEqual(_action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings, curJsonResult);
             }
         }
 
         [Test]
         [Category("ActionController.GetConfigurationSettings")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionController_NULL_ActionRegistration()
+        public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
             Assert.IsNotNull(curAction.GetConfigurationSettings(1));
@@ -143,10 +143,10 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+                var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string assembeledName = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1";
-                Assert.AreEqual(_pluginRegistration.AssembleName(curActionRegistration), assembeledName);
+                Assert.AreEqual(_pluginRegistration.AssembleName(curActionTemplate), assembeledName);
             }
         }
 
@@ -156,10 +156,10 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+                var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionRegistration), curJsonResult);
+                Assert.AreEqual(_pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionTemplate), curJsonResult);
             }
         }
 

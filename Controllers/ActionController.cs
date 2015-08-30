@@ -18,12 +18,12 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
-        private readonly IActionRegistration _actionRegistration;
+        private readonly IActionTemplate _actionTemplate;
 
         public ActionController()
         {
 			_action = ObjectFactory.GetInstance<IAction>();
-            _actionRegistration = ObjectFactory.GetInstance<IActionRegistration>();
+            _actionTemplate = ObjectFactory.GetInstance<IActionTemplate>();
         }
 
         public ActionController(IAction service)
@@ -40,7 +40,7 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        [ResponseType(typeof(IEnumerable<ActionRegistrationDTO>))]
+        [ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
         public IHttpActionResult GetAvailableActions()
         {
             var userId = User.Identity.GetUserId();
@@ -49,7 +49,7 @@ namespace Web.Controllers
                 var curDockyardAccount = uow.UserRepository.GetByKey(userId);
                 var availableActions = _action
                     .GetAvailableActions(curDockyardAccount)
-                    .Select(x => Mapper.Map<ActionRegistrationDTO>(x))
+                    .Select(x => Mapper.Map<ActionTemplateDTO>(x))
                     .ToList();
             
                 return Ok(availableActions);
@@ -91,11 +91,10 @@ namespace Web.Controllers
 
         [HttpGet]
         [Route("actions/configuration")]
-        public string GetConfigurationSettings(int curActionRegistrationId)
-        {
-            
-            ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
-            return _action.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
+        public string GetConfigurationSettings(int curActionTemplateId)
+        {            
+            ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
+            return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
         }
 
 

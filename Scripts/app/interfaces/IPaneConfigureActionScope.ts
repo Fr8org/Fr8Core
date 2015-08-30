@@ -5,6 +5,8 @@ module dockyard.interfaces {
         onActionChanged: (newValue: model.Action, oldValue: model.Action, scope: IPaneConfigureActionScope) => void;
         action: model.Action;
         isVisible: boolean;
+        currentAction: IActionVM;
+        configurationSettings: ng.resource.IResource<model.ConfigurationSettings>;
         cancel: (event: ng.IAngularEvent) => void;
         save: (event: ng.IAngularEvent) => void;
     }

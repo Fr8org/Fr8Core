@@ -35,17 +35,17 @@ module dockyard.controllers {
 
         private _scope: interfaces.IProcessBuilderScope;
 
-        constructor(
-            private $rootScope: interfaces.IAppRootScope,
-            private $scope: interfaces.IProcessBuilderScope,
-            private StringService: services.IStringService,
-            private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ng.ui.IState,
-            private ActionService: services.IActionService,
-            private $q: ng.IQService,
-            private $http: ng.IHttpService,
-            private urlPrefix: string
-        ) {
+            constructor(
+                private $rootScope: interfaces.IAppRootScope,
+                private $scope: interfaces.IProcessBuilderScope,
+                private StringService: services.IStringService,
+                private LocalIdentityGenerator: services.ILocalIdentityGenerator,
+                private $state: ng.ui.IState,
+                private ActionService: services.IActionService,
+                private $q: ng.IQService,
+                private $http: ng.IHttpService,
+                private urlPrefix: string
+            ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
 
@@ -225,7 +225,7 @@ module dockyard.controllers {
                     if (self._scope.currentAction != null) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.actionId, self._scope.currentAction.userLabel)
                             );
                     }
 
@@ -307,14 +307,14 @@ module dockyard.controllers {
             self.saveProcessNodeTemplate(function () {
                 var originalId = null;
                 if (self._scope.currentAction) {
-                    originalId = self._scope.currentAction.id;
+                    originalId = self._scope.currentAction.actionId;
                 }
 
                 self.SaveAction(function (savedAction: any) {
                     if (self._scope.currentAction != null) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                            new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.actionId, self._scope.currentAction.userLabel)
                             );
                     }
 
@@ -355,7 +355,7 @@ module dockyard.controllers {
                 if (scope.currentAction != null) {
                     scope.$broadcast(
                         pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.id, scope.currentAction.userLabel)
+                        new pwd.ActionNameUpdatedEventArgs(scope.currentAction.actionId, scope.currentAction.userLabel)
                         );
                 }
 
@@ -405,12 +405,12 @@ module dockyard.controllers {
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
 
             //Render Pane Configure Mapping 
-            var pcmEventArgs = new pcm.RenderEventArgs(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId);
+            //var pcmEventArgs = new pcm.RenderEventArgs(
+            //    eventArgs.processNodeTemplateId,
+            //    eventArgs.id,
+            //    eventArgs.isTempId);
 
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
+            //this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
         }
          
         // TODO: do we need this?
@@ -442,7 +442,7 @@ module dockyard.controllers {
                 if (self._scope.currentAction != null) {
                     self._scope.$broadcast(
                         pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.id, self._scope.currentAction.userLabel)
+                        new pwd.ActionNameUpdatedEventArgs(self._scope.currentAction.actionId, self._scope.currentAction.userLabel)
                         );
                 }
             });
@@ -457,7 +457,7 @@ module dockyard.controllers {
 
                 var promise = self.ActionService.save(
                     {
-                        id: self._scope.currentAction.id
+                        id: self._scope.currentAction.actionId
                     },
                     self._scope.currentAction,
                     null,
@@ -468,11 +468,11 @@ module dockyard.controllers {
                     if (self._scope.currentAction.isTempId) {
                         self._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
-                            new pwd.ActionTempIdReplacedEventArgs(self._scope.currentAction.id, data[0].id)
+                            new pwd.ActionTempIdReplacedEventArgs(self._scope.currentAction.actionId, data[0].id)
                             );
 
                         if (data) {
-                            self._scope.currentAction.id = data[0].Id;
+                            self._scope.currentAction.actionId = data[0].Id;
                             self._scope.currentAction.isTempId = false;
                         }
                     }
@@ -515,7 +515,7 @@ module dockyard.controllers {
                     actionType: "test action type",
                     configurationSettings: "",
                     processNodeTemplateId: 1,
-                    id: 1,
+                    actionId: 1,
                     isTempId: false,
                     fieldMappingSettings: "",
                     userLabel: "test",

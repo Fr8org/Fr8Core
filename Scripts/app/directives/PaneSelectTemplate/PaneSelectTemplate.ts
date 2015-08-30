@@ -111,7 +111,7 @@ module dockyard.directives.paneSelectTemplate {
         };
 
         public save(scope) {
-            if (this._$scope.processTemplate != null) {
+            if (this._$scope.processTemplate != null && this._$scope.visible) {
                 console.log(this._$scope.processTemplate);
                 //Add selected DocuSign template
                 this._$scope.processTemplate.SubscribedDocuSignTemplates.splice(

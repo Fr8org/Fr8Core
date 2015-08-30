@@ -31,7 +31,7 @@ namespace Data.Infrastructure.AutoMapper
                 return new ExternalEventSubscriptionDO()
                 {
                     ExternalEvent = a,
-                    ProcessTemplateId = processTermplateId
+                    ExternalProcessTemplateId = processTermplateId
                 };
             }).ToList();
         }

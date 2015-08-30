@@ -96,15 +96,13 @@ module dockyard.tests.controller {
         //     });
 
         //Rule #7
-        it("When PaneSelectAction_ActionTypeSelected is sent, PaneConfigureMapping_Render " +
-            "and PaneConfigureAction_Render should be received with correct args", () => {
+        it("When PaneSelectAction_ActionTypeSelected is sent, " +
+            "PaneConfigureAction_Render should be received with correct args", () => {
                 var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, 3, "myaction", "myaction"),
                     outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false),
                     outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, 3);
-
+                 
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
-
-                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
             });
 
@@ -115,7 +113,7 @@ module dockyard.tests.controller {
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting], incomingEventArgs);
-                expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id}, currentAction, null, null);
+                expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.actionId}, currentAction, null, null);
             });
 
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction==null " +
@@ -135,7 +133,7 @@ module dockyard.tests.controller {
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting], incomingEventArgs);
-                expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
+                expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.actionId }, currentAction, null, null);
             });
 
         it("When PaneWorkflowDesigner_TemplateSelected is sent and selectedAction!=null " +
@@ -145,7 +143,7 @@ module dockyard.tests.controller {
                 _$scope.currentAction = currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting], incomingEventArgs);
-                expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
+                expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.actionId }, currentAction, null, null);
             });
     });
 }
