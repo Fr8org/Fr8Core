@@ -38,6 +38,7 @@ module dockyard.directives.paneWorkflowDesigner {
             console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
 
             var actionObj = <any>eventArgs.action;
+            actionObj.id = actionObj.actionId;
             actionObj.name = actionObj.userLabel;
 
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
