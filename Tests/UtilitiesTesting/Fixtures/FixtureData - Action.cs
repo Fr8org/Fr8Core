@@ -15,7 +15,6 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 54,
-                UserLabel = "Save to Sql Server",
                 Name = "Write to Sql Server",
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ConfigurationSettings = "",
@@ -45,7 +44,7 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             var curActionDO = new ActionDO
             {
-                UserLabel = "Action 1",
+                Name = "Action 1",
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate,
             };
@@ -68,7 +67,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 2,
-                UserLabel = "Action 2",
+                Name = "Action 2",
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
             };
@@ -85,7 +84,6 @@ namespace UtilitiesTesting.Fixtures
                 Id = 34,
                 ConfigurationSettings = "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
-                UserLabel = "my test action",
                 Ordering = 3,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -126,7 +124,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 6,
-                UserLabel = "Action 6",
+                Name = "Action 6",
                 ActionListId = 1,
                 Ordering = 2,
                 ActionState = ActionState.Unstarted,
@@ -141,7 +139,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 7,
-                UserLabel = "Action 7",
+                Name = "Action 7",
                 ActionListId = 1,
                 Ordering = 3,
                 ActionState = ActionState.Unstarted,
@@ -156,7 +154,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 8,
-                UserLabel = "Action 8",
+                Name = "Action 8",
                 ActionListId = 1,
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
@@ -174,7 +172,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 5,
-                UserLabel = "Action 5",
+                Name = "Action 5",
                 ActionListId = 1,
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
@@ -202,7 +200,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 1,
-                UserLabel = "Action 1",
+                Name = "Action 1",
                 ActionListId = 1,
                 Ordering = 1,
                 ActionTemplateId = actionTemplate.Id,
@@ -216,7 +214,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 2,
-                UserLabel = "Action 2",
+                Name = "Action 2",
                 ActionListId = 1,
                 Ordering = 2,
                 ActionTemplateId = actionTemplate.Id,

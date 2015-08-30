@@ -72,7 +72,6 @@ namespace Core.Services
                     existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
-                    existingActionDo.UserLabel = currentActionDo.UserLabel;
                 }
                 else
                 {

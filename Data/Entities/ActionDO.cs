@@ -7,9 +7,6 @@ namespace Data.Entities
 {
     public class ActionDO : ActivityDO
 	{
-		[ Key ]
-
-
         public string Name { get; set; }
 
         [ForeignKey("ActionList")]

@@ -60,21 +60,7 @@ namespace DockyardTest.Services
         [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var expectedResult = new ConfigurationSettingsDTO()
-            {
-                Fields = new List<FieldDefinitionDTO>(){
-                    new FieldDefinitionDTO()
-                    {
-                        Type= "textField",
-                        FieldLabel = "SQL Connection String",
-                        Value = "",
-                        Name = "connection_string",
-                        Required = true,
-                        Selected = false
-                    }
-                }
-            };
-
+            var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionTemplate = FixtureData.TestActionTemplateDO1();
             string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
             ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
@@ -110,7 +96,6 @@ namespace DockyardTest.Services
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
-                Assert.AreEqual(origActionDO.UserLabel, actionDO.UserLabel);
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete
