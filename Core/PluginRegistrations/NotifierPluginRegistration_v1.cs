@@ -22,9 +22,9 @@ namespace Core.PluginRegistrations
         {
             if(curAction == null)
                 throw new ArgumentNullException("curAction");
-            if (string.IsNullOrEmpty(curAction.ActionType))
+            if (string.IsNullOrEmpty(curAction.Name))
                 throw new NullReferenceException("curAction.UserLabel");
-            return InitConfigurationSettings(curAction.ActionType);
+            return InitConfigurationSettings(curAction.Name);
         }
 
         private ConfigurationSettingsDTO InitConfigurationSettings(string actionType)

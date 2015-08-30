@@ -86,7 +86,7 @@ namespace DockyardTest.Services
 
                 //Get
                 var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.ActionType, actionDO.ActionType);
+                Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);

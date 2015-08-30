@@ -7,20 +7,21 @@ module dockyard.interfaces {
         id: number;
         isTempId: boolean;
         userLabel: string;
-        actions: Array<IAction>;
+        actions: Array<IActionDesignDTO>;
         conditions: Array<ICondition>;
         executionMode: string;
     }
 
-    export interface IAction {
+    export interface IActionDesignDTO {
         actionId: number,
         isTempId: boolean, 
         processNodeTemplateId: number,
         userLabel: string,
         actionListId: number,
-        actionType: string;
+        name: string;
         configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;
+        actionTemplateId: number;
     }
 
     export interface ICondition {

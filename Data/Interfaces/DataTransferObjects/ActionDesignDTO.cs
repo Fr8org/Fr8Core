@@ -7,9 +7,6 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("userLabel")]
         public string UserLabel { get; set; }
 
-        [JsonProperty("actionType")]
-        public string ActionType { get; set; }
-
         [JsonProperty("actionListId")]
         public int? ActionListId { get; set; }
 
@@ -25,5 +22,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("docuSignTemplateId")]
 	    public string DocuSignTemplateId { get; set; }
 
+        [JsonProperty("actionTemplateId")]
+        public int ActionTemplateId { get; set; }
     }
 }

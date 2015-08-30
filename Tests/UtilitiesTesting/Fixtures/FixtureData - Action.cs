@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 54,
                 UserLabel = "Save to Sql Server",
-                ActionType = "Write to Sql Server",
+                Name = "Write to Sql Server",
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ConfigurationSettings = "",
                 FieldMappingSettings = "",
@@ -59,7 +59,7 @@ namespace UtilitiesTesting.Fixtures
             var origActionDO = new ActionDO()
             {
                 ActionListId = null,
-                ActionType = "type 1",
+                Name = "type 1",
                 Id = 34,
                 ConfigurationSettings = "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
@@ -76,7 +76,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 3,
-                ActionType = "Send an Email"
+                Name = "Send an Email"
             };
             return curActionDO;
         }
@@ -85,7 +85,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Id = 4,
-                ActionType = "Send a Text (SMS) Message"
+                Name = "Send a Text (SMS) Message"
             };
             return curActionDO;
         }
@@ -198,7 +198,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionList = actionListDo,
                 ActionListId = 1,
                 ActionState = ActionState.Unstarted,
-                ActionType = "testaction",
+                Name = "testaction",
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FixtureData.FieldMappings,
                 Id = 1
@@ -229,7 +229,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 ActionState = ActionState.Unstarted,
-                ActionType = "testaction",
+                Name = "testaction",
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ActionList = actionListDo,
                 FieldMappingSettings = FixtureData.FieldMappings

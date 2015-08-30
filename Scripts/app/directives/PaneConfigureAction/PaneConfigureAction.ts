@@ -6,6 +6,7 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ActionUpdated,
         PaneConfigureAction_Render,
         PaneConfigureAction_Hide,
+        PaneConfigureAction_MapFieldsClicked,
         PaneConfigureAction_Cancelled
     }
 
@@ -29,14 +30,21 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
+    export class MapFieldsClickedEventArgs {
+        action: model.ActionDesignDTO;
+
+        constructor(action: model.ActionDesignDTO) {
+            this.action = action;
+        }
+    }
+
     export interface IPaneConfigureActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.Action, oldValue: model.Action, scope: IPaneConfigureActionScope) => void;
-        action: model.Action;
+        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) => void;
+        action: model.ActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
         configurationSettings: ng.resource.IResource<model.ConfigurationSettings> | model.ConfigurationSettings;
-        cancel: (event: ng.IAngularEvent) => void;
-        save: (event: ng.IAngularEvent) => void;
+        mapFields: (scope: IPaneConfigureActionScope) => void;
     }
 
 
@@ -70,25 +78,28 @@ module dockyard.directives.paneConfigureAction {
                 this._$element = $element;
 
                 //Controller goes here
-                $scope.isVisible = true;
 
-                $scope.$watch<model.Action>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<model.ActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
 
+                $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
+                
                 //TODO: this is test code, remove later
+                $scope.isVisible = true;
                 $scope.currentAction = <interfaces.IActionVM> { actionId: 1, isTempId: false };
                 $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
         }
 
-        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: IPaneConfigureActionScope) {
+        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
             model.ConfigurationSettings
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
-            scope.action = new model.Action(
+
+            scope.action = new model.ActionDesignDTO(
                 eventArgs.processNodeTemplateId,
                 eventArgs.id,
                 eventArgs.isTempId,
@@ -98,7 +109,6 @@ module dockyard.directives.paneConfigureAction {
             //for now ignore actions which were not saved in the database
             if (eventArgs.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
-
 
             if (scope.currentAction.configurationSettings == null
                 || scope.currentAction.configurationSettings.fields == null
@@ -110,6 +120,13 @@ module dockyard.directives.paneConfigureAction {
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             (<IPaneConfigureActionScope> event.currentScope).isVisible = false;
+        }
+
+        private mapFields(scope: IPaneConfigureActionScope) {
+            scope.$emit(
+                MessageType[MessageType.PaneConfigureAction_MapFieldsClicked],
+                new MapFieldsClickedEventArgs(angular.extend({}, scope.currentAction)) //clone action to prevent msg recipient from modifying orig. object
+            );
         }
 
         //The factory function returns Directive object as per Angular requirements

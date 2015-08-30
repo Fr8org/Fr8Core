@@ -120,7 +120,7 @@ module dockyard.directives.paneSelectAction {
 
                 this.PopulateData($scope, $http, urlPrefix);
 
-                $scope.$watch<model.Action>(
+                $scope.$watch<model.ActionDesignDTO>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
@@ -129,7 +129,7 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.actionId,
                         $scope.action.isTempId,
                         $scope.action.actionListId,
-                        $scope.action.actionType,
+                        $scope.action.name,
                         $scope.action.userLabel);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                 }
@@ -161,7 +161,7 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: interfaces.IPaneSelectActionScope) {
 
         }
 

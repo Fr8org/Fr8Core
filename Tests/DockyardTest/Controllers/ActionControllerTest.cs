@@ -233,7 +233,7 @@ namespace DockyardTest.Controllers
             {
                 Id = actionId,
                 UserLabel = "AzureSqlAction",
-                ActionType = "WriteToAzureSql",
+                Name = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = new FieldMappingSettingsDTO(),

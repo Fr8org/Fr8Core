@@ -35,16 +35,16 @@ module dockyard.controllers {
 
         private _scope: interfaces.IProcessBuilderScope;
 
-            constructor(
-                private $rootScope: interfaces.IAppRootScope,
-                private $scope: interfaces.IProcessBuilderScope,
-                private StringService: services.IStringService,
-                private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-                private $state: ng.ui.IState,
-                private ActionService: services.IActionService,
-                private $q: ng.IQService,
-                private $http: ng.IHttpService,
-                private urlPrefix: string
+        constructor(
+            private $rootScope: interfaces.IAppRootScope,
+            private $scope: interfaces.IProcessBuilderScope,
+            private StringService: services.IStringService,
+            private LocalIdentityGenerator: services.ILocalIdentityGenerator,
+            private $state: ng.ui.IState,
+            private ActionService: services.IActionService,
+            private $q: ng.IQService,
+            private $http: ng.IHttpService,
+            private urlPrefix: string
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -92,6 +92,8 @@ module dockyard.controllers {
             //Process Configure Action Pane events
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_MapFieldsClicked],
+                (event: ng.IAngularEvent, eventArgs: pca.MapFieldsClickedEventArgs) => this.PaneConfigureAction_MapFieldsClicked(eventArgs));
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
@@ -163,7 +165,7 @@ module dockyard.controllers {
             this._scope.$broadcast(
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ProcessNodeTemplateRemoved],
                 new pwd.ProcessNodeTemplateRemovedEventArgs(eventArgs.processNodeTemplateId, eventArgs.isTempId)
-            );
+                );
 
             // Hide Define Criteria pane.
             this._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
@@ -184,8 +186,8 @@ module dockyard.controllers {
                     new pwd.ProcessNodeTemplateRemovedEventArgs(
                         this._scope.curNodeId,
                         this._scope.curNodeIsTempId
-                    )
-                );
+                        )
+                    );
             }
 
             // Hide DefineCriteria pane.
@@ -276,7 +278,7 @@ module dockyard.controllers {
                         var actionListId = data.id;
 
                         // Create action object.
-                        var action = new model.Action(
+                        var action = new model.ActionDesignDTO(
                             processNodeTemplateId,
                             id,
                             true,
@@ -377,6 +379,19 @@ module dockyard.controllers {
         }
 
         /*
+            Handles message 'PaneConfigureAction_MapFieldsClicked'
+        */
+        private PaneConfigureAction_MapFieldsClicked(eventArgs: pca.MapFieldsClickedEventArgs) {
+            //Render Pane Configure Mapping 
+            var pcmEventArgs = new pcm.RenderEventArgs(
+                eventArgs.action.processNodeTemplateId,
+                eventArgs.action.actionId,
+                eventArgs.action.isTempId);
+            debugger;
+            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
+        }
+
+        /*
             Handles message 'ConfigureActionPane_ActionUpdated'
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
@@ -401,16 +416,9 @@ module dockyard.controllers {
                 eventArgs.id,
                 eventArgs.isTempId,
                 eventArgs.actionListId);
-                
+
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
 
-            //Render Pane Configure Mapping 
-            //var pcmEventArgs = new pcm.RenderEventArgs(
-            //    eventArgs.processNodeTemplateId,
-            //    eventArgs.id,
-            //    eventArgs.isTempId);
-
-            //this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
         }
          
         // TODO: do we need this?
@@ -448,7 +456,7 @@ module dockyard.controllers {
             });
         }
 
-        public SaveAction(callback: (data: interfaces.IAction) => void) {
+        public SaveAction(callback: (data: interfaces.IActionDesignDTO) => void) {
             var self = this;
 
             //If an action is selected, save it
@@ -510,11 +518,12 @@ module dockyard.controllers {
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IAction =
+            var actions: interfaces.IActionDesignDTO =
                 {
-                    actionType: "test action type",
+                    name: "test action type",
                     configurationSettings: new model.ConfigurationSettings(),
                     processNodeTemplateId: 1,
+                    actionTemplateId: 1,
                     actionId: 1,
                     isTempId: false,
                     fieldMappingSettings: "",
@@ -532,7 +541,7 @@ module dockyard.controllers {
                 .respond(function (method, url, data) {
                     return data;
                 })
-    }
+        }
     ]);
 
     app.controller('ProcessBuilderController', ProcessBuilderController);

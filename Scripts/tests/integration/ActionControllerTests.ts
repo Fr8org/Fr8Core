@@ -69,11 +69,12 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IAction =
+            var actions: interfaces.IActionDesignDTO =
                 {
-                    actionType: "test action type",
+                    name: "test action type",
                     configurationSettings: new model.ConfigurationSettings(),
                     processNodeTemplateId: 1,
+                    actionTemplateId: 1,
                     isTempId: false,
                     actionId: null,
                     fieldMappingSettings: "test",

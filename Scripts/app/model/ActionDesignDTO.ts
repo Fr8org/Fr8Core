@@ -1,10 +1,10 @@
 ﻿module dockyard.model {
-    export class Action implements interfaces.IAction {
+    export class ActionDesignDTO implements interfaces.IActionDesignDTO {
         processNodeTemplateId: number;
         actionId: number;
         isTempId: boolean;
         actionListId: number;
-        actionType: string;
+        name: string;
         configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;
         userLabel: string;
@@ -29,16 +29,16 @@
                 processNodeTemplateId: this.processNodeTemplateId,
                 userLabel: this.userLabel,
                 actionListId: this.actionListId,
-                actionType: this.actionType,
+                name: this.name,
                 configurationSettings: this.configurationSettings,
                 fieldMappingSettings: this.fieldMappingSettings
             };
         }
 
-        clone(): Action {
-            var result = new Action(this.processNodeTemplateId, this.actionId, this.isTempId, this.actionListId);
+        clone(): ActionDesignDTO {
+            var result = new ActionDesignDTO(this.processNodeTemplateId, this.actionId, this.isTempId, this.actionListId);
             result.userLabel = this.userLabel;
-            result.actionType = this.actionType;
+            result.name = this.name;
 
             return result;
         }

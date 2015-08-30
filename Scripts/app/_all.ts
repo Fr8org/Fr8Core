@@ -19,7 +19,7 @@
 /*
     MODEL
 */
-/// <reference path="model/action.ts" />
+/// <reference path="model/actiondesigndto.ts" />
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
