@@ -6,11 +6,9 @@ using Data.Wrappers;
 namespace Data.Entities
 {
     public class ActionDO : ActivityDO
-    {
-        [Key]
-        public int Id { get; set; }
+	{
+		[ Key ]
 
-        public string UserLabel { get; set; }
 
         public string Name { get; set; }
 
@@ -32,11 +30,11 @@ namespace Data.Entities
         public string PayloadMappings { get; set; }
 
         [NotMapped]
-        public string DocuSignTemplateId { get; set; }
+	    public string DocuSignTemplateId { get; set; }
 
         [ForeignKey("ActionTemplate")]
         public int ActionTemplateId { get; set; }
         public virtual ActionTemplateDO ActionTemplate { get; set; }
 
-    }
+	}
 }

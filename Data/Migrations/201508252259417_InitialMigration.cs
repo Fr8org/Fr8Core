@@ -74,7 +74,7 @@ namespace Data.Migrations
                 "dbo.ActionLists",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Int(nullable: false, identity: false),
                         Name = c.String(),
                         ProcessNodeTemplateDO_Id = c.Int(),
                         ProcessID = c.Int(),
@@ -121,7 +121,7 @@ namespace Data.Migrations
                 "dbo.Actions",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Int(nullable: false, identity: false),
                         UserLabel = c.String(),
                         ActionType = c.String(),
                         ActionListId = c.Int(),
