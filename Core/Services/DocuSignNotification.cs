@@ -76,7 +76,7 @@ namespace Core.Services
                 {
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
-                        uow.ExternalEventRegistrationRepository.GetQuery().Include(p => p.ExternalProcessTemplate)
+                        uow.ExternalEventSubscriptionRepository.GetQuery().Include(p => p.ExternalProcessTemplate)
                             .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ExternalProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
                    

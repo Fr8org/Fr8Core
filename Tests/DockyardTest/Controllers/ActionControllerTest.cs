@@ -31,7 +31,9 @@ namespace DockyardTest.Controllers
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
             CreateEmptyActionList();
+            CreateActionTemplate();
         }
+
 
         [Test]
         [Category("ActionController.Save")]
@@ -53,7 +55,7 @@ namespace DockyardTest.Controllers
 
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+                Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
         }
 
@@ -82,7 +84,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+                Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
         }
 
@@ -111,7 +113,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+                Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
         }
 
@@ -122,9 +124,15 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curActionTemplate = FixtureData.TestActionTemplateDO1();
-                
-                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings, curJsonResult);
+
+                var expectedResult = FixtureData.TestConfigurationSettings();
+                string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+                Assert.AreEqual(1, result.Fields.Count);
+                Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+                Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+                Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+                Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
             }
         }
 
@@ -134,7 +142,7 @@ namespace DockyardTest.Controllers
         public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            Assert.IsNotNull(curAction.GetConfigurationSettings(1));
+            Assert.IsNotNull(curAction.GetConfigurationSettings(2));
         }
 
         [Test]
@@ -158,8 +166,14 @@ namespace DockyardTest.Controllers
             {
                 var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionTemplate), curJsonResult);
+                var expectedResult = FixtureData.TestConfigurationSettings();
+                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionTemplate);
+                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+                Assert.AreEqual(1, result.Fields.Count);
+                Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+                Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+                Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+                Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
             }
         }
 
@@ -203,8 +217,6 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               
-
                 //Add a template
                 var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
                 uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
@@ -218,10 +230,15 @@ namespace DockyardTest.Controllers
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();
             }
+        }
 
-
-
-
+        private void CreateActionTemplate()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionTemplateRepository.Add(FixtureData.TestActionTemplateDO1());
+                uow.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -232,12 +249,12 @@ namespace DockyardTest.Controllers
             return new ActionDesignDTO
             {
                 Id = actionId,
-                UserLabel = "AzureSqlAction",
-                ActionType = "WriteToAzureSql",
+                Name = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
-                ParentPluginRegistration = "AzureSql"
+                ParentPluginRegistration = "AzureSql",
+                ActionTemplateId = 1
             };
         }
 

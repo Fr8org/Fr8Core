@@ -187,6 +187,8 @@
         //     criteriaId - id of criteria
         //     action - object to define action; minimum required set of properties: { id: 'someId' }
         addAction: function (criteriaId, action, actionType) {
+            debugger;
+
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
             }

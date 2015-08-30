@@ -1,5 +1,7 @@
 ﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -37,5 +39,24 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
-	}
+
+        public static ConfigurationSettingsDTO TestConfigurationSettings()
+        {
+            return new ConfigurationSettingsDTO()
+            {
+                Fields = new List<FieldDefinitionDTO>(){
+                    new FieldDefinitionDTO()
+                    {
+                        Type= "textField",
+                        FieldLabel = "SQL Connection String",
+                        Value = "",
+                        Name = "connection_string",
+                        Required = true,
+                        Selected = false
+                    }
+                }
+            };
+
+        }
+    }
 }

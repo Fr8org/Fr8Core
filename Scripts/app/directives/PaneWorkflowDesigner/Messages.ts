@@ -80,11 +80,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class ActionAddedEventArgs {
         public criteriaId: number;
-        public action: model.Action;
+        public action: model.ActionDesignDTO;
         public actionListType: model.ActionListType;
 
         constructor(criteriaId: number,
-            action: model.Action,
+            action: model.ActionDesignDTO,
             actionListType: model.ActionListType) {
 
             this.criteriaId = criteriaId;

@@ -60,9 +60,15 @@ namespace DockyardTest.Services
         [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
+            var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionTemplate = FixtureData.TestActionTemplateDO1();
-            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-            Assert.AreEqual(_action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings, curJsonResult);
+            string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+            ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+            Assert.AreEqual(1, result.Fields.Count);
+            Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+            Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+            Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+            Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
         }
 
         [Test]
@@ -86,11 +92,10 @@ namespace DockyardTest.Services
 
                 //Get
                 var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.ActionType, actionDO.ActionType);
+                Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
-                Assert.AreEqual(origActionDO.UserLabel, actionDO.UserLabel);
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete
