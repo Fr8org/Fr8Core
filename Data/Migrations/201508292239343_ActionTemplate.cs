@@ -8,9 +8,9 @@ namespace Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Actions", "Name", c => c.String());
-            AddColumn("dbo.Actions", "ActionTemplateId", c => c.Int());
+            AddColumn("dbo.Actions", "ActionTemplateId", c => c.Int(nullable: false));
             CreateIndex("dbo.Actions", "ActionTemplateId");
-            AddForeignKey("dbo.Actions", "ActionTemplateId", "dbo.ActionTemplate", "Id");
+            AddForeignKey("dbo.Actions", "ActionTemplateId", "dbo.ActionTemplate", "Id", cascadeDelete: true);
             DropColumn("dbo.Actions", "ActionType");
         }
         

@@ -31,7 +31,9 @@ namespace DockyardTest.Controllers
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
             CreateEmptyActionList();
+            CreateActionTemplate();
         }
+
 
         [Test]
         [Category("ActionController.Save")]
@@ -203,8 +205,6 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               
-
                 //Add a template
                 var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
                 uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
@@ -218,10 +218,15 @@ namespace DockyardTest.Controllers
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();
             }
+        }
 
-
-
-
+        private void CreateActionTemplate()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionTemplateRepository.Add(FixtureData.ActionTemplate());
+                uow.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -237,7 +242,8 @@ namespace DockyardTest.Controllers
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
-                ParentPluginRegistration = "AzureSql"
+                ParentPluginRegistration = "AzureSql",
+                ActionTemplateId = 1
             };
         }
 

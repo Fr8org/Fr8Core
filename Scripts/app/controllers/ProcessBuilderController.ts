@@ -30,7 +30,7 @@ module dockyard.controllers {
             'ActionService',
             '$q',
             '$http',
-            'urlPrefix'
+            'urlPrefix',
             'ProcessTemplateService'
         ];
 

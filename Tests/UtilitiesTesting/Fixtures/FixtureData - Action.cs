@@ -24,12 +24,27 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
-        public static ActionDO TestAction1()
+
+        public static ActionTemplateDO ActionTemplate()
         {
-            var curActionDO = new ActionDO
+            return new ActionTemplateDO()
             {
                 Id = 1,
-                UserLabel = "Action 1"
+                ActionType = "Test action",
+                ParentPluginRegistration = "Test registration",
+                Version = "1"
+            };
+        }
+
+        public static ActionDO TestAction1()
+        {
+            var actionTemplate = ActionTemplate();
+            var curActionDO = new ActionDO
+            {
+                Id = actionTemplate.Id,
+                UserLabel = "Action 1",
+                ActionTemplateId = 1,
+                ActionTemplate = actionTemplate
             };
             return curActionDO;
         }
