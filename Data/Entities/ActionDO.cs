@@ -7,9 +7,6 @@ namespace Data.Entities
 {
 	public class ActionDO: ActivityDO
 	{
-		[ Key ]
-		public int Id{ get; set; }
-
         public string UserLabel{ get; set; }
 
         public string ActionType { get; set; }
