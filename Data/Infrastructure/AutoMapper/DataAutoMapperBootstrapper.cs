@@ -84,6 +84,11 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
+
+            Mapper.CreateMap<ConfigurationSettingsDTO, string>()
+                .ConvertUsing<JSONToStringConverter<ConfigurationSettingsDTO>>();
+            Mapper.CreateMap<string, ConfigurationSettingsDTO>()
+                .ConvertUsing<StringToJSONConverter<ConfigurationSettingsDTO>>();
         }
     }
 

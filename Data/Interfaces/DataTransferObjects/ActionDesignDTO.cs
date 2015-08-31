@@ -20,7 +20,7 @@ namespace Data.Interfaces.DataTransferObjects
 	    public string DocuSignTemplateId { get; set; }
 
         [JsonProperty("actionTemplateId")]
-        public int ActionTemplateId { get; set; }
+        public int? ActionTemplateId { get; set; }
 
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }

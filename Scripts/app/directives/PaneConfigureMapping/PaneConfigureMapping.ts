@@ -55,8 +55,6 @@ module dockyard.directives.paneConfigureMapping {
             };
 
             function render() {
-
-
                 var loadedActions = false;
                 var loadedFields = false;
                 $scope.mappedValue = mappedValue;
@@ -89,7 +87,8 @@ module dockyard.directives.paneConfigureMapping {
 
 
                 var actionWithProcess = { DocuSignTemplateId: "58521204-58AF-4E65-8A77-4F4B51FEF626" };
-
+                debugger;
+                console.log($scope.currentAction);
 
                 $http.post(urlPrefix + "/actions/field_data_sources/", actionWithProcess )
                     .then((dataSources) => {
