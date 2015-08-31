@@ -5,7 +5,7 @@
         public processTemplateId: number;
         public name: string;
         public criteria: Criteria;
-        public actions: Array<Action>;
+        public actions: Array<ActionDesignDTO>;
 
         constructor(
             id: number,

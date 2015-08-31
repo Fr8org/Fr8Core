@@ -18,19 +18,19 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
-                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
             Mapper.CreateMap<ActionDesignDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
-                .ForMember(a => a.UserLabel, opts => opts.ResolveUsing(ad => ad.UserLabel))
-                .ForMember(a => a.ActionType, opts => opts.ResolveUsing(ad => ad.ActionType))
+                .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
+                .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
+                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationSettings)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
+                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
             Mapper.CreateMap<ActionTemplateDO, ActionTemplateDTO>()
@@ -47,8 +47,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDO, ActionPayloadDTO>()
                 .ForMember(dest => dest.Id, opts => opts.ResolveUsing(src => src.Id))
-                .ForMember(dest => dest.UserLabel, opts => opts.ResolveUsing(src => src.UserLabel))
-                .ForMember(dest => dest.ActionType, opts => opts.ResolveUsing(src => src.ActionType))
+                .ForMember(dest => dest.Name, opts => opts.ResolveUsing(src => src.Name))
                 .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ActionListId))
                 .ForMember(dest => dest.ConfigurationSettings,
                     opts => opts.ResolveUsing(src => src.ConfigurationSettings))

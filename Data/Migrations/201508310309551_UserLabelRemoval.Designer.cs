@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ExternalEventSubscriptions_Renamed_Migration : IMigrationMetadata
+    public sealed partial class UserLabelRemoval : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ExternalEventSubscriptions_Renamed_Migration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UserLabelRemoval));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508282040014_ExternalEventSubscriptions_Renamed_Migration"; }
+            get { return "201508310309551_UserLabelRemoval"; }
         }
         
         string IMigrationMetadata.Source

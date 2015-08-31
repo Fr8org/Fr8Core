@@ -8,7 +8,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ConfigurationSettingsDTO
             {
-                FieldDefinitions =  {
+                Fields =  {
                     TestConnectionString1()
                 }
             };

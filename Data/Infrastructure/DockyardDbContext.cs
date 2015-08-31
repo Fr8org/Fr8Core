@@ -263,6 +263,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
+            modelBuilder.Entity<ActivityDO>().ToTable("Activities");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
             modelBuilder.Entity<TemplateDO>().ToTable("Templates");
@@ -306,6 +307,9 @@ namespace Data.Infrastructure
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
+            modelBuilder.Entity<ActionDO>()
+                .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
           
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
@@ -316,12 +320,6 @@ namespace Data.Infrastructure
  
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-
-            modelBuilder.Entity<ProcessTemplateDO>()
-               .HasRequired(x => x.StartingProcessNodeTemplate)
-               .WithMany()
-               .HasForeignKey(x => x.StartingProcessNodeTemplateId)
-               .WillCascadeOnDelete(false);
 
             base.OnModelCreating(modelBuilder);
         }

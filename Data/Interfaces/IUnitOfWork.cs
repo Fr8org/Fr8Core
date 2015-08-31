@@ -74,7 +74,7 @@ namespace Data.Interfaces
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        ExternalEventRegistrationRepository ExternalEventRegistrationRepository { get; }
+        ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository { get; }
         MailerRepository MailerRepository { get; }
 
         /// <summary>

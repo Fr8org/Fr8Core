@@ -107,17 +107,21 @@ namespace DockyardTest.Controllers
         /// </summary>
         private ActionDO CreateActionDO()
         {
+            var actionTemplate = FixtureData.ActionTemplate();
+
             return new ActionDO
             {
                 Id = 10,
-                UserLabel = "AzureSqlAction",
-                ActionType = "WriteToAzureSql",
+                Name = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+
             };
         }
 

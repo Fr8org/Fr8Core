@@ -4,17 +4,11 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDesignDTO : ActionDTOBase
     {
-        [JsonProperty("userLabel")]
-        public string UserLabel { get; set; }
-
-        [JsonProperty("actionType")]
-        public string ActionType { get; set; }
-
         [JsonProperty("actionListId")]
         public int? ActionListId { get; set; }
 
         [JsonProperty("configurationSettings")]
-        public string ConfigurationSettings { get; set; }
+        public ConfigurationSettingsDTO ConfigurationSettings { get; set; }
 
         [JsonProperty("fieldMappingSettings")]
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
@@ -25,5 +19,10 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("docuSignTemplateId")]
 	    public string DocuSignTemplateId { get; set; }
 
+        [JsonProperty("actionTemplateId")]
+        public int ActionTemplateId { get; set; }
+
+        [JsonProperty("isTempId")]
+        public bool IsTempId { get; set; }
     }
 }

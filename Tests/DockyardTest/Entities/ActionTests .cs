@@ -29,7 +29,7 @@ namespace DockyardTest.Entities
                 //check that it was saved to the db
                 var savedActionDO = uow.ActionRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO.Id);
                 Assert.NotNull(savedActionDO);
-                Assert.AreEqual(curActionDO.UserLabel, savedActionDO.UserLabel);
+                Assert.AreEqual(curActionDO.Name, savedActionDO.Name);
 
                 var curActionDO2 = FixtureData.TestAction2();
 
@@ -41,7 +41,7 @@ namespace DockyardTest.Entities
                 //check that it was saved to the db
                 var savedActionDO2 = uow.ActionRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO2.Id);
                 Assert.NotNull(savedActionDO2);
-                Assert.AreEqual(curActionDO2.UserLabel, savedActionDO2.UserLabel);
+                Assert.AreEqual(curActionDO2.Name, savedActionDO2.Name);
             }
         }
 

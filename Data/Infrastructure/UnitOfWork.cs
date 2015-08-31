@@ -452,13 +452,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
+        private ExternalEventSubscriptionRepository _externalEventSubscriptionRepository;
 
-	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
+	    public ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository
 	    {
 		    get
 		    {
-		        return _externalEventRegistrationRepository ?? (_externalEventRegistrationRepository = new ExternalEventRegistrationRepository(this));
+		        return _externalEventSubscriptionRepository ?? (_externalEventSubscriptionRepository = new ExternalEventSubscriptionRepository(this));
 		    }
 	    }
 

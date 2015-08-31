@@ -49,6 +49,7 @@ namespace Core.Services
                 ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(scheduledActionList);
+
             uow.SaveChanges();
         }
 

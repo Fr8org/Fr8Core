@@ -42,7 +42,16 @@ namespace Core.PluginRegistrations
 
         public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
         {
-            return "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+            return @"
+                {'fields':
+                    [{
+                        'type': 'textField',
+                        'name': 'connection_string',
+                        'required': true,
+                        'value':'',
+                        'fieldLabel':'SQL Connection String'
+                     }]
+                }";
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)

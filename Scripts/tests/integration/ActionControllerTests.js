@@ -67,15 +67,14 @@ var dockyard;
                 beforeEach(function (done) {
                     // First POST, create a dummy entry
                     var actions = {
-                        actionType: "test action type",
-                        configurationSettings: "test",
+                        name: "test action type",
+                        configurationSettings: tests.utils.Fixtures.configurationSettings,
                         processNodeTemplateId: 1,
+                        actionTemplateId: 1,
                         isTempId: false,
-                        actionId: null,
+                        id: 0,
                         fieldMappingSettings: "test",
-                        userLabel: "test",
-                        tempId: 0,
-                        actionListId: null
+                        actionListId: 1
                     };
                     postInvoker(done, actions);
                 });
