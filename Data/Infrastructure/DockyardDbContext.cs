@@ -321,6 +321,12 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
 
+            modelBuilder.Entity<ProcessTemplateDO>()
+               .HasRequired(x => x.StartingProcessNodeTemplate)
+               .WithMany()
+               .HasForeignKey(x => x.StartingProcessNodeTemplateId)
+               .WillCascadeOnDelete(false);
+
             base.OnModelCreating(modelBuilder);
         }
 
