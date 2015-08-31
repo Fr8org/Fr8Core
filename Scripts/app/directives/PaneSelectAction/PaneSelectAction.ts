@@ -17,7 +17,7 @@ module dockyard.directives.paneSelectAction {
         public id: number;
         public isTempId: boolean;
         public actionListId: number;
-        public actionType: string;
+        public actionTemplateId: number;
         public actionName: string;
 
         constructor(
@@ -25,14 +25,14 @@ module dockyard.directives.paneSelectAction {
             id: number,
             isTempId: boolean,
             actionListId: number,
-            actionType: string,
+            actionTemplateId: number,
             actionName: string) {
 
             this.processNodeTemplateId = processNodeTemplateId;
             this.id = id;
             this.isTempId = isTempId;
             this.actionListId = actionListId;
-            this.actionType = actionType;
+            this.actionTemplateId = actionTemplateId;
             this.actionName = actionName;
         }
     }
@@ -129,8 +129,8 @@ module dockyard.directives.paneSelectAction {
                         $scope.action.id,
                         $scope.action.isTempId,
                         $scope.action.actionListId,
-                        $scope.action.name,
-                        $scope.action.userLabel);
+                        $scope.action.actionTemplateId,
+                        $scope.action.name);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                 }
 

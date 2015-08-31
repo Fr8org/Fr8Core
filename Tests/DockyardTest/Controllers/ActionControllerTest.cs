@@ -24,7 +24,7 @@ namespace DockyardTest.Controllers
 
         public ActionControllerTest()
         {
-            
+
         }
         public override void SetUp()
         {
@@ -42,7 +42,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Arrange is done with empty action list
-                
+
                 //Act
                 var actualAction = CreateActionWithId(1);
 
@@ -99,7 +99,7 @@ namespace DockyardTest.Controllers
                 var action = FixtureData.TestAction1();
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
-                
+
                 //Act
                 var actualAction = CreateActionWithId(1);
 
@@ -251,7 +251,7 @@ namespace DockyardTest.Controllers
                 Id = actionId,
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
-                ConfigurationSettings = "JSON Config Settings",
+                ConfigurationSettings = new ConfigurationSettingsDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ParentPluginRegistration = "AzureSql",
                 ActionTemplateId = 1
@@ -259,7 +259,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        
+
 
         [Test]
         [Ignore]
@@ -268,9 +268,9 @@ namespace DockyardTest.Controllers
         // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
         // make sure that the endpoint is running 
         // in azure db you need a db demodb_health
-        public async  void Can_Get_FieldMappingTargets()
+        public async void Can_Get_FieldMappingTargets()
         {
-            
+
             //Arrange 
             string pluginName =
                 "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
@@ -282,13 +282,13 @@ namespace DockyardTest.Controllers
             var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
             {
                 ParentPluginRegistration = pluginName,
-                ConfigurationSettings = "{\"connection_string\":\"" + dataSource + "\"}"
+                ConfigurationSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
+                    "{\"connection_string\":\"" + dataSource + "\"}")
             });
 
-          
             await task;
             Assert.NotNull(task.Result);
-            Assert.Greater(task.Result.Count(),0);
+            Assert.Greater(task.Result.Count(), 0);
             task.Result.ToList().ForEach(Console.WriteLine);
         }
     }
