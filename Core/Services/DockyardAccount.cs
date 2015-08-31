@@ -299,7 +299,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var userManager = new KwasantUserManager(uow);
+                var userManager = new DockyardIdentityManager(uow);
                 var user = await userManager.FindByEmailAsync(userEmail);
                 if (user == null /* || !(await userManager.IsEmailConfirmedAsync(user.Id))*/)
                 {
@@ -332,7 +332,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var userManager = new KwasantUserManager(uow);
+                var userManager = new DockyardIdentityManager(uow);
                 var result = await userManager.ResetPasswordAsync(userId, code, password);
                 uow.SaveChanges();
                 return result;

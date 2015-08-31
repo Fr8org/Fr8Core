@@ -258,8 +258,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Security\KwasantUserManager.cs" />
-    <Compile Include="Security\KwasantUserStore.cs" />
+    <Compile Include="Security\DockyardIdentityManager.cs" />
+    <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
