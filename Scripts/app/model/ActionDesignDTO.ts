@@ -1,13 +1,13 @@
 ﻿module dockyard.model {
-    export class Action implements interfaces.IAction {
+    export class ActionDesignDTO implements interfaces.IActionDesignDTO {
         processNodeTemplateId: number;
         id: number;
         isTempId: boolean;
         actionListId: number;
-        actionType: string;
-        configurationSettings: string;
+        name: string;
+        configurationSettings: model.ConfigurationSettings;
         fieldMappingSettings: string;
-        userLabel: string
+        actionTemplateId: number;
 
         constructor(
             processNodeTemplateId: number,
@@ -26,18 +26,16 @@
                 id: this.id,
                 isTempId: this.isTempId,
                 processNodeTemplateId: this.processNodeTemplateId,
-                userLabel: this.userLabel,
                 actionListId: this.actionListId,
-                actionType: this.actionType,
+                name: this.name,
                 configurationSettings: this.configurationSettings,
                 fieldMappingSettings: this.fieldMappingSettings
             };
         }
 
-        clone(): Action {
-            var result = new Action(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
-            result.userLabel = this.userLabel;
-            result.actionType = this.actionType;
+        clone(): ActionDesignDTO {
+            var result = new ActionDesignDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
+            result.name = this.name;
 
             return result;
         }

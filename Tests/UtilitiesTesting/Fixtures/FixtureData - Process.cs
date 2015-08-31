@@ -13,6 +13,7 @@ namespace UtilitiesTesting.Fixtures
 		{
 			var process = new ProcessDO();
 			process.Id = 49;
+            process.ProcessTemplateId = TestProcessTemplate2().Id;
 			process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
 			return process;
@@ -22,6 +23,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
+            process.ProcessTemplateId = TestProcessTemplate2().Id;
             process.ProcessState = ProcessState.Executing;
             process.ProcessNodes.Add(TestProcessNode1());
             return process;
@@ -30,10 +32,12 @@ namespace UtilitiesTesting.Fixtures
         public static IList<ProcessDO> GetProcesses()
 		{
 			IList<ProcessDO> processList = new List<ProcessDO>();
+            var processTemplateId = TestProcessTemplate2().Id;
 			processList.Add(new ProcessDO()
 			{
 				Id = 1,
 				Name = "Process 1",
+                ProcessTemplateId = processTemplateId,
 				DockyardAccountId = "testuser",
 				ProcessState = ProcessState.Executing
 			});
@@ -42,6 +46,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 2,
 				Name = "Process 2",
+                ProcessTemplateId = processTemplateId,
 				DockyardAccountId = "testuser",
 				ProcessState = ProcessState.Executing
 			});
@@ -50,6 +55,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 3,
 				Name = "Process 3",
+                ProcessTemplateId = processTemplateId,
 				DockyardAccountId = "testuser",
 				ProcessState = ProcessState.Unstarted
 			});
@@ -58,6 +64,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 4,
 				Name = "Process 4",
+                ProcessTemplateId = processTemplateId,
 				DockyardAccountId = "anotheruser",
 				ProcessState = ProcessState.Unstarted
 			});

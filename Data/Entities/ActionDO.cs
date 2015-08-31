@@ -5,14 +5,9 @@ using Data.Wrappers;
 
 namespace Data.Entities
 {
-	public class ActionDO: BaseDO
+    public class ActionDO : ActivityDO
 	{
-		[ Key ]
-		public int Id{ get; set; }
-
-        public string UserLabel{ get; set; }
-
-        public string ActionType { get; set; }
+        public string Name { get; set; }
 
         [ForeignKey("ActionList")]
         public int? ActionListId { get; set; }
@@ -24,11 +19,6 @@ namespace Data.Entities
 
         public string ParentPluginRegistration { get; set; }
 
-        /// <summary>
-        /// This property defines the permanent postion of Actions in ActionList.
-        /// </summary>
-        public int Ordering  { get; set; }
-
         [ForeignKey("ActionStateTemplate")]
         public int? ActionState { get; set; }
 
@@ -38,5 +28,12 @@ namespace Data.Entities
 
         [NotMapped]
 	    public string DocuSignTemplateId { get; set; }
+
+        [ForeignKey("ActionTemplate")]
+        public int ActionTemplateId { get; set; }
+        public virtual ActionTemplateDO ActionTemplate { get; set; }
+
+        [NotMapped]
+        public bool IsTempId { get; set; }
 	}
 }

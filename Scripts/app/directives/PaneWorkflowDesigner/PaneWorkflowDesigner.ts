@@ -36,6 +36,9 @@ module dockyard.directives.paneWorkflowDesigner {
 
         var onActionAdded = function (eventArgs: ActionAddedEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
+            var actionObj = <any>eventArgs.action;
+            actionObj.id = actionObj.id;
+            actionObj.name = actionObj.userLabel;
 
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
 
@@ -64,6 +67,9 @@ module dockyard.directives.paneWorkflowDesigner {
             scope.widget.replaceActionTempId(eventArgs.tempId, eventArgs.id);
         };
 
+        var onActionRenamed = function (eventArgs: ActionNameUpdatedEventArgs, scope: IPaneWorkflowDesignerScope) {
+            scope.widget.renameAction(eventArgs.id, eventArgs.name);
+        };
 
         return {
             restrict: 'E',
@@ -145,6 +151,9 @@ module dockyard.directives.paneWorkflowDesigner {
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateNameUpdated],
                     (event: ng.IAngularEvent, eventArgs: ProcessNodeTemplateNameUpdatedEventArgs) => onProcessNodeTemplateRenamed(eventArgs, scope));
+
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                    (event: ng.IAngularEvent, eventArgs: ActionNameUpdatedEventArgs) => onActionRenamed(eventArgs, scope));
             }
         };
     }

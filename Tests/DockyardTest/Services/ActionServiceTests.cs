@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using AutoMapper;
 using Core.Interfaces;
+using Core.Managers;
+using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.PluginRegistrations;
+using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Data.Wrappers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json.Linq;
-using Data.States;
-using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers;
-using Data.Wrappers;
+using Action = Core.Services.Action;
+using System.Threading.Tasks;
 
 namespace DockyardTest.Services
 {
@@ -29,8 +28,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionRegistrationDO> _pr1Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "Read", Version = "1.0" } };
-        private readonly IEnumerable<ActionRegistrationDO> _pr2Actions = new List<ActionRegistrationDO>() { new ActionRegistrationDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionRegistrationDO() { ActionType = "SQL Read", Version = "1.0" } };
+        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { ActionType = "Write", Version = "1.0" }, new ActionTemplateDO() { ActionType = "Read", Version = "1.0" } };
+        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { ActionType = "SQL Read", Version = "1.0" } };
 
         [SetUp]
         public override void SetUp()
@@ -61,16 +60,22 @@ namespace DockyardTest.Services
         [Test]
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
-            var curActionRegistration = FixtureData.TestActionRegistrationDO1();
-            string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-            Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+            var expectedResult = FixtureData.TestConfigurationSettings();
+            var curActionTemplate = FixtureData.TestActionTemplateDO1();
+            string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+            ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+            Assert.AreEqual(1, result.Fields.Count);
+            Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+            Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+            Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+            Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionService_NULL_ActionRegistration()
+        public void ActionService_NULL_ActionTemplate()
         {
-            var _service = new Core.Services.Action();
+            var _service = new Action();
             Assert.IsNotNull(_service.GetConfigurationSettings(null));
         }
 
@@ -79,7 +84,7 @@ namespace DockyardTest.Services
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IAction action = new Core.Services.Action();
+                IAction action = new Action();
                 var origActionDO = new FixtureData(uow).TestAction3();
 
                 //Add
@@ -87,11 +92,10 @@ namespace DockyardTest.Services
 
                 //Get
                 var actionDO = action.GetById(origActionDO.Id);
-                Assert.AreEqual(origActionDO.ActionType, actionDO.ActionType);
+                Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
-                Assert.AreEqual(origActionDO.UserLabel, actionDO.UserLabel);
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete
@@ -136,12 +140,14 @@ namespace DockyardTest.Services
         [Test]
         public void CanProcessDocuSignTemplate()
         {
-            Core.Services.Action action = new Core.Services.Action();
+            Action action = new Action();
+            var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
                 uow.ActionListRepository.Add(actionDo.ActionList);
                 uow.ProcessRepository.Add(actionDo.ActionList.Process);
@@ -167,12 +173,13 @@ namespace DockyardTest.Services
         [Test]
         public void CanSavePayloadMappingToActionTabe()
         {
-            Core.Services.Action action = new Core.Services.Action();
+            Action action = new Action();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
-
+            var processTemplate = FixtureData.TestProcessTemplate2();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
                 uow.ActionListRepository.Add(actionDo.ActionList);
                 uow.ProcessRepository.Add(actionDo.ActionList.Process);
@@ -185,7 +192,7 @@ namespace DockyardTest.Services
             {
                 var curActionDo = uow.ActionRepository.FindOne((a) => true);
                 Assert.NotNull(curActionDo);
-                var curActionDto = AutoMapper.Mapper.Map<ActionPayloadDTO>(curActionDo);
+                var curActionDto = Mapper.Map<ActionPayloadDTO>(curActionDo);
                 Assert.IsTrue(IsPayloadValid(curActionDto));                
             }
         }
@@ -200,7 +207,7 @@ namespace DockyardTest.Services
         public void Process_ActionListNotUnstarted_ThrowException()
         {
             ActionDO actionDo = FixtureData.TestAction9();
-            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            Action _action = ObjectFactory.GetInstance<Action>();
 
             Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo).Exception.InnerException.Message);
         }
@@ -232,5 +239,74 @@ namespace DockyardTest.Services
 
             Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
         }
+
+        [Test]
+        public void Process_ActionUnstarted_ShouldBeCompleted()
+        {
+            ActionDO actionDo = FixtureData.TestActionUnstarted();
+            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            var response = _action.Process(actionDo);
+            Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
+        }
+
+        [Test]
+        public void Dispatch_PayloadDTO_ShouldBeDispatched()
+        {
+            ActionDO actionDo = FixtureData.TestActionUnstarted();
+            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            var pluginRegistration = BasePluginRegistration.GetPluginType(actionDo);
+            Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+            var response = _action.Dispatch(actionDo, baseUri);
+            Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
+
+        }
+
+        [Test]
+        public void GetAvailableActions_ReturnsActionsForAccount()
+        {
+            const string unavailablePluginName = "UnavailablePlugin";
+            const string noAccessPluginName = "NoAccessPlugin";
+            const string userAccessPluginName = "AvailableWithUserAccessPlugin";
+            const string adminAccessPluginName = "AvailableWithAdminAccessPlugin";
+            var unavailablePluginRegistration = new Mock<IPluginRegistration>();
+            var noAccessPluginRegistration = new Mock<IPluginRegistration>();
+            var userAccessPluginRegistration = new Mock<IPluginRegistration>();
+            var adminAccessPluginRegistration = new Mock<IPluginRegistration>();
+            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(unavailablePluginRegistration.Object).Named(unavailablePluginName));
+            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(noAccessPluginRegistration.Object).Named(noAccessPluginName));
+            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(userAccessPluginRegistration.Object).Named(userAccessPluginName));
+            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(adminAccessPluginRegistration.Object).Named(adminAccessPluginName));
+            var account = new DockyardAccountDO()
+            {
+                Subscriptions = new List<SubscriptionDO>()
+                {
+                    new SubscriptionDO()
+                    {
+                        AccessLevel = AccessLevel.None,
+                        Plugin = new PluginDO() {Name = noAccessPluginName}
+                    },
+                    new SubscriptionDO()
+                    {
+                        AccessLevel = AccessLevel.User,
+                        Plugin = new PluginDO() {Name = userAccessPluginName}
+                    },
+                    new SubscriptionDO()
+                    {
+                        AccessLevel = AccessLevel.Admin,
+                        Plugin = new PluginDO() {Name = adminAccessPluginName}
+                    },
+                }
+            };
+
+            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            List<ActionTemplateDO> curActionTemplateDO = _action.GetAvailableActions(account).ToList();
+
+            //Assert
+            Assert.AreEqual(4, curActionTemplateDO.Count);
+            Assert.That(curActionTemplateDO, Is.Ordered.By("ActionType"));
+
+
+        }
+
     }
 }

@@ -24,14 +24,16 @@ namespace DockyardTest.Controllers
 
         public ActionControllerTest()
         {
-            
+
         }
         public override void SetUp()
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
             CreateEmptyActionList();
+            CreateActionTemplate();
         }
+
 
         [Test]
         [Category("ActionController.Save")]
@@ -40,7 +42,7 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Arrange is done with empty action list
-                
+
                 //Act
                 var actualAction = CreateActionWithId(1);
 
@@ -53,7 +55,7 @@ namespace DockyardTest.Controllers
 
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+                Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
         }
 
@@ -82,7 +84,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+                Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
         }
 
@@ -97,7 +99,7 @@ namespace DockyardTest.Controllers
                 var action = FixtureData.TestAction1();
                 uow.ActionRepository.Add(action);
                 uow.SaveChanges();
-                
+
                 //Act
                 var actualAction = CreateActionWithId(1);
 
@@ -111,7 +113,7 @@ namespace DockyardTest.Controllers
                 //Still there is only one action as the update happened.
                 var expectedAction = uow.ActionRepository.GetByKey(actualAction.Id);
                 Assert.IsNotNull(expectedAction);
-                Assert.AreEqual(actualAction.UserLabel, expectedAction.UserLabel);
+                Assert.AreEqual(actualAction.Name, expectedAction.Name);
             }
         }
 
@@ -121,20 +123,26 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
-                
-                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_action.GetConfigurationSettings(curActionRegistration).ConfigurationSettings, curJsonResult);
+                var curActionTemplate = FixtureData.TestActionTemplateDO1();
+
+                var expectedResult = FixtureData.TestConfigurationSettings();
+                string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+                Assert.AreEqual(1, result.Fields.Count);
+                Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+                Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+                Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+                Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
             }
         }
 
         [Test]
         [Category("ActionController.GetConfigurationSettings")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionController_NULL_ActionRegistration()
+        public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            Assert.IsNotNull(curAction.GetConfigurationSettings(1));
+            Assert.IsNotNull(curAction.GetConfigurationSettings(2));
         }
 
         [Test]
@@ -143,10 +151,10 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+                var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string assembeledName = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1";
-                Assert.AreEqual(_pluginRegistration.AssembleName(curActionRegistration), assembeledName);
+                Assert.AreEqual(_pluginRegistration.AssembleName(curActionTemplate), assembeledName);
             }
         }
 
@@ -156,10 +164,16 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistration = FixtureData.TestActionRegistrationDO1();
+                var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-                string curJsonResult = "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
-                Assert.AreEqual(_pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionRegistration), curJsonResult);
+                var expectedResult = FixtureData.TestConfigurationSettings();
+                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionTemplate);
+                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+                Assert.AreEqual(1, result.Fields.Count);
+                Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+                Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+                Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+                Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
             }
         }
 
@@ -203,8 +217,6 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               
-
                 //Add a template
                 var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
                 uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
@@ -218,10 +230,15 @@ namespace DockyardTest.Controllers
                 uow.ActionListRepository.Add(actionList);
                 uow.SaveChanges();
             }
+        }
 
-
-
-
+        private void CreateActionTemplate()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionTemplateRepository.Add(FixtureData.TestActionTemplateDO1());
+                uow.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -232,17 +249,17 @@ namespace DockyardTest.Controllers
             return new ActionDesignDTO
             {
                 Id = actionId,
-                UserLabel = "AzureSqlAction",
-                ActionType = "WriteToAzureSql",
+                Name = "WriteToAzureSql",
                 ActionListId = 1,
-                ConfigurationSettings = "JSON Config Settings",
+                ConfigurationSettings = new ConfigurationSettingsDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
-                ParentPluginRegistration = "AzureSql"
+                ParentPluginRegistration = "AzureSql",
+                ActionTemplateId = 1
             };
         }
 
 
-        
+
 
         [Test]
         [Ignore]
@@ -251,9 +268,9 @@ namespace DockyardTest.Controllers
         // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
         // make sure that the endpoint is running 
         // in azure db you need a db demodb_health
-        public async  void Can_Get_FieldMappingTargets()
+        public async void Can_Get_FieldMappingTargets()
         {
-            
+
             //Arrange 
             string pluginName =
                 "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
@@ -265,13 +282,13 @@ namespace DockyardTest.Controllers
             var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
             {
                 ParentPluginRegistration = pluginName,
-                ConfigurationSettings = "{\"connection_string\":\"" + dataSource + "\"}"
+                ConfigurationSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
+                    "{\"connection_string\":\"" + dataSource + "\"}")
             });
 
-          
             await task;
             Assert.NotNull(task.Result);
-            Assert.Greater(task.Result.Count(),0);
+            Assert.Greater(task.Result.Count(), 0);
             task.Result.ToList().ForEach(Console.WriteLine);
         }
     }

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -12,10 +10,10 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
 using Data.States;
 using Data.Wrappers;
 using Newtonsoft.Json;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -24,7 +22,7 @@ namespace Core.Services
         private readonly ISubscription _subscription;
         private IPluginRegistration _pluginRegistration;
         private IEnvelope _envelope;
-        private IDocuSignTemplate _docusignTemplate;  //TODO: switch to wrappers
+        private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPluginRegistration _basePluginRegistration;
 
@@ -45,32 +43,47 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
+        public IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
             var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            return plugins.SelectMany(p => p.AvailableActions).OrderBy(s => s.ActionType);
+            var curActions = plugins
+                .SelectMany(p => p.AvailableActions)
+                .OrderBy(s => s.ActionType);
+
+            return curActions;
         }
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
+            ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                if (currentActionDo.Id > 0)
+                {
+                    existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                }
+
+                if (currentActionDo.IsTempId)
+                {
+                    currentActionDo.Id = 0;
+                }
+
                 if (existingActionDo != null)
                 {
                     existingActionDo.ActionList = currentActionDo.ActionList;
                     existingActionDo.ActionListId = currentActionDo.ActionListId;
-                    existingActionDo.ActionType = currentActionDo.ActionType;
+                    existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
+                    existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
-                    existingActionDo.UserLabel = currentActionDo.UserLabel;
                 }
                 else
                 {
                     uow.ActionRepository.Add(currentActionDo);
                 }
                 uow.SaveChanges();
+
                 return true;
             }
         }
@@ -82,22 +95,26 @@ namespace Core.Services
                 return uow.ActionRepository.GetByKey(id);
             }
         }
-        public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+
+        public ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
         {
-            ActionDO curActionDO = new ActionDO();
-            if (curActionRegistrationDO != null)
+            var curActionDO = new ActionDO();
+            if (curActionTemplateDo != null)
             {
-                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
-                curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
-            } 
+                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
+                curActionDO.ConfigurationSettings =
+                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
+                        "GetConfigurationSettings", curActionTemplateDo);
+            }
             else
-                throw new ArgumentNullException("ActionRegistrationDO");
+                throw new ArgumentNullException("ActionTemplateDO");
+
             return curActionDO;
         }
 
         public void Delete(int id)
         {
-            ActionDO entity = new ActionDO() { Id = id };
+            var entity = new ActionDO {Id = id};
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -120,7 +137,7 @@ namespace Core.Services
 
                     EventManager.ActionStarted(curAction);
                     var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
-                    Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+                    var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
                     var jsonResult = await Dispatch(curAction, baseUri);
 
                     //check if the returned JSON is Error
@@ -151,6 +168,7 @@ namespace Core.Services
             PayloadMappingsDTO mappings;
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
+
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
@@ -175,7 +193,7 @@ namespace Core.Services
                 actionPayloadDTO.PayloadMappings = mappings;
             }
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDTO);
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
             return jsonResult;
         }
@@ -190,9 +208,7 @@ namespace Core.Services
             return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
-
         //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
-
         public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
         {
             _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -200,13 +216,10 @@ namespace Core.Services
         }
 
         //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
-
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
         {
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
-
-
     }
 }

@@ -101,10 +101,11 @@ namespace Core.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
-                For<IActionRegistration>().Use<ActionRegistration>();
+                For<IActionTemplate>().Use<ActionTemplate>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IActionList>().Use<ActionList>();
-
+                For<IFile>().Use<File>();
+                For<ISMSMessage>().Use<SMSMessage>();
 
             }
         }
@@ -134,7 +135,7 @@ namespace Core.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActionRegistration>().Use<ActionRegistration>();
+                For<IActionTemplate>().Use<ActionTemplate>();
                 
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
@@ -155,13 +156,15 @@ namespace Core.StructureMap
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
                 pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
-                For<IActionRegistration>().Use<ActionRegistration>();
+                For<IActionTemplate>().Use<ActionTemplate>();
                 For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IActionList>().Use<ActionList>();
+                For<IFile>().Use<File>();
+                For<ISMSMessage>().Use<SMSMessage>();
             }
         }
 

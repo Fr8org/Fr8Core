@@ -10,7 +10,7 @@ module dockyard.interfaces {
         curNodeId: number,
         // Flag, that indicates if currently selected processNodeTemplate has temporary identity.
         curNodeIsTempId: boolean,
-
+        currentProcessTemplate: interfaces.IProcessTemplateVM,
         currentAction: IActionVM,
         Save: Function,
         Cancel: Function

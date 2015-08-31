@@ -1,5 +1,7 @@
-﻿using Data.Wrappers;
+﻿using Core.Services;
+using Data.Wrappers;
 using DocuSign.Integrations.Client;
+using Account = DocuSign.Integrations.Client.Account;
 
 namespace UtilitiesTesting.DocusignTools.Interfaces
 {

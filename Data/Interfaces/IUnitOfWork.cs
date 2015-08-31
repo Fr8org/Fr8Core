@@ -47,12 +47,14 @@ namespace Data.Interfaces
         IProcessTemplateRepository ProcessTemplateRepository { get; }
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
-        ActionRegistrationRepository ActionRegistrationRepository { get; }
+        ActionTemplateRepository ActionTemplateRepository { get; }
         ActionListRepository ActionListRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
         IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
+
+        IFileRepository FileRepository { get; }
 
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
@@ -72,7 +74,7 @@ namespace Data.Interfaces
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        ExternalEventRegistrationRepository ExternalEventRegistrationRepository { get; }
+        ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository { get; }
         MailerRepository MailerRepository { get; }
 
         /// <summary>
