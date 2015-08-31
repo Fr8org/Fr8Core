@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201508292239343_ActionTemplate.Designer.cs">
       <DependentUpon>201508292239343_ActionTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508310309551_UserLabelRemoval.cs" />
+    <Compile Include="Migrations\201508310309551_UserLabelRemoval.Designer.cs">
+      <DependentUpon>201508310309551_UserLabelRemoval.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.Designer.cs">
@@ -503,6 +507,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508292239343_ActionTemplate.resx">
       <DependentUpon>201508292239343_ActionTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508310309551_UserLabelRemoval.resx">
+      <DependentUpon>201508310309551_UserLabelRemoval.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
