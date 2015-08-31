@@ -72,7 +72,7 @@ var dockyard;
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
-                        id: 1,
+                        id: 0,
                         fieldMappingSettings: "test",
                         actionListId: 1
                     };
