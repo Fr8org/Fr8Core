@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Entities;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -24,5 +25,8 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
+
+        [JsonProperty("actionTemplate")]
+        public ActionTemplateDO ActionTemplate { get; set; }
     }
 }

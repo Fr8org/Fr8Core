@@ -142,7 +142,8 @@ namespace DockyardTest.Controllers
         public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            Assert.IsNotNull(curAction.GetConfigurationSettings(2));
+            string test = curAction.GetConfigurationSettings(CreateActionWithId(2));
+            Assert.IsNotNull(test);
         }
 
         [Test]
@@ -167,7 +168,7 @@ namespace DockyardTest.Controllers
                 var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionTemplate);
+                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", FixtureData.TestAction1());
                 ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
                 Assert.AreEqual(1, result.Fields.Count);
                 Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -253,8 +254,9 @@ namespace DockyardTest.Controllers
                 ActionListId = 1,
                 ConfigurationSettings = new ConfigurationSettingsDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
-                ParentPluginRegistration = "AzureSql",
+                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ActionTemplateId = 1
+                //,ActionTemplate = FixtureData.TestActionTemplateDO2()
             };
         }
 

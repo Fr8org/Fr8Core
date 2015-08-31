@@ -40,7 +40,7 @@ namespace Core.PluginRegistrations
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionTemplateDo)
         {
             return @"
                 {'fields':

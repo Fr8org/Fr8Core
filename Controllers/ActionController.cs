@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Microsoft.AspNet.Identity;
 using StructureMap;
+using Core.PluginRegistrations;
 
 namespace Web.Controllers
 {
@@ -89,12 +90,23 @@ namespace Web.Controllers
             return new List<ActionDesignDTO>();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("actions/configuration")]
-        public string GetConfigurationSettings(int curActionTemplateId)
+        public string GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
         {            
-            ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
-            return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            if (curActionDO.ActionTemplate != null)
+            {
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
+                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
+                return settings;
+            }
+            else
+            {
+                throw new System.ArgumentNullException("ActionTemplate is null");
+            }
+           
         }
 
 

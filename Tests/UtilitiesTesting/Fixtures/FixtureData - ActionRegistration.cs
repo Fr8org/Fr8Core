@@ -58,5 +58,18 @@ namespace UtilitiesTesting.Fixtures
             };
 
         }
+
+        public static ActionTemplateDO TestActionTemplateDO2()
+        {
+            var curActionDO = new ActionTemplateDO
+            {
+                Id = 1,
+                ActionType = "Write to SQL",
+                ParentPluginRegistration = "AzureSqlServer",
+                Version = "1"
+            };
+            return curActionDO;
+
+        }
     }
 }

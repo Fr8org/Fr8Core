@@ -104,7 +104,7 @@ namespace Core.Services
                 string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
                 curActionDO.ConfigurationSettings =
                     _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+                        "GetConfigurationSettings", curActionDO);
             }
             else
                 throw new ArgumentNullException("ActionTemplateDO");
