@@ -523,7 +523,7 @@ namespace Data.Migrations
                 "dbo.DocuSignTemplateSubscriptions",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Int(nullable: false, identity: false),
                         ProcessTemplateId = c.Int(),
                         DocuSignTemplateId = c.String(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),

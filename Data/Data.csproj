@@ -262,6 +262,10 @@
     <Compile Include="Migrations\201508310540573_ActionDO_ActionTemplate_Nullable.Designer.cs">
       <DependentUpon>201508310540573_ActionDO_ActionTemplate_Nullable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508311206254_ExternalEventSubs_ExternalEvent_Nullable.cs" />
+    <Compile Include="Migrations\201508311206254_ExternalEventSubs_ExternalEvent_Nullable.Designer.cs">
+      <DependentUpon>201508311206254_ExternalEventSubs_ExternalEvent_Nullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.cs" />
     <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.Designer.cs">
@@ -519,6 +523,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508310540573_ActionDO_ActionTemplate_Nullable.resx">
       <DependentUpon>201508310540573_ActionDO_ActionTemplate_Nullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508311206254_ExternalEventSubs_ExternalEvent_Nullable.resx">
+      <DependentUpon>201508311206254_ExternalEventSubs_ExternalEvent_Nullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
