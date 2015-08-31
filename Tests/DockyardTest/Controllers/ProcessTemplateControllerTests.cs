@@ -233,8 +233,8 @@ namespace DockyardTest.Controllers
             var docuSignTemplateList = new List<string>();
             docuSignTemplateList.Add("58521204-58af-4e65-8a77-4f4b51fef626");
 
-            var externalEventList = new List<int>();
-            externalEventList.AddRange(new int[] { 1, 3 });
+            var externalEventList = new List<int?>();
+            externalEventList.AddRange(new int?[] { 1, 3 });
 
             //Act: first add a process template, then modify it. 
             ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
