@@ -149,8 +149,8 @@ namespace DockyardTest.Services
             {
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionDo.ActionList);
-                uow.ProcessRepository.Add(actionDo.ActionList.Process);
+                uow.ActionListRepository.Add(actionDo.ParentActionList);
+                uow.ProcessRepository.Add(actionDo.ParentActionList.Process);
                 uow.SaveChanges();
             }
 
@@ -181,8 +181,8 @@ namespace DockyardTest.Services
             {
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionDo.ActionList);
-                uow.ProcessRepository.Add(actionDo.ActionList.Process);
+                uow.ActionListRepository.Add(actionDo.ParentActionList);
+                uow.ProcessRepository.Add(actionDo.ParentActionList.Process);
                 uow.SaveChanges();
             }
 
@@ -248,14 +248,21 @@ namespace DockyardTest.Services
 		  [Test]
 		  public void GetUpstreamActivities_1Level_ShoudBeOk()
 		  {
+			  var actionTempate = new ActionTemplateDO()
+            {
+                Id = 1,
+                ActionType = "Test action",
+                ParentPluginRegistration = "Test registration",
+                Version = "1"
+            };
 			  // Level 1
-			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l1_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
 			  l1_aList.Actions.Add(l1_a1);
-			  l1_a1.ActionList = l1_aList;
+			  l1_a1.ParentActionList = l1_aList;
 			  l1_aList.Actions.Add(l1_a2);
-			  l1_a2.ActionList = l1_aList;
+			  l1_a2.ParentActionList = l1_aList;
 
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			  {
@@ -274,23 +281,32 @@ namespace DockyardTest.Services
 		  [Test]
 		  public void GetUpstreamActivities_2Levels_ShoudBeOk()
 		  {
+			  var actionTempate = new ActionTemplateDO()
+			  {
+				  Id = 1,
+				  ActionType = "Test action",
+				  ParentPluginRegistration = "Test registration",
+				  Version = "1"
+			  };
 			  // Level 2
-			  ActionDO l2_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l2_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l2_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l2_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l2_aList = new ActionListDO() { Ordering = 2, ActionListType = ActionListType.Immediate };
 			  l2_aList.Actions.Add(l2_a1);
-			  l2_a1.ActionList = l2_aList;
+			  l2_a1.ParentActionList = l2_aList;
 			  l2_aList.Actions.Add(l2_a2);
-			  l2_a2.ActionList = l2_aList;
+			  l2_a2.ParentActionList = l2_aList;
 
 			  // Level 1
-			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l1_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
 			  l1_aList.Actions.Add(l1_a1);
-			  l1_a1.ActionList = l1_aList;
+			  l1_a1.ParentActionList = l1_aList;
 			  l1_aList.Actions.Add(l1_a2);
-			  l1_a2.ActionList = l1_aList;
+			  l1_a2.ParentActionList = l1_aList;
+
+			  l2_aList.ParentActionList = l1_aList;
 
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			  {
@@ -315,35 +331,45 @@ namespace DockyardTest.Services
 		  [Test]
 		  public void GetUpstreamActivities_3Levels_ShoudBeOk()
 		  {
+			  var actionTempate = new ActionTemplateDO()
+			  {
+				  Id = 1,
+				  ActionType = "Test action",
+				  ParentPluginRegistration = "Test registration",
+				  Version = "1"
+			  };
 			  // Level 3
-			  ActionDO l3_a1 = new ActionDO() { Id = 1, };
-			  ActionDO l3_a2 = new ActionDO() { Id = 2, };
-			  ActionDO l3_a3 = new ActionDO() { Id = 3, };
+			  ActionDO l3_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l3_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
+			  ActionDO l3_a3 = new ActionDO() { Id = 3, ActionTemplate = actionTempate };
 			  ActionListDO l3_aList = new ActionListDO() { Ordering = 3 , ActionListType = ActionListType.Immediate};
 			  l3_aList.Actions.Add(l3_a1);
-			  l3_a1.ActionList = l3_aList;
+			  l3_a1.ParentActionList = l3_aList;
 			  l3_aList.Actions.Add(l3_a2);
-			  l3_a2.ActionList = l3_aList;
+			  l3_a2.ParentActionList = l3_aList;
 			  l3_aList.Actions.Add(l3_a3);
-			  l3_a3.ActionList = l3_aList;
+			  l3_a3.ParentActionList = l3_aList;
 
 			  // Level 2
-			  ActionDO l2_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l2_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l2_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l2_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l2_aList = new ActionListDO() { Ordering = 2, ActionListType = ActionListType.Immediate };
 			  l2_aList.Actions.Add(l2_a1);
-			  l2_a1.ActionList = l2_aList;
+			  l2_a1.ParentActionList = l2_aList;
 			  l2_aList.Actions.Add(l2_a2);
-			  l2_a2.ActionList = l2_aList;
+			  l2_a2.ParentActionList = l2_aList;
 
 			  // Level 1
-			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l1_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
 			  l1_aList.Actions.Add(l1_a1);
-			  l1_a1.ActionList = l1_aList;
+			  l1_a1.ParentActionList = l1_aList;
 			  l1_aList.Actions.Add(l1_a2);
-			  l1_a2.ActionList = l1_aList;
+			  l1_a2.ParentActionList = l1_aList;
+
+			  l3_aList.ParentActionList = l2_aList;
+			  l2_aList.ParentActionList = l1_aList;
 
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			  {
@@ -375,47 +401,58 @@ namespace DockyardTest.Services
 		  [Test]
 		  public void GetUpstreamActivities_4Levels_ShoudBeOk()
 		  {
+			  var actionTempate = new ActionTemplateDO()
+			  {
+				  Id = 1,
+				  ActionType = "Test action",
+				  ParentPluginRegistration = "Test registration",
+				  Version = "1"
+			  };
 			  // Level 4
-			  ActionDO l4_a1 = new ActionDO() { Id = 1, };
-			  ActionDO l4_a2 = new ActionDO() { Id = 2, };
-			  ActionDO l4_a3 = new ActionDO() { Id = 3, };
+			  ActionDO l4_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l4_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
+			  ActionDO l4_a3 = new ActionDO() { Id = 3, ActionTemplate = actionTempate };
 			  ActionListDO l4_aList = new ActionListDO() { Ordering = 4, ActionListType = ActionListType.Immediate };
 			  l4_aList.Actions.Add(l4_a1);
-			  l4_a1.ActionList = l4_aList;
+			  l4_a1.ParentActionList = l4_aList;
 			  l4_aList.Actions.Add(l4_a2);
-			  l4_a2.ActionList = l4_aList;
+			  l4_a2.ParentActionList = l4_aList;
 			  l4_aList.Actions.Add(l4_a3);
-			  l4_a3.ActionList = l4_aList;
+			  l4_a3.ParentActionList = l4_aList;
 
 			  // Level 3
-			  ActionDO l3_a1 = new ActionDO() { Id = 1, };
-			  ActionDO l3_a2 = new ActionDO() { Id = 2, };
-			  ActionDO l3_a3 = new ActionDO() { Id = 3, };
+			  ActionDO l3_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l3_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
+			  ActionDO l3_a3 = new ActionDO() { Id = 3, ActionTemplate = actionTempate };
 			  ActionListDO l3_aList = new ActionListDO() { Ordering = 3, ActionListType = ActionListType.Immediate };
 			  l3_aList.Actions.Add(l3_a1);
-			  l3_a1.ActionList = l3_aList;
+			  l3_a1.ParentActionList = l3_aList;
 			  l3_aList.Actions.Add(l3_a2);
-			  l3_a2.ActionList = l3_aList;
+			  l3_a2.ParentActionList = l3_aList;
 			  l3_aList.Actions.Add(l3_a3);
-			  l3_a3.ActionList = l3_aList;
+			  l3_a3.ParentActionList = l3_aList;
 
 			  // Level 2
-			  ActionDO l2_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l2_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l2_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l2_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l2_aList = new ActionListDO() { Ordering = 2, ActionListType = ActionListType.Immediate };
 			  l2_aList.Actions.Add(l2_a1);
-			  l2_a1.ActionList = l2_aList;
+			  l2_a1.ParentActionList = l2_aList;
 			  l2_aList.Actions.Add(l2_a2);
-			  l2_a2.ActionList = l2_aList;
+			  l2_a2.ParentActionList = l2_aList;
 
 			  // Level 1
-			  ActionDO l1_a1 = new ActionDO() { Id = 1 };
-			  ActionDO l1_a2 = new ActionDO() { Id = 2 };
+			  ActionDO l1_a1 = new ActionDO() { Id = 1, ActionTemplate = actionTempate };
+			  ActionDO l1_a2 = new ActionDO() { Id = 2, ActionTemplate = actionTempate };
 			  ActionListDO l1_aList = new ActionListDO() { Ordering = 1, ActionListType = ActionListType.Immediate };
 			  l1_aList.Actions.Add(l1_a1);
-			  l1_a1.ActionList = l1_aList;
+			  l1_a1.ParentActionList = l1_aList;
 			  l1_aList.Actions.Add(l1_a2);
-			  l1_a2.ActionList = l1_aList;
+			  l1_a2.ParentActionList = l1_aList;
+
+			  l4_aList.ParentActionList = l3_aList;
+			  l3_aList.ParentActionList = l2_aList;
+			  l2_aList.ParentActionList = l1_aList;
 
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			  {

@@ -113,7 +113,7 @@ namespace DockyardTest.Controllers
             {
                 Id = 10,
                 Name = "WriteToAzureSql",
-                ActionListId = 1,
+                ParentActionListID = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",

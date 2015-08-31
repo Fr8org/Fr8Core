@@ -29,7 +29,7 @@ namespace Data.Entities
 
 		public virtual _EventStatusTemplate TriggerEvent{ get; set; }
 
-		[InverseProperty("ActionList")]
+		[InverseProperty("ParentActionList")]
 		public virtual List<ActionDO> Actions{ get; set; }
 
         [Required]
@@ -45,5 +45,9 @@ namespace Data.Entities
         public int? ActionListState { get; set; }
 
         public virtual _ActionListStateTemplate ActionListStateTemplate { get; set; }
+
+		  [ForeignKey("ParentActionList")]
+		  public int? ParentActionListID { get; set; }
+		  public virtual ActionListDO ParentActionList { get; set; }
 	}
 }

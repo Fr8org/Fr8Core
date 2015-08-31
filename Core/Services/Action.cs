@@ -70,8 +70,8 @@ namespace Core.Services
 
                 if (existingActionDo != null)
                 {
-                    existingActionDo.ActionList = currentActionDo.ActionList;
-                    existingActionDo.ActionListId = currentActionDo.ActionListId;
+                    existingActionDo.ParentActionList = currentActionDo.ParentActionList;
+                    existingActionDo.ParentActionListID = currentActionDo.ParentActionListID;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
@@ -172,7 +172,7 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; 
+            actionPayloadDTO.EnvelopeId = curActionDO.ParentActionList.Process.EnvelopeId; 
             
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
@@ -231,11 +231,9 @@ namespace Core.Services
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO action = actionDO;
-				var aList = action.ActionList;
+				var aList = action.ParentActionList;
 				if (aList != null)
 				{
-					List<ActionListDO> descOrderedActionLists = uow.ActionListRepository.GetAll().Where(y => y.ProcessNodeTemplateID == aList.ProcessNodeTemplateID)
-						.OrderByDescending(x => x.Ordering).ToList();
 					Stack<ActionListDO> stack = new Stack<ActionListDO>();
 					stack.Push(aList);
 					while (stack.Count != 0)
@@ -245,9 +243,8 @@ namespace Core.Services
 						if (lowerAction != null)
 							result.Add(lowerAction);
 						result.Add(aList);
-						var parentActionList = descOrderedActionLists.Where(x => x.Ordering < aList.Ordering).FirstOrDefault();
-						if (parentActionList != null)
-							stack.Push(parentActionList);
+						if (aList.ParentActionList != null)
+							stack.Push(aList.ParentActionList);
 					}
 				}
 			}
@@ -262,7 +259,7 @@ namespace Core.Services
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO action = actionDO;
-				var aList = action.ActionList;
+				var aList = action.ParentActionList;
 				if (aList != null)
 				{
 					var higherActions = aList.Actions.OrderBy(x => x.Id).Where(y => y.Id > action.Id);

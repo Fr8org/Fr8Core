@@ -679,7 +679,7 @@ namespace Core.Managers
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ActionListId).ProcessID;
+                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActionListID).ProcessID;
                 processInExecution = uow.ProcessRepository.GetByKey(processId);
             }
 
