@@ -5,20 +5,20 @@ using Data.Interfaces;
 namespace Data.Entities
 {
     /// <summary>
-    /// This entity contains information about access to remote calendar providers granted by customer.
+    /// This entity contains information about access to remote service providers granted by customer.
     /// The key field is AuthData that is JSON-string field with authorization data such as OAuth access and refresh token.
     /// </summary>
-    public class RemoteCalendarAuthDataDO : BaseDO, IRemoteCalendarAuthDataDO
+    public class RemoteOAuthDataDo : BaseDO, IRemoteOAuthDataDO
     {
         [NotMapped]
-        IRemoteCalendarProviderDO IRemoteCalendarAuthDataDO.Provider
+        IRemoteServiceProviderDO IRemoteOAuthDataDO.Provider
         {
             get { return Provider; }
-            set { Provider = (RemoteCalendarProviderDO)value; }
+            set { Provider = (RemoteServiceProviderDO)value; }
         }
 
         [NotMapped]
-        IDockyardAccountDO IRemoteCalendarAuthDataDO.User
+        IDockyardAccountDO IRemoteOAuthDataDO.User
         {
             get { return User; }
             set { User = (DockyardAccountDO)value; }
@@ -26,11 +26,11 @@ namespace Data.Entities
 
         [Key]
         public int Id { get; set; }
-        public string AuthData { get; set; }
+        public string Token { get; set; }
 
         [Required, ForeignKey("Provider")]
         public int? ProviderID { get; set; }
-        public virtual RemoteCalendarProviderDO Provider { get; set; }
+        public virtual RemoteServiceProviderDO Provider { get; set; }
         
         [Required, ForeignKey("User")]
         public string UserID { get; set; }
@@ -38,8 +38,8 @@ namespace Data.Entities
         
         public bool HasAccessToken()
         {
-            return !string.IsNullOrEmpty(AuthData) &&
-                   AuthData.Contains("access_token");
+            return !string.IsNullOrEmpty(Token) &&
+                   Token.Contains("access_token");
         }
     }
 }

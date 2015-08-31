@@ -32,7 +32,7 @@ namespace DockyardTest.Managers
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RemoteCalendarProviderRepository.CreateRemoteCalendarProviders(configRepository);
+                uow.RemoteServiceProviderRepository.CreateRemoteCalendarProviders(configRepository);
                 uow.SaveChanges();
             }
         }
@@ -53,7 +53,7 @@ namespace DockyardTest.Managers
             // EXECUTE
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var oauthProviders = uow.RemoteCalendarProviderRepository.GetQuery().Where(p => p.AuthType == ServiceAuthorizationType.OAuth2).ToArray();
+                var oauthProviders = uow.RemoteServiceProviderRepository.GetQuery().Where(p => p.AuthType == ServiceAuthorizationType.OAuth2).ToArray();
                 Assert.That(oauthProviders.Length > 0, "No OAuth providers.");
                 foreach (var provider in oauthProviders)
                 {

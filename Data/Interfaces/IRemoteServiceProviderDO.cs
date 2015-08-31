@@ -2,7 +2,7 @@ using Data.States.Templates;
 
 namespace Data.Interfaces
 {
-    public interface IRemoteCalendarProviderDO : IBaseDO
+    public interface IRemoteServiceProviderDO : IBaseDO
     {
         int Id { get; set; }
         string Name { get; set; }

@@ -8,7 +8,7 @@ namespace Data.Entities
     /// <summary>
     /// Presents a remote calendar provider such as Google, Yahoo, etc.
     /// </summary>
-    public class RemoteCalendarProviderDO : BaseDO, IRemoteCalendarProviderDO
+    public class RemoteServiceProviderDO : BaseDO, IRemoteServiceProviderDO
     {
         [Key]
         public int Id { get; set; }

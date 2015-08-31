@@ -228,47 +228,15 @@
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
-    <Compile Include="Migrations\201508252259417_InitialMigration.cs" />
-    <Compile Include="Migrations\201508252259417_InitialMigration.Designer.cs">
-      <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508271601204_AddFileDO.cs" />
-    <Compile Include="Migrations\201508271601204_AddFileDO.Designer.cs">
-      <DependentUpon>201508271601204_AddFileDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508282358100_merge.cs" />
-    <Compile Include="Migrations\201508282358100_merge.Designer.cs">
-      <DependentUpon>201508282358100_merge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs" />
-    <Compile Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.Designer.cs">
-      <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508292010152_forcemerge.cs" />
-    <Compile Include="Migrations\201508292010152_forcemerge.Designer.cs">
-      <DependentUpon>201508292010152_forcemerge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508292239343_ActionTemplate.cs" />
-    <Compile Include="Migrations\201508292239343_ActionTemplate.Designer.cs">
-      <DependentUpon>201508292239343_ActionTemplate.cs</DependentUpon>
+    <Compile Include="Migrations\201508302127004_InitialMigration.cs" />
+    <Compile Include="Migrations\201508302127004_InitialMigration.Designer.cs">
+      <DependentUpon>201508302127004_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201508310309551_UserLabelRemoval.cs" />
     <Compile Include="Migrations\201508310309551_UserLabelRemoval.Designer.cs">
       <DependentUpon>201508310309551_UserLabelRemoval.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.cs" />
-    <Compile Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.Designer.cs">
-      <DependentUpon>201508282038003_DocuSignTemplateSubscription_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs" />
-    <Compile Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.Designer.cs">
-      <DependentUpon>201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.cs" />
-    <Compile Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.Designer.cs">
-      <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -380,10 +348,10 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
-    <Compile Include="Interfaces\IRemoteCalendarAuthDataDO.cs" />
-    <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
+    <Compile Include="Interfaces\IRemoteOAuthDataDO.cs" />
+    <Compile Include="Entities\RemoteOAuthDataDo.cs" />
     <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
-    <Compile Include="Interfaces\IRemoteCalendarProviderDO.cs" />
+    <Compile Include="Interfaces\IRemoteServiceProviderDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
@@ -395,7 +363,7 @@
     <Compile Include="States\Templates\_UserStateTemplate.cs" />
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
-    <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
+    <Compile Include="Entities\RemoteServiceProviderDO.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
@@ -422,7 +390,7 @@
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
-    <Compile Include="Repositories\RemoteCalendarProviderRepository.cs" />
+    <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
@@ -481,32 +449,8 @@
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201508252259417_InitialMigration.resx">
-      <DependentUpon>201508252259417_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508271601204_AddFileDO.resx">
-      <DependentUpon>201508271601204_AddFileDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508282038003_DocuSignTemplateSubscription_Migration.resx">
-      <DependentUpon>201508282038003_DocuSignTemplateSubscription_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508282040014_ExternalEventSubscriptions_Renamed_Migration.resx">
-      <DependentUpon>201508282040014_ExternalEventSubscriptions_Renamed_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508282358100_merge.resx">
-      <DependentUpon>201508282358100_merge.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508291902170_RenameActionRegistrationDOToActionTemplateDO.resx">
-      <DependentUpon>201508291902170_RenameActionRegistrationDOToActionTemplateDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508281126398_201508282028_ChangedActionListActionDO.resx">
-      <DependentUpon>201508281126398_201508282028_ChangedActionListActionDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508292010152_forcemerge.resx">
-      <DependentUpon>201508292010152_forcemerge.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508292239343_ActionTemplate.resx">
-      <DependentUpon>201508292239343_ActionTemplate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508302127004_InitialMigration.resx">
+      <DependentUpon>201508302127004_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508310309551_UserLabelRemoval.resx">
       <DependentUpon>201508310309551_UserLabelRemoval.cs</DependentUpon>

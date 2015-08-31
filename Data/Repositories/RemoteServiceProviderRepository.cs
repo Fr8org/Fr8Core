@@ -7,15 +7,15 @@ using Utilities;
 
 namespace Data.Repositories
 {
-    public class RemoteCalendarProviderRepository : GenericRepository<RemoteCalendarProviderDO>, IRemoteCalendarProviderRepository
+    public class RemoteServiceProviderRepository : GenericRepository<RemoteServiceProviderDO>, IRemoteCalendarProviderRepository
     {
-        internal RemoteCalendarProviderRepository(IUnitOfWork uow)
+        internal RemoteServiceProviderRepository(IUnitOfWork uow)
             : base(uow)
         {
 
         }
 
-        public RemoteCalendarProviderDO GetByName(string name)
+        public RemoteServiceProviderDO GetByName(string name)
         {
             return GetQuery().FirstOrDefault(rcp => rcp.Name == name);
         }
@@ -26,7 +26,7 @@ namespace Data.Repositories
             var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
             var providers = new[]
                 {
-                    new RemoteCalendarProviderDO
+                    new RemoteServiceProviderDO
                         {
                             Name = "Google",
                             AuthType = ServiceAuthorizationType.OAuth2,
@@ -57,8 +57,8 @@ namespace Data.Repositories
         }
     }
 
-    public interface IRemoteCalendarProviderRepository : IGenericRepository<RemoteCalendarProviderDO>
+    public interface IRemoteCalendarProviderRepository : IGenericRepository<RemoteServiceProviderDO>
     {
-        RemoteCalendarProviderDO GetByName(string name);
+        RemoteServiceProviderDO GetByName(string name);
     }
 }
