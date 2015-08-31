@@ -15,7 +15,7 @@ namespace DockyardTest.Integration
     public class RunTimeTests : BaseTest
     {
 
-        [Test, Ignore]
+        [Test]
         [Category("IntegrationTests")]
         public async void ITest_CanProcessHealthDemo()
         {
@@ -37,8 +37,6 @@ namespace DockyardTest.Integration
                 var xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, healthPayloadPath);
                 DocuSignNotification _docuSignNotification = ObjectFactory.GetInstance<DocuSignNotification>();
                 _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
-
-
             }
 
             // EXECUTE
@@ -73,6 +71,9 @@ namespace DockyardTest.Integration
             var healthActionList = FixtureData.TestActionListHealth1();
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
             uow.ActionListRepository.Add(healthActionList);
+
+            var healthAction = FixtureData.TestActionHealth1();
+            uow.ActionRepository.Add(healthAction);
 
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -12,10 +10,10 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
 using Data.States;
 using Data.Wrappers;
 using Newtonsoft.Json;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -108,7 +106,7 @@ namespace Core.Services
         }
 
 
-        public async Task<string> Process(ActionDO curAction)
+        public async Task<int> Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -145,7 +143,7 @@ namespace Core.Services
                     throw new Exception(string.Format("Action ID: {0} status is not unstarted.", curAction.Id));
                 }
             }
-            return curAction.ActionState.ToString();
+            return curAction.ActionState.Value;
         }
 
         public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
@@ -169,7 +167,7 @@ namespace Core.Services
                 actionPayloadDto.PayloadMappings = mappings;
             }
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
+            var jsonResult = curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto).Result;
             EventManager.ActionDispatched(actionPayloadDto);
             return jsonResult;
         }

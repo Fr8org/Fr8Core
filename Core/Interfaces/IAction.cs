@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
@@ -20,6 +18,6 @@ namespace Core.Interfaces
         //void Register(string ActionType, string PluginRegistration, string Version);
         ActionDO GetById(int id);
         void Delete(int id);
-        Task<string> Process(ActionDO curAction);
+        Task<int> Process(ActionDO curAction);
     }
 }

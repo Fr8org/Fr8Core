@@ -8,7 +8,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using DocuSign.Integrations.Client;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 
@@ -24,7 +23,6 @@ namespace Core.Services
       
         public bool Evaluate(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curCriteria =
@@ -35,8 +33,6 @@ namespace Core.Services
                     return true;
                 else
                     return Evaluate(curCriteria.ConditionsJSON, curProcessNode.Id, curEventData);
-
-
             }
         }
 

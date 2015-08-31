@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using Data.States;
-using Newtonsoft.Json;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -28,14 +27,7 @@ namespace UtilitiesTesting.Fixtures
                 Description = "DO-866 HealthDemo Integration Test",
                 Name = "HealthDemoIntegrationTest",
                 ProcessTemplateState = ProcessTemplateState.Active,
-
             };
-
-
-            
-
-
-
             return healthProcessTemplate;
         }
     }

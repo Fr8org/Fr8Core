@@ -1,7 +1,6 @@
 ﻿using Data.Entities;
 using Data.States;
 using Data.Wrappers;
-using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -15,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 54,
                 UserLabel = "Save to Sql Server",
                 ActionType = "Write to Sql Server",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_V1",
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 ConfigurationSettings = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
@@ -155,10 +154,24 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.Unstarted,
                 ActionType = "testaction",
                 ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
-                FieldMappingSettings = FixtureData.FieldMappings,
+                FieldMappingSettings = FieldMappings,
                 Id = 1
             };
 
+            return actionDo;
+        }
+        public static ActionDO TestActionHealth1()
+        {
+            var actionDo = new ActionDO
+            {
+                Id=1,
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
+                FieldMappingSettings = FieldMappings,
+                ActionState = ActionState.Unstarted,
+                ActionType = "testaction",
+                ConfigurationSettings = "config settings",
+                ActionListId = 88
+            };
             return actionDo;
         }
     }

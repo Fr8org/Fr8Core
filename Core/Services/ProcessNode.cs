@@ -20,7 +20,8 @@ namespace Core.Services
 
         public ProcessNode()
         {
-                  }
+        }
+
         /// <summary>
         /// Creates ProcessNode Object
         /// </summary>
@@ -35,6 +36,7 @@ namespace Core.Services
             };
 
             processNode.ProcessNodeTemplateId = processNodeTemplateId;
+            processNode.ProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(processNodeTemplateId);
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -56,16 +58,15 @@ namespace Core.Services
                 throw new ArgumentException("There should only be one key with false.");
 
             var key = keys.First(k => k.Flag.Equals("false", StringComparison.OrdinalIgnoreCase));
-            key.Id = targetPNode.Id.ToString();
+            key.Id = targetPNode.Id;
 
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            string evaluationResult = "";
             var _criteria = ObjectFactory.GetInstance<ICriteria>();
-            bool result = _criteria.Evaluate(curEventData, curProcessNode);
+            var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
                 var _curActionList = ObjectFactory.GetInstance<IActionList>();
@@ -75,10 +76,7 @@ namespace Core.Services
                     _curActionList.Process(actionList);
                 }
             }
-            evaluationResult = result.ToString();
-
-            return evaluationResult;
-
+            return result.ToString();
         }
 
         /// <summary>
