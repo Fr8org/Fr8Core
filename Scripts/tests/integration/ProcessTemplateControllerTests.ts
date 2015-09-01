@@ -53,5 +53,15 @@ module dockyard.tests.controller {
                     expect(data.SubscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.SubscribedDocuSignTemplates[0]);
                 });
         });
+
+        it("should return the list of external events", function () {
+            $.get(endpoint + "/triggersettings").done(
+                (data: interfaces.IExternalEventVM, status: string) => {
+                    expect(data).not.toBe(null);
+                    expect(status).toBe("success");
+                    expect((<any>data).length).toBe(4);
+                });
+        });
+
     });
 }

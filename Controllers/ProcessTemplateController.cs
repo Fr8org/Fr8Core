@@ -120,5 +120,19 @@ namespace Web.Controllers
                 return Ok(id);
             }
         }
+
+        [Route("triggersettings"), ResponseType(typeof (List<ExternalEventDTO>))]
+        public IHttpActionResult GetTriggerSettings()
+        {
+            var triggerSettings = new List<ExternalEventDTO>()
+            {
+                new ExternalEventDTO(ExternalEventType.EnvelopeSent, "Envelope Sent"),
+                new ExternalEventDTO(ExternalEventType.EnvelopeDelivered, "Envelope Received"),
+                new ExternalEventDTO(ExternalEventType.RecipientSent, "Recipient Sent"),
+                new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Received")
+            };
+
+            return Ok(triggerSettings);
+        }
     }
 }

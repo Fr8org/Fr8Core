@@ -46,11 +46,12 @@ namespace Data.Entities
         {
             base.BeforeSave();
 
+            //Connected out by @alexavrutin due to a logical conflict with Process Template UI.
 
-            ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
-            curValidator.ValidateAndThrow(this);
+            //ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
+            // curValidator.ValidateAndThrow(this);
 
-            
+
         }
     }
 }

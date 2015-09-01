@@ -2,17 +2,18 @@
 
 module dockyard.interfaces {
     export interface IProcessBuilderScope extends ng.IScope {
-        processTemplateId: number,
+        processTemplateId: number;
         processNodeTemplates: Array<model.ProcessNodeTemplate>,
-        fields: Array<model.Field>,
+        fields: Array<model.Field>;
 
         // Identity of currently selected processNodeTemplate.
-        curNodeId: number,
+        curNodeId: number;
         // Flag, that indicates if currently selected processNodeTemplate has temporary identity.
-        curNodeIsTempId: boolean,
-        currentProcessTemplate: interfaces.IProcessTemplateVM,
-        currentAction: IActionVM,
-        Save: Function,
-        Cancel: Function
+        curNodeIsTempId: boolean;
+        currentProcessTemplate: interfaces.IProcessTemplateVM;
+        currentAction: IActionVM;
+        Save: Function;
+        Cancel: Function;
+        Loaded: Function;
     }
 } 
