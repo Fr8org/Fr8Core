@@ -9,14 +9,14 @@ using Microsoft.AspNet.Identity;
 
 namespace Core.Security
 {
-    class KwasantUserStore : IUserStore<DockyardAccountDO>, 
+    class DockyardUserStore : IUserStore<DockyardAccountDO>, 
         IUserSecurityStampStore<DockyardAccountDO>, 
         IUserEmailStore<DockyardAccountDO>,
         IUserPasswordStore<DockyardAccountDO>
     {
         private readonly IUnitOfWork _uow;
 
-        public KwasantUserStore(IUnitOfWork uow)
+        public DockyardUserStore(IUnitOfWork uow)
         {
             _uow = uow;
         }

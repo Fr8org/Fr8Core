@@ -1,16 +1,16 @@
 namespace Data.Interfaces
 {
-    public interface IRemoteCalendarAuthDataDO : IBaseDO
+    public interface IRemoteOAuthDataDO : IBaseDO
     {
         int Id { get; set; }
         
         int? ProviderID { get; set; }
-        IRemoteCalendarProviderDO Provider { get; set; }
+        IRemoteServiceProviderDO Provider { get; set; }
 
         string UserID { get; set; }
         IDockyardAccountDO User { get; set; }
         
-        string AuthData { get; set; }
+        string Token { get; set; }
         bool HasAccessToken();
     }
 }

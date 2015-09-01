@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ExternalEventSubs_ExternalEvent_Nullable : IMigrationMetadata
+    public sealed partial class DO_849_Migration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ExternalEventSubs_ExternalEvent_Nullable));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(DO_849_Migration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508311206254_ExternalEventSubs_ExternalEvent_Nullable"; }
+            get { return "201509010854001_DO_849_Migration"; }
         }
         
         string IMigrationMetadata.Source

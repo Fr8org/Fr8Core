@@ -70,7 +70,7 @@ namespace Data.Interfaces
         /// </summary>
         IDBContext Db { get; }
 
-        RemoteCalendarProviderRepository RemoteCalendarProviderRepository { get; }
+        RemoteServiceProviderRepository RemoteServiceProviderRepository { get; }
         RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
