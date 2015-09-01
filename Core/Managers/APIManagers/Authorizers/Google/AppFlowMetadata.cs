@@ -47,7 +47,7 @@ namespace Core.Managers.APIManagers.Authorizers.Google
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var provider = uow.RemoteCalendarProviderRepository.GetByName("Google");
+                var provider = uow.RemoteServiceProviderRepository.GetByName("Google");
                 var creds = JsonConvert.DeserializeObject<Dictionary<string, string>>(provider.AppCreds);
 
                 return new AuthorizationCodeFlow(
