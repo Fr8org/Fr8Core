@@ -31,7 +31,8 @@ module dockyard.controllers {
             '$q',
             '$http',
             'urlPrefix',
-            'ProcessTemplateService'
+            'ProcessTemplateService',
+            '$timeout'
         ];
 
         private _scope: interfaces.IProcessBuilderScope;
@@ -43,11 +44,11 @@ module dockyard.controllers {
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
-
             private $q: ng.IQService,
             private $http: ng.IHttpService,
             private urlPrefix: string,
-            private ProcessTemplateService: services.IProcessTemplateService
+            private ProcessTemplateService: services.IProcessTemplateService,
+            private $timeout: ng.ITimeoutService
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -101,7 +102,11 @@ module dockyard.controllers {
 
             //Select Template Pane events
             this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
-                (event: ng.IAngularEvent, eventArgs: pst.ProcessTemplateUpdatedEventArgs) => this.PaneSelectTemplate_ProcessTemplateUpdated(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: pst.ProcessTemplateUpdatedEventArgs) => {
+                    //avoid infinite loop if the message was sent by this controller
+                    if (event.currentScope == event.targetScope) return;
+                    this.PaneSelectTemplate_ProcessTemplateUpdated(eventArgs);
+                });
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
@@ -116,10 +121,12 @@ module dockyard.controllers {
             this._scope.$watch('currentProcessTemplate', (newValue, oldValue, scope) => {
                 console.log('currentProcessTemplate changed:' + (<any>newValue).SubscribedDocuSignTemplates);
             }, true);
+
         }
 
         private loadProcessTemplate() {
             this._scope.currentProcessTemplate = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
+            this._scope.currentProcessTemplate.$promise.then(() => this.displaySelectTemplatePane());
         }
          
         // Find criteria by Id.
@@ -145,6 +152,12 @@ module dockyard.controllers {
             else {
                 callback(null);
             }
+        }
+
+        private displaySelectTemplatePane() {
+            //Show Select Template Pane
+            var eArgs = new directives.paneSelectTemplate.RenderEventArgs();
+            this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
         }
 
         /*
@@ -362,7 +375,8 @@ module dockyard.controllers {
         private PaneWorkflowDesigner_TemplateSelecting(eventArgs: pwd.TemplateSelectingEventArgs) {
             console.log("ProcessBuilderController: template selected");
 
-            var scope = this._scope;
+            var scope = this._scope,
+                that = this;
             this.SaveAction(function () {
                 if (scope.currentAction != null) {
                     scope.$broadcast(
@@ -373,10 +387,6 @@ module dockyard.controllers {
 
                 scope.currentAction = null; // action is apparently unselected
 
-                //Show Select Template Pane
-                var eArgs = new directives.paneSelectTemplate.RenderEventArgs();
-                scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
-
                 //Hide Define Criteria Pane
                 scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
 
@@ -385,6 +395,9 @@ module dockyard.controllers {
                 
                 //Hide Configure Action Pane
                 scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+
+                //Show Select Template Pane
+                that.displaySelectTemplatePane();
             });
         }
 
@@ -425,9 +438,7 @@ module dockyard.controllers {
                 eventArgs.id,
                 eventArgs.isTempId,
                 eventArgs.actionListId);
-
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-
         }
          
         // TODO: do we need this?
@@ -468,9 +479,6 @@ module dockyard.controllers {
         private PaneSelectTemplate_ProcessTemplateUpdated(eventArgs: pst.ProcessTemplateUpdatedEventArgs) {
             console.log('changed');
 
-            //Update page subtitle
-            this.$state.data.pageSubTitle = eventArgs.processTemplateName
-
             //Update scope variable
             var currentProcessTemplate = this._scope.currentProcessTemplate || <interfaces.IProcessTemplateVM>{}
             currentProcessTemplate.Name = eventArgs.processTemplateName;
@@ -492,8 +500,6 @@ module dockyard.controllers {
 
             //If an action is selected, save it
             if (self._scope.currentAction != null) {
-                debugger;
-
                 var promise = self.ActionService.save(
                     {
                         id: self._scope.currentAction.id

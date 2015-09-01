@@ -30,8 +30,8 @@
                     <label class=" col-sm-5 ">Docusign Events :</label>
                     <div class="col-sm-7">
                         <div class="checkbox checkbox-primary" ng-repeat="event in docuSignExternalEvents">
-                            <input type="checkbox" id="extEvent_{{event.Id}}" checkbox-group array="processTemplate.SubscribedExternalEvents" id-field='Id' item-object='event' />
-                            <label for="extEvent_{{event.Id}}">{{event.Name}}</label>
+                            <input type="checkbox" id="extEvent_{{event.id}}" checkbox-group array="processTemplate.SubscribedExternalEvents" id-field='id' item-object='event' />
+                            <label for="extEvent_{{event.id}}">{{event.name}}</label>
                         </div>
                     </div>
                 </div>

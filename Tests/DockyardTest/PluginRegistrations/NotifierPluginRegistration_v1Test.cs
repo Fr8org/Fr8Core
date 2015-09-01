@@ -24,7 +24,9 @@ namespace DockyardTest.PluginRegistrations
         public override void SetUp()
         {
             base.SetUp();
+
             _notifierPluginRegistration_v1 = new NotifierPluginRegistration_v1();
+            _notifierPluginRegistration_v1.RegisterActions();
         }
 
         [Test]
