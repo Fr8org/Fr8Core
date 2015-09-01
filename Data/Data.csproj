@@ -232,9 +232,9 @@
     <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
       <DependentUpon>201509010217565_inital_migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508301015398_AddStartingProcessNodeTemplate.cs" />
-    <Compile Include="Migrations\201508301015398_AddStartingProcessNodeTemplate.Designer.cs">
-      <DependentUpon>201508301015398_AddStartingProcessNodeTemplate.cs</DependentUpon>
+    <Compile Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.cs" />
+    <Compile Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.Designer.cs">
+      <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -452,8 +452,8 @@
     <EmbeddedResource Include="Migrations\201509010217565_inital_migration.resx">
       <DependentUpon>201509010217565_inital_migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508301015398_AddStartingProcessNodeTemplate.resx">
-      <DependentUpon>201508301015398_AddStartingProcessNodeTemplate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.resx">
+      <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
