@@ -43,4 +43,8 @@ module dockyard.services {
                 }
             })
     ]);
+
+    app.factory('DataSourcesService', ['$resource', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
+        <IDocuSignTriggerService> $resource('/action/field_data_sources')
+    ]);
 }
