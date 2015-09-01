@@ -70,13 +70,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private RemoteCalendarProviderRepository _remoteCalendarProviderRepository;
+        private RemoteServiceProviderRepository _remoteServiceProviderRepository;
 
-        public RemoteCalendarProviderRepository RemoteCalendarProviderRepository
+        public RemoteServiceProviderRepository RemoteServiceProviderRepository
         {
             get
             {
-                return _remoteCalendarProviderRepository ?? (_remoteCalendarProviderRepository = new RemoteCalendarProviderRepository(this));
+                return _remoteServiceProviderRepository ?? (_remoteServiceProviderRepository = new RemoteServiceProviderRepository(this));
             }
         }
 

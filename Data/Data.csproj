@@ -228,13 +228,9 @@
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
-    <Compile Include="Migrations\201508302127004_InitialMigration.cs" />
-    <Compile Include="Migrations\201508302127004_InitialMigration.Designer.cs">
-      <DependentUpon>201508302127004_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201508310309551_UserLabelRemoval.cs" />
-    <Compile Include="Migrations\201508310309551_UserLabelRemoval.Designer.cs">
-      <DependentUpon>201508310309551_UserLabelRemoval.cs</DependentUpon>
+    <Compile Include="Migrations\201509010217565_inital_migration.cs" />
+    <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
+      <DependentUpon>201509010217565_inital_migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201508301015398_AddStartingProcessNodeTemplate.cs" />
     <Compile Include="Migrations\201508301015398_AddStartingProcessNodeTemplate.Designer.cs">
@@ -352,10 +348,10 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
-    <Compile Include="Interfaces\IRemoteCalendarAuthDataDO.cs" />
-    <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
+    <Compile Include="Interfaces\IRemoteOAuthDataDO.cs" />
+    <Compile Include="Entities\RemoteOAuthDataDo.cs" />
     <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
-    <Compile Include="Interfaces\IRemoteCalendarProviderDO.cs" />
+    <Compile Include="Interfaces\IRemoteServiceProviderDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
@@ -367,7 +363,7 @@
     <Compile Include="States\Templates\_UserStateTemplate.cs" />
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
-    <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
+    <Compile Include="Entities\RemoteServiceProviderDO.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
@@ -394,7 +390,7 @@
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
-    <Compile Include="Repositories\RemoteCalendarProviderRepository.cs" />
+    <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
@@ -453,11 +449,8 @@
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201508302127004_InitialMigration.resx">
-      <DependentUpon>201508302127004_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508310309551_UserLabelRemoval.resx">
-      <DependentUpon>201508310309551_UserLabelRemoval.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509010217565_inital_migration.resx">
+      <DependentUpon>201509010217565_inital_migration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508301015398_AddStartingProcessNodeTemplate.resx">
       <DependentUpon>201508301015398_AddStartingProcessNodeTemplate.cs</DependentUpon>
