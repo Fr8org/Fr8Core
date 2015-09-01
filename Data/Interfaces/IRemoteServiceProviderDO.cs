@@ -8,6 +8,6 @@ namespace Data.Interfaces
         string Name { get; set; }
         _ServiceAuthorizationTypeTemplate AuthTypeTemplate { get; set; }
         string AppCreds { get; set; }
-        string CalDAVEndPoint { get; set; }
+        string EndPoint { get; set; }
     }
 }

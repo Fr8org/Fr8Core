@@ -13,18 +13,18 @@ using Utilities;
 
 namespace Core.Managers.APIManagers.Authorizers.Docusign
 {
-    class DocusignAuthFlow
+    class DocuSignAuthFlow
     {
         private readonly string _userId;
-        private readonly AuthorizationToken _authorizationTokenService;
+        private readonly AuthorizationToken _authorizationToken;
 
         public string Endpoint { get; set; }
         public string IntegratorKey { get; set; }
 
-        public DocusignAuthFlow(string userId)
+        public DocuSignAuthFlow(string userId)
         {
             _userId = userId;
-            _authorizationTokenService = new AuthorizationToken();
+            _authorizationToken = new AuthorizationToken();
         }
 
         private HttpClient CreateClient(string accessToken = null)
@@ -88,7 +88,7 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
                     }
                     var responseAsString = await response.Content.ReadAsStringAsync();
                     var responseObject = JsonConvert.DeserializeAnonymousType(responseAsString, new { access_token = "" });
-                    _authorizationTokenService.AddOrUpdateToken(_userId, responseObject.access_token);
+                    _authorizationToken.AddOrUpdateToken(_userId, responseObject.access_token);
                 }
                 finally
                 {
@@ -122,13 +122,13 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
                 {
                     response.Dispose();
                 }
-                _authorizationTokenService.RemoveToken(_userId);
+                _authorizationToken.RemoveToken(_userId);
             }
         }
 
         public Task<string> GetTokenAsync()
         {
-            return Task.FromResult(_authorizationTokenService.GetToken(_userId));
+            return Task.FromResult(_authorizationToken.GetToken(_userId));
         }
     }
 }
