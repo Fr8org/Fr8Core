@@ -222,6 +222,7 @@
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />

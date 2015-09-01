@@ -26,6 +26,11 @@ module dockyard.interfaces {
         ExternalEvent: number;
         ProcessTemplateId: number;
     }
+    
+    export interface IExternalEvent {
+        id: number,
+        name: string
+    }
 
     export interface IProcessNodeTemplateVM extends ng.resource.IResource<IProcessNodeTemplateVM> {
         Id: number;
@@ -42,4 +47,5 @@ module dockyard.interfaces {
     export interface IActionVM extends ng.resource.IResource<model.ActionDesignDTO>, model.ActionDesignDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
+    export interface IExternalEventVM extends ng.resource.IResource<IExternalEvent> { }
 }
