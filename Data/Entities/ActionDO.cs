@@ -17,6 +17,8 @@ namespace Data.Entities
 
         public string FieldMappingSettings { get; set; }
 
+        // TODO: We should probably remove this property.
+        // TODO: We can access ParentPluginRegistration via ActionDO.ActionTemplate.ParentPluginRegistration.
         public string ParentPluginRegistration { get; set; }
 
         [ForeignKey("ActionStateTemplate")]

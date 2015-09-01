@@ -60,31 +60,28 @@ module dockyard.directives.paneConfigureMapping {
                 var loadedFields = false;
                 $scope.mappedValue = mappedValue;
 
-                var actionDto = {
-                    ConfigurationSettings: "{'connection_string':'Data Source= s79ifqsqga.database.windows.net; database = demodb_health; User ID= alexeddodb; Password = Thales89'}",
-                    ParentPluginRegistration: "AzureSqlServerPluginRegistration_v1"
-                }
+                $http
+                    .post(urlPrefix + "/actions/field_mapping_targets/", $scope.currentAction)
+                    .then((returnedParams) => {
+                        loadedActions = true;
+                        var tempToBeMapped = [];
 
-                $http.post(urlPrefix + "/actions/field_mapping_targets/", actionDto).then((returnedParams) => {
-                    loadedActions = true;
-                    var tempToBeMapped = [];
+                        returnedParams.data.forEach((actionParam) => {
+                            tempToBeMapped.push({ 'type': "actionparam", 'Name': actionParam });
+                        });
 
-                    returnedParams.data.forEach((actionParam) => {
-                        tempToBeMapped.push({ 'type': "actionparam", 'Name': actionParam });
-                    });
-
-                    if ($scope.mode === "param") {
-                        $scope.toBeMappedTo = tempToBeMapped;
-                        $scope.HeadingRight = "Target Data";
+                        if ($scope.mode === "param") {
+                            $scope.toBeMappedTo = tempToBeMapped;
+                            $scope.HeadingRight = "Target Data";
+                            $scope.HeadingLeft = "Source Data";
+                            return;
+                        }
+                        $scope.toBeMappedFrom = tempToBeMapped;
+                        transform();
                         $scope.HeadingLeft = "Source Data";
+                        $scope.HeadingRight = "Target Data";
                         return;
-                    }
-                    $scope.toBeMappedFrom = tempToBeMapped;
-                    transform();
-                    $scope.HeadingLeft = "Source Data";
-                    $scope.HeadingRight = "Target Data";
-                    return;
-                });
+                    });
 
                 $http.post(urlPrefix + "/actions/field_data_sources/", $scope.currentAction)
                     .then((dataSources) => {

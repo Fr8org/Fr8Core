@@ -248,7 +248,9 @@ namespace Core.Services
             }
         }
 
-        //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
+        /// <summary>
+        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
+        /// </summary>
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
         {
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);

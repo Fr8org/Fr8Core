@@ -120,8 +120,12 @@ namespace Web.Controllers
         [Route("field_mapping_targets")]
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            return _action.GetFieldMappingTargets(curActionDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
+
+                return _action.GetFieldMappingTargets(curAction);
+            }
         }
 
 

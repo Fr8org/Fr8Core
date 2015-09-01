@@ -17,7 +17,6 @@ namespace Core.PluginRegistrations
     {
         private readonly ActionNameListDTO availableActions;
         private readonly string baseUrl;
-        // private readonly IAction _action;
 
         protected BasePluginRegistration(ActionNameListDTO curAvailableActions, string curBaseUrl)
         {
@@ -39,36 +38,62 @@ namespace Core.PluginRegistrations
         {
             get
             {
-                // return JsonConvert.DeserializeObject<IEnumerable<ActionTemplateDO>>(availableActions,
-                //  new JsonSerializerSettings());
+                var curParentPluginRegistration = this.GetType().Name;
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var curActionTemplates = uow.ActionTemplateRepository
+                        .GetQuery()
+                        .Where(x => x.ParentPluginRegistration == curParentPluginRegistration)
+                        .ToList();
+
+                    return curActionTemplates;
+                }
+            }
+        }
+
+        private IEnumerable<ActionTemplateDO> ActionsToBeRegistered
+        {
+            get
+            {
                 var curActionTemplates = new List<ActionTemplateDO>();
-                //IEnumerable<ActionTemplateDO> curActionTemplates;
-                //return Mapper.Map(availableActions, curActionTemplates);
                 
                 foreach (var item in availableActions.ActionNames)
                 {
-                    var curActionRegistratoin = new ActionTemplateDO();
-                    Mapper.Map(item,curActionRegistratoin);
-                    curActionTemplates.Add(curActionRegistratoin);
+                    var curActionRegistration = new ActionTemplateDO();
+                    Mapper.Map(item, curActionRegistration);
+                    curActionTemplates.Add(curActionRegistration);
                 }
+
                 return curActionTemplates;
             }
         }
 
         public static IPluginRegistration GetPluginType(ActionDO curAction)
         {
-            var pluginRegistrationType = Type.GetType("Core.PluginRegistrations." + curAction.ParentPluginRegistration);
+            if (curAction.ActionTemplate == null)
+            {
+                throw new ArgumentException("ActionTemplate is not specified for current action.");
+            }
+
+            var pluginRegistrationType = Type.GetType("Core.PluginRegistrations." + curAction.ActionTemplate.ParentPluginRegistration);
             if (pluginRegistrationType == null)
+            {
                 throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            }
+
             var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
             if (pluginRegistration == null)
+            {
                 throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            }
+
             return pluginRegistration;
         }
 
         public void RegisterActions()
         {
-            IEnumerable<ActionTemplateDO> curAvailableCommands = this.AvailableActions;
+            IEnumerable<ActionTemplateDO> curAvailableCommands = this.ActionsToBeRegistered;
             foreach (var action in curAvailableCommands)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
