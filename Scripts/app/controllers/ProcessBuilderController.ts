@@ -102,7 +102,11 @@ module dockyard.controllers {
 
             //Select Template Pane events
             this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
-                (event: ng.IAngularEvent, eventArgs: pst.ProcessTemplateUpdatedEventArgs) => this.PaneSelectTemplate_ProcessTemplateUpdated(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: pst.ProcessTemplateUpdatedEventArgs) => {
+                    //avoid infinite loop if the message was sent by this controller
+                    if (event.currentScope == event.targetScope) return;
+                    this.PaneSelectTemplate_ProcessTemplateUpdated(eventArgs);
+                });
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
