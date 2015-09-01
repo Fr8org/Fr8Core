@@ -26,8 +26,9 @@ namespace Data.Entities
 
         public string PayloadMappings { get; set; }
 
-        [NotMapped]
-	    public string DocuSignTemplateId { get; set; }
+        // TODO: remove this.
+        // [NotMapped]
+	    // public string DocuSignTemplateId { get; set; }
 
         [ForeignKey("ActionTemplate")]
         public int? ActionTemplateId { get; set; }

@@ -26,7 +26,8 @@ module dockyard.directives.paneConfigureMapping {
         // control works in two modes field (fields would be dropdown) or param (would be dropdown) REWRITE THIS
         // if nothing is set it works as field mapper
         public scope = {
-            mode: "@"
+            mode: "@",
+            currentAction: "="
         };
 
 
@@ -86,12 +87,17 @@ module dockyard.directives.paneConfigureMapping {
                 });
 
 
-                var actionWithProcess = { DocuSignTemplateId: "58521204-58AF-4E65-8A77-4F4B51FEF626" };
-                debugger;
-                console.log($scope.currentAction);
+                // TODO: remove this.
+                // var actionWithProcess = { DocuSignTemplateId: "58521204-58AF-4E65-8A77-4F4B51FEF626" };
+                // debugger;
+                // console.log($scope.currentAction);
 
-                $http.post(urlPrefix + "/actions/field_data_sources/", actionWithProcess )
+                debugger;
+
+                $http.post(urlPrefix + "/actions/field_data_sources/", $scope.currentAction)
                     .then((dataSources) => {
+                        debugger;
+
                         loadedFields = true;
                         var tempToBeMapped = [];
                         dataSources.data.forEach((docField) => {
