@@ -224,6 +224,7 @@
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
@@ -238,9 +239,13 @@
     <Compile Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.Designer.cs">
       <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509010854001_DO_849_Migration.cs" />
-    <Compile Include="Migrations\201509010854001_DO_849_Migration.Designer.cs">
-      <DependentUpon>201509010854001_DO_849_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201509011428137_ActionTemplateIdNullable.cs" />
+    <Compile Include="Migrations\201509011428137_ActionTemplateIdNullable.Designer.cs">
+      <DependentUpon>201509011428137_ActionTemplateIdNullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509011535465_DO_849_Migration.cs" />
+    <Compile Include="Migrations\201509011535465_DO_849_Migration.Designer.cs">
+      <DependentUpon>201509011535465_DO_849_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -462,8 +467,11 @@
     <EmbeddedResource Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.resx">
       <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509010854001_DO_849_Migration.resx">
-      <DependentUpon>201509010854001_DO_849_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509011428137_ActionTemplateIdNullable.resx">
+      <DependentUpon>201509011428137_ActionTemplateIdNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509011535465_DO_849_Migration.resx">
+      <DependentUpon>201509011535465_DO_849_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

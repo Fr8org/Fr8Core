@@ -63,7 +63,6 @@ var dockyard;
                     var templateName = "testtemplate";
                     var incomingEventArgs = new pst.ProcessTemplateUpdatedEventArgs(1, "testtemplate", ['test']);
                     _$scope.$emit(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated], incomingEventArgs);
-                    expect(_$state.data.pageSubTitle).toBe(templateName);
                 });
                 // TODO: do we need this ?
                 //Rule #6

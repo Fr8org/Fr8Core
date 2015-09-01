@@ -260,6 +260,14 @@ namespace DockyardTest.Controllers
             }
         }
 
+        [Test]
+        public void ProcessController_CanGetExternalEventList()
+        {
+            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var triggerSettings = ptc.GetTriggerSettings() as OkNegotiatedContentResult<List<ExternalEventDTO>>;
+            Assert.AreEqual(4, triggerSettings.Content.Count);
+        }
+
         private static ProcessTemplateController CreateProcessTemplateController(string userId, string email)
         {
             var claims = new List<Claim>();
@@ -271,7 +279,7 @@ namespace DockyardTest.Controllers
 
             var ptc = new ProcessTemplateController
             {
-                User = new GenericPrincipal(identity, new[] { "USers" })
+                User = new GenericPrincipal(identity, new[] { "Users" })
             };
 
             return ptc;

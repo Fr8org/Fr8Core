@@ -86,9 +86,7 @@ module dockyard.directives.paneConfigureAction {
                 $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
                 
                 //TODO: this is test code, remove later
-                $scope.isVisible = true;
                 $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
-                $scope.$broadcast(MessageType[MessageType.PaneConfigureAction_Render], new RenderEventArgs(1, 2, false, 1));
             };
         }
 
@@ -98,7 +96,7 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
-
+            debugger;
             scope.action = new model.ActionDesignDTO(
                 eventArgs.processNodeTemplateId,
                 eventArgs.id,
