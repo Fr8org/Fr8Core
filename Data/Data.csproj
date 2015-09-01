@@ -237,6 +237,10 @@
     <Compile Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.Designer.cs">
       <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509011428137_ActionTemplateIdNullable.cs" />
+    <Compile Include="Migrations\201509011428137_ActionTemplateIdNullable.Designer.cs">
+      <DependentUpon>201509011428137_ActionTemplateIdNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -455,6 +459,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.resx">
       <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509011428137_ActionTemplateIdNullable.resx">
+      <DependentUpon>201509011428137_ActionTemplateIdNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

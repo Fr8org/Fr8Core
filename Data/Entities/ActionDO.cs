@@ -30,7 +30,7 @@ namespace Data.Entities
 	    public string DocuSignTemplateId { get; set; }
 
         [ForeignKey("ActionTemplate")]
-        public int ActionTemplateId { get; set; }
+        public int? ActionTemplateId { get; set; }
         public virtual ActionTemplateDO ActionTemplate { get; set; }
 
         [NotMapped]
