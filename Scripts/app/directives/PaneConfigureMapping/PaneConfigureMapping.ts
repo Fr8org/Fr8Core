@@ -86,18 +86,8 @@ module dockyard.directives.paneConfigureMapping {
                     return;
                 });
 
-
-                // TODO: remove this.
-                // var actionWithProcess = { DocuSignTemplateId: "58521204-58AF-4E65-8A77-4F4B51FEF626" };
-                // debugger;
-                // console.log($scope.currentAction);
-
-                debugger;
-
                 $http.post(urlPrefix + "/actions/field_data_sources/", $scope.currentAction)
                     .then((dataSources) => {
-                        debugger;
-
                         loadedFields = true;
                         var tempToBeMapped = [];
                         dataSources.data.forEach((docField) => {
