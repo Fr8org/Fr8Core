@@ -10,6 +10,7 @@ module dockyard.services {
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
+    export interface IDataSourceService extends ng.resource.IResourceClass<interfaces.IDataSourceListVM>{ }
 
     app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessTemplateService =>
         <IProcessTemplateService> $resource(urlPrefix + '/processTemplate/:id', { id: '@id' })
@@ -44,7 +45,7 @@ module dockyard.services {
             })
     ]);
 
-    app.factory('DataSourcesService', ['$resource', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource('/action/field_data_sources')
+    app.factory('DataSourceService', ['$resource', ($resource: ng.resource.IResourceService, urlPrefix: string): IDataSourceService =>
+        <IDataSourceService> $resource('/action/field_data_sources')
     ]);
 }

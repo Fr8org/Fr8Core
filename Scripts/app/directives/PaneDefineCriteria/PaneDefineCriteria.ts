@@ -118,8 +118,17 @@ module dockyard.directives.paneDefineCriteria {
             scope: IPaneDefineCriteriaScope,
             http: ng.IHttpService,
             urlPrefix: string,
-            LocalIdentityGenerator: services.LocalIdentityGenerator) {
+            LocalIdentityGenerator: services.LocalIdentityGenerator,
+            DataSourcesService: services.IDataSourceService) {
             console.log('PaneDefineCriteria::onRender', eventArgs);
+
+            //Load fields
+            debugger;
+            DataSourcesService.get({}, { curActionDesignDTO: scope.currentAction }).$promise.then((data) => {
+                data.forEach((value) => {
+                    scope.fields.push(new model.Field(value, value));
+                });
+            });
 
             // If we deal with newly created object (i.e. isTempId === true),
             // then create blank temporary object in the scope of DefineCriteria pane.
@@ -276,12 +285,15 @@ module dockyard.directives.paneDefineCriteria {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/PaneDefineCriteria',
-            scope: {},
+            scope: {
+                currentAction: '='
+            },
             controller: (
                 $scope: IPaneDefineCriteriaScope,
                 $http: ng.IHttpService,
                 urlPrefix: string, 
-                LocalIdentityGenerator: services.LocalIdentityGenerator
+                LocalIdentityGenerator: services.LocalIdentityGenerator,
+                DataSourceService: services.IDataSourceService
             ): void => {
 
                 $scope.operators = [
@@ -296,7 +308,7 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.defaultOperator = 'gt';
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Render],
-                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator));
+                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator, DataSourceService));
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Hide],
                     (event: ng.IAngularEvent) => onHide($scope));
