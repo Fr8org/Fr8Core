@@ -12,6 +12,7 @@ namespace Data.Interfaces.DataTransferObjects
         {
             Fields = new List<FieldDefinitionDTO>();
         }
+
         public List<FieldDefinitionDTO> Fields { get; set; }
     }
 }

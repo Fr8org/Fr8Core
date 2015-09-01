@@ -489,6 +489,7 @@
     <Folder Include="Authentication\" />
     <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
+    <Folder Include="Infrastructure\JsonNet\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201508252259417_InitialMigration.resx">

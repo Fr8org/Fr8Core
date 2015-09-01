@@ -21,7 +21,7 @@ module dockyard.tests.controller {
         var deleteInvoker = function (data, done) {
             $.ajax({
                 type: "Delete",
-                url: "/api/action/" + data.Id,
+                url: "/api/action/" + data.id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -35,7 +35,7 @@ module dockyard.tests.controller {
         var getInvoker = function (data, done) {
             $.ajax({
                 type: "GET",
-                url: "/api/action/" + data[0].Id,
+                url: "/api/action/" + data[0].id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {

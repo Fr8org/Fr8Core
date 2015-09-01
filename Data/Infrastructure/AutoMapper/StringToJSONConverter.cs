@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using Utilities.Serializers.Json;
 
 namespace Data.Infrastructure.AutoMapper
@@ -14,7 +15,9 @@ namespace Data.Infrastructure.AutoMapper
                 return null;
             }
 
-            var serializer = new JsonSerializer();
+            var serializer = new Utilities.Serializers.Json.JsonSerializer();
+            serializer.Settings.MissingMemberHandling = MissingMemberHandling.Ignore;
+
             var curObject = serializer.Deserialize<T>(jsonString);
 
             return curObject;
