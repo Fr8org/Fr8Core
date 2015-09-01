@@ -11,7 +11,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         [ForeignKey("EventStatusTemplate")]
-        public int ExternalEvent { get; set; }
+        public int? ExternalEvent { get; set; }
 
         public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
 
