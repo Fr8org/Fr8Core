@@ -59,7 +59,7 @@ namespace Core.Security
 
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, DockyardAccountDO dockyardAccountDO)
         {
-            var um = new KwasantUserManager(uow);
+            var um = new DockyardIdentityManager(uow);
             var identity = um.CreateIdentity(dockyardAccountDO, DefaultAuthenticationTypes.ApplicationCookie);
             foreach (var roleId in dockyardAccountDO.Roles.Select(r => r.RoleId))
             {

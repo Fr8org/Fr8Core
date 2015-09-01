@@ -47,7 +47,7 @@ module dockyard.tests.controller {
             }).fail(function (response) {
                 errorHandler(response, done);
             });
-        };
+        }; 
 
         var postInvoker = function (done, dataToSave) {
             $.ajax({
@@ -69,17 +69,16 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IAction =
+            var actions: interfaces.IActionDesignDTO =
                 {
-                    actionType: "test action type",
-                    configurationSettings: "test",
+                    name: "test action type",
+                    configurationSettings: utils.Fixtures.configurationSettings,
                     processNodeTemplateId: 1,
+                    actionTemplateId: 1,
                     isTempId: false,
-                    id: null,
+                    id:0,
                     fieldMappingSettings: "test",
-                    userLabel: "test",
-                    tempId: 0,
-                    actionListId: null
+                    actionListId: 1
                 };
 
             postInvoker(done, actions);

@@ -14,7 +14,7 @@
     <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
     <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
     <li>@Html.ActionLink("My Account", "MyAccount", "User") </li>
-    <li>@Html.ActionLink("Sign Out", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
+    <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
 </ul>
 }
 }
@@ -24,7 +24,7 @@ else
         <li data-section="2"><a href="#how_to_works" class="how_to_works" title="How it Works">How it Works</a></li>
         <li><a href="/Home/About" title="About Us">About Us</a></li>
         <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
-        <li><a href="/Account/Index" title="SignUp/Login">SignUp/Login</a></li>
+        <li><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>
         <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
     </ul>
 }

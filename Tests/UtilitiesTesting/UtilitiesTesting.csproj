@@ -93,7 +93,7 @@
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
     <Compile Include="Fixtures\FixtureData - ActionNameDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionNameListDTO.cs" />
-    <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
+    <Compile Include="Fixtures\FixtureData - ActionTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
@@ -108,6 +108,7 @@
     <Compile Include="Fixtures\FixtureData - ConfigurationSettingsDTO.cs" />
     <Compile Include="Fixtures\FixtureData - FieldMappingSettingsDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
+    <Compile Include="Fixtures\FixtureData - File.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />

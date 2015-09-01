@@ -31,7 +31,7 @@ namespace Data.Infrastructure.AutoMapper
                 return new DocuSignTemplateSubscriptionDO()
                 {
                     DocuSignTemplateId = a,
-                    ProcessTemplateId = processTermplateId
+                    ExternalProcessTemplateId = processTermplateId
                 };
             }).ToList();
         }

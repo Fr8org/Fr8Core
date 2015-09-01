@@ -75,7 +75,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestAction21(),
+                CurrentActivity = TestAction21(),
                 ActionListState = ActionListState.Inprocess
             };
         }
@@ -85,8 +85,54 @@ namespace UtilitiesTesting.Fixtures
             return new ActionListDO
             {
                 Id = 2,
-                CurrentAction = TestAction21(),
+                CurrentActivity = TestAction21(),
                 ActionListState = ActionListState.Unstarted
+            };
+        }
+
+        public static ActionListDO TestActionList5()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                ActionListType = ActionListType.Immediate,
+                CurrentActivity = FixtureData.TestAction6(),
+                ActionListState = ActionListState.Unstarted,
+                Actions = new System.Collections.Generic.List<ActionDO>() 
+                { 
+                    FixtureData.TestAction10(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
+            };
+        }
+
+        public static ActionListDO TestActionList6()
+        {
+            ProcessDO processDO = FixtureData.TestProcess1();
+            processDO.EnvelopeId = "";
+            return new ActionListDO
+            {
+                Id = 2,
+                ActionListType = ActionListType.Immediate,
+                ActionListState = ActionListState.Unstarted,
+                Process = processDO
+            };
+        }
+
+        public static ActionListDO TestActionList7()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                CurrentActivity = FixtureData.TestAction6(),
+                ActionListState = ActionListState.Unstarted,
+                Actions = new System.Collections.Generic.List<ActionDO>() 
+                { 
+                    FixtureData.TestAction10(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
             };
         }
     }

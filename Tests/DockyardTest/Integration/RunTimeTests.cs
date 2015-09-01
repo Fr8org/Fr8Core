@@ -3,6 +3,9 @@
 ﻿using Core.Services;
 ﻿using Data.Entities;
 ﻿using Data.Interfaces;
+﻿using Data.States;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 ﻿using Newtonsoft.Json;
 ﻿using NUnit.Framework;
 ﻿using StructureMap;
@@ -25,7 +28,7 @@ namespace DockyardTest.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //create a registered account
-                Account _account = new Account();
+                DockyardAccount _account = new DockyardAccount();              
                 var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User");
                 uow.UserRepository.Add(registeredAccount);
                 uow.SaveChanges();
@@ -70,6 +73,7 @@ namespace DockyardTest.Integration
             //add actionlist to processnode
             var healthActionList = FixtureData.TestActionListHealth1();
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+            
             uow.ActionListRepository.Add(healthActionList);
 
             var healthAction = FixtureData.TestActionHealth1();
@@ -78,6 +82,7 @@ namespace DockyardTest.Integration
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
             healthWriteAction.ActionListId = healthActionList.Id;
+            healthActionList.CurrentActivity = healthWriteAction;
 
             //add field mappings to write action
             var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
@@ -90,8 +95,8 @@ namespace DockyardTest.Integration
 
             //add a subscription to a specific template on the docusign platform
             var health_ExternalEventSubscription = FixtureData.TestExternalEventSubscription_medical_form_v1();
-            health_ExternalEventSubscription.ProcessTemplate = healthProcessTemplate;
-            uow.ExternalEventRegistrationRepository.Add(health_ExternalEventSubscription);
+            health_ExternalEventSubscription.ExternalProcessTemplate = healthProcessTemplate;
+            uow.ExternalEventSubscriptionRepository.Add(health_ExternalEventSubscription);
 
             uow.SaveChanges();
             return healthProcessTemplate;

@@ -20,7 +20,7 @@ namespace Core.Services
     public class Process : IProcess
     {
         private readonly IProcessNode _processNode;
-        private readonly DocuSignEnvelope _envelope ;
+        private readonly DocuSignEnvelope _envelope;
 
         public Process()
         {
@@ -39,21 +39,21 @@ namespace Core.Services
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);              
+                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
                 if (curProcessTemplate == null)
                     throw new ArgumentNullException("processTemplateId");
                 curProcessDO.ProcessTemplate = curProcessTemplate;
 
                 curProcessDO.Name = curProcessTemplate.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.EnvelopeId = envelopeId;              
+                curProcessDO.EnvelopeId = envelopeId;
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
                 //then create process node
                 var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
-                var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId,"process node");
+                var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
                 uow.SaveChanges();
             }
@@ -67,7 +67,7 @@ namespace Core.Services
             var curProcessDO = Create(curProcessTemplate.Id, curEvent.EnvelopeId);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
@@ -90,19 +90,22 @@ namespace Core.Services
                     string nodeExecutionResultKey = _processNode.Execute(curEnvelopeData, curProcessNode);
                     if (nodeExecutionResultKey != string.Empty)
                     {
-                        var nodeTransitions = JsonConvert.DeserializeObject<List<TransitionKeyData>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
-                        int nodeID = nodeTransitions.Where(k => k.Flag.Equals(nodeExecutionResultKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new TransitionKeyData()).FirstOrDefault().Id;
-                        if (nodeTransitions != null && nodeID != 0)
-                        {
-                            curProcessNode = uow.ProcessNodeRepository.GetByKey(nodeID);
-                        }
-                        else
-                        {
-                            throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
-                        }
+                        List<ProcessNodeTransition> nodeTransitions = JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
+                        string nodeID = GetNextProcessNodeId(nodeTransitions, nodeExecutionResultKey);
+                        curProcessNode = uow.ProcessNodeRepository.GetByKey(Convert.ToInt32(nodeID));
                     }
                 }
             }
+        }
+
+        private string GetNextProcessNodeId(List<ProcessNodeTransition> nodeTransitions, string nodeTransitionKey)
+        {
+            string nodeID = nodeTransitions.Where(k => k.TransitionKey.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new ProcessNodeTransition()).FirstOrDefault().ProcessNodeId;
+            if (nodeID == null)
+            {
+                throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
+            }
+            return nodeID;
         }
     }
 }

@@ -6,7 +6,6 @@
 */
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
-/// <reference path="interfaces/ipaneconfigureactionscope.ts" />
 /// <reference path="interfaces/ipanescope.ts" />
 /// <reference path="interfaces/ipaneselectactionscope.ts" />
 /// <reference path="interfaces/iprocessbuildercontroller.ts" />
@@ -15,14 +14,16 @@
 /// <reference path="interfaces/iprocesstemplatesscope.ts" />
 /// <reference path="interfaces/iprocesstemplatevm.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
+/// <reference path="interfaces/iconfigurationsettings.ts" />
 
 /*
     MODEL
 */
-/// <reference path="model/action.ts" />
+/// <reference path="model/actiondesigndto.ts" />
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
+/// <reference path="model/configurationsettings.ts" />
 
 /*
     SERVICES
@@ -39,6 +40,7 @@
 /// <reference path="filters/processtemplatestate.ts" />
 
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
+/// <reference path="directives/paneconfigureaction/configurationfield.ts" />
 
 /// <reference path="directives/panedefinecriteria/ipanedefinecriteriascope.ts" />
 /// <reference path="directives/panedefinecriteria/messages.ts" />
@@ -52,6 +54,7 @@
 /// <reference path="directives/paneworkflowdesigner/paneworkflowdesigner.ts" />
 
 /// <reference path="directives/querybuilderwidget.ts" />
+
 
 /*
     CONTROLLERS

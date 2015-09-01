@@ -2,10 +2,8 @@
 using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces;
-using Data.Migrations;
 using NUnit.Framework;
 using StructureMap;
-using System.Collections.Generic;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -31,7 +29,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curEvent = FixtureData.TestDocuSignEvent1();
-                Data.Entities.ProcessTemplateDO processTemplate = null;
+                ProcessTemplateDO processTemplate = null;
                 _processTemplateService.LaunchProcess(uow, processTemplate, curEvent);
             }
 		}

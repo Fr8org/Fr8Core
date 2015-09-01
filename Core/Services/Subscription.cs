@@ -17,7 +17,10 @@ namespace Core.Services
         public IEnumerable<IPluginRegistration> GetAuthorizedPlugins(IDockyardAccountDO account)
         {
             if (account == null)
+            {
                 throw new ArgumentNullException("account");
+            }
+
             return account.Subscriptions
                 .Where(s => s.AccessLevel == AccessLevel.User || s.AccessLevel == AccessLevel.Admin)
                 .Select(s => ObjectFactory.GetNamedInstance<IPluginRegistration>(s.PluginRegistration.Name))

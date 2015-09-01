@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Description;
 using AutoMapper;
-using Core.Helper;
-using Microsoft.AspNet.Identity;
-using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
-using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Web.ViewModels;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace Web.Controllers
 {
@@ -22,12 +18,12 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
-        private readonly IActionRegistration _actionRegistration;
+        private readonly IActionTemplate _actionTemplate;
 
         public ActionController()
         {
 			_action = ObjectFactory.GetInstance<IAction>();
-            _actionRegistration = ObjectFactory.GetInstance<IActionRegistration>();
+            _actionTemplate = ObjectFactory.GetInstance<IActionTemplate>();
         }
 
         public ActionController(IAction service)
@@ -44,13 +40,19 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        public IEnumerable<ActionRegistrationDO> GetAvailableActions()
+        [ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
+        public IHttpActionResult GetAvailableActions()
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var account = uow.UserRepository.GetByKey(userId);
-                return _action.GetAvailableActions(account);
+                var curDockyardAccount = uow.UserRepository.GetByKey(userId);
+                var availableActions = _action
+                    .GetAvailableActions(curDockyardAccount)
+                    .Select(x => Mapper.Map<ActionTemplateDTO>(x))
+                    .ToList();
+            
+                return Ok(availableActions);
             }
         }
 
@@ -89,11 +91,10 @@ namespace Web.Controllers
 
         [HttpGet]
         [Route("actions/configuration")]
-        public string GetConfigurationSettings(int curActionRegistrationId)
-        {
-            
-            ActionRegistrationDO curActionRegistrationDO = _actionRegistration.GetByKey(curActionRegistrationId);
-            return _action.GetConfigurationSettings(curActionRegistrationDO).ConfigurationSettings;
+        public string GetConfigurationSettings(int curActionTemplateId)
+        {            
+            ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
+            return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
         }
 
 

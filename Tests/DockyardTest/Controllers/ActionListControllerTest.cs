@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
+using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
+using Core.Services;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
-using Core.Services;
-using Data.States;
+using DockyardTest.Controllers.Api;
 
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    public class ActionListControllerTest : BaseTest
+    public class ActionListControllerTest : ApiControllerTestBase
     {
+        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private ActionListDO _curActionList;
 
         public override void SetUp()
         {
@@ -60,7 +65,7 @@ namespace DockyardTest.Controllers
                 ActionDO actionDO = CreateActionDO();
                 curService.AddAction(actionDO, "last");
                 Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
-                Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentAction.Ordering, 1);
+                Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentActivity.Ordering, 1);
             }
         }
 
@@ -77,42 +82,64 @@ namespace DockyardTest.Controllers
             }
         }
 
+        [Test]
+        [Category("ActionListController.GetByProcessNodeTemplateId")]
+        public void ActionListController_GetByProcessNodeTemplateId()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var controller = CreateController<ActionListController>();
+
+                var actionResult = controller.GetByProcessNodeTemplateId(
+                    _curProcessNodeTemplate.Id, ActionListType.Immediate);
+
+                var okResult = actionResult as OkNegotiatedContentResult<ActionListDTO>;
+
+                Assert.IsNotNull(okResult);
+                Assert.IsNotNull(okResult.Content);
+                Assert.AreEqual(okResult.Content.Id, _curActionList.Id);
+            }
+        }
+
         #region Private methods
         /// <summary>
         /// Creates a new Action with the given actiond ID
         /// </summary>
         private ActionDO CreateActionDO()
         {
+            var actionTemplate = FixtureData.ActionTemplate();
+
             return new ActionDO
             {
                 Id = 10,
-                UserLabel = "AzureSqlAction",
-                ActionType = "WriteToAzureSql",
+                Name = "WriteToAzureSql",
                 ActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
-                ActionState = ActionState.Unstarted
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+
             };
         }
 
-        void InitializeActionList()
+        private void InitializeActionList()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
                 //Add a template
-                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
                 uow.SaveChanges();
 
-                var actionList = FixtureData.TestActionList();
-                actionList.ActionListType = 1;
-                actionList.CurrentAction = null;
-                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
+                _curActionList = FixtureData.TestActionList();
+                _curActionList.ActionListType = ActionListType.Immediate;
+                _curActionList.CurrentActivity = null;
+                _curActionList.ProcessNodeTemplateID = _curProcessNodeTemplate.Id;
 
-                uow.ActionListRepository.Add(actionList);
+                uow.ActionListRepository.Add(_curActionList);
                 uow.SaveChanges();
             }
         }

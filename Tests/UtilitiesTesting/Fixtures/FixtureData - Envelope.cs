@@ -30,6 +30,6 @@ namespace UtilitiesTesting.Fixtures
 			};
 		}
 
-	    public static string TestTemplateId = "b5abd63a-c12c-4856-b9f4-989200e41a6f";
+	    public static string TestTemplateId = "58521204-58AF-4E65-8A77-4F4B51FEF626";
 	}
 }

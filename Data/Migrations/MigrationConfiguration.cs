@@ -251,7 +251,10 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
-     
+            CreateAdmin("kevin.gilliard8415@gmail.com", "123qwe", unitOfWork);
+
+            //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
+            //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
         /// <summary>
@@ -356,7 +359,7 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-            const string azureSqlPluginName = "AzureSqlServer";
+            const string azureSqlPluginName = "AzureSql";
 
             // Create test Dockaard account for plugin subscription.
             var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
@@ -371,7 +374,7 @@ namespace Data.Migrations
                 // Create plugin instance.
                 var azureSqlPlugin = new PluginDO()
                 {
-                    Name = "AzureSqlServer",
+                    Name = azureSqlPluginName,
                     PluginStatus = PluginStatus.Active
                 };
 

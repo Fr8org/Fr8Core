@@ -9,5 +9,7 @@ namespace Core.Interfaces
         ActionListDO GetByKey(int curActionListId);
         void AddAction(ActionDO curActionDO, string position);
         void Process(ActionListDO curActionListDO);
+        void UpdateCurrentActivityPointer(ActionListDO curActionListDO);
+        void ProcessNextActivity(ActionListDO curActionListDO);
     }
 }
