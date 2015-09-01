@@ -127,7 +127,7 @@ namespace Web.Controllers
             var triggerSettings = new List<ExternalEventDTO>()
             {
                 new ExternalEventDTO(ExternalEventType.EnvelopeSent, "Envelope Sent"),
-                new ExternalEventDTO(ExternalEventType.EnvelopeDelivered, "Envelope Received"),
+                new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Delivered"),
                 new ExternalEventDTO(ExternalEventType.RecipientSent, "Recipient Sent"),
                 new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Received")
             };
