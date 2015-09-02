@@ -32,6 +32,8 @@ namespace DockyardTest.Integration
 
                 //create a process template linked to that account
                 var healthProcessTemplate = CreateProcessTemplate_healthdemo(uow, registeredAccount);
+                uow.SaveChanges();
+
                 string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
 
                 var xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, healthPayloadPath);
@@ -53,6 +55,7 @@ namespace DockyardTest.Integration
             var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
             healthProcessTemplate.DockyardAccount = registeredAccount;
             uow.ProcessTemplateRepository.Add(healthProcessTemplate);
+            uow.SaveChanges();
 
             //add processnode to process
             var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
@@ -94,7 +97,7 @@ namespace DockyardTest.Integration
             health_ExternalEventSubscription.ExternalProcessTemplate = healthProcessTemplate;
             uow.ExternalEventSubscriptionRepository.Add(health_ExternalEventSubscription);
 
-            uow.SaveChanges();
+         
             return healthProcessTemplate;
         }
     }
