@@ -12,7 +12,6 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
-using Newtonsoft.Json;
 using StructureMap;
 
 namespace Core.Services
@@ -161,7 +160,7 @@ namespace Core.Services
                     throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
             }
-            return curAction.ActionState.ToString();
+            return curAction.ActionState.Value;
         }
 
         public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
@@ -194,7 +193,7 @@ namespace Core.Services
                 actionPayloadDTO.PayloadMappings = mappings;
             }
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDto);
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
             return jsonResult;
         }

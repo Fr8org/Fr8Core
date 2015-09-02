@@ -6,7 +6,6 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-
         public static ActionDO TestActionWriteSqlServer1()
         {
             var actionTemplate = ActionTemplate();
@@ -104,6 +103,7 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
+
         public static ActionDO TestAction5()
         {
             var actionTemplate = ActionTemplate();
@@ -246,7 +246,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionList = actionListDo,
                 ActionListId = 1,
                 ActionState = ActionState.Unstarted,
-                ActionType = "testaction",
+                Name = "testaction",
                 ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FieldMappings,
                 Id = 1,
@@ -256,22 +256,24 @@ namespace UtilitiesTesting.Fixtures
 
             return actionDo;
         }
+
         public static ActionDO TestActionHealth1()
         {
             var actionDo = new ActionDO
             {
-                Id=1,
+                Id = 1,
                 ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
-                ActionType = "testaction",
+                Name = "testaction",
                 ConfigurationSettings = "config settings",
-                ActionListId = 88
+                ActionListId = 88,
+                ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };
             return actionDo;
         }
-		
-		public static ActionDO TestActionUnstarted()
+
+        public static ActionDO TestActionUnstarted()
         {
             var actionTemplate = ActionTemplate();
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
@@ -295,7 +297,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 ActionList = actionListDo,
                 FieldMappingSettings = FixtureData.FieldMappings,
                 ActionTemplateId = actionTemplate.Id,

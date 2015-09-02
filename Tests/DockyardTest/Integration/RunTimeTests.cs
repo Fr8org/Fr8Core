@@ -1,16 +1,13 @@
 ﻿﻿using System;
-﻿using System.IO;
 ﻿using Core.Services;
 ﻿using Data.Entities;
 ﻿using Data.Interfaces;
-﻿using Data.States;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
 ﻿using Newtonsoft.Json;
 ﻿using NUnit.Framework;
 ﻿using StructureMap;
 ﻿using UtilitiesTesting;
 ﻿using UtilitiesTesting.Fixtures;
+﻿using File = System.IO.File;
 
 namespace DockyardTest.Integration
 {
@@ -73,7 +70,6 @@ namespace DockyardTest.Integration
             //add actionlist to processnode
             var healthActionList = FixtureData.TestActionListHealth1();
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
-            
             uow.ActionListRepository.Add(healthActionList);
 
             var healthAction = FixtureData.TestActionHealth1();
@@ -101,8 +97,6 @@ namespace DockyardTest.Integration
             uow.SaveChanges();
             return healthProcessTemplate;
         }
-
-
     }
 }
 

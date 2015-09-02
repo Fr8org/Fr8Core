@@ -14,7 +14,8 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 EnvelopeId = envelopeId,
                 ProcessState = 1,
-                Name = "test name"
+                Name = "test name",
+                ProcessTemplateId = TestProcessTemplateHealthDemo().Id
             };
 
             return new ActionListDO
@@ -23,11 +24,10 @@ namespace UtilitiesTesting.Fixtures
                 Name = "list1",
                 ActionListType = ActionListType.Immediate,
                 ProcessNodeTemplateID = 50,
-                CurrentAction = TestActionHealth1(),
+                CurrentActivity = TestActionHealth1(),
                 Process = processDo
             };
         }
-
 
         public static ActionListDO TestActionList()
         {

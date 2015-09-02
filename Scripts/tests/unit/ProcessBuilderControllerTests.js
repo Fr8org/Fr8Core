@@ -82,7 +82,7 @@ var dockyard;
                 //Rule #7
                 it("When PaneSelectAction_ActionTypeSelected is sent, " +
                     "PaneConfigureAction_Render should be received with correct args", function () {
-                    var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, 3, "myaction", "myaction"), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, 3);
+                    var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, 3, 1, "myaction"), outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false), outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, 3);
                     _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
                     expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
                 });
@@ -98,7 +98,7 @@ var dockyard;
                     var currentAction = new dockyard.model.ActionDesignDTO(1, 1, false, 1);
                     _$scope.currentAction = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting], incomingEventArgs);
-                    expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.actionId }, currentAction, null, null);
+                    expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
                 });
                 it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction==null " +
                     "Save method on ProcessTemplateService should NOT be called", function () {
@@ -113,7 +113,7 @@ var dockyard;
                     var currentAction = new dockyard.model.ActionDesignDTO(1, 1, false, 1);
                     _$scope.currentAction = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting], incomingEventArgs);
-                    expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.actionId }, currentAction, null, null);
+                    expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
                 });
                 it("When PaneWorkflowDesigner_TemplateSelected is sent and selectedAction!=null " +
                     "Save method should be called on ProcessTemplateService", function () {
@@ -121,7 +121,7 @@ var dockyard;
                     var currentAction = new dockyard.model.ActionDesignDTO(1, 1, false, 1);
                     _$scope.currentAction = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting], incomingEventArgs);
-                    expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.actionId }, currentAction, null, null);
+                    expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
                 });
             });
         })(controller = tests.controller || (tests.controller = {}));

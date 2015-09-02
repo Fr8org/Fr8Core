@@ -68,7 +68,7 @@ namespace Core.Services
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            string nextTransitionKey = "";
+            string nextTransitionKey;
             var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
@@ -77,7 +77,6 @@ namespace Core.Services
                 {
                     var curProcessNodeTemplate =
                         uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
-
 
                     List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
                     foreach (var actionList in actionListSet)
@@ -92,7 +91,7 @@ namespace Core.Services
             {
                 nextTransitionKey = "false";
             }
-            return evaluationResult;
+            return nextTransitionKey;
         }
 
         /// <summary>
