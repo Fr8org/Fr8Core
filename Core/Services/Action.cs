@@ -25,11 +25,13 @@ namespace Core.Services
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPluginRegistration _basePluginRegistration;
+        private IPlugin _plugin;
 
         public Action()
         {
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
            
             _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
@@ -45,12 +47,23 @@ namespace Core.Services
 
         public IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
-            var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            var curActions = plugins
-                .SelectMany(p => p.AvailableActions)
-                .OrderBy(s => s.ActionType);
+            List<ActionTemplateDO> curActionTemplates;
 
-            return curActions;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActionTemplates = uow.ActionTemplateRepository.GetAll().ToList();
+            }
+
+            //we're currently bypassing the subscription logic until we need it
+            //we're bypassing the pluginregistration logic here because it's going away in V2
+
+            //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
+            //var plugins = _plugin.GetAll();
+           // var curActionTemplates = plugins
+            //    .SelectMany(p => p.AvailableActions)
+            //    .OrderBy(s => s.ActionType);
+
+            return curActionTemplates;
         }
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)

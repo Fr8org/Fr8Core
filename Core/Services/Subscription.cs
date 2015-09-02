@@ -14,6 +14,8 @@ namespace Core.Services
 {
     class Subscription : ISubscription
     {
+
+        
         public IEnumerable<IPluginRegistration> GetAuthorizedPlugins(IDockyardAccountDO account)
         {
             if (account == null)
