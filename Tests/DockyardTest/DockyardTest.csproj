@@ -223,6 +223,7 @@
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="DocuSign\DocuSignTemplateTests.cs" />
     <Compile Include="Entities\ActionRegistrationTests.cs" />
+    <Compile Include="Entities\ProcessTemplateTests.cs" />
     <Compile Include="Entities\ActionTests .cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\EnvelopeTests.cs" />

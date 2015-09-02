@@ -87,7 +87,7 @@ namespace Web
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RemoteCalendarProviderRepository.CreateRemoteCalendarProviders(configRepository);
+                uow.RemoteServiceProviderRepository.CreateRemoteCalendarProviders(configRepository);
                 uow.SaveChanges();
             }
 

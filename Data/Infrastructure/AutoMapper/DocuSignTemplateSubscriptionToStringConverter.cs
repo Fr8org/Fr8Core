@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
+using Data.States;
 
 namespace Data.Infrastructure.AutoMapper
 {

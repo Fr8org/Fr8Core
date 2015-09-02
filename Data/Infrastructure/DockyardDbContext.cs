@@ -252,8 +252,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ConceptDO>().ToTable("Concepts");
             modelBuilder.Entity<SubscriptionDO>().ToTable("Subscriptions");
             modelBuilder.Entity<PluginDO>().ToTable("Plugins");
-            modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
-            modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
+            modelBuilder.Entity<RemoteServiceProviderDO>().ToTable("RemoteCalendarProviders");
+            modelBuilder.Entity<RemoteOAuthDataDo>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
             modelBuilder.Entity<LogDO>().ToTable("Logs");
             modelBuilder.Entity<ProfileDO>().ToTable("Profiles");
@@ -263,7 +263,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
-            modelBuilder.Entity<ActivityDO>().ToTable("Activities");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
             modelBuilder.Entity<TemplateDO>().ToTable("Templates");
@@ -320,6 +319,12 @@ namespace Data.Infrastructure
  
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
+
+            modelBuilder.Entity<ProcessTemplateDO>()
+               .HasRequired(x => x.StartingProcessNodeTemplate)
+               .WithMany()
+               .HasForeignKey(x => x.StartingProcessNodeTemplateId)
+               .WillCascadeOnDelete(false);
 
             base.OnModelCreating(modelBuilder);
         }

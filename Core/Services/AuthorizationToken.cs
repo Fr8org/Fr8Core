@@ -15,9 +15,9 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var tokenDO = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
-                if (tokenDO != null)
-                    return tokenDO.Token;
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at => at.UserID == userId);
+                if (curAuthToken != null)
+                    return curAuthToken.Token;
             }
             return null;
         }

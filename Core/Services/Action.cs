@@ -58,6 +58,9 @@ namespace Core.Services
             ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                if (currentActionDo.ActionTemplateId == 0)
+                    currentActionDo.ActionTemplateId = null;
+
                 if (currentActionDo.Id > 0)
                 {
                     existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
@@ -208,14 +211,49 @@ namespace Core.Services
             return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
-        //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
-        public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
+        /// <summary>
+        /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
+        /// </summary>
+        public IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO)
         {
-            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
-            return _docusignTemplate.GetMappableSourceFields(curActionDO.DocuSignTemplateId);
+            DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
+
+            if (curActionDO.ActionList != null)
+            {
+                // Try to get ProcessTemplate.Id from relation chain
+                // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
+                var curProcessTemplateId = curActionDO
+                    .ActionList
+                    .ProcessNodeTemplate
+                    .ProcessTemplate
+                    .Id;
+
+                // Try to get DocuSignSubscription related to current ProcessTemplate.Id.
+                curDocuSignSubscription = uow.ExternalEventSubscriptionRepository
+                    .GetQuery()
+                    .OfType<DocuSignTemplateSubscriptionDO>()
+                    .FirstOrDefault(x => x.DocuSignProcessTemplateId == curProcessTemplateId);
+            }
+
+            // Return list of mappable source fields, in case we fetched DocuSignSubscription object.
+            if (curDocuSignSubscription != null)
+            {
+                _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+                var curMappableSourceFields = _docusignTemplate
+                    .GetMappableSourceFields(curDocuSignSubscription.DocuSignTemplateId);
+
+                return curMappableSourceFields;
+            }
+            // Return empty list in other case.
+            else
+            {
+                return Enumerable.Empty<string>();
+            }
         }
 
-        //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
+        /// <summary>
+        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
+        /// </summary>
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
         {
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);

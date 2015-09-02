@@ -7,15 +7,15 @@ using Utilities;
 
 namespace Data.Repositories
 {
-    public class RemoteCalendarProviderRepository : GenericRepository<RemoteCalendarProviderDO>, IRemoteCalendarProviderRepository
+    public class RemoteServiceProviderRepository : GenericRepository<RemoteServiceProviderDO>, IRemoteCalendarProviderRepository
     {
-        internal RemoteCalendarProviderRepository(IUnitOfWork uow)
+        internal RemoteServiceProviderRepository(IUnitOfWork uow)
             : base(uow)
         {
 
         }
 
-        public RemoteCalendarProviderDO GetByName(string name)
+        public RemoteServiceProviderDO GetByName(string name)
         {
             return GetQuery().FirstOrDefault(rcp => rcp.Name == name);
         }
@@ -26,7 +26,7 @@ namespace Data.Repositories
             var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
             var providers = new[]
                 {
-                    new RemoteCalendarProviderDO
+                    new RemoteServiceProviderDO
                         {
                             Name = "Google",
                             AuthType = ServiceAuthorizationType.OAuth2,
@@ -37,7 +37,7 @@ namespace Data.Repositories
                                         ClientSecret = clientSecret,
                                         Scopes = "https://www.googleapis.com/auth/calendar,email"
                                     }),
-                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                            EndPoint = "https://apidata.googleusercontent.com/caldav/v2"
                         }
                 };
             foreach (var provider in providers)
@@ -51,14 +51,14 @@ namespace Data.Repositories
                 {
                     existingRow.AuthType = provider.AuthType;
                     existingRow.AppCreds = provider.AppCreds;
-                    existingRow.CalDAVEndPoint = provider.CalDAVEndPoint;
+                    existingRow.EndPoint = provider.EndPoint;
                 }
             }
         }
     }
 
-    public interface IRemoteCalendarProviderRepository : IGenericRepository<RemoteCalendarProviderDO>
+    public interface IRemoteCalendarProviderRepository : IGenericRepository<RemoteServiceProviderDO>
     {
-        RemoteCalendarProviderDO GetByName(string name);
+        RemoteServiceProviderDO GetByName(string name);
     }
 }

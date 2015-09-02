@@ -12,6 +12,7 @@ namespace Data.Entities
             SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
             SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
             DockyardAccount = new DockyardAccountDO();
+            StartingProcessNodeTemplate = new ProcessNodeTemplateDO();
         }
 
         [Key]
@@ -24,7 +25,10 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
+        [ForeignKey("StartingProcessNodeTemplate")]
         public int StartingProcessNodeTemplateId { get; set; }
+
+        public virtual ProcessNodeTemplateDO StartingProcessNodeTemplate { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplateStateTemplate")]

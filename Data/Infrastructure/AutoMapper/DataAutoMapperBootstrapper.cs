@@ -20,7 +20,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActionListID))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => ad.ConfigurationSettings))
+                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationSettings)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
@@ -62,8 +62,8 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<IList<DocuSignTemplateSubscriptionDO>, IList<string>>().ConvertUsing<DocuSignTemplateSubscriptionToStringConverter>();
             Mapper.CreateMap<IList<string>, IList<DocuSignTemplateSubscriptionDO>>().ConvertUsing<StringToDocuSignTemplateSubscriptionConverter>();
-            Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
-            Mapper.CreateMap<IList<int>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
+            Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int?>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
+            Mapper.CreateMap<IList<int?>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
 
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
 
@@ -84,6 +84,11 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
+
+            Mapper.CreateMap<ConfigurationSettingsDTO, string>()
+                .ConvertUsing<JSONToStringConverter<ConfigurationSettingsDTO>>();
+            Mapper.CreateMap<string, ConfigurationSettingsDTO>()
+                .ConvertUsing<StringToJSONConverter<ConfigurationSettingsDTO>>();
         }
     }
 

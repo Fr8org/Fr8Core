@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class UserLabelRemoval : IMigrationMetadata
+    public sealed partial class ActionTemplateIdNullable : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UserLabelRemoval));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ActionTemplateIdNullable));
         
         string IMigrationMetadata.Id
         {
-            get { return "201508310309551_UserLabelRemoval"; }
+            get { return "201509011428137_ActionTemplateIdNullable"; }
         }
         
         string IMigrationMetadata.Source

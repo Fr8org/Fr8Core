@@ -44,7 +44,10 @@ namespace DockyardTest.Services
             var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
-            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableActions;
+            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
+            basePluginRegistration.RegisterActions();
+
+            var result = basePluginRegistration.AvailableActions;
 
             Assert.AreEqual(1, result.Count());
         }
@@ -55,7 +58,10 @@ namespace DockyardTest.Services
             var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
-            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableActions;
+            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
+            basePluginRegistration.RegisterActions();
+
+            var result = basePluginRegistration.AvailableActions;
 
             //Assert.AreEqual(actionType, result.ToList()[0].ActionType);
             //Assert.AreEqual(version, result.ToList()[0].Version);
