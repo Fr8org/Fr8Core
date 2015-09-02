@@ -92,21 +92,11 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("actions/configuration")]
-        public string GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
+        [ResponseType(typeof(ActionDO))]
+        public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
         {            
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            if (curActionDO.ActionTemplate != null)
-            {
-                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
-                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
-                return settings;
-            }
-            else
-            {
-                throw new System.ArgumentNullException("ActionTemplate is null");
-            }
-           
+            return Ok(_action.GetConfigurationSettings(curActionDO));  
         }
 
 

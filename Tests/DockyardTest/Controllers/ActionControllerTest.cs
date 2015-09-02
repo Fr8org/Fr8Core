@@ -13,6 +13,7 @@ using Moq;
 using Core.PluginRegistrations;
 using System;
 using Core.Interfaces;
+using System.Web.Http.Results;
 
 namespace DockyardTest.Controllers
 {
@@ -123,10 +124,10 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionTemplate = FixtureData.TestActionTemplateDO1();
+                var curActionDO = FixtureData.TestAction22();
 
                 var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+                string curJsonResult = _action.GetConfigurationSettings(curActionDO).ConfigurationSettings;
                 ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
                 Assert.AreEqual(1, result.Fields.Count);
                 Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -142,8 +143,8 @@ namespace DockyardTest.Controllers
         public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            string test = curAction.GetConfigurationSettings(CreateActionWithId(2));
-            Assert.IsNotNull(test);
+            var actionDO = curAction.GetConfigurationSettings(CreateActionWithId(2));
+            Assert.IsNotNull(actionDO);
         }
 
         [Test]
@@ -292,6 +293,53 @@ namespace DockyardTest.Controllers
             Assert.NotNull(task.Result);
             Assert.Greater(task.Result.Count(), 0);
             task.Result.ToList().ForEach(Console.WriteLine);
+        }
+
+        [Test]
+        [Category("ActionController")]
+        public void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
+        {
+            var controller = new ActionController();
+            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.ActionTemplate = FixtureData.TestActionTemplateDO1();
+            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Content);
+        }
+
+        [Test]
+        [Category("ActionController")]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionController_GetConfigurationSettings_IdIsMissing()
+        {
+            var controller = new ActionController();
+            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.Id = 0;
+            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Content);
+        }
+
+        [Test]
+        [Category("ActionController")]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
+        {
+            var controller = new ActionController();
+            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.ActionTemplateId = 0;
+            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Content);
         }
     }
 }

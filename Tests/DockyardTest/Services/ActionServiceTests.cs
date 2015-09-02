@@ -61,8 +61,8 @@ namespace DockyardTest.Services
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
-            var curActionTemplate = FixtureData.TestActionTemplateDO1();
-            string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+            var curActionDO = FixtureData.TestAction22();
+            string curJsonResult = _action.GetConfigurationSettings(curActionDO).ConfigurationSettings;
             ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
             Assert.AreEqual(1, result.Fields.Count);
             Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);

@@ -96,18 +96,27 @@ namespace Core.Services
             }
         }
 
-        public ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
+        public ActionDO GetConfigurationSettings(ActionDO curActionDO)
         {
-            var curActionDO = new ActionDO();
-            if (curActionTemplateDo != null)
+            if(curActionDO == null)
+                throw new System.ArgumentNullException("Action parameter is null");
+
+            if (curActionDO.ActionTemplate != null)
             {
-                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                curActionDO.ConfigurationSettings =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionDO);
+                if(curActionDO.Id == 0)
+                    throw new System.ArgumentNullException("Action ID is empty");
+                if (curActionDO.ActionTemplateId == 0)
+                    throw new System.ArgumentNullException("Action Template ID is empty");
+
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
+                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
+                curActionDO.ConfigurationSettings = settings;
             }
             else
-                throw new ArgumentNullException("ActionTemplateDO");
+            {
+                throw new System.ArgumentNullException("ActionTemplate is null");
+            }
 
             return curActionDO;
         }
