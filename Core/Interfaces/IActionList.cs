@@ -8,8 +8,8 @@ namespace Core.Interfaces
         IEnumerable<ActionListDO> GetAll();
         ActionListDO GetByKey(int curActionListId);
         void AddAction(ActionDO curActionDO, string position);
-        void Process(ActionListDO curActionListDO);
-        void UpdateCurrentActivityPointer(ActionListDO curActionListDO);
-        void ProcessNextActivity(ActionListDO curActionListDO);
+        void Process(ActionListDO curActionList);
+        void UpdateActionListState(ActionListDO curActionListDO);
+        void ProcessAction(ActionListDO curActionList);
     }
 }

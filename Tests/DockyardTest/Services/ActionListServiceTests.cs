@@ -104,7 +104,7 @@ namespace DockyardTest.Services
 
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.UpdateCurrentActivityPointer(actionListDO);
+            _actionList.UpdateActionListState(actionListDO);
         }
 
         [Test]
@@ -115,7 +115,7 @@ namespace DockyardTest.Services
             ((ActionDO)actionListDO.CurrentActivity).ActionState = ActionState.Completed;
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.UpdateCurrentActivityPointer(actionListDO);
+            _actionList.UpdateActionListState(actionListDO);
 
             ActionDO actionDO = new ActionDO();
             if (actionListDO.CurrentActivity is ActionDO)
@@ -133,7 +133,7 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.ProcessNextActivity(actionListDO);
+            _actionList.ProcessAction(actionListDO);
 
             ActionDO actionDO = new ActionDO();
             if (actionListDO.CurrentActivity is ActionDO)
@@ -155,7 +155,7 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.ProcessNextActivity(actionListDO);
+            _actionList.ProcessAction(actionListDO);
         }
     }
 }
