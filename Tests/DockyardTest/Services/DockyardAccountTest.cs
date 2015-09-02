@@ -23,7 +23,7 @@ namespace DockyardTest.Services
         private DockyardAccount _dockyardAccount;
         DockyardAccountDO _dockyardAccountDO;
         private readonly string userName = "alexlucre";
-        private readonly string password = "alexl@123";
+        private readonly string password = "alex@123";
         LoginStatus curLogingStatus = LoginStatus.InvalidCredential;
         [SetUp]
         public override void SetUp()
@@ -52,8 +52,7 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curDockyardAccount = _dockyardAccount.Register(uow, userName, "Alex", "Lucre", password, Roles.Admin);
-                curLogingStatus = _dockyardAccount.Login(uow, curDockyardAccount, password, true);
+                curLogingStatus = _dockyardAccount.Login(uow, _dockyardAccountDO, password, true);
                 Assert.AreEqual(curLogingStatus, LoginStatus.Successful);
             }
         }
