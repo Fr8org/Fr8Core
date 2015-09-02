@@ -33,10 +33,12 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public string Process(string path, ActionDO curActionDTO)
+        public string Process(string path, ActionDesignDTO curActionDTO)
         {
+            System.Diagnostics.Debugger.Launch();
 
             ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+
             string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
             //extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
@@ -56,7 +58,7 @@ namespace pluginAzureSqlServer.Controllers
 
             return JsonConvert.SerializeObject(
                 //_actionHandler.Process(path, curAction) ?? new { }
-                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curActionDTO }) ?? new { }
+                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curAction }) ?? new { }
             );
         }
 
