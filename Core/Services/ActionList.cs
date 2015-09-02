@@ -73,7 +73,7 @@ namespace Core.Services
             try
             {
                 //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curActionListDO.ActionListState == ActionState.Completed)
+                if (curActionListDO.ActionListState == ActionState.Unstarted)
                 {
                     SetState(curActionListDO, ActionListState.Inprocess);
                     ProcessNextActivity(curActionListDO);
