@@ -155,15 +155,20 @@ namespace Core.Services
                     var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
                     var jsonResult = await Dispatch(curAction, baseUri);
 
+
+                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+
+
                     //check if the returned JSON is Error
-                    if (jsonResult.ToLower().Contains("error"))
-                    {
-                        curAction.ActionState = ActionState.Error;
-                    }
-                    else
-                    {
-                        curAction.ActionState = ActionState.Completed;
-                    }
+                    //  if (jsonResult.ToLower().Contains("error"))
+                    // {
+                    //     curAction.ActionState = ActionState.Error;
+                    //  }
+                    //   else
+                    //   {
+                    curAction.ActionState = ActionState.Completed;
+                 //   }
 
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
