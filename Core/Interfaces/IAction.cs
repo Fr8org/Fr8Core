@@ -12,7 +12,7 @@ namespace Core.Interfaces
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         //void Register(string ActionType, string PluginRegistration, string Version);
         ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo);
-        IEnumerable<string> GetFieldDataSources(ActionDO curActionDO);
+        IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 
         Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO);
         //void Register(string ActionType, string PluginRegistration, string Version);

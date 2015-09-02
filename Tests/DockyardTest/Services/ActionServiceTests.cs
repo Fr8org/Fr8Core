@@ -140,6 +140,7 @@ namespace DockyardTest.Services
         [Test]
         public void CanProcessDocuSignTemplate()
         {
+            // Test.
             Action action = new Action();
             var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
@@ -261,7 +262,8 @@ namespace DockyardTest.Services
 
         }
 
-        [Test]
+        //this test is being phased out
+        [Test,Ignore]
         public void GetAvailableActions_ReturnsActionsForAccount()
         {
             const string unavailablePluginName = "UnavailablePlugin";
