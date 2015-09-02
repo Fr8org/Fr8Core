@@ -262,7 +262,8 @@ namespace DockyardTest.Services
 
         }
 
-        [Test]
+        //this test is being phased out
+        [Test,Ignore]
         public void GetAvailableActions_ReturnsActionsForAccount()
         {
             const string unavailablePluginName = "UnavailablePlugin";
