@@ -218,12 +218,12 @@ namespace Core.Services
         {
             DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
 
-            if (curActionDO.ActionList != null)
+            if (curActionDO.ParentActionList != null)
             {
                 // Try to get ProcessTemplate.Id from relation chain
                 // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
                 var curProcessTemplateId = curActionDO
-                    .ActionList
+						  .ParentActionList
                     .ProcessNodeTemplate
                     .ProcessTemplate
                     .Id;
