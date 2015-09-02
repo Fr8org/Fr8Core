@@ -16,6 +16,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var emailAddressDO =  new EmailAddressDO("alexlucre1@gmail.com");
             emailAddressDO.Id = 1;
+            emailAddressDO.Name = "Alex";
             return emailAddressDO;
         }
 
@@ -43,14 +44,6 @@ namespace UtilitiesTesting.Fixtures
         {
             var emailAddressDO = new EmailAddressDO("RobMaginot@gmail.com");
             emailAddressDO.Id = 5;
-            return emailAddressDO;
-        }
-
-        public static EmailAddressDO TestEmailAddress6()
-        {
-            var emailAddressDO = new EmailAddressDO("chauhangovind3@gmail.com");
-            emailAddressDO.Id = 6;
-            emailAddressDO.Name = "Govind";
             return emailAddressDO;
         }
     }

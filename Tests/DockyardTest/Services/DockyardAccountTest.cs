@@ -21,25 +21,25 @@ namespace DockyardTest.Services
     public class DockyardAccountTest : BaseTest
     {
         private DockyardAccount _dockyardAccount;
-        DockyardAccountDO curDockyardAccount;
-        private readonly string userName = "gchauhan";
-        private readonly string password = "govind@123";
-        LoginStatus curLogingStatus = LoginStatus.Successful;
+        DockyardAccountDO _dockyardAccountDO;
+        private readonly string userName = "alexlucre";
+        private readonly string password = "alexl@123";
+        LoginStatus curLogingStatus = LoginStatus.InvalidCredential;
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
-            curDockyardAccount = FixtureData.TestDockyardAccount3();
+            _dockyardAccountDO = FixtureData.TestDockyardAccount3();
         }
 
         #region Test cases for method RegisterUser
         [Test]
-        public void RegisterUser_CheckRegisteredOrNot()
+        public void CanRegisterOrNot()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curDockyardAccount = _dockyardAccount.Register(uow, userName, "Govind", "Chauhan", password, Roles.Customer);
+                var curDockyardAccount = _dockyardAccount.Register(uow, userName, "Alex", "Lucre", password, Roles.Admin);
                 Assert.IsNotNull(curDockyardAccount);
                 Assert.AreEqual(curDockyardAccount.UserName, userName);
             }
@@ -48,10 +48,11 @@ namespace DockyardTest.Services
 
         #region Test cases for method Login
         [Test]
-        public void Login_CheckLoginSucess()
+        public void CanLogin()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curDockyardAccount = _dockyardAccount.Register(uow, userName, "Alex", "Lucre", password, Roles.Admin);
                 curLogingStatus = _dockyardAccount.Login(uow, curDockyardAccount, password, true);
                 Assert.AreEqual(curLogingStatus, LoginStatus.Successful);
             }
@@ -59,7 +60,7 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void Login_CheckLoginFailureWithNullException()
+        public void FailsWhenDockyardAccountNull()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -68,11 +69,11 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Login_CheckLoginPasswordMismatch()
+        public void FailsWhenPasswordInconrrect()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curLogingStatus = _dockyardAccount.Login(uow, curDockyardAccount, "abc", true);
+                curLogingStatus = _dockyardAccount.Login(uow, _dockyardAccountDO, "abc", true);
                 Assert.AreEqual(curLogingStatus, LoginStatus.InvalidCredential);
             }
         }
@@ -80,17 +81,16 @@ namespace DockyardTest.Services
 
         #region Test cases for method UpdatePassword
         [Test]
-        public void UpdatePassword_CheckPasswordUpdatedOrNot()
+        public void CanPasswordUpdateOrNot()
         {
-            string passwrodHash = curDockyardAccount.PasswordHash;
+            string passwrodHash = _dockyardAccountDO.PasswordHash;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 _dockyardAccount.UpdatePassword(uow, null, "abc");
-                Assert.AreEqual(passwrodHash, curDockyardAccount.PasswordHash);
+                Assert.AreEqual(passwrodHash, _dockyardAccountDO.PasswordHash);
 
-                _dockyardAccount.UpdatePassword(uow, curDockyardAccount, "abc");
-                Assert.AreNotEqual(passwrodHash, curDockyardAccount.PasswordHash);
-
+                _dockyardAccount.UpdatePassword(uow, _dockyardAccountDO, "abc");
+                Assert.AreNotEqual(passwrodHash, _dockyardAccountDO.PasswordHash);
             }
         }
         #endregion
@@ -98,16 +98,16 @@ namespace DockyardTest.Services
         #region Test cases for method GetMode
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void GetMode_CheckCommunicationModeDirectOrDelegetOrNullRef()
+        public void CanCommunicationModeDirectOrDelegetOrNull()
         {
             CommunicationMode cruCommunicationMode;
             _dockyardAccount.GetMode(null);
 
-            cruCommunicationMode = _dockyardAccount.GetMode(curDockyardAccount);
+            cruCommunicationMode = _dockyardAccount.GetMode(_dockyardAccountDO);
             Assert.AreEqual(cruCommunicationMode, CommunicationMode.Direct);
 
-            curDockyardAccount.PasswordHash = string.Empty;
-            cruCommunicationMode = _dockyardAccount.GetMode(curDockyardAccount);
+            _dockyardAccountDO.PasswordHash = string.Empty;
+            cruCommunicationMode = _dockyardAccount.GetMode(_dockyardAccountDO);
             Assert.AreEqual(cruCommunicationMode, CommunicationMode.Delegate);
         }
         #endregion
@@ -115,50 +115,50 @@ namespace DockyardTest.Services
         #region Test cases for method GetDisplayName
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void GetDisplayName_CheckDisplayNameWithDockyardAccountDONull()
+        public void FailsGetDisplayNameIfDockyardAccountDONull()
         {
             DockyardAccount.GetDisplayName(null);
         }
 
         [Test]
-        public void GetDisplayName_CheckDisplayNameWithFirstNameLastName()
+        public void CanGetDisplayNameIfFirstNameLastName()
         {
-            curDockyardAccount.FirstName = "Govind";
-            curDockyardAccount.LastName = "Chauhan";
-            string displayName = "Govind Chauhan";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(curDockyardAccount));
+            _dockyardAccountDO.FirstName = "Alex";
+            _dockyardAccountDO.LastName = "Lucre";
+            string displayName = "Alex Lucre";
+            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
-        public void GetDisplayName_CheckDisplayWithFirstName()
+        public void CanGetDisplayNameIfNoLastName()
         {
-            curDockyardAccount.FirstName = "Govind";
-            curDockyardAccount.LastName = null;
-            string displayName = "Govind";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(curDockyardAccount));
+            _dockyardAccountDO.FirstName = "Alex";
+            _dockyardAccountDO.LastName = null;
+            string displayName = "Alex";
+            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
-        public void GetDisplayName_CheckDisplayWithEmailAddressDO()
+        public void CanGetDisplayNameWithEmailAddressDO()
         {
-            curDockyardAccount.EmailAddress = FixtureData.TestEmailAddress6();
-            string displayName = "Govind";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(curDockyardAccount));
+            _dockyardAccountDO.EmailAddress = FixtureData.TestEmailAddress1();
+            string displayName = "Alex";
+            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
         }
 
         [Test]
-        public void GetDisplayName_CheckDisplayWithEmailAddressDONameEmpty()
+        public void CanGetDisplayNAmeIfEmailAddressDONameEmpty()
         {
-            curDockyardAccount.EmailAddress = FixtureData.TestEmailAddress6();
-            curDockyardAccount.EmailAddress.Name = null;
-            string displayName = "chauhangovind3";
-            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(curDockyardAccount));
+            _dockyardAccountDO.EmailAddress = FixtureData.TestEmailAddress1();
+            _dockyardAccountDO.EmailAddress.Name = null;
+            string displayName = "alexlucre1";
+            Assert.AreEqual(displayName, DockyardAccount.GetDisplayName(_dockyardAccountDO));
         }
         #endregion
 
         #region Test cases for method Create
         [Test]
-        public void Create_CheckUserCreatedOrNot()
+        public void CanCreatedUser()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -171,7 +171,7 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void Create_CheckUserCreatedOrNotWithNullDockyardAccountDO()
+        public void FailsCreateUserIfNoDockyardAccountDO()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -181,18 +181,18 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void Create_CheckUserCreatedOrNotWithNullUnitOfWork()
+        public void FailsCreateUserIfNoUnitOfWork()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _dockyardAccount.Create(null, curDockyardAccount);
+                _dockyardAccount.Create(null, _dockyardAccountDO);
             }
         }
         #endregion
 
         #region Test cases for method GetExisting
         [Test]
-        public void GetExisting_CanGetExistingUser()
+        public void CanGetExistingUser()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -203,7 +203,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void GetExisting_CanGetExistingUserWithEmptyOrNull()
+        public void FailsGetExistingUserIfNoEmailAddress()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -215,24 +215,24 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void GetExisting_CanGetExistingUserWithNullUOW()
+        public void FailsGetExistingUserIfNoUnitOfWork()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _dockyardAccount.GetExisting(null, "chauhangovind3@gmail.com");
+                _dockyardAccount.GetExisting(null, "alexlucre1@gmail.com");
             }
         }
         #endregion
 
         #region Test cases for method Update
         [Test]
-        public void Update_CheckUserUpdatedOrNot()
+        public void CanUpdateUser()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
                 _dockyardAccount.Create(uow, curDockyardAccountLocal);
-                _dockyardAccount.Update(uow, curDockyardAccountLocal, curDockyardAccount);
+                _dockyardAccount.Update(uow, curDockyardAccountLocal, _dockyardAccountDO);
                 DockyardAccountDO curDockyardAccountLocalNew = uow.UserRepository.GetQuery().Where(u => u.UserName == curDockyardAccountLocal.UserName).FirstOrDefault();
                 Assert.AreEqual(curDockyardAccountLocal, curDockyardAccountLocalNew);
             }
@@ -240,17 +240,17 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void Update_CheckUserUpdatedOrNotWithNullSubmittedAccount()
+        public void FailsUserUpdatedIfNoDockyardAccountToSubmit()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                 _dockyardAccount.Update(uow, null, curDockyardAccount);
+                 _dockyardAccount.Update(uow, null, _dockyardAccountDO);
             }
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(NullReferenceException))]
-        public void Update_CheckUserUpdatedOrNotWithNullExistingAccount()
+        public void FailsUserUpdatedIfNoExistingDockyardAccount()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

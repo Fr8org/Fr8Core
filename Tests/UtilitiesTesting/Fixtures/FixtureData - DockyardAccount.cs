@@ -51,26 +51,19 @@ namespace UtilitiesTesting.Fixtures
             DockyardAccount _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return _dockyardAccount.Register(uow, "chauhangovind3@gmail.com", "Govind", "Chauhan", "govind@123", Roles.Admin);
+                return _dockyardAccount.Register(uow, "alexlucre", "Alex", "Lucre1", "alex@123", Roles.Admin);
             }
-           /* DockyardAccount _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                DockyardAccountDO curDockyardAccountLocal = FixtureData.TestDockyardAccount4();
-                _dockyardAccount.Create(uow, curDockyardAccountLocal);
-               return uow.UserRepository.GetQuery().Where(u => u.UserName == curDockyardAccountLocal.UserName).FirstOrDefault();
-            }*/
         }
 
         public static DockyardAccountDO TestDockyardAccount4()
         {
-            var curEmailAddressDO = TestEmailAddress6();
+            var curEmailAddressDO = TestEmailAddress1();
             return new DockyardAccountDO()
             {
                 EmailAddress = curEmailAddressDO,
-                FirstName = "Govind",
-                LastName = "Chauhan",
-                UserName = "gchauhan"
+                FirstName = "Alex",
+                LastName = "Lucre1",
+                UserName = "alexlucre"
                
             };
 
