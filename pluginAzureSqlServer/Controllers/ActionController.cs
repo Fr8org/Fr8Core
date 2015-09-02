@@ -35,8 +35,6 @@ namespace pluginAzureSqlServer.Controllers
         [Route("Write_To_Sql_Server/{path}")]
         public string Process(string path, ActionDesignDTO curActionDTO)
         {
-            System.Diagnostics.Debugger.Launch();
-
             ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
 
             string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
