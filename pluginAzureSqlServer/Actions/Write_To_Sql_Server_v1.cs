@@ -39,7 +39,19 @@ namespace pluginAzureSqlServer.Actions {
         private object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
             var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
-            var connString = settings.Value<string>("connection_string");
+            var fieldsArray = settings.Value<JArray>("fields");
+
+            string connString = null;
+            foreach (var fieldObjectToken in fieldsArray)
+            {
+                var fieldObject = fieldObjectToken.ToObject<JObject>();
+                if (fieldObject.Value<string>("name") != "connection_string")
+                {
+                    continue;
+                }
+
+                connString = fieldObject.Value<string>("value");
+            }
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
