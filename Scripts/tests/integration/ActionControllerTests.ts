@@ -76,9 +76,10 @@ module dockyard.tests.controller {
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
-                    id:0,
+                    id: 0,
                     fieldMappingSettings: "test",
-                    actionListId: 1
+                    // ActionListId is set to null, since there is no ActionsLists on a blank db.
+                    actionListId: null
                 };
 
             postInvoker(done, actions);
