@@ -108,7 +108,7 @@ namespace Core.StructureMap
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
-
+                For<IPlugin>().Use<Plugin>();
             }
         }
 
@@ -169,6 +169,7 @@ namespace Core.StructureMap
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
+                For<IPlugin>().Use<Plugin>();
             }
         }
 

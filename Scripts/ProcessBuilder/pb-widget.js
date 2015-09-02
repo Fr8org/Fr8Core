@@ -187,7 +187,7 @@
         //     criteriaId - id of criteria
         //     action - object to define action; minimum required set of properties: { id: 'someId' }
         addAction: function (criteriaId, action, actionType) {
-            debugger;
+            
 
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
@@ -261,7 +261,7 @@
 
         // Replace temporary ID with global ID.
         replaceActionTempId: function (tempId, id) {
-            debugger;
+             
 
             var i, j, criteria;
             for (i = 0; i < this._criteria.length; ++i) {
@@ -281,7 +281,7 @@
 
         // Rename action with global ID.
         renameAction: function (id, text) {
-            debugger;
+           
 
             var i, j, criteria;
             for (i = 0; i < this._criteria.length; ++i) {
