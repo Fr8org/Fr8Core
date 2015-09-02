@@ -84,9 +84,6 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
 
                 $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
-                
-                //TODO: this is test code, remove later
-                $scope.currentAction = <interfaces.IActionVM> { id: 1, isTempId: false };
             };
         }
 
