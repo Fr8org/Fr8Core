@@ -515,6 +515,14 @@ namespace Data.Infrastructure
             }
         }
 
+        private UserEmailsRepository _UserEmailsRepository;
+        public IUserEmailsRepository UserEmailsRepository
+        {
+            get
+            {
+                return _UserEmailsRepository ?? (_UserEmailsRepository = new UserEmailsRepository(this));
+            }
+        }
 
 	    public void Save()
         {
