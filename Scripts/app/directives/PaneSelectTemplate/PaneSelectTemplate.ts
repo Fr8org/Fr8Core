@@ -77,7 +77,6 @@ module dockyard.directives.paneSelectTemplate {
                 angular.bind(this, this.cancel);
                 $scope.save = <(curScope: IPaneSelectTemplateScope) => ng.IPromise<interfaces.IProcessTemplateVM>>
                 angular.bind(this, this.save);
-
             };
         }
 
@@ -106,8 +105,10 @@ module dockyard.directives.paneSelectTemplate {
 
         private onRender = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
             var curScope = (<IPaneSelectTemplateScope> event.currentScope)
-            curScope.visible = true;
-            this.init(curScope);
+            if (!curScope.visible) {
+                curScope.visible = true;
+                this.init(curScope);
+            }
         }
 
         private onHide = (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => {
@@ -168,22 +169,5 @@ module dockyard.directives.paneSelectTemplate {
         }
     }
 
-    app.run([
-        "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
-
-            var triggerSettings = [
-                { Name: "Envelope Sent", Id: 1 },
-                { Name: "Envelope Delivered", Id: 2 },
-                { Name: "Envelope Signed", Id: 3 },
-                { Name: "Envelope Completed", Id: 4 }
-            ];
-
-
-            httpBackend
-                .whenGET("/apimocks/processtemplate/triggersettings")
-                .respond(triggerSettings);
-
-        }
-    ]);
     app.directive("paneSelectTemplate", PaneSelectTemplate.Factory());
 }

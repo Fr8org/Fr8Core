@@ -8,16 +8,26 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionListDO TestActionListHealth1()
         {
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            var processDo = new ProcessDO
+            {
+                Id = 1,
+                EnvelopeId = envelopeId,
+                ProcessState = 1,
+                Name = "test name",
+                ProcessTemplateId = TestProcessTemplateHealthDemo().Id
+            };
+
             return new ActionListDO
             {
                 Id = 88,
                 Name = "list1",
                 ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplateID = 50
+                ProcessNodeTemplateID = 50,
+                CurrentActivity = TestActionHealth1(),
+                Process = processDo
             };
-
         }
-
 
         public static ActionListDO TestActionList()
         {

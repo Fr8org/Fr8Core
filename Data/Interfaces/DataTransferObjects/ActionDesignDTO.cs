@@ -17,11 +17,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("parentPluginRegistration")]
         public string ParentPluginRegistration { get; set; }
 
-        [JsonProperty("docuSignTemplateId")]
-	    public string DocuSignTemplateId { get; set; }
-
         [JsonProperty("actionTemplateId")]
-        public int ActionTemplateId { get; set; }
+        public int? ActionTemplateId { get; set; }
 
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }

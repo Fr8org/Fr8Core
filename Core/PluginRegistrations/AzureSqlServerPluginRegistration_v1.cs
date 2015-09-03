@@ -20,6 +20,7 @@ namespace Core.PluginRegistrations
         //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
 #if DEBUG
         public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
+        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server";
 #else
         public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
 #endif
@@ -69,7 +70,9 @@ namespace Core.PluginRegistrations
                 var response = await client.PostAsync(baseUrl + "/actions/Write_To_Sql_Server/field_mappings", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
 
                 var curMappingTargets = await response.Content.ReadAsStringAsync();
-                return JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());
+                var curResultJson = JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());
+
+                return curResultJson;
             }
         }
     }
