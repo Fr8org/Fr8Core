@@ -20,7 +20,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationSettings)))
+                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationStore)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
@@ -28,7 +28,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationSettings)))
+                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationSettings)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
@@ -50,7 +50,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dest => dest.Name, opts => opts.ResolveUsing(src => src.Name))
                 .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ActionListId))
                 .ForMember(dest => dest.ConfigurationSettings,
-                    opts => opts.ResolveUsing(src => src.ConfigurationSettings))
+                    opts => opts.ResolveUsing(src => src.ConfigurationStore))
                 .ForMember(dest => dest.ParentPluginRegistration,
                     opts => opts.ResolveUsing(src => src.ParentPluginRegistration))
                 .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());

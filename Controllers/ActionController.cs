@@ -94,7 +94,7 @@ namespace Web.Controllers
         public string GetConfigurationSettings(int curActionId)
         {
             ActionDO curActionDO = _action.GetById(curActionId);
-            return _action.GetConfigurationSettings(curActionDO).ConfigurationSettings;
+            return _action.GetConfigurationSettings(curActionDO).ConfigurationStore;
             //ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
             //return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
         }

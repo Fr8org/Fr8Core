@@ -38,7 +38,7 @@ namespace pluginAzureSqlServer.Actions {
         //[Route("write_to_sql_server/field_mappings")]
         private object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
+            var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationStore);
             var fieldsArray = settings.Value<JArray>("fields");
 
             string connString = null;

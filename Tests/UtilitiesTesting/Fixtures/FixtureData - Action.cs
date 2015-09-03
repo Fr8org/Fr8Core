@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 54,
                 Name = "Write to Sql Server",
                 ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
-                ConfigurationSettings = "",
+                ConfigurationStore = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
                 Ordering = 1,
@@ -80,7 +80,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionListId = null,
                 Name = "type 1",
                 Id = 34,
-                ConfigurationSettings = "config settings",
+                ConfigurationStore= "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 Ordering = 3,
                 ActionTemplateId = actionTemplate.Id,
@@ -266,7 +266,7 @@ namespace UtilitiesTesting.Fixtures
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ConfigurationSettings = "config settings",
+                ConfigurationStore= "config settings",
                 ActionListId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };

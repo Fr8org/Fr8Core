@@ -89,7 +89,7 @@ namespace Core.Services
                     existingActionDo.ActionListId = currentActionDo.ActionListId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }

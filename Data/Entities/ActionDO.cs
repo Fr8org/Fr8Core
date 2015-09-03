@@ -13,7 +13,7 @@ namespace Data.Entities
         public int? ActionListId { get; set; }
         public virtual ActionListDO ActionList { get; set; }
 
-        public string ConfigurationSettings { get; set; }
+        public string ConfigurationStore { get; set; }
 
         public string FieldMappingSettings { get; set; }
 
