@@ -73,7 +73,7 @@ var dockyard;
                         actionTemplateId: 1,
                         isTempId: false,
                         id: 0,
-                        fieldMappingSettings: tests.utils.Fixtures.fieldMappingSettings,
+                        fieldMappingSettings: "test",
                         // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null
                     };
