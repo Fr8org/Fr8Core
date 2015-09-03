@@ -11,7 +11,7 @@ namespace Core.Interfaces
         IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         //void Register(string ActionType, string PluginRegistration, string Version);
-        ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo);
+        ActionDO GetConfigurationSettings(ActionDO curActionDO);
         IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 
         Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO);

@@ -91,10 +91,12 @@ namespace Web.Controllers
 
         [HttpGet]
         [Route("actions/configuration")]
-        public string GetConfigurationSettings(int curActionTemplateId)
-        {            
-            ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
-            return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
+        public string GetConfigurationSettings(int curActionId)
+        {
+            ActionDO curActionDO = _action.GetById(curActionId);
+            return _action.GetConfigurationSettings(curActionDO).ConfigurationSettings;
+            //ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
+            //return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
         }
 
 

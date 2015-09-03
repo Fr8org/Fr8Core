@@ -111,15 +111,14 @@ namespace Core.Services
             }
         }
 
-        public ActionDO GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
+        public ActionDO GetConfigurationSettings(ActionDO curActionDO)
         {
-            var curActionDO = new ActionDO();
-            if (curActionTemplateDo != null)
+            if (curActionDO != null)
             {
-                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                curActionDO.ConfigurationSettings =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+                //string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
+                //curActionDO.ConfigurationSettings =
+                //    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
+                //        "GetConfigurationSettings", curActionTemplateDo);
             }
             else
                 throw new ArgumentNullException("ActionTemplateDO");
