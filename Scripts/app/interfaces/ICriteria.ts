@@ -19,7 +19,7 @@ module dockyard.interfaces {
         actionListId: number,
         name: string;
         configurationStore: model.ConfigurationStore;
-        fieldMappingSettings: string;
+        fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
     }
 

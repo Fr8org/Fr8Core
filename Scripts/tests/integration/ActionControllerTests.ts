@@ -21,7 +21,7 @@ module dockyard.tests.controller {
         var deleteInvoker = function (data, done) {
             $.ajax({
                 type: "Delete",
-                url: "/api/action/" + data.id,
+                url: "/actions/" + data.id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -35,7 +35,7 @@ module dockyard.tests.controller {
         var getInvoker = function (data, done) {
             $.ajax({
                 type: "GET",
-                url: "/api/action/" + data[0].id,
+                url: "/actions/" + data[0].id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -52,7 +52,7 @@ module dockyard.tests.controller {
         var postInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "/api/action/save",
+                url: "/actions/save",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -77,7 +77,7 @@ module dockyard.tests.controller {
                     actionTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    fieldMappingSettings: "test",
+                    fieldMappingSettings: utils.Fixtures.fieldMappingSettings,
                     // ActionListId is set to null, since there is no ActionsLists on a blank db.
                     actionListId: null
                 };

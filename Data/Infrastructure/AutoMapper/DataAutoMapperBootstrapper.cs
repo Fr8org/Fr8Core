@@ -89,6 +89,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<JSONToStringConverter<ConfigurationSettingsDTO>>();
             Mapper.CreateMap<string, ConfigurationSettingsDTO>()
                 .ConvertUsing<StringToJSONConverter<ConfigurationSettingsDTO>>();
+
+            Mapper.CreateMap<FieldMappingSettingsDTO, string>()
+                .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
+            Mapper.CreateMap<string, FieldMappingSettingsDTO>()
+                .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
         }
     }
 

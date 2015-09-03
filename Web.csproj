@@ -566,6 +566,7 @@
     <TypeScriptCompile Include="Scripts\app\model\ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionList.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionType.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />

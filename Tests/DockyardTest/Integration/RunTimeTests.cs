@@ -52,6 +52,8 @@ namespace DockyardTest.Integration
 
         public ProcessTemplateDO CreateProcessTemplate_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
         {
+            var jsonSerializer = new global::Utilities.Serializers.Json.JsonSerializer();
+
             var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
             healthProcessTemplate.DockyardAccount = registeredAccount;
             uow.ProcessTemplateRepository.Add(healthProcessTemplate);
@@ -85,7 +87,7 @@ namespace DockyardTest.Integration
 
             //add field mappings to write action
             var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
-            healthWriteAction.FieldMappingSettings = health_FieldMappings.Serialize();
+            healthWriteAction.FieldMappingSettings = jsonSerializer.Serialize(health_FieldMappings);
 
             //add configuration settings to write action
             var configuration_settings = FixtureData.TestConfigurationSettings_healthdemo();

@@ -569,7 +569,7 @@ module dockyard.controllers {
                     actionTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    fieldMappingSettings: "",
+                    fieldMappingSettings: new model.FieldMappingSettings(),
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0

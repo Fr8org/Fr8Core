@@ -14,7 +14,7 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/actions")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private readonly IAction _action;
@@ -60,6 +60,7 @@ namespace Web.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
+        [Route("{id:int}")]
         public ActionDesignDTO Get(int id)
         {
             return Mapper.Map<ActionDesignDTO>(_action.GetById(id)); 
@@ -69,6 +70,7 @@ namespace Web.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpDelete]
+        [Route("{id:int}")]
         public void Delete(int id)
         {
             _action.Delete(id); 
@@ -78,6 +80,7 @@ namespace Web.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
+        [Route("save")]
         public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
@@ -92,7 +95,7 @@ namespace Web.Controllers
         [HttpGet]
         [Route("actions/configuration")]
         public string GetConfigurationSettings(int curActionId)
-        {
+        {            
             ActionDO curActionDO = _action.GetById(curActionId);
             return _action.GetConfigurationSettings(curActionDO).ConfigurationStore;
             //ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
