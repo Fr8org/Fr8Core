@@ -121,6 +121,8 @@ AppPackages/
 Scripts/app/**/*.js
 Scripts/tests/mocks/*.js
 Scripts/tests/unit/*.js
+Scripts/tests/utils/*.js
+Scripts/tests/integration/*.js
 *.js.map
 
  
