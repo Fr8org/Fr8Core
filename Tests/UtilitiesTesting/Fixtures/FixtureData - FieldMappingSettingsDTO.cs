@@ -1,4 +1,5 @@
-﻿using System.Net.NetworkInformation;
+﻿using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using Data.Interfaces.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
@@ -9,8 +10,11 @@ namespace UtilitiesTesting.Fixtures
         {
             return new FieldMappingSettingsDTO
             {
-                TestFieldMappingDTO_Doctor(),
-                TestFieldMappingDTO_Condition()
+                Fields = new List<FieldMappingDTO>
+                {
+                    TestFieldMappingDTO_Doctor(),
+                    TestFieldMappingDTO_Condition()
+                }
             };
         }
 

@@ -65,6 +65,8 @@ module dockyard.controllers {
             this._scope.Cancel = angular.bind(this, this.Cancel);
             this._scope.Save = angular.bind(this, this.onSave);
 
+            this._scope.currentAction = null;
+
             this.setupMessageProcessing();
             this.loadProcessTemplate();
         }
@@ -405,12 +407,16 @@ module dockyard.controllers {
             Handles message 'PaneConfigureAction_MapFieldsClicked'
         */
         private PaneConfigureAction_MapFieldsClicked(eventArgs: pca.MapFieldsClickedEventArgs) {
-            //Render Pane Configure Mapping 
-            var pcmEventArgs = new pcm.RenderEventArgs(
-                eventArgs.action.processNodeTemplateId,
-                eventArgs.action.id,
-                eventArgs.action.isTempId);
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
+            var scope = this._scope;
+
+            this.SaveAction(function () {
+                //Render Pane Configure Mapping 
+                var pcmEventArgs = new pcm.RenderEventArgs(
+                    eventArgs.action.processNodeTemplateId,
+                    eventArgs.action.id,
+                    eventArgs.action.isTempId);
+                scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
+            });
         }
 
         /*
@@ -563,7 +569,7 @@ module dockyard.controllers {
                     actionTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    fieldMappingSettings: "",
+                    fieldMappingSettings: new model.FieldMappingSettings(),
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0

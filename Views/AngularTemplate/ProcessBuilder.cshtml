@@ -14,18 +14,11 @@
         <div class="col-md-6 col-sm-6">
             <!-- BEGIN PORTLET-->
             <div class="portlet light ">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Add a Process</span>
-                    </div>
-                </div>
+                <h4 class="no-margin caption-subject font-green-haze bold uppercase">Define Process</h4>
                 <div class="portlet-body">
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
-                        <div class="form-group">
-                            <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
-                        </div>
+                        <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
                     </div>
                     <!-- END PROCESS FORM -->
                 </div>
@@ -43,12 +36,12 @@
             <pane-select-action id="paneSelectAction" action="currentAction"></pane-select-action>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-configure-action id="paneConfigureAction" currentAction="currentAction"></pane-configure-action>
+            <pane-configure-action id="paneConfigureAction" current-action="currentAction"></pane-configure-action>
         </div>
         <div class="col-md-6 col-sm-6">
             <pane-configure-mapping id="paneConfigureMapping" current-action="currentAction" mode="field" ></pane-configure-mapping>
         </div>
-        <div class="col-md-4 col-sm-4" ng-show="currentAction">
+        <div class="col-md-4 col-sm-4" ng-show="currentAction.id">
             <div class="form-group">
                 <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>
                 <button class="btn btn-danger btn-large" ng-click="Cancel()">Cancel</button>

@@ -204,8 +204,8 @@ namespace DockyardTest.Services
                 dto.PayloadMappings.Any(m => m.Name == "Condition" && m.Value == "Marthambles"));
         }
 
-        [Test]
-        public void Process_ActionListNotUnstarted_ThrowException()
+        [Test,Ignore]
+        public void Process_ActionNotUnstarted_ThrowException()
         {
             ActionDO actionDo = FixtureData.TestAction9();
             Action _action = ObjectFactory.GetInstance<Action>();
@@ -213,7 +213,7 @@ namespace DockyardTest.Services
             Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo).Exception.InnerException.Message);
         }
 
-        [Test]
+        [Test,Ignore]
         public void Process_ReturnJSONDispatchError_ActionStateError()
         {
             ActionDO actionDO = FixtureData.IntegrationTestAction();
@@ -506,7 +506,8 @@ namespace DockyardTest.Services
 
         }
 
-        [Test]
+        //this test is being phased out
+        [Test,Ignore]
         public void GetAvailableActions_ReturnsActionsForAccount()
         {
             const string unavailablePluginName = "UnavailablePlugin";

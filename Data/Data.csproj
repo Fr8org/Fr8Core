@@ -251,6 +251,10 @@
     <Compile Include="Migrations\201508312027130_ChangesInActionListDOandActionDO.Designer.cs">
       <DependentUpon>201508312027130_ChangesInActionListDOandActionDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509031000594_DO_947_Migration.cs" />
+    <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
+      <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -358,7 +362,7 @@
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventStatusTemplate.cs" />
+    <Compile Include="States\Templates\_ExternalEventTypeTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
@@ -479,6 +483,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508312027130_ChangesInActionListDOandActionDO.resx">
       <DependentUpon>201508312027130_ChangesInActionListDOandActionDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
+      <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,13 +1,11 @@
 ﻿using Data.Entities;
 using Data.States;
 using Data.Wrappers;
-using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-
         public static ActionDO TestActionWriteSqlServer1()
         {
             var actionTemplate = ActionTemplate();
@@ -16,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 54,
                 Name = "Write to Sql Server",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 ConfigurationSettings = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
@@ -79,7 +77,7 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             var origActionDO = new ActionDO()
             {
-                ParentActionListID = null,
+                ActionListId = null,
                 Name = "type 1",
                 Id = 34,
                 ConfigurationSettings = "config settings",
@@ -105,6 +103,7 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionDO;
         }
+
         public static ActionDO TestAction5()
         {
             var actionTemplate = ActionTemplate();
@@ -124,7 +123,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 6,
-                ParentActionListID = 1,
+                ActionListId = 1,
                 Ordering = 2,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -139,7 +138,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 7,
                 Name = "Action 7",
-                ParentActionListID = 1,
+                ActionListId = 1,
                 Ordering = 3,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -154,10 +153,10 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 8,
                 Name = "Action 8",
-                ParentActionListID = 1,
+                ActionListId = 1,
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
-                ParentActionList = FixtureData.TestActionList6(),
+                ActionList = FixtureData.TestActionList6(),
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 PayloadMappings = "x",
                 ActionTemplateId = actionTemplate.Id,
@@ -172,7 +171,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 5,
                 Name = "Action 5",
-                ParentActionListID = 1,
+                ActionListId = 1,
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -200,7 +199,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Action 1",
-                ParentActionListID = 1,
+                ActionListId = 1,
                 Ordering = 1,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -214,10 +213,30 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 Name = "Action 2",
-                ParentActionListID = 1,
+                ActionListId = 1,
                 Ordering = 2,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
+            };
+        }
+
+        public static ActionDO TestAction22()
+        {
+            var actionTemplate = FixtureData.ActionTemplate();
+
+            return new ActionDO
+            {
+                Id = 10,
+                Name = "WriteToAzureSql",
+                ActionListId = 1,
+                ConfigurationSettings = "JSON Config Settings",
+                FieldMappingSettings = "JSON Field Mapping Settings",
+                ParentPluginRegistration = "AzureSql",
+                Ordering = 1,
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+
             };
         }
 
@@ -244,17 +263,33 @@ namespace UtilitiesTesting.Fixtures
 
             var actionDo = new ActionDO()
             {
-                ParentActionList = actionListDo,
-                ParentActionListID = 1,
+                ActionList = actionListDo,
+                ActionListId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
-                FieldMappingSettings = FixtureData.FieldMappings,
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
+                FieldMappingSettings = FieldMappings,
                 Id = 1,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
             };
 
+            return actionDo;
+        }
+
+        public static ActionDO TestActionHealth1()
+        {
+            var actionDo = new ActionDO
+            {
+                Id = 1,
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
+                FieldMappingSettings = FieldMappings,
+                ActionState = ActionState.Unstarted,
+                Name = "testaction",
+                ConfigurationSettings = "config settings",
+                ActionListId = 88,
+                ActionTemplateId = FixtureData.TestActionTemplate1().Id
+            };
             return actionDo;
         }
 
@@ -282,8 +317,8 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
-                ParentActionList = actionListDo,
+                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
+                ActionList = actionListDo,
                 FieldMappingSettings = FixtureData.FieldMappings,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
