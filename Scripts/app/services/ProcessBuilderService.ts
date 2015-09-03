@@ -6,7 +6,7 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        getConfigurationSettings: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationSettingsVM>;
+        getConfigurationSettings: (curActionDesignDTO: { actionDesign: model.ActionDesignDTO }) => interfaces.IActionVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
@@ -36,7 +36,7 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',
-                    url: '/apimock/Action/configuration/:id'
+                    url: '/apimock/Action/configuration/'
                 },
                 'params': {
                     id: 'id'

@@ -114,7 +114,7 @@ module dockyard.directives.paneConfigureAction {
                 || scope.currentAction.configurationSettings.fields == null
                 || scope.currentAction.configurationSettings.fields.length == 0) {
 
-                (<any>scope.currentAction).configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });  //TODO supply real actionRegistrationId 
+                scope.currentAction = this.ActionService.getConfigurationSettings({ actionDesign: scope.action });  //TODO supply real actionRegistrationId 
             }
         }
 
