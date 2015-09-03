@@ -272,6 +272,8 @@
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Interfaces\IPlugin.cs" />
+    <Compile Include="Services\Plugin.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />

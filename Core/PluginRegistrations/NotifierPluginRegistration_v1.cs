@@ -11,6 +11,7 @@ namespace Core.PluginRegistrations
     public class NotifierPluginRegistration_v1 : BasePluginRegistration
     {
         public const string baseUrl = "Notifier.BaseUrl";
+
         //private ActionNameListDTO availableActions = InitAvailableActions();//@"[{ ""ActionType"" : """" , ""Version"": ""1.0""},{ ""ActionType"" : """" , ""Version"": ""1.0""}]";
         // ActionNameListDTO availableActions = InitAvailableActions();
         public NotifierPluginRegistration_v1()

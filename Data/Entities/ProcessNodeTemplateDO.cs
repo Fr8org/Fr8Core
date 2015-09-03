@@ -46,12 +46,12 @@ namespace Data.Entities
         {
             base.BeforeSave();
 
-            //Connected out by @alexavrutin due to a logical conflict with Process Template UI.
-
-            //ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
+            // TODO: commented out.
+            // TODO: Currently crashes on ProcessTemplate creation.
+            //       When ProcessTemplate is created, empty StartProcessNodeTemplate is created and assigned to ProcessTemplate.
+            //       Need to create another issue to fix that.
+            // ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
             // curValidator.ValidateAndThrow(this);
-
-
         }
     }
 }

@@ -1,16 +1,13 @@
 ﻿﻿using System;
-﻿using System.IO;
 ﻿using Core.Services;
 ﻿using Data.Entities;
 ﻿using Data.Interfaces;
-﻿using Data.States;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
 ﻿using Newtonsoft.Json;
 ﻿using NUnit.Framework;
 ﻿using StructureMap;
 ﻿using UtilitiesTesting;
 ﻿using UtilitiesTesting.Fixtures;
+﻿using File = System.IO.File;
 
 namespace DockyardTest.Integration
 {
@@ -35,13 +32,13 @@ namespace DockyardTest.Integration
 
                 //create a process template linked to that account
                 var healthProcessTemplate = CreateProcessTemplate_healthdemo(uow, registeredAccount);
+                uow.SaveChanges();
+
                 string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
 
                 var xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, healthPayloadPath);
                 DocuSignNotification _docuSignNotification = ObjectFactory.GetInstance<DocuSignNotification>();
-               // _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
-
-
+                _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
             }
 
             // EXECUTE
@@ -58,6 +55,7 @@ namespace DockyardTest.Integration
             var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
             healthProcessTemplate.DockyardAccount = registeredAccount;
             uow.ProcessTemplateRepository.Add(healthProcessTemplate);
+            uow.SaveChanges();
 
             //add processnode to process
             var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
@@ -75,8 +73,10 @@ namespace DockyardTest.Integration
             //add actionlist to processnode
             var healthActionList = FixtureData.TestActionListHealth1();
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
-            
             uow.ActionListRepository.Add(healthActionList);
+
+           // var healthAction = FixtureData.TestActionHealth1();
+           // uow.ActionRepository.Add(healthAction);
 
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
@@ -97,11 +97,9 @@ namespace DockyardTest.Integration
             health_ExternalEventSubscription.ExternalProcessTemplate = healthProcessTemplate;
             uow.ExternalEventSubscriptionRepository.Add(health_ExternalEventSubscription);
 
-            uow.SaveChanges();
+         
             return healthProcessTemplate;
         }
-
-
     }
 }
 

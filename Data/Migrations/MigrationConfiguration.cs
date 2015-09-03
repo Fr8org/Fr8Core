@@ -251,7 +251,7 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
-            CreateAdmin("kevin.gilliard8415@gmail.com", "123qwe", unitOfWork);
+            
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -306,49 +306,7 @@ namespace Data.Migrations
             return user;
         }
 
-        //private static void AddBookingRequest(IUnitOfWork unitOfWork)
-        //{
-        //    if (!unitOfWork.BookingRequestRepository.GetQuery().Any())
-        //    {
-        //        CreateBookingRequest("alexlucre1@gmail.com", "First Booking request subject", "First Booking request text", unitOfWork);
-        //        CreateBookingRequest("alexlucre1@gmail.com", "Second Booking request subject", "Second Booking request text", unitOfWork);
-        //    }
-        //}
 
-        //private static void CreateBookingRequest(string curUserName, string subject, string htmlText, IUnitOfWork uow)
-        //{
-        //    var userDO = uow.UserRepository.DBSet.Local.FirstOrDefault(u => u.UserName == curUserName);
-        //    if (userDO == null)
-        //        userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
-
-        //    var fromUser = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName);
-
-        //    var curBookingRequestDO = new BookingRequestDO
-        //    {
-        //        From = fromUser,
-        //        FromID = fromUser.Id,
-        //        Subject = subject,
-        //        HTMLText = htmlText,
-        //        EmailStatus = EmailState.Unprocessed,
-        //        DateReceived = DateTimeOffset.UtcNow,
-        //        State = BookingRequestState.NeedsBooking,
-        //        Customer = userDO
-        //    };
-        //    userDO.UserBookingRequests.Add(curBookingRequestDO);
-
-        //    foreach (var calendar in curBookingRequestDO.Customer.Calendars)
-        //        curBookingRequestDO.Calendars.Add(calendar);
-        //    uow.BookingRequestRepository.Add(curBookingRequestDO);
-        //}
-
-        //private static void AddCalendars(IUnitOfWork uow)
-        //{
-        //    if (uow.CalendarRepository.GetAll().All(e => e.Name != "Test Calendar 1"))
-        //    {
-        //        CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
-        //        CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
-        //    }
-        //}
 
         private void AddProfiles(IUnitOfWork uow)
         {
@@ -357,9 +315,23 @@ namespace Data.Migrations
                 uow.UserRepository.AddDefaultProfile(user);
         }
 
+
+        private void AddSubscription(IUnitOfWork uow, DockyardAccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
+        {
+            var curSub = new SubscriptionDO()
+            {
+                Plugin = curPlugin,
+                DockyardAccount = curAccount,
+                AccessLevel = curAccessLevel
+            };
+
+            uow.SubscriptionRepository.Add(curSub);
+        }
+
+
         private void AddPlugins(IUnitOfWork uow)
         {
-            const string azureSqlPluginName = "AzureSql";
+            const string azureSqlPluginName = "AzureSqlServerPluginRegistration_v1";
 
             // Create test Dockaard account for plugin subscription.
             var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
@@ -381,67 +353,12 @@ namespace Data.Migrations
                 uow.PluginRepository.Add(azureSqlPlugin);
 
                 // Create subscription instance.
-                var azureSqlPluginSubscription = new SubscriptionDO()
-                {
-                    Plugin = azureSqlPlugin,
-                    DockyardAccount = account,
-                    AccessLevel = AccessLevel.User
-                };
-
-                uow.SubscriptionRepository.Add(azureSqlPluginSubscription);
+                AddSubscription(uow,account,azureSqlPlugin,AccessLevel.User);
+               
             }
         }
 
-        //private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
-        //{
-        //    UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
-        //    var curCalendar = new CalendarDO
-        //    {
-        //        Name = calendarName,
-        //        Owner = curUser,
-        //        OwnerID = curUser.Id
-        //    };
-        //    curUser.Calendars.Add(curCalendar);
-        //}
-
-        //private static void AddEvents(IUnitOfWork uow)
-        //{
-        //    if (uow.EventRepository.GetAll().All(e => e.Description != "Test Event 1"))
-        //    {
-        //        CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 1");
-        //        CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 2");
-        //    }
-        //}
         
-        //Creating 10 events for each calendar
-        //private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
-        //{
-        //    uow.SaveChanges();
-        //    UserDO curUser = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
-        //    if (curUser == null)
-        //        curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
-
-        //    var bookingRequestID = curUser.UserBookingRequests.First().Id;
-        //    var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
-
-        //    for (int eventNumber = 1; eventNumber < 11; eventNumber++)
-        //    {
-        //        DateTimeOffset start = GetRandomEventStartTime();
-        //        DateTimeOffset end = start.AddMinutes(new Random().Next(30, 120));
-        //        EventDO createdEvent = new EventDO();
-        //        createdEvent.BookingRequestID = bookingRequestID;
-        //        createdEvent.CalendarID = calendarID;
-        //        createdEvent.StartDate = start;
-        //        createdEvent.EndDate = end;
-        //        createdEvent.Description = "Test Event " + eventNumber.ToString();
-        //        createdEvent.Summary = "Test Event " + eventNumber.ToString();
-        //        createdEvent.IsAllDay = false;
-        //        createdEvent.CreatedBy = curUser;
-        //        createdEvent.CreatedByID = curUser.Id;
-        //        createdEvent.EventStatus = EventState.EnvelopeSent;
-        //        uow.EventRepository.Add(createdEvent);
-        //    }
-        //}
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()

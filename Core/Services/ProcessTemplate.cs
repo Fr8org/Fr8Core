@@ -152,7 +152,7 @@ namespace Core.Services
             if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
             {
                 _process.Launch(curProcessTemplate, curEvent);
-
+               
                 //todo: what does this do?
                 ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
                     process =>

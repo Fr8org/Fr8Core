@@ -22,7 +22,7 @@ var dockyard;
                 var deleteInvoker = function (data, done) {
                     $.ajax({
                         type: "Delete",
-                        url: "/api/action/" + data.Id,
+                        url: "/api/action/" + data.id,
                         contentType: "application/json; charset=utf-8",
                         dataType: "json"
                     }).done(function (data, status) {
@@ -35,7 +35,7 @@ var dockyard;
                 var getInvoker = function (data, done) {
                     $.ajax({
                         type: "GET",
-                        url: "/api/action/" + data[0].Id,
+                        url: "/api/action/" + data[0].id,
                         contentType: "application/json; charset=utf-8",
                         dataType: "json"
                     }).done(function (data, status) {
@@ -72,7 +72,8 @@ var dockyard;
                         isTempId: false,
                         id: 0,
                         fieldMappingSettings: "test",
-                        actionListId: 1
+                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
+                        actionListId: null
                     };
                     postInvoker(done, actions);
                 });
