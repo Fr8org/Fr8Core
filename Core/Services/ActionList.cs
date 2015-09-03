@@ -74,17 +74,24 @@ namespace Core.Services
         public void Process(ActionListDO curActionList)
         {
 
-          
-            if (curActionList.ActionListState == ActionListState.Unstarted) //need to add pending state for asynchronous cases
+            //We assume that any unstarted ActionList that makes it to here should be put into process
+            if (curActionList.ActionListState == ActionListState.Unstarted && curActionList.CurrentActivity!=null) //need to add pending state for asynchronous cases
             {
                 SetState(curActionList, ActionListState.Inprocess);
             }
 
+            
             if (curActionList.ActionListState != ActionListState.Inprocess) //need to add pending state for asynchronous cases
             {
                 throw new ArgumentException("tried to process an ActionList that was not in state=InProcess");
             }
 
+            if (curActionList.CurrentActivity == null)
+            {
+                throw new ArgumentException("An ActionList with a null CurrentActivity should not get this far. It should be Completed or Unstarted");
+            }
+
+            //main processing loop for the Activities belonging to this ActionList
             while (curActionList.ActionListState == ActionListState.Inprocess)
             {
                 try

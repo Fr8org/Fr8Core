@@ -49,5 +49,16 @@ namespace UtilitiesTesting.Fixtures
             };
             return ProcessNodeTemplateDO;
         }
+
+        public static ProcessNodeTemplateDO TestProcessNodeTemplateDO4()
+        {
+            ProcessNodeTemplateDO ProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                NodeTransitions =
+                    "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
+            };
+            return ProcessNodeTemplateDO;
+        }
     }
 }
