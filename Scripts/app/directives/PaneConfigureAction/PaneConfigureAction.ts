@@ -109,7 +109,7 @@ module dockyard.directives.paneConfigureAction {
                 || scope.currentAction.configurationStore.fields == null
                 || scope.currentAction.configurationStore.fields.length == 0) {
 
-                (<any>scope.currentAction).configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });  //TODO supply real actionRegistrationId 
+                (<any>scope.currentAction).configurationStore = this.ActionService.getConfigurationSettings({ id: 1 });  //TODO supply real actionRegistrationId 
             }
         }
 
@@ -140,7 +140,7 @@ module dockyard.directives.paneConfigureAction {
 
             httpBackend
                 .whenGET("/apimock/Action/configuration/1")
-                .respond(tests.utils.Fixtures.configurationSettings);
+                .respond(tests.utils.Fixtures.configurationStore);
         }
     ]);
     app.directive('paneConfigureAction', PaneConfigureAction.Factory());

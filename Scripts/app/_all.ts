@@ -14,7 +14,7 @@
 /// <reference path="interfaces/iprocesstemplatesscope.ts" />
 /// <reference path="interfaces/iprocesstemplatevm.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
-/// <reference path="interfaces/iconfigurationsettings.ts" />
+/// <reference path="interfaces/iconfigurationstore.ts" />
 
 /*
     MODEL

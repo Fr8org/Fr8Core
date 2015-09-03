@@ -49,7 +49,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dest => dest.Id, opts => opts.ResolveUsing(src => src.Id))
                 .ForMember(dest => dest.Name, opts => opts.ResolveUsing(src => src.Name))
                 .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ActionListId))
-                .ForMember(dest => dest.ConfigurationSettings,
+                .ForMember(dest => dest.ConfigurationStore,
                     opts => opts.ResolveUsing(src => src.ConfigurationStore))
                 .ForMember(dest => dest.ParentPluginRegistration,
                     opts => opts.ResolveUsing(src => src.ParentPluginRegistration))

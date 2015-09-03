@@ -14,7 +14,7 @@
             'SubscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
         }
 
-        public static configurationSettings = {
+        public static configurationStore = {
             "fields":
             [
                 {

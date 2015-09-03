@@ -18,7 +18,7 @@ var dockyard;
                     'ProcessTemplateState': 1,
                     'SubscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
                 };
-                Fixtures.configurationSettings = {
+                Fixtures.configurationStore = {
                     "fields": [
                         {
                             "type": "textField",

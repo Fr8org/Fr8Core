@@ -68,7 +68,7 @@ var dockyard;
                     // First POST, create a dummy entry
                     var actions = {
                         name: "test action type",
-                        configurationStore: tests.utils.Fixtures.configurationSettings,
+                        configurationStore: tests.utils.Fixtures.configurationStore,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
