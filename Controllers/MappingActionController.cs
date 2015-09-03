@@ -29,5 +29,14 @@ namespace Web.Controllers
 			var result = upstreamActivities.Select(x => Mapper.Map<ActionDTOBase>(x)).ToList();
 			return Ok(result);
 		}
+		[Route("downstream")]
+		[ResponseType(typeof(IEnumerable<ActionDTOBase>))]
+		public IHttpActionResult GetDownstreamActivities(ActionDesignDTO actionDesignDTO)
+		{
+			ActionDO actionDO = Mapper.Map<ActionDO>(actionDesignDTO);
+			var downstreamActivities = _action.GetDownstreamActivities(actionDO);
+			var result = downstreamActivities.Select(x => Mapper.Map<ActionDTOBase>(x)).ToList();
+			return Ok(result);
+		}
 	}
 }
