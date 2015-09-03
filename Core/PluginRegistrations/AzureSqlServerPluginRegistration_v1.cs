@@ -41,7 +41,7 @@ namespace Core.PluginRegistrations
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
             return @"
                 {'fields':
