@@ -43,7 +43,7 @@ module dockyard.directives.paneConfigureAction {
         action: model.ActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
-        configurationSettings: ng.resource.IResource<model.ConfigurationSettings> | model.ConfigurationSettings;
+        configurationStore: ng.resource.IResource<model.ConfigurationStore> | model.ConfigurationStore;
         mapFields: (scope: IPaneConfigureActionScope) => void;
     }
 
@@ -88,7 +88,7 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
-            model.ConfigurationSettings
+            model.ConfigurationStore
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -105,9 +105,9 @@ module dockyard.directives.paneConfigureAction {
             if (eventArgs.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
 
-            if (scope.currentAction.configurationSettings == null
-                || scope.currentAction.configurationSettings.fields == null
-                || scope.currentAction.configurationSettings.fields.length == 0) {
+            if (scope.currentAction.configurationStore == null
+                || scope.currentAction.configurationStore.fields == null
+                || scope.currentAction.configurationStore.fields.length == 0) {
 
                 (<any>scope.currentAction).configurationSettings = this.ActionService.getConfigurationSettings({ id: 1 });  //TODO supply real actionRegistrationId 
             }

@@ -251,7 +251,7 @@ namespace DockyardTest.Controllers
                 Id = actionId,
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
-                ConfigurationSettings = new ConfigurationSettingsDTO(),
+                ConfigurationStore = new ConfigurationSettingsDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ParentPluginRegistration = "AzureSql",
                 ActionTemplateId = 1
@@ -282,7 +282,7 @@ namespace DockyardTest.Controllers
             var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
             {
                 ParentPluginRegistration = pluginName,
-                ConfigurationSettings = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
+                ConfigurationStore = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
                     "{\"connection_string\":\"" + dataSource + "\"}")
             });
 

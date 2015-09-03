@@ -553,7 +553,7 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IConfigurationSettings.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ConfigurationSettings.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />

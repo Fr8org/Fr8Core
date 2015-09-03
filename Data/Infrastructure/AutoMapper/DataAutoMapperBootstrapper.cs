@@ -20,7 +20,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ConfigurationSettings, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationStore)))
+                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationStore)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
 
@@ -28,7 +28,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
-                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationSettings)))
+                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationStore)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));

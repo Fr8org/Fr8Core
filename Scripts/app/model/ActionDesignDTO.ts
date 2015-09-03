@@ -5,7 +5,7 @@
         isTempId: boolean;
         actionListId: number;
         name: string;
-        configurationSettings: model.ConfigurationSettings;
+        configurationStore: model.ConfigurationStore;
         fieldMappingSettings: string;
         actionTemplateId: number;
 
@@ -28,7 +28,7 @@
                 processNodeTemplateId: this.processNodeTemplateId,
                 actionListId: this.actionListId,
                 name: this.name,
-                configurationSettings: this.configurationSettings,
+                configurationStore: this.configurationStore,
                 fieldMappingSettings: this.fieldMappingSettings
             };
         }

@@ -564,7 +564,7 @@ module dockyard.controllers {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationSettings: new model.ConfigurationSettings(),
+                    configurationStore: new model.ConfigurationStore(),
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     id: 1,
