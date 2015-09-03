@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Utilities.Serializers.Json;
 
 namespace Data.Wrappers
 {
@@ -100,22 +101,26 @@ namespace Data.Wrappers
         public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId,
             IList<EnvelopeDataDTO> curEnvelopeData)
         {
-            var mappings = new FieldMappingSettingsDTO();
-            mappings.Deserialize(curFieldMappingsJSON);
+            var serializer = new JsonSerializer();
+            var mappings = serializer.Deserialize<FieldMappingSettingsDTO>(curFieldMappingsJSON);
+
             var payload = new PayloadMappingsDTO();
 
-            mappings.ForEach(m =>
+            if (mappings.Fields != null)
             {
-                var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
-                if (newValue == null)
+                mappings.Fields.ForEach(m =>
                 {
-                    EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
-                }
-                else
-                {
-                    payload.Add(new FieldMappingDTO() {Name = m.Name, Value = newValue});
-                }
-            });
+                    var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
+                    if (newValue == null)
+                    {
+                        EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
+                    }
+                    else
+                    {
+                        payload.Add(new FieldMappingDTO() { Name = m.Name, Value = newValue });
+                    }
+                });
+            }
             return payload;
         }
 
