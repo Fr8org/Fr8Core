@@ -29,17 +29,31 @@ namespace pluginAzureSqlServer.Actions {
         }
 
         private const string ProviderName = "System.Data.SqlClient";
-               
-        private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols " +
-                                                 @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
-                                                 @"ORDER BY tbls.name, cols.COLUMN_NAME";
+        private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
+                                                 @"FROM ( " +
+	                                                @"SELECT DISTINCT tbls.NAME, cols.COLUMN_NAME " +
+	                                                @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
+                                                 @") r " +
+                                                 @"ORDER BY r.NAME, r.COLUMN_NAME";
 
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
         private object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
             var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
-            var connString = settings.Value<string>("connection_string");
+            var fieldsArray = settings.Value<JArray>("fields");
+
+            string connString = null;
+            foreach (var fieldObjectToken in fieldsArray)
+            {
+                var fieldObject = fieldObjectToken.ToObject<JObject>();
+                if (fieldObject.Value<string>("name") != "connection_string")
+                {
+                    continue;
+                }
+
+                connString = fieldObject.Value<string>("value");
+            }
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 

@@ -45,7 +45,7 @@ namespace DockyardTest.Entities
             }
         }
 
-        [Test, Ignore]
+        [Test,Ignore]
         [Category("ActionList")]
         public void ActionList_Add_CanCreateActionList()
         {
@@ -54,9 +54,12 @@ namespace DockyardTest.Entities
               
                 //SETUP
                 //create a customer from fixture data
-                var curActionListDO = FixtureData.TestEmptyActionList();
+                
+                var curProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplateDO);
+                uow.SaveChanges();
 
-                //EXECUTE
+                var curActionListDO = FixtureData.TestEmptyActionList();
                 uow.ActionListRepository.Add(curActionListDO);
                 uow.SaveChanges();
 
@@ -66,9 +69,10 @@ namespace DockyardTest.Entities
                 Assert.NotNull(savedActionListDO);
                 Assert.AreEqual(curActionListDO.Name, savedActionListDO.Name);
 
-                var curActionListDO2 = FixtureData.TestActionList();
 
                 //EXECUTE
+                var curActionListDO2 = FixtureData.TestActionList();
+
                 uow.ActionListRepository.Add(curActionListDO2);
                 uow.SaveChanges();
 

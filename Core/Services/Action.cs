@@ -12,7 +12,6 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
-using Newtonsoft.Json;
 using StructureMap;
 
 namespace Core.Services
@@ -140,7 +139,7 @@ namespace Core.Services
             }
         }
 
-        public async Task Process(ActionDO curAction)
+        public async Task<int> Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -156,15 +155,20 @@ namespace Core.Services
                     var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
                     var jsonResult = await Dispatch(curAction, baseUri);
 
+
+                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+
+
                     //check if the returned JSON is Error
-                    if (jsonResult.ToLower().Contains("error"))
-                    {
-                        curAction.ActionState = ActionState.Error;
-                    }
-                    else
-                    {
-                        curAction.ActionState = ActionState.Completed;
-                    }
+                    //  if (jsonResult.ToLower().Contains("error"))
+                    // {
+                    //     curAction.ActionState = ActionState.Error;
+                    //  }
+                    //   else
+                    //   {
+                    curAction.ActionState = ActionState.Completed;
+                 //   }
 
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
@@ -177,6 +181,7 @@ namespace Core.Services
                     throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
             }
+            return curAction.ActionState.Value;
         }
 
         public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)

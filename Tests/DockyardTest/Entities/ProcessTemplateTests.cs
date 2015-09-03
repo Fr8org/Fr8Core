@@ -19,7 +19,7 @@ namespace DockyardTest.Entities
                 var processTemplate = FixtureData.TestProcessTemplate2();
                 uow.ProcessTemplateRepository.Add(processTemplate);
 
-                var processNodeTemplate = FixtureData.TestProcessNodeTemplateDO();
+                var processNodeTemplate = FixtureData.TestProcessNodeTemplateDO2();
                 uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
                 processTemplate.StartingProcessNodeTemplate = processNodeTemplate;
 
@@ -30,11 +30,7 @@ namespace DockyardTest.Entities
 
                 Assert.AreEqual(processNodeTemplate.Id, result.StartingProcessNodeTemplate.Id);
                 Assert.AreEqual(processNodeTemplate.Name, result.StartingProcessNodeTemplate.Name);
-
-
             }
         }
-
-     
     }
 }
