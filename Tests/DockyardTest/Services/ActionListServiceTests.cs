@@ -2,6 +2,7 @@
 using Core.Services;
 using Core.StructureMap;
 using Data.Entities;
+using Data.Interfaces;
 using Data.States;
 using Moq;
 using NUnit.Framework;
@@ -22,10 +23,13 @@ namespace DockyardTest.Services
     {
         private IActionList _actionList;
         private Mock<IAction> _actionMock;
+        private ProcessNodeTemplateDO _curProcessNodeTemplate;
+        private ActionListDO _curActionList;
         [SetUp]
         public override void SetUp()
         {
  	        base.SetUp();
+            InitializeActionList();
         }
         
 
@@ -157,5 +161,75 @@ namespace DockyardTest.Services
 
             _actionList.ProcessAction(actionListDO);
         }
+
+        [Test]
+        public void ActionListController_CanAddActionDOInLastPosition()
+        {
+            _actionList = ObjectFactory.GetInstance<IActionList>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                
+                ActionDO actionDO = FixtureData.TestAction22();
+                _actionList.AddAction(actionDO, "last");
+                Assert.IsNotNull(uow.ActionRepository.GetByKey(10));
+                Assert.AreEqual(uow.ActionRepository.GetByKey(10).Ordering, 3);
+            }
+        }
+
+        [Test]
+        [ExpectedException(ExpectedException = typeof(NotSupportedException))]
+        public void ActionListController_CanAddActionDOInPositionOtherThanLast()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList = ObjectFactory.GetInstance<IActionList>();
+                ActionDO actionDO = FixtureData.TestAction22();
+                _actionList.AddAction(actionDO, "first");
+            }
+        }
+
+        [Test]
+        public void ActionListController_Set_LowestPostitoned_ActionDO_To_CurrentAtion_Of_ActionListDO()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList = ObjectFactory.GetInstance<IActionList>();
+                ActionDO actionDO = FixtureData.TestAction22();
+                _actionList.AddAction(actionDO, "last");
+                Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
+                Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentActivity.Ordering, 1);
+            }
+        }
+
+        [Test]
+        public void ActionListController_CanGetByKeyAndNotNull()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList = ObjectFactory.GetInstance<IActionList>();
+                Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
+            }
+        }
+
+
+        private void InitializeActionList()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Add a template
+                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+                uow.SaveChanges();
+
+                _curActionList = FixtureData.TestActionList();
+                _curActionList.ActionListType = ActionListType.Immediate;
+                _curActionList.CurrentActivity = null;
+                _curActionList.ProcessNodeTemplateID = _curProcessNodeTemplate.Id;
+
+                uow.ActionListRepository.Add(_curActionList);
+                uow.SaveChanges();
+            }
+        }
+
     }
 }
