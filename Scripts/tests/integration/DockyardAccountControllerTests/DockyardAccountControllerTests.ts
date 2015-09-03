@@ -3,11 +3,42 @@
 
 module dockyard.tests.controller {
     describe("Dockyard Account Controller ", function () {
-        var returnedData = null;
 
+        var controllerPoint = "/dockyardaccount/";
         var errorHandler = function (response, done) {
             done.fail(response.responseText);
         }
+
+        beforeAll(function(){
+            $(document).ajaxError(errorHandler);
+            $.ajaxSetup({ async: false, dataType: "json", contentType: "text/json" });
+        });
+
+        var returnedData = null;
+
+        it("LoggOff should return a page", function () {
+            $.get(controllerPoint + "logoff")
+                .done((data: any, status: string) => {
+                    expect(data).not.toBe(null);
+                    expect(status).toBe("success");
+                });
+        });
+       
+        it("RegistrationSuccessful action should return the page", function () {
+            $.get(controllerPoint + "registrationsuccessful")
+                .done((data: any, status: string) => {
+                    expect(data).not.toBe(null);
+                    expect(status).toBe("success");
+                });
+        });
+
+        it("Confirm action should return the page", function () {
+            $.get(controllerPoint + "confirm", {email: null})
+                .done((data: any, status: string) => {
+                    expect(data).not.toBe(null);
+                    expect(status).toBe("success");
+                });
+        });
 
         var logInInvoker = function (done, data) {
             $.ajax({
@@ -24,7 +55,7 @@ module dockyard.tests.controller {
             });
         };
 
-        var logOffInvoker = function (done) {
+   /*     var logOffInvoker = function (done) {
             $.ajax({
                 type: "GET",
                 url: "/dockyardaccount/logoff",
@@ -37,7 +68,7 @@ module dockyard.tests.controller {
             }).fail(function (response) {
                 errorHandler(response, done);
             });
-        }; 
+        }; */
 
         var confirmInvoker = function (data, done) {
             $.ajax({
@@ -55,7 +86,7 @@ module dockyard.tests.controller {
             });
         }; 
 
-        var registrationSuccessfulInvoker = function (done) {
+      /*  var registrationSuccessfulInvoker = function (done) {
             $.ajax({
                 type: "GET",
                 url: "/dockyardaccount/registrationsuccessful",
@@ -68,7 +99,7 @@ module dockyard.tests.controller {
             }).fail(function (response) {
                 errorHandler(response, done);
             });
-        }; 
+        }; */
 
         var processRegistrationInvoker = function (data, done) {
             $.ajax({
