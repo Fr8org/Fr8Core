@@ -1,12 +1,14 @@
 ﻿using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
+using Newtonsoft.Json.Linq;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 
 namespace Web.WebApiControllers
@@ -15,10 +17,19 @@ namespace Web.WebApiControllers
     {
         
         // GET api/<controller>
-        public IEnumerable<EmailAddressDO> Get()
+        public HttpResponseMessage Get()
         {
            // var response = 
-            return new UserEmails().GetUserEmails();
+            var data = new UserEmails().GetUserEmails();
+            var list = (from model in data
+                        select new { 
+                        Id=model.Id,
+                        Address=model.Address
+                        });
+          return new HttpResponseMessage()
+          {
+              Content = new StringContent(JArray.FromObject(list).ToString(), Encoding.UTF8, "application/json")
+          };
            // return Request.CreateResponse(HttpStatusCode.OK, response, Configuration.Formatters.JsonFormatter);
          // return new HttpResponseMessage(){Content=new JsonContent { new UserEmails().GetUserEmails()};
         }

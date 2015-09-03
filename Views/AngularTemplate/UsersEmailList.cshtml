@@ -1,0 +1,84 @@
+
+<script src="~/Content/templates/metronic/assets/global/plugins/angularjs/angular.min.js"></script>
+<script src="~/Scripts/app/controllers/UserEmailsController.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/dt/dt-1.10.9/datatables.min.css" />
+<h2>User Emails List</h2>
+
+    <div ng-controller="WithAjaxCtrl as showCase">
+        <table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="row-border hover"></table>
+    </div>
+
+<script>
+    angular.module('showcase.withAjax', ['datatables']).controller('WithAjaxCtrl', WithAjaxCtrl);
+
+    function WithAjaxCtrl(DTOptionsBuilder, DTColumnBuilder, $log) {
+        var vm = this;
+        $scope.items = [];
+        $log.info('hjgjhgjhg');
+        debugger;
+        $http({
+            url: "/api/UserEmailsApi",
+            method: "GET",
+            dataType: 'json',
+        }).success(function (data) {
+
+            vm.dtOptions = DTOptionsBuilder.fromSource(data)
+        .withPaginationType('full_numbers');
+            vm.dtColumns = [
+                DTColumnBuilder.newColumn('Id').withTitle('SNO'),
+                DTColumnBuilder.newColumn('Address').withTitle('Address')
+            ];
+
+        }).error(function (data) {
+            //something went wrong
+            alert('Error getting data');
+        });
+    }
+    //$(document).ready(function () {
+    //    debugger;
+    //    $.ajax({
+    //        url: '/api/UserEmailsApi',
+    //        type: 'GET',
+    //        dataType: 'json',
+    //        crossDomain: true,
+    //        success: function (data) {
+    //            debugger;
+    //            for (var i = 0; i < data.length; i++) {
+    //                $("#MyTbl").append("<tr> <td>" + data[i].Id + "</td>  <td>" + data[i].Address + "</td>  <td>" + data[i].Address + "</td>  </tr>");
+    //           // alert(JSON.stringify(data));
+    //        }
+    //    },
+    //        error: function (result) {
+    //            alert("Error");
+    //        }
+    //});
+
+
+
+    //  var parseJSONResult = jQuery.parseJSON(JSONResult);
+    //  if (parseJSONResult!= null && parseJSONResult.length > 0) {
+    @*$('#MyTbl').dataTable({
+                            "bDestroy": true,
+                            "bScrollCollapse": true,
+                            "bJQueryUI": true,
+                            "bPaginate": false,
+                            "sScrollY": "310px",
+                            "bInfo": true,
+                            "bFilter": true,
+                            "bSort": true,
+                            "aaData": JSONResult,
+                            "aoColumns": [
+                                { "SNO": "Id" },
+                                { "Address": "Address" },
+                            ]
+            });
+                },
+                error: function (errorThrown) {
+                    console.log(errorThrown);
+                }
+
+            });*@
+    //});
+</script>
+
+<!-- END MAIN CONTENT -->
