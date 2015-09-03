@@ -9,7 +9,6 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 
 namespace Core.Services
@@ -79,7 +78,6 @@ namespace Core.Services
                         uow.ExternalEventSubscriptionRepository.GetQuery().Include(p => p.ExternalProcessTemplate)
                             .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ExternalProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
-                   
 
                     foreach (var subscription in subscriptions)
                     {

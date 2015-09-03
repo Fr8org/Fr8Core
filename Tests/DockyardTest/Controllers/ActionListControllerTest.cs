@@ -34,9 +34,9 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curService = new ActionList();
+                var _service = new ActionList();
                 ActionDO actionDO = CreateActionDO();
-                curService.AddAction(actionDO, "last");
+                _service.AddAction(actionDO, "last");
                 Assert.IsNotNull(uow.ActionRepository.GetByKey(10));
                 Assert.AreEqual(uow.ActionRepository.GetByKey(10).Ordering, 3);
             }
@@ -49,9 +49,9 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curService = new ActionList();
+                var _service = new ActionList();
                 ActionDO actionDO = CreateActionDO();
-                curService.AddAction(actionDO, "first");
+                _service.AddAction(actionDO, "first");
             }
         }
 
@@ -61,9 +61,9 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curService = new ActionList();
+                var _service = new ActionList();
                 ActionDO actionDO = CreateActionDO();
-                curService.AddAction(actionDO, "last");
+                _service.AddAction(actionDO, "last");
                 Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
                 Assert.AreEqual(uow.ActionListRepository.GetByKey(1).CurrentActivity.Ordering, 1);
             }
@@ -71,14 +71,14 @@ namespace DockyardTest.Controllers
 
         [Test]
         [Category("ActionListController.Process")]
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        [ExpectedException(ExpectedException = typeof(ArgumentException))]
         public void ActionListController_NULL_CurrentAtion_Of_ActionListDO()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curService = new ActionList();
+                var _service = new ActionList();
                 Assert.IsNotNull(uow.ActionListRepository.GetByKey(1));
-                curService.Process(uow.ActionListRepository.GetByKey(1));
+                _service.Process(uow.ActionListRepository.GetByKey(1));
             }
         }
 
