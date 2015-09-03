@@ -251,9 +251,9 @@
     <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509031420298_ActionConfigStoreChange.cs" />
-    <Compile Include="Migrations\201509031420298_ActionConfigStoreChange.Designer.cs">
-      <DependentUpon>201509031420298_ActionConfigStoreChange.cs</DependentUpon>
+    <Compile Include="Migrations\201509031952410_ActionConfigStoreChange.cs" />
+    <Compile Include="Migrations\201509031952410_ActionConfigStoreChange.Designer.cs">
+      <DependentUpon>201509031952410_ActionConfigStoreChange.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -484,8 +484,8 @@
     <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509031420298_ActionConfigStoreChange.resx">
-      <DependentUpon>201509031420298_ActionConfigStoreChange.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509031952410_ActionConfigStoreChange.resx">
+      <DependentUpon>201509031952410_ActionConfigStoreChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
