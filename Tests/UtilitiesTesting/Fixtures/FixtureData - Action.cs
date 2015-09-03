@@ -229,7 +229,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 10,
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
-                ConfigurationSettings = "JSON Config Settings",
+                ConfigurationStore = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
