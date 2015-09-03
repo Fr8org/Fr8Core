@@ -75,8 +75,8 @@ namespace DockyardTest.Integration
             healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
             uow.ActionListRepository.Add(healthActionList);
 
-            var healthAction = FixtureData.TestActionHealth1();
-            uow.ActionRepository.Add(healthAction);
+           // var healthAction = FixtureData.TestActionHealth1();
+           // uow.ActionRepository.Add(healthAction);
 
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
