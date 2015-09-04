@@ -10,6 +10,7 @@ module dockyard.directives.paneDefineCriteria {
         defaultOperator: string;
         processNodeTemplate: model.ProcessNodeTemplate;
         fields: Array<model.Field>;
-        currentAction: interfaces.IActionVM
+        currentAction: interfaces.IActionVM;
+        isActionValid: (action: interfaces.IActionVM) => boolean;
     }
 }

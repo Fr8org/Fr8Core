@@ -7,10 +7,10 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         getConfigurationSettings: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationSettingsVM>;
+        getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
-    export interface IDataSourceService extends ng.resource.IResourceClass<interfaces.IDataSourceListVM>{ }
 
     app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessTemplateService =>
         <IProcessTemplateService> $resource(urlPrefix + '/processTemplate/:id', { id: '@id' })
@@ -37,15 +37,17 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',
-                    url: '/apimock/Action/configuration/:id'
+                    url: '/api/Actions/configuration/:id'
+                },
+
+                'getFieldDataSources': {
+                    method: 'POST',
+                    isArray: true,
+                    url: '/api/Actions/field_data_sources'
                 },
                 'params': {
                     id: 'id'
                 }
             })
-    ]);
-
-    app.factory('DataSourceService', ['$resource', ($resource: ng.resource.IResourceService, urlPrefix: string): IDataSourceService =>
-        <IDataSourceService> $resource('/action/field_data_sources')
     ]);
 }

@@ -72,9 +72,9 @@ module dockyard.interfaces {
         curNodeIsTempId: boolean;
         currentProcessTemplate: interfaces.IProcessTemplateVM;
         currentAction: IActionVM;
+        currentCriteria: ICriteria; 
         Save: Function;
         Cancel: Function;
-        Loaded: Function;
     }
 
     export interface IConfigurationSettingsVM extends ng.resource.IResource<model.ConfigurationSettings>, model.ConfigurationSettings {

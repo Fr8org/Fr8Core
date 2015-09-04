@@ -5,6 +5,8 @@ module dockyard.directives.paneDefineCriteria {
 
     export function PaneDefineCriteria(): ng.IDirective {
 
+        var disposeActionListener: Function; // a function to deregister currentAction watch upon Hide()
+
         // Get url for ProcessNodeTemplate create, update, delete operations.
         var getProcessNodeTemplateUrl = function (urlPrefix) {
             return urlPrefix + '/processNodeTemplate';
@@ -112,6 +114,18 @@ module dockyard.directives.paneDefineCriteria {
                 });
         };
 
+        var loadDatasources = function (
+            eventArgs: RenderEventArgs,
+            scope: IPaneDefineCriteriaScope,
+            ActionService: services.IActionService) {
+            ActionService.getFieldDataSources({}, scope.currentAction).$promise.then((data) => {
+                scope.fields = [];
+                data.forEach((value) => {
+                    scope.fields.push(new model.Field(value, value));
+                });
+            });
+        }
+
         // Callback for handling PaneDefineCriteria_Render message.
         var onRender = function (
             eventArgs: RenderEventArgs,
@@ -119,16 +133,13 @@ module dockyard.directives.paneDefineCriteria {
             http: ng.IHttpService,
             urlPrefix: string,
             LocalIdentityGenerator: services.LocalIdentityGenerator,
-            DataSourcesService: services.IDataSourceService) {
-            console.log('PaneDefineCriteria::onRender', eventArgs);
+            ActionService: services.IActionService) {
 
-            //Load fields
-            debugger;
-            DataSourcesService.get({}, { curActionDesignDTO: scope.currentAction }).$promise.then((data) => {
-                data.forEach((value) => {
-                    scope.fields.push(new model.Field(value, value));
-                });
-            });
+            console.log('PaneDefineCriteria::onRender', eventArgs);
+            console.log('PaneDefineCriteria: currentAction: ' + scope.currentAction);
+
+            //Clean up state from previous Criteria
+            cleanUp(scope);
 
             // If we deal with newly created object (i.e. isTempId === true),
             // then create blank temporary object in the scope of DefineCriteria pane.
@@ -151,14 +162,35 @@ module dockyard.directives.paneDefineCriteria {
             }
 
             scope.isVisible = true;
+
+            //Check if we have currentAction with the same criteriaId (processNodeTemplateId)
+            //If yes, init the module. If no, wait for it and then init the module.  
+
+            if (scope.isActionValid(scope.currentAction)) {
+                loadDatasources(eventArgs, scope, ActionService);
+            }
+            else {
+                disposeActionListener = scope.$watch("currentAction", (newAction: interfaces.IActionVM) => {
+                    //When user selected the current criteria's action, initialize the pane. 
+                    if (scope.isActionValid(newAction)) {
+                        disposeActionListener(); //deregister the watch
+                        loadDatasources(eventArgs, scope, ActionService);
+                    }
+                }, true);
+            }
         };
 
         // Callback for handling PaneDefineCriteria_Hide.
         var onHide = function (scope: IPaneDefineCriteriaScope) {
+            cleanUp(scope);
             scope.isVisible = false;
+        };
+
+        var cleanUp = function(scope){
+            if (disposeActionListener) disposeActionListener(); //deregister currentAction watch
             scope.processNodeTemplate = null;
             scope.fields = [];
-        };
+        }
 
         // Callback for handling "Remove criteria" button click event.
         var removeCriteria = function (
@@ -291,10 +323,10 @@ module dockyard.directives.paneDefineCriteria {
             controller: (
                 $scope: IPaneDefineCriteriaScope,
                 $http: ng.IHttpService,
-                urlPrefix: string, 
+                urlPrefix: string,
                 LocalIdentityGenerator: services.LocalIdentityGenerator,
-                DataSourceService: services.IDataSourceService
-            ): void => {
+                ActionService: services.IActionService
+                ): void => {
 
                 $scope.operators = [
                     { text: 'Greater than', value: 'gt' },
@@ -308,7 +340,7 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.defaultOperator = 'gt';
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Render],
-                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator, DataSourceService));
+                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator, ActionService));
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Hide],
                     (event: ng.IAngularEvent) => onHide($scope));
@@ -327,6 +359,10 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.cancel = function () {
                     $scope.$emit(MessageType[MessageType.PaneDefineCriteria_Cancelling]);
                 };
+
+                $scope.isActionValid = function (action: interfaces.IActionVM) {
+                    return action && action.$resolved && !action.isTempId 
+                }
             }
         };
     }
