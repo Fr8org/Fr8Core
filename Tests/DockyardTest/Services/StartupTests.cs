@@ -45,9 +45,10 @@ namespace DockyardTest.Services
     {
         public const string baseUrl = "AzureSql.BaseUrl";
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
+        public const string PluginRegistrationName = "Test";
 
         public TestPluginRegistration()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
 
         }

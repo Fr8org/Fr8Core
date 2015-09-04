@@ -4,13 +4,14 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Microsoft.AspNet.Identity;
-using StructureMap;
+using Newtonsoft.Json;
 
 namespace Web.Controllers
 {
@@ -93,11 +94,17 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        [Route("actions/configuration")]
-        public string GetConfigurationSettings(int curActionTemplateId)
+        [Route("configuration/{actionTemplateId:int}")]
+        [ResponseType(typeof(ConfigurationSettingsDTO))]
+        public IHttpActionResult GetConfigurationSettings(int actionTemplateId)
         {
-            ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
-            return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
+            var curActionTemplateDO = _actionTemplate.GetByKey(actionTemplateId);
+            var curConfigurationSettingsJson = _action.GetConfigurationSettings(curActionTemplateDO);
+
+            var curConfigurationSettingsDTO = JsonConvert
+                .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
+
+            return Ok(curConfigurationSettingsDTO);
         }
 
 
