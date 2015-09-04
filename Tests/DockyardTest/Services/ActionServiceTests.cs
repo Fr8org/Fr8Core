@@ -244,7 +244,7 @@ namespace DockyardTest.Services
 		  public void GetUpstreamActivities_ActionDOIsNull_ExpectedArgumentNullException()
 		  {
 			  var ex = Assert.Throws<ArgumentNullException>(() => _action.GetUpstreamActivities(null));
-			  Assert.AreEqual("curActivity", ex.ParamName);
+			  Assert.AreEqual("curActionDO", ex.ParamName);
 		  }
 		  [Test]
 		  public void GetUpstreamActivities_1Level_ShoudBeOk()
@@ -586,7 +586,7 @@ namespace DockyardTest.Services
 			  Assert.AreEqual(l1_a2, downstreamActivities[0]);
 		  }
 		  [Test(Description="Big tree from https://maginot.atlassian.net/wiki/display/SH/Getting+Upstream+and+Downstream+Activities+Lists")]
-		  public void GetDownstreamActivities_4Levels_ShoudBeOk()
+		  public void GetDownstreamActivities_BigTreeFromWikiPage_ShoudBeOk()
 		  {
 			  var actionTempate = new ActionTemplateDO()
 			  {
