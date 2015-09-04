@@ -40,12 +40,11 @@
             return result;
         }
 
-        isActionValid (action: interfaces.IActionVM) {
+        static isActionValid(action: interfaces.IActionVM) {
             return action && action.$resolved && !action.isTempId
         }
 
-        static create(dataObject: interfaces.IActionDesignDTO) {
-            debugger;
+        static create(dataObject: interfaces.IActionDesignDTO): ActionDesignDTO {
             var result = new ActionDesignDTO(0, 0, false, 0);
             result.actionListId = dataObject.actionListId;
             result.actionTemplateId = dataObject.actionTemplateId;
@@ -55,6 +54,7 @@
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
             result.processNodeTemplateId = dataObject.processNodeTemplateId;
+            return result;
         }
     }
 }

@@ -22,7 +22,7 @@ module dockyard.directives {
                 operators: '=',
                 defaultOperator: '=',
                 rows: '=',
-                currentAction: '&'
+                currentAction: '='
             },
 
             controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {
@@ -44,6 +44,10 @@ module dockyard.directives {
                 $scope.valueChanged = function (row) {
                     row.valueError = !row.value;
                 };
+
+                $scope.isActionValid = function (action: interfaces.IActionVM) {
+                    return model.ActionDesignDTO.isActionValid(action);
+                }
             }
         };
     }

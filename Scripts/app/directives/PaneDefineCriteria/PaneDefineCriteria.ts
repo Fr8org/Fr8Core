@@ -165,14 +165,13 @@ module dockyard.directives.paneDefineCriteria {
 
             //Check if we have currentAction with the same criteriaId (processNodeTemplateId)
             //If yes, init the module. If no, wait for it and then init the module.  
-
-            if (scope.currentAction.isActionValid) {
+            if (model.ActionDesignDTO.isActionValid(scope.currentAction)) {
                 loadDatasources(eventArgs, scope, ActionService);
-            }
+            } 
             else {
                 disposeActionListener = scope.$watch("currentAction", (newAction: interfaces.IActionVM) => {
                     //When user selected the current criteria's action, initialize the pane. 
-                    if (newAction.isActionValid) {
+                    if (model.ActionDesignDTO.isActionValid(newAction)) {
                         disposeActionListener(); //deregister the watch
                         loadDatasources(eventArgs, scope, ActionService);
                     }
@@ -359,6 +358,7 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.cancel = function () {
                     $scope.$emit(MessageType[MessageType.PaneDefineCriteria_Cancelling]);
                 };
+
             }
         };
     }

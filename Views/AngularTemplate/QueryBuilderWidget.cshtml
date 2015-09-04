@@ -1,56 +1,56 @@
-﻿<div ng-class="{'grayed-out': !isActionValid(currentAction)}">
-    <div ng-if="!currentAction.isActionValid" class="criteria-warning bg-purple">
-        Please add or select  an action in order to configure criteria
+﻿<div>
+    <div ng-if="!isActionValid(currentAction)" class="criteria-warning bg-purple">
+        Please add or select an action in order to configure criteria
     </div>
-    <div class="noclick-background" ng-if="!currentAction.isActionValid">
-    </div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th class="col-md-1"></th>
-                <th class="col-md-4">Field</th>
-                <th class="col-md-3">Operator</th>
-                <th class="col-md-3">Value</th>
-                <th class="col-md-1"></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="row in rows track by $index">
-                <td>
-                    <div class="text-right">
-                        <div class="form-control-static">{{$index + 1}}</div>
-                    </div>
-                </td>
-                <td>
-                    <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field">
-                        <option value="">Select a Field</option>
+    <div ng-class="{'noclick-background': !isActionValid(currentAction) }">
+        <table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}">
+            <thead>
+                <tr>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-4">Field</th>
+                    <th class="col-md-3">Operator</th>
+                    <th class="col-md-3">Value</th>
+                    <th class="col-md-1"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="row in rows track by $index">
+                    <td>
+                        <div class="text-right">
+                            <div class="form-control-static">{{$index + 1}}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field">
+                            <option value="">Select a Field</option>
 
-                    </select>
-                </td>
-                <td>
-                    <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator"></select>
-                </td>
-                <td>
-                    <div ng-class="{ 'has-error': row.valueError }">
-                        <input type="text"
-                               class="form-control"
-                               ng-required="true"
-                               ng-model="row.value"
-                               ng-change="valueChanged(row)" />
-                    </div>
-                </td>
-                <td>
-                    <a href title="Delete filter rule"
-                       class="btn btn-danger"
-                       ng-show="rows.length > 1"
-                       ng-click="removeRow($index)">
-                        Delete
-                    </a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <div>
-        <a href class="btn btn-primary" ng-click="addRow()">Add Row</a>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator"></select>
+                    </td>
+                    <td>
+                        <div ng-class="{ 'has-error': row.valueError }">
+                            <input type="text"
+                                   class="form-control"
+                                   ng-required="true"
+                                   ng-model="row.value"
+                                   ng-change="valueChanged(row)" />
+                        </div>
+                    </td>
+                    <td>
+                        <a href title="Delete filter rule"
+                           class="btn btn-danger"
+                           ng-show="rows.length > 1"
+                           ng-click="removeRow($index)">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div>
+            <a href class="btn btn-primary" ng-click="addRow()">Add Row</a>
+        </div>
     </div>
 </div>

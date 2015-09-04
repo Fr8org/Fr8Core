@@ -79,7 +79,7 @@ module dockyard.directives.paneSelectAction {
         public controller: ($scope: ng.IScope, element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes, $http: ng.IHttpService, urlPrefix: string) => void;
         public scope = {
-            action: '='
+            currentAction: '='
         };
         public restrict = 'E';
 
@@ -105,27 +105,26 @@ module dockyard.directives.paneSelectAction {
                 this.PopulateData($scope, $http);
 
                 $scope.$watch<model.ActionDesignDTO>(
-                    (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
+                    (scope: interfaces.IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
-                    var eventArgs = new ActionTypeSelectedEventArgs($scope.action);
+                    var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                 }
 
                 $scope.RemoveAction = () => {
-
                     $scope.$emit(
                         MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                        new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
+                        new ActionRemovedEventArgs($scope.currentAction.id, $scope.currentAction.isTempId)
                     );
 
-                    if (!$scope.action.isTempId) {
+                    if (!$scope.currentAction.isTempId) {
                         this.ActionService.delete({
-                            id: $scope.action.id
+                            id: $scope.currentAction.id
                         }); 
                     }
 
-                    $scope.action = null;
+                    $scope.currentAction = null;
                     $scope.isVisible = false;
                 };
 

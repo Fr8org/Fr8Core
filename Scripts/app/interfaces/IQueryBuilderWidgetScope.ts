@@ -12,7 +12,7 @@ module dockyard.interfaces {
         fields: Array<model.Field>,
         rows: Array<model.Condition>,
         defaultOperator: string,
-
+        isActionValid: (action: interfaces.IActionVM) => boolean;
         addRow: () => void,
         removeRow: (index: number) => void,
         valueChanged: (row: model.Condition) => void
