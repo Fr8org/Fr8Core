@@ -18,6 +18,9 @@ namespace Core.PluginRegistrations
         //private readonly ActionNameListDTO availableActions;
         // private const string availableActions = @"[{ ""ActionType"" : ""Write to Sql Server"" , ""Version"": ""1.0"", ""ParentPluginRegistration"": ""AzureSql""}]";
         //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
+
+        public const string PluginRegistrationName = "AzureSqlServer";
+
 #if DEBUG
         public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
         // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server";
@@ -25,7 +28,7 @@ namespace Core.PluginRegistrations
         public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
 #endif
         public AzureSqlServerPluginRegistration_v1()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
 
         }
@@ -44,13 +47,13 @@ namespace Core.PluginRegistrations
         public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
         {
             return @"
-                {'fields':
+                {""fields"":
                     [{
-                        'type': 'textField',
-                        'name': 'connection_string',
-                        'required': true,
-                        'value':'',
-                        'fieldLabel':'SQL Connection String'
+                        ""type"": ""textField"",
+                        ""name"": ""connection_string"",
+                        ""required"": true,
+                        ""fieldLabel"": ""SQL Connection String"",
+                        ""value"": """",
                      }]
                 }";
         }
