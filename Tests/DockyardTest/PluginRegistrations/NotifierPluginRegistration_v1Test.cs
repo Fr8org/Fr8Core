@@ -42,8 +42,8 @@ namespace DockyardTest.PluginRegistrations
         {
             ActionDO curActionForEmail = FixtureData.TestAction4();
             ActionDO curActionForMessage = FixtureData.TestAction5();
-            string resultJsonEmail = JsonConvert.SerializeObject(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForEmail));
-            string resultJsonMessage = JsonConvert.SerializeObject(_notifierPluginRegistration_v1.GetConfigurationSettings(curActionForMessage));
+            string resultJsonEmail = _notifierPluginRegistration_v1.GetConfigurationSettings(curActionForEmail.ActionTemplate);
+            string resultJsonMessage = _notifierPluginRegistration_v1.GetConfigurationSettings(curActionForMessage.ActionTemplate);
             Assert.AreEqual(resultJsonEmail, emailAction);
             Assert.AreEqual(resultJsonMessage, textMessageAction);
         }
@@ -53,7 +53,7 @@ namespace DockyardTest.PluginRegistrations
         public void GetConfigurationSettings_CheckForAcitonIsNullOrEmpy()
         {
             ActionDO curActionNameEmpty = FixtureData.TestAction6();
-            _notifierPluginRegistration_v1.GetConfigurationSettings(curActionNameEmpty);
+            _notifierPluginRegistration_v1.GetConfigurationSettings(curActionNameEmpty.ActionTemplate);
         }
 
         [Test]
