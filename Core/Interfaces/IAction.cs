@@ -20,7 +20,7 @@ namespace Core.Interfaces
         void Delete(int id);
         Task<int> Process(ActionDO curAction);
 
-		  List<ActivityDO> GetUpstreamActivities(ActionDO actionDO);
-		  List<ActivityDO> GetDownstreamActivities(ActionDO actionDO);
+		  List<ActivityDO> GetUpstreamActivities(ActionDO curActionDO);
+		  List<ActivityDO> GetDownstreamActivities(ActionDO curActionDO);
     }
 }

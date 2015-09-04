@@ -244,7 +244,7 @@ namespace DockyardTest.Services
 		  public void GetUpstreamActivities_ActionDOIsNull_ExpectedArgumentNullException()
 		  {
 			  var ex = Assert.Throws<ArgumentNullException>(() => _action.GetUpstreamActivities(null));
-			  Assert.AreEqual("actionDO", ex.ParamName);
+			  Assert.AreEqual("curActivity", ex.ParamName);
 		  }
 		  [Test]
 		  public void GetUpstreamActivities_1Level_ShoudBeOk()
@@ -585,7 +585,7 @@ namespace DockyardTest.Services
 			  Assert.AreEqual(1, downstreamActivities.Count);
 			  Assert.AreEqual(l1_a2, downstreamActivities[0]);
 		  }
-		  [Test, Ignore]
+		  [Test(Description="Big tree from https://maginot.atlassian.net/wiki/display/SH/Getting+Upstream+and+Downstream+Activities+Lists")]
 		  public void GetDownstreamActivities_4Levels_ShoudBeOk()
 		  {
 			  var actionTempate = new ActionTemplateDO()
@@ -618,6 +618,8 @@ namespace DockyardTest.Services
 			  al_52.Actions.Add(a_53);
 
 			  ActionListDO al_54 = new ActionListDO() { Id = 54, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "AL2" };
+			  al_54.ParentActionList = al_52;
+
 			  ActionDO a_56 = new ActionDO() { Id = 56, Ordering = 1, ActionTemplate = actionTempate, Name = "A11" };
 			  a_56.ParentActionList = al_54;
 			  al_54.Actions.Add(a_56);
@@ -638,6 +640,7 @@ namespace DockyardTest.Services
 			  al_59.Actions.Add(a_60);
 			 
 			  ActionListDO al_61 = new ActionListDO() { Id = 61, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "AL2" };
+			  al_61.ParentActionList = al_59;
 			  ActionDO a_63 = new ActionDO() { Id = 63, Ordering = 1, ActionTemplate = actionTempate, Name = "A11" };
 			  a_63.ParentActionList = al_61;
 			  al_61.Actions.Add(a_63);
@@ -651,6 +654,10 @@ namespace DockyardTest.Services
 			  ActionDO a_62 = new ActionDO() { Id = 62, Ordering = 3, ActionTemplate = actionTempate, Name = "A3" };
 			  a_62.ParentActionList = al_59;
 			  al_59.Actions.Add(a_62);
+
+			  al_43.ParentActionList = al_1;
+			  al_52.ParentActionList = al_1;
+			  al_59.ParentActionList = al_1;
 
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			  {
@@ -677,9 +684,25 @@ namespace DockyardTest.Services
 
 				  uow.SaveChanges();
 			  }
+			  Console.WriteLine("ASD");
 			  var downstreamActivities = _action.GetDownstreamActivities(a_46);
 
-			  Assert.AreEqual(8, downstreamActivities.Count);
+			  Assert.AreEqual(15, downstreamActivities.Count);
+			  Assert.AreEqual(a_48, downstreamActivities[0]);
+			  Assert.AreEqual(al_52, downstreamActivities[1]);
+			  Assert.AreEqual(a_53, downstreamActivities[2]);
+			  Assert.AreEqual(al_54, downstreamActivities[3]);
+			  Assert.AreEqual(a_56, downstreamActivities[4]);
+			  Assert.AreEqual(a_57, downstreamActivities[5]);
+			  Assert.AreEqual(a_58, downstreamActivities[6]);
+			  Assert.AreEqual(a_55, downstreamActivities[7]);
+			  Assert.AreEqual(al_59, downstreamActivities[8]);
+			  Assert.AreEqual(a_60, downstreamActivities[9]);
+			  Assert.AreEqual(al_61, downstreamActivities[10]);
+			  Assert.AreEqual(a_63, downstreamActivities[11]);
+			  Assert.AreEqual(a_64, downstreamActivities[12]);
+			  Assert.AreEqual(a_65, downstreamActivities[13]);
+			  Assert.AreEqual(a_62, downstreamActivities[14]);
 			  
 		  }
     }
