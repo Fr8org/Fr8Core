@@ -51,10 +51,11 @@ namespace Web
                         {
                             foreach (var notificationPortForward in notificationPortForwards)
                             {
-                                await
+                                var response = await
                                     forwarder.PostAsync(
                                         new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery)),
                                         new StreamContent(context.Request.Body));
+                                Logger.GetLogger().DebugFormat("Forwarding request {0} to {1}: {2}", context.Request.Uri.PathAndQuery, notificationPortForward, response);
                             }
                         }
                     }
