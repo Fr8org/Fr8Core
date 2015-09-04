@@ -117,12 +117,13 @@ namespace Core.Services
         {
             if (curActionTemplateDo != null)
             {
-                var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                var curConfigurationSettingsJson =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+                //var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
+                //var curConfigurationSettingsJson =
+                //    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
+                //        "GetConfigurationSettings", curActionTemplateDo);
 
-                return curConfigurationSettingsJson;
+                //return curConfigurationSettingsJson;
+                return string.Empty;
             }
             else
             {

@@ -60,9 +60,25 @@ namespace pluginAzureSqlServer.Controllers
             );
         }
 
-       
+        [HttpPost]
+        [Route("Write_To_Sql_Server/configure")]
+        public string Configure(ActionDesignDTO curActionDTO)
+        {
+            return string.Empty;
+        }
 
+        [HttpPost]
+        [Route("Write_To_Sql_Server/activate")]
+        public string Activate(ActionDesignDTO curActionDTO)
+        {
+            return string.Empty;
+        }
 
-
+        [HttpPost]
+        [Route("Write_To_Sql_Server/execute")]
+        public string Execute(ActionDesignDTO curActionDTO)
+        {
+            return string.Empty;
+        }
     }
 }
