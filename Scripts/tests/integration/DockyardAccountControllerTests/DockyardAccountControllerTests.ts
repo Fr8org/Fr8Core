@@ -40,6 +40,14 @@ module dockyard.tests.controller {
                 });
         });
 
+        it("Register action should return the page", function () {
+            $.get(controllerPoint + "register")
+                .done((data: any, status: string) => {
+                    expect(data).not.toBe(null);
+                    expect(status).toBe("success");
+                });
+        });
+
         var logInInvoker = function (done, data) {
             $.ajax({
                 type: "POST",
@@ -70,7 +78,7 @@ module dockyard.tests.controller {
             });
         }; */
 
-        var confirmInvoker = function (data, done) {
+     /*   var confirmInvoker = function (data, done) {
             $.ajax({
                 type: "GET",
                 url: "/dockyardaccount/logoff",
@@ -84,7 +92,7 @@ module dockyard.tests.controller {
             }).fail(function (response) {
                 errorHandler(response, done);
             });
-        }; 
+        }; */
 
       /*  var registrationSuccessfulInvoker = function (done) {
             $.ajax({
@@ -116,7 +124,7 @@ module dockyard.tests.controller {
             });
         };
 
-        var registerInvoker = function (done) {
+        /*var registerInvoker = function (done) {
             $.ajax({
                 type: "GET",
                 url: "/dockyardaccount/register",
@@ -129,6 +137,6 @@ module dockyard.tests.controller {
             }).fail(function (response) {
                 errorHandler(response, done);
             });
-        }; 
+        };*/ 
     });
 } 
