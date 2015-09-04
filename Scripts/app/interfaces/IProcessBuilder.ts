@@ -77,6 +77,6 @@ module dockyard.interfaces {
         Cancel: Function;
     }
 
-    export interface IConfigurationSettingsVM extends ng.resource.IResource<model.ConfigurationSettings>, model.ConfigurationSettings {
+    export interface IConfigurationStoreVM extends ng.resource.IResource<model.ConfigurationStore>, model.ConfigurationStore {
     }
 }

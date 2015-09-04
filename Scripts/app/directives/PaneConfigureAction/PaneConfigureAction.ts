@@ -108,7 +108,7 @@ module dockyard.directives.paneConfigureAction {
                 || scope.currentAction.configurationStore.fields == null
                 || scope.currentAction.configurationStore.fields.length == 0) {
 
-                (<any>scope.currentAction).configurationStore = this.ActionService.getConfigurationSettings({ id: 1 });  //TODO supply real actionRegistrationId 
+                (<any>scope.currentAction).configurationStore = this.ActionService.getConfigurationStore({ id: 1 });  //TODO supply real actionRegistrationId 
             }
         }
 
