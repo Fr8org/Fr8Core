@@ -17,7 +17,10 @@
                     </div>
                 </td>
                 <td>
-                    <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field"></select>
+                    <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field">
+                        <option value="">Select a Field</option>
+
+                    </select>
                 </td>
                 <td>
                     <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator"></select>
