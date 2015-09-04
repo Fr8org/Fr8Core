@@ -32,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 ActionType = "Test action",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ParentPluginRegistration = "AzureSqlServer",
                 Version = "1"
             };
         }

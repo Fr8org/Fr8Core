@@ -1,6 +1,7 @@
 ﻿.table-linkrows > tbody > tr {
     cursor: pointer;
 }
+
 .table-process-templates td button {
     float: right;
 }
@@ -9,8 +10,42 @@
     This one is for Angular Bootstrap.
     More info: https://angular-ui.github.io/bootstrap/
 */
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
 
 .form-horizontal .control-label {
     text-align: left;
+}
+
+.criteria-warning {
+    opacity: 0.8;
+    font-size: 16px;
+    text-align: center;
+    padding: 15px; 
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+.noclick-background {
+    width: 100%;
+    height: 100%;
+    opacity: 0.3;
+    z-index: 2;
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left:0;
+    padding:0;
+    background-color: white;
+}
+
+.grayed-out {
+    z-index: 3;
+    opacity: 0.4;
 }

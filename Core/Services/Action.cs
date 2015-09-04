@@ -13,6 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
 using StructureMap;
+using Utilities.Serializers.Json;
 
 namespace Core.Services
 {
@@ -111,19 +112,22 @@ namespace Core.Services
             }
         }
 
-        public ActionDO GetConfigurationSettings(ActionDO curActionDO)
+        public string GetConfigurationSettings(
+            ActionTemplateDO curActionTemplateDo)
         {
-            if (curActionDO != null)
+            if (curActionTemplateDo != null)
             {
-                //string pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                //curActionDO.ConfigurationSettings =
-                //    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                //        "GetConfigurationSettings", curActionTemplateDo);
+                var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
+                var curConfigurationSettingsJson =
+                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
+                        "GetConfigurationSettings", curActionTemplateDo);
+
+                return curConfigurationSettingsJson;
             }
             else
+            {
                 throw new ArgumentNullException("ActionTemplateDO");
-
-            return curActionDO;
+            }
         }
 
         public void Delete(int id)

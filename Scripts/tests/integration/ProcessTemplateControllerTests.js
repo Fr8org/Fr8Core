@@ -48,6 +48,13 @@ var dockyard;
                         expect(data.SubscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.SubscribedDocuSignTemplates[0]);
                     });
                 });
+                it("should return the list of external events", function () {
+                    $.get(endpoint + "/triggersettings").done(function (data, status) {
+                        expect(data).not.toBe(null);
+                        expect(status).toBe("success");
+                        expect(data.length).toBe(4);
+                    });
+                });
             });
         })(controller = tests.controller || (tests.controller = {}));
     })(tests = dockyard.tests || (dockyard.tests = {}));
