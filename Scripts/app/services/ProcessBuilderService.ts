@@ -25,25 +25,26 @@ module dockyard.services {
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
-        <IActionService> $resource(urlPrefix + '/Action/:id',
+        <IActionService> $resource('/actions/:id',
             {
                 id: '@id'
             },
             {
                 'save': {
                     method: 'POST',
-                    isArray: true
+                    isArray: true,
+                    url: '/actions/save'
                 },
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',
-                    url: '/api/Actions/configuration/:id'
+                    url: '/actions/configuration/:id'
                 },
 
                 'getFieldDataSources': {
                     method: 'POST',
                     isArray: true,
-                    url: '/api/Actions/field_data_sources'
+                    url: '/actions/field_data_sources'
                 },
                 'params': {
                     id: 'id'

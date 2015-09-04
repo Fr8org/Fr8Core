@@ -12,10 +12,12 @@ namespace Core.PluginRegistrations
     {
         public const string baseUrl = "Notifier.BaseUrl";
 
+        public const string PluginRegistrationName = "Notifier";
+
         //private ActionNameListDTO availableActions = InitAvailableActions();//@"[{ ""ActionType"" : """" , ""Version"": ""1.0""},{ ""ActionType"" : """" , ""Version"": ""1.0""}]";
         // ActionNameListDTO availableActions = InitAvailableActions();
         public NotifierPluginRegistration_v1()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
         }
 

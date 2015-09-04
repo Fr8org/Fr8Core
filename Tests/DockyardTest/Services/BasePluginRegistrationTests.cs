@@ -41,7 +41,9 @@ namespace DockyardTest.Services
             //availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}, { ""ActionType"" : ""Write"" , ""Version"": ""1.4""}]";
             
 
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            var basePluginRegistrationMock =
+                new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
+
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
@@ -55,7 +57,9 @@ namespace DockyardTest.Services
         [Test]
         public void AvailableCommands_CorrectFormat_ReturnsCorrectLists()
         {
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            var basePluginRegistrationMock =
+                new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
+
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
@@ -73,7 +77,7 @@ namespace DockyardTest.Services
         [Test]
         public void RegisterActions_RegisterNew_CreatesActionTemplateDO()
         {
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
@@ -89,14 +93,14 @@ namespace DockyardTest.Services
         [Test]
         public void RegisterActions_RegisterExisting_DoNoCreateNew()
         {
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
             basePluginRegistration.RegisterActions();
             int totalRecords = _uow.ActionTemplateRepository.GetQuery().Count();
 
-            basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
             basePluginRegistration.RegisterActions();
             int totalRecordsAfterExistingRegister = _uow.ActionTemplateRepository.GetQuery().Count();
