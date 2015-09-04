@@ -33,14 +33,13 @@ namespace Web
 
             RegisterPluginActions();
 
-            //var forwardingMiddleware = new 
             app.Use(async (context, next) =>
             {
                 if (string.Equals(context.Request.Method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(context.Request.Uri.AbsolutePath, "/api/DocuSignNotification", StringComparison.OrdinalIgnoreCase))
                 {
                     var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    var notificationPortForwardsCsv = configRepository.Get("DocuSignNotificationPortForwards");
+                    var notificationPortForwardsCsv = configRepository.Get<string>("DocuSignNotificationPortForwards", "");
                     var notificationPortForwards = !string.IsNullOrEmpty(notificationPortForwardsCsv)
                         ? notificationPortForwardsCsv.Split(',')
                         : new string[0];
