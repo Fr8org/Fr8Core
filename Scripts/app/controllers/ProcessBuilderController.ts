@@ -453,12 +453,8 @@ module dockyard.controllers {
             Handles message 'SelectActionPane_ActionTypeSelected'
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            //Render Pane Configure Action 
-            var pcaEventArgs = new pca.RenderEventArgs(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId,
-                eventArgs.actionListId);
+            // Render Pane Configure Action 
+            var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
         }
          

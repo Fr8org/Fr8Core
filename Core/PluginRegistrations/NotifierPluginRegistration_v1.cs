@@ -21,31 +21,27 @@ namespace Core.PluginRegistrations
         {
         }
 
-        public ConfigurationSettingsDTO GetConfigurationSettings(ActionDO curAction)
+        public string GetConfigurationSettings(ActionTemplateDO curActionTemplate)
         {
-            if (curAction == null)
+            if (curActionTemplate == null)
                 throw new ArgumentNullException("curAction");
-            if (string.IsNullOrEmpty(curAction.Name))
-                throw new NullReferenceException("curAction.UserLabel");
-            return InitConfigurationSettings(curAction.Name);
-        }
 
-        private ConfigurationSettingsDTO InitConfigurationSettings(string actionType)
-        {
             ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
-            if (actionType.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
+
+            if (curActionTemplate.ActionType.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", ""));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", ""));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Subject", true, "", ""));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Body", true, "", ""));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", "Email Address"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", "Friendly Name"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Subject", true, "", "Subject"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Body", true, "", "Body"));
             }
-            else if (actionType.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
+            else if (curActionTemplate.ActionType.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", ""));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Message", true, "", ""));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", "Phone Number"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Message", true, "", "Message"));
             }
-            return curConfigurationSettings;
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(curConfigurationSettings);
         }
 
         public List<string> GetFieldMappingTargets(string curActionName, string ConfigUIData)

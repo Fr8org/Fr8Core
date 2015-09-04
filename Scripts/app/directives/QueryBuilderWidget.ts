@@ -21,7 +21,8 @@ module dockyard.directives {
                 fields: '=',
                 operators: '=',
                 defaultOperator: '=',
-                rows: '='
+                rows: '=',
+                currentAction: '&'
             },
 
             controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {

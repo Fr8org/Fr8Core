@@ -1,4 +1,9 @@
-﻿<div>
+﻿<div ng-class="{'grayed-out': !isActionValid(currentAction)}">
+    <div ng-if="!currentAction.isActionValid" class="criteria-warning bg-purple">
+        Please add or select  an action in order to configure criteria
+    </div>
+    <div class="noclick-background" ng-if="!currentAction.isActionValid">
+    </div>
     <table class="table">
         <thead>
             <tr>

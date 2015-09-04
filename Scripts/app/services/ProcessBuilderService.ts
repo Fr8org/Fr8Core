@@ -35,6 +35,13 @@ module dockyard.services {
                     isArray: true,
                     url: '/actions/save'
                 },
+                'get': {
+                    transformResponse: function (data) {
+                        //Map a proto-action object to an actual ActionDesignDTO instance so that we can access methods 
+                        var dataObject: interfaces.IActionDesignDTO = angular.fromJson(data);
+                        return model.ActionDesignDTO.create(dataObject);
+                    }
+                },
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',

@@ -132,7 +132,7 @@ namespace Core.PluginRegistrations
 
         public static string AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDo)
         {
-            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.ParentPluginRegistration, curActionTemplateDo.Version);
+            return string.Format("Core.PluginRegistrations.{0}", curActionTemplateDo.ParentPluginRegistration, curActionTemplateDo.Version);
         }
 
         public virtual Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)

@@ -13,27 +13,11 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionTypeSelectedEventArgs {
-        public processNodeTemplateId: number;
-        public id: number;
-        public isTempId: boolean;
-        public actionListId: number;
-        public actionTemplateId: number;
-        public actionName: string;
+        public action: interfaces.IActionDesignDTO
 
-        constructor(
-            processNodeTemplateId: number,
-            id: number,
-            isTempId: boolean,
-            actionListId: number,
-            actionTemplateId: number,
-            actionName: string) {
-
-            this.processNodeTemplateId = processNodeTemplateId;
-            this.id = id;
-            this.isTempId = isTempId;
-            this.actionListId = actionListId;
-            this.actionTemplateId = actionTemplateId;
-            this.actionName = actionName;
+        constructor(action: interfaces.IActionDesignDTO) {
+            // Clone Action to prevent any issues due to possible mutation of source object
+            this.action = angular.extend({}, action);
         }
     }
 
@@ -100,7 +84,8 @@ module dockyard.directives.paneSelectAction {
         public restrict = 'E';
 
         constructor(
-            private $rootScope: interfaces.IAppRootScope
+            private $rootScope: interfaces.IAppRootScope,
+            private ActionService: services.IActionService
             ) {
 
             PaneSelectAction.prototype.link = (
@@ -123,35 +108,25 @@ module dockyard.directives.paneSelectAction {
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
-                    var eventArgs = new ActionTypeSelectedEventArgs(
-                        $scope.action.processNodeTemplateId,
-                        $scope.action.id,
-                        $scope.action.isTempId,
-                        $scope.action.actionListId,
-                        $scope.action.actionTemplateId,
-                        $scope.action.name);
+                    var eventArgs = new ActionTypeSelectedEventArgs($scope.action);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                 }
 
                 $scope.RemoveAction = () => {
-                    var afterRemove = function () {
-                        $scope.$emit(
-                            MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                            new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
-                            );
-                    };
 
-                    var self = this;
+                    $scope.$emit(
+                        MessageType[MessageType.PaneSelectAction_ActionRemoved],
+                        new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
+                    );
+
                     if (!$scope.action.isTempId) {
-                        var url = '/Action/' + $scope.action.id;
-                        $http.delete(url)
-                            .success(function () {
-                                afterRemove();
-                            });
+                        this.ActionService.delete({
+                            id: $scope.action.id
+                        }); 
                     }
-                    else {
-                        afterRemove();
-                    }
+
+                    $scope.action = null;
+                    $scope.isVisible = false;
                 };
 
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Render], this.onRender);
@@ -170,7 +145,7 @@ module dockyard.directives.paneSelectAction {
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<interfaces.IPaneSelectActionScope> event.currentScope).isVisible = false;
+            (<interfaces.IPaneSelectActionScope>event.currentScope).isVisible = false;
         }
 
         private onUpdate(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -200,12 +175,13 @@ module dockyard.directives.paneSelectAction {
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
             var directive = (
-                $rootScope: interfaces.IAppRootScope) => {
+                $rootScope: interfaces.IAppRootScope,
+                ActionService: services.IActionService) => {
 
-                return new PaneSelectAction($rootScope);
+                return new PaneSelectAction($rootScope, ActionService);
             };
 
-            directive['$inject'] = ['$rootScope'];
+            directive['$inject'] = ['$rootScope', 'ActionService'];
             return directive;
         }
     }
