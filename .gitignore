@@ -16,6 +16,8 @@ build/
 [Bb]in/
 [Oo]bj/
 
+# we should not store the contents of this folder in source control
+/bower_components
 
 
 # we will not track App_Data, which changes constantly.
@@ -121,6 +123,8 @@ AppPackages/
 Scripts/app/**/*.js
 Scripts/tests/mocks/*.js
 Scripts/tests/unit/*.js
+Scripts/tests/utils/*.js
+Scripts/tests/integration/*.js
 *.js.map
 
  

@@ -115,10 +115,9 @@ module dockyard.directives.paneSelectAction {
                 $scope: interfaces.IPaneSelectActionScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
-                $http: ng.IHttpService,
-                urlPrefix: string) => {
+                $http: ng.IHttpService) => {
 
-                this.PopulateData($scope, $http, urlPrefix);
+                this.PopulateData($scope, $http);
 
                 $scope.$watch<model.ActionDesignDTO>(
                     (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
@@ -144,7 +143,7 @@ module dockyard.directives.paneSelectAction {
 
                     var self = this;
                     if (!$scope.action.isTempId) {
-                        var url = urlPrefix + '/Action/' + $scope.action.id;
+                        var url = '/Action/' + $scope.action.id;
                         $http.delete(url)
                             .success(function () {
                                 afterRemove();
@@ -180,12 +179,11 @@ module dockyard.directives.paneSelectAction {
 
         private PopulateData(
             $scope: interfaces.IPaneSelectActionScope,
-            $http: ng.IHttpService,
-            urlPrefix: string) {
+            $http: ng.IHttpService) {
 
             $scope.actionTypes = [];
 
-            $http.get(urlPrefix + '/actions/available')
+            $http.get('/actions/available')
                 .then(function (resp) {
                     angular.forEach(resp.data, function (it) {
                         console.log(it);

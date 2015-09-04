@@ -14,18 +14,11 @@
         <div class="col-md-6 col-sm-6">
             <!-- BEGIN PORTLET-->
             <div class="portlet light ">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Add a Process</span>
-                    </div>
-                </div>
+                <h4 class="no-margin caption-subject font-green-haze bold uppercase">Define Process</h4>
                 <div class="portlet-body">
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
-                        <div class="form-group">
-                            <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
-                        </div>
+                        <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
                     </div>
                     <!-- END PROCESS FORM -->
                 </div>
@@ -34,7 +27,7 @@
         </div>
 
         <div class="col-md-6 col-sm-6">
-            <pane-define-criteria></pane-define-criteria>
+            <pane-define-criteria current-action="currentAction"></pane-define-criteria>
         </div>
         <div class="col-md-6 col-sm-6">
             <pane-select-template></pane-select-template>

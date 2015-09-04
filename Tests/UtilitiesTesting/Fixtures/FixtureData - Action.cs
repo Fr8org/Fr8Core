@@ -32,7 +32,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 ActionType = "Test action",
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ParentPluginRegistration = "AzureSqlServer",
                 Version = "1"
             };
         }
@@ -217,6 +217,26 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 2,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
+            };
+        }
+
+        public static ActionDO TestAction22()
+        {
+            var actionTemplate = FixtureData.ActionTemplate();
+
+            return new ActionDO
+            {
+                Id = 10,
+                Name = "WriteToAzureSql",
+                ActionListId = 1,
+                ConfigurationSettings = "JSON Config Settings",
+                FieldMappingSettings = "JSON Field Mapping Settings",
+                ParentPluginRegistration = "AzureSql",
+                Ordering = 1,
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+
             };
         }
 

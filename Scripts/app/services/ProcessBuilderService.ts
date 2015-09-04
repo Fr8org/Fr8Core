@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         getConfigurationSettings: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationSettingsVM>;
+        getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
@@ -24,19 +25,26 @@ module dockyard.services {
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
-        <IActionService> $resource(urlPrefix + '/Action/:id',
+        <IActionService> $resource('/actions/:id',
             {
                 id: '@id'
             },
             {
                 'save': {
                     method: 'POST',
-                    isArray: true
+                    isArray: true,
+                    url: '/actions/save'
                 },
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',
-                    url: '/apimock/Action/configuration/:id'
+                    url: '/actions/configuration/:id'
+                },
+
+                'getFieldDataSources': {
+                    method: 'POST',
+                    isArray: true,
+                    url: '/actions/field_data_sources'
                 },
                 'params': {
                     id: 'id'
