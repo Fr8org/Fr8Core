@@ -99,7 +99,7 @@ namespace Web.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Confirm(RegisterVM model)
+        public ActionResult Confirm(RegistrationVM model)
         {
             return View(model);
         }
@@ -107,7 +107,7 @@ namespace Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterVM model)
+        public ActionResult ProcessRegistration(RegistrationVM model)
         {
             try
             {
