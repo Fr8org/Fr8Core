@@ -43,8 +43,11 @@ module dockyard.controllers {
             $scope.ptvms = ProcessTemplateService.query();
 
             //Detail/edit link
-            $scope.nav = function (pt) {
-                window.location.href = '#processes/' + pt.Id;
+            $scope.nav = function (pt) {                
+                if (pt != null)
+                {
+                    window.location.href = '#processes/' + pt.Id + '/builder';
+                }
             }
 
             //Delete link

@@ -95,7 +95,7 @@ namespace Web.Controllers
         public ActionResult LogOff()
         {
             this.Logout();
-            return RedirectToAction("Index", "Account");
+            return RedirectToAction("Index", "DockyardAccount");
         }
 
         [AllowAnonymous]
