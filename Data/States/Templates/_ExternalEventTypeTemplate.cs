@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.States.Templates
 {
-    public class _EventStatusTemplate : IStateTemplate<ExternalEventType>
+    public class _ExternalEventTypeTemplate : IStateTemplate<ExternalEventType>
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]

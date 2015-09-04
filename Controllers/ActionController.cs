@@ -14,7 +14,7 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/actions")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private readonly IAction _action;
@@ -22,7 +22,7 @@ namespace Web.Controllers
 
         public ActionController()
         {
-			_action = ObjectFactory.GetInstance<IAction>();
+            _action = ObjectFactory.GetInstance<IAction>();
             _actionTemplate = ObjectFactory.GetInstance<IActionTemplate>();
         }
 
@@ -51,7 +51,7 @@ namespace Web.Controllers
                     .GetAvailableActions(curDockyardAccount)
                     .Select(x => Mapper.Map<ActionTemplateDTO>(x))
                     .ToList();
-            
+
                 return Ok(availableActions);
             }
         }
@@ -60,24 +60,27 @@ namespace Web.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
+        [Route("{id:int}")]
         public ActionDesignDTO Get(int id)
         {
-            return Mapper.Map<ActionDesignDTO>(_action.GetById(id)); 
+            return Mapper.Map<ActionDesignDTO>(_action.GetById(id));
         }
 
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpDelete]
+        [Route("{id:int}")]
         public void Delete(int id)
         {
-            _action.Delete(id); 
+            _action.Delete(id);
         }
 
         /// <summary>
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
+        [Route("save")]
         public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
@@ -92,7 +95,7 @@ namespace Web.Controllers
         [HttpGet]
         [Route("actions/configuration")]
         public string GetConfigurationSettings(int curActionTemplateId)
-        {            
+        {
             ActionTemplateDO curActionTemplateDo = _actionTemplate.GetByKey(curActionTemplateId);
             return _action.GetConfigurationSettings(curActionTemplateDo).ConfigurationSettings;
         }
@@ -129,6 +132,6 @@ namespace Web.Controllers
         }
 
 
-       
+
     }
 }

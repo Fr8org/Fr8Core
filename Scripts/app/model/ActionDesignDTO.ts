@@ -6,7 +6,7 @@
         actionListId: number;
         name: string;
         configurationSettings: model.ConfigurationSettings;
-        fieldMappingSettings: string;
+        fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
 
         constructor(

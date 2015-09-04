@@ -220,6 +220,26 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActionDO TestAction22()
+        {
+            var actionTemplate = FixtureData.ActionTemplate();
+
+            return new ActionDO
+            {
+                Id = 10,
+                Name = "WriteToAzureSql",
+                ActionListId = 1,
+                ConfigurationSettings = "JSON Config Settings",
+                FieldMappingSettings = "JSON Field Mapping Settings",
+                ParentPluginRegistration = "AzureSql",
+                Ordering = 1,
+                ActionState = ActionState.Unstarted,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+
+            };
+        }
+
         public static ActionDO IntegrationTestAction()
         {
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";

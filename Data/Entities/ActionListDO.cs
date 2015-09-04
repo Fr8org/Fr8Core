@@ -27,7 +27,7 @@ namespace Data.Entities
 		[ForeignKey("TriggerEvent")]
 		public int? TriggerEventID{ get; set; }
 
-		public virtual _EventStatusTemplate TriggerEvent{ get; set; }
+		public virtual _ExternalEventTypeTemplate TriggerEvent{ get; set; }
 
 		[InverseProperty("ActionList")]
 		public virtual List<ActionDO> Actions{ get; set; }
