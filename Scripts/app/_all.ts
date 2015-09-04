@@ -6,15 +6,11 @@
 */
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
-/// <reference path="interfaces/ipanescope.ts" />
 /// <reference path="interfaces/ipaneselectactionscope.ts" />
-/// <reference path="interfaces/iprocessbuildercontroller.ts" />
-/// <reference path="interfaces/iprocessbuilderscope.ts" />
-/// <reference path="interfaces/iprocesstemplatescope.ts" />
-/// <reference path="interfaces/iprocesstemplatesscope.ts" />
-/// <reference path="interfaces/iprocesstemplatevm.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
-/// <reference path="interfaces/iconfigurationsettings.ts" />
+/// <reference path="interfaces/iprocessbuilder.ts" />
+/// <reference path="interfaces/iprocesstemplate.ts" />
+
 
 /*
     MODEL

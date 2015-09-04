@@ -3,9 +3,9 @@
         <thead>
             <tr>
                 <th class="col-md-1"></th>
-                <th class="col-md-3">Field</th>
+                <th class="col-md-4">Field</th>
                 <th class="col-md-3">Operator</th>
-                <th class="col-md-4">Value</th>
+                <th class="col-md-3">Value</th>
                 <th class="col-md-1"></th>
             </tr>
         </thead>
@@ -17,7 +17,7 @@
                     </div>
                 </td>
                 <td>
-                    <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field"></select>
+                    <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field"></select>
                 </td>
                 <td>
                     <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator"></select>

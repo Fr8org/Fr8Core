@@ -13,7 +13,6 @@ module dockyard.directives.paneWorkflowDesigner {
 
         var onProcessNodeTemplateAdded = function (eventArgs: ProcessNodeTemplateAddedEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onCriteriaAdded', eventArgs);
-
             scope.widget.addCriteria({
                 id: eventArgs.id,
                 isTempId: eventArgs.isTempId,

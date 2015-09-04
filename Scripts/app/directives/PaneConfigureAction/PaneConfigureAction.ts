@@ -93,7 +93,6 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
-            debugger;
             scope.action = new model.ActionDesignDTO(
                 eventArgs.processNodeTemplateId,
                 eventArgs.id,
