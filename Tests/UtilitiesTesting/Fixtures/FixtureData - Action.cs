@@ -129,6 +129,8 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestAction6()
         {
             var actionTemplate = ActionTemplate();
+            actionTemplate.ActionType = null;
+
             return new ActionDO
             {
                 Id = 6,

@@ -49,7 +49,7 @@ namespace DockyardTest.PluginRegistrations
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void GetConfigurationSettings_CheckForAcitonIsNullOrEmpy()
         {
             ActionDO curActionNameEmpty = FixtureData.TestAction6();

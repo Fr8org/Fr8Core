@@ -24,7 +24,10 @@ namespace Core.PluginRegistrations
         public string GetConfigurationSettings(ActionTemplateDO curActionTemplate)
         {
             if (curActionTemplate == null)
-                throw new ArgumentNullException("curAction");
+                throw new ArgumentNullException("curActionTemplate");
+
+            if (String.IsNullOrEmpty(curActionTemplate.ActionType))
+                throw new ArgumentNullException("curActionTemplate.ActionType");
 
             ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
 
