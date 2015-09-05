@@ -377,7 +377,7 @@ module dockyard.controllers {
                         eventArgs.actionListId);
 
                     self._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
-
+                    self._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
                     self._scope.$broadcast(
                         psa.MessageType[psa.MessageType.PaneSelectAction_Render],
                         eArgs
