@@ -1,11 +1,8 @@
 ﻿
 <div class="portlet light" ng-show="isVisible">
-    <div ng-if="!isActionValid(currentAction)" class="criteria-warning bg-purple">
-        Please add or select  an action in order to configure criteria
-    </div>
-    <div class="noclick-background" ng-if="!isActionValid(currentAction)" >
-    </div>
-    <div ng-class="{'grayed-out': !isActionValid(currentAction)}">
+
+
+    <div>
         <div class="portlet-title">
             <div class="caption caption-md">
                 <i class="icon-bar-chart font-green-haze hide"></i>
@@ -45,7 +42,10 @@
             </div>
 
             <div class="form-group">
+
+
                 <query-builder-widget fields="fields"
+                                      current-action="currentAction"
                                       rows="processNodeTemplate.criteria.conditions"
                                       operators="operators"
                                       default-operator="defaultOperator"
