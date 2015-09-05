@@ -16,8 +16,8 @@ namespace DockyardTest.PluginRegistrations
     {
         private NotifierPluginRegistration_v1 _notifierPluginRegistration_v1;
 #region configuration setting Json
-        private const string emailAction = @"{""fields"":[{""name"":""Email Address"",""required"":true,""value"":"""",""fieldLabel"":"""",""type"":""textboxField"",""selected"":false},{""name"":""Friendly Name"",""required"":true,""value"":"""",""fieldLabel"":"""",""type"":""textboxField"",""selected"":false},{""name"":""Subject"",""required"":true,""value"":"""",""fieldLabel"":"""",""type"":""textboxField"",""selected"":false},{""name"":""Body"",""required"":true,""value"":"""",""fieldLabel"":"""",""type"":""textboxField"",""selected"":false}]}";
-        private const string textMessageAction = @"{""fields"":[{""name"":""Phone Number"",""required"":true,""value"":"""",""fieldLabel"":"""",""type"":""textboxField"",""selected"":false},{""name"":""Message"",""required"":true,""value"":"""",""fieldLabel"":"""",""type"":""textboxField"",""selected"":false}]}";
+        private const string emailAction = @"{""fields"":[{""name"":""Email Address"",""required"":true,""value"":"""",""fieldLabel"":""Email Address"",""type"":""textField"",""selected"":false},{""name"":""Friendly Name"",""required"":true,""value"":"""",""fieldLabel"":""Friendly Name"",""type"":""textField"",""selected"":false},{""name"":""Subject"",""required"":true,""value"":"""",""fieldLabel"":""Subject"",""type"":""textField"",""selected"":false},{""name"":""Body"",""required"":true,""value"":"""",""fieldLabel"":""Body"",""type"":""textField"",""selected"":false}]}";
+        private const string textMessageAction = @"{""fields"":[{""name"":""Phone Number"",""required"":true,""value"":"""",""fieldLabel"":""Phone Number"",""type"":""textField"",""selected"":false},{""name"":""Message"",""required"":true,""value"":"""",""fieldLabel"":""Message"",""type"":""textField"",""selected"":false}]}";
 #endregion
 
         [SetUp]

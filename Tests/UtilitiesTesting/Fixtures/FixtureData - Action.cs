@@ -31,13 +31,22 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Test action",
+                ActionType = "Send an Email",
                 ParentPluginRegistration = "AzureSqlServer",
                 Version = "1"
             };
         }
 
-        public static ActionDO TestAction1()
+        public static ActionTemplateDO ActionTemplateSMS()
+        {
+            return new ActionTemplateDO()
+            {
+                Id = 1,
+                ActionType = "Send a Text (SMS) Message",
+                ParentPluginRegistration = "AzureSqlServer",
+                Version = "1"
+            };
+        }        public static ActionDO TestAction1()
         {
             var actionTemplate = ActionTemplate();
             var curActionDO = new ActionDO
@@ -106,7 +115,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO TestAction5()
         {
-            var actionTemplate = ActionTemplate();
+            var actionTemplate = ActionTemplateSMS();
             var curActionDO = new ActionDO
             {
                 Id = 4,
