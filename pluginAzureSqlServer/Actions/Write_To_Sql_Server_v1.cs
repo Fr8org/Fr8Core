@@ -67,7 +67,7 @@ namespace pluginAzureSqlServer.Actions {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
                 }
 
-            var connStringField = configuration.Fields.Find(f => f.Name == "Connection_String");
+            var connStringField = configuration.Fields.Find(f => f.Name == "connection_string");
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);

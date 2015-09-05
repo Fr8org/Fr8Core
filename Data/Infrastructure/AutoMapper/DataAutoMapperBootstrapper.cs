@@ -29,7 +29,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionDesignDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
-                .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
+                .ForMember(a => a.ParentActionListId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
                 .ForMember(a => a.ActionTemplate, opts => opts.ResolveUsing(ad => ad.ActionTemplate))
                 .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationStore)))
@@ -59,10 +59,13 @@ namespace Data.Infrastructure.AutoMapper
                     opts => opts.ResolveUsing(src => src.ParentPluginRegistration))
                 .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());
               
+            Mapper.CreateMap<ActionPayloadDTO, ActionDO>()
+                .ForMember(x => x.ParentActionListId, opts => opts.ResolveUsing(x => x.ActionListId));
 
-            Mapper.CreateMap<ActionPayloadDTO, ActionDO>();
-
-            Mapper.CreateMap<ActionListDO, ActionListDTO>();
+            Mapper.CreateMap<ActionListDO, ActionListDTO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
+                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
             Mapper.CreateMap<IList<DocuSignTemplateSubscriptionDO>, IList<string>>().ConvertUsing<DocuSignTemplateSubscriptionToStringConverter>();
             Mapper.CreateMap<IList<string>, IList<DocuSignTemplateSubscriptionDO>>().ConvertUsing<StringToDocuSignTemplateSubscriptionConverter>();

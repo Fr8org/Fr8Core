@@ -87,8 +87,8 @@ namespace Core.Services
 
                 if (existingActionDo != null)
                 {
-                    existingActionDo.ActionList = currentActionDo.ActionList;
-                    existingActionDo.ActionListId = currentActionDo.ActionListId;
+                    existingActionDo.ParentActionList = currentActionDo.ParentActionList;
+                    existingActionDo.ParentActionListId = currentActionDo.ParentActionListId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
@@ -199,7 +199,7 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; 
+            actionPayloadDTO.EnvelopeId = curActionDO.ParentActionList.Process.EnvelopeId; 
             
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
@@ -242,12 +242,12 @@ namespace Core.Services
         {
             DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
 
-            if (curActionDO.ActionList != null)
+            if (curActionDO.ParentActionList != null)
             {
                 // Try to get ProcessTemplate.Id from relation chain
                 // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
                 var curProcessTemplateId = curActionDO
-                    .ActionList
+                    .ParentActionList
                     .ProcessNodeTemplate
                     .ProcessTemplate
                     .Id;
