@@ -28,6 +28,21 @@ namespace pluginAzureSqlServer.Actions {
             }
         }
 
+        public object Configure(ActionDO curActionDO)
+        {
+            return new ConfigurationSettingsDTO();
+        }
+
+        public object Activate(ActionDO curActionDO)
+        {
+            return null;
+        }
+
+        public object ExecuteV2(ActionDO curActionDO)
+        {
+            return null;
+        }
+
         private const string ProviderName = "System.Data.SqlClient";
         private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
                                                  @"FROM ( " +

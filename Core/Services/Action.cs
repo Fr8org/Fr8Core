@@ -113,9 +113,9 @@ namespace Core.Services
         }
 
         public string GetConfigurationSettings(
-            ActionTemplateDO curActionTemplateDo)
+            ActionDO curActionDO)
         {
-            if (curActionTemplateDo != null)
+            if (curActionDO != null)
             {
                 //var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
                 //var curConfigurationSettingsJson =
@@ -123,6 +123,9 @@ namespace Core.Services
                 //        "GetConfigurationSettings", curActionTemplateDo);
 
                 //return curConfigurationSettingsJson;
+
+
+
                 return string.Empty;
             }
             else
