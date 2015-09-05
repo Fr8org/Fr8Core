@@ -2,14 +2,15 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Wrappers;
+using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class ActionDO : ActivityDO
+    public class ActionDO : ActivityDO, IActionListChild
 	{
         public string Name { get; set; }
 
-		  [ForeignKey("ParentActionList")]
+        [ForeignKey("ParentActionList")]
         public int? ParentActionListId { get; set; }
         public virtual ActionListDO ParentActionList { get; set; }
 

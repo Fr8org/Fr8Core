@@ -557,7 +557,6 @@
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IConfigurationSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationSettings.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
@@ -604,12 +603,8 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\IPaneDefineCriteriaScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderController.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplatesScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />
@@ -617,7 +612,7 @@
     <TypeScriptCompile Include="Scripts\app\model\Field.ts" />
     <TypeScriptCompile Include="Scripts\app\services\LocalIdentityGenerator.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateVM.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ProcessBuilderService.ts" />
     <Content Include="Scripts\lib\jquery-ui.js" />
     <Content Include="Scripts\_legacy\custom.js" />

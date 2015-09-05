@@ -54,11 +54,14 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dest => dest.ParentPluginRegistration,
                     opts => opts.ResolveUsing(src => src.ParentPluginRegistration))
                 .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());
-              
 
-            Mapper.CreateMap<ActionPayloadDTO, ActionDO>();
+            Mapper.CreateMap<ActionPayloadDTO, ActionDO>()
+                .ForMember(x => x.ParentActionListId, opts => opts.ResolveUsing(x => x.ActionListId));
 
-            Mapper.CreateMap<ActionListDO, ActionListDTO>();
+            Mapper.CreateMap<ActionListDO, ActionListDTO>()
+                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
+                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
             Mapper.CreateMap<IList<DocuSignTemplateSubscriptionDO>, IList<string>>().ConvertUsing<DocuSignTemplateSubscriptionToStringConverter>();
             Mapper.CreateMap<IList<string>, IList<DocuSignTemplateSubscriptionDO>>().ConvertUsing<StringToDocuSignTemplateSubscriptionConverter>();

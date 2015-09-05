@@ -126,7 +126,7 @@ namespace DockyardTest.Controllers
                 var curActionTemplate = FixtureData.TestActionTemplateDO1();
 
                 var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _action.GetConfigurationSettings(curActionTemplate).ConfigurationSettings;
+                string curJsonResult = _action.GetConfigurationSettings(curActionTemplate);
                 ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
                 Assert.AreEqual(1, result.Fields.Count);
                 Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);

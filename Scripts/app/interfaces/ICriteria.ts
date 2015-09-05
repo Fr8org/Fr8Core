@@ -9,7 +9,7 @@ module dockyard.interfaces {
         userLabel: string;
         actions: Array<IActionDesignDTO>;
         conditions: Array<ICondition>;
-        executionMode: string;
+        executionType: model.CriteriaExecutionType;
     }
 
     export interface IActionDesignDTO {

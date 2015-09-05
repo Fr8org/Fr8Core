@@ -64,7 +64,7 @@ module dockyard.directives.paneConfigureMapping {
                 var loadedFields = false;
 
                 $http
-                    .post(urlPrefix + "/actions/field_mapping_targets/", $scope.currentAction)
+                    .post("/actions/field_mapping_targets/", $scope.currentAction)
                     .then((returnedParams) => {
                         loadedActions = true;
 
@@ -88,7 +88,7 @@ module dockyard.directives.paneConfigureMapping {
                         return;
                     });
 
-                $http.post(urlPrefix + "/actions/field_data_sources/", $scope.currentAction)
+                $http.post("/actions/field_data_sources/", $scope.currentAction)
                     .then((dataSources) => {
                         loadedFields = true;
 

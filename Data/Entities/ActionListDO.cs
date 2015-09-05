@@ -1,16 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Interfaces;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-	public class ActionListDO: ActivityDO
+    public class ActionListDO : ActivityDO, IActionListChild
 	{
 		public ActionListDO()
 		{
 			Actions = new List<ActionDO>();
 		}
+
+        [ForeignKey("ParentActionList")]
+        public int? ParentActionListId { get; set; }
+        public virtual ActionListDO ParentActionList { get; set; }
 
  		public string Name { get; set; }
 
@@ -32,6 +37,9 @@ namespace Data.Entities
 		[InverseProperty("ParentActionList")]
 		public virtual List<ActionDO> Actions{ get; set; }
 
+        [InverseProperty("ParentActionList")]
+        public virtual List<ActionListDO> ActionLists { get; set; }
+
         [Required]
         [ForeignKey("ActionListTypeTemplate")]
         public int ActionListType { get; set; }
@@ -45,9 +53,5 @@ namespace Data.Entities
         public int? ActionListState { get; set; }
 
         public virtual _ActionListStateTemplate ActionListStateTemplate { get; set; }
-
-		  [ForeignKey("ParentActionList")]
-		  public int? ParentActionListId { get; set; }
-		  public virtual ActionListDO ParentActionList { get; set; }
 	}
 }

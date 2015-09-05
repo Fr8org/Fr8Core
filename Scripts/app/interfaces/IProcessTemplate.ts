@@ -7,4 +7,10 @@ module dockyard.interfaces {
         errorMessage: string;
         processBuilder: any
     }
+
+    export interface IProcessTemplatesScope extends ng.IScope {
+        ptvms: angular.resource.IResourceArray<dockyard.interfaces.IProcessTemplateVM>;
+        nav: (pt: IProcessTemplateVM) => void,
+        remove: (pt: IProcessTemplateVM) => void
+    }
 } 
