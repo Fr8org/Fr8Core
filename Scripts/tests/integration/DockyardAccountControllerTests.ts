@@ -1,5 +1,6 @@
-﻿/// <reference path="../../../app/_all.ts" />
-/// <reference path="../../../typings/angularjs/angular-mocks.d.ts" />
+﻿///// <reference path="../../../app/_all.ts" />
+///// <reference path="../../../typings/angularjs/angular-mocks.d.ts" />
+
 module dockyard.tests.controller {
     describe("Dockyard Account Controller ", function () {
 
