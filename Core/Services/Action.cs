@@ -113,17 +113,16 @@ namespace Core.Services
             }
         }
 
-        public string GetConfigurationSettings(
-            ActionDO curActionDO)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
             if (curActionDO != null)
             {
-                string pluginUrl = curActionDO.ActionTemplate.ParentPluginRegistration + curActionDO.ActionTemplate.ActionType + "/actions/configure/";
-
-                var curActionDto = Mapper.Map<ActionDesignDTO>(curActionDO);
+                //TODO: Vas, rename Parent Plugin Registratoin as Default End Point and Action Type to Name
+                //prepare the current plugin URL
+                string curPluginUrl = curActionDO.ActionTemplate.ParentPluginRegistration + curActionDO.ActionTemplate.ActionType + "/actions/configure/";
 
                 var restClient = new RestfulServiceClient();
-                string curConfigurationStoreJson = restClient.PostAsync(new Uri(pluginUrl, UriKind.Absolute), curActionDO).Result;
+                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
 
                 return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }

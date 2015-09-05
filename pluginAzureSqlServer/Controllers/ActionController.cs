@@ -98,10 +98,7 @@ namespace pluginAzureSqlServer.Controllers
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
 
-            return JsonConvert.SerializeObject(
-                //_actionHandler.Process(path, curAction) ?? new { }
-                (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { }
-            );
+            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
         }
     }
 }
