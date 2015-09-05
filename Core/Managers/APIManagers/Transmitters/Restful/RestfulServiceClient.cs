@@ -14,7 +14,7 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
 {
     public class RestfulServiceClient : IRestfulServiceClient
     {
-        private static readonly ILog Log = Logger.GetLogger(); 
+        private static readonly ILog Log = Logger.GetLogger();
         class FormatterLogger : IFormatterLogger
         {
             public void LogError(string message, Exception ex)
@@ -52,10 +52,13 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
 
         private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
         {
-            var response = await _innerClient.SendAsync(request);
-            var responseContent = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage response;
+            string responseContent = "";
+
             try
             {
+                response = _innerClient.SendAsync(request).Result;
+                responseContent = response.Content.ReadAsStringAsync().Result;
                 response.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException ex)
@@ -65,6 +68,24 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
             }
             return response;
         }
+
+        //private async Task<HttpResponseMessage> SendInternalAsync(HttpRequestMessage request)
+        //{
+        //    var response = await _innerClient.SendAsync(request);
+        //    var responseContent = await response.Content.ReadAsStringAsync();
+        //    try
+        //    {
+        //        response.EnsureSuccessStatusCode();
+        //    }
+        //    catch (HttpRequestException ex)
+        //    {
+        //        var errorMessage = ExtractErrorMessage(responseContent);
+        //        throw new RestfulServiceException(errorMessage, ex);
+        //    }
+        //    return response;
+        //}
+
+
 
         protected virtual string ExtractErrorMessage(string responseContent)
         {
@@ -81,7 +102,7 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
 
         private async Task<HttpResponseMessage> PostInternalAsync<TContent>(Uri requestUri, TContent content)
         {
-            using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri) {Content = new ObjectContent(typeof(TContent), content, _formatter)})
+            using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = new ObjectContent(typeof(TContent), content, _formatter) })
             {
                 return await SendInternalAsync(request);
             }

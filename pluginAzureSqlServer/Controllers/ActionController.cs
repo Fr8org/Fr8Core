@@ -60,9 +60,14 @@ namespace pluginAzureSqlServer.Controllers
             );
         }
 
-       
 
-
-
+        [HttpPost]
+        [Route("Write_To_Sql_Server")]
+        public IHttpActionResult Process(ActionPayloadDTO curActionDTO)
+        {
+            var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
+            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+            return Ok(_actionHandler.GetFieldMappings(curAction));
+        }
     }
 }

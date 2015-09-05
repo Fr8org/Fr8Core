@@ -22,10 +22,14 @@ namespace Core.PluginRegistrations
         public const string PluginRegistrationName = "AzureSqlServer";
 
 #if DEBUG
-        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
-        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server";
+        // IMPORTANT
+        // Please always use training slash in the end of plugin URL. For details see: 
+        // http://stackoverflow.com/questions/23438416/why-is-httpclient-baseaddress-not-working
+        //
+        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server/";
+        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server/";
 #else
-        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
+        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1/";
 #endif
         public AzureSqlServerPluginRegistration_v1()
             : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
