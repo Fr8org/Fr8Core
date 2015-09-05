@@ -239,7 +239,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 10,
                 Name = "WriteToAzureSql",
-                ActionListId = 1,
+                ParentActionListId = 1,
                 ConfigurationStore = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
@@ -298,7 +298,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 ConfigurationStore= "config settings",
-                ActionListId = 88,
+                ParentActionListId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };
             return actionDo;
