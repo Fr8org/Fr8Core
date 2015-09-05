@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201509040722567_ActionConfigStoreChange"; }
+            get { return "201509051956279_ActionConfigStoreChange"; }
         }
         
         string IMigrationMetadata.Source
