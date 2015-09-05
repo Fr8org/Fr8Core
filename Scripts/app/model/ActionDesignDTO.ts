@@ -48,7 +48,7 @@
             var result = new ActionDesignDTO(0, 0, false, 0);
             result.actionListId = dataObject.actionListId;
             result.actionTemplateId = dataObject.actionTemplateId;
-            result.configurationSettings = dataObject.configurationSettings;
+            result.configurationStore = dataObject.configurationStore;
             result.fieldMappingSettings = dataObject.fieldMappingSettings;
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;

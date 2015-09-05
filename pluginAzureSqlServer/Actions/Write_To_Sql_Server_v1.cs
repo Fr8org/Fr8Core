@@ -56,12 +56,12 @@ namespace pluginAzureSqlServer.Actions {
         //[Route("write_to_sql_server/field_mappings")]
         public object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            if (string.IsNullOrEmpty(curActionDO.ConfigurationSettings))
+            if (string.IsNullOrEmpty(curActionDO.ConfigurationStore))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationSettings);
+            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
             if (configuration == null || configuration.Fields.Count == 0)
                 {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
