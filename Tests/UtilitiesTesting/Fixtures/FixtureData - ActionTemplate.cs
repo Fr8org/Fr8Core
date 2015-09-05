@@ -40,7 +40,20 @@ namespace UtilitiesTesting.Fixtures
             return curActionDO;
         }
 
-        public static ConfigurationSettingsDTO TestConfigurationSettings()
+	    public static ActionTemplateDO TestActionTemplateV2()
+	    {
+	        var curActionTemplate = new ActionTemplateDO
+	        {
+	            Id = 1,
+	            ActionType = "Write_To_Sql_Server",
+	            ParentPluginRegistration = "http://localhost:46281/plugin_azure_sql_server/",
+	            Version = "1"
+	        };
+
+	        return curActionTemplate;
+	    }
+
+	    public static ConfigurationSettingsDTO TestConfigurationSettings()
         {
             return new ConfigurationSettingsDTO()
             {
@@ -58,5 +71,64 @@ namespace UtilitiesTesting.Fixtures
             };
 
         }
+
+	    public static ConfigurationSettingsDTO TestConfigurationStore()
+	    {
+	        return new ConfigurationSettingsDTO
+	        {
+	            Fields = new List<FieldDefinitionDTO>
+	            {
+	                new FieldDefinitionDTO
+	                {
+	                    Type = "textField",
+	                    Name = "connection_string",
+	                    Required = true,
+	                    Value = "",
+	                    FieldLabel = "SQL Connection String"
+	                },
+
+	                new FieldDefinitionDTO
+	                {
+	                    Type = "textField",
+	                    Name = "query",
+	                    Required = true,
+	                    Value = "",
+	                    FieldLabel = "Custom SQL Query"
+	                },
+
+	                new FieldDefinitionDTO
+	                {
+	                    Type = "checkboxField",
+	                    Name = "log_transactions",
+	                    Selected = false,
+	                    FieldLabel = "Log All Transactions?"
+	                },
+
+	                new FieldDefinitionDTO
+	                {
+	                    Type = "checkboxField",
+	                    Name = "log_transactions1",
+	                    Selected = false,
+	                    FieldLabel = "Log Some Transactions?"
+	                },
+
+	                new FieldDefinitionDTO
+	                {
+	                    Type = "checkboxField",
+	                    Name = "log_transactions2",
+	                    Selected = false,
+	                    FieldLabel = "Log No Transactions?"
+	                },
+
+	                new FieldDefinitionDTO
+	                {
+	                    Type = "checkboxField",
+	                    Name = "log_transactions3",
+	                    Selected = false,
+	                    FieldLabel = "Log Failed Transactions?"
+	                }
+	            }
+	        };
+	    }
     }
 }

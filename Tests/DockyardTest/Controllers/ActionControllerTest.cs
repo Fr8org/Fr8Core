@@ -1,8 +1,11 @@
 ﻿using System.Linq;
+using System.Web.Http;
+using System.Web.Http.Results;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -121,6 +124,7 @@ namespace DockyardTest.Controllers
         [Category("ActionController.GetConfigurationSettings")]
         public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
         {
+
             //using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             //{
             //    var curActionTemplate = FixtureData.TestActionTemplateDO1();
@@ -143,6 +147,94 @@ namespace DockyardTest.Controllers
         {
             var curAction = new ActionController();
             Assert.IsNotNull(curAction.GetConfigurationSettings(2));
+        }
+
+        [Test]
+        public void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //remvoe existing action templates
+                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.SaveChanges();
+
+                //create action
+                var curAction = CreateActionWithV2ActionTemplate(uow);
+                curAction.ConfigurationStore = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
+                uow.SaveChanges();
+
+                //Act
+                var result =
+                    new ActionController(_action).GetConfigurationSettings(curAction.Id) as
+                        OkNegotiatedContentResult<ConfigurationSettingsDTO>;
+
+                //Assert
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result.Content);
+                Assert.IsTrue(result.Content.Fields.Count == 1);
+            }
+        }
+
+        [Test]
+        public void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //remvoe existing action templates
+                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.SaveChanges();
+
+                //create action
+                var curAction = CreateActionWithV2ActionTemplate(uow);
+                var configurationStore = FixtureData.TestConfigurationStore();
+                configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+                curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
+                uow.SaveChanges();
+
+                //Act
+                var result =
+                    new ActionController(_action).GetConfigurationSettings(curAction.Id) as
+                        OkNegotiatedContentResult<ConfigurationSettingsDTO>;
+
+                //Assert
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result.Content);
+                Assert.IsTrue(result.Content.Fields.Count == 1);
+                Assert.IsTrue(result.Content.DataFields.Count == 1);
+            }
+        }
+
+        [Test]
+        public void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Arrange
+                //remvoe existing action templates
+                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.SaveChanges();
+
+                //create action
+                var curAction = CreateActionWithV2ActionTemplate(uow);
+                var configurationStore = FixtureData.TestConfigurationStore();
+                configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+                configurationStore.DataFields.Add(new FieldDefinitionDTO {Name = "something", Value = "something"});
+                curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
+                uow.SaveChanges();
+
+                //Act
+                var result =
+                    new ActionController(_action).GetConfigurationSettings(curAction.Id) as
+                        OkNegotiatedContentResult<ConfigurationSettingsDTO>;
+
+                //Assert
+                Assert.IsNotNull(result);
+                Assert.IsNotNull(result.Content);
+                Assert.IsTrue(result.Content.Fields.Count == 1);
+                Assert.IsTrue(result.Content.DataFields.Count == 1);
+            }
         }
 
         [Test]
@@ -258,7 +350,19 @@ namespace DockyardTest.Controllers
             };
         }
 
+        private ActionDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
+        {
 
+            var curActionTemplate = FixtureData.TestActionTemplateV2();
+            uow.ActionTemplateRepository.Add(curActionTemplate);
+
+            var curAction = FixtureData.TestAction1();
+            curAction.ActionTemplateId = curActionTemplate.Id;
+            curAction.ActionTemplate = curActionTemplate;
+            uow.ActionRepository.Add(curAction);
+
+            return curAction;
+        }
 
 
         [Test]
