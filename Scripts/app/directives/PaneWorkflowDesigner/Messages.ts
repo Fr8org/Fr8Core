@@ -8,7 +8,7 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_TemplateSelecting,
         PaneWorkflowDesigner_ProcessNodeTemplateAdding,
         PaneWorkflowDesigner_ProcessNodeTemplateAdded,
-        PaneWorkflowDesigner_ProcessNodeTemplateSelecting,
+        PaneWorkflowDesigner_CriteriaSelected,
         PaneWorkflowDesigner_ProcessNodeTemplateRemoved,
         PaneWorkflowDesigner_ProcessNodeTemplateNameUpdated,
         PaneWorkflowDesigner_ActionAdding,
@@ -38,7 +38,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ProcessNodeTemplateSelectingEventArgs {
+    export class CriteriaSelectedEventArgs {
         public id: number;
         public isTempId: boolean;
 

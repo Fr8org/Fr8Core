@@ -5,13 +5,12 @@
         WithoutConditions = 2
     }
 
-    export class Criteria implements interfaces.ICriteria {
+    export class CriteriaDTO implements interfaces.ICriteriaDTO {
         public id: number;
         public isTempId: boolean;
         public processNodeTemplateId: number;
         public conditions: Array<Condition>;
         public executionType: CriteriaExecutionType;
-        public userLabel: string;
         public actions: Array<ActionDesignDTO>;
 
         constructor(
@@ -28,8 +27,8 @@
             this.conditions = [];
         }
 
-        clone(): Criteria {
-            var result = new Criteria(this.id, this.isTempId, this.processNodeTemplateId, this.executionType);
+        clone(): CriteriaDTO {
+            var result = new CriteriaDTO(this.id, this.isTempId, this.processNodeTemplateId, this.executionType);
             angular.forEach(this.conditions, function (it) { result.conditions.push(it.clone()); });
 
             return result;

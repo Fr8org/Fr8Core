@@ -39,8 +39,8 @@ module dockyard.controllers {
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    if (!$scope.ptvm.ProcessTemplateState) {
-                        $scope.ptvm.ProcessTemplateState = dockyard.interfaces.ProcessState.Inactive;
+                    if (!$scope.ptvm.processTemplateState) {
+                        $scope.ptvm.processTemplateState = dockyard.interfaces.ProcessState.Inactive;
                     }
 
                     var result = ProcessTemplateService.save($scope.ptvm);
@@ -49,7 +49,7 @@ module dockyard.controllers {
                         .finally(function () {
                             console.log(result);
                             $rootScope.lastResult = "success";
-                            window.location.href = '#processes/' + result.Id + '/builder';
+                            window.location.href = '#processes/' + result.id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {

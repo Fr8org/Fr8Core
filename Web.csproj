@@ -16,15 +16,11 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -588,7 +584,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
@@ -600,7 +595,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\IPaneDefineCriteriaScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplate.ts" />
