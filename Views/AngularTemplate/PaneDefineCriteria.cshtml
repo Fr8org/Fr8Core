@@ -1,62 +1,58 @@
 ﻿
 <div class="portlet light" ng-show="isVisible">
-    <div ng-if="!isActionValid(currentAction)" class="criteria-warning bg-purple">
-        Please add or select  an action in order to configure criteria
+    <div class="portlet-title">
+        <div class="caption caption-md">
+            <i class="icon-bar-chart font-green-haze hide"></i>
+            <span class="caption-subject font-green-haze bold uppercase">{{processNodeTemplate.name}}</span>
+        </div>
     </div>
-    <div class="noclick-background" ng-if="!isActionValid(currentAction)" >
-    </div>
-    <div ng-class="{'grayed-out': !isActionValid(currentAction)}">
-        <div class="portlet-title">
-            <div class="caption caption-md">
-                <i class="icon-bar-chart font-green-haze hide"></i>
-                <span class="caption-subject font-green-haze bold uppercase">{{processNodeTemplate.name}}</span>
+    <div class="portlet-body" style="z-index: 3;">
+        <div class="form-group">
+            <a href class="btn btn-danger" ng-hide="processNodeTemplate.isTempId" ng-click="removeCriteria()">Remove criteria</a>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Criteria Name</label>
+            <input type="text" class="form-control" ng-model="processNodeTemplate.name" />
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Criteria for Executing Actions</label>
+            <div class="radio">
+                <label>
+                    <input type="radio"
+                           name="executionType"
+                           value="1"
+                           ng-model="processNodeTemplate.criteria.executionType" />
+                    <span>Filter conditions are met</span>
+                </label>
+            </div>
+            <div class="radio">
+                <label>
+                    <input type="radio"
+                           name="executionType"
+                           value="2"
+                           ng-model="processNodeTemplate.criteria.executionType" />
+                    <span>No criteria - just execute the actions!</span>
+                </label>
             </div>
         </div>
-        <div class="portlet-body" style="z-index: 3;">
-            <div class="form-group">
-                <a href class="btn btn-danger" ng-hide="processNodeTemplate.isTempId" ng-click="removeCriteria()">Remove criteria</a>
-            </div>
 
-            <div class="form-group">
-                <label class="control-label">Criteria Name</label>
-                <input type="text" class="form-control" ng-model="processNodeTemplate.name" />
-            </div>
+        <div class="form-group">
 
-            <div class="form-group">
-                <label class="control-label">Criteria for Executing Actions</label>
-                <div class="radio">
-                    <label>
-                        <input type="radio"
-                               name="executionType"
-                               value="1"
-                               ng-model="processNodeTemplate.criteria.executionType" />
-                        <span>Filter conditions are met</span>
-                    </label>
-                </div>
-                <div class="radio">
-                    <label>
-                        <input type="radio"
-                               name="executionType"
-                               value="2"
-                               ng-model="processNodeTemplate.criteria.executionType" />
-                        <span>No criteria - just execute the actions!</span>
-                    </label>
-                </div>
-            </div>
 
-            <div class="form-group">
-                <query-builder-widget fields="fields"
-                                      rows="processNodeTemplate.criteria.conditions"
-                                      operators="operators"
-                                      default-operator="defaultOperator"
-                                      ng-show="processNodeTemplate.criteria.executionType == 1">
-                </query-builder-widget>
-            </div>
+            <query-builder-widget fields="fields"
+                                  current-action="currentAction"
+                                  rows="processNodeTemplate.criteria.conditions"
+                                  operators="operators"
+                                  default-operator="defaultOperator"
+                                  ng-show="processNodeTemplate.criteria.executionType == 1">
+            </query-builder-widget>
+        </div>
 
-            <div class="form-group">
-                <a href="#" class="btn btn-success" ng-click="save()">Save criteria</a>
-                <a href="#" class="btn btn-default" ng-click="cancel()">Cancel</a>
-            </div>
+        <div class="form-group">
+            <a href="#" class="btn btn-success" ng-click="save()">Save criteria</a>
+            <a href="#" class="btn btn-default" ng-click="cancel()">Cancel</a>
         </div>
     </div>
 </div>

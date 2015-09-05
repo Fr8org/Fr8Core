@@ -11,6 +11,5 @@ module dockyard.directives.paneDefineCriteria {
         processNodeTemplate: model.ProcessNodeTemplate;
         fields: Array<model.Field>;
         currentAction: interfaces.IActionVM;
-        isActionValid: (action: interfaces.IActionVM) => boolean;
     }
 }

@@ -46,21 +46,19 @@ namespace Core.PluginRegistrations
 
         public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
         {
-            return @"
-                {""fields"":
-                    [{
-                        ""type"": ""textField"",
-                        ""name"": ""connection_string"",
-                        ""required"": true,
-                        ""fieldLabel"": ""SQL Connection String"",
-                        ""value"": """",
-                     }]
-                }";
+
+            if (curActionTemplateDo == null)
+                throw new ArgumentNullException("curAction");
+
+            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
+            curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("connection_string", true, "", "SQL Connection String"));
+
+            return JsonConvert.SerializeObject(curConfigurationSettings);
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)
         {
-           
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseUrl);
