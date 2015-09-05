@@ -310,7 +310,7 @@ namespace Core.Services
 			List<ActivityDO> downstreamList = new List<ActivityDO>();
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				GetDownstreamActivitiesRecursive(uow, GetParent(curActionDO), curActionDO.Ordering, downstreamList, new HashSet<ActionListDO>());
+				GetDownstreamActivitiesRecursive(uow, curActionDO.ParentActionList, curActionDO.Ordering, downstreamList, new HashSet<ActionListDO>());
 			}
 			return downstreamList;
 		}
@@ -334,7 +334,7 @@ namespace Core.Services
 				}
 				// Work up the parent ActionList chain to get activities that are downstream of the path.
 				startingOrdering = curActionList.Ordering;
-				curActionList = GetParent(curActionList);
+				curActionList = curActionList.ParentActionList;
 			}
 		}
 		private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
@@ -362,14 +362,6 @@ namespace Core.Services
 				return x.Ordering.CompareTo(y.Ordering);
 			});
 			return orderedActivities;
-		}
-		private ActionListDO GetParent(ActivityDO activity)
-		{
-			if (activity is ActionDO)
-				return (activity as ActionDO).ParentActionList;
-			else if (activity is ActionListDO)
-				return (activity as ActionListDO).ParentActionList;
-			throw new NotSupportedException();
 		}
     }
 }
