@@ -23,7 +23,7 @@ namespace Web.Controllers
 		}
 		[Route("upstream")]
 		[ResponseType(typeof(IEnumerable<ActionDTOBase>))]
-		public IHttpActionResult GetUpstreamActivities(int? id)
+		public IHttpActionResult GetUpstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
@@ -35,7 +35,7 @@ namespace Web.Controllers
 		}
 		[Route("downstream")]
 		[ResponseType(typeof(IEnumerable<ActionDTOBase>))]
-		public IHttpActionResult GetDownstreamActivities(int? id)
+		public IHttpActionResult GetDownstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{

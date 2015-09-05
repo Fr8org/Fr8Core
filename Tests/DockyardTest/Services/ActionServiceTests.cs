@@ -18,6 +18,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Core.Services.Action;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace DockyardTest.Services
 {
@@ -586,124 +587,85 @@ namespace DockyardTest.Services
 			  Assert.AreEqual(l1_a2, downstreamActivities[0]);
 		  }
 		  [Test(Description="Big tree from https://maginot.atlassian.net/wiki/display/SH/Getting+Upstream+and+Downstream+Activities+Lists")]
-		  public void GetDownstreamActivities_BigTreeFromWikiPage_ShoudBeOk()
+		  public void GetDownstreamActivities_BigTreeFromWikiPageWithActivity46_ShoudBeOk()
 		  {
-			  var actionTempate = new ActionTemplateDO()
-			  {
-				  Id = 1,
-				  ActionType = "Test action",
-				  ParentPluginRegistration = "Test registration",
-				  Version = "1"
-			  };
-			  ActionListDO al_1 = new ActionListDO() {  Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "Fly To Kiev"};
-			  ActionDO a_23 = new ActionDO() { Id = 23, ActionTemplate = actionTempate, Name = "Drive to  Ariport"};
-			  al_1.Actions.Add(a_23);
-			  a_23.ParentActionList = al_1;
-
-			  ActionListDO al_43 = new ActionListDO() {  Id = 43, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "Board Plane"};
-			  al_43.ParentActionList = al_1;
-			  ActionDO a_44 = new ActionDO() { Id = 44, Ordering = 1, ActionTemplate = actionTempate, Name = "Check Baggage" };
-			  a_44.ParentActionList = al_43;
-			  al_43.Actions.Add(a_44);
-			  ActionDO a_46 = new ActionDO() { Id = 46, Ordering = 2, ActionTemplate = actionTempate, Name = "Buy Ticket" };
-			  a_46.ParentActionList = al_43;
-			  al_43.Actions.Add(a_46);
-			  ActionDO a_48 = new ActionDO() { Id = 48, Ordering = 3, ActionTemplate = actionTempate, Name = "Get on Plane" };
-			  a_48.ParentActionList = al_43;
-			  al_43.Actions.Add(a_48);
-
-			  ActionListDO al_52 = new ActionListDO() { Id = 52, Ordering = 3, ActionListType = ActionListType.Immediate, Name = "BLA BLA" };
-			  ActionDO a_53 = new ActionDO() { Id = 53, Ordering = 1, ActionTemplate = actionTempate, Name = "A1" };
-			  a_53.ParentActionList = al_52;
-			  al_52.Actions.Add(a_53);
-
-			  ActionListDO al_54 = new ActionListDO() { Id = 54, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "AL2" };
-			  al_54.ParentActionList = al_52;
-
-			  ActionDO a_56 = new ActionDO() { Id = 56, Ordering = 1, ActionTemplate = actionTempate, Name = "A11" };
-			  a_56.ParentActionList = al_54;
-			  al_54.Actions.Add(a_56);
-			  ActionDO a_57 = new ActionDO() { Id = 57, Ordering = 2, ActionTemplate = actionTempate, Name = "A22" };
-			  a_57.ParentActionList = al_54;
-			  al_54.Actions.Add(a_57);
-			  ActionDO a_58 = new ActionDO() { Id = 58, Ordering = 3, ActionTemplate = actionTempate, Name = "A33" };
-			  a_58.ParentActionList = al_54;
-			  al_54.Actions.Add(a_58);
-
-			  ActionDO a_55 = new ActionDO() { Id = 55, Ordering = 3, ActionTemplate = actionTempate, Name = "A3" };
-			  a_55.ParentActionList = al_52;
-			  al_52.Actions.Add(a_55);
-
-			  ActionListDO al_59 = new ActionListDO() { Id = 59, Ordering = 4, ActionListType = ActionListType.Immediate, Name = "BLA BLA2" };
-			  ActionDO a_60 = new ActionDO() { Id = 60, Ordering = 1, ActionTemplate = actionTempate, Name = "A1" };
-			  a_60.ParentActionList = al_59;
-			  al_59.Actions.Add(a_60);
-			 
-			  ActionListDO al_61 = new ActionListDO() { Id = 61, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "AL2" };
-			  al_61.ParentActionList = al_59;
-			  ActionDO a_63 = new ActionDO() { Id = 63, Ordering = 1, ActionTemplate = actionTempate, Name = "A11" };
-			  a_63.ParentActionList = al_61;
-			  al_61.Actions.Add(a_63);
-			  ActionDO a_64 = new ActionDO() { Id = 64, Ordering = 2, ActionTemplate = actionTempate, Name = "A22" };
-			  a_64.ParentActionList = al_61;
-			  al_61.Actions.Add(a_64);
-			  ActionDO a_65 = new ActionDO() { Id = 65, Ordering = 3, ActionTemplate = actionTempate, Name = "A33" };
-			  a_65.ParentActionList = al_61;
-			  al_61.Actions.Add(a_65);
-
-			  ActionDO a_62 = new ActionDO() { Id = 62, Ordering = 3, ActionTemplate = actionTempate, Name = "A3" };
-			  a_62.ParentActionList = al_59;
-			  al_59.Actions.Add(a_62);
-
-			  al_43.ParentActionList = al_1;
-			  al_52.ParentActionList = al_1;
-			  al_59.ParentActionList = al_1;
+			  List<ActionListDO> actionLists = FixtureData.TreeFromWikiPage();
 
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			  {
-				  uow.ActionRepository.Add(a_23);
-				  uow.ActionRepository.Add(a_44);
-				  uow.ActionRepository.Add(a_46);
-				  uow.ActionRepository.Add(a_48);
-				  uow.ActionRepository.Add(a_53);
-				  uow.ActionRepository.Add(a_55);
-				  uow.ActionRepository.Add(a_56);
-				  uow.ActionRepository.Add(a_57);
-				  uow.ActionRepository.Add(a_58);
-				  uow.ActionRepository.Add(a_60);
-				  uow.ActionRepository.Add(a_62);
-				  uow.ActionRepository.Add(a_63);
-				  uow.ActionRepository.Add(a_64);
-				  uow.ActionRepository.Add(a_65);
-
-				  uow.ActionListRepository.Add(al_43);
-				  uow.ActionListRepository.Add(al_52);
-				  uow.ActionListRepository.Add(al_54);
-				  uow.ActionListRepository.Add(al_59);
-				  uow.ActionListRepository.Add(al_61);
-
+				  foreach (var actionList in actionLists)
+				  {
+					  foreach (var action in actionList.Actions)
+						  uow.ActionRepository.Add(action);
+					  uow.ActionListRepository.Add(actionList);
+				  }
 				  uow.SaveChanges();
-			  }
-			  Console.WriteLine("ASD");
-			  var downstreamActivities = _action.GetDownstreamActivities(a_46);
 
-			  Assert.AreEqual(15, downstreamActivities.Count);
-			  Assert.AreEqual(a_48, downstreamActivities[0]);
-			  Assert.AreEqual(al_52, downstreamActivities[1]);
-			  Assert.AreEqual(a_53, downstreamActivities[2]);
-			  Assert.AreEqual(al_54, downstreamActivities[3]);
-			  Assert.AreEqual(a_56, downstreamActivities[4]);
-			  Assert.AreEqual(a_57, downstreamActivities[5]);
-			  Assert.AreEqual(a_58, downstreamActivities[6]);
-			  Assert.AreEqual(a_55, downstreamActivities[7]);
-			  Assert.AreEqual(al_59, downstreamActivities[8]);
-			  Assert.AreEqual(a_60, downstreamActivities[9]);
-			  Assert.AreEqual(al_61, downstreamActivities[10]);
-			  Assert.AreEqual(a_63, downstreamActivities[11]);
-			  Assert.AreEqual(a_64, downstreamActivities[12]);
-			  Assert.AreEqual(a_65, downstreamActivities[13]);
-			  Assert.AreEqual(a_62, downstreamActivities[14]);
-			  
+				  var actionWithId46 = uow.ActionRepository.GetByKey(46);
+				  var downstreamActivities = _action.GetDownstreamActivities(actionWithId46);
+
+				  Assert.AreEqual(15, downstreamActivities.Count);
+				  Assert.AreEqual(true, downstreamActivities[0] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[0].GetType().Name));
+				  Assert.AreEqual(48, downstreamActivities[0].Id, "Expected Action with Id '{0}' but got '{1}".format(48, downstreamActivities[0].Id));
+				  Assert.AreEqual(true, downstreamActivities[1] is ActionListDO, "Expected ActionListDO but got '{0}'".format(downstreamActivities[1].GetType().Name));
+				  Assert.AreEqual(52, downstreamActivities[1].Id, "Expected ActionListDO with Id '{0}' but got '{1}".format(52, downstreamActivities[1].Id));
+				  Assert.AreEqual(true, downstreamActivities[2] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[2].GetType().Name));
+				  Assert.AreEqual(53, downstreamActivities[2].Id, "Expected Action with Id '{0}' but got '{1}".format(53, downstreamActivities[2].Id));
+				  Assert.AreEqual(true, downstreamActivities[3] is ActionListDO, "Expected ActionListDO but got '{0}'".format(downstreamActivities[3].GetType().Name));
+				  Assert.AreEqual(54, downstreamActivities[3].Id, "Expected ActionListDO with Id '{0}' but got '{1}".format(54, downstreamActivities[3].Id));
+				  Assert.AreEqual(true, downstreamActivities[4] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[4].GetType().Name));
+				  Assert.AreEqual(56, downstreamActivities[4].Id, "Expected Action with Id '{0}' but got '{1}".format(56, downstreamActivities[4].Id));
+				  Assert.AreEqual(true, downstreamActivities[5] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[5].GetType().Name));
+				  Assert.AreEqual(57, downstreamActivities[5].Id, "Expected Action with Id '{0}' but got '{1}".format(57, downstreamActivities[5].Id));
+				  Assert.AreEqual(true, downstreamActivities[6] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[6].GetType().Name));
+				  Assert.AreEqual(58, downstreamActivities[6].Id, "Expected Action with Id '{0}' but got '{1}".format(58, downstreamActivities[6].Id));
+				  Assert.AreEqual(true, downstreamActivities[7] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[7].GetType().Name));
+				  Assert.AreEqual(55, downstreamActivities[7].Id, "Expected Action with Id '{0}' but got '{1}".format(55, downstreamActivities[7].Id));
+				  Assert.AreEqual(true, downstreamActivities[8] is ActionListDO, "Expected ActionListDO but got '{0}'".format(downstreamActivities[8].GetType().Name));
+				  Assert.AreEqual(59, downstreamActivities[8].Id, "Expected ActionListDO with Id '{0}' but got '{1}".format(59, downstreamActivities[8].Id));
+				  Assert.AreEqual(true, downstreamActivities[9] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[9].GetType().Name));
+				  Assert.AreEqual(60, downstreamActivities[9].Id, "Expected Action with Id '{0}' but got '{1}".format(60, downstreamActivities[9].Id));
+				  Assert.AreEqual(true, downstreamActivities[10] is ActionListDO, "Expected ActionListDO but got '{0}'".format(downstreamActivities[10].GetType().Name));
+				  Assert.AreEqual(61, downstreamActivities[10].Id, "Expected ActionListDO with Id '{0}' but got '{1}".format(61, downstreamActivities[10].Id));
+				  Assert.AreEqual(true, downstreamActivities[11] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[11].GetType().Name));
+				  Assert.AreEqual(63, downstreamActivities[11].Id, "Expected Action with Id '{0}' but got '{1}".format(63, downstreamActivities[11].Id));
+				  Assert.AreEqual(true, downstreamActivities[12] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[12].GetType().Name));
+				  Assert.AreEqual(64, downstreamActivities[12].Id, "Expected Action with Id '{0}' but got '{1}".format(64, downstreamActivities[12].Id));
+				  Assert.AreEqual(true, downstreamActivities[13] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[13].GetType().Name));
+				  Assert.AreEqual(65, downstreamActivities[13].Id, "Expected Action with Id '{0}' but got '{1}".format(65, downstreamActivities[13].Id));
+				  Assert.AreEqual(true, downstreamActivities[14] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[14].GetType().Name));
+				  Assert.AreEqual(62, downstreamActivities[14].Id, "Expected Action with Id '{0}' but got '{1}".format(62, downstreamActivities[14].Id));
+			  }
 		  }
+		  [Test]
+		  public void GetUpstreamActivities_BigTreeFromWikiPageWithActivity46_ShoudBeOk()
+		  {
+			  List<ActionListDO> actionLists = FixtureData.TreeFromWikiPage();
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  foreach (var actionList in actionLists)
+				  {
+					  foreach (var action in actionList.Actions)
+						  uow.ActionRepository.Add(action);
+					  uow.ActionListRepository.Add(actionList);
+				  }
+				  uow.SaveChanges();
+
+				  var actionWithId46 = uow.ActionRepository.GetByKey(46);
+				  var downstreamActivities = _action.GetUpstreamActivities(actionWithId46);
+
+				  Assert.AreEqual(4, downstreamActivities.Count);
+				  Assert.AreEqual(true, downstreamActivities[0] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[0].GetType().Name));
+				  Assert.AreEqual(44, downstreamActivities[0].Id, "Expected Action with Id '{0}' but got '{1}".format(44, downstreamActivities[0].Id));
+				  Assert.AreEqual(true, downstreamActivities[1] is ActionListDO, "Expected ActionListDO but got '{0}'".format(downstreamActivities[1].GetType().Name));
+				  Assert.AreEqual(43, downstreamActivities[1].Id, "Expected ActionListDO with Id '{0}' but got '{1}".format(43, downstreamActivities[1].Id));
+				  Assert.AreEqual(true, downstreamActivities[2] is ActionDO, "Expected ActionDO but got '{0}'".format(downstreamActivities[2].GetType().Name));
+				  Assert.AreEqual(23, downstreamActivities[2].Id, "Expected Action with Id '{0}' but got '{1}".format(23, downstreamActivities[2].Id));
+				  Assert.AreEqual(true, downstreamActivities[3] is ActionListDO, "Expected ActionListDO but got '{0}'".format(downstreamActivities[3].GetType().Name));
+				  Assert.AreEqual(1, downstreamActivities[3].Id, "Expected ActionListDO with Id '{0}' but got '{1}".format(1, downstreamActivities[3].Id));
+			  }
+		  }
+		  
     }
 }

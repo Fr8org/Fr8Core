@@ -210,6 +210,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Axtions\WriteToSqlServerV1Tests.cs" />
+    <Compile Include="Controllers\ActivitiesControllerTest.cs" />
     <Compile Include="Controllers\ActionListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
