@@ -47,7 +47,7 @@ namespace Data.Entities
         public virtual _ActionListStateTemplate ActionListStateTemplate { get; set; }
 
 		  [ForeignKey("ParentActionList")]
-		  public int? ParentActionListID { get; set; }
+		  public int? ParentActionListId { get; set; }
 		  public virtual ActionListDO ParentActionList { get; set; }
 	}
 }

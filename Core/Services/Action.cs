@@ -339,7 +339,7 @@ namespace Core.Services
 			// We don't have ActivityRepository at this moment
 			// To get all activities we need to get all ActionLists(filtred by ParentActionListID) and all Actions(filtred by ParentActionListID)
 			var orderedActionLists = uow.ActionListRepository.GetAll()
-						.Where(x => x.ParentActionListID == currActivity.Id)
+						.Where(x => x.ParentActionListId == currActivity.Id)
 						.OrderBy(z => z.Ordering);
 			var orderedActions = uow.ActionRepository.GetAll()
 				.Where(x => x.ParentActionListID == currActivity.Id)
