@@ -125,7 +125,7 @@ namespace Core.Services
                 var restClient = new RestfulServiceClient();
                 string curConfigurationStoreJson = restClient.PostAsync(new Uri(pluginUrl, UriKind.Absolute), curActionDO).Result;
 
-                return curConfigurationStoreJson;
+                return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }
             else
             {

@@ -12,13 +12,13 @@ namespace Data.Interfaces.DataTransferObjects
         public ConfigurationSettingsDTO()
         {
             Fields = new List<FieldDefinitionDTO>();
-            DataFields = new List<FieldDefinitionDTO>();
+            DataFields = new List<string>();
         }
 
         [JsonProperty("fields")]
         public List<FieldDefinitionDTO> Fields { get; set; }
 
         [JsonProperty("data-fields")]
-        public List<FieldDefinitionDTO> DataFields { get; set; }
+        public List<string> DataFields { get; set; }
     }
 }

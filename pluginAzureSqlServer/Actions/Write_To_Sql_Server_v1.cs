@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
@@ -29,9 +30,51 @@ namespace pluginAzureSqlServer.Actions {
             }
         }
 
-        public object Configure(ActionDO curActionDO)
+        public ConfigurationSettingsDTO Configure(ActionDO curActionDO)
         {
-            return new ConfigurationSettingsDTO();
+            //return new ConfigurationSettingsDTO();
+            ConfigurationSettingsDTO curConfigurationStore =
+                JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
+
+            var curConnectionStringField =
+                curConfigurationStore.Fields.First(field => field.Name.Equals("connection_string"));
+
+            if (curConnectionStringField != null)
+            {
+                if (string.IsNullOrEmpty(curConnectionStringField.Value))
+                {
+                    //Scenario 1 - This is the first request being made by this Action
+                    //Return back the ConfigurationStore JSON, which should just contain the single connection string text field
+
+                    curConfigurationStore = new ConfigurationSettingsDTO
+                    {
+                        Fields = new List<FieldDefinitionDTO>
+                        {
+                            new FieldDefinitionDTO
+                            {
+                                Type = "textField",
+                                Name = "connection_string",
+                                Required = true,
+                                Value = string.Empty,
+                                FieldLabel = "SQL Connection String"
+                            }
+                        }
+                    };
+                }
+                else
+                {
+                    //This else block covers 2nd and 3rd scenarios as mentioned below
+
+                    //Scenario 2 - This is the seond request, being made after the user filled in the value of the connection string
+                    //Scenario 3 - A data_fields was previously constructed, but perhaps the connection string has changed.
+
+                    //in either scenario, we have to update the new data fields.
+
+                    curConfigurationStore.DataFields = (List<string>) GetFieldMappings(curActionDO);
+                }
+            }
+
+            return curConfigurationStore;
         }
 
         public object Activate(ActionDO curActionDO)

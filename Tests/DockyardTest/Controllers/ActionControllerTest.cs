@@ -150,6 +150,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
+        [Category("ActionController.Configure")]
         public void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -170,13 +171,19 @@ namespace DockyardTest.Controllers
                         OkNegotiatedContentResult<ConfigurationSettingsDTO>;
 
                 //Assert
-                Assert.IsNotNull(result);
-                Assert.IsNotNull(result.Content);
-                Assert.IsTrue(result.Content.Fields.Count == 1);
+                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+                Assert.IsNotNull(result.Content, "Configure returns no Configuration Store");
+                Assert.IsTrue(result.Content.Fields.Count == 1, "Configure is not assuming this is the first request from the client");
+                Assert.AreEqual("connection_string", result.Content.Fields[0].Name, "Configure does not return one connection string with empty value");
+                Assert.IsEmpty(result.Content.Fields[0].Value, "Configure returned some connectoin string when the first request made");
+                
+                //There should be no data fields as this is the first request from the client
+                Assert.IsTrue(result.Content.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
             }
         }
 
         [Test]
+        [Category("ActionController.Configure")]
         public void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -199,14 +206,14 @@ namespace DockyardTest.Controllers
                         OkNegotiatedContentResult<ConfigurationSettingsDTO>;
 
                 //Assert
-                Assert.IsNotNull(result);
-                Assert.IsNotNull(result.Content);
-                Assert.IsTrue(result.Content.Fields.Count == 1);
-                Assert.IsTrue(result.Content.DataFields.Count == 1);
+                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+                Assert.IsNotNull(result.Content, "Configure returns no Configuration Store");
+                Assert.IsTrue(result.Content.DataFields.Count == 3, "Configure returned invalid data fields");
             }
         }
 
         [Test]
+        [Category("ActionController.Configure")]
         public void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -220,7 +227,10 @@ namespace DockyardTest.Controllers
                 var curAction = CreateActionWithV2ActionTemplate(uow);
                 var configurationStore = FixtureData.TestConfigurationStore();
                 configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-                configurationStore.DataFields.Add(new FieldDefinitionDTO {Name = "something", Value = "something"});
+                configurationStore.DataFields.Add("something");
+                configurationStore.DataFields.Add("Wrong");
+                configurationStore.DataFields.Add("data fields");
+                configurationStore.DataFields.Add("data fields");
                 curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
 
@@ -230,10 +240,10 @@ namespace DockyardTest.Controllers
                         OkNegotiatedContentResult<ConfigurationSettingsDTO>;
 
                 //Assert
-                Assert.IsNotNull(result);
-                Assert.IsNotNull(result.Content);
-                Assert.IsTrue(result.Content.Fields.Count == 1);
-                Assert.IsTrue(result.Content.DataFields.Count == 1);
+                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+                Assert.IsNotNull(result.Content, "Configure returns no Configuration Store");
+                Assert.IsTrue(result.Content.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
+                Assert.IsTrue(result.Content.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
             }
         }
 
