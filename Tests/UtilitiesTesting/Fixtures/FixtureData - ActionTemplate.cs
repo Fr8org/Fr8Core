@@ -45,8 +45,8 @@ namespace UtilitiesTesting.Fixtures
 	        var curActionTemplate = new ActionTemplateDO
 	        {
 	            Id = 1,
-	            ActionType = "Write_To_Sql_Server",
-	            ParentPluginRegistration = "http://localhost:46281/plugin_azure_sql_server/",
+                ActionType = "plugin_azure_sql_server",
+                ParentPluginRegistration = "http://localhost:46281/",
 	            Version = "1"
 	        };
 

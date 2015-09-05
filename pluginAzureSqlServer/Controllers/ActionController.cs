@@ -61,23 +61,23 @@ namespace pluginAzureSqlServer.Controllers
         }
 
         [HttpPost]
-        [Route("Write_To_Sql_Server/configure/{actionNameVersion}")]
-        public string Configure(string actionNameVersion, ActionDesignDTO curActionDTO)
+        [Route("configure")]
+        public string Configure(ActionDO curActionDO)
         {
             //
-            return string.Empty;
+            return curActionDO.ActionTemplate.ParentPluginRegistration;
         }
        
         [HttpPost]
-        [Route("Write_To_Sql_Server/activate/{actionNameVersion}")]
-        public string Activate(string actionNameVersion, ActionDesignDTO curActionDTO)
+        [Route("activate")]
+        public string Activate(ActionDO curActionDO)
         {
             return string.Empty;
         }
 
         [HttpPost]
-        [Route("Write_To_Sql_Server/execute/{actionNameVersion}")]
-        public string Execute(string actionNameVersion, ActionDesignDTO curActionDTO)
+        [Route("execute")]
+        public string Execute(ActionDO curActionDO)
         {
             return string.Empty;
         }

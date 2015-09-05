@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
@@ -117,16 +118,14 @@ namespace Core.Services
         {
             if (curActionDO != null)
             {
-                //var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                //var curConfigurationSettingsJson =
-                //    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                //        "GetConfigurationSettings", curActionTemplateDo);
+                string pluginUrl = curActionDO.ActionTemplate.ParentPluginRegistration + curActionDO.ActionTemplate.ActionType + "/actions/configure/";
 
-                //return curConfigurationSettingsJson;
+                var curActionDto = Mapper.Map<ActionDesignDTO>(curActionDO);
 
+                var restClient = new RestfulServiceClient();
+                string curConfigurationStoreJson = restClient.PostAsync(new Uri(pluginUrl, UriKind.Absolute), curActionDO).Result;
 
-
-                return string.Empty;
+                return curConfigurationStoreJson;
             }
             else
             {

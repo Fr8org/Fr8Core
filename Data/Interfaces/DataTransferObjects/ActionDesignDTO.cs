@@ -19,6 +19,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("actionTemplateId")]
         public int? ActionTemplateId { get; set; }
 
+        [JsonProperty("actionTemplate")]
+        public ActionTemplateDTO ActionTemplate { get; set; }
+
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
     }
