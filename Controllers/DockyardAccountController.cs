@@ -107,13 +107,13 @@ namespace Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult ProcessRegistration(RegistrationVM model)
+        public ActionResult ProcessRegistration(RegistrationVM submittedRegData)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
+                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", @"You are already registered with us. Please login.");
@@ -123,8 +123,8 @@ namespace Web.Controllers
                         // return RedirectToAction("Index", "Home");
 	                  return this.Login(new LoginVM
 	                  {
-		                  Email = model.Email.Trim(),
-		                  Password = model.Password.Trim(),
+                          Email = submittedRegData.Email.Trim(),
+                          Password = submittedRegData.Password.Trim(),
 		                  RememberMe = false
 	                  },string.Empty).Result;
                     }

@@ -30,7 +30,7 @@ namespace Web
         {
             ConfigureDaemons();
             ConfigureAuth(app);
-            //ConfigureCommunicationConfigs();
+
             RegisterPluginActions();
 
             //var forwardingMiddleware = new 
