@@ -67,7 +67,7 @@ namespace pluginAzureSqlServer.Controllers
             //
             return string.Empty;
         }
-
+       
         [HttpPost]
         [Route("Write_To_Sql_Server/activate/{actionNameVersion}")]
         public string Activate(string actionNameVersion, ActionDesignDTO curActionDTO)
@@ -80,6 +80,15 @@ namespace pluginAzureSqlServer.Controllers
         public string Execute(string actionNameVersion, ActionDesignDTO curActionDTO)
         {
             return string.Empty;
+        }
+
+        [HttpPost]
+        [Route("Write_To_Sql_Server")]
+        public IHttpActionResult Process(ActionPayloadDTO curActionDTO)
+        {
+            var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
+            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+            return Ok(_actionHandler.GetFieldMappings(curAction));
         }
     }
 }

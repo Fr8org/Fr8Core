@@ -17,7 +17,7 @@ namespace Web
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 ExpireTimeSpan = TimeSpan.FromHours(1),
-                LoginPath = new PathString("/Account/Index"),
+                LoginPath = new PathString("/DockyardAccount/Index"),
                 Provider = new CookieAuthenticationProvider
                 {
                     OnApplyRedirect =
