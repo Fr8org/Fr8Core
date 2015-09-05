@@ -77,7 +77,7 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             var origActionDO = new ActionDO()
             {
-                ParentActionListID = null,
+                ParentActionListId = null,
                 Name = "type 1",
                 Id = 34,
                 ConfigurationSettings = "config settings",
@@ -123,7 +123,7 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 6,
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 Ordering = 2,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -138,7 +138,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 7,
                 Name = "Action 7",
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 Ordering = 3,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -153,7 +153,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 8,
                 Name = "Action 8",
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
                 ParentActionList = FixtureData.TestActionList6(),
@@ -171,7 +171,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 5,
                 Name = "Action 5",
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -199,7 +199,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Action 1",
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 Ordering = 1,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -213,7 +213,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 Name = "Action 2",
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 Ordering = 2,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -228,7 +228,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 10,
                 Name = "WriteToAzureSql",
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 ConfigurationSettings = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
@@ -264,7 +264,7 @@ namespace UtilitiesTesting.Fixtures
             var actionDo = new ActionDO()
             {
                 ParentActionList = actionListDo,
-                ParentActionListID = 1,
+                ParentActionListId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
@@ -287,7 +287,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 ConfigurationSettings = "config settings",
-                ParentActionListID = 88,
+                ParentActionListId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };
             return actionDo;

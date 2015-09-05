@@ -86,7 +86,7 @@ namespace Core.Services
 				if (existingActionDo != null)
 				{
 					existingActionDo.ParentActionList = currentActionDo.ParentActionList;
-					existingActionDo.ParentActionListID = currentActionDo.ParentActionListID;
+					existingActionDo.ParentActionListId = currentActionDo.ParentActionListId;
 					existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
 					existingActionDo.Name = currentActionDo.Name;
 					existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
@@ -342,7 +342,7 @@ namespace Core.Services
 						.Where(x => x.ParentActionListId == currActivity.Id)
 						.OrderBy(z => z.Ordering);
 			var orderedActions = uow.ActionRepository.GetAll()
-				.Where(x => x.ParentActionListID == currActivity.Id)
+				.Where(x => x.ParentActionListId == currActivity.Id)
 				.OrderBy(z => z.Ordering);
 			// We are putting all things to ActivityDO array and sorting it by Ordering property because of importance of order
 			// Created needed size array

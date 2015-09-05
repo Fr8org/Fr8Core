@@ -41,10 +41,10 @@ namespace Core.Services
 
         public void AddAction(ActionDO curActionDO, string position)
         {
-            if (!curActionDO.ParentActionListID.HasValue)
+            if (!curActionDO.ParentActionListId.HasValue)
                 throw new NullReferenceException("ActionListId");
 
-            var curActionList = GetByKey(curActionDO.ParentActionListID.Value);
+            var curActionList = GetByKey(curActionDO.ParentActionListId.Value);
             if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
                 Reorder(curActionList, curActionDO, position);
             else

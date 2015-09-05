@@ -10,7 +10,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
 		  [ForeignKey("ParentActionList")]
-        public int? ParentActionListID { get; set; }
+        public int? ParentActionListId { get; set; }
         public virtual ActionListDO ParentActionList { get; set; }
 
         public string ConfigurationSettings { get; set; }
