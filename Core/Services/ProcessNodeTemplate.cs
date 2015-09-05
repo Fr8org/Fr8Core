@@ -89,7 +89,7 @@ namespace Core.Services
             // Remove all actions.
             uow.ActionRepository
                 .GetQuery()
-                .Where(x => x.ActionList.ProcessNodeTemplate.Id == id)
+                .Where(x => x.ParentActionList.ProcessNodeTemplate.Id == id)
                 .ToList()
                 .ForEach(x => uow.ActionRepository.Remove(x));
 

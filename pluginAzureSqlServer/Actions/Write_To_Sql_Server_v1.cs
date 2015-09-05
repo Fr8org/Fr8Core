@@ -9,6 +9,7 @@ using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Services;
 using PluginUtilities.Infrastructure;
 using StructureMap;
+using PluginUtilities;
 
 namespace pluginAzureSqlServer.Actions {
     
@@ -38,22 +39,25 @@ namespace pluginAzureSqlServer.Actions {
 
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
-        private object GetFieldMappings(ActionDO curActionDO) {
+        public object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
-            var fieldsArray = settings.Value<JArray>("fields");
-
-            string connString = null;
-            foreach (var fieldObjectToken in fieldsArray)
+            if (string.IsNullOrEmpty(curActionDO.ConfigurationSettings))
             {
-                var fieldObject = fieldObjectToken.ToObject<JObject>();
-                if (fieldObject.Value<string>("name") != "connection_string")
-                {
-                    continue;
-                }
-
-                connString = fieldObject.Value<string>("value");
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
+
+            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationSettings);
+            if (configuration == null || configuration.Fields.Count == 0)
+            {
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var connStringField = configuration.Fields.Find(f => f.Name == "connection_string");
+            if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
+            {
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+            string connString = connStringField.Value;
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
