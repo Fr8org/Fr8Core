@@ -10,22 +10,26 @@ module dockyard.tests.controller {
             done.fail(response.responseText);
         }
 
+
         var validationRules = function (data: any, status: string) {
             expect(data).not.toBe(null);
             expect(status).toBe("success");
         }
 
+
         beforeAll(function () {
             $(document).ajaxError(errorHandler);
-            $.ajaxSetup({ async: false, dataType: "json", contentType: "text/json" });
+            $.ajaxSetup({ async: false, dataType: "html", contentType: "text/json" });
         });
 
-        it("LoggOff should return a page", function () {
+
+        it("LogOff should return a page", function () {
             $.get(controllerPoint + "logoff")
                 .done((data: any, status: string) => {
                     validationRules(data, status);
                 });
         });
+
 
         it("RegistrationSuccessful action should return the page", function () {
             $.get(controllerPoint + "registrationsuccessful")
@@ -34,12 +38,22 @@ module dockyard.tests.controller {
                 });
         });
 
+
         it("Confirm action should return the page", function () {
             $.get(controllerPoint + "confirm", { email: null })
                 .done((data: any, status: string) => {
                     validationRules(data, status);
                 });
         });
+
+        it("Login action should return the page", function () {
+            $.post(controllerPoint + "login",
+                { Login: "12345", Password: "12345" })
+                .done((data: any, status: string) => {
+                    validationRules(data, status);
+                });
+        });
+
 
         it("Register action should return the page", function () {
             $.get(controllerPoint + "register")
@@ -48,18 +62,13 @@ module dockyard.tests.controller {
                 });
         });
 
-        it("Login action should return the page", function () {
-            $.post(controllerPoint + "login")
-                .done((data: any, status: string) => {
-                    validationRules(data, status);
-                });
-        });
 
         it("ProcessRegistration action should return the page", function () {
+
             $.post(controllerPoint + "processregistration")
                 .done((data: any, status: string) => {
                     validationRules(data, status);
                 });
         });
-    });
+    })
 } 
