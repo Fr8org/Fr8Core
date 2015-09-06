@@ -11,6 +11,7 @@ module dockyard.services {
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
+    export interface ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> { }
 
     app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessTemplateService =>
         <IProcessTemplateService> $resource(urlPrefix + '/processTemplate/:id', { id: '@id' })
@@ -21,7 +22,11 @@ module dockyard.services {
     ]);
 
     app.factory('DocuSignTriggerService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/triggersettings')
+        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/trigg ersettings')
+    ]);
+
+    app.factory('CriteriaService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
+        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/trigg ersettings')
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>
@@ -35,6 +40,13 @@ module dockyard.services {
                     isArray: true,
                     url: '/actions/save'
                 },
+                //'get': {
+                //    transformResponse: function (data) {
+                //        //Map a proto-action object to an actual ActionDesignDTO instance so that we can access methods 
+                //        var dataObject: interfaces.IActionDesignDTO = angular.fromJson(data);
+                //        return model.ActionDesignDTO.create(dataObject);
+                //    }
+                //},
                 'delete': { method: 'DELETE' },
                 'getConfigurationSettings': {
                     method: 'GET',

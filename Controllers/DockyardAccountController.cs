@@ -1,3 +1,4 @@
+
 ﻿using System;
 using System.Linq;
 using System.Net.Mail;
@@ -27,10 +28,12 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                String senderMailAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+                String senderMailAddress =
+                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
 
                 EmailDO emailDO = new EmailDO();
-                emailDO.AddEmailRecipient(EmailParticipantType.To, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
+                emailDO.AddEmailRecipient(EmailParticipantType.To,
+                    Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
                 emailDO.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
 
                 emailDO.Subject = message.Subject;
@@ -99,7 +102,7 @@ namespace Web.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Confirm(RegisterVM model)
+        public ActionResult Confirm(RegistrationVM model)
         {
             return View(model);
         }
@@ -107,13 +110,14 @@ namespace Web.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterVM model)
+        public ActionResult ProcessRegistration(RegistrationVM submittedRegData)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
+                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(
+                        submittedRegData.Email.Trim(), submittedRegData.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", @"You are already registered with us. Please login.");
@@ -121,12 +125,12 @@ namespace Web.Controllers
                     else
                     {
                         // return RedirectToAction("Index", "Home");
-	                  return this.Login(new LoginVM
-	                  {
-		                  Email = model.Email.Trim(),
-		                  Password = model.Password.Trim(),
-		                  RememberMe = false
-	                  },string.Empty).Result;
+                        return this.Login(new LoginVM
+                        {
+                            Email = submittedRegData.Email.Trim(),
+                            Password = submittedRegData.Password.Trim(),
+                            RememberMe = false
+                        }, string.Empty).Result;
                     }
                 }
             }
@@ -153,7 +157,8 @@ namespace Web.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus = await new DockyardAccount().ProcessLoginRequest(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus =
+                        await new DockyardAccount().ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -161,12 +166,14 @@ namespace Web.Controllers
                             break;
 
                         case LoginStatus.ImplicitUser:
-                            ModelState.AddModelError("", @"We already have a record of that email address, but No password exists for this Email id. 
+                            ModelState.AddModelError("",
+                                @"We already have a record of that email address, but No password exists for this Email id. 
 Please register first.");
                             break;
 
                         case LoginStatus.UnregisteredUser:
-                            ModelState.AddModelError("", @"We do not have a registered account associated with this email address. 
+                            ModelState.AddModelError("",
+                                @"We do not have a registered account associated with this email address. 
 Please register first.");
                             break;
 
@@ -180,7 +187,7 @@ Please register first.");
 
                                 if (getRole == "Admin")
                                     return RedirectToAction("Index", "Dashboard");
-                                   // return RedirectToAction("MyAccount", "User");
+                                // return RedirectToAction("MyAccount", "User");
                                 else if (getRole == "Booker")
                                     return RedirectToAction("Index", "Booker");
 

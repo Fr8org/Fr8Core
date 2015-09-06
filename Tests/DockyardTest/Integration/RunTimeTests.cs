@@ -1,4 +1,5 @@
 ﻿﻿using System;
+﻿using Core.Managers.APIManagers.Transmitters.Plugin;
 ﻿using Core.Services;
 ﻿using Data.Entities;
 ﻿using Data.Interfaces;
@@ -24,6 +25,12 @@ namespace DockyardTest.Integration
             // SETUP
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+
+                ObjectFactory.Configure(x =>
+                {
+                    x.For<IPluginTransmitter>().Use<PluginTransmitter>();
+                });
+
                 //create a registered account
                 DockyardAccount _account = new DockyardAccount();              
                 var registeredAccount = _account.Register(uow, "devtester", "dev", "tester", "password", "User");
@@ -82,7 +89,7 @@ namespace DockyardTest.Integration
 
             //add write action to actionlist
             var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
-            healthWriteAction.ActionListId = healthActionList.Id;
+            healthWriteAction.ParentActionListId = healthActionList.Id;
             healthActionList.CurrentActivity = healthWriteAction;
 
             //add field mappings to write action

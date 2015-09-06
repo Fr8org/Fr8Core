@@ -230,6 +230,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IEnvelope.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -253,6 +254,10 @@
     <Compile Include="Migrations\201509031000594_DO_947_Migration.cs" />
     <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.cs" />
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.Designer.cs">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201509051729450_DO_954_Migration.cs" />
     <Compile Include="Migrations\201509051729450_DO_954_Migration.Designer.cs">
@@ -484,9 +489,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509051729450_DO_954_Migration.resx">
-      <DependentUpon>201509051729450_DO_954_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

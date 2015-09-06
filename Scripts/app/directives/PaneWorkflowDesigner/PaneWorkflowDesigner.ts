@@ -20,8 +20,8 @@ module dockyard.directives.paneWorkflowDesigner {
             });
 
             scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting],
-                new ProcessNodeTemplateSelectingEventArgs(eventArgs.id, eventArgs.isTempId)
+                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
+                new CriteriaSelectedEventArgs(eventArgs.id, eventArgs.isTempId)
                 );
         };
 
@@ -100,8 +100,8 @@ module dockyard.directives.paneWorkflowDesigner {
                 widget.on('criteriaNode:click', function (e, criteriaId, isTempId) {
                     scope.$apply(function () {
                         scope.$emit(
-                            MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateSelecting],
-                            new ProcessNodeTemplateSelectingEventArgs(criteriaId, isTempId)
+                            MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
+                            new CriteriaSelectedEventArgs(criteriaId, isTempId)
                         );
                     });
                 });
