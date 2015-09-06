@@ -6,11 +6,12 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        getConfigurationSettings: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationSettingsVM>;
+        getConfigurationStore: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationStoreVM>;
         getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
+    export interface ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> { }
 
     app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IProcessTemplateService =>
         <IProcessTemplateService> $resource(urlPrefix + '/processTemplate/:id', { id: '@id' })
@@ -21,7 +22,11 @@ module dockyard.services {
     ]);
 
     app.factory('DocuSignTriggerService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/triggersettings')
+        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/trigg ersettings')
+    ]);
+
+    app.factory('CriteriaService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IDocuSignTriggerService =>
+        <IDocuSignTriggerService> $resource(urlPrefix + '/processtemplate/trigg ersettings')
     ]);
 
     app.factory('ActionService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService, urlPrefix: string): IActionService =>

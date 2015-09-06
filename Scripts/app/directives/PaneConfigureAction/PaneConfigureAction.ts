@@ -34,7 +34,7 @@ module dockyard.directives.paneConfigureAction {
         action: interfaces.IActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
-        configurationSettings: ng.resource.IResource<model.ConfigurationSettings> | model.ConfigurationSettings;
+        configurationStore: ng.resource.IResource<model.ConfigurationStore> | model.ConfigurationStore;
         mapFields: (scope: IPaneConfigureActionScope) => void;
     }
 
@@ -81,7 +81,7 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
-            model.ConfigurationSettings
+            model.ConfigurationStore
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -95,15 +95,15 @@ module dockyard.directives.paneConfigureAction {
 
             // Get configuration settings template from the server if the current action does not 
             // contain those or user has selected another action template.
-            if (scope.currentAction.configurationSettings == null
-                || scope.currentAction.configurationSettings.fields == null
-                || scope.currentAction.configurationSettings.fields.length == 0
+            if (scope.currentAction.configurationStore == null
+                || scope.currentAction.configurationStore.fields == null
+                || scope.currentAction.configurationStore.fields.length == 0
                 || (eventArgs.action.id == this._currentAction.id &&
                     eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
 
                 if (eventArgs.action.actionTemplateId > 0) {
-                    (<any>scope.currentAction).configurationSettings =
-                    this.ActionService.getConfigurationSettings({ id: eventArgs.action.actionTemplateId });
+                    (<any>scope.currentAction).configurationStore =
+                    this.ActionService.getConfigurationStore({ id: eventArgs.action.actionTemplateId });
                 }
             }
 

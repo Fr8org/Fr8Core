@@ -1,10 +1,9 @@
 ﻿/// <reference path="../../_all.ts" />
- 
+
 module dockyard.directives.paneDefineCriteria {
     'use strict';
 
     export function PaneDefineCriteria(): ng.IDirective {
-
         var disposeActionListener: Function; // a function to deregister currentAction watch upon Hide()
 
         // Get url for ProcessNodeTemplate create, update, delete operations.
@@ -66,7 +65,7 @@ module dockyard.directives.paneDefineCriteria {
                 );
 
             // Create criteria with default conditions, and temporary criteria.id.
-            var criteria = new model.Criteria(
+            var criteria = new model.CriteriaDTO(
                 criteriaId,
                 true,
                 processNodeTemplate.id,
@@ -88,15 +87,15 @@ module dockyard.directives.paneDefineCriteria {
                         .success(function (criteriaDTO: any) {
                             // Construct ProcessNodeTemplate object from DTO.
                             var processNodeTemplate = new model.ProcessNodeTemplate(
-                                processNodeTemplateDTO.Id,
+                                processNodeTemplateDTO.id,
                                 false,
                                 processNodeTemplateDTO.ProcessNodeTemplateId,
                                 processNodeTemplateDTO.Name
                                 );
 
                             // Construct Criteria object from DTO.
-                            var criteria = new model.Criteria(
-                                criteriaDTO.Id,
+                            var criteria = new model.CriteriaDTO(
+                                criteriaDTO.id,
                                 false,
                                 processNodeTemplate.id,
                                 criteriaDTO.ExecutionType
@@ -227,12 +226,12 @@ module dockyard.directives.paneDefineCriteria {
                     var processNodeTemplateTempId: number = scope.processNodeTemplate.id;
 
                     scope.processNodeTemplate.isTempId = false;
-                    scope.processNodeTemplate.id = processNodeTemplateResult.Id;
+                    scope.processNodeTemplate.id = processNodeTemplateResult.id;
 
                     // Fetch criteria object from server by ProcessNodeTemplate global ID.
-                    var url = getCriteriaIdUrl(urlPrefix, processNodeTemplateResult.Id);
+                    var url = getCriteriaIdUrl(urlPrefix, processNodeTemplateResult.id);
                     http.get(url).success(function (criteriaResult: any) {
-                        scope.processNodeTemplate.criteria.id = criteriaResult.Id;
+                        scope.processNodeTemplate.criteria.id = criteriaResult.id;
                         scope.processNodeTemplate.criteria.isTempId = false;
 
                         // Update criteria object on server.
@@ -252,7 +251,7 @@ module dockyard.directives.paneDefineCriteria {
                                 console.log('DefineCriteriaPane::save succeded');
 
                                 // Invoke callback, after all asynchronous HTTP operations were completed.
-                                callback(new SaveCallbackArgs(processNodeTemplateResult.Id, processNodeTemplateTempId));
+                                callback(new SaveCallbackArgs(processNodeTemplateResult.id, processNodeTemplateTempId));
                             });
                     });
                 });
@@ -361,6 +360,87 @@ module dockyard.directives.paneDefineCriteria {
 
             }
         };
+    }
+
+    export enum MessageType {
+        PaneDefineCriteria_Render,
+        PaneDefineCriteria_Hide,
+        PaneDefineCriteria_Save,
+        PaneDefineCriteria_ProcessNodeTemplateRemoving,
+        PaneDefineCriteria_ProcessNodeTemplateUpdating,
+        PaneDefineCriteria_Cancelling
+    }
+
+    export class RenderEventArgs {
+        public fields: Array<model.Field>;
+        public processTemplateId: number;
+        public id: number;
+        public isTempId: boolean;
+
+        constructor(fields: Array<model.Field>, processTemplateId: number,
+            id: number, isTempId: boolean) {
+
+            this.fields = fields;
+            this.processTemplateId = processTemplateId;
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class SaveEventArgs {
+        public callback: (args: SaveCallbackArgs) => void;
+
+        constructor(callback: (args: SaveCallbackArgs) => void) {
+            this.callback = callback;
+        }
+    }
+
+    export class SaveCallbackArgs {
+        public id: number;
+        public tempId: number;
+
+        constructor(id: number, tempId: number) {
+            this.id = id;
+            this.tempId = tempId;
+        }
+    }
+
+    export class ProcessNodeTemplateRemovingEventArgs {
+        public processNodeTemplateId: number;
+        public isTempId: boolean;
+
+        constructor(processNodeTemplateId: number, isTempId: boolean) {
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class ProcessNodeTemplateUpdatingEventArgs {
+        public processNodeTemplateId: number;
+        public name: string;
+        public processNodeTemplateTempId: number;
+
+        constructor(
+            processNodeTemplateId: number,
+            name: string,
+            processNodeTemplateTempId: number) {
+
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.name = name;
+            this.processNodeTemplateTempId = processNodeTemplateTempId;
+        }
+    }
+
+    export interface IPaneDefineCriteriaScope extends ng.IScope {
+        isVisible: boolean;
+        removeCriteria: () => void;
+        save: () => void;
+        cancel: () => void;
+        operators: Array<interfaces.IOperator>;
+        defaultOperator: string;
+        processNodeTemplate: model.ProcessNodeTemplate;
+        fields: Array<model.Field>;
+        currentAction: interfaces.IActionVM;
     }
 }
 

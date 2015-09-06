@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ConfigurationSettings {
+    export class ConfigurationStore {
         fields: Array<ConfigurationField>
     }
 

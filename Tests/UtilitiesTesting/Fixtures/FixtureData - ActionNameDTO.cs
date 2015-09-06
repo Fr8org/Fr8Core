@@ -13,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActionNameDTO
             {
-                ActionType = "Write SQL",
+                Name = "Write SQL",
                 Version = "1.0"
             };
         }
