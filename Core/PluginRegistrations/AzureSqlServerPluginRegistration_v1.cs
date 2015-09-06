@@ -18,14 +18,21 @@ namespace Core.PluginRegistrations
         //private readonly ActionNameListDTO availableActions;
         // private const string availableActions = @"[{ ""ActionType"" : ""Write to Sql Server"" , ""Version"": ""1.0"", ""ParentPluginRegistration"": ""AzureSql""}]";
         //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
+
+        public const string PluginRegistrationName = "AzureSqlServer";
+
 #if DEBUG
-        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
-        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server";
+        // IMPORTANT
+        // Please always use training slash in the end of plugin URL. For details see: 
+        // http://stackoverflow.com/questions/23438416/why-is-httpclient-baseaddress-not-working
+        //
+        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server/";
+        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server/";
 #else
-        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
+        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1/";
 #endif
         public AzureSqlServerPluginRegistration_v1()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
 
         }
@@ -43,21 +50,19 @@ namespace Core.PluginRegistrations
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            return @"
-                {'fields':
-                    [{
-                        'type': 'textField',
-                        'name': 'connection_string',
-                        'required': true,
-                        'value':'',
-                        'fieldLabel':'SQL Connection String'
-                     }]
-                }";
+
+            if (curActionDO == null)
+                throw new ArgumentNullException("curAction");
+
+            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
+            curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("connection_string", true, "", "SQL Connection String"));
+
+            return JsonConvert.SerializeObject(curConfigurationSettings);
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)
         {
-           
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseUrl);

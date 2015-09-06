@@ -189,7 +189,7 @@
                     height: ns.WidgetConsts.startNodeHeight
                 });
             
-            var label = new fabric.Text('Choose Template...', {
+            var label = new fabric.Text('Define Triggers', {
                 fontSize: ns.WidgetConsts.startNodeTextSize,
                 fontFamily: ns.WidgetConsts.startNodeTextFont,
                 fontWeight: ns.WidgetConsts.startNodeTextWeight,

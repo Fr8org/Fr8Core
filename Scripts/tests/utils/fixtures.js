@@ -18,6 +18,18 @@ var dockyard;
                     'ProcessTemplateState': 1,
                     'SubscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
                 };
+                Fixtures.fieldMappingSettings = {
+                    "fields": [
+                        {
+                            "name": "[_AccessLevelTemplate].Value]",
+                            "value": "Text"
+                        },
+                        {
+                            "name": "[_AccessLevelTemplate].Version]",
+                            "value": "Checkbox"
+                        }
+                    ]
+                };
                 Fixtures.configurationSettings = {
                     "fields": [
                         {

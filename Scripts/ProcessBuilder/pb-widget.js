@@ -230,16 +230,12 @@
         //     actionId - id of action.
         //     isTempId - flag.
         removeAction: function (actionId, isTempId) {
-            debugger;
-
             var i, j, criteria, foundFlag;
             for (i = 0; i < this._criteria.length; ++i) {
                 var criteria = this._criteria[i];
 
                 foundFlag = false;
                 for (j = 0; j < criteria.actions.length; ++j) {
-                    debugger;
-
                     if (criteria.actions[j].id == actionId
                         && criteria.actions[j].isTempId == isTempId) {
 

@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
 using Data.Entities;
@@ -12,10 +14,11 @@ using Data.Interfaces.DataTransferObjects;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Core.PluginRegistrations;
+using Newtonsoft.Json;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/actions")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private readonly IAction _action;
@@ -61,6 +64,7 @@ namespace Web.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
+        [Route("{id:int}")]
         public ActionDesignDTO Get(int id)
         {
             return Mapper.Map<ActionDesignDTO>(_action.GetById(id)); 
@@ -70,6 +74,7 @@ namespace Web.Controllers
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpDelete]
+        [Route("{id:int}")]
         public void Delete(int id)
         {
             _action.Delete(id); 
@@ -79,6 +84,7 @@ namespace Web.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
+        [Route("save")]
         public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);

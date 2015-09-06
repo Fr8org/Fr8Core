@@ -13,20 +13,11 @@ module dockyard.directives.paneConfigureAction {
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
 
     export class RenderEventArgs {
-        public processNodeTemplateId: number;
-        public id: number;
-        public isTempId: boolean;
-        public actionListId: number;
+        public action: interfaces.IActionDesignDTO
 
-        constructor(
-            processNodeTemplateId: number,
-            id: number,
-            isTempId: boolean,
-            actionListId: number) {
-
-            this.actionListId = actionListId;
-            this.id = id;
-            this.isTempId = isTempId;
+        constructor(action: interfaces.IActionDesignDTO) {
+            // Clone Action to prevent any issues due to possible mutation of source object
+            this.action = angular.extend({}, action);
         }
     }
 
@@ -40,7 +31,7 @@ module dockyard.directives.paneConfigureAction {
 
     export interface IPaneConfigureActionScope extends ng.IScope {
         onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) => void;
-        action: model.ActionDesignDTO;
+        action: interfaces.IActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
         configurationSettings: ng.resource.IResource<model.ConfigurationSettings> | model.ConfigurationSettings;
@@ -61,6 +52,8 @@ module dockyard.directives.paneConfigureAction {
         };
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
+        private _currentAction: interfaces.IActionDesignDTO =
+            new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
 
         constructor(private $rootScope: interfaces.IAppRootScope, private ActionService: services.IActionService) {
             PaneConfigureAction.prototype.link = (
@@ -79,7 +72,7 @@ module dockyard.directives.paneConfigureAction {
 
                 //Controller goes here
 
-                $scope.$watch<model.ActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
 
@@ -93,24 +86,31 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
-            debugger;
-            scope.action = new model.ActionDesignDTO(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId,
-                eventArgs.actionListId
-                );
+
+            scope.action = eventArgs.action;
 
             //for now ignore actions which were not saved in the database
-            if (eventArgs.isTempId || scope.currentAction == null) return;
+            if (eventArgs.action.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
 
+            // Get configuration settings template from the server if the current action does not 
+            // contain those or user has selected another action template.
             if (scope.currentAction.configurationSettings == null
                 || scope.currentAction.configurationSettings.fields == null
-                || scope.currentAction.configurationSettings.fields.length == 0) {
+                || scope.currentAction.configurationSettings.fields.length == 0
+                || (eventArgs.action.id == this._currentAction.id &&
+                    eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
 
-                scope.currentAction = this.ActionService.getConfigurationSettings({ actionDesign: scope.action });  //TODO supply real actionRegistrationId 
+                if (eventArgs.action.actionTemplateId > 0) {
+                    (<any>scope.currentAction).configurationSettings =
+                    this.ActionService.getConfigurationSettings({ id: eventArgs.action.actionTemplateId });
+                }
             }
+
+            // Create a directive-local immutable copy of action so we can detect 
+            // a change of actionTemplateId in the currently selected action
+            this._currentAction = angular.extend({}, eventArgs.action);
+
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -135,14 +135,14 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
-    app.run([
-        "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
+    //app.run([
+    //    "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
 
-            httpBackend
-                .whenGET("/apimock/Action/configuration/1")
-                .respond(tests.utils.Fixtures.configurationSettings);
-        }
-    ]);
+    //        httpBackend
+    //            .whenGET("/apimock/Action/configuration/1")
+    //            .respond(tests.utils.Fixtures.configurationSettings);
+    //    }
+    //]);
     app.directive('paneConfigureAction', PaneConfigureAction.Factory());
 
 }

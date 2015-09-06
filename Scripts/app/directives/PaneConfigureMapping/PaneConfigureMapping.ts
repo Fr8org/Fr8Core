@@ -34,36 +34,40 @@ module dockyard.directives.paneConfigureMapping {
 
         public controller = ["$scope", "$http", "urlPrefix", ($scope, $http, urlPrefix) => {
 
-            var mappedValue = <any>{
-                Map: [
-                ]
-            };
+            var updateScopedAction = () => {
+                var fields = [];
 
-
-            var transform = () => {
-                if (!$scope.toBeMappedFrom)
-                    return;
-                if ($scope.toBeMappedFrom.constructor !== Array && $scope.toBeMappedFrom < 0)
-                    return;
-                mappedValue.Map = [];
-                var includeOnly = ['Id', 'Name', 'type'];
-
-                $scope.toBeMappedFrom.forEach((current) => {
-                    mappedValue.Map.push({
-                        from: _.pick(current, includeOnly), to: _.pick(current.mappedTo, includeOnly)
+                if ($scope.mode === 'param') {
+                    $scope.toBeMappedFrom.forEach((it) => {
+                        if (it.mappedTo && it.mappedTo.Name) {
+                            fields.push(new model.FieldMapping(it.mappedTo.Name, it.Name));
+                        }
                     });
-                });
+                }
+                else {
+                    $scope.toBeMappedFrom.forEach((it) => {
+                        if (it.mappedTo && it.mappedTo.Name) {
+                            fields.push(new model.FieldMapping(it.Name, it.mappedTo.Name));
+                        }
+                    });
+                }
+
+                if (!$scope.currentAction.fieldMappingSettings) {
+                    $scope.currentAction.fieldMappingSettings = new model.FieldMappingSettings();
+                }
+
+                $scope.currentAction.fieldMappingSettings.fields = fields;
             };
 
             function render() {
                 var loadedActions = false;
                 var loadedFields = false;
-                $scope.mappedValue = mappedValue;
 
                 $http
-                    .post(urlPrefix + "/actions/field_mapping_targets/", $scope.currentAction)
+                    .post("/actions/field_mapping_targets/", $scope.currentAction)
                     .then((returnedParams) => {
                         loadedActions = true;
+
                         var tempToBeMapped = [];
 
                         returnedParams.data.forEach((actionParam) => {
@@ -76,16 +80,18 @@ module dockyard.directives.paneConfigureMapping {
                             $scope.HeadingLeft = "Source Data";
                             return;
                         }
+
                         $scope.toBeMappedFrom = tempToBeMapped;
-                        transform();
                         $scope.HeadingLeft = "Source Data";
                         $scope.HeadingRight = "Target Data";
+
                         return;
                     });
 
-                $http.post(urlPrefix + "/actions/field_data_sources/", $scope.currentAction)
+                $http.post("/actions/field_data_sources/", $scope.currentAction)
                     .then((dataSources) => {
                         loadedFields = true;
+
                         var tempToBeMapped = [];
                         dataSources.data.forEach((docField) => {
                             tempToBeMapped.push({ 'type': "docusignfield", 'Name': docField }); //should be renamed from docusignField to 'data source'
@@ -93,11 +99,10 @@ module dockyard.directives.paneConfigureMapping {
 
                         if ($scope.mode === "param") {
                             $scope.toBeMappedFrom = tempToBeMapped;
-                            transform();
                             return;
                         }
-                        $scope.toBeMappedTo = tempToBeMapped;
 
+                        $scope.toBeMappedTo = tempToBeMapped;
                     });
 
                 $scope.doneLoading = () => loadedActions && loadedFields;
@@ -110,15 +115,12 @@ module dockyard.directives.paneConfigureMapping {
                 }
 
                 $scope.uiDropDownChanged = () => {
-                    transform();
+                    updateScopedAction();
                 };
-
             }
 
             var onRender = () => {
-                debugger;
                 render();
-                transform();
             }
 
             var onHide = () => {

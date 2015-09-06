@@ -1,15 +1,18 @@
 ﻿module dockyard.model {
     export enum CriteriaExecutionType {
+        NoSet = 0,
         WithConditions = 1,
         WithoutConditions = 2
     }
 
-    export class Criteria {
+    export class Criteria implements interfaces.ICriteria {
         public id: number;
         public isTempId: boolean;
         public processNodeTemplateId: number;
         public conditions: Array<Condition>;
         public executionType: CriteriaExecutionType;
+        public userLabel: string;
+        public actions: Array<ActionDesignDTO>;
 
         constructor(
             id: number,

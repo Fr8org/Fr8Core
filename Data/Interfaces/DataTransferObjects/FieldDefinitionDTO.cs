@@ -30,7 +30,7 @@ namespace Data.Interfaces.DataTransferObjects
         }
 
         public const string CHECKBOX_FIELD = "checkboxField";
-        public const string TEXTBOX_FIELD = "textboxField";
+        public const string TEXTBOX_FIELD = "textField";
 
         [JsonProperty("name")]
         public string Name { get; set; }

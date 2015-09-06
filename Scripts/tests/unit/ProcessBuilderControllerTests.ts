@@ -97,9 +97,9 @@ module dockyard.tests.controller {
         //Rule #7
         it("When PaneSelectAction_ActionTypeSelected is sent, " +
             "PaneConfigureAction_Render should be received with correct args", () => {
-                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(1, 2, false, 3, 1, "myaction"),
+                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(new model.ActionDesignDTO(1, 2, false, 3)),
                     outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false),
-                    outgoingEvent2Args = new pca.RenderEventArgs(1, 2, false, 3);
+                    outgoingEvent2Args = new pca.RenderEventArgs(new model.ActionDesignDTO(1, 2, false, 3));
                  
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);

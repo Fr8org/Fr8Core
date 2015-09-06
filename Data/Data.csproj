@@ -230,6 +230,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
@@ -246,6 +247,14 @@
     <Compile Include="Migrations\201509011535465_DO_849_Migration.cs" />
     <Compile Include="Migrations\201509011535465_DO_849_Migration.Designer.cs">
       <DependentUpon>201509011535465_DO_849_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509031000594_DO_947_Migration.cs" />
+    <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
+      <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.cs" />
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.Designer.cs">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -354,7 +363,7 @@
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventStatusTemplate.cs" />
+    <Compile Include="States\Templates\_ExternalEventTypeTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
@@ -472,6 +481,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509011535465_DO_849_Migration.resx">
       <DependentUpon>201509011535465_DO_849_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
+      <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051519518_DO_990_Migration.resx">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

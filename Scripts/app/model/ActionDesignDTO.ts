@@ -6,7 +6,7 @@
         actionListId: number;
         name: string;
         configurationSettings: model.ConfigurationSettings;
-        fieldMappingSettings: string;
+        fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
 
         constructor(
@@ -37,6 +37,23 @@
             var result = new ActionDesignDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
             result.name = this.name;
 
+            return result;
+        }
+
+        static isActionValid(action: interfaces.IActionVM) {
+            return action && action.$resolved && !action.isTempId
+        }
+
+        static create(dataObject: interfaces.IActionDesignDTO): ActionDesignDTO {
+            var result = new ActionDesignDTO(0, 0, false, 0);
+            result.actionListId = dataObject.actionListId;
+            result.actionTemplateId = dataObject.actionTemplateId;
+            result.configurationSettings = dataObject.configurationSettings;
+            result.fieldMappingSettings = dataObject.fieldMappingSettings;
+            result.id = dataObject.id;
+            result.isTempId = dataObject.isTempId;
+            result.name = dataObject.name;
+            result.processNodeTemplateId = dataObject.processNodeTemplateId;
             return result;
         }
     }

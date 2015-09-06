@@ -10,7 +10,8 @@
     <div class="row margin-top-15" ng-repeat="mappedFrom in toBeMappedFrom ">
         <div class="col-md-6">
             <select ng-model="mappedFrom.mappedTo" class="form-control"
-                    ng-options="mappedTo  as mappedTo.Name for mappedTo in toBeMappedTo" ng-change="uiDropDownChanged()">
+                    ng-options="mappedTo  as mappedTo.Name for mappedTo in toBeMappedTo"
+                    ng-change="uiDropDownChanged()">
                 <option value="">Select Document Field</option>
             </select>
         </div>

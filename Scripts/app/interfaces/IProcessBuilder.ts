@@ -48,4 +48,35 @@ module dockyard.interfaces {
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
     export interface IExternalEventVM extends ng.resource.IResource<IExternalEvent> { }
+    export interface IDataSourceListVM extends ng.resource.IResource<Array<string>> { }
+
+    export interface IProcessBuilderController extends ng.IControllerService {
+        ptvm: interfaces.IProcessTemplateVM;
+        submit: (isValid: boolean) => void;
+        errorMessage: string;
+        pbAddCriteriaClick: () => void,
+        pbCriteriaClick: (criteriaId: number) => void,
+        pbAddActionClick: (criteriaId: number) => void,
+        pbActionClick: (criteriaId: number, actionId: number) => void,
+        processBuilder: any
+    }
+
+    export interface IProcessBuilderScope extends ng.IScope {
+        processTemplateId: number;
+        processNodeTemplates: Array<model.ProcessNodeTemplate>,
+        fields: Array<model.Field>;
+
+        // Identity of currently selected processNodeTemplate.
+        curNodeId: number;
+        // Flag, that indicates if currently selected processNodeTemplate has temporary identity.
+        curNodeIsTempId: boolean;
+        currentProcessTemplate: interfaces.IProcessTemplateVM;
+        currentAction: IActionVM;
+        currentCriteria: ICriteria; 
+        Save: Function;
+        Cancel: Function;
+    }
+
+    export interface IConfigurationSettingsVM extends ng.resource.IResource<model.ConfigurationSettings>, model.ConfigurationSettings {
+    }
 }

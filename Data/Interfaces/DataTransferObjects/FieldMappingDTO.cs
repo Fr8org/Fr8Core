@@ -1,9 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -51,15 +52,10 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class FieldMappingSettingsDTO : MappingDTOBase
+    public class FieldMappingSettingsDTO
     {
-        protected override string _rootName
-        {
-            get
-            {
-                return "field_mappings";
-            }
-        }
+        [JsonProperty("fields")]
+        public List<FieldMappingDTO> Fields { get; set; }
     }
 
     public class PayloadMappingsDTO : MappingDTOBase
