@@ -17,7 +17,7 @@ namespace pluginAzureSqlServer.Actions {
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
     //Action container class
-    public class Write_To_Sql_Server_v1 : ActionHandler {        
+    public class Write_To_Sql_Server_v1 : BasePluginAction {        
 
         //Public entry point, maps to actions from the controller
         public object Process(string path, ActionDO curActionDO) {
@@ -32,9 +32,12 @@ namespace pluginAzureSqlServer.Actions {
 
         public ConfigurationSettingsDTO Configure(ActionDO curActionDO)
         {
-            //return new ConfigurationSettingsDTO();
-            ConfigurationSettingsDTO curConfigurationStore =
-                JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
+            return DetermineConfigurationRequest(curActionDO, ConfigurationRequestTypeChecker);
+        }
+
+        private ConfigurationRequestType ConfigurationRequestTypeChecker(ActionDO curActionDO)
+        {
+            ConfigurationSettingsDTO curConfigurationStore = GetConfigurationStore(curActionDO);
 
             var curConnectionStringField =
                 curConfigurationStore.Fields.First(field => field.Name.Equals("connection_string"));
@@ -44,22 +47,8 @@ namespace pluginAzureSqlServer.Actions {
                 if (string.IsNullOrEmpty(curConnectionStringField.Value))
                 {
                     //Scenario 1 - This is the first request being made by this Action
-                    //Return back the ConfigurationStore JSON, which should just contain the single connection string text field
-
-                    curConfigurationStore = new ConfigurationSettingsDTO
-                    {
-                        Fields = new List<FieldDefinitionDTO>
-                        {
-                            new FieldDefinitionDTO
-                            {
-                                Type = "textField",
-                                Name = "connection_string",
-                                Required = true,
-                                Value = string.Empty,
-                                FieldLabel = "SQL Connection String"
-                            }
-                        }
-                    };
+                    //Return Initial configuration request type
+                    return ConfigurationRequestType.Initial;
                 }
                 else
                 {
@@ -68,11 +57,42 @@ namespace pluginAzureSqlServer.Actions {
                     //Scenario 2 - This is the seond request, being made after the user filled in the value of the connection string
                     //Scenario 3 - A data_fields was previously constructed, but perhaps the connection string has changed.
 
-                    //in either scenario, we have to update the new data fields.
-
-                    curConfigurationStore.DataFields = (List<string>) GetFieldMappings(curActionDO);
+                    //in either scenario, we have to return Followup configuration request type
+                    return ConfigurationRequestType.Followup;
                 }
             }
+
+            //This should not happen
+            return ConfigurationRequestType.Initial;
+        }
+
+        protected override ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
+        {
+            //Return one field with empty connection string
+            ConfigurationSettingsDTO curConfigurationStore = new ConfigurationSettingsDTO
+            {
+                Fields = new List<FieldDefinitionDTO>
+                {
+                    new FieldDefinitionDTO
+                    {
+                        Type = "textField",
+                        Name = "connection_string",
+                        Required = true,
+                        Value = string.Empty,
+                        FieldLabel = "SQL Connection String"
+                    }
+                }
+            };
+
+            return curConfigurationStore;
+        }
+
+        protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        {
+            //In all followup calls, update data fields of the configuration store
+            ConfigurationSettingsDTO curConfigurationStore = GetConfigurationStore(curActionDO);
+
+            curConfigurationStore.DataFields = (List<string>)GetFieldMappings(curActionDO);
 
             return curConfigurationStore;
         }
@@ -85,6 +105,11 @@ namespace pluginAzureSqlServer.Actions {
         public object ExecuteV2(ActionDO curActionDO)
         {
             return null;
+        }
+
+        private ConfigurationSettingsDTO GetConfigurationStore(ActionDO curActionDO)
+        {
+            return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
         }
 
         private const string ProviderName = "System.Data.SqlClient";
