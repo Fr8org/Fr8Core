@@ -58,16 +58,6 @@ namespace UtilitiesTesting.Fixtures
             return curActionDO;
         }
 
-        public static TemplateDO TestTemplate1()
-        {
-            var curTemplateDO = new TemplateDO(new DocuSignTemplate())
-            {
-                Id = 1
-            };
-
-            return curTemplateDO;
-        }
-
         public static ActionDO TestAction2()
         {
             var actionTemplate = ActionTemplate();

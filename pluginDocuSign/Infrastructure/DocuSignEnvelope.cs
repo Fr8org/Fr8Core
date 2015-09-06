@@ -7,8 +7,9 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
 using Utilities.Serializers.Json;
+using pluginDocuSign.Services;
 
-namespace Data.Wrappers
+namespace pluginDocuSign.Infrastructure
 {
     public class DocuSignEnvelope : Envelope, IEnvelope
     {

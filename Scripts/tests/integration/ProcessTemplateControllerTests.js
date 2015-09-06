@@ -8,7 +8,7 @@ var dockyard;
     (function (tests) {
         var controller;
         (function (controller) {
-            var fx = tests.utils.Fixtures;
+            var fx = tests.utils.Fixtures; // just an alias
             var errorHandler = function (response, detail) {
                 if (detail.status === 401) {
                     fail("User is not logged in, to run these tests, please login");
@@ -22,6 +22,7 @@ var dockyard;
                 beforeAll(function () {
                     $(document).ajaxError(errorHandler);
                     $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
+                    //Create a ProcessTemplate
                     $.post(endpoint, JSON.stringify(fx.newProcessTemplate), function (curProcessTemplate, status) { return currentProcessTemplate = curProcessTemplate; });
                 });
                 it("should get a Process Template successfully", function () {
