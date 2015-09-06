@@ -248,7 +248,6 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="PluginRegistrations\DocuSignPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />

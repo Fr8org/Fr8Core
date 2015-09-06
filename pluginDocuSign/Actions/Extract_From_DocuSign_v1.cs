@@ -4,10 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Data.Interfaces.DataTransferObjects;
 
 namespace pluginDocuSign.Actions
 {
-    public class Extract_From_DocuSign_v1 : ActionHandler
+    public class Extract_From_DocuSign_v1 : BasePluginAction
     {
         public object HandleConfigureRequest(ActionDO curActionDTO)
         {
@@ -22,6 +23,17 @@ namespace pluginDocuSign.Actions
         public object HandleExecuteRequest(ActionDO curActionDTO)
         {
             return "Execute Request"; // Will be changed when implementation is plumbed in.
-        } 
+        }
+
+        protected override ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
+        {
+            return new ConfigurationSettingsDTO();//this is nyi
+        }
+
+        protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        {
+            return new ConfigurationSettingsDTO();//this is nyi
+        }
+
     }
 }

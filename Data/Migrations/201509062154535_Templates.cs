@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class DO_954_Migration : DbMigration
+    public partial class Templates : DbMigration
     {
         public override void Up()
         {
