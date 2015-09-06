@@ -3,7 +3,7 @@
         id: number;
         actionType: string;
         version: string;
-        parentPluginRegistration: string;
+        defaultEndPoint: string;
 
         constructor(id: number, actionType: string,
             version: string) {

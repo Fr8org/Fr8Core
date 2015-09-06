@@ -88,7 +88,7 @@ var dockyard;
                 describe("Action#GetConfigurationSettings", function () {
                     var endpoint = "/actions";
                     var curActionTemplate = new dockyard.model.ActionTemplate(1, "Write to SQL", "1");
-                    curActionTemplate.parentPluginRegistration = "AzureSqlServer";
+                    curActionTemplate.defaultEndPoint = "AzureSqlServer";
                     var currentActionDesignDTO = {
                         name: "test action type",
                         configurationStore: tests.utils.Fixtures.configurationStore,
@@ -106,7 +106,7 @@ var dockyard;
                         $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
                     });
                     it("Should get the correct configuration settings (AzureSqlServerPluginRegistration_v1)", function () {
-                        var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }] });
+                        var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }], "data-fields": [] });
                         $.ajax({
                             type: "POST",
                             url: "/actions/actions/configuration",

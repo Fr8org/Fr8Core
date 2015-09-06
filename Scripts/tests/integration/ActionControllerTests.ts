@@ -96,7 +96,8 @@ module dockyard.tests.controller {
         describe("Action#GetConfigurationSettings", function () {
             var endpoint = "/actions";
             var curActionTemplate = new model.ActionTemplate(1, "Write to SQL", "1");
-            curActionTemplate.parentPluginRegistration = "AzureSqlServer";
+            curActionTemplate.defaultEndPoint = "AzureSqlServer";
+
             var currentActionDesignDTO: interfaces.IActionDesignDTO =
                     {
                         name: "test action type",
@@ -117,7 +118,7 @@ module dockyard.tests.controller {
             });
 
             it("Should get the correct configuration settings (AzureSqlServerPluginRegistration_v1)", function () {
-                var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }] });
+                var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }], "data-fields": [] });
                 $.ajax({
                     type: "POST",
                     url: "/actions/actions/configuration",
@@ -126,6 +127,7 @@ module dockyard.tests.controller {
                     dataType: "json"
                 }).done(function (data, status) {
                     expect(data).not.toBe(null);
+
                     expect(angular.equals(data, expectedSettings)).toBe(true);
                 });
             });
