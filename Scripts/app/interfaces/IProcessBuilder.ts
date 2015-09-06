@@ -58,9 +58,10 @@ module dockyard.interfaces {
         pbCriteriaClick: (criteriaId: number) => void,
         pbAddActionClick: (criteriaId: number) => void,
         pbActionClick: (criteriaId: number, actionId: number) => void,
+
         processBuilder: any
     }
 
-    export interface IConfigurationSettingsVM extends ng.resource.IResource<model.ConfigurationSettings>, model.ConfigurationSettings {
+    export interface IConfigurationStoreVM extends ng.resource.IResource<model.ConfigurationStore>, model.ConfigurationStore {
     }
 }

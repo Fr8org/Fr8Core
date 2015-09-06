@@ -19,7 +19,7 @@
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
-/// <reference path="model/configurationsettings.ts" />
+/// <reference path="model/configurationstore.ts" />
 
 /*
     SERVICES

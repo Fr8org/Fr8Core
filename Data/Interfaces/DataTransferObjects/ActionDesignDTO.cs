@@ -6,7 +6,8 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public int? ActionListId { get; set; }
 
-        public ConfigurationSettingsDTO ConfigurationSettings { get; set; }
+        [JsonProperty("configurationStore")]
+        public ConfigurationSettingsDTO ConfigurationStore { get; set; }
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
@@ -14,6 +15,10 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int? ActionTemplateId { get; set; }
 
+        [JsonProperty("actionTemplate")]
+        public ActionTemplateDTO ActionTemplate { get; set; }
+
+        [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
 
         [JsonProperty("action_name")]

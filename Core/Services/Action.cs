@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
@@ -90,7 +91,7 @@ namespace Core.Services
                     existingActionDo.ParentActionListId = currentActionDo.ParentActionListId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }
@@ -112,17 +113,17 @@ namespace Core.Services
             }
         }
 
-        public string GetConfigurationSettings(
-            ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionTemplateDo != null)
+            if (curActionDO != null)
             {
-                var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                var curConfigurationSettingsJson =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+                //prepare the current plugin URL
+                string curPluginUrl = curActionDO.ActionTemplate.Name + curActionDO.ActionTemplate.Name + "/actions/configure/";
 
-                return curConfigurationSettingsJson;
+                var restClient = new RestfulServiceClient();
+                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
+
+                return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }
             else
             {

@@ -94,17 +94,17 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        [Route("configuration/{actionTemplateId:int}")]
+        [Route("configuration/{actionId:int}")]
         [ResponseType(typeof(ConfigurationSettingsDTO))]
-        public IHttpActionResult GetConfigurationSettings(int actionTemplateId)
+        public IHttpActionResult GetConfigurationSettings(int curActionId)
         {
-            var curActionTemplateDO = _actionTemplate.GetByKey(actionTemplateId);
-            var curConfigurationSettingsJson = _action.GetConfigurationSettings(curActionTemplateDO);
+            var curActionDO = _action.GetById(curActionId);
+            var curConfigurationSettingsJson = _action.GetConfigurationSettings(curActionDO);
 
-            var curConfigurationSettingsDTO = JsonConvert
-                .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
+            //var curConfigurationSettingsDTO = JsonConvert
+            //    .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
 
-            return Ok(curConfigurationSettingsDTO);
+            return Ok(curConfigurationSettingsJson);
         }
 
 

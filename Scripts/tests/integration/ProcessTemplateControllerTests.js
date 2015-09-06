@@ -8,7 +8,7 @@ var dockyard;
     (function (tests) {
         var controller;
         (function (controller) {
-            var fx = tests.utils.Fixtures; // just an alias
+            var fx = tests.utils.Fixtures;
             var errorHandler = function (response, detail) {
                 if (detail.status === 401) {
                     fail("User is not logged in, to run these tests, please login");
@@ -22,17 +22,16 @@ var dockyard;
                 beforeAll(function () {
                     $(document).ajaxError(errorHandler);
                     $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
-                    //Create a ProcessTemplate
                     $.post(endpoint, JSON.stringify(fx.newProcessTemplate), function (curProcessTemplate, status) { return currentProcessTemplate = curProcessTemplate; });
                 });
                 it("should get a Process Template successfully", function () {
-                    $.getJSON(endpoint, { id: currentProcessTemplate.Id })
+                    $.getJSON(endpoint, { id: currentProcessTemplate.id })
                         .done(function (data, status) {
                         expect(data).not.toBe(null);
                         expect(status).toBe("success");
-                        expect(data.Name).toBe(fx.newProcessTemplate.Name);
-                        expect(data.Description).toBe(fx.newProcessTemplate.Description);
-                        expect(data.ProcessTemplateState).toBe(fx.newProcessTemplate.ProcessTemplateState);
+                        expect(data.name).toBe(fx.newProcessTemplate.name);
+                        expect(data.description).toBe(fx.newProcessTemplate.description);
+                        expect(data.processTemplateState).toBe(fx.newProcessTemplate.processTemplateState);
                     });
                 });
                 it("should specify DocuSign template successfully", function () {
@@ -40,12 +39,12 @@ var dockyard;
                         .done(function (data, status) {
                         expect(data).not.toBe(null);
                         expect(status).toBe("success");
-                        expect(data.Name).toBe(fx.updatedProcessTemplate.Name);
-                        expect(data.Description).toBe(fx.updatedProcessTemplate.Description);
-                        expect(data.ProcessTemplateState).toBe(fx.updatedProcessTemplate.ProcessTemplateState);
-                        expect($.isArray(data.SubscribedDocuSignTemplates)).toBeTruthy();
-                        expect(data.SubscribedDocuSignTemplates.length).toBe(1);
-                        expect(data.SubscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.SubscribedDocuSignTemplates[0]);
+                        expect(data.name).toBe(fx.updatedProcessTemplate.name);
+                        expect(data.description).toBe(fx.updatedProcessTemplate.description);
+                        expect(data.processTemplateState).toBe(fx.updatedProcessTemplate.processTemplateState);
+                        expect($.isArray(data.subscribedDocuSignTemplates)).toBeTruthy();
+                        expect(data.subscribedDocuSignTemplates.length).toBe(1);
+                        expect(data.subscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.subscribedDocuSignTemplates[0]);
                     });
                 });
                 it("should return the list of external events", function () {

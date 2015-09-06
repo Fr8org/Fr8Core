@@ -60,6 +60,26 @@ namespace pluginAzureSqlServer.Controllers
             );
         }
 
+        [HttpPost]
+        [Route("configure")]
+        public string Configure(ActionDO curActionDO)
+        {
+            return HandleDockyardRequest("Configure", curActionDO);
+        }
+       
+        [HttpPost]
+        [Route("activate")]
+        public string Activate(ActionDO curActionDO)
+        {
+            return string.Empty;
+        }
+
+        [HttpPost]
+        [Route("execute")]
+        public string Execute(ActionDO curActionDO)
+        {
+            return string.Empty;
+        }
 
         [HttpPost]
         [Route("Write_To_Sql_Server")]
@@ -68,6 +88,17 @@ namespace pluginAzureSqlServer.Controllers
             var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
             return Ok(_actionHandler.GetFieldMappings(curAction));
+        }
+
+        private string HandleDockyardRequest(string curActionPath, ActionDO curActionDO)
+        {
+            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.Write_To_Sql_Server_v{0}", curActionDO.ActionTemplate.Version);
+
+            Type calledType = Type.GetType(curAssemblyName);
+            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
+            object curObject = Activator.CreateInstance(calledType);
+
+            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
         }
     }
 }

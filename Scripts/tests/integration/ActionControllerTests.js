@@ -42,7 +42,6 @@ var dockyard;
                         returnedData = data;
                         console.log("Got it Sucessfully");
                         console.log(returnedData);
-                        //Delete after get
                         deleteInvoker(data, done);
                     }).fail(function (response) {
                         errorHandler(response, done);
@@ -58,7 +57,6 @@ var dockyard;
                     }).done(function (data, status) {
                         console.log("Saved it Sucessfully");
                         console.log(data);
-                        // Then GET, 
                         getInvoker(data, done);
                     }).fail(function (response) {
                         errorHandler(response, done);
@@ -68,13 +66,12 @@ var dockyard;
                     // First POST, create a dummy entry
                     var actions = {
                         name: "test action type",
-                        configurationSettings: tests.utils.Fixtures.configurationSettings,
+                        configurationStore: tests.utils.Fixtures.configurationStore,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
                         id: 0,
                         fieldMappingSettings: tests.utils.Fixtures.fieldMappingSettings,
-                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null
                     };
                     postInvoker(done, actions);

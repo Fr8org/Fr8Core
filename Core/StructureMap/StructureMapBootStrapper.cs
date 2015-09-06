@@ -1,3 +1,4 @@
+using System.Net.Http.Formatting;
 using AutoMapper;
 using Core.ExternalServices;
 using Core.Interfaces;

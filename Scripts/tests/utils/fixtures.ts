@@ -27,7 +27,7 @@
             ]
         }
 
-        public static configurationSettings = {
+        public static configurationStore = {
             "fields":
             [
                 {
