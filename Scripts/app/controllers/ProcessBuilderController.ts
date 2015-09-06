@@ -590,7 +590,8 @@ module dockyard.controllers {
                     fieldMappingSettings: new model.FieldMappingSettings(),
                     userLabel: "test",
                     tempId: 0,
-                    actionListId: 0
+                    actionListId: 0,
+                    actionTemplate: new model.ActionTemplate(1,"Write to SQL","1")
                 };
 
             $httpBackend

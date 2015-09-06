@@ -579,6 +579,7 @@
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixtures.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />

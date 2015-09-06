@@ -14,6 +14,7 @@ using Data.States;
 using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
+using System.Data.Entity;
 
 namespace Core.Services
 {
@@ -108,7 +109,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetByKey(id);
+                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
 
