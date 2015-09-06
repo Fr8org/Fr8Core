@@ -14,14 +14,14 @@
                 <div class="form-group">
                     <label for="processName" class="col-sm-4 control-label">Process Name :</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="processName" placeholder="Process Name" ng-model="processTemplate.Name">
+                        <input type="text" class="form-control" id="processName" placeholder="Process Name" ng-model="processTemplate.name">
                     </div>
                 </div>
                 <h4 for="processName" class="control-label text-left">Triggers</h4>
                 <div class="form-group margin-top-10">
                     <label for="docuSignTemplate" class=" col-sm-4 control-label text-left">Docusign Template :</label>
                     <div class="col-sm-8">
-                        <select class="form-control" ng-options="dt.Id as dt.Name for dt in docuSignTemplates"
+                        <select class="form-control" ng-options="dt.id as dt.name for dt in docuSignTemplates"
                                 ng-model="docuSignTemplateId" id="docuSignTemplate"></select>
                     </div>
 
@@ -30,7 +30,7 @@
                     <label class=" col-sm-5 ">Docusign Events :</label>
                     <div class="col-sm-7">
                         <div class="checkbox checkbox-primary" ng-repeat="event in docuSignExternalEvents">
-                            <input type="checkbox" id="extEvent_{{event.id}}" checkbox-group array="processTemplate.SubscribedExternalEvents" id-field='id' item-object='event' />
+                            <input type="checkbox" id="extEvent_{{event.id}}" checkbox-group array="processTemplate.subscribedExternalEvents" id-field='id' item-object='event' />
                             <label for="extEvent_{{event.id}}">{{event.name}}</label>
                         </div>
                     </div>

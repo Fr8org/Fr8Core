@@ -589,7 +589,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
@@ -601,7 +600,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\IPaneDefineCriteriaScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplate.ts" />
@@ -3952,13 +3950,13 @@
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
-    CustomCollectFiles;
-    $(CopyAllFilesToSingleFolderForPackageDependsOn);
-  </CopyAllFilesToSingleFolderForPackageDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
     <CopyAllFilesToSingleFolderForMsdeployDependsOn>
-    CustomCollectFiles;
-    $(CopyAllFilesToSingleFolderForPackageDependsOn);
-  </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
   </PropertyGroup>
   <Target Name="CustomCollectFiles">
     <ItemGroup>

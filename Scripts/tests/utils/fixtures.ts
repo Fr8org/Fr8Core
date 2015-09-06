@@ -2,16 +2,16 @@
 
     export class Fixtures {
         public static newProcessTemplate = <interfaces.IProcessTemplateVM> {
-            Name: 'Test',
-            Description: 'Description',
-            ProcessTemplateState: 1
+            name: 'Test',
+            description: 'Description',
+            processTemplateState: 1
         };
 
         public static updatedProcessTemplate = <interfaces.IProcessTemplateVM> {
-            'Name': 'Updated',
-            'Description': 'Description',
-            'ProcessTemplateState': 1,
-            'SubscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
+            'name': 'Updated',
+            'description': 'Description',
+            'processTemplateState': 1,
+            'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
         }
 
         public static fieldMappingSettings = {
