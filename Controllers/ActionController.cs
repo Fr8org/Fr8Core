@@ -101,10 +101,10 @@ namespace Web.Controllers
             var curActionDO = _action.GetById(curActionId);
             var curConfigurationSettingsJson = _action.GetConfigurationSettings(curActionDO);
 
-            var curConfigurationSettingsDTO = JsonConvert
-                .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
-        
-            return Ok(curConfigurationSettingsDTO);
+            //var curConfigurationSettingsDTO = JsonConvert
+            //    .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
+
+            return Ok(curConfigurationSettingsJson);
         }
 
 
