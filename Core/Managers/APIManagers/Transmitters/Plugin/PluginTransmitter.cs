@@ -6,7 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Managers.APIManagers.Transmitters.Plugin
 {
-    class PluginTransmitter : RestfulServiceClient, IPluginTransmitter
+    public class PluginTransmitter : RestfulServiceClient, IPluginTransmitter
     {
         /// <summary>
         /// Posts ActionDTO object to "/actions/&lt;actionType&gt;"
