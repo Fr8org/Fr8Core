@@ -95,7 +95,7 @@ namespace Web.Controllers
         public ActionResult LogOff()
         {
             this.Logout();
-            return RedirectToAction("Index", "Account");
+            return RedirectToAction("Index", "DockyardAccount");
         }
 
         [AllowAnonymous]
@@ -106,7 +106,9 @@ namespace Web.Controllers
 
         [HttpPost]
         [AllowAnonymous]
+#if !DEBUG
         [ValidateAntiForgeryToken]
+#endif
         public ActionResult ProcessRegistration(RegistrationVM submittedRegData)
         {
             try
@@ -121,12 +123,12 @@ namespace Web.Controllers
                     else
                     {
                         // return RedirectToAction("Index", "Home");
-	                  return this.Login(new LoginVM
-	                  {
-                          Email = submittedRegData.Email.Trim(),
-                          Password = submittedRegData.Password.Trim(),
-		                  RememberMe = false
-	                  },string.Empty).Result;
+                        return this.Login(new LoginVM
+                        {
+                            Email = submittedRegData.Email.Trim(),
+                            Password = submittedRegData.Password.Trim(),
+                            RememberMe = false
+                        }, string.Empty).Result;
                     }
                 }
             }
@@ -139,12 +141,14 @@ namespace Web.Controllers
                 ModelState.AddModelError("", ex.Message);
             }
 
-            return View();
+            return View("Register");
         }
 
         [HttpPost]
         [AllowAnonymous]
+#if !DEBUG
         [ValidateAntiForgeryToken]
+#endif
         public async Task<ActionResult> Login(LoginVM model, string returnUrl)
         {
             try
@@ -180,7 +184,7 @@ Please register first.");
 
                                 if (getRole == "Admin")
                                     return RedirectToAction("Index", "Dashboard");
-                                   // return RedirectToAction("MyAccount", "User");
+                                // return RedirectToAction("MyAccount", "User");
                                 else if (getRole == "Booker")
                                     return RedirectToAction("Index", "Booker");
 

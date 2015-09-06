@@ -3817,6 +3817,7 @@
     <Content Include="Views\User\ShareCalendar.cshtml" />
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
+    <Content Include="Views\DockyardAccount\RegistrationSuccessful.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
