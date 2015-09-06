@@ -568,7 +568,6 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
-    <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
@@ -3817,7 +3816,6 @@
     <Content Include="Views\User\ShareCalendar.cshtml" />
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
-    <Content Include="Views\DockyardAccount\RegistrationSuccessful.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
