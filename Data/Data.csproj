@@ -260,6 +260,10 @@
     <Compile Include="Migrations\201509051956279_ActionConfigStoreChange.Designer.cs">
       <DependentUpon>201509051956279_ActionConfigStoreChange.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.cs" />
+    <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.Designer.cs">
+      <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -494,6 +498,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509051956279_ActionConfigStoreChange.resx">
       <DependentUpon>201509051956279_ActionConfigStoreChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509061125516_RenameActionTemplateFields.resx">
+      <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

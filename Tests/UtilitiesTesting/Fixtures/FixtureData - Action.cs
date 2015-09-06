@@ -31,8 +31,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Send an Email",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Send an Email",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }
@@ -42,8 +42,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Send a Text (SMS) Message",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Send a Text (SMS) Message",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }        public static ActionDO TestAction1()
@@ -129,7 +129,7 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestAction6()
         {
             var actionTemplate = ActionTemplate();
-            actionTemplate.ActionType = null;
+            actionTemplate.Name = null;
 
             return new ActionDO
             {

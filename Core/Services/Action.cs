@@ -117,9 +117,8 @@ namespace Core.Services
         {
             if (curActionDO != null)
             {
-                //TODO: Vas, rename Parent Plugin Registratoin as Default End Point and Action Type to Name
                 //prepare the current plugin URL
-                string curPluginUrl = curActionDO.ActionTemplate.ParentPluginRegistration + curActionDO.ActionTemplate.ActionType + "/actions/configure/";
+                string curPluginUrl = curActionDO.ActionTemplate.Name + curActionDO.ActionTemplate.Name + "/actions/configure/";
 
                 var restClient = new RestfulServiceClient();
                 string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;

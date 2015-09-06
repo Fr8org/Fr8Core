@@ -39,14 +39,14 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActionTemplateDO, ActionTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
-                .ForMember(x => x.ActionType, opts => opts.ResolveUsing(x => x.ActionType))
-                .ForMember(x => x.ParentPluginRegistration, opts => opts.ResolveUsing(x => x.ParentPluginRegistration))
+                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
+                .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 
             Mapper.CreateMap<ActionTemplateDTO, ActionTemplateDO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
-                .ForMember(x => x.ActionType, opts => opts.ResolveUsing(x => x.ActionType))
-                .ForMember(x => x.ParentPluginRegistration, opts => opts.ResolveUsing(x => x.ParentPluginRegistration))
+                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
+                .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 
             Mapper.CreateMap<ActionDO, ActionPayloadDTO>()

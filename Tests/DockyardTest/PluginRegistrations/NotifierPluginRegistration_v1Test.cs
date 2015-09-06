@@ -33,8 +33,8 @@ namespace DockyardTest.PluginRegistrations
         public void CanGetAvailableActions()
         {
             Assert.AreEqual(_notifierPluginRegistration_v1.AvailableActions.Count(), 2);
-            Assert.AreEqual(((List<ActionTemplateDO>)_notifierPluginRegistration_v1.AvailableActions)[0].ActionType, "Send an Email");
-            Assert.AreEqual(((List<ActionTemplateDO>)_notifierPluginRegistration_v1.AvailableActions)[1].ActionType, "Send a Text (SMS) Message");
+            Assert.AreEqual(((List<ActionTemplateDO>)_notifierPluginRegistration_v1.AvailableActions)[0].Name, "Send an Email");
+            Assert.AreEqual(((List<ActionTemplateDO>)_notifierPluginRegistration_v1.AvailableActions)[1].Name, "Send a Text (SMS) Message");
         }
 
         [Test]

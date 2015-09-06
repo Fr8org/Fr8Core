@@ -12,8 +12,8 @@ namespace UtilitiesTesting.Fixtures
             ActionTemplateDO actionTemplateDo = new ActionTemplateDO
 			{
 				Id = 1,
-                ActionType = "Write to Sql Server",
-                ParentPluginRegistration = "pluginAzureSqlServer",
+                Name = "Write to Sql Server",
+                DefaultEndPoint = "pluginAzureSqlServer",
                 Version="v3"
 			};
             return actionTemplateDo;
@@ -33,8 +33,8 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionTemplateDO
             {
                 Id = 1,
-                ActionType = "Type1",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Type1",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
             return curActionDO;
@@ -45,8 +45,8 @@ namespace UtilitiesTesting.Fixtures
 	        var curActionTemplate = new ActionTemplateDO
 	        {
 	            Id = 1,
-                ActionType = "plugin_azure_sql_server",
-                ParentPluginRegistration = "http://localhost:46281/",
+                Name = "plugin_azure_sql_server",
+                DefaultEndPoint = "http://localhost:46281/",
 	            Version = "1"
 	        };
 
