@@ -86,8 +86,8 @@ namespace Core.Services
 
                 if (existingActionDo != null)
                 {
-                    existingActionDo.ParentActionList = currentActionDo.ParentActionList;
-                    existingActionDo.ParentActionListId = currentActionDo.ParentActionListId;
+                    existingActionDo.ParentActivity = currentActionDo.ParentActivity;
+                    existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
@@ -196,7 +196,7 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ParentActionList.Process.EnvelopeId; 
+            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
             
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
@@ -239,12 +239,11 @@ namespace Core.Services
         {
             DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
 
-            if (curActionDO.ParentActionList != null)
+            if (curActionDO.ParentActivity != null)
             {
                 // Try to get ProcessTemplate.Id from relation chain
                 // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
-                var curProcessTemplateId = curActionDO
-                    .ParentActionList
+                var curProcessTemplateId = ((ActionListDO)curActionDO.ParentActivity)
                     .ProcessNodeTemplate
                     .ProcessTemplate
                     .Id;

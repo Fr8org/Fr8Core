@@ -38,8 +38,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "list1",
                 ActionListType = ActionListType.Immediate
             };
-            curActionListDO.Actions.Add(TestAction20());
-            curActionListDO.Actions.Add(TestAction21());
+            curActionListDO.Activities.Add(TestAction20());
+            curActionListDO.Activities.Add(TestAction21());
 
             return curActionListDO;
         }
@@ -98,7 +98,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionListType = ActionListType.Immediate,
                 CurrentActivity = FixtureData.TestAction6(),
                 ActionListState = ActionListState.Unstarted,
-                Actions = new System.Collections.Generic.List<ActionDO>() 
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
                 { 
                     FixtureData.TestAction10(),
                     FixtureData.TestAction7(),
@@ -127,7 +127,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 2,
                 CurrentActivity = FixtureData.TestAction6(),
                 ActionListState = ActionListState.Unstarted,
-                Actions = new System.Collections.Generic.List<ActionDO>() 
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
                 { 
                     FixtureData.TestAction10(),
                     FixtureData.TestAction7(),

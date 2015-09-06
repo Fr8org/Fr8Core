@@ -150,8 +150,8 @@ namespace DockyardTest.Services
             {
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionDo.ParentActionList);
-                uow.ProcessRepository.Add(actionDo.ParentActionList.Process);
+                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
+                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
             }
 
@@ -182,8 +182,8 @@ namespace DockyardTest.Services
             {
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionDo.ParentActionList);
-                uow.ProcessRepository.Add(actionDo.ParentActionList.Process);
+                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
+                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
             }
 

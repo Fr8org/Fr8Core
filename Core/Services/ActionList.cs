@@ -41,18 +41,20 @@ namespace Core.Services
 
         public void AddAction(ActionDO curActionDO, string position)
         {
-            if (!curActionDO.ParentActionListId.HasValue)
+            if (!curActionDO.ParentActivityId.HasValue)
                 throw new NullReferenceException("ActionListId");
 
-            var curActionList = GetByKey(curActionDO.ParentActionListId.Value);
+            var curActionList = GetByKey(curActionDO.ParentActivityId.Value);
             if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
                 Reorder(curActionList, curActionDO, position);
             else
                 throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
-            curActionList.Actions.Add(curActionDO);
+            curActionList.Activities.Add(curActionDO);
             if (curActionList.CurrentActivity == null)
+            {
                 curActionList.CurrentActivity =
-                    curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
+                    curActionList.Activities.OrderBy(action => action.Ordering).FirstOrDefault();
+            }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActionListRepository.Add(curActionList);
@@ -62,7 +64,7 @@ namespace Core.Services
 
         private void Reorder(ActionListDO curActionListDO, ActionDO curActionDO, string position)
         {
-            int ordering = curActionListDO.Actions.Select(action => action.Ordering).Max();
+            int ordering = curActionListDO.Activities.Select(action => action.Ordering).Max();
             curActionDO.Ordering = ordering + 1;
         }
 
@@ -153,7 +155,9 @@ namespace Core.Services
                     if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed ||
                         ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
                     {
-                        ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
+                        ActionDO actionDO = curActionListDO.Activities
+                            .OfType<ActionDO>()
+                            .OrderBy(o => o.Ordering)
                             .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering)
                             .DefaultIfEmpty(null)
                             .FirstOrDefault();
