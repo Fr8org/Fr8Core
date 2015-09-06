@@ -28,8 +28,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { ActionType = "Write", Version = "1.0" }, new ActionTemplateDO() { ActionType = "Read", Version = "1.0" } };
-        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { ActionType = "SQL Read", Version = "1.0" } };
+        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "Write", Version = "1.0" }, new ActionTemplateDO() { Name = "Read", Version = "1.0" } };
+        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
         [SetUp]
         public override void SetUp()
@@ -62,7 +62,7 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            string curJsonResult = _action.GetConfigurationSettings(curActionDO).ConfigurationSettings;
+            string curJsonResult = _action.GetConfigurationSettings(curActionDO);
             ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
             Assert.AreEqual(1, result.Fields.Count);
             Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -94,7 +94,7 @@ namespace DockyardTest.Services
                 var actionDO = action.GetById(origActionDO.Id);
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
+                Assert.AreEqual(origActionDO.ConfigurationStore, actionDO.ConfigurationStore);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 

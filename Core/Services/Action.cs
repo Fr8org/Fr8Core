@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
@@ -91,7 +92,7 @@ namespace Core.Services
                     existingActionDo.ParentActionListId = currentActionDo.ParentActionListId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }
@@ -113,7 +114,7 @@ namespace Core.Services
             }
         }
 
-        public ActionDO GetConfigurationSettings(ActionDO curActionDO)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
             if(curActionDO == null)
                 throw new System.ArgumentNullException("Action parameter is null");
@@ -128,14 +129,14 @@ namespace Core.Services
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
                 var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
-                curActionDO.ConfigurationSettings = settings;
+                curActionDO.ConfigurationStore = settings;
             }
             else
             {
                 throw new System.ArgumentNullException("ActionTemplate is null");
             }
 
-            return curActionDO;
+            return curActionDO.ConfigurationStore;
         }
 
         public void Delete(int id)

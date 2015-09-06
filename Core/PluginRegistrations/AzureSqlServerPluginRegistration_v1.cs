@@ -42,7 +42,7 @@ namespace Core.PluginRegistrations
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             ActionNameDTO curActionName = new ActionNameDTO();
 
-            curActionName.ActionType = "Write";
+            curActionName.Name = "Write";
             curActionName.Version = "1";
             curActionNameList.ActionNames.Add(curActionName);
             return curActionNameList;

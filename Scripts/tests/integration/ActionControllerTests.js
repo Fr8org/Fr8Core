@@ -69,7 +69,7 @@ var dockyard;
                         // First POST, create a dummy entry
                         var actions = {
                             name: "test action type",
-                            configurationSettings: tests.utils.Fixtures.configurationSettings,
+                            configurationStore: tests.utils.Fixtures.configurationStore,
                             processNodeTemplateId: 1,
                             actionTemplateId: 1,
                             isTempId: false,
@@ -91,7 +91,7 @@ var dockyard;
                     curActionTemplate.parentPluginRegistration = "AzureSqlServer";
                     var currentActionDesignDTO = {
                         name: "test action type",
-                        configurationSettings: tests.utils.Fixtures.configurationSettings,
+                        configurationStore: tests.utils.Fixtures.configurationStore,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
@@ -115,7 +115,7 @@ var dockyard;
                             dataType: "json"
                         }).done(function (data, status) {
                             expect(data).not.toBe(null);
-                            expect(angular.equals(data.ConfigurationSettings, expectedSettings)).toBe(true);
+                            expect(angular.equals(data, expectedSettings)).toBe(true);
                         });
                     });
                 });

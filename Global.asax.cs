@@ -31,6 +31,7 @@ using Data.Wrappers;
 using System.Web.Http;
 using FluentValidation.WebApi;
 using System.Net.Http.Formatting;
+using Newtonsoft.Json.Serialization;
 
 namespace Web
 {
@@ -46,9 +47,13 @@ namespace Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            //Configure formatters
-            GlobalConfiguration.Configuration.Formatters.Clear();
-            GlobalConfiguration.Configuration.Formatters.Add(new JsonMediaTypeFormatter());
+            // Configure formatters
+            // Enable camelCasing in JSON responses
+            var formatters = GlobalConfiguration.Configuration.Formatters;
+            var jsonFormatter = formatters.JsonFormatter;
+            var settings = jsonFormatter.SerializerSettings;
+            settings.Formatting = Formatting.Indented;
+            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());

@@ -58,7 +58,7 @@ namespace DockyardTest.Services
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             curActionNameList.ActionNames.Add(new ActionNameDTO
             {
-                ActionType = "Write",
+                Name = "Write",
                 Version = "1.0"
             });
             return curActionNameList;

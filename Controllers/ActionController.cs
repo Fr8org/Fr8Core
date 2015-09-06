@@ -26,7 +26,7 @@ namespace Web.Controllers
 
         public ActionController()
         {
-			_action = ObjectFactory.GetInstance<IAction>();
+            _action = ObjectFactory.GetInstance<IAction>();
             _actionTemplate = ObjectFactory.GetInstance<IActionTemplate>();
         }
 
@@ -55,7 +55,7 @@ namespace Web.Controllers
                     .GetAvailableActions(curDockyardAccount)
                     .Select(x => Mapper.Map<ActionTemplateDTO>(x))
                     .ToList();
-            
+
                 return Ok(availableActions);
             }
         }
@@ -67,7 +67,7 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public ActionDesignDTO Get(int id)
         {
-            return Mapper.Map<ActionDesignDTO>(_action.GetById(id)); 
+            return Mapper.Map<ActionDesignDTO>(_action.GetById(id));
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public void Delete(int id)
         {
-            _action.Delete(id); 
+            _action.Delete(id);
         }
 
         /// <summary>
@@ -98,9 +98,9 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("actions/configuration")]
-        [ResponseType(typeof(ActionDO))]
+        [ResponseType(typeof(ConfigurationSettingsDTO))]
         public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
-        {            
+        {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             return Ok(_action.GetConfigurationSettings(curActionDO));  
         }
@@ -137,6 +137,6 @@ namespace Web.Controllers
         }
 
 
-       
+
     }
 }
