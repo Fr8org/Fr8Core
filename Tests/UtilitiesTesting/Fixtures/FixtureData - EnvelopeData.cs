@@ -16,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
 		           };
         }
 
-        public static string TestTeamplateId = "b5abd63a-c12c-4856-b9f4-989200e41a6f";
+        public static string TestTeamplateId = "58521204-58AF-4E65-8A77-4F4B51FEF626";
 
         public static List<EnvelopeDataDTO> TestEnvelopeDataList2(string envelopeId)
         {
@@ -47,14 +47,14 @@ namespace UtilitiesTesting.Fixtures
         {
             get
             {
-                return "{\"field_mappings\": { \"Doctor\" : \"[Customer].physician_string\", \"Condition\" : \"[Customer].medical_condition\"} }";
+                return "{\"fields\": [ { \"name\": \"Doctor\", \"value\": \"[Customer].physician_string\" }, { \"name\": \"Condition\", \"value\": \"[Customer].medical_condition\"} ] }";
             }
         }
         public static string FieldMappings2
         {
             get
             {
-                return "{\"field_mappings\": { \"Physicial\" : \"[Customer].physician_string\", \"Condition\" : \"[Customer].medical_condition\"} }";
+                return "{\"fields\": [ { \"name\": \"Physicial\", \"value\": \"[Customer].physician_string\" }, { \"name\": \"Condition\", \"value\": \"[Customer].medical_condition\"} ] }";
             }
         }
     }

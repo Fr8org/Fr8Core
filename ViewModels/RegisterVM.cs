@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Web.ViewModels
 {
-    public class RegisterVM
+    public class RegistrationVM
     {
         [Required]
         [DataType(DataType.EmailAddress)]

@@ -16,11 +16,15 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
-    <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -363,7 +367,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DockyardAccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AlertingController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -551,25 +555,36 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionList.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionType.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
+    <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
+    <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
-    <TypeScriptCompile Include="Scripts\tests\utils\fixtures.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
@@ -578,7 +593,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
@@ -590,23 +604,17 @@
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneConfigureActionScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\IPaneDefineCriteriaScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderController.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilderScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplatesScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateScope.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\Action.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Criteria.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Field.ts" />
     <TypeScriptCompile Include="Scripts\app\services\LocalIdentityGenerator.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplateVM.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ProcessBuilderService.ts" />
     <Content Include="Scripts\lib\jquery-ui.js" />
     <Content Include="Scripts\_legacy\custom.js" />
@@ -3728,6 +3736,7 @@
     <Content Include="RunFrontEndTests - With Web Server.ps1" />
     <Content Include="RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
+    <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -3744,15 +3753,15 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
-    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\Index.cshtml" />
-    <Content Include="Views\Account\Manage.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\DockyardAccount\_ExternalLoginsListPartial.cshtml" />
+    <Content Include="Views\DockyardAccount\_RemoveAccountPartial.cshtml" />
+    <Content Include="Views\DockyardAccount\_SetPasswordPartial.cshtml" />
+    <Content Include="Views\DockyardAccount\ExternalLoginConfirmation.cshtml" />
+    <Content Include="Views\DockyardAccount\ExternalLoginFailure.cshtml" />
+    <Content Include="Views\DockyardAccount\Index.cshtml" />
+    <Content Include="Views\DockyardAccount\Manage.cshtml" />
+    <Content Include="Views\DockyardAccount\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\User\Create.cshtml" />
     <Content Include="Views\User\Delete.cshtml" />
@@ -3774,13 +3783,13 @@
     <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
     <Content Include="Views\Event\DeleteEvent.cshtml" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
-    <Content Include="Views\Account\Confirm.cshtml" />
+    <Content Include="Views\DockyardAccount\Confirm.cshtml" />
     <Content Include="Views\NegotiationResponse\ProcessResponse.cshtml" />
     <Content Include="Views\User\MyAccount.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
     <Content Include="Views\NegotiationResponse\View.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
-    <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\DockyardAccount\RegistrationConfirmation.cshtml" />
     <Content Include="Views\User\ChooseCalendars.cshtml" />
     <Content Include="Views\User\FindUser.cshtml" />
     <Content Include="Views\User\ShowAddUser.cshtml" />
@@ -3795,10 +3804,10 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\Shared\QueuePollingScript.cshtml" />
-    <Content Include="Views\Account\ForgotPassword.cshtml" />
-    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\DockyardAccount\ForgotPassword.cshtml" />
+    <Content Include="Views\DockyardAccount\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\DockyardAccount\ResetPassword.cshtml" />
+    <Content Include="Views\DockyardAccount\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Email\Send.cshtml" />
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
@@ -3934,7 +3943,7 @@
   <Target Name="AfterBuild">
   </Target> -->
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
-    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)"  ContinueOnError="WarnAndContinue"/>
+    <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" ContinueOnError="WarnAndContinue" />
   </Target>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

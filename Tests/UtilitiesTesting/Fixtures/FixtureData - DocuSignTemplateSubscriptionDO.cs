@@ -13,31 +13,31 @@ namespace UtilitiesTesting.Fixtures
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 1,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "AAA"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 2,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "BBB"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 3,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "CCC"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 4,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "DDD"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 5,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "EEE"
                 }
             };
@@ -50,31 +50,31 @@ namespace UtilitiesTesting.Fixtures
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 1,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "AAA"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 2,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "BBB"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 3,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "CCC"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 0,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "KKK"
                 },
                 new DocuSignTemplateSubscriptionDO()
                 {
                     Id = 0,
-                    ProcessTemplateId = 1,
+                    ExternalProcessTemplateId = 1,
                     DocuSignTemplateId = "MMM"
                 }
             };

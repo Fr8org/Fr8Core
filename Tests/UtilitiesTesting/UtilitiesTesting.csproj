@@ -86,14 +86,16 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
+    <Compile Include="CsvReaderTests.cs" />
     <Compile Include="DocusignTools\DocusignApiHelper.cs" />
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
+    <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\FixtureData - FactDO.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
     <Compile Include="Fixtures\FixtureData - ActionNameDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionNameListDTO.cs" />
-    <Compile Include="Fixtures\FixtureData - ActionRegistration.cs" />
+    <Compile Include="Fixtures\FixtureData - ActionTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="Fixtures\FixtureData - ConfigurationSettingsDTO.cs" />
     <Compile Include="Fixtures\FixtureData - FieldMappingSettingsDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
+    <Compile Include="Fixtures\FixtureData - File.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />
@@ -128,6 +131,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Tools\FileTools\TestFiles\10Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\10Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\1Column.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\1Column.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\2Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\2Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\3Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\3Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Tools\FileTools\TestFiles\small_pdf_file.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

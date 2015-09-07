@@ -8,57 +8,57 @@ using UtilitiesTesting.Fixtures;
 namespace DockyardTest.Entities
 {
     [TestFixture]
-    public class ActionRegistrationTests : BaseTest
+    public class ActionTemplateTests : BaseTest
     {
         [Test]
-        [Category("ActionRegistration")]
-        public void ActionRegistration_Add_CanCreateActionRegistration()
+        [Category("ActionTemplate")]
+        public void ActionTemplate_Add_CanCreateActionTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
                 
-                var actionRegistrationDO = FixtureData.TestActionRegistration1();
+                var actionTemplateDO = FixtureData.TestActionTemplate1();
 
-                uow.ActionRegistrationRepository.Add(actionRegistrationDO);
+                uow.ActionTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionRegistrationDO = uow.ActionRegistrationRepository.GetQuery().FirstOrDefault(u => u.Id == actionRegistrationDO.Id);
-                Assert.NotNull(savedActionRegistrationDO);
+                var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                Assert.NotNull(savedActionTemplateDO);
 
-                Assert.AreEqual(actionRegistrationDO.ActionType, savedActionRegistrationDO.ActionType);
-                Assert.AreEqual(actionRegistrationDO.ParentPluginRegistration, savedActionRegistrationDO.ParentPluginRegistration);
+                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
+                Assert.AreEqual(actionTemplateDO.DefaultEndPoint, savedActionTemplateDO.DefaultEndPoint);
 
             }
         }
 
         [Test]
-        [Category("ActionRegistration")]
-        public void ActionRegistration_Remove_CanRemoveActionRegistration()
+        [Category("ActionTemplate")]
+        public void ActionTemplate_Remove_CanRemoveActionTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
 
-                var actionRegistrationDO = FixtureData.TestActionRegistration1();
+                var actionTemplateDO = FixtureData.TestActionTemplate1();
 
-                uow.ActionRegistrationRepository.Add(actionRegistrationDO);
+                uow.ActionTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionRegistrationDO = uow.ActionRegistrationRepository.GetQuery().FirstOrDefault(u => u.Id == actionRegistrationDO.Id);
+                var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
 
 
-                Assert.NotNull(savedActionRegistrationDO);
-                Assert.AreEqual(actionRegistrationDO.ActionType, savedActionRegistrationDO.ActionType);
-                Assert.AreEqual(actionRegistrationDO.Version, savedActionRegistrationDO.Version);
+                Assert.NotNull(savedActionTemplateDO);
+                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
+                Assert.AreEqual(actionTemplateDO.Version, savedActionTemplateDO.Version);
 
                 // remove saved instance
-                uow.ActionRegistrationRepository.Remove(savedActionRegistrationDO);
+                uow.ActionTemplateRepository.Remove(savedActionTemplateDO);
                 uow.SaveChanges();
 
-                var deletedActionRegistrationDO = uow.ActionRegistrationRepository.GetQuery().FirstOrDefault(u => u.Id == savedActionRegistrationDO.Id);
+                var deletedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActionTemplateDO.Id);
 
-                Assert.IsNull(deletedActionRegistrationDO);
+                Assert.IsNull(deletedActionTemplateDO);
 
             }
         }

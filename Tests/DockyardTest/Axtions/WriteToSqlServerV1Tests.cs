@@ -30,17 +30,17 @@ namespace DockyardTest.Axtions
         {
             var curActionData = FixtureData.TestAction1();
             curActionData.PayloadMappings = PayloadData;
-            curActionData.ConfigurationSettings = CreateConfigurationSettings();
+            curActionData.ConfigurationStore = CreateConfigurationStore();
 
             _sqServerWriter.Process("execute", curActionData);
         }
 
-        private string CreateConfigurationSettings()
+        private string CreateConfigurationStore()
         {
-            const string configurationSettings =
-                "{'configurationSettings': [{'textField': {'value': 'connection_string'}}]";
+            const string configurationStore =
+                "{'configurationStore': [{'textField': {'value': 'connection_string'}}]";
 
-            return configurationSettings.Replace("connection_string", _connectionString);
+            return configurationStore.Replace("connection_string", _connectionString);
         }
     }
 }

@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Mvc;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using StructureMap;
 using Data.States;
 using Data.Wrappers;
-using Newtonsoft.Json;
+using StructureMap;
+using Utilities.Serializers.Json;
+using System.Data.Entity;
 
 namespace Core.Services
 {
@@ -24,14 +24,16 @@ namespace Core.Services
         private readonly ISubscription _subscription;
         private IPluginRegistration _pluginRegistration;
         private IEnvelope _envelope;
-        private IDocuSignTemplate _docusignTemplate;  //TODO: switch to wrappers
+        private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPluginRegistration _basePluginRegistration;
+        private IPlugin _plugin;
 
         public Action()
         {
             _subscription = ObjectFactory.GetInstance<ISubscription>();
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
            
             _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
@@ -45,32 +47,61 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<ActionRegistrationDO> GetAvailableActions(IDockyardAccountDO curAccount)
+        public IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
         {
-            var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            return plugins.SelectMany(p => p.AvailableActions).OrderBy(s => s.ActionType);
+            List<ActionTemplateDO> curActionTemplates;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActionTemplates = uow.ActionTemplateRepository.GetAll().ToList();
+            }
+
+            //we're currently bypassing the subscription logic until we need it
+            //we're bypassing the pluginregistration logic here because it's going away in V2
+
+            //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
+            //var plugins = _plugin.GetAll();
+           // var curActionTemplates = plugins
+            //    .SelectMany(p => p.AvailableActions)
+            //    .OrderBy(s => s.ActionType);
+
+            return curActionTemplates;
         }
 
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
+            ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                if (currentActionDo.ActionTemplateId == 0)
+                    currentActionDo.ActionTemplateId = null;
+
+                if (currentActionDo.Id > 0)
+                {
+                    existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                }
+
+                if (currentActionDo.IsTempId)
+                {
+                    currentActionDo.Id = 0;
+                }
+
                 if (existingActionDo != null)
                 {
-                    existingActionDo.ActionList = currentActionDo.ActionList;
-                    existingActionDo.ActionListId = currentActionDo.ActionListId;
-                    existingActionDo.ActionType = currentActionDo.ActionType;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.ParentActivity = currentActionDo.ParentActivity;
+                    existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
+                    existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
+                    existingActionDo.Name = currentActionDo.Name;
+                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
-                    existingActionDo.UserLabel = currentActionDo.UserLabel;
                 }
                 else
                 {
                     uow.ActionRepository.Add(currentActionDo);
                 }
                 uow.SaveChanges();
+
                 return true;
             }
         }
@@ -79,25 +110,38 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetByKey(id);
+                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
-        public ActionDO GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            ActionDO curActionDO = new ActionDO();
-            if (curActionRegistrationDO != null)
+            if(curActionDO == null)
+                throw new System.ArgumentNullException("Action parameter is null");
+
+            if (curActionDO.ActionTemplate != null)
             {
-                string pluginRegistrationName = _pluginRegistration.AssembleName(curActionRegistrationDO);
-                curActionDO.ConfigurationSettings = _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName, "GetConfigurationSettings", curActionRegistrationDO);
-            } 
+                if(curActionDO.Id == 0)
+                    throw new System.ArgumentNullException("Action ID is empty");
+                if (curActionDO.ActionTemplateId == 0)
+                    throw new System.ArgumentNullException("Action Template ID is empty");
+
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
+                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
+                curActionDO.ConfigurationStore = settings;
+            }
             else
-                throw new ArgumentNullException("ActionRegistrationDO");
-            return curActionDO;
+            {
+                throw new System.ArgumentNullException("ActionTemplate is null");
+            }
+
+            return curActionDO.ConfigurationStore;
         }
 
         public void Delete(int id)
         {
-            ActionDO entity = new ActionDO() { Id = id };
+            var entity = new ActionDO {Id = id};
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -107,7 +151,7 @@ namespace Core.Services
             }
         }
 
-        public async Task Process(ActionDO curAction)
+        public async Task<int> Process(ActionDO curAction)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -120,18 +164,23 @@ namespace Core.Services
 
                     EventManager.ActionStarted(curAction);
                     var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
-                    Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+                    var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
                     var jsonResult = await Dispatch(curAction, baseUri);
 
+
+                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+
+
                     //check if the returned JSON is Error
-                    if (jsonResult.ToLower().Contains("error"))
-                    {
-                        curAction.ActionState = ActionState.Error;
-                    }
-                    else
-                    {
-                        curAction.ActionState = ActionState.Completed;
-                    }
+                    //  if (jsonResult.ToLower().Contains("error"))
+                    // {
+                    //     curAction.ActionState = ActionState.Error;
+                    //  }
+                    //   else
+                    //   {
+                    curAction.ActionState = ActionState.Completed;
+                 //   }
 
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
@@ -144,6 +193,7 @@ namespace Core.Services
                     throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
             }
+            return curAction.ActionState.Value;
         }
 
         public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
@@ -151,10 +201,11 @@ namespace Core.Services
             PayloadMappingsDTO mappings;
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
+
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; 
+            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
             
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
@@ -175,7 +226,7 @@ namespace Core.Services
                 actionPayloadDTO.PayloadMappings = mappings;
             }
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.ActionType, actionPayloadDTO);
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
             return jsonResult;
         }
@@ -190,23 +241,52 @@ namespace Core.Services
             return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
-
-        //retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
-
-        public IEnumerable<string> GetFieldDataSources(ActionDO curActionDO)
+        /// <summary>
+        /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
+        /// </summary>
+        public IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO)
         {
-            _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
-            return _docusignTemplate.GetMappableSourceFields(curActionDO.DocuSignTemplateId);
+            DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
+
+            if (curActionDO.ParentActivity != null)
+            {
+                // Try to get ProcessTemplate.Id from relation chain
+                // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
+                var curProcessTemplateId = ((ActionListDO)curActionDO.ParentActivity)
+                    .ProcessNodeTemplate
+                    .ProcessTemplate
+                    .Id;
+
+                // Try to get DocuSignSubscription related to current ProcessTemplate.Id.
+                curDocuSignSubscription = uow.ExternalEventSubscriptionRepository
+                    .GetQuery()
+                    .OfType<DocuSignTemplateSubscriptionDO>()
+                    .FirstOrDefault(x => x.DocuSignProcessTemplateId == curProcessTemplateId);
+            }
+
+            // Return list of mappable source fields, in case we fetched DocuSignSubscription object.
+            if (curDocuSignSubscription != null)
+            {
+                _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+                var curMappableSourceFields = _docusignTemplate
+                    .GetMappableSourceFields(curDocuSignSubscription.DocuSignTemplateId);
+
+                return curMappableSourceFields;
+            }
+            // Return empty list in other case.
+            else
+            {
+                return Enumerable.Empty<string>();
+            }
         }
 
-        //retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder
-
+        /// <summary>
+        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
+        /// </summary>
         public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
         {
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
-
-
     }
 }

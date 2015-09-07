@@ -1,32 +1,14 @@
-﻿<div class="portlet light " ng-show="isVisible">
+﻿<div class="portlet light " ng-if="isVisible">
     <div class="portlet-title">
         <div class="caption caption-md">
             <i class="icon-bar-chart font-green-haze hide"></i>
             <span class="caption-subject font-green-haze bold uppercase">Configure Action</span>
         </div>
     </div>
-    <div class="portlet-body">
-        <div class="form-group">
-            <label class="control-label">Criteria Name</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                    required size="20" maxlength="20"/>
-        </div>
-        <div class="form-group">
-            <label class="control-label">Configuration Option 1</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                   required size="20" maxlength="20"/>
-        </div>
-        <div class="form-group">
-            <label class="control-label">Configuration Option 2</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                   required size="20" maxlength="20"/>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label">Configuration Option 3</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                   required size="20" maxlength="20"/>
-        </div>
-        <br />
+    <div ng-repeat="field in currentAction.configurationStore.fields">
+        <configuration-field field="field" />
+    </div>
+    <div>
+        <button class="btn btn-primary" ng-click="mapFields(this)">Map Fields</button>
     </div>
 </div>

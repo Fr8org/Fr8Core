@@ -17,14 +17,16 @@ namespace Core.PluginRegistrations
     {
         private readonly ActionNameListDTO availableActions;
         private readonly string baseUrl;
-        // private readonly IAction _action;
+        private readonly string pluginRegistrationName;
 
-        protected BasePluginRegistration(ActionNameListDTO curAvailableActions, string curBaseUrl)
+        protected BasePluginRegistration(ActionNameListDTO curAvailableActions,
+            string curBaseUrl, string curPluginRegistrationName)
         {
             //AutoMapperBootStrapper.ConfigureAutoMapper();
 
             availableActions = curAvailableActions;
             baseUrl = curBaseUrl;
+            pluginRegistrationName = curPluginRegistrationName;
             //  _action = ObjectFactory.GetInstance<IAction>();
         }
 
@@ -35,52 +37,78 @@ namespace Core.PluginRegistrations
             set { }
         }
 
-        public IEnumerable<ActionRegistrationDO> AvailableActions
+        public IEnumerable<ActionTemplateDO> AvailableActions
         {
             get
             {
-                // return JsonConvert.DeserializeObject<IEnumerable<ActionRegistrationDO>>(availableActions,
-                //  new JsonSerializerSettings());
-                var curActionRegistrations = new List<ActionRegistrationDO>();
-                //IEnumerable<ActionRegistrationDO> curActionRegistrations;
-                //return Mapper.Map(availableActions, curActionRegistrations);
+                var curParentPluginRegistration = pluginRegistrationName;
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var curActionTemplates = uow.ActionTemplateRepository
+                        .GetQuery()
+                        .Where(x => x.DefaultEndPoint == curParentPluginRegistration)
+                        .ToList();
+
+                    return curActionTemplates;
+                }
+            }
+        }
+
+        private IEnumerable<ActionTemplateDO> ActionsToBeRegistered
+        {
+            get
+            {
+                var curActionTemplates = new List<ActionTemplateDO>();
                 
                 foreach (var item in availableActions.ActionNames)
                 {
-                    var curActionRegistratoin = new ActionRegistrationDO();
-                    Mapper.Map(item,curActionRegistratoin);
-                    curActionRegistrations.Add(curActionRegistratoin);
+                    var curActionRegistration = new ActionTemplateDO();
+                    Mapper.Map(item, curActionRegistration);
+                    curActionTemplates.Add(curActionRegistration);
                 }
-                return curActionRegistrations;
+
+                return curActionTemplates;
             }
         }
 
         public static IPluginRegistration GetPluginType(ActionDO curAction)
         {
-            var pluginRegistrationType = Type.GetType("Core.PluginRegistrations." + curAction.ParentPluginRegistration);
+            if (curAction.ActionTemplate == null)
+            {
+                throw new ArgumentException("ActionTemplate is not specified for current action.");
+            }
+
+            var pluginRegistrationType = Type.GetType(AssembleName(curAction.ActionTemplate));
             if (pluginRegistrationType == null)
-                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            {
+                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ActionTemplate.DefaultEndPoint), "curAction");
+            }
+
             var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
             if (pluginRegistration == null)
+            {
                 throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
+            }
+
             return pluginRegistration;
         }
 
         public void RegisterActions()
         {
-            IEnumerable<ActionRegistrationDO> curAvailableCommands = this.AvailableActions;
+            IEnumerable<ActionTemplateDO> curAvailableCommands = this.ActionsToBeRegistered;
             foreach (var action in curAvailableCommands)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    string curParentPluginRegistration = this.GetType().Name;
-                    if (!uow.ActionRegistrationRepository.GetQuery().Where(a => a.ActionType == action.ActionType
-                        && a.Version == action.Version && a.ParentPluginRegistration == curParentPluginRegistration).Any())
+                    // string curParentPluginRegistration = this.GetType().Name;
+                    if (!uow.ActionTemplateRepository.GetQuery().Where(a => a.Name == action.Name
+                        && a.Version == action.Version && a.DefaultEndPoint == pluginRegistrationName).Any())
                     {
-                        ActionRegistrationDO actionRegistrationDO = new ActionRegistrationDO(action.ActionType,
-                                                                        curParentPluginRegistration,
+                        ActionTemplateDO actionTemplateDo = new ActionTemplateDO(action.Name,
+                                                                        pluginRegistrationName,
                                                                         action.Version);
-                        uow.ActionRegistrationRepository.Add(actionRegistrationDO);
+                        uow.ActionTemplateRepository.Add(actionTemplateDo);
                         uow.SaveChanges();
                     }
                 }
@@ -88,18 +116,23 @@ namespace Core.PluginRegistrations
         }
 
 
-        public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionRegistrationDO curActionRegistrationDO)
+        public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionDO curActionDO)
         {
             // Get the Type for the class
             Type calledType = Type.GetType(typeName);
             MethodInfo curMethodInfo = calledType.GetMethod(methodName);
             object curObject = Activator.CreateInstance(calledType);
-            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionRegistrationDO });
+            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
         }
 
-        public string AssembleName(Data.Entities.ActionRegistrationDO curActionRegistrationDO)
+        string IPluginRegistration.AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDO)
         {
-            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionRegistrationDO.ParentPluginRegistration, curActionRegistrationDO.Version);
+            return AssembleName(curActionTemplateDO);
+        }
+
+        public static string AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDo)
+        {
+            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.DefaultEndPoint, curActionTemplateDo.Version);
         }
 
         public virtual Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)

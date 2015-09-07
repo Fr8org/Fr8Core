@@ -1,9 +1,5 @@
-﻿using Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Data.Entities;
 
 namespace Core.Interfaces
 {
@@ -12,6 +8,8 @@ namespace Core.Interfaces
         IEnumerable<ActionListDO> GetAll();
         ActionListDO GetByKey(int curActionListId);
         void AddAction(ActionDO curActionDO, string position);
-        void Process(ActionListDO curActionListDO);
+        void Process(ActionListDO curActionList);
+        void UpdateActionListState(ActionListDO curActionListDO);
+        void ProcessAction(ActionListDO curActionList);
     }
 }

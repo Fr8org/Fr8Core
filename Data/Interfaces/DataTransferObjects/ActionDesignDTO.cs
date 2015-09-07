@@ -1,20 +1,31 @@
-﻿namespace Data.Interfaces.DataTransferObjects
+﻿using Data.Entities;
+using Newtonsoft.Json;
+
+namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDesignDTO : ActionDTOBase
     {
-        public string UserLabel { get; set; }
-
-        public string ActionType { get; set; }
-
         public int? ActionListId { get; set; }
 
-        public string ConfigurationSettings { get; set; }
+        [JsonProperty("configurationStore")]
+        public ConfigurationSettingsDTO ConfigurationStore { get; set; }
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
         public string ParentPluginRegistration { get; set; }
 
-	    public string DocuSignTemplateId { get; set; }
+        public int? ActionTemplateId { get; set; }
 
+        [JsonProperty("actionTemplate")]
+        public ActionTemplateDTO ActionTemplate { get; set; }
+
+        [JsonProperty("isTempId")]
+        public bool IsTempId { get; set; }
+
+        [JsonProperty("action_name")]
+        public string ActionName { get; set; }
+
+        [JsonProperty("action_version")]
+        public string ActionVersion { get; set; }
     }
 }

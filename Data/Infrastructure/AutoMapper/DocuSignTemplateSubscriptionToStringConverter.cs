@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
+using Data.States;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -31,7 +32,7 @@ namespace Data.Infrastructure.AutoMapper
                 return new DocuSignTemplateSubscriptionDO()
                 {
                     DocuSignTemplateId = a,
-                    ProcessTemplateId = processTermplateId
+                    ExternalProcessTemplateId = processTermplateId
                 };
             }).ToList();
         }

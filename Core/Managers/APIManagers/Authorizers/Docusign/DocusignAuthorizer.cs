@@ -21,9 +21,9 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
             _configRepository = configRepository;
         }
 
-        private DocusignAuthFlow CreateFlow(string userId)
+        private DocuSignAuthFlow CreateFlow(string userId)
         {
-            return new DocusignAuthFlow(userId)
+            return new DocuSignAuthFlow(userId)
             {
                 Endpoint = _configRepository.Get("endpoint"),
                 IntegratorKey = _configRepository.Get("IntegratorKey"),

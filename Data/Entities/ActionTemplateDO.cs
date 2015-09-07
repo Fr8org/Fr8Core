@@ -1,0 +1,26 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Data.Entities
+{
+    public class ActionTemplateDO : BaseDO
+    {
+        public ActionTemplateDO() { }
+
+        public ActionTemplateDO(string name, string defaultEndPoint, string version)
+        {
+            this.Name = name;
+            this.DefaultEndPoint = defaultEndPoint;
+            this.Version = version;
+        }
+
+        [Key]
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Version { get; set; }
+
+        public string DefaultEndPoint { get; set; }
+    }
+}

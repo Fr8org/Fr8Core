@@ -1,9 +1,8 @@
 ﻿using System.Linq;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Core.Services;
-using Core.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;

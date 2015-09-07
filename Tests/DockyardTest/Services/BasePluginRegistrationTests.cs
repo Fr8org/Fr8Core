@@ -41,10 +41,15 @@ namespace DockyardTest.Services
             //availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}, { ""ActionType"" : ""Write"" , ""Version"": ""1.4""}]";
             
 
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            var basePluginRegistrationMock =
+                new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
+
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
-            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableActions;
+            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
+            basePluginRegistration.RegisterActions();
+
+            var result = basePluginRegistration.AvailableActions;
 
             Assert.AreEqual(1, result.Count());
         }
@@ -52,48 +57,53 @@ namespace DockyardTest.Services
         [Test]
         public void AvailableCommands_CorrectFormat_ReturnsCorrectLists()
         {
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
-            ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
+            var basePluginRegistrationMock =
+                new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
 
-            var result = ObjectFactory.GetInstance<BasePluginRegistration>().AvailableActions;
-
-            //Assert.AreEqual(actionType, result.ToList()[0].ActionType);
-            //Assert.AreEqual(version, result.ToList()[0].Version);
-
-            Assert.AreEqual(actionType, ((List<ActionRegistrationDO>)result)[0].ActionType);
-            Assert.AreEqual(version, ((List<ActionRegistrationDO>)result)[0].Version);
-        }
-
-        [Test]
-        public void RegisterActions_RegisterNew_CreatesActionRegistrationDO()
-        {
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
             basePluginRegistration.RegisterActions();
 
-            var newActionRegistration = _uow.ActionRegistrationRepository.GetQuery()
-                .FirstOrDefault(i => i.ActionType == actionType && i.Version == version);
+            var result = basePluginRegistration.AvailableActions;
 
-            Assert.AreEqual(actionType, newActionRegistration.ActionType);
-            Assert.AreEqual(version, newActionRegistration.Version);
+            //Assert.AreEqual(actionType, result.ToList()[0].ActionType);
+            //Assert.AreEqual(version, result.ToList()[0].Version);
+
+            Assert.AreEqual(actionType, ((List<ActionTemplateDO>)result)[0].Name);
+            Assert.AreEqual(version, ((List<ActionTemplateDO>)result)[0].Version);
+        }
+
+        [Test]
+        public void RegisterActions_RegisterNew_CreatesActionTemplateDO()
+        {
+            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
+            ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
+
+            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
+            basePluginRegistration.RegisterActions();
+
+            var newActionTemplate = _uow.ActionTemplateRepository.GetQuery()
+                .FirstOrDefault(i => i.Name == actionType && i.Version == version);
+
+            Assert.AreEqual(actionType, newActionTemplate.Name);
+            Assert.AreEqual(version, newActionTemplate.Version);
         }
 
         [Test]
         public void RegisterActions_RegisterExisting_DoNoCreateNew()
         {
-            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 
             var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
             basePluginRegistration.RegisterActions();
-            int totalRecords = _uow.ActionRegistrationRepository.GetQuery().Count();
+            int totalRecords = _uow.ActionTemplateRepository.GetQuery().Count();
 
-            basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl);
+            basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
             ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
             basePluginRegistration.RegisterActions();
-            int totalRecordsAfterExistingRegister = _uow.ActionRegistrationRepository.GetQuery().Count();
+            int totalRecordsAfterExistingRegister = _uow.ActionTemplateRepository.GetQuery().Count();
 
             Assert.AreEqual(totalRecords, totalRecordsAfterExistingRegister);
         }

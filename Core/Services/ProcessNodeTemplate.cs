@@ -49,6 +49,7 @@ namespace Core.Services
                 ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(scheduledActionList);
+
             uow.SaveChanges();
         }
 
@@ -88,7 +89,9 @@ namespace Core.Services
             // Remove all actions.
             uow.ActionRepository
                 .GetQuery()
-                .Where(x => x.ActionList.ProcessNodeTemplate.Id == id)
+                // .Where(x => x.ParentActivity.ProcessNodeTemplate.Id == id)
+                .Where(x => uow.ActionListRepository.GetQuery()
+                    .Any(y => y.Id == x.ParentActivityId && y.ProcessNodeTemplate.Id == id))
                 .ToList()
                 .ForEach(x => uow.ActionRepository.Remove(x));
 

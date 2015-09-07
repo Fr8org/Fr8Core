@@ -23,89 +23,86 @@ module dockyard.directives.paneConfigureMapping {
         public templateUrl = "/Views/AngularTemplate/PaneConfigureMapping.html";
         public restrict = "E";
 
-        // control works in two modes field (fields would be dropdown) or param (would be dropdown)
+        // control works in two modes field (fields would be dropdown) or param (would be dropdown) REWRITE THIS
         // if nothing is set it works as field mapper
         public scope = {
-            mode: "@"
+            mode: "@",
+            currentAction: "="
         };
 
 
 
         public controller = ["$scope", "$http", "urlPrefix", ($scope, $http, urlPrefix) => {
 
-            var mappedValue = <any>{
-                Map: [
-                ]
-            };
+            var updateScopedAction = () => {
+                var fields = [];
 
-
-            var transform = () => {
-                if (!$scope.toBeMappedFrom)
-                    return;
-                if ($scope.toBeMappedFrom.constructor !== Array && $scope.toBeMappedFrom < 0)
-                    return;
-                mappedValue.Map = [];
-                var includeOnly = ['Id', 'Name', 'type'];
-
-                $scope.toBeMappedFrom.forEach((current) => {
-                    mappedValue.Map.push({
-                        from: _.pick(current, includeOnly), to: _.pick(current.mappedTo, includeOnly)
+                if ($scope.mode === 'param') {
+                    $scope.toBeMappedFrom.forEach((it) => {
+                        if (it.mappedTo && it.mappedTo.name) {
+                            fields.push(new model.FieldMapping(it.mappedTo.name, it.name));
+                        }
                     });
-                });
-            };
-
-            function init() {
-
-
-                var loadedActions = false;
-                var loadedFields = false;
-                $scope.mappedValue = mappedValue;
-
-                var actionDto = {
-                    ConfigurationSettings: "{'connection_string':'Data Source= s79ifqsqga.database.windows.net; database = demodb_health; User ID= alexeddodb; Password = Thales89'}",
-                    ParentPluginRegistration: "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core"
+                }
+                else {
+                    $scope.toBeMappedFrom.forEach((it) => {
+                        if (it.mappedTo && it.mappedTo.name) {
+                            fields.push(new model.FieldMapping(it.name, it.mappedTo.name));
+                        }
+                    });
                 }
 
-                $http.post(urlPrefix + "/actions/field_mapping_targets/", actionDto).then((returnedParams) => {
-                    loadedActions = true;
-                    var tempToBeMapped = [];
+                if (!$scope.currentAction.fieldMappingSettings) {
+                    $scope.currentAction.fieldMappingSettings = new model.FieldMappingSettings();
+                }
 
-                    returnedParams.data.forEach((actionParam) => {
-                        tempToBeMapped.push({ 'type': "actionparam", 'Name': actionParam });
+                $scope.currentAction.fieldMappingSettings.fields = fields;
+            };
+
+            function render() {
+                var loadedActions = false;
+                var loadedFields = false;
+
+                $http
+                    .post("/actions/field_mapping_targets/", $scope.currentAction)
+                    .then((returnedParams) => {
+                        loadedActions = true;
+
+                        var tempToBeMapped = [];
+
+                        returnedParams.data.forEach((actionParam) => {
+                            tempToBeMapped.push({ 'type': "actionparam", 'Name': actionParam });
+                        });
+
+                        if ($scope.mode === "param") {
+                            $scope.toBeMappedTo = tempToBeMapped;
+                            $scope.HeadingRight = "Target Data";
+                            $scope.HeadingLeft = "Source Data";
+                            return;
+                        }
+
+                        $scope.toBeMappedFrom = tempToBeMapped;
+                        $scope.HeadingLeft = "Source Data";
+                        $scope.HeadingRight = "Target Data";
+
+                        return;
                     });
 
-                    if ($scope.mode === "param") {
-                        $scope.toBeMappedTo = tempToBeMapped;
-                        $scope.HeadingRight = "Document Fields";
-                        $scope.HeadingLeft = "Action Params";
-                        return;
-                    }
-                    $scope.toBeMappedFrom = tempToBeMapped;
-                    transform();
-                    $scope.HeadingLeft = "Document Fields";
-                    $scope.HeadingRight = "Action Params";
-                    return;
-                });
-
-
-                var actionWithProcess = { DocuSignTemplateId: "b5abd63a-c12c-4856-b9f4-989200e41a6f" };
-
-
-                $http.post(urlPrefix + "/actions/field_data_sources/", actionWithProcess )
-                    .then((docFields) => {
+                $http.post("/actions/field_data_sources/", $scope.currentAction)
+                    .then((dataSources) => {
                         loadedFields = true;
+
                         var tempToBeMapped = [];
-                        docFields.data.forEach((docField) => {
-                            tempToBeMapped.push({ 'type': "docusignfield", 'Name': docField });
+                        dataSources.data.forEach((docField) => {
+                            tempToBeMapped.push({ 'type': "docusignfield", 'Name': docField }); //should be renamed from docusignField to 'data source'
                         });
 
                         if ($scope.mode === "param") {
                             $scope.toBeMappedFrom = tempToBeMapped;
-                            transform();
                             return;
                         }
-                        $scope.toBeMappedTo = tempToBeMapped;
 
+                        $scope.toBeMappedTo = tempToBeMapped;
                     });
 
                 $scope.doneLoading = () => loadedActions && loadedFields;
@@ -118,14 +115,12 @@ module dockyard.directives.paneConfigureMapping {
                 }
 
                 $scope.uiDropDownChanged = () => {
-                    transform();
+                    updateScopedAction();
                 };
-
             }
 
             var onRender = () => {
-                init();
-                transform();
+                render();
             }
 
             var onHide = () => {
@@ -135,7 +130,7 @@ module dockyard.directives.paneConfigureMapping {
 
             var onUpdate = () => { };
 
-            onRender();
+            //onRender();
 
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Render], onRender);
             $scope.$on(MessageType[MessageType.PaneConfigureMapping_Hide], onHide);

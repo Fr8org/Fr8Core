@@ -8,7 +8,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using DocuSign.Integrations.Client;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 
@@ -38,10 +37,10 @@ namespace Core.Services
 				throw new ArgumentNullException("envelopeData");
 			if (curProcessNode == null)
 				throw new ArgumentNullException("curProcessNode");
-
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplate.Id == curProcessNode.Id);
+			    var cq = uow.CriteriaRepository.GetAll().ToList();
+				var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplateId == curProcessNode.ProcessNodeTemplateId);
 				if (curCriteria == null)
 					throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
 				if (curCriteria.CriteriaExecutionType == CriteriaExecutionType.WithoutConditions)

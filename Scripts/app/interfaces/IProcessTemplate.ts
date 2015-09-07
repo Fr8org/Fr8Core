@@ -1,0 +1,16 @@
+﻿/// <reference path="../_all.ts" />
+
+module dockyard.interfaces {
+    export interface IProcessTemplateScope extends ng.IScope {
+        ptvm: interfaces.IProcessTemplateVM;
+        submit: (isValid: boolean) => void;
+        errorMessage: string;
+        processBuilder: any
+    }
+
+    export interface IProcessTemplatesScope extends ng.IScope {
+        ptvms: angular.resource.IResourceArray<dockyard.interfaces.IProcessTemplateVM>;
+        nav: (pt: IProcessTemplateVM) => void,
+        remove: (pt: IProcessTemplateVM) => void
+    }
+} 

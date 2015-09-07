@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Interfaces;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-	public class ActionListDO: BaseDO
+    public class ActionListDO : ActivityDO /*, IActionListChild*/
 	{
 		public ActionListDO()
 		{
-			Actions = new List<ActionDO>();
+            Activities = new List<ActivityDO>();
 		}
 
-		[Key]
-		public int Id{ get; set; }
+        // [ForeignKey("ParentActionList")]
+        // public int? ParentActionListId { get; set; }
+        // public virtual ActionListDO ParentActionList { get; set; }
 
-		public string Name{ get; set; }
+ 		public string Name { get; set; }
 
         [ForeignKey("ProcessNodeTemplate")]
         [Column("ProcessNodeTemplateDO_Id")]
@@ -30,19 +32,19 @@ namespace Data.Entities
 		[ForeignKey("TriggerEvent")]
 		public int? TriggerEventID{ get; set; }
 
-		public virtual _EventStatusTemplate TriggerEvent{ get; set; }
+		public virtual _ExternalEventTypeTemplate TriggerEvent{ get; set; }
 
-		[InverseProperty("ActionList")]
-		public virtual List<ActionDO> Actions{ get; set; }
+        // [InverseProperty("ParentActionList")]
+        // public virtual List<ActionListDO> ActionLists { get; set; }
 
         [Required]
         [ForeignKey("ActionListTypeTemplate")]
         public int ActionListType { get; set; }
         public virtual _ActionListTypeTemplate ActionListTypeTemplate { get; set; }
 
-        [ForeignKey("CurrentAction")]
-        public int? CurrentActionID { get; set; }
-        public virtual ActionDO CurrentAction  { get; set; }
+        [ForeignKey("CurrentActivity")]
+        public int? CurrentActivityID { get; set; }
+        public virtual ActivityDO CurrentActivity { get; set; }
 
         [ForeignKey("ActionListStateTemplate")]
         public int? ActionListState { get; set; }

@@ -7,19 +7,18 @@
     </div>
     <div class="portlet-body">
         <div class="form-group">
-            <a href class="btn btn-danger" ng-hide="action.isTempId" ng-click="RemoveAction()">Remove action</a>
+            <a href class="btn btn-danger" ng-hide="currentAction.isTempId" ng-click="RemoveAction()">Remove action</a>
         </div>
         <div class="form-group">
-            <label class="control-label">Criteria Name</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                    required size="20" maxlength="20" ng-model="action.name" />
-        </div>
-        <div class="form-group">
-            <select ng-model="action.actionTypeId" class="form-control" ng-change="ActionTypeSelected()"
-                    ng-options="sampleActionType.value as sampleActionType.name for sampleActionType in sampleActionTypes">
+            <select ng-model="currentAction.actionTemplateId" class="form-control" ng-change="ActionTypeSelected()"
+                    ng-options="actionType.id as actionType.actionType for actionType in actionTypes">
                 <option value="">Select Action Type</option>
             </select>
         </div>
-        <br />
+        <div class="form-group">
+            <label class="control-label">Name</label>
+            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
+                   required size="20" maxlength="20" ng-model="currentAction.userLabel" />
+        </div>
     </div>
 </div>

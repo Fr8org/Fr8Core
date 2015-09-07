@@ -14,15 +14,25 @@ namespace Core.PluginRegistrations
 {
     public class AzureSqlServerPluginRegistration_v1 : BasePluginRegistration
     {
-       // private readonly ActionNameListDTO availableActions;
+        //public const string baseUrl = "plugin_azure_sql_server";
+        //private readonly ActionNameListDTO availableActions;
+        // private const string availableActions = @"[{ ""ActionType"" : ""Write to Sql Server"" , ""Version"": ""1.0"", ""ParentPluginRegistration"": ""AzureSql""}]";
         //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
+
+        public const string PluginRegistrationName = "AzureSqlServer";
+
 #if DEBUG
-        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
+        // IMPORTANT
+        // Please always use training slash in the end of plugin URL. For details see: 
+        // http://stackoverflow.com/questions/23438416/why-is-httpclient-baseaddress-not-working
+        //
+        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server/";
+        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server/";
 #else
-        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
+        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1/";
 #endif
         public AzureSqlServerPluginRegistration_v1()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
 
         }
@@ -32,20 +42,27 @@ namespace Core.PluginRegistrations
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             ActionNameDTO curActionName = new ActionNameDTO();
 
-            curActionName.ActionType = "Write";
+            curActionName.Name = "Write";
             curActionName.Version = "1";
             curActionNameList.ActionNames.Add(curActionName);
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionRegistrationDO curActionRegistrationDO)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            return "{\"configurationSettings\":[{\"textField\": {\"name\": \"connection_string\",\"required\":true,\"value\":\"\",\"fieldLabel\":\"SQL Connection String\",}}]}";
+
+            if (curActionDO == null)
+                throw new ArgumentNullException("curAction");
+
+            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
+            curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("connection_string", true, "", "SQL Connection String"));
+
+            return JsonConvert.SerializeObject(curConfigurationSettings);
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)
         {
-           
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseUrl);
@@ -58,7 +75,9 @@ namespace Core.PluginRegistrations
                 var response = await client.PostAsync(baseUrl + "/actions/Write_To_Sql_Server/field_mappings", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
 
                 var curMappingTargets = await response.Content.ReadAsStringAsync();
-                return JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());
+                var curResultJson = JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());
+
+                return curResultJson;
             }
         }
     }

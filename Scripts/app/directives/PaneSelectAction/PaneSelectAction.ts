@@ -13,27 +13,11 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionTypeSelectedEventArgs {
-        public processNodeTemplateId: number;
-        public id: number;
-        public isTempId: boolean;
-        public actionListId: number;
-        public actionType: string;
-        public actionName: string;
+        public action: interfaces.IActionDesignDTO
 
-        constructor(
-            processNodeTemplateId: number,
-            id: number,
-            isTempId: boolean,
-            actionListId: number,
-            actionType: string,
-            actionName: string) {
-
-            this.processNodeTemplateId = processNodeTemplateId;
-            this.id = id;
-            this.isTempId = isTempId;
-            this.actionListId = actionListId;
-            this.actionType = actionType;
-            this.actionName = actionName;
+        constructor(action: interfaces.IActionDesignDTO) {
+            // Clone Action to prevent any issues due to possible mutation of source object
+            this.action = angular.extend({}, action);
         }
     }
 
@@ -94,7 +78,9 @@ module dockyard.directives.paneSelectAction {
         public templateUrl = '/AngularTemplate/PaneSelectAction';
         public controller: ($scope: ng.IScope, element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes, $http: ng.IHttpService, urlPrefix: string) => void;
-        public scope = {};
+        public scope = {
+            currentAction: '='
+        };
         public restrict = 'E';
 
         constructor(
@@ -114,44 +100,32 @@ module dockyard.directives.paneSelectAction {
                 $scope: interfaces.IPaneSelectActionScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
-                $http: ng.IHttpService,
-                urlPrefix: string) => {
+                $http: ng.IHttpService) => {
 
-                this.PupulateSampleData($scope);
+                this.PopulateData($scope, $http);
 
-                $scope.$watch<model.Action>(
-                    (scope: interfaces.IPaneSelectActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<model.ActionDesignDTO>(
+                    (scope: interfaces.IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
-                    var eventArgs = new ActionTypeSelectedEventArgs(
-                        $scope.action.processNodeTemplateId,
-                        $scope.action.id,
-                        $scope.action.isTempId,
-                        $scope.action.actionListId,
-                        $scope.action.actionType,
-                        $scope.action.userLabel);
+                    var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
                     $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                 }
 
                 $scope.RemoveAction = () => {
-                    var afterRemove = function () {
-                        $scope.$emit(
-                            MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                            new ActionRemovedEventArgs($scope.action.id, $scope.action.isTempId)
-                            );
-                    };
+                    $scope.$emit(
+                        MessageType[MessageType.PaneSelectAction_ActionRemoved],
+                        new ActionRemovedEventArgs($scope.currentAction.id, $scope.currentAction.isTempId)
+                    );
 
-                    var self = this;
-                    if (!$scope.action.isTempId) {
-                        var url = urlPrefix + '/Action/' + $scope.action.id;
-                        $http.delete(url)
-                            .success(function () {
-                                afterRemove();
-                            });
+                    if (!$scope.currentAction.isTempId) {
+                        this.ActionService.delete({
+                            id: $scope.currentAction.id
+                        }); 
                     }
-                    else {
-                        afterRemove();
-                    }
+
+                    $scope.currentAction = null;
+                    $scope.isVisible = false;
                 };
 
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Render], this.onRender);
@@ -160,35 +134,41 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.Action, oldValue: model.Action, scope: interfaces.IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: interfaces.IPaneSelectActionScope) {
 
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
-            scope.action = new model.Action(
-                eventArgs.processNodeTemplateId,
-                eventArgs.id,
-                eventArgs.isTempId,
-                eventArgs.actionListId
-                );
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<interfaces.IPaneSelectActionScope> event.currentScope).isVisible = false;
+            (<interfaces.IPaneSelectActionScope>event.currentScope).isVisible = false;
         }
 
         private onUpdate(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             (<any>$).notify("Greetings from Select Action Pane. I've got a message about my neighbor saving its data so I saved my data, too.", "success");
         }
 
-        private PupulateSampleData($scope: interfaces.IPaneSelectActionScope) {
-            $scope.sampleActionTypes = [
-                { name: "Action type 1", value: "1" },
-                { name: "Action type 2", value: "2" },
-                { name: "Action type 3", value: "3" }
-            ];
+        private PopulateData(
+            $scope: interfaces.IPaneSelectActionScope,
+            $http: ng.IHttpService) {
+
+            $scope.actionTypes = [];
+
+            $http.get('/actions/available')
+                .then(function (resp) {
+                    angular.forEach(resp.data, function (it) {
+                        console.log(it);
+                        $scope.actionTypes.push(
+                            new model.ActionTemplate(
+                                it.id,
+                                it.actionType,
+                                it.version)
+                            );
+                    });
+                });
         }
 
         //The factory function returns Directive object as per Angular requirements

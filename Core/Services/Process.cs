@@ -53,7 +53,7 @@ namespace Core.Services
 
                 //then create process node
                 var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
-                var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
+                var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
                 uow.SaveChanges();
             }
@@ -68,10 +68,12 @@ namespace Core.Services
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
 
-            curProcessDO.ProcessState = ProcessState.Executing;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ProcessNodeDO curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
+                var curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
+                curProcessDO.ProcessState = ProcessState.Executing;
+                uow.SaveChanges();
+
                 Execute(curEvent, curProcessNode);
             }
         }
@@ -80,9 +82,8 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                DocuSignEnvelope curDocuSignEnvelope = new DocuSignEnvelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
+                var curDocuSignEnvelope = new DocuSignEnvelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
                 List<EnvelopeDataDTO> curEnvelopeData = _envelope.GetEnvelopeData(curDocuSignEnvelope);
-
 
                 while (curProcessNode != null)
                 {

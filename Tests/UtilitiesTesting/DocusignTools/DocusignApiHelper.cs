@@ -1,11 +1,10 @@
 ﻿using System;
+using Core.Services;
 using Data.Wrappers;
 using DocuSign.Integrations.Client;
-
 using Newtonsoft.Json;
-
 using UtilitiesTesting.DocusignTools.Interfaces;
-using Data.Wrappers;
+using Account = DocuSign.Integrations.Client.Account;
 
 namespace UtilitiesTesting.DocusignTools
 {

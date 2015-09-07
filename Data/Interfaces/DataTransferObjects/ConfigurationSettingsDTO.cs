@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -10,8 +11,14 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public ConfigurationSettingsDTO()
         {
-            FieldDefinitions = new List<FieldDefinitionDTO>();
+            Fields = new List<FieldDefinitionDTO>();
+            DataFields = new List<string>();
         }
-        public List<FieldDefinitionDTO> FieldDefinitions { get; set; }
+
+        [JsonProperty("fields")]
+        public List<FieldDefinitionDTO> Fields { get; set; }
+
+        [JsonProperty("data-fields")]
+        public List<string> DataFields { get; set; }
     }
 }

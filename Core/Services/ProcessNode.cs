@@ -39,6 +39,7 @@ namespace Core.Services
             };
 
             processNode.ProcessNodeTemplateId = processNodeTemplateId;
+            processNode.ProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(processNodeTemplateId);
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -67,8 +68,8 @@ namespace Core.Services
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            string nextTransitionKey = "";
-            bool result = _criteria.Evaluate(curEventData, curProcessNode);
+            string nextTransitionKey;
+            var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
                 var _curActionList = ObjectFactory.GetInstance<IActionList>();
@@ -77,10 +78,10 @@ namespace Core.Services
                     var curProcessNodeTemplate =
                         uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
 
-
                     List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
                     foreach (var actionList in actionListSet)
                     {
+                        
                         _curActionList.Process(actionList);
                     }
                 }
@@ -91,9 +92,7 @@ namespace Core.Services
             {
                 nextTransitionKey = "false";
             }
-
             return nextTransitionKey;
-
         }
 
         /// <summary>

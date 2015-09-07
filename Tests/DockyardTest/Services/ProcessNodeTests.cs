@@ -1,13 +1,12 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using Core.Interfaces;
 using Core.Services;
+using Data.Interfaces.DataTransferObjects;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Moq;
-using System.Collections.Generic;
-using Utilities;
-using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
 using Data.Interfaces;
@@ -61,7 +60,7 @@ namespace DockyardTest.Services
 		}
 
         [Test]
-        public void Execute_CriteriaEvaluateFalse_ReturnFalse()
+        public void Execute_CriteriaEvaluatesToFalse_ReturnFalse()
         {
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
@@ -80,7 +79,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Execute_CriteriaEvaluateTrue_ReturnTrue()
+        public void Execute_CriteriaEvaluatesToTrue_ReturnTrue()
         {
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
@@ -97,9 +96,11 @@ namespace DockyardTest.Services
 
             var processNodeDO = FixtureData.TestProcessNode4();
             var docusignEventDO = FixtureData.TestEnvelopeDataList1();
+            var processTemplate = FixtureData.TestProcessTemplate2();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
                 uow.SaveChanges();
             }
@@ -110,7 +111,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void Execute_ActionListTypeImmediate_CallProcess()
+        public void Execute_VerifyProcessCalled_ActionListTypeIsImmediate()
         {
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
@@ -127,9 +128,10 @@ namespace DockyardTest.Services
 
             var processNodeDO = FixtureData.TestProcessNode4();
             var docusignEventDO = FixtureData.TestEnvelopeDataList1();
-
+            var processTemplate = FixtureData.TestProcessTemplate2();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
                 uow.SaveChanges();
             }
