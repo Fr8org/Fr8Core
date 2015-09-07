@@ -16,6 +16,8 @@ using Moq;
 using Core.PluginRegistrations;
 using System;
 using Core.Interfaces;
+using System.Web.Http.Results;
+using AutoMapper;
 
 namespace DockyardTest.Controllers
 {
@@ -124,29 +126,29 @@ namespace DockyardTest.Controllers
         [Category("ActionController.GetConfigurationSettings")]
         public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
         {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActionDO = FixtureData.TestAction22();
 
-            //using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //{
-            //    var curActionTemplate = FixtureData.TestActionTemplateDO1();
-
-            //    var expectedResult = FixtureData.TestConfigurationSettings();
-            //    string curJsonResult = _action.GetConfigurationSettings(curActionTemplate);
-            //    ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
-            //    Assert.AreEqual(1, result.Fields.Count);
-            //    Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
-            //    Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
-            //    Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
-            //    Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
-            //}
+                var expectedResult = FixtureData.TestConfigurationSettings();
+                string curJsonResult = _action.GetConfigurationSettings(curActionDO);
+                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+                Assert.AreEqual(1, result.Fields.Count);
+                Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
+                Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
+                Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
+                Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
+            }
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("ActionController.GetConfigurationSettings")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            Assert.IsNotNull(curAction.GetConfigurationSettings(2));
+            var actionDO = curAction.GetConfigurationSettings(CreateActionWithId(2));
+            Assert.IsNotNull(actionDO);
         }
 
         [Test]
@@ -166,9 +168,10 @@ namespace DockyardTest.Controllers
                 curAction.ConfigurationStore = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
                 uow.SaveChanges();
 
+                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
                 //Act
                 var result =
-                    new ActionController(_action).GetConfigurationSettings(curAction.Id) as
+                    new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
                 ConfigurationSettingsDTO resultantConfigurationSettingsDto =
@@ -204,10 +207,10 @@ namespace DockyardTest.Controllers
                 configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
                 curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
-
+                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
                 //Act
                 var result =
-                    new ActionController(_action).GetConfigurationSettings(curAction.Id) as
+                    new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
                 ConfigurationSettingsDTO resultantConfigurationSettingsDto =
@@ -242,10 +245,10 @@ namespace DockyardTest.Controllers
                 configurationStore.DataFields.Add("data fields");
                 curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
-
+                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
                 //Act
                 var result =
-                    new ActionController(_action).GetConfigurationSettings(curAction.Id) as
+                    new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
                 ConfigurationSettingsDTO resultantConfigurationSettingsDto =
@@ -281,7 +284,7 @@ namespace DockyardTest.Controllers
                 var curActionTemplate = FixtureData.TestActionTemplateDO1();
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", curActionTemplate);
+                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", FixtureData.TestAction1());
                 ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
                 Assert.AreEqual(1, result.Fields.Count);
                 Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -367,8 +370,10 @@ namespace DockyardTest.Controllers
                 ActionListId = 1,
                 ConfigurationStore = new ConfigurationSettingsDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
-                ParentPluginRegistration = "AzureSql",
-                ActionTemplateId = 1
+                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ActionTemplateId = 1,
+                ActionTemplate = FixtureData.TestActionTemplateDTOV2()
+                //,ActionTemplate = FixtureData.TestActionTemplateDO2()
             };
         }
 
@@ -416,6 +421,53 @@ namespace DockyardTest.Controllers
             Assert.NotNull(task.Result);
             Assert.Greater(task.Result.Count(), 0);
             task.Result.ToList().ForEach(Console.WriteLine);
+        }
+
+        [Test, Ignore]
+        [Category("ActionController")]
+        public void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
+        {
+            var controller = new ActionController();
+            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.ActionTemplate = FixtureData.TestActionTemplateDTOV2();
+            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Content);
+        }
+
+        [Test]
+        [Category("ActionController")]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionController_GetConfigurationSettings_IdIsMissing()
+        {
+            var controller = new ActionController();
+            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.Id = 0;
+            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Content);
+        }
+
+        [Test]
+        [Category("ActionController")]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
+        {
+            var controller = new ActionController();
+            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.ActionTemplateId = 0;
+            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+
+            var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
+
+            Assert.IsNotNull(okResult);
+            Assert.IsNotNull(okResult.Content);
         }
     }
 }

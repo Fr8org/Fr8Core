@@ -102,8 +102,8 @@ module dockyard.directives.paneConfigureAction {
                     eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
 
                 if (eventArgs.action.actionTemplateId > 0) {
-                    (<any>scope.currentAction).configurationStore =
-                    this.ActionService.getConfigurationStore({ id: eventArgs.action.actionTemplateId });
+                    (<any>scope.currentAction).configurationSettings =
+                    this.ActionService.getConfigurationStore(scope.action);
                 }
             }
 

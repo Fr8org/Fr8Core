@@ -116,13 +116,13 @@ namespace Core.PluginRegistrations
         }
 
 
-        public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionTemplateDO curActionTemplateDo)
+        public string CallPluginRegistrationByString(string typeName, string methodName, Data.Entities.ActionDO curActionDO)
         {
             // Get the Type for the class
             Type calledType = Type.GetType(typeName);
             MethodInfo curMethodInfo = calledType.GetMethod(methodName);
             object curObject = Activator.CreateInstance(calledType);
-            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionTemplateDo });
+            return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
         }
 
         string IPluginRegistration.AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDO)

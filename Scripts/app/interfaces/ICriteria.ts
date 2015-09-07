@@ -20,6 +20,7 @@ module dockyard.interfaces {
         configurationStore: model.ConfigurationStore;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
+        actionTemplate: model.ActionTemplate;
     }
 
     export interface ICondition {

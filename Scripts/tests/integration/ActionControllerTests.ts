@@ -2,11 +2,10 @@
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 
 module dockyard.tests.controller {
+    import fx = utils.fixtures; // just an alias
 
     describe("Action Controller ", function () {
         var testData = {};
-
-        var returnedData = null;
 
         var errorHandler = function (response, done) {
             if (response.status === 401) {
@@ -17,6 +16,9 @@ module dockyard.tests.controller {
             }
             done.fail(response.responseText);
         };
+
+        describe("Action#Get,Delete,Save", function () {
+            var returnedData = null;
 
         var deleteInvoker = function (data, done) {
             $.ajax({
@@ -72,14 +74,15 @@ module dockyard.tests.controller {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationStore: utils.Fixtures.configurationStore,
+                    configurationStore: fx.ActionDesignDTO.configurationStore,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    fieldMappingSettings: utils.Fixtures.fieldMappingSettings,
+                    fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                     // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                    actionListId: null
+                        actionListId: null,
+                        actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
                 };
 
             postInvoker(done, actions);
@@ -88,6 +91,45 @@ module dockyard.tests.controller {
 
         it("can save action", function () {
             expect(returnedData).not.toBe(null);
+        });
+    });
+
+        describe("Action#GetConfigurationSettings", function () {
+            var endpoint = "/actions";
+
+            var currentActionDesignDTO: interfaces.IActionDesignDTO =
+                    {
+                        name: "test action type",
+                        configurationStore: fx.ActionDesignDTO.configurationStore,
+                        processNodeTemplateId: 1,
+                        actionTemplateId: 1,
+                        isTempId: false,
+                        id: 1,
+                        fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
+                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
+                        actionListId: null,
+                        actionTemplate: fx.ActionTemplate.actionTemplateDO
+                    };
+
+            beforeAll(function () {
+                $(document).ajaxError(errorHandler);
+                $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
+            });
+
+            it("Should get the correct configuration settings (AzureSqlServerPluginRegistration_v1)", function () {
+                var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }], "data-fields": [] });
+                $.ajax({
+                    type: "POST",
+                    url: "/actions/actions/configuration",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(currentActionDesignDTO),
+                    dataType: "json"
+                }).done(function (data, status) {
+                    expect(data).not.toBe(null);
+
+                    expect(angular.equals(data, expectedSettings)).toBe(true);
+                });
+            });
         });
     });
 

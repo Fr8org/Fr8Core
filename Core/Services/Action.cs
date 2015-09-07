@@ -15,6 +15,7 @@ using Data.States;
 using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
+using System.Data.Entity;
 
 namespace Core.Services
 {
@@ -109,26 +110,33 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetByKey(id);
+                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionDO != null)
+            if(curActionDO == null)
+                throw new System.ArgumentNullException("Action parameter is null");
+
+            if (curActionDO.ActionTemplate != null)
             {
-                //prepare the current plugin URL
-                string curPluginUrl = curActionDO.ActionTemplate.Name + curActionDO.ActionTemplate.Name + "/actions/configure/";
+                if(curActionDO.Id == 0)
+                    throw new System.ArgumentNullException("Action ID is empty");
+                if (curActionDO.ActionTemplateId == 0)
+                    throw new System.ArgumentNullException("Action Template ID is empty");
 
-                var restClient = new RestfulServiceClient();
-                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
-
-                return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
+                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
+                curActionDO.ConfigurationStore = settings;
             }
             else
             {
-                throw new ArgumentNullException("ActionTemplateDO");
+                throw new System.ArgumentNullException("ActionTemplate is null");
             }
+
+            return curActionDO.ConfigurationStore;
         }
 
         public void Delete(int id)

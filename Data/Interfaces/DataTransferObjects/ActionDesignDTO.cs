@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Entities;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {

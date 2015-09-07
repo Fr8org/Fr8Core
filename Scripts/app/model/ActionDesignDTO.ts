@@ -8,6 +8,7 @@
         configurationStore: model.ConfigurationStore;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
+        actionTemplate: model.ActionTemplate;
 
         constructor(
             processNodeTemplateId: number,
@@ -29,7 +30,8 @@
                 actionListId: this.actionListId,
                 name: this.name,
                 configurationStore: this.configurationStore,
-                fieldMappingSettings: this.fieldMappingSettings
+                fieldMappingSettings: this.fieldMappingSettings,
+                actionTemplate: this.actionTemplate
             };
         }
 
@@ -54,6 +56,7 @@
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
             result.processNodeTemplateId = dataObject.processNodeTemplateId;
+            result.actionTemplate = dataObject.actionTemplate;
             return result;
         }
     }

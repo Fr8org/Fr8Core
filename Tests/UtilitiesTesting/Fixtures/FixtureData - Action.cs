@@ -241,6 +241,19 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActionDO TestAction23()
+        {
+            var actionTemplate = FixtureData.TestActionTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action 2",
+                Ordering = 2,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+            };
+        }
+
         public static ActionDO IntegrationTestAction()
         {
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";

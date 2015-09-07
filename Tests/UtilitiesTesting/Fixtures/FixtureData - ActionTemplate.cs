@@ -53,7 +53,20 @@ namespace UtilitiesTesting.Fixtures
 	        return curActionTemplate;
 	    }
 
-	    public static ConfigurationSettingsDTO TestConfigurationSettings()
+        public static ActionTemplateDTO TestActionTemplateDTOV2()
+        {
+            var curActionTemplate = new ActionTemplateDTO
+            {
+                Id = 1,
+                Name = "plugin_azure_sql_server",
+                DefaultEndPoint = "http://localhost:46281/",
+                Version = "1"
+            };
+
+            return curActionTemplate;
+        }
+
+        public static ConfigurationSettingsDTO TestConfigurationSettings()
         {
             return new ConfigurationSettingsDTO()
             {
@@ -129,6 +142,19 @@ namespace UtilitiesTesting.Fixtures
 	                }
 	            }
 	        };
-	    }
+        }
+
+        public static ActionTemplateDO TestActionTemplateDO2()
+        {
+            var curActionDO = new ActionTemplateDO
+            {
+                Id = 1,
+                Name = "Write to SQL",
+                DefaultEndPoint = "AzureSqlServer",
+                Version = "1"
+            };
+            return curActionDO;
+
+        }
     }
 }

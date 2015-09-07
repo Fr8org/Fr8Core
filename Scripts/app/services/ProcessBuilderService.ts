@@ -48,9 +48,10 @@ module dockyard.services {
                 //    }
                 //},
                 'delete': { method: 'DELETE' },
-                'getConfigurationSettings': {
-                    method: 'GET',
-                    url: '/actions/configuration/:id'
+                'getConfigurationStore': {
+                    method: 'POST',
+                    url: '/actions/configuration',
+                    params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter
                 },
 
                 'getFieldDataSources': {

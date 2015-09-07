@@ -48,10 +48,10 @@ namespace Core.PluginRegistrations
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
 
-            if (curActionTemplateDo == null)
+            if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
             ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
