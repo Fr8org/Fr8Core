@@ -260,6 +260,7 @@
     <Compile Include="Migrations\201509051519518_DO_990_Migration.Designer.cs">
       <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />

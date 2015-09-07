@@ -341,26 +341,29 @@ namespace Core.Services
 		{
 			// We don't have ActivityRepository at this moment
 			// To get all activities we need to get all ActionLists(filtred by ParentActionListID) and all Actions(filtred by ParentActionListID)
-			var orderedActionLists = uow.ActionListRepository.GetAll()
-						.Where(x => x.ParentActionListId == currActivity.Id)
-						.OrderBy(z => z.Ordering);
-			var orderedActions = uow.ActionRepository.GetAll()
+			var orderedActivities = uow.ActivityRepository.GetAll()
 				.Where(x => x.ParentActionListId == currActivity.Id)
 				.OrderBy(z => z.Ordering);
+			//var orderedActionLists = uow.ActionListRepository.GetAll()
+			//			.Where(x => x.ParentActionListId == currActivity.Id)
+			//			.OrderBy(z => z.Ordering);
+			//var orderedActions = uow.ActionRepository.GetAll()
+			//	.Where(x => x.ParentActionListId == currActivity.Id)
+			//	.OrderBy(z => z.Ordering);
 			// We are putting all things to ActivityDO array and sorting it by Ordering property because of importance of order
 			// Created needed size array
-			ActivityDO[] orderedActivities = new ActivityDO[orderedActionLists.Count() + orderedActions.Count()];
-			int k = 0;
-			// Fill array
-			foreach (var actionList in orderedActionLists)
-				orderedActivities[k++] = actionList;
-			foreach (var action in orderedActions)
-				orderedActivities[k++] = action;
-			// Sort it by property 'Ordering' because the order is important
-			Array.Sort(orderedActivities, (x, y) =>
-			{
-				return x.Ordering.CompareTo(y.Ordering);
-			});
+			//ActivityDO[] orderedActivities = new ActivityDO[orderedActionLists.Count() + orderedActions.Count()];
+			//int k = 0;
+			//// Fill array
+			//foreach (var actionList in orderedActionLists)
+			//	orderedActivities[k++] = actionList;
+			//foreach (var action in orderedActions)
+			//	orderedActivities[k++] = action;
+			//// Sort it by property 'Ordering' because the order is important
+			//Array.Sort(orderedActivities, (x, y) =>
+			//{
+			//	return x.Ordering.CompareTo(y.Ordering);
+			//});
 			return orderedActivities;
 		}
     }
