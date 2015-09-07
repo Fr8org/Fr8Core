@@ -2,6 +2,7 @@
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 
 module dockyard.tests.controller {
+    import fx = utils.fixtures; // just an alias
 
     describe("Action Controller ", function () {
         var testData = {};
@@ -73,12 +74,12 @@ module dockyard.tests.controller {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationStore: utils.Fixtures.configurationStore,
+                    configurationStore: fx.ActionDesignDTO.configurationStore,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    fieldMappingSettings: utils.Fixtures.fieldMappingSettings,
+                    fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                     // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
                         actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
@@ -95,21 +96,19 @@ module dockyard.tests.controller {
 
         describe("Action#GetConfigurationSettings", function () {
             var endpoint = "/actions";
-            var curActionTemplate = new model.ActionTemplate(1, "Write to SQL", "1");
-            curActionTemplate.defaultEndPoint = "AzureSqlServer";
 
             var currentActionDesignDTO: interfaces.IActionDesignDTO =
                     {
                         name: "test action type",
-                        configurationStore: utils.Fixtures.configurationStore,
+                        configurationStore: fx.ActionDesignDTO.configurationStore,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
                         id: 1,
-                        fieldMappingSettings: utils.Fixtures.fieldMappingSettings,
+                        fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                         // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
-                        actionTemplate: curActionTemplate
+                        actionTemplate: fx.ActionTemplate.actionTemplateDO
                     };
 
             beforeAll(function () {

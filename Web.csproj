@@ -580,8 +580,10 @@
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
-    <TypeScriptCompile Include="Scripts\tests\utils\fixtures.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />

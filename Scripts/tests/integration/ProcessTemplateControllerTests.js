@@ -1,14 +1,14 @@
 /// <reference path="../../app/_all.ts" />
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 /// <reference path="../../typings/jquery/jquery.d.ts" />
-/// <reference path="../utils/fixtures.ts" />
+/// <reference path="../utils/fixture_processbuilder.ts" />
 var dockyard;
 (function (dockyard) {
     var tests;
     (function (tests) {
         var controller;
         (function (controller) {
-            var fx = tests.utils.Fixtures; // just an alias
+            var fx = tests.utils.fixtures.ProcessBuilder; // just an alias
             var errorHandler = function (response, detail) {
                 if (detail.status === 401) {
                     fail("User is not logged in, to run these tests, please login");

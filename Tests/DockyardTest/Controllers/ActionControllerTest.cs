@@ -141,7 +141,7 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("ActionController.GetConfigurationSettings")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionController_NULL_ActionTemplate()
@@ -423,7 +423,7 @@ namespace DockyardTest.Controllers
             task.Result.ToList().ForEach(Console.WriteLine);
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("ActionController")]
         public void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {

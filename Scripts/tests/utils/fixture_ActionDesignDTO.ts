@@ -1,31 +1,13 @@
-﻿module dockyard.tests.utils {
+﻿
+module dockyard.tests.utils.fixtures {
 
-    export class Fixtures {
+    export class ActionDesignDTO {
+
         public static newProcessTemplate = <interfaces.IProcessTemplateVM> {
             name: 'Test',
             description: 'Description',
             processTemplateState: 1
         };
-
-        public static updatedProcessTemplate = <interfaces.IProcessTemplateVM> {
-            'name': 'Updated',
-            'description': 'Description',
-            'processTemplateState': 1,
-            'subscribedDocuSignTemplates': ['58521204-58af-4e65-8a77-4f4b51fef626']
-        }
-
-        public static fieldMappingSettings = {
-            "fields": [
-                {
-                    "name": "[_AccessLevelTemplate].Value]",
-                    "value": "Text"
-                },
-                {
-                    "name": "[_AccessLevelTemplate].Version]",
-                    "value": "Checkbox"
-                }
-            ]
-        }
 
         public static configurationStore = {
             "fields":
@@ -71,5 +53,46 @@
             ]
         };
 
+        public static fieldMappingSettings = {
+            "fields": [
+                {
+                    "name": "[_AccessLevelTemplate].Value]",
+                    "value": "Text"
+                },
+                {
+                    "name": "[_AccessLevelTemplate].Version]",
+                    "value": "Checkbox"
+                }
+            ]
+        };
+
+        public static actionDesignDTO = <interfaces.IActionDesignDTO> {
+            name: "test action type",
+            configurationStore: null,
+            processNodeTemplateId: 1,
+            actionTemplateId: 1,
+            isTempId: false,
+            id: 1,
+            fieldMappingSettings: ActionDesignDTO.fieldMappingSettings,
+            actionListId: null,
+            actionTemplate: ActionTemplate.actionTemplateDO
+        };
+
+        public static paneConfiguration = <dockyard.directives.paneConfigureAction.IPaneConfigureActionScope> {
+            currentAction: ActionDesignDTO.actionDesignDTO
+        };
+
+        public static PaneConfigureActionOnRender_EventArgs = <dockyard.directives.paneConfigureAction.RenderEventArgs> {
+             action: ActionDesignDTO.actionDesignDTO
+        };
+
+        public static PaneConfigureActionOnRender_Event = <ng.IAngularEvent> {
+            currentScope: ActionDesignDTO.paneConfiguration,
+            targetScope: ActionDesignDTO.paneConfiguration,
+            defaultPrevented: null,
+            name: "",
+            preventDefault: null,
+            stopPropagation: null
+        };
     }
-}
+} 

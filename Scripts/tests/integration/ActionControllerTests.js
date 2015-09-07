@@ -6,6 +6,7 @@ var dockyard;
     (function (tests) {
         var controller;
         (function (controller) {
+            var fx = tests.utils.fixtures; // just an alias
             describe("Action Controller ", function () {
                 var testData = {};
                 var errorHandler = function (response, done) {
@@ -69,12 +70,12 @@ var dockyard;
                         // First POST, create a dummy entry
                         var actions = {
                             name: "test action type",
-                            configurationStore: tests.utils.Fixtures.configurationStore,
+                            configurationStore: fx.ActionDesignDTO.configurationStore,
                             processNodeTemplateId: 1,
                             actionTemplateId: 1,
                             isTempId: false,
                             id: 0,
-                            fieldMappingSettings: tests.utils.Fixtures.fieldMappingSettings,
+                            fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                             // ActionListId is set to null, since there is no ActionsLists on a blank db.
                             actionListId: null,
                             actionTemplate: new dockyard.model.ActionTemplate(1, "Write to SQL", "1")
@@ -87,19 +88,17 @@ var dockyard;
                 });
                 describe("Action#GetConfigurationSettings", function () {
                     var endpoint = "/actions";
-                    var curActionTemplate = new dockyard.model.ActionTemplate(1, "Write to SQL", "1");
-                    curActionTemplate.defaultEndPoint = "AzureSqlServer";
                     var currentActionDesignDTO = {
                         name: "test action type",
-                        configurationStore: tests.utils.Fixtures.configurationStore,
+                        configurationStore: fx.ActionDesignDTO.configurationStore,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
                         id: 1,
-                        fieldMappingSettings: tests.utils.Fixtures.fieldMappingSettings,
+                        fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                         // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
-                        actionTemplate: curActionTemplate
+                        actionTemplate: fx.ActionTemplate.actionTemplateDO
                     };
                     beforeAll(function () {
                         $(document).ajaxError(errorHandler);
