@@ -52,7 +52,7 @@ namespace Web.App_Start
                 .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
 
             Mapper.CreateMap<ActionNameDTO, ActionTemplateDO>()
-                  .ForMember(actionTemplateDO => actionTemplateDO.ActionType, opts => opts.ResolveUsing(e => e.ActionType))
+                  .ForMember(actionTemplateDO => actionTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(actionTemplateDO => actionTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
                // .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
               //  .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
@@ -91,7 +91,8 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.UserName, opts => opts.ResolveUsing(e => e.UserName))
                 .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO {Address = e.EmailAddress}))
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
-                //.ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
+
+            Mapper.CreateMap<ActionDO, ActionDesignDTO>();
           //Mapper.CreateMap< ActionDO, ActionVM >()
           //    .ForMember( a => a.Id, opts => opts.ResolveUsing( ad => ad.Id ) )
           //    .ForMember( a => a.Name, opts => opts.ResolveUsing( ad => ad.Name ) );

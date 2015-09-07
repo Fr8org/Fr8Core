@@ -1,0 +1,58 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Utilities.Interfaces;
+
+namespace Utilities
+{
+	public class CsvReader : ICsvReader
+	{
+		private readonly TextReader _txtReader;
+		private readonly char _delimeter;
+		private readonly bool _txtReaderCreatedHere;
+		private string[] _headers;
+		public string FilePath { get; private set; }
+
+		public CsvReader(string path, char delimeter = ',')
+			: this(System.IO.File.OpenText(path), delimeter)
+		{
+			FilePath = path;
+			_txtReaderCreatedHere = true;
+		}
+		public CsvReader(System.IO.TextReader txtReader, char delimeter = ',')
+		{
+			if (txtReader == null)
+				throw new ArgumentNullException("txtReader");
+			
+			_txtReader = txtReader;
+			_delimeter = delimeter;
+		}
+		public string[] GetColumnHeaders()
+		{
+			if (_headers == null)
+			{
+				// From https://tools.ietf.org/html/rfc4180
+				// Each field may or may not be enclosed in double quotes (however some programs, such as Microsoft Excel, do not use double quotes at all).
+				// We will not process double quotes fields
+				string firstLine = _txtReader.ReadLine();
+				if (string.IsNullOrEmpty(firstLine))
+					throw new InvalidDataException("There is no data in stream");
+
+				_headers = firstLine.Split(new char[] { _delimeter }, StringSplitOptions.None);
+			}
+			return _headers;
+		}
+
+		public void Dispose()
+		{
+			if (_txtReaderCreatedHere)
+			{
+				try { _txtReader.Dispose(); }
+				catch { }
+			}
+		}
+	}
+}

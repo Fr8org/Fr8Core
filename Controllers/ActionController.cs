@@ -11,6 +11,9 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Microsoft.AspNet.Identity;
+using StructureMap;
+using Core.PluginRegistrations;
 using Newtonsoft.Json;
 
 namespace Web.Controllers
@@ -93,18 +96,13 @@ namespace Web.Controllers
             return new List<ActionDesignDTO>();
         }
 
-        [HttpGet]
-        [Route("configuration/{actionTemplateId:int}")]
+        [HttpPost]
+        [Route("actions/configuration")]
         [ResponseType(typeof(ConfigurationSettingsDTO))]
-        public IHttpActionResult GetConfigurationSettings(int actionTemplateId)
+        public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
         {
-            var curActionTemplateDO = _actionTemplate.GetByKey(actionTemplateId);
-            var curConfigurationSettingsJson = _action.GetConfigurationSettings(curActionTemplateDO);
-
-            var curConfigurationSettingsDTO = JsonConvert
-                .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
-
-            return Ok(curConfigurationSettingsDTO);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            return Ok(_action.GetConfigurationSettings(curActionDO));  
         }
 
 

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Entities;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -6,7 +7,8 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public int? ActionListId { get; set; }
 
-        public ConfigurationSettingsDTO ConfigurationSettings { get; set; }
+        [JsonProperty("configurationStore")]
+        public ConfigurationSettingsDTO ConfigurationStore { get; set; }
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
@@ -14,6 +16,16 @@ namespace Data.Interfaces.DataTransferObjects
 
         public int? ActionTemplateId { get; set; }
 
+        [JsonProperty("actionTemplate")]
+        public ActionTemplateDTO ActionTemplate { get; set; }
+
+        [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
+
+        [JsonProperty("action_name")]
+        public string ActionName { get; set; }
+
+        [JsonProperty("action_version")]
+        public string ActionVersion { get; set; }
     }
 }

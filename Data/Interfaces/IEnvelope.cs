@@ -18,7 +18,7 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope);
+        //List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 

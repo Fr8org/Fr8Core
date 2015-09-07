@@ -17,9 +17,10 @@ module dockyard.interfaces {
         processNodeTemplateId: number,
         actionListId: number,
         name: string;
-        configurationSettings: model.ConfigurationSettings;
+        configurationStore: model.ConfigurationStore;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
+        actionTemplate: model.ActionTemplate;
     }
 
     export interface ICondition {

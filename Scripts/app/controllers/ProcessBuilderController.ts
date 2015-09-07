@@ -608,7 +608,7 @@ module dockyard.controllers {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationSettings: new model.ConfigurationSettings(),
+                    configurationStore: new model.ConfigurationStore(),
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     id: 1,
@@ -616,7 +616,8 @@ module dockyard.controllers {
                     fieldMappingSettings: new model.FieldMappingSettings(),
                     userLabel: "test",
                     tempId: 0,
-                    actionListId: 0
+                    actionListId: 0,
+                    actionTemplate: new model.ActionTemplate(1,"Write to SQL","1")
                 };
 
             $httpBackend

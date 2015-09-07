@@ -41,7 +41,8 @@ namespace Data.Infrastructure.AutoMapper
                         .Select(y => new FullActionListDTO()
                         {
                             ActionList = Mapper.Map<ActionListDTO>(y),
-                            Actions = y.Actions
+                            Actions = y.Activities
+                                .OfType<ActionDO>()
                                 .Select(z => Mapper.Map<ActionDesignDTO>(z))
                                 .ToList()
                         })

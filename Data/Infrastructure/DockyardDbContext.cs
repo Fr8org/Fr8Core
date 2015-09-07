@@ -265,7 +265,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
-            modelBuilder.Entity<TemplateDO>().ToTable("Templates");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
             modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventSubscriptions");

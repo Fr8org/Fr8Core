@@ -1,10 +1,11 @@
 ﻿/// <reference path="../../app/_all.ts" />
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 /// <reference path="../../typings/jquery/jquery.d.ts" />
-/// <reference path="../utils/fixtures.ts" />
+/// <reference path="../utils/fixture_processbuilder.ts" />
+
 
 module dockyard.tests.controller {
-    import fx = utils.Fixtures; // just an alias
+    import fx = utils.fixtures.ProcessBuilder; // just an alias
 
     var errorHandler = function (response, detail) {
         if (detail.status === 401) {
