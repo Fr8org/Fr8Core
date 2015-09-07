@@ -6,13 +6,13 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class ActionDO : ActivityDO, IActionListChild
+    public class ActionDO : ActivityDO /*, IActionListChild*/
 	{
         public string Name { get; set; }
 
-        [ForeignKey("ParentActionList")]
-        public int? ParentActionListId { get; set; }
-        public virtual ActionListDO ParentActionList { get; set; }
+        // [ForeignKey("ParentActionList")]
+        // public int? ParentActionListId { get; set; }
+        // public virtual ActionListDO ParentActionList { get; set; }
 
         public string ConfigurationStore { get; set; }
 
