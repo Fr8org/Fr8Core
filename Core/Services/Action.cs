@@ -297,16 +297,16 @@ namespace Core.Services
 			List<ActivityDO> result = new List<ActivityDO>();
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				ActionListDO curActionList = curActionDO.ParentActionList;
-				while (curActionList != null)
+				var curActivity = curActionDO.ParentActivity;
+				while (curActivity != null)
 				{
 					// Get action with lower Ordering
-					var lowerAction = curActionList.Actions.OrderBy(x => x.Ordering).FirstOrDefault();
+					var lowerAction = curActivity.Activities.OrderBy(x => x.Ordering).FirstOrDefault();
 					if (lowerAction != null)
 						result.Add(lowerAction);
-					result.Add(curActionList);
+					result.Add(curActivity);
 					// Go to parent ActionListDO
-					curActionList = curActionList.ParentActionList;
+					curActivity = curActivity.ParentActivity;
 				}
 			}
 			return result;
@@ -318,20 +318,20 @@ namespace Core.Services
 			List<ActivityDO> downstreamList = new List<ActivityDO>();
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				GetDownstreamActivitiesRecursive(uow, curActionDO.ParentActionList, curActionDO.Ordering, downstreamList, new HashSet<ActionListDO>());
+				GetDownstreamActivitiesRecursive(uow, curActionDO.ParentActivity, curActionDO.Ordering, downstreamList, new HashSet<ActivityDO>());
 			}
 			return downstreamList;
 		}
-		private void GetDownstreamActivitiesRecursive(IUnitOfWork uow, ActionListDO curActionList, int startingOrdering, List<ActivityDO> downstreamList, HashSet<ActionListDO> alreadyStartedTraversingList)
+		private void GetDownstreamActivitiesRecursive(IUnitOfWork uow, ActivityDO curActivity, int startingOrdering, List<ActivityDO> downstreamList, HashSet<ActivityDO> alreadyStartedTraversingList)
 		{
-			while (curActionList != null)
+			while (curActivity != null)
 			{
 				// Do we start traverse on this curActionList?
-				if (alreadyStartedTraversingList.Contains(curActionList))
+				if (alreadyStartedTraversingList.Contains(curActivity))
 					return;
-				alreadyStartedTraversingList.Add(curActionList);
+				alreadyStartedTraversingList.Add(curActivity);
 				// Get the higher ordered (downstream) activities for the current ActionList
-				var higherChildren = GetChildren(uow, curActionList).Where(x => x.Ordering > startingOrdering);
+				var higherChildren = GetChildren(uow, curActivity).Where(x => x.Ordering > startingOrdering);
 				// For any ActionLists, add their children
 				foreach (var higherActivity in higherChildren)
 				{
@@ -341,8 +341,8 @@ namespace Core.Services
 						GetDownstreamActivitiesRecursive(uow, childActionList, 0, downstreamList, alreadyStartedTraversingList);
 				}
 				// Work up the parent ActionList chain to get activities that are downstream of the path.
-				startingOrdering = curActionList.Ordering;
-				curActionList = curActionList.ParentActionList;
+				startingOrdering = curActivity.Ordering;
+				curActivity = curActivity.ParentActivity;
 			}
 		}
 		private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
@@ -350,7 +350,7 @@ namespace Core.Services
 			// We don't have ActivityRepository at this moment
 			// To get all activities we need to get all ActionLists(filtred by ParentActionListID) and all Actions(filtred by ParentActionListID)
 			var orderedActivities = uow.ActivityRepository.GetAll()
-				.Where(x => x.ParentActionListId == currActivity.Id)
+				.Where(x => x.ParentActivityId == currActivity.Id)
 				.OrderBy(z => z.Ordering);
 			//var orderedActionLists = uow.ActionListRepository.GetAll()
 			//			.Where(x => x.ParentActionListId == currActivity.Id)

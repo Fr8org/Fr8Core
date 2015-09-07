@@ -34,9 +34,9 @@ namespace DockyardTest.Controllers
 			{
 				foreach (var actionList in actionLists)
 				{
-					foreach (var action in actionList.Actions)
-						uow.ActionRepository.Add(action);
-					uow.ActionListRepository.Add(actionList);
+					foreach (var action in actionList.Activities)
+						uow.ActivityRepository.Add(action as ActionDO);
+					uow.ActivityRepository.Add(actionList);
 				}
 				uow.SaveChanges();
 			}

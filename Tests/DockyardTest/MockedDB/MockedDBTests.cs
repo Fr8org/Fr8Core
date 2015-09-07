@@ -116,7 +116,68 @@ namespace DockyardTest.MockedDB
                 if (exceptionMessages.Any())
                     Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
             }
+		  [Test]
+		  public void ActivityRepository_AddActionDOandActivityListDO_Failed()
+		  {
+			  var actionTempate = new ActionTemplateDO()
+			 {
+				 Id = 1,
+				 Version = "1"
+			 };
 
+			  ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
+			  ActionDO a1 = new ActionDO() { Id = 23, ActionTemplate = actionTempate };
+			  al1.Activities.Add(a1);
+			  a1.ParentActivity = al1;
+
+			  ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
+			  ActionDO a2 = new ActionDO() { Id = 24, ActionTemplate = actionTempate };
+			  al2.Activities.Add(a2);
+			  a2.ParentActivity = al2;
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  uow.ActivityRepository.Add(al1);
+				  uow.ActivityRepository.Add(al2);
+				  uow.SaveChanges();
+
+				  var allActivites = uow.ActivityRepository.GetAll().ToList();
+
+				  Assert.AreEqual(4, allActivites.Count);
+
+			  }
+		  }
+		  [Test]
+		  public void ActivityRepository_AddActionDOandActivityListDO_Failed2()
+		  {
+			  var actionTempate = new ActionTemplateDO()
+			  {
+				  Id = 1,
+				  Version = "1"
+			  };
+
+			  ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
+			  ActionDO a1 = new ActionDO() { Id = 23, ActionTemplate = actionTempate };
+			  al1.Activities.Add(a1);
+			  a1.ParentActivity = al1;
+
+			  ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
+			  ActionDO a2 = new ActionDO() { Id = 24, ActionTemplate = actionTempate };
+			  al2.Activities.Add(a2);
+			  a2.ParentActivity = al2;
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  uow.ActivityRepository.Add(al1);
+				  uow.ActivityRepository.Add(a1);
+				  uow.ActivityRepository.Add(al2);
+				  uow.ActivityRepository.Add(a2);
+				  uow.SaveChanges();
+
+				  var allActivites = uow.ActivityRepository.GetAll().ToList();
+
+				  Assert.AreEqual(4, allActivites.Count);
+
+			  }
+		  }
             //[Test, ExpectedException(ExpectedMessage = "Foreign row does not exist.\nValue '0' on 'NegotiationDO.NegotiationState' pointing to '_NegotiationStateTemplate.Id'")]
             //public void TestForeignKeyEnforced()
             //{
