@@ -164,7 +164,7 @@ module dockyard.directives.paneSelectAction {
                         $scope.actionTypes.push(
                             new model.ActionTemplate(
                                 it.id,
-                                it.actionType,
+                                it.name,
                                 it.version)
                             );
                     });
