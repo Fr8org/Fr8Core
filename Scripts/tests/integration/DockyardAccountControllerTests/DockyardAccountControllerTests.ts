@@ -37,8 +37,7 @@ module dockyard.tests.controller {
                     validationRules(data, status);
                 });
         });
-
-
+        
         it("Confirm action should return the page", function () {
             $.get(controllerPoint + "confirm", { email: null })
                 .done((data: any, status: string) => {
