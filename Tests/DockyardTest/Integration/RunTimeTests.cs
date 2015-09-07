@@ -98,7 +98,7 @@ namespace DockyardTest.Integration
 
             //add configuration settings to write action
             var configuration_settings = FixtureData.TestConfigurationSettings_healthdemo();
-            healthWriteAction.ConfigurationSettings = JsonConvert.SerializeObject(configuration_settings);
+            healthWriteAction.ConfigurationStore = JsonConvert.SerializeObject(configuration_settings);
             uow.ActionRepository.Add(healthWriteAction);
 
             //add a subscription to a specific template on the docusign platform

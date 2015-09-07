@@ -7,24 +7,24 @@ module dockyard.interfaces {
     }
 
     export interface IProcessTemplateVM extends ng.resource.IResource<IProcessTemplateVM> {
-        Id: number;
-        Name: string;
-        Description: string;
-        ProcessTemplateState: ProcessState;
-        SubscribedDocuSignTemplates: Array<string>;
-        ExternalEventSubscription: Array<number>; 
+        id: number;
+        name: string;
+        description: string;
+        processTemplateState: ProcessState;
+        subscribedDocuSignTemplates: Array<string>;
+        externalEventSubscription: Array<number>; 
     }
 
     export interface ISubscribedDocuSignTemplates {
-        ProcessTemplateId?: number;
-        Id: number;
-        DocuSignTemplateId: string;
+        processTemplateId?: number;
+        id: number;
+        docuSignTemplateId: string;
     }
 
     export interface IExternalEventSubscription {
-        Id: number;
-        ExternalEvent: number;
-        ProcessTemplateId: number;
+        id: number;
+        externalEvent: number;
+        processTemplateId: number;
     }
     
     export interface IExternalEvent {
@@ -33,15 +33,15 @@ module dockyard.interfaces {
     }
 
     export interface IProcessNodeTemplateVM extends ng.resource.IResource<IProcessNodeTemplateVM> {
-        Id: number;
-        ProcessTemplateId: number;
-        Name: string;
+        id: number;
+        processTemplateId: number;
+        name: string;
     }
 
-    export interface ICriteriaVM extends ng.resource.IResource<ICriteriaVM> {
-        Id: number;
-        ExecutionType: number;
-        Conditions: Array<model.Condition>;
+    export interface ICriteriaVM extends ng.resource.IResource<ICriteriaDTO> {
+        //Id: number;
+        //ExecutionType: number;
+        //Conditions: Array<model.Condition>;
     }
 
     export interface IActionVM extends ng.resource.IResource<model.ActionDesignDTO>, model.ActionDesignDTO { }
@@ -58,25 +58,10 @@ module dockyard.interfaces {
         pbCriteriaClick: (criteriaId: number) => void,
         pbAddActionClick: (criteriaId: number) => void,
         pbActionClick: (criteriaId: number, actionId: number) => void,
+
         processBuilder: any
     }
 
-    export interface IProcessBuilderScope extends ng.IScope {
-        processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplate>,
-        fields: Array<model.Field>;
-
-        // Identity of currently selected processNodeTemplate.
-        curNodeId: number;
-        // Flag, that indicates if currently selected processNodeTemplate has temporary identity.
-        curNodeIsTempId: boolean;
-        currentProcessTemplate: interfaces.IProcessTemplateVM;
-        currentAction: IActionVM;
-        currentCriteria: ICriteria; 
-        Save: Function;
-        Cancel: Function;
-    }
-
-    export interface IConfigurationSettingsVM extends ng.resource.IResource<model.ConfigurationSettings>, model.ConfigurationSettings {
+    export interface IConfigurationStoreVM extends ng.resource.IResource<model.ConfigurationStore>, model.ConfigurationStore {
     }
 }

@@ -53,19 +53,22 @@ namespace Data.Wrappers
             return GetEnvelopeData(this);
         }
 
-        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
-        {
-            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
-            if (curSignersSet != null)
-            {
-                foreach (var curSigner in curSignersSet)
-                {
-                    return _tab.ExtractEnvelopeData(envelope, curSigner);
-                }
-            }
+        // TODO: This implementation of the interface method is no different than what is already implemented in the other overload. Hence commenting out here and in the interface definition.
+        // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the plugin project and the Data project  and interface expects it to be in Data.Wrappers 
+        // namespace, where it will not belong. 
+        //public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
+        //{
+        //    Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
+        //    if (curSignersSet != null)
+        //    {
+        //        foreach (var curSigner in curSignersSet)
+        //        {
+        //            return _tab.ExtractEnvelopeData(envelope, curSigner);
+        //        }
+        //    }
 
-            return new List<EnvelopeDataDTO>();
-        }
+        //    return new List<EnvelopeDataDTO>();
+        //}
 
 
         /// <summary>

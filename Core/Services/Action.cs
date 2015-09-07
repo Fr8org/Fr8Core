@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
@@ -14,6 +15,7 @@ using Data.States;
 using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
+using System.Data.Entity;
 
 namespace Core.Services
 {
@@ -90,7 +92,7 @@ namespace Core.Services
                     existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }
@@ -108,26 +110,33 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetByKey(id);
+                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
 
-        public string GetConfigurationSettings(
-            ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionTemplateDo != null)
-            {
-                var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                var curConfigurationSettingsJson =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+            if(curActionDO == null)
+                throw new System.ArgumentNullException("Action parameter is null");
 
-                return curConfigurationSettingsJson;
+            if (curActionDO.ActionTemplate != null)
+            {
+                if(curActionDO.Id == 0)
+                    throw new System.ArgumentNullException("Action ID is empty");
+                if (curActionDO.ActionTemplateId == 0)
+                    throw new System.ArgumentNullException("Action Template ID is empty");
+
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
+                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
+                curActionDO.ConfigurationStore = settings;
             }
             else
             {
-                throw new ArgumentNullException("ActionTemplateDO");
+                throw new System.ArgumentNullException("ActionTemplate is null");
             }
+
+            return curActionDO.ConfigurationStore;
         }
 
         public void Delete(int id)

@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 54,
                 Name = "Write to Sql Server",
                 ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
-                ConfigurationSettings = "",
+                ConfigurationStore = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
                 Ordering = 1,
@@ -31,8 +31,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Send an Email",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Send an Email",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }
@@ -42,8 +42,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Send a Text (SMS) Message",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Send a Text (SMS) Message",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }        public static ActionDO TestAction1()
@@ -56,16 +56,6 @@ namespace UtilitiesTesting.Fixtures
                 ActionTemplate = actionTemplate,
             };
             return curActionDO;
-        }
-
-        public static TemplateDO TestTemplate1()
-        {
-            var curTemplateDO = new TemplateDO(new DocuSignTemplate())
-            {
-                Id = 1
-            };
-
-            return curTemplateDO;
         }
 
         public static ActionDO TestAction2()
@@ -89,7 +79,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = null,
                 Name = "type 1",
                 Id = 34,
-                ConfigurationSettings = "config settings",
+                ConfigurationStore= "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 Ordering = 3,
                 ActionTemplateId = actionTemplate.Id,
@@ -129,7 +119,7 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestAction6()
         {
             var actionTemplate = ActionTemplate();
-            actionTemplate.ActionType = null;
+            actionTemplate.Name = null;
 
             return new ActionDO
             {
@@ -240,7 +230,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 10,
                 Name = "WriteToAzureSql",
                 ParentActivityId = 1,
-                ConfigurationSettings = "JSON Config Settings",
+                ConfigurationStore = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
@@ -248,6 +238,19 @@ namespace UtilitiesTesting.Fixtures
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
 
+            };
+        }
+
+        public static ActionDO TestAction23()
+        {
+            var actionTemplate = FixtureData.TestActionTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action 2",
+                Ordering = 2,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
@@ -297,7 +300,7 @@ namespace UtilitiesTesting.Fixtures
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ConfigurationSettings = "config settings",
+                ConfigurationStore= "config settings",
                 ParentActivityId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };

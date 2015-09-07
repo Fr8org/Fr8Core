@@ -70,7 +70,7 @@ namespace DockyardTest.Services
             //Assert.AreEqual(actionType, result.ToList()[0].ActionType);
             //Assert.AreEqual(version, result.ToList()[0].Version);
 
-            Assert.AreEqual(actionType, ((List<ActionTemplateDO>)result)[0].ActionType);
+            Assert.AreEqual(actionType, ((List<ActionTemplateDO>)result)[0].Name);
             Assert.AreEqual(version, ((List<ActionTemplateDO>)result)[0].Version);
         }
 
@@ -84,9 +84,9 @@ namespace DockyardTest.Services
             basePluginRegistration.RegisterActions();
 
             var newActionTemplate = _uow.ActionTemplateRepository.GetQuery()
-                .FirstOrDefault(i => i.ActionType == actionType && i.Version == version);
+                .FirstOrDefault(i => i.Name == actionType && i.Version == version);
 
-            Assert.AreEqual(actionType, newActionTemplate.ActionType);
+            Assert.AreEqual(actionType, newActionTemplate.Name);
             Assert.AreEqual(version, newActionTemplate.Version);
         }
 
