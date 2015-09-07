@@ -3,7 +3,7 @@ using Data.States.Templates;
 
 namespace Data.Repositories
 {
-    public class EventStatusRepository : GenericRepository<_EventStatusTemplate>, IEventStatusRepository
+    public class EventStatusRepository : GenericRepository<_ExternalEventTypeTemplate>, IEventStatusRepository
     {
         public EventStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -13,7 +13,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IEventStatusRepository : IGenericRepository<_EventStatusTemplate>
+    public interface IEventStatusRepository : IGenericRepository<_ExternalEventTypeTemplate>
     {
 
     }

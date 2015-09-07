@@ -1,9 +1,10 @@
 ﻿/// <reference path="../../_all.ts" />
- 
+
 module dockyard.directives.paneDefineCriteria {
     'use strict';
 
     export function PaneDefineCriteria(): ng.IDirective {
+        var disposeActionListener: Function; // a function to deregister currentAction watch upon Hide()
 
         // Get url for ProcessNodeTemplate create, update, delete operations.
         var getProcessNodeTemplateUrl = function (urlPrefix) {
@@ -17,7 +18,7 @@ module dockyard.directives.paneDefineCriteria {
 
         // Get url for fetching criteria by ProcessNodeTemplate.Id.
         var getCriteriaIdUrl = function (urlPrefix, pntId) {
-            return urlPrefix + '/processNodeTemplate/criteria?id=' + pntId;
+            return urlPrefix + '/criteria/byProcessNodeTemplate?id=' + pntId;
         };
 
         // Get url for criteria update operation.
@@ -64,7 +65,7 @@ module dockyard.directives.paneDefineCriteria {
                 );
 
             // Create criteria with default conditions, and temporary criteria.id.
-            var criteria = new model.Criteria(
+            var criteria = new model.CriteriaDTO(
                 criteriaId,
                 true,
                 processNodeTemplate.id,
@@ -86,15 +87,15 @@ module dockyard.directives.paneDefineCriteria {
                         .success(function (criteriaDTO: any) {
                             // Construct ProcessNodeTemplate object from DTO.
                             var processNodeTemplate = new model.ProcessNodeTemplate(
-                                processNodeTemplateDTO.Id,
+                                processNodeTemplateDTO.id,
                                 false,
                                 processNodeTemplateDTO.ProcessNodeTemplateId,
                                 processNodeTemplateDTO.Name
                                 );
 
                             // Construct Criteria object from DTO.
-                            var criteria = new model.Criteria(
-                                criteriaDTO.Id,
+                            var criteria = new model.CriteriaDTO(
+                                criteriaDTO.id,
                                 false,
                                 processNodeTemplate.id,
                                 criteriaDTO.ExecutionType
@@ -112,15 +113,32 @@ module dockyard.directives.paneDefineCriteria {
                 });
         };
 
+        var loadDatasources = function (
+            eventArgs: RenderEventArgs,
+            scope: IPaneDefineCriteriaScope,
+            ActionService: services.IActionService) {
+            ActionService.getFieldDataSources({}, scope.currentAction).$promise.then((data) => {
+                scope.fields = [];
+                data.forEach((value) => {
+                    scope.fields.push(new model.Field(value, value));
+                });
+            });
+        }
+
         // Callback for handling PaneDefineCriteria_Render message.
         var onRender = function (
             eventArgs: RenderEventArgs,
             scope: IPaneDefineCriteriaScope,
             http: ng.IHttpService,
             urlPrefix: string,
-            LocalIdentityGenerator: services.LocalIdentityGenerator) {
+            LocalIdentityGenerator: services.LocalIdentityGenerator,
+            ActionService: services.IActionService) {
 
             console.log('PaneDefineCriteria::onRender', eventArgs);
+            console.log('PaneDefineCriteria: currentAction: ' + scope.currentAction);
+
+            //Clean up state from previous Criteria
+            cleanUp(scope);
 
             // If we deal with newly created object (i.e. isTempId === true),
             // then create blank temporary object in the scope of DefineCriteria pane.
@@ -143,14 +161,34 @@ module dockyard.directives.paneDefineCriteria {
             }
 
             scope.isVisible = true;
+
+            //Check if we have currentAction with the same criteriaId (processNodeTemplateId)
+            //If yes, init the module. If no, wait for it and then init the module.  
+            if (model.ActionDesignDTO.isActionValid(scope.currentAction)) {
+                loadDatasources(eventArgs, scope, ActionService);
+            } 
+            else {
+                disposeActionListener = scope.$watch("currentAction", (newAction: interfaces.IActionVM) => {
+                    //When user selected the current criteria's action, initialize the pane. 
+                    if (model.ActionDesignDTO.isActionValid(newAction)) {
+                        disposeActionListener(); //deregister the watch
+                        loadDatasources(eventArgs, scope, ActionService);
+                    }
+                }, true);
+            }
         };
 
         // Callback for handling PaneDefineCriteria_Hide.
         var onHide = function (scope: IPaneDefineCriteriaScope) {
+            cleanUp(scope);
             scope.isVisible = false;
+        };
+
+        var cleanUp = function(scope){
+            if (disposeActionListener) disposeActionListener(); //deregister currentAction watch
             scope.processNodeTemplate = null;
             scope.fields = [];
-        };
+        }
 
         // Callback for handling "Remove criteria" button click event.
         var removeCriteria = function (
@@ -188,12 +226,12 @@ module dockyard.directives.paneDefineCriteria {
                     var processNodeTemplateTempId: number = scope.processNodeTemplate.id;
 
                     scope.processNodeTemplate.isTempId = false;
-                    scope.processNodeTemplate.id = processNodeTemplateResult.Id;
+                    scope.processNodeTemplate.id = processNodeTemplateResult.id;
 
                     // Fetch criteria object from server by ProcessNodeTemplate global ID.
-                    var url = getCriteriaIdUrl(urlPrefix, processNodeTemplateResult.Id);
+                    var url = getCriteriaIdUrl(urlPrefix, processNodeTemplateResult.id);
                     http.get(url).success(function (criteriaResult: any) {
-                        scope.processNodeTemplate.criteria.id = criteriaResult.Id;
+                        scope.processNodeTemplate.criteria.id = criteriaResult.id;
                         scope.processNodeTemplate.criteria.isTempId = false;
 
                         // Update criteria object on server.
@@ -213,7 +251,7 @@ module dockyard.directives.paneDefineCriteria {
                                 console.log('DefineCriteriaPane::save succeded');
 
                                 // Invoke callback, after all asynchronous HTTP operations were completed.
-                                callback(new SaveCallbackArgs(processNodeTemplateResult.Id, processNodeTemplateTempId));
+                                callback(new SaveCallbackArgs(processNodeTemplateResult.id, processNodeTemplateTempId));
                             });
                     });
                 });
@@ -260,6 +298,9 @@ module dockyard.directives.paneDefineCriteria {
             callback: (args: SaveCallbackArgs) => void
             ) {
 
+            //don't save anything if there is no criteria is selected
+            if (!scope.processNodeTemplate) return;
+
             // In case of newly created object (i.e. isTempId === true).
             if (scope.processNodeTemplate.isTempId) {
                 saveNew(scope, http, urlPrefix, callback);
@@ -274,13 +315,16 @@ module dockyard.directives.paneDefineCriteria {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/PaneDefineCriteria',
-            scope: {},
+            scope: {
+                currentAction: '='
+            },
             controller: (
                 $scope: IPaneDefineCriteriaScope,
                 $http: ng.IHttpService,
-                urlPrefix: string, 
-                LocalIdentityGenerator: services.LocalIdentityGenerator
-            ): void => {
+                urlPrefix: string,
+                LocalIdentityGenerator: services.LocalIdentityGenerator,
+                ActionService: services.IActionService
+                ): void => {
 
                 $scope.operators = [
                     { text: 'Greater than', value: 'gt' },
@@ -294,7 +338,7 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.defaultOperator = 'gt';
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Render],
-                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator));
+                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator, ActionService));
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Hide],
                     (event: ng.IAngularEvent) => onHide($scope));
@@ -313,8 +357,90 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.cancel = function () {
                     $scope.$emit(MessageType[MessageType.PaneDefineCriteria_Cancelling]);
                 };
+
             }
         };
+    }
+
+    export enum MessageType {
+        PaneDefineCriteria_Render,
+        PaneDefineCriteria_Hide,
+        PaneDefineCriteria_Save,
+        PaneDefineCriteria_ProcessNodeTemplateRemoving,
+        PaneDefineCriteria_ProcessNodeTemplateUpdating,
+        PaneDefineCriteria_Cancelling
+    }
+
+    export class RenderEventArgs {
+        public fields: Array<model.Field>;
+        public processTemplateId: number;
+        public id: number;
+        public isTempId: boolean;
+
+        constructor(fields: Array<model.Field>, processTemplateId: number,
+            id: number, isTempId: boolean) {
+
+            this.fields = fields;
+            this.processTemplateId = processTemplateId;
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class SaveEventArgs {
+        public callback: (args: SaveCallbackArgs) => void;
+
+        constructor(callback: (args: SaveCallbackArgs) => void) {
+            this.callback = callback;
+        }
+    }
+
+    export class SaveCallbackArgs {
+        public id: number;
+        public tempId: number;
+
+        constructor(id: number, tempId: number) {
+            this.id = id;
+            this.tempId = tempId;
+        }
+    }
+
+    export class ProcessNodeTemplateRemovingEventArgs {
+        public processNodeTemplateId: number;
+        public isTempId: boolean;
+
+        constructor(processNodeTemplateId: number, isTempId: boolean) {
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class ProcessNodeTemplateUpdatingEventArgs {
+        public processNodeTemplateId: number;
+        public name: string;
+        public processNodeTemplateTempId: number;
+
+        constructor(
+            processNodeTemplateId: number,
+            name: string,
+            processNodeTemplateTempId: number) {
+
+            this.processNodeTemplateId = processNodeTemplateId;
+            this.name = name;
+            this.processNodeTemplateTempId = processNodeTemplateTempId;
+        }
+    }
+
+    export interface IPaneDefineCriteriaScope extends ng.IScope {
+        isVisible: boolean;
+        removeCriteria: () => void;
+        save: () => void;
+        cancel: () => void;
+        operators: Array<interfaces.IOperator>;
+        defaultOperator: string;
+        processNodeTemplate: model.ProcessNodeTemplate;
+        fields: Array<model.Field>;
+        currentAction: interfaces.IActionVM;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
@@ -9,13 +10,14 @@ using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Services;
 using PluginUtilities.Infrastructure;
 using StructureMap;
+using PluginUtilities;
 
 namespace pluginAzureSqlServer.Actions {
     
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
     //Action container class
-    public class Write_To_Sql_Server_v1 : ActionHandler {        
+    public class Write_To_Sql_Server_v1 : BasePluginAction {        
 
         //Public entry point, maps to actions from the controller
         public object Process(string path, ActionDO curActionDO) {
@@ -28,18 +30,117 @@ namespace pluginAzureSqlServer.Actions {
             }
         }
 
+        public ConfigurationSettingsDTO Configure(ActionDO curActionDO)
+        {
+            return DetermineConfigurationRequest(curActionDO, ConfigurationRequestTypeChecker);
+        }
+
+        private ConfigurationRequestType ConfigurationRequestTypeChecker(ActionDO curActionDO)
+        {
+            ConfigurationSettingsDTO curConfigurationStore = GetConfigurationStore(curActionDO);
+
+            var curConnectionStringField =
+                curConfigurationStore.Fields.First(field => field.Name.Equals("connection_string"));
+
+            if (curConnectionStringField != null)
+            {
+                if (string.IsNullOrEmpty(curConnectionStringField.Value))
+                {
+                    //Scenario 1 - This is the first request being made by this Action
+                    //Return Initial configuration request type
+                    return ConfigurationRequestType.Initial;
+                }
+                else
+                {
+                    //This else block covers 2nd and 3rd scenarios as mentioned below
+
+                    //Scenario 2 - This is the seond request, being made after the user filled in the value of the connection string
+                    //Scenario 3 - A data_fields was previously constructed, but perhaps the connection string has changed.
+
+                    //in either scenario, we have to return Followup configuration request type
+                    return ConfigurationRequestType.Followup;
+                }
+            }
+
+            //This should not happen
+            return ConfigurationRequestType.Initial;
+        }
+
+        protected override ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
+        {
+            //Return one field with empty connection string
+            ConfigurationSettingsDTO curConfigurationStore = new ConfigurationSettingsDTO
+            {
+                Fields = new List<FieldDefinitionDTO>
+                {
+                    new FieldDefinitionDTO
+                    {
+                        Type = "textField",
+                        Name = "connection_string",
+                        Required = true,
+                        Value = string.Empty,
+                        FieldLabel = "SQL Connection String"
+                    }
+                }
+            };
+
+            return curConfigurationStore;
+        }
+
+        protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        {
+            //In all followup calls, update data fields of the configuration store
+            ConfigurationSettingsDTO curConfigurationStore = GetConfigurationStore(curActionDO);
+
+            curConfigurationStore.DataFields = (List<string>)GetFieldMappings(curActionDO);
+
+            return curConfigurationStore;
+        }
+
+        public object Activate(ActionDO curActionDO)
+        {
+            return null;
+        }
+
+        public object ExecuteV2(ActionDO curActionDO)
+        {
+            return null;
+        }
+
+        private ConfigurationSettingsDTO GetConfigurationStore(ActionDO curActionDO)
+        {
+            return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
+        }
+
         private const string ProviderName = "System.Data.SqlClient";
-               
-        private const string FieldMappingQuery = @"SELECT CONCAT('[', tbls.name, '].', cols.COLUMN_NAME) as tblcols " +
-                                                 @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
-                                                 @"ORDER BY tbls.name, cols.COLUMN_NAME";
+        private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
+                                                 @"FROM ( " +
+	                                                @"SELECT DISTINCT tbls.NAME, cols.COLUMN_NAME " +
+	                                                @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
+                                                 @") r " +
+                                                 @"ORDER BY r.NAME, r.COLUMN_NAME";
 
         //[HttpPost]
         //[Route("write_to_sql_server/field_mappings")]
-        private object GetFieldMappings(ActionDO curActionDO) {
+        public object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            var settings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
-            var connString = settings.Value<string>("connection_string");
+            if (string.IsNullOrEmpty(curActionDO.ConfigurationStore))
+            {
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
+            if (configuration == null || configuration.Fields.Count == 0)
+                {
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                }
+
+            var connStringField = configuration.Fields.Find(f => f.Name == "connection_string");
+            if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
+            {
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+            string connString = connStringField.Value;
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 

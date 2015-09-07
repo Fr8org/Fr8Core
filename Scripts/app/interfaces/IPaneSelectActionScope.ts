@@ -2,10 +2,11 @@
 
 module dockyard.interfaces {
     export interface IPaneSelectActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.Action, oldValue: model.Action, scope: IPaneSelectActionScope) => void;
-        action: model.Action;
+        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) => void;
+        currentAction: model.ActionDesignDTO;
         isVisible: boolean;
-        sampleActionTypes: Array<{ name: string, value: string }>;
+        actionTypes: Array<model.ActionTemplate>;
         ActionTypeSelected: () => void;
+        RemoveAction: () => void;
     }
 }

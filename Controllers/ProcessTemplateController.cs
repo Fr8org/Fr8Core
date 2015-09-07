@@ -75,7 +75,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto)
+        public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -89,15 +89,13 @@ namespace Web.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto);
+                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = User.Identity.GetUserId();
                 curProcessTemplateDO.DockyardAccount = uow.UserRepository
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
-                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO);
-
-                uow.SaveChanges();
+                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
 
                 return Ok(processTemplateDto);
             }
@@ -121,6 +119,20 @@ namespace Web.Controllers
                 uow.SaveChanges();
                 return Ok(id);
             }
+        }
+
+        [Route("triggersettings"), ResponseType(typeof (List<ExternalEventDTO>))]
+        public IHttpActionResult GetTriggerSettings()
+        {
+            var triggerSettings = new List<ExternalEventDTO>()
+            {
+                new ExternalEventDTO(ExternalEventType.EnvelopeSent, "Envelope Sent"),
+                new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Delivered"),
+                new ExternalEventDTO(ExternalEventType.RecipientSent, "Recipient Sent"),
+                new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Received")
+            };
+
+            return Ok(triggerSettings);
         }
     }
 }

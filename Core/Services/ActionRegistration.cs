@@ -10,25 +10,25 @@ using System.Threading.Tasks;
 
 namespace Core.Services
 {
-    public class ActionRegistration :IActionRegistration
+    public class ActionTemplate :IActionTemplate
     {
-        public IEnumerable<ActionRegistrationDO> GetAll()
+        public IEnumerable<ActionTemplateDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRegistrationRepository.GetAll();
+                return uow.ActionTemplateRepository.GetAll();
             }
         }
 
-        public ActionRegistrationDO GetByKey(int curActionRegistrationId)
+        public ActionTemplateDO GetByKey(int curActionTemplateId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionRegistrationDO = uow.ActionRegistrationRepository.GetByKey(curActionRegistrationId);
-                if (curActionRegistrationDO == null)
-                    throw new ArgumentNullException("ActionRegistrationId");
+                var curActionTemplateDO = uow.ActionTemplateRepository.GetByKey(curActionTemplateId);
+                if (curActionTemplateDO == null)
+                    throw new ArgumentNullException("ActionTemplateId");
 
-                return curActionRegistrationDO;
+                return curActionTemplateDO;
             }
 
         }

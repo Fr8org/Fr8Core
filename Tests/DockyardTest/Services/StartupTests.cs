@@ -35,7 +35,7 @@ namespace DockyardTest.Services
             Startup startup = new Startup();
             startup.RegisterPluginActions();
 
-            var recordCount = _uow.ActionRegistrationRepository.GetQuery().Count();
+            var recordCount = _uow.ActionTemplateRepository.GetQuery().Count();
 
             Assert.GreaterOrEqual(recordCount, 1);
         }
@@ -45,9 +45,10 @@ namespace DockyardTest.Services
     {
         public const string baseUrl = "AzureSql.BaseUrl";
         private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
+        public const string PluginRegistrationName = "Test";
 
         public TestPluginRegistration()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
 
         }
@@ -57,7 +58,7 @@ namespace DockyardTest.Services
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             curActionNameList.ActionNames.Add(new ActionNameDTO
             {
-                ActionType = "Write",
+                Name = "Write",
                 Version = "1.0"
             });
             return curActionNameList;

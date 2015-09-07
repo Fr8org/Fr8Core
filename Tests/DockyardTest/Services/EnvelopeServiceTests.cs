@@ -32,35 +32,33 @@ namespace DockyardTest.Services
         public void Envelope_Can_Normalize_EnvelopeData()
         {
             Account account = docusignApiHelper.LoginDocusign(FixtureData.TestDocuSignAccount1(),
-                                                              FixtureData.TestRestSettings1());
+                FixtureData.TestRestSettings1());
 
             DocuSignEnvelope envelope = docusignApiHelper.CreateAndFillEnvelope(account,
-                                                                        FixtureData.TestEnvelope2(account),
-                                                                        FixtureData.TestRealPdfFile1(),
-                                                                        FixtureData.TestTabCollection1());
+                FixtureData.TestEnvelope2(account),
+                FixtureData.TestRealPdfFile1(),
+                FixtureData.TestTabCollection1());
 
-            Assert.IsTrue(envelope.RestError == null, "The CreateAndFillEnvelope request contained at least one invalid parameter.");
+            Assert.IsTrue(envelope.RestError == null,
+                "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
             IEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
             var env = new Data.Wrappers.DocuSignEnvelope();
-            List <EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
+            List<EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 
             Assert.IsNotNull(envelopeDatas);
             //Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.
         }
 
-        [Test,Ignore] //use a mock for this instead of actually connecting 
+        [Test] //use a mock for this instead of actually connecting 
         [Category("Envelope")]
         public void Envelope_Can_Normalize_EnvelopeData_Using_TemplateId()
         {
-
             RestSettings.Instance.RestTracing = true;
 
-            var envelopeDatas = (new Data.Wrappers.DocuSignEnvelope())
-                                .GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
+            var envelopeDatas = (new DocuSignEnvelope()).GetEnvelopeDataByTemplate(FixtureData.TestTemplateId).ToList();
 
             Assert.IsNotNull(envelopeDatas);
         }
-
     }
 }

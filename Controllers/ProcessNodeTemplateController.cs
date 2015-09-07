@@ -32,24 +32,6 @@ namespace Web.Controllers
         }
 
         /// <summary>
-        /// Retrieve criteria by ProcessNodeTemplate.Id.
-        /// </summary>
-        /// <param name="id">ProcessNodeTemplate.id.</param>
-        [ResponseType(typeof(CriteriaDTO))]
-        [Route("criteria")]
-        [HttpGet]
-        public IHttpActionResult GetByProcessNodeTemplateId(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curCriteria = uow.CriteriaRepository.GetQuery()
-                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id);
-
-                return Ok(Mapper.Map<CriteriaDTO>(curCriteria));
-            };
-        }
-
-        /// <summary>
         /// Retrieve ProcessNodeTemplate by id.
         /// </summary>
         /// <param name="id">ProcessNodeTemplate id.</param>

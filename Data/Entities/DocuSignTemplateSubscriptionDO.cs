@@ -1,18 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class DocuSignTemplateSubscriptionDO : BaseDO
+    public class DocuSignTemplateSubscriptionDO : ExternalEventSubscriptionDO, IEquatable<DocuSignTemplateSubscriptionDO>
     {
-        [Key]
-        public int Id { get; set; }
+        [ForeignKey("DocuSignProcessTemplate")]
+        public int DocuSignProcessTemplateId { get; set; }
 
-        [ForeignKey("ProcessTemplate")]
-        public int? ProcessTemplateId { get; set; }
-
-        public virtual ProcessTemplateDO ProcessTemplate { get; set; }
+        public virtual ProcessTemplateDO DocuSignProcessTemplate { get; set; }
 
         public string DocuSignTemplateId { get; set; }
+
+        public bool Equals(DocuSignTemplateSubscriptionDO other)
+        {
+            return DocuSignTemplateId == other.DocuSignTemplateId;
+        }
     }
 }

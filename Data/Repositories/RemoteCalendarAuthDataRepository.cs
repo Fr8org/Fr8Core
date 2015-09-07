@@ -4,7 +4,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class RemoteCalendarAuthDataRepository : GenericRepository<RemoteCalendarAuthDataDO>, IRemoteCalendarAuthDataRepository
+    public class RemoteCalendarAuthDataRepository : GenericRepository<RemoteOAuthDataDo>, IRemoteCalendarAuthDataRepository
     {
         internal RemoteCalendarAuthDataRepository(IUnitOfWork uow)
             : base(uow)
@@ -12,14 +12,14 @@ namespace Data.Repositories
 
         }
 
-        public RemoteCalendarAuthDataDO GetOrCreate(string userId, string providerName)
+        public RemoteOAuthDataDo GetOrCreate(string userId, string providerName)
         {
             var curUserAuthData = GetQuery().FirstOrDefault(ad => ad.Provider.Name == providerName && ad.UserID == userId);
             if (curUserAuthData == null)
             {
-                var provider = UnitOfWork.RemoteCalendarProviderRepository.GetByName(providerName);
+                var provider = UnitOfWork.RemoteServiceProviderRepository.GetByName(providerName);
                 var user = UnitOfWork.UserRepository.GetByKey(userId);
-                curUserAuthData = new RemoteCalendarAuthDataDO
+                curUserAuthData = new RemoteOAuthDataDo
                                       {
                                           ProviderID = provider.Id,
                                           Provider = provider, 
@@ -32,7 +32,7 @@ namespace Data.Repositories
         }
     }
 
-    public interface IRemoteCalendarAuthDataRepository : IGenericRepository<RemoteCalendarAuthDataDO>
+    public interface IRemoteCalendarAuthDataRepository : IGenericRepository<RemoteOAuthDataDo>
     {
     }
 }

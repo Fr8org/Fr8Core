@@ -189,7 +189,7 @@
                     height: ns.WidgetConsts.startNodeHeight
                 });
             
-            var label = new fabric.Text('Choose Template...', {
+            var label = new fabric.Text('Define Triggers', {
                 fontSize: ns.WidgetConsts.startNodeTextSize,
                 fontFamily: ns.WidgetConsts.startNodeTextFont,
                 fontWeight: ns.WidgetConsts.startNodeTextWeight,
@@ -491,7 +491,7 @@
             ns.FabricJsActionNode.super.constructor.call(this);
 
             this._actionName = actionName;
-            this._object = this;
+            this._object = null;
         },
 
         init: function () {
@@ -505,6 +505,10 @@
             label.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
 
             this._object = label;
+        },
+
+        setText: function (text) {
+            this._object.setText(text);
         },
 
         getFabricObject: function () {

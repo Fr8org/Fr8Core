@@ -70,13 +70,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private RemoteCalendarProviderRepository _remoteCalendarProviderRepository;
+        private RemoteServiceProviderRepository _remoteServiceProviderRepository;
 
-        public RemoteCalendarProviderRepository RemoteCalendarProviderRepository
+        public RemoteServiceProviderRepository RemoteServiceProviderRepository
         {
             get
             {
-                return _remoteCalendarProviderRepository ?? (_remoteCalendarProviderRepository = new RemoteCalendarProviderRepository(this));
+                return _remoteServiceProviderRepository ?? (_remoteServiceProviderRepository = new RemoteServiceProviderRepository(this));
             }
         }
 
@@ -414,12 +414,12 @@ namespace Data.Infrastructure
             }
         }
 
-        private ActionRegistrationRepository _actionRegistrationRepository;
-        public ActionRegistrationRepository ActionRegistrationRepository
+        private ActionTemplateRepository _actionTemplateRepository;
+        public ActionTemplateRepository ActionTemplateRepository
         {
             get
             {
-                return _actionRegistrationRepository ?? (_actionRegistrationRepository = new ActionRegistrationRepository(this));
+                return _actionTemplateRepository ?? (_actionTemplateRepository = new ActionTemplateRepository(this));
             }
         }
 
@@ -452,13 +452,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private ExternalEventRegistrationRepository _externalEventRegistrationRepository;
+        private ExternalEventSubscriptionRepository _externalEventSubscriptionRepository;
 
-	    public ExternalEventRegistrationRepository ExternalEventRegistrationRepository
+	    public ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository
 	    {
 		    get
 		    {
-		        return _externalEventRegistrationRepository ?? (_externalEventRegistrationRepository = new ExternalEventRegistrationRepository(this));
+		        return _externalEventSubscriptionRepository ?? (_externalEventSubscriptionRepository = new ExternalEventSubscriptionRepository(this));
 		    }
 	    }
 
@@ -480,6 +480,16 @@ namespace Data.Infrastructure
             get
             {
                 return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
+            }
+        }
+
+        private FileRepository _fileRepository;
+
+        public IFileRepository FileRepository
+        {
+            get
+            {
+                return _fileRepository ?? (_fileRepository = new FileRepository(this));
             }
         }
 

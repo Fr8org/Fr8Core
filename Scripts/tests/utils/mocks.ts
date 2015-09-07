@@ -4,8 +4,8 @@
     //The class contains methods to create mocks for complex objects
     export class Factory {
         //Creates a mock for ProcessBuilderController $scope
-        public static GetProcessBuilderScope(rootScope: interfaces.IAppRootScope): interfaces.IProcessBuilderScope {
-            var scope = <interfaces.IProcessBuilderScope>rootScope.$new();
+        public static GetProcessBuilderScope(rootScope: interfaces.IAppRootScope): dockyard.controllers.IProcessBuilderScope {
+            var scope = <dockyard.controllers.IProcessBuilderScope>rootScope.$new();
             scope.processTemplateId = 0;
             scope.processNodeTemplates = null;
             scope.fields = null;
@@ -22,6 +22,9 @@
             this.save = jasmine.createSpy('save').and.callFake(() => {
                 var def: any = $q.defer();
                 def.resolve();
+
+                def.promise.$promise = def.promise;
+
                 return def.promise;
             });
 

@@ -11,38 +11,40 @@ namespace Core.PluginRegistrations
     public class NotifierPluginRegistration_v1 : BasePluginRegistration
     {
         public const string baseUrl = "Notifier.BaseUrl";
+
+        public const string PluginRegistrationName = "Notifier";
+
         //private ActionNameListDTO availableActions = InitAvailableActions();//@"[{ ""ActionType"" : """" , ""Version"": ""1.0""},{ ""ActionType"" : """" , ""Version"": ""1.0""}]";
-       // ActionNameListDTO availableActions = InitAvailableActions();
+        // ActionNameListDTO availableActions = InitAvailableActions();
         public NotifierPluginRegistration_v1()
-            : base(InitAvailableActions(), baseUrl)
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
         }
 
-        public ConfigurationSettingsDTO GetConfigurationSettings(ActionDO curAction)
+        public string GetConfigurationSettings(ActionTemplateDO curActionTemplate)
         {
-            if(curAction == null)
-                throw new ArgumentNullException("curAction");
-            if (string.IsNullOrEmpty(curAction.ActionType))
-                throw new NullReferenceException("curAction.UserLabel");
-            return InitConfigurationSettings(curAction.ActionType);
-        }
+            if (curActionTemplate == null)
+                throw new ArgumentNullException("curActionTemplate");
 
-        private ConfigurationSettingsDTO InitConfigurationSettings(string actionType)
-        {
+            if (String.IsNullOrEmpty(curActionTemplate.Name))
+                throw new ArgumentNullException("curActionTemplate.ActionType");
+
             ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
-            if (actionType.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
+
+            if (curActionTemplate.Name.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.FieldDefinitions.Add(FillConfigurationSetting("Email Address", "true", "", ""));
-                curConfigurationSettings.FieldDefinitions.Add(FillConfigurationSetting("Friendly Name", "true", "", ""));
-                curConfigurationSettings.FieldDefinitions.Add(FillConfigurationSetting("Subject", "true", "", ""));
-                curConfigurationSettings.FieldDefinitions.Add(FillConfigurationSetting("Body", "true", "", ""));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", "Email Address"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", "Friendly Name"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Subject", true, "", "Subject"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Body", true, "", "Body"));
             }
-            else if (actionType.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
+            else if (curActionTemplate.Name.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.FieldDefinitions.Add(FillConfigurationSetting("Phone Number", "true", "", ""));
-                curConfigurationSettings.FieldDefinitions.Add(FillConfigurationSetting("Message", "true", "", ""));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", "Phone Number"));
+                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Message", true, "", "Message"));
             }
-            return curConfigurationSettings;
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(curConfigurationSettings);
         }
 
         public List<string> GetFieldMappingTargets(string curActionName, string ConfigUIData)
@@ -50,26 +52,17 @@ namespace Core.PluginRegistrations
             return null;
         }
 
-        private FieldDefinitionDTO FillConfigurationSetting(string name,string required,string value, string fieldLable)
-        {
-            return new FieldDefinitionDTO
-            {
-                Name = name,
-                Required = required,
-                Value = value,
-                FieldLabel = fieldLable
-            };
-        }
-
         private static ActionNameListDTO InitAvailableActions()
         {
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
-            curActionNameList.ActionNames.Add(new ActionNameDTO{
-                ActionType ="Send an Email",
+            curActionNameList.ActionNames.Add(new ActionNameDTO
+            {
+                Name = "Send an Email",
                 Version = "1.0"
             });
-            curActionNameList.ActionNames.Add(new ActionNameDTO{
-                ActionType ="Send a Text (SMS) Message",
+            curActionNameList.ActionNames.Add(new ActionNameDTO
+            {
+                Name = "Send a Text (SMS) Message",
                 Version = "1.0"
             });
             return curActionNameList;

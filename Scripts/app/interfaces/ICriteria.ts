@@ -3,35 +3,47 @@ module dockyard.interfaces {
 
     // TODO: Do we really need all these interfaces, since we have model type safe classes?
 
-    export interface ICriteria {
-        id: number,
-        isTempId: boolean,
-        userLabel: string,
-        actions: Array<IAction>,
-        conditions: Array<ICondition>,
-        executionMode: string
+    export interface ICriteriaDTO {
+        id: number;
+        isTempId: boolean;
+        actions: Array<IActionDesignDTO>;
+        conditions: Array<ICondition>;
+        executionType: model.CriteriaExecutionType;
     }
 
-    export interface IAction {
+    export interface IActionDesignDTO {
         id: number,
         isTempId: boolean, 
-        criteriaId: number,
-        userLabel: string,
+        processNodeTemplateId: number,
         actionListId: number,
-        actionType: string;
-        configurationSettings: string;
-        fieldMappingSettings: string
+        name: string;
+        configurationStore: model.ConfigurationStore;
+        fieldMappingSettings: model.FieldMappingSettings;
+        actionTemplateId: number;
+        actionTemplate: model.ActionTemplate;
     }
 
     export interface ICondition {
-        field: string,
-        operator: string,
-        value: string,
-        valueError: boolean
+        field: string;
+        operator: string;
+        value: string;
+        valueError: boolean;
     }
 
     export interface IField {
-        key: string,
-        name: string
+        key: string;
+        name: string;
+    }
+
+    export interface IDocuSignTemplate {
+        id: number;
+        name: string;
+        description: string;
+    }
+
+    export interface IDocuSignExternalEvent {
+        id: number;
+        name: string;
+        description: string;
     }
 }

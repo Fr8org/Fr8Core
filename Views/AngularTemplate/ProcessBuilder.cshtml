@@ -14,56 +14,49 @@
         <div class="col-md-6 col-sm-6">
             <!-- BEGIN PORTLET-->
             <div class="portlet light ">
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Add a Process</span>
-                    </div>
-                </div>
+                <h4 class="no-margin caption-subject font-green-haze bold uppercase">Define Process</h4>
                 <div class="portlet-body">
                     <!-- PROCESS FORM -->
                     <div class="tab-pane active" id="tab_1_1">
-                        <div class="form-group">
-                            <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
-                        </div>
+                        <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
                     </div>
                     <!-- END PROCESS FORM -->
                 </div>
             </div>
             <!-- END PORTLET-->
         </div>
-        
+
         <div class="col-md-6 col-sm-6">
-            <pane-define-criteria></pane-define-criteria>
+            <pane-define-criteria current-action="currentAction"></pane-define-criteria>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-select-action id="paneSelectAction"></pane-select-action>
+            <pane-select-template></pane-select-template>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-configure-action id="paneConfigureAction"></pane-configure-action>
+            <pane-select-action id="paneSelectAction" current-action="currentAction"></pane-select-action>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-configure-mapping id="paneConfigureAction" mode="field" ></pane-configure-mapping>
+            <pane-configure-action id="paneConfigureAction" current-action="currentAction"></pane-configure-action>
         </div>
         <div class="col-md-6 col-sm-6">
-            <pane-select-template ></pane-select-template>
+            <pane-configure-mapping id="paneConfigureMapping" current-action="currentAction" mode="field"></pane-configure-mapping>
         </div>
-        <div class="col-md-4 col-sm-4" ng-show="currentAction">
+        <div class="col-md-4 col-sm-4" ng-show="currentAction.id">
             <div class="form-group">
                 <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>
                 <button class="btn btn-danger btn-large" ng-click="Cancel()">Cancel</button>
             </div>
         </div>
-        </div>
-        <!-- END MAIN CONTENT -->
-        <!-- BEGIN SCRIPT REQUIREMENTS -->
-        <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
-        <!-- END SCRIPT REQUIREMENTS -->
     </div>
+    <!-- END MAIN CONTENT -->
+    <!-- BEGIN SCRIPT REQUIREMENTS -->
+    <script type="text/javascript" src="@Url.Content("~/bower_components/fabric/dist/fabric.min.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/core.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-consts.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-interfaces.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-fabricjs-img.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-resources.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/ProcessBuilder/pb-widget.js")"></script>
+    <!-- END SCRIPT REQUIREMENTS -->
+</div>
 </div>

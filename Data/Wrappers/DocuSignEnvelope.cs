@@ -1,25 +1,22 @@
-﻿using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using DocuSign.Integrations.Client;
-using Newtonsoft.Json.Linq;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Infrastructure;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
-using Utilities;
+using Utilities.Serializers.Json;
 
 namespace Data.Wrappers
 {
-    public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IEnvelope
+    public class DocuSignEnvelope : Envelope, IEnvelope
     {
         private string _baseUrl;
         private readonly ITab _tab;
         private readonly ISigner _signer;
+        //Can't use DockYardAccount here - circular dependency
+        private readonly DocuSignPackager _docuSignPackager;
 
         public DocuSignEnvelope()
         {
@@ -30,47 +27,24 @@ namespace Data.Wrappers
             _tab = new Tab();
             _signer = new Signer();
 
-            Login = EnsureLogin();
-        }
-
-        private Account EnsureLogin()
-        {
-            var appSettings = System.Configuration.ConfigurationManager.AppSettings;
-            string username = appSettings["username"] ?? "Not Found";
-            string password = appSettings["password"] ?? "Not Found";
-            string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";
-
-            // configure application's integrator key and webservice url
-            RestSettings.Instance.IntegratorKey = appSettings["IntegratorKey"];
-            RestSettings.Instance.DocuSignAddress = appSettings["environment"];
-            RestSettings.Instance.WebServiceUrl = RestSettings.Instance.DocuSignAddress + "/restapi/v2";
-
-            // credentials for sending account
-            Account account = new Account();
-            account.Email = username;
-            account.Password = password;
-
-            // make the Login API call
-            bool result = account.Login();
-
-            if (!result)
+            _docuSignPackager = new DocuSignPackager
             {
-                throw new InvalidOperationException("Cannot log in to DocuSign. Please check the authentication information on web.config.");
-            }
-            return account;
+                CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
+                CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
+            };
+            Login = _docuSignPackager.Login();
         }
+
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
         /// Each EnvelopeData row is essentially a specific DocuSign "Tab".
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
-        /// </returns>
-        /// 
-        /// 
+        /// </summary>
         public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
         {
-            if (String.IsNullOrEmpty(curEnvelopeId))
+            if (string.IsNullOrEmpty(curEnvelopeId))
             {
                 throw new ArgumentNullException("envelopeId");
             }
@@ -79,19 +53,22 @@ namespace Data.Wrappers
             return GetEnvelopeData(this);
         }
 
-        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
-        {
-            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
-            if (curSignersSet != null)
-            {
-                foreach (Signer curSigner in curSignersSet)
-                {
-                    return _tab.ExtractEnvelopeData(envelope, curSigner);
-                }
-            }
+        // TODO: This implementation of the interface method is no different than what is already implemented in the other overload. Hence commenting out here and in the interface definition.
+        // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the plugin project and the Data project  and interface expects it to be in Data.Wrappers 
+        // namespace, where it will not belong. 
+        //public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
+        //{
+        //    Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
+        //    if (curSignersSet != null)
+        //    {
+        //        foreach (var curSigner in curSignersSet)
+        //        {
+        //            return _tab.ExtractEnvelopeData(envelope, curSigner);
+        //        }
+        //    }
 
-            return new List<EnvelopeDataDTO>();
-        }
+        //    return new List<EnvelopeDataDTO>();
+        //}
 
 
         /// <summary>
@@ -108,7 +85,7 @@ namespace Data.Wrappers
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
             {
-                foreach (Signer curSigner in curSignersSet)
+                foreach (var curSigner in curSignersSet)
                 {
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
@@ -124,62 +101,37 @@ namespace Data.Wrappers
         /// <param name="curFieldMappingsJSON">Field mappings created by user for an action.</param>
         /// <param name="curEnvelopeId">Envelope id which is being processed.</param>
         /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId, IList<EnvelopeDataDTO> curEnvelopeData)
+        public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId,
+            IList<EnvelopeDataDTO> curEnvelopeData)
         {
-            var mappings = new FieldMappingSettingsDTO();
-            mappings.Deserialize(curFieldMappingsJSON);
+            var serializer = new JsonSerializer();
+            var mappings = serializer.Deserialize<FieldMappingSettingsDTO>(curFieldMappingsJSON);
+
             var payload = new PayloadMappingsDTO();
 
-            mappings.ForEach(m =>
+            if (mappings.Fields != null)
             {
-                var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
-                if (newValue == null)
+                mappings.Fields.ForEach(m =>
                 {
-                    EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
-                }
-                else
-                {
-                    payload.Add(new FieldMappingDTO() { Name = m.Name, Value = newValue });
-                }
-            });
+                    var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
+                    if (newValue == null)
+                    {
+                        EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
+                    }
+                    else
+                    {
+                        payload.Add(new FieldMappingDTO() { Name = m.Name, Value = newValue });
+                    }
+                });
+            }
             return payload;
         }
 
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
+            var curDocuSignTemplate = new DocuSignTemplate();
 
-            var username = ConfigurationManager.AppSettings["username"];
-            var password = ConfigurationManager.AppSettings["password"];
-            var integratorKey = ConfigurationManager.AppSettings["IntegratorKey"];
-            var baseUrl = ConfigurationManager.AppSettings["BaseUrl"];
-
-            if (username == null
-                || password == null
-                || integratorKey == null
-                || baseUrl == null
-              )
-                throw new ApplicationException(" Web/App Config is missing Docusign values of "
-                                                + (username == null ? "username, " : "")
-                                                + (password == null ? "password, " : "")
-                                                + (integratorKey == null ? "IntegratorKey, " : "")
-                                                + (baseUrl == null ? "environment, " : ""));
-
-
-            RestSettings.Instance.IntegratorKey = integratorKey;
-
-
-            var template = new DocuSign.Integrations.Client.Template
-            {
-                Login = new DocuSign.Integrations.Client.Account
-                {
-                    Email = username,
-                    ApiPassword = password,
-                    BaseUrl = baseUrl
-                }
-            };
-
-
-            var templateDetails = template.GetTemplate(templateId);
+            var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
             foreach (var signer in templateDetails["recipients"]["signers"])
             {
                 if (signer["tabs"]["textTabs"] != null)
@@ -193,12 +145,11 @@ namespace Data.Wrappers
                     yield return CreateEnvelopeData(chekBoxTabs, chekBoxTabs["selected"].ToString());
                 }
             }
-
         }
 
         private EnvelopeDataDTO CreateEnvelopeData(dynamic tab, string value)
         {
-            return new EnvelopeDataDTO()
+            return new EnvelopeDataDTO
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,

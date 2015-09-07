@@ -1,9 +1,5 @@
-﻿using Data.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Data.Entities;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -14,10 +10,10 @@ namespace UtilitiesTesting.Fixtures
             CriteriaDO criteriaDO = new CriteriaDO()
             {
                 Id = 1,
-                ExecutionType = 1,
+                CriteriaExecutionType = 1,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
                 LastUpdated = DateTime.Now,
-                ProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1()
+                ProcessNodeTemplate = TestProcessNodeTemplateDO1()
             };
             return criteriaDO;
         }
@@ -27,7 +23,7 @@ namespace UtilitiesTesting.Fixtures
             CriteriaDO criteriaDO = new CriteriaDO()
             {
                 Id = 78,
-                ExecutionType = 2,
+                CriteriaExecutionType = 2,
                 ConditionsJSON = @"{""criteria"":[{""field"":""Value"",""operator"":""Equals"",""value"":""test value 1""}]}",
                 LastUpdated = DateTime.Now,
                 

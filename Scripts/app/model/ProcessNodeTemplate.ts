@@ -4,8 +4,8 @@
         public isTempId: boolean;
         public processTemplateId: number;
         public name: string;
-        public criteria: Criteria;
-        public actions: Array<Action>;
+        public criteria: CriteriaDTO;
+        public actions: Array<ActionDesignDTO>;
 
         constructor(
             id: number,

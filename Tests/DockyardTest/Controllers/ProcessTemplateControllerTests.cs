@@ -224,6 +224,50 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(postEditGetResult.Content.Id, getResult.Content.Id);            
         }
 
+        [Test]
+        public void ProcessController_CanUpdateDocuSignTemplate()
+        {
+            //Arrange
+            var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
+
+            var docuSignTemplateList = new List<string>();
+            docuSignTemplateList.Add("58521204-58af-4e65-8a77-4f4b51fef626");
+
+            var externalEventList = new List<int?>();
+            externalEventList.AddRange(new int?[] { 1, 3 });
+
+            //Act: first add a process template, then modify it. 
+            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var response = ptc.Post(processTemplateDto);
+            processTemplateDto.Name = "updated";
+            processTemplateDto.SubscribedDocuSignTemplates = docuSignTemplateList;
+            processTemplateDto.SubscribedExternalEvents = externalEventList;
+            response = ptc.Post(processTemplateDto, true);
+
+            //Assert
+            var okResult = response as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            Assert.NotNull(okResult);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
+                var ptdo = uow.ProcessTemplateRepository.
+                    GetQuery().SingleOrDefault(pt => pt.DockyardAccount.Id == _testUserAccount.Id && pt.Name == processTemplateDto.Name);
+                Assert.IsNotNull(ptdo);
+                Assert.AreEqual(processTemplateDto.Name, ptdo.Name);
+                Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates.Count(), 1);
+                Assert.AreEqual(processTemplateDto.SubscribedDocuSignTemplates[0], docuSignTemplateList[0]);
+                Assert.AreEqual(processTemplateDto.SubscribedExternalEvents, externalEventList);
+            }
+        }
+
+        [Test]
+        public void ProcessController_CanGetExternalEventList()
+        {
+            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            var triggerSettings = ptc.GetTriggerSettings() as OkNegotiatedContentResult<List<ExternalEventDTO>>;
+            Assert.AreEqual(4, triggerSettings.Content.Count);
+        }
+
         private static ProcessTemplateController CreateProcessTemplateController(string userId, string email)
         {
             var claims = new List<Claim>();
@@ -235,7 +279,7 @@ namespace DockyardTest.Controllers
 
             var ptc = new ProcessTemplateController
             {
-                User = new GenericPrincipal(identity, new[] { "USers" })
+                User = new GenericPrincipal(identity, new[] { "Users" })
             };
 
             return ptc;

@@ -33,10 +33,10 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public string Process(string path, ActionDO curActionDTO)
+        public string Process(string path, ActionDesignDTO curActionDTO)
         {
-
             ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+
             string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
             //extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
@@ -56,13 +56,49 @@ namespace pluginAzureSqlServer.Controllers
 
             return JsonConvert.SerializeObject(
                 //_actionHandler.Process(path, curAction) ?? new { }
-                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curActionDTO }) ?? new { }
+                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curAction }) ?? new { }
             );
         }
 
+        [HttpPost]
+        [Route("configure")]
+        public string Configure(ActionDO curActionDO)
+        {
+            return HandleDockyardRequest("Configure", curActionDO);
+        }
        
+        [HttpPost]
+        [Route("activate")]
+        public string Activate(ActionDO curActionDO)
+        {
+            return string.Empty;
+        }
 
+        [HttpPost]
+        [Route("execute")]
+        public string Execute(ActionDO curActionDO)
+        {
+            return string.Empty;
+        }
 
+        [HttpPost]
+        [Route("Write_To_Sql_Server")]
+        public IHttpActionResult Process(ActionPayloadDTO curActionDTO)
+        {
+            var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
+            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+            return Ok(_actionHandler.GetFieldMappings(curAction));
+        }
 
+        private string HandleDockyardRequest(string curActionPath, ActionDO curActionDO)
+        {
+            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.Write_To_Sql_Server_v{0}", curActionDO.ActionTemplate.Version);
+
+            Type calledType = Type.GetType(curAssemblyName);
+            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
+            object curObject = Activator.CreateInstance(calledType);
+
+            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+        }
     }
 }

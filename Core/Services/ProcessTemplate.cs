@@ -8,13 +8,16 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using System.Data.Entity;
 using StructureMap;
-
+using System.Data;
 namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
         private readonly IProcess _process;
+
+        public object itemsToRemove { get; private set; }
 
         public ProcessTemplate()
         {
@@ -28,7 +31,9 @@ namespace Core.Services
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
+                    .Include("SubscribedDocuSignTemplates")
+                    .Include("SubscribedExternalEvents");
 
                 if (isAdmin)
                 {
@@ -41,33 +46,92 @@ namespace Core.Services
             }
         }
 
-        public int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo)
+        public int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
-            try
+            if (creating)
             {
-                if (creating)
-                {
-                    ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
-                    uow.ProcessTemplateRepository.Add(ptdo);
-                }
-                else
-                {
-                    var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(ptdo.Id);
-                    if (curProcessTemplate == null)
-                        throw new EntityNotFoundException();
-                    curProcessTemplate.Name = ptdo.Name;
-                    curProcessTemplate.Description = ptdo.Description;
-                }
+                ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
+                uow.ProcessTemplateRepository.Add(ptdo);
             }
-            catch (Exception ex)
+            else
             {
-                throw;
-            }
+                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(ptdo.Id);
+                if (curProcessTemplate == null)
+                    throw new EntityNotFoundException();
+                curProcessTemplate.Name = ptdo.Name;
+                curProcessTemplate.Description = ptdo.Description;
 
+                //
+                if (updateChildEntities)
+                {
+                    //Update DocuSign template registration
+                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedDocuSignTemplates,
+                        ptdo.SubscribedDocuSignTemplates);
+
+                    //Update DocuSign trigger registration
+                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedExternalEvents,
+                        ptdo.SubscribedExternalEvents);
+                }
+            }
             uow.SaveChanges();
-
             return ptdo.Id;
+        }
+
+        /// <summary>
+        /// The function add/removes items on the current collection 
+        /// so that they match the items on the new collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collectionToUpdate"></param>
+        /// <param name="sourceCollection"></param>
+        public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class
+        {
+            List<T> itemsToAdd = new List<T>();
+            List<T> itemsToRemove = new List<T>();
+            bool found;
+
+            foreach (T entity in collectionToUpdate)
+            {
+                found = false;
+                foreach (T entityToCompare in sourceCollection)
+                {
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    itemsToRemove.Add(entity);
+                }
+            }
+            itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
+            
+            foreach (T entity in sourceCollection)
+            {
+                found = false;
+                foreach (T entityToCompare in collectionToUpdate)
+                {
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    itemsToAdd.Add(entity);
+                }
+            }
+            itemsToAdd.ForEach(i => collectionToUpdate.Add(i));
+
+
+            //identify deleted items and remove them from the collection
+            //collectionToUpdate.Except(sourceCollection).ToList().ForEach(s => collectionToUpdate.Remove(s));
+            //identify added items and add them to the collection
+            //sourceCollection.Except(collectionToUpdate).ToList().ForEach(s => collectionToUpdate.Add(s));
         }
 
         public void Delete(IUnitOfWork uow, int id)
@@ -88,7 +152,7 @@ namespace Core.Services
             if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
             {
                 _process.Launch(curProcessTemplate, curEvent);
-
+               
                 //todo: what does this do?
                 ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
                     process =>

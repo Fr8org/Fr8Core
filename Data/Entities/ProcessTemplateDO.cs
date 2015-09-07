@@ -12,6 +12,7 @@ namespace Data.Entities
             SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
             SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
             DockyardAccount = new DockyardAccountDO();
+            StartingProcessNodeTemplate = new ProcessNodeTemplateDO();
         }
 
         [Key]
@@ -24,7 +25,10 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
-        public int StartingProcessNodeTemplate { get; set; }
+        [ForeignKey("StartingProcessNodeTemplate")]
+        public int StartingProcessNodeTemplateId { get; set; }
+
+        public virtual ProcessNodeTemplateDO StartingProcessNodeTemplate { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplateStateTemplate")]
@@ -34,13 +38,13 @@ namespace Data.Entities
 
         public virtual DockyardAccountDO DockyardAccount { get; set; }
 
-        [InverseProperty("ProcessTemplate")]
+        [InverseProperty("DocuSignProcessTemplate")]
         public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }
 
-        [InverseProperty("ProcessTemplate")]
+        [InverseProperty("ExternalProcessTemplate")]
         public virtual IList<ExternalEventSubscriptionDO> SubscribedExternalEvents { get; set; }
 
-
-        public virtual ICollection<ProcessNodeDO> Processes { get; set; }
+        [InverseProperty("ProcessTemplate")]
+        public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
     }
 }

@@ -185,17 +185,19 @@
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActionRegistration.cs" />
     <Compile Include="Interfaces\IAction.cs" />
-    <Compile Include="Helper\TransitionKeyData.cs" />
+    <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
+    <Compile Include="Interfaces\IFile.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcess.cs" />
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
+    <Compile Include="Interfaces\ISMSMessage.cs" />
     <Compile Include="Interfaces\ISubscription.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
@@ -224,7 +226,6 @@
     <Compile Include="Managers\APIManagers\Authorizers\IOAuthAuthorizer.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Docusign\DocuSignPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
@@ -257,27 +258,30 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Security\KwasantUserManager.cs" />
-    <Compile Include="Security\KwasantUserStore.cs" />
+    <Compile Include="Security\DockyardIdentityManager.cs" />
+    <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
-    <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
     <Compile Include="Services\ActionRegistration.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Criteria.cs" />
+    <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Interfaces\IPlugin.cs" />
+    <Compile Include="Services\Plugin.cs" />
+    <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Process.cs" />
     <Compile Include="Services\ProcessNodeTemplate.cs" />
     <Compile Include="Services\ProcessTemplate.cs" />
     <Compile Include="Services\Report.cs" />
-    <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\SMSMessage.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Template.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
@@ -309,6 +313,7 @@
   <ItemGroup>
     <Folder Include="Diagnostics\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="UserAlerting\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using AutoMapper;
+using AutoMapper.Internal;
+using Core.Managers;
+using Core.Managers.APIManagers.Authorizers;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Core.Managers;
-using Core.Managers.APIManagers.Authorizers;
-using Web.ViewModels;
-using Microsoft.Ajax.Utilities;
-using StructureMap;
-using Data.Validations;
-using System.Linq;
-using Utilities;
-using Core.Services;
-using AutoMapper;
-using AutoMapper.Internal;
+using Data.Wrappers;
 using Microsoft.AspNet.Identity.EntityFramework;
+using StructureMap;
+using Utilities;
+using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -174,7 +173,8 @@ namespace Web.Controllers
         [DockyardAuthorize(Roles = Roles.Admin)]
         public ActionResult ProcessAddUser(UserVM curCreateUserVM)
         {
-            DockyardAccountDO submittedDockyardAccountData = _mappingEngine.Map<DockyardAccountDO>(curCreateUserVM);
+            DockyardAccountDO submittedDockyardAccountData = new DockyardAccountDO();
+            Mapper.Map(curCreateUserVM, submittedDockyardAccountData);
             string userPassword = curCreateUserVM.NewPassword;
             bool sendConfirmation = curCreateUserVM.SendMail;
             string displayMessage;
@@ -333,13 +333,13 @@ namespace Web.Controllers
                 if (curUserDO == null)
                 {
                     // if we found no user then assume that this user doesn't exists any more and force log off action.
-                    return RedirectToAction("LogOff", "Account");
+                    return RedirectToAction("LogOff", "DockyardAccount");
                 }
                 var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
                 var tuple = new Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);
 
                 var curManageUserVM =
-                    AutoMapper.Mapper.Map<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
+                    Mapper.Map<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
                 return View(curManageUserVM);
             }
         }

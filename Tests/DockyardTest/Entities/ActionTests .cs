@@ -29,7 +29,7 @@ namespace DockyardTest.Entities
                 //check that it was saved to the db
                 var savedActionDO = uow.ActionRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO.Id);
                 Assert.NotNull(savedActionDO);
-                Assert.AreEqual(curActionDO.UserLabel, savedActionDO.UserLabel);
+                Assert.AreEqual(curActionDO.Name, savedActionDO.Name);
 
                 var curActionDO2 = FixtureData.TestAction2();
 
@@ -41,11 +41,11 @@ namespace DockyardTest.Entities
                 //check that it was saved to the db
                 var savedActionDO2 = uow.ActionRepository.GetQuery().FirstOrDefault(u => u.Id == curActionDO2.Id);
                 Assert.NotNull(savedActionDO2);
-                Assert.AreEqual(curActionDO2.UserLabel, savedActionDO2.UserLabel);
+                Assert.AreEqual(curActionDO2.Name, savedActionDO2.Name);
             }
         }
 
-        [Test, Ignore]
+        [Test,Ignore]
         [Category("ActionList")]
         public void ActionList_Add_CanCreateActionList()
         {
@@ -54,9 +54,12 @@ namespace DockyardTest.Entities
               
                 //SETUP
                 //create a customer from fixture data
-                var curActionListDO = FixtureData.TestEmptyActionList();
+                
+                var curProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplateDO);
+                uow.SaveChanges();
 
-                //EXECUTE
+                var curActionListDO = FixtureData.TestEmptyActionList();
                 uow.ActionListRepository.Add(curActionListDO);
                 uow.SaveChanges();
 
@@ -66,9 +69,10 @@ namespace DockyardTest.Entities
                 Assert.NotNull(savedActionListDO);
                 Assert.AreEqual(curActionListDO.Name, savedActionListDO.Name);
 
-                var curActionListDO2 = FixtureData.TestActionList();
 
                 //EXECUTE
+                var curActionListDO2 = FixtureData.TestActionList();
+
                 uow.ActionListRepository.Add(curActionListDO2);
                 uow.SaveChanges();
 
@@ -79,8 +83,8 @@ namespace DockyardTest.Entities
                 Assert.NotNull(curActionListDO2);
                 Assert.NotNull(savedActionListDO2);
                 Assert.AreEqual(curActionListDO2.Name, savedActionListDO2.Name);
-                Assert.AreEqual(curActionListDO2.Actions.FirstOrDefault().Id,
-                    savedActionListDO2.Actions.FirstOrDefault().Id);
+                Assert.AreEqual(curActionListDO2.Activities.FirstOrDefault().Id,
+                    savedActionListDO2.Activities.FirstOrDefault().Id);
             }
         }
     }
