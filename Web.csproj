@@ -671,8 +671,6 @@
     <Content Include="Documentation\GetUserSignatureInformation.html" />
     <Content Include="Documentation\GetUserSocialAccounts.html" />
     <Content Include="Documentation\Get_Account_Information.html" />
-    <Content Include="Documentation\jquery-1.10.2.js" />
-    <Content Include="Documentation\jquery-1.11.2.min.js" />
     <Content Include="Documentation\js\bootstrap-treeview.js" />
     <Content Include="Documentation\LockanEnvelopeorTemplate.html" />
     <Content Include="Documentation\Login.html" />
