@@ -66,7 +66,7 @@ module dockyard.tests.controller {
 
         //Rule #2
         it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectTemplate_Render should be received", () => {
-            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting], null);
+            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
             expect(_$scope.$broadcast).toHaveBeenCalledWith('PaneSelectTemplate_Render');
         });
 
@@ -116,11 +116,11 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
-                var incomingEventArgs = new pwd.ActionSelectingEventArgs(1, 1, 1);
+                var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1);
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
                 _$scope.currentAction = <any>currentAction;
 
-                _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting], incomingEventArgs);
+                _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id}, currentAction, null, null);
             });
 
@@ -130,7 +130,7 @@ module dockyard.tests.controller {
 
                 _$scope.currentAction = null;
 
-                _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelecting], incomingEventArgs);
+                _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).not.toHaveBeenCalled();
             });
 
@@ -146,11 +146,11 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_TemplateSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
-                var incomingEventArgs = new pwd.TemplateSelectingEventArgs();
+                var incomingEventArgs = new pwd.TemplateSelectedEventArgs();
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
                 _$scope.currentAction = <any>currentAction;
 
-                _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelecting], incomingEventArgs);
+                _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
             });
     });

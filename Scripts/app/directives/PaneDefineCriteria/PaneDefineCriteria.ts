@@ -54,10 +54,10 @@ module dockyard.directives.paneDefineCriteria {
         var createEmptyProcessNodeTemplate = function (
             processTemplateId,
             processNodeTemplateId,
-            criteriaId): model.ProcessNodeTemplate {
+            criteriaId): model.ProcessNodeTemplateDTO {
 
             // Create new ProcessNodeTemplate object with default name and provided temporary id.
-            var processNodeTemplate = new model.ProcessNodeTemplate(
+            var processNodeTemplate = new model.ProcessNodeTemplateDTO(
                 processNodeTemplateId,
                 true,
                 processTemplateId,
@@ -86,7 +86,7 @@ module dockyard.directives.paneDefineCriteria {
                     http.get(getCriteriaIdUrl(urlPrefix, id))
                         .success(function (criteriaDTO: any) {
                             // Construct ProcessNodeTemplate object from DTO.
-                            var processNodeTemplate = new model.ProcessNodeTemplate(
+                            var processNodeTemplate = new model.ProcessNodeTemplateDTO(
                                 processNodeTemplateDTO.id,
                                 false,
                                 processNodeTemplateDTO.ProcessNodeTemplateId,
@@ -132,7 +132,8 @@ module dockyard.directives.paneDefineCriteria {
             http: ng.IHttpService,
             urlPrefix: string,
             LocalIdentityGenerator: services.LocalIdentityGenerator,
-            ActionService: services.IActionService) {
+            ActionService: services.IActionService,
+            CriteriaServiceWrapper: services.ICriteriaWrapperService) {
 
             console.log('PaneDefineCriteria::onRender', eventArgs);
             console.log('PaneDefineCriteria: currentAction: ' + scope.currentAction);
@@ -153,8 +154,8 @@ module dockyard.directives.paneDefineCriteria {
             }
             // If we deal with existing object, we load it asynchronously from REST api.
             else {
-                loadProcessNodeTemplate(http, urlPrefix, eventArgs.id,
-                    function (pnt: model.ProcessNodeTemplate) {
+                CriteriaServiceWrapper.load(eventArgs.id)
+                    .then((pnt: model.ProcessNodeTemplateDTO) => {
                         scope.processNodeTemplate = pnt;
                         afterLoaded(scope, eventArgs);
                     });
@@ -166,7 +167,7 @@ module dockyard.directives.paneDefineCriteria {
             //If yes, init the module. If no, wait for it and then init the module.  
             if (model.ActionDesignDTO.isActionValid(scope.currentAction)) {
                 loadDatasources(eventArgs, scope, ActionService);
-            } 
+            }
             else {
                 disposeActionListener = scope.$watch("currentAction", (newAction: interfaces.IActionVM) => {
                     //When user selected the current criteria's action, initialize the pane. 
@@ -179,12 +180,13 @@ module dockyard.directives.paneDefineCriteria {
         };
 
         // Callback for handling PaneDefineCriteria_Hide.
-        var onHide = function (scope: IPaneDefineCriteriaScope) {
+        var onHide = function (scope: IPaneDefineCriteriaScope, CriteriaWrapperService: services.ICriteriaWrapperService) {
+            save(scope, null, CriteriaWrapperService);
             cleanUp(scope);
             scope.isVisible = false;
         };
 
-        var cleanUp = function(scope){
+        var cleanUp = function (scope) {
             if (disposeActionListener) disposeActionListener(); //deregister currentAction watch
             scope.processNodeTemplate = null;
             scope.fields = [];
@@ -240,8 +242,8 @@ module dockyard.directives.paneDefineCriteria {
                                 // Emit PaneDefineCriteria_ProcessNodeTemplateUpdating message,
                                 // to replace temporary id with global id, and update name on WorkflowDesigner pane.
                                 scope.$emit(
-                                    MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdating],
-                                    new ProcessNodeTemplateUpdatingEventArgs(
+                                    MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
+                                    new ProcessNodeTemplateUpdatedEventArgs(
                                         scope.processNodeTemplate.id,
                                         scope.processNodeTemplate.name,
                                         processNodeTemplateTempId
@@ -273,8 +275,8 @@ module dockyard.directives.paneDefineCriteria {
                             // Emit PaneDefineCriteria_ProcessNodeTemplateUpdating message,
                             // to replace temporary id with global id, and update name on WorkflowDesigner pane.
                             scope.$emit(
-                                MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdating],
-                                new ProcessNodeTemplateUpdatingEventArgs(
+                                MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
+                                new ProcessNodeTemplateUpdatedEventArgs(
                                     scope.processNodeTemplate.id,
                                     scope.processNodeTemplate.name,
                                     null
@@ -291,26 +293,58 @@ module dockyard.directives.paneDefineCriteria {
 
         // Callback to handle PaneDefineCriteria_Save message,
         // or handle "Save" button click event.
-        var onSave = function (
+        var save = function (
             scope: IPaneDefineCriteriaScope,
-            http: ng.IHttpService,
-            urlPrefix: string,
-            callback: (args: SaveCallbackArgs) => void
+            callback: (args: SaveCallbackArgs) => void,
+            CriteriaServiceWrapper: services.ICriteriaWrapperService
             ) {
 
-            //don't save anything if there is no criteria is selected
-            if (!scope.processNodeTemplate) return;
+            var curProcessNodeTemplate: model.ProcessNodeTemplateDTO = scope.processNodeTemplate;
+            var tempId: number = curProcessNodeTemplate.id; //maybe not temp but then we won't use this value
+            var operationResult = CriteriaServiceWrapper.addOrUpdate(curProcessNodeTemplate);
 
-            // In case of newly created object (i.e. isTempId === true).
-            if (scope.processNodeTemplate.isTempId) {
-                saveNew(scope, http, urlPrefix, callback);
+            if (operationResult.actionType == services.ActionTypeEnum.Add) {
+                // In case of newly created object (i.e. isTempId === true).
+                operationResult.promise.then(() => {
+                    // Emit PaneDefineCriteria_ProcessNodeTemplateUpdating message,
+                    // to replace temporary id with global id, and update name on WorkflowDesigner pane.
+                    scope.$emit(
+                        MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
+                        new ProcessNodeTemplateUpdatedEventArgs(
+                            curProcessNodeTemplate.id,
+                            curProcessNodeTemplate.name,
+                            tempId
+                            )
+                        );
+                    console.log('DefineCriteriaPane::save succeded');
+                    
+                    // Invoke callback, after all asynchronous HTTP operations were completed.
+                    callback(new SaveCallbackArgs(curProcessNodeTemplate.id, tempId));
+                });
             }
-            // In case of existing object with global ID.
+            else if (operationResult.actionType == services.ActionTypeEnum.Update) {
+                // In case of existing object with permanent id.
+                operationResult.promise.then(() => {
+                    // Emit PaneDefineCriteria_ProcessNodeTemplateUpdating message,
+                    // to replace temporary id with global id, and update name on WorkflowDesigner pane.
+                    scope.$emit(
+                        MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
+                        new ProcessNodeTemplateUpdatedEventArgs(
+                            scope.processNodeTemplate.id,
+                            scope.processNodeTemplate.name,
+                            null
+                            )
+                        );
+                    console.log('DefineCriteriaPane update succeded');
+
+                    // Invoke callback, after all asynchronous HTTP operations were completed.
+                    callback(new SaveCallbackArgs(scope.processNodeTemplate.id, null));
+                });
+            }
             else {
-                saveExisting(scope, http, urlPrefix, callback);
+                return; //ProcessNodeTemplate object was null, just exiting
             }
-        };
-
+        }
 
         return {
             restrict: 'E',
@@ -323,7 +357,8 @@ module dockyard.directives.paneDefineCriteria {
                 $http: ng.IHttpService,
                 urlPrefix: string,
                 LocalIdentityGenerator: services.LocalIdentityGenerator,
-                ActionService: services.IActionService
+                ActionService: services.IActionService,
+                CriteriaServiceWrapper: services.ICriteriaWrapperService
                 ): void => {
 
                 $scope.operators = [
@@ -338,20 +373,20 @@ module dockyard.directives.paneDefineCriteria {
                 $scope.defaultOperator = 'gt';
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Render],
-                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator, ActionService));
+                    (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, $scope, $http, urlPrefix, LocalIdentityGenerator, ActionService, CriteriaServiceWrapper));
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Hide],
-                    (event: ng.IAngularEvent) => onHide($scope));
+                    (event: ng.IAngularEvent) => onHide($scope, CriteriaServiceWrapper));
 
                 $scope.$on(MessageType[MessageType.PaneDefineCriteria_Save],
-                    (event: ng.IAngularEvent, eventArgs: SaveEventArgs) => onSave($scope, $http, urlPrefix, eventArgs.callback));
+                    (event: ng.IAngularEvent, eventArgs: SaveEventArgs) => save($scope, eventArgs.callback, CriteriaServiceWrapper));
 
                 $scope.removeCriteria = function () {
                     removeCriteria($scope, $http, urlPrefix);
                 };
 
                 $scope.save = function () {
-                    onSave($scope, $http, urlPrefix, function () { });
+                    save($scope, function () { }, CriteriaServiceWrapper);
                 };
 
                 $scope.cancel = function () {
@@ -367,7 +402,7 @@ module dockyard.directives.paneDefineCriteria {
         PaneDefineCriteria_Hide,
         PaneDefineCriteria_Save,
         PaneDefineCriteria_ProcessNodeTemplateRemoving,
-        PaneDefineCriteria_ProcessNodeTemplateUpdating,
+        PaneDefineCriteria_ProcessNodeTemplateUpdated,
         PaneDefineCriteria_Cancelling
     }
 
@@ -381,6 +416,20 @@ module dockyard.directives.paneDefineCriteria {
             id: number, isTempId: boolean) {
 
             this.fields = fields;
+            this.processTemplateId = processTemplateId;
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+    export class HideEventArgs  {
+        public processTemplateId: number;
+        public id: number;
+        public isTempId: boolean;
+
+        constructor(processTemplateId: number,
+            id: number, isTempId: boolean) {
+
             this.processTemplateId = processTemplateId;
             this.id = id;
             this.isTempId = isTempId;
@@ -415,7 +464,7 @@ module dockyard.directives.paneDefineCriteria {
         }
     }
 
-    export class ProcessNodeTemplateUpdatingEventArgs {
+    export class ProcessNodeTemplateUpdatedEventArgs {
         public processNodeTemplateId: number;
         public name: string;
         public processNodeTemplateTempId: number;
@@ -438,9 +487,10 @@ module dockyard.directives.paneDefineCriteria {
         cancel: () => void;
         operators: Array<interfaces.IOperator>;
         defaultOperator: string;
-        processNodeTemplate: model.ProcessNodeTemplate;
+        processNodeTemplate: model.ProcessNodeTemplateDTO;
         fields: Array<model.Field>;
         currentAction: interfaces.IActionVM;
+        currentCriteria: model.CriteriaDTO;
     }
 }
 

@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ProcessNodeTemplate {
+    export class ProcessNodeTemplateDTO {
         public id: number;
         public isTempId: boolean;
         public processTemplateId: number;
@@ -22,8 +22,8 @@
             this.actions = [];
         }
 
-        clone(): ProcessNodeTemplate {
-            var result = new ProcessNodeTemplate(this.id, this.isTempId, this.processTemplateId, this.name);
+        clone(): ProcessNodeTemplateDTO {
+            var result = new ProcessNodeTemplateDTO(this.id, this.isTempId, this.processTemplateId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
             angular.forEach(this.actions, function (it) { result.actions.push(it.clone()); });
 

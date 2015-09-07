@@ -32,18 +32,8 @@ module dockyard.interfaces {
         name: string
     }
 
-    export interface IProcessNodeTemplateVM extends ng.resource.IResource<IProcessNodeTemplateVM> {
-        id: number;
-        processTemplateId: number;
-        name: string;
-    }
-
-    export interface ICriteriaVM extends ng.resource.IResource<ICriteriaDTO> {
-        //Id: number;
-        //ExecutionType: number;
-        //Conditions: Array<model.Condition>;
-    }
-
+    export interface IProcessNodeTemplateVM extends ng.resource.IResource<model.ProcessNodeTemplateDTO>, model.ProcessNodeTemplateDTO { }
+    export interface ICriteriaVM extends ng.resource.IResource<model.CriteriaDTO>, model.CriteriaDTO { }
     export interface IActionVM extends ng.resource.IResource<model.ActionDesignDTO>, model.ActionDesignDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }

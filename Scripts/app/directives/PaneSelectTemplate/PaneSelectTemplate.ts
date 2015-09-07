@@ -94,7 +94,6 @@ module dockyard.directives.paneSelectTemplate {
                 curScope.processTemplate.$promise]
                 ).then(
                     () => {
-                        console.log(curScope);
                         if (curScope.processTemplate && curScope.processTemplate.subscribedDocuSignTemplates.length > 0) {
                             curScope.docuSignTemplateId = curScope.processTemplate.subscribedDocuSignTemplates[0];
                         }
