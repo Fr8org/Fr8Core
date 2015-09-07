@@ -29,8 +29,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { ActionType = "Write", Version = "1.0" }, new ActionTemplateDO() { ActionType = "Read", Version = "1.0" } };
-        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { ActionType = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { ActionType = "SQL Read", Version = "1.0" } };
+        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "Write", Version = "1.0" }, new ActionTemplateDO() { Name = "Read", Version = "1.0" } };
+        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
         [SetUp]
         public override void SetUp()
@@ -62,8 +62,8 @@ namespace DockyardTest.Services
         public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
-            var curActionTemplate = FixtureData.TestActionTemplateDO1();
-            string curJsonResult = _action.GetConfigurationSettings(curActionTemplate);
+            var curActionDO = FixtureData.TestAction22();
+            string curJsonResult = _action.GetConfigurationSettings(curActionDO);
             ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
             Assert.AreEqual(1, result.Fields.Count);
             Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -95,7 +95,7 @@ namespace DockyardTest.Services
                 var actionDO = action.GetById(origActionDO.Id);
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.ConfigurationSettings, actionDO.ConfigurationSettings);
+                Assert.AreEqual(origActionDO.ConfigurationStore, actionDO.ConfigurationStore);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
@@ -151,8 +151,8 @@ namespace DockyardTest.Services
             {
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionDo.ParentActionList);
-                uow.ProcessRepository.Add(actionDo.ParentActionList.Process);
+                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
+                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
             }
 
@@ -183,8 +183,8 @@ namespace DockyardTest.Services
             {
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add(actionDo.ParentActionList);
-                uow.ProcessRepository.Add(actionDo.ParentActionList.Process);
+                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
+                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
             }
 

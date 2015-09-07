@@ -42,16 +42,16 @@ namespace Core.PluginRegistrations
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             ActionNameDTO curActionName = new ActionNameDTO();
 
-            curActionName.ActionType = "Write";
+            curActionName.Name = "Write";
             curActionName.Version = "1";
             curActionNameList.ActionNames.Add(curActionName);
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
 
-            if (curActionTemplateDo == null)
+            if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
             ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
