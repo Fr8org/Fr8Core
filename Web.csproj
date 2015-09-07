@@ -17,14 +17,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -573,7 +569,7 @@
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
