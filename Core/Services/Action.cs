@@ -16,6 +16,7 @@ using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
 using System.Data.Entity;
+using Newtonsoft.Json;
 
 namespace Core.Services
 {
@@ -92,7 +93,7 @@ namespace Core.Services
                     existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
+                    existingActionDo.CrateStorage = currentActionDo.CrateStorage;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }
@@ -129,14 +130,14 @@ namespace Core.Services
                 var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
                 string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
                 var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
-                curActionDO.ConfigurationStore = settings;
+                curActionDO.CrateStorage = settings;
             }
             else
             {
                 throw new System.ArgumentNullException("ActionTemplate is null");
             }
 
-            return curActionDO.ConfigurationStore;
+            return curActionDO.CrateStorage;
         }
 
         public void Delete(int id)
@@ -287,6 +288,32 @@ namespace Core.Services
         {
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
+        }
+
+
+        public string AddCrate(CrateDTO crateDTO, string crateStorage)
+        {
+            string resultCrateStorage = string.Empty;
+
+            if (crateDTO == null)
+                throw new ArgumentNullException("CrateDTO is null");
+            
+            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(crateStorage);//deserialized
+            
+            if (crates == null)
+                crates = new List<CrateDTO>();//create crates if JSOn is first empty
+
+            crates.Add(crateDTO);
+
+            resultCrateStorage = JsonConvert.SerializeObject(crates);
+
+            return resultCrateStorage;
+        }
+
+        public List<CrateDTO> GetCrates(string crateStorage)
+        {
+            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(crateStorage);
+            return crates;
         }
     }
 }

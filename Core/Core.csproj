@@ -187,6 +187,7 @@
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
+    <Compile Include="Interfaces\ICrate.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
@@ -266,6 +267,7 @@
     <Compile Include="Services\ActionRegistration.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
+    <Compile Include="Services\Crate.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />

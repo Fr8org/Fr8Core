@@ -6,7 +6,7 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        getConfigurationStore: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IConfigurationStoreVM>;
+        getCrateStorage: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.ICrateStorageVM>;
         getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
@@ -48,7 +48,7 @@ module dockyard.services {
                 //    }
                 //},
                 'delete': { method: 'DELETE' },
-                'getConfigurationStore': {
+                'getCrateStorage': {
                     method: 'POST',
                     url: '/actions/configuration',
                     params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter

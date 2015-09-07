@@ -33,7 +33,7 @@ namespace pluginAzureSqlServer.Infrastructure
         public string ExtractConnectionString(ActionDO curActionDO)
         {
             var curConnectionString = string.Empty;
-            var curSettings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationStore);
+            var curSettings = JsonConvert.DeserializeObject<JObject>(curActionDO.CrateStorage);
             var curConnStringObject = curSettings.ExtractPropertyValue<JArray>("configurationSettings");
 
             foreach (var v in curConnStringObject.Select(item => item.SelectToken("textField")).Where(v => v != null))

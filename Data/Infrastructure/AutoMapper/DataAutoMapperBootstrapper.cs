@@ -21,7 +21,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
-                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationStore)))
+                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.CrateStorage)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
@@ -32,7 +32,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ActionListId))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
                 .ForMember(a => a.ActionTemplate, opts => opts.ResolveUsing(ad => ad.ActionTemplate))
-                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.ConfigurationStore)))
+                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
@@ -53,8 +53,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dest => dest.Id, opts => opts.ResolveUsing(src => src.Id))
                 .ForMember(dest => dest.Name, opts => opts.ResolveUsing(src => src.Name))
                 .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ParentActivityId))
-                .ForMember(dest => dest.ConfigurationStore,
-                    opts => opts.ResolveUsing(src => src.ConfigurationStore))
+                .ForMember(dest => dest.CrateStorage,
+                    opts => opts.ResolveUsing(src => src.CrateStorage))
                 .ForMember(dest => dest.ParentPluginRegistration,
                     opts => opts.ResolveUsing(src => src.ParentPluginRegistration))
                 .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());

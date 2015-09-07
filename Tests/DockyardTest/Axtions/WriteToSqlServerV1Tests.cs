@@ -30,7 +30,7 @@ namespace DockyardTest.Axtions
         {
             var curActionData = FixtureData.TestAction1();
             curActionData.PayloadMappings = PayloadData;
-            curActionData.ConfigurationStore = CreateConfigurationStore();
+            curActionData.CrateStorage = CreateConfigurationStore();
 
             _sqServerWriter.Process("execute", curActionData);
         }

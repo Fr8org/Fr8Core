@@ -73,7 +73,7 @@ module dockyard.tests.controller {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationStore: utils.fixtures.ActionDesignDTO.configurationStore,
+                    crateStorage: utils.fixtures.ActionDesignDTO.crateStorage,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,

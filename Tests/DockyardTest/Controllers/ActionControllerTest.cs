@@ -165,7 +165,7 @@ namespace DockyardTest.Controllers
 
                 //create action
                 var curAction = CreateActionWithV2ActionTemplate(uow);
-                curAction.ConfigurationStore = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
+                curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
                 uow.SaveChanges();
 
                 var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
@@ -205,7 +205,7 @@ namespace DockyardTest.Controllers
                 var curAction = CreateActionWithV2ActionTemplate(uow);
                 var configurationStore = FixtureData.TestConfigurationStore();
                 configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-                curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
+                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
                 var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
                 //Act
@@ -243,7 +243,7 @@ namespace DockyardTest.Controllers
                 configurationStore.DataFields.Add("Wrong");
                 configurationStore.DataFields.Add("data fields");
                 configurationStore.DataFields.Add("data fields");
-                curAction.ConfigurationStore = JsonConvert.SerializeObject(configurationStore);
+                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
                 var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
                 //Act
@@ -368,7 +368,7 @@ namespace DockyardTest.Controllers
                 Id = actionId,
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
-                ConfigurationStore = new ConfigurationSettingsDTO(),
+                CrateStorage = new ConfigurationSettingsDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 ActionTemplateId = 1,
@@ -413,7 +413,7 @@ namespace DockyardTest.Controllers
             var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
             {
                 ParentPluginRegistration = pluginName,
-                ConfigurationStore = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
+                CrateStorage = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
                     "{\"connection_string\":\"" + dataSource + "\"}")
             });
 

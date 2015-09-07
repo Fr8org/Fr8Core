@@ -18,6 +18,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Core.Services.Action;
 using System.Threading.Tasks;
+using System.Web.Helpers;
+using Newtonsoft.Json;
 
 namespace DockyardTest.Services
 {
@@ -94,7 +96,7 @@ namespace DockyardTest.Services
                 var actionDO = action.GetById(origActionDO.Id);
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
-                Assert.AreEqual(origActionDO.ConfigurationStore, actionDO.ConfigurationStore);
+                Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
                 Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
@@ -310,5 +312,51 @@ namespace DockyardTest.Services
 
         }
 
+        [Test]
+        public void AddCrate_AddNewCrate_ReturnsJSONCrate()
+        {
+            CrateDTO crateDTO = FixtureData.CrateDTO1();
+            List<CrateDTO> crates = new List<CrateDTO>() { crateDTO };
+            string expectedCratesJSON = JsonConvert.SerializeObject(crates);
+
+            string result = _action.AddCrate(crateDTO, "");
+
+            Assert.AreEqual(expectedCratesJSON, result);
+        }
+
+        [Test]
+        public void AddCrate_AddToExistingCrate_AppendedToJSONCrate()
+        {
+            CrateDTO crateDTO = FixtureData.CrateDTO1();
+            List<CrateDTO> crates = new List<CrateDTO>() { crateDTO };
+            string currentCratesStorage = JsonConvert.SerializeObject(crates);
+
+            //set expected JSON result
+            CrateDTO crateDTONew = FixtureData.CrateDTO2();
+            crates = new List<CrateDTO>() { crateDTO, crateDTONew };
+            string expectedCratesJSON = JsonConvert.SerializeObject(crates);
+
+           string result = _action.AddCrate(crateDTONew, currentCratesStorage);
+
+           Assert.AreEqual(expectedCratesJSON, result);
+        }
+
+        [Test]
+        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        public void AddCrate_NullCrateDTO_ThrowsException()
+        {
+            CrateDTO crateDTO = null;
+
+            _action.AddCrate(crateDTO, "");
+        }
+
+        [Test]
+        [ExpectedException(ExpectedException = typeof(Newtonsoft.Json.JsonSerializationException))]
+        public void AddCrate_InvalidJSON_ThrowsException()
+        {
+            CrateDTO crateDTO = FixtureData.CrateDTO1();
+
+            _action.AddCrate(crateDTO, "{test: 1}");
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace Data.Entities
         // public int? ParentActionListId { get; set; }
         // public virtual ActionListDO ParentActionList { get; set; }
 
-        public string ConfigurationStore { get; set; }
+        public string CrateStorage { get; set; }
 
         public string FieldMappingSettings { get; set; }
 

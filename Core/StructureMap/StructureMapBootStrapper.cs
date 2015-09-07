@@ -110,6 +110,7 @@ namespace Core.StructureMap
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
+                For<ICrate>().Use<Crate>();
             }
         }
 
@@ -171,6 +172,7 @@ namespace Core.StructureMap
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
+                For<ICrate>().Use<Crate>();
             }
         }
 

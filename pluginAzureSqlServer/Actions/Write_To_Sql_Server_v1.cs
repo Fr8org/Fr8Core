@@ -109,7 +109,7 @@ namespace pluginAzureSqlServer.Actions {
 
         private ConfigurationSettingsDTO GetConfigurationStore(ActionDO curActionDO)
         {
-            return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
+            return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.CrateStorage);
         }
 
         private const string ProviderName = "System.Data.SqlClient";
@@ -124,12 +124,12 @@ namespace pluginAzureSqlServer.Actions {
         //[Route("write_to_sql_server/field_mappings")]
         public object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            if (string.IsNullOrEmpty(curActionDO.ConfigurationStore))
+            if (string.IsNullOrEmpty(curActionDO.CrateStorage))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
+            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.CrateStorage);
             if (configuration == null || configuration.Fields.Count == 0)
                 {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
