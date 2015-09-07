@@ -231,6 +231,9 @@
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
@@ -264,6 +267,10 @@
     <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.Designer.cs">
       <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509062154535_Templates.cs" />
+    <Compile Include="Migrations\201509062154535_Templates.Designer.cs">
+      <DependentUpon>201509062154535_Templates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -287,7 +294,6 @@
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
-    <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTypeListDTO.cs" />
@@ -303,7 +309,6 @@
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
     <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
-    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginDO.cs" />
@@ -501,6 +506,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509061125516_RenameActionTemplateFields.resx">
       <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509062154535_Templates.resx">
+      <DependentUpon>201509062154535_Templates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
