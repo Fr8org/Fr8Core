@@ -20,7 +20,7 @@ namespace Core.Interfaces
         ActionDO GetById(int id);
         void Delete(int id);
         Task<int> Process(ActionDO curAction);
-        string AddCrate(CrateDTO crateDTO, string crateStorage);
-        List<CrateDTO> GetCrates(string crateStorage);
+        string AddCrate(CrateDTO crateDTO, string curStorage);
+        List<CrateDTO> GetCrates(string curStorage);
     }
 }

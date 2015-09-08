@@ -11,19 +11,10 @@ namespace Core.Services
 {
     public class Crate : ICrate
     {
-        public CrateDTO Create(string crateStorage)
+        public CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
         {
-            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(crateStorage); //get the lists of crate inside CrateStorage JSON
-            if (crates != null && crates.Count > 0)
-            {
-                CrateDTO crateDTO = crates[0];
-                crateDTO.Id = Guid.NewGuid().ToString();
-                return crateDTO;
-            }
-            else
-            {
-                throw new ArgumentNullException("Cannot deserialize Empty CrateStorage to Crate DTO");
-            }
+            CrateDTO crateDTO = new CrateDTO() { Id = Guid.NewGuid().ToString(), Label = label, Contents = contents, ManifestType = manifestType, ManifestId = manifestId };
+            return crateDTO;
         }
     }
 }

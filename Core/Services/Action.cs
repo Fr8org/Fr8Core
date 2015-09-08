@@ -291,14 +291,14 @@ namespace Core.Services
         }
 
 
-        public string AddCrate(CrateDTO crateDTO, string crateStorage)
+        public string AddCrate(CrateDTO crateDTO, string curStorage)
         {
             string resultCrateStorage = string.Empty;
 
             if (crateDTO == null)
                 throw new ArgumentNullException("CrateDTO is null");
             
-            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(crateStorage);//deserialized
+            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(curStorage);//deserialized
             
             if (crates == null)
                 crates = new List<CrateDTO>();//create crates if JSOn is first empty
@@ -310,9 +310,9 @@ namespace Core.Services
             return resultCrateStorage;
         }
 
-        public List<CrateDTO> GetCrates(string crateStorage)
+        public List<CrateDTO> GetCrates(string curStorage)
         {
-            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(crateStorage);
+            List<CrateDTO> crates = JsonConvert.DeserializeObject<List<CrateDTO>>(curStorage);
             return crates;
         }
     }
