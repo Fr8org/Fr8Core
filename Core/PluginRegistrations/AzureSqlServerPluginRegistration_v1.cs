@@ -54,10 +54,10 @@ namespace Core.PluginRegistrations
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
-            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
-            curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("connection_string", true, "", "SQL Connection String"));
+            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
+            curCrateStorage.Fields.Add(new FieldDefinitionDTO("connection_string", true, "", "SQL Connection String"));
 
-            return JsonConvert.SerializeObject(curConfigurationSettings);
+            return JsonConvert.SerializeObject(curCrateStorage);
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)

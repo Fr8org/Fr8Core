@@ -63,7 +63,7 @@ namespace DockyardTest.Services
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
             string curJsonResult = _action.GetConfigurationSettings(curActionDO);
-            ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+            CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
             Assert.AreEqual(1, result.Fields.Count);
             Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
             Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);

@@ -66,9 +66,9 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static ConfigurationSettingsDTO TestConfigurationSettings()
+        public static CrateStorageDTO TestConfigurationSettings()
         {
-            return new ConfigurationSettingsDTO()
+            return new CrateStorageDTO()
             {
                 Fields = new List<FieldDefinitionDTO>(){
                     new FieldDefinitionDTO()
@@ -85,9 +85,9 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
-	    public static ConfigurationSettingsDTO TestConfigurationStore()
+	    public static CrateStorageDTO TestConfigurationStore()
 	    {
-	        return new ConfigurationSettingsDTO
+	        return new CrateStorageDTO
 	        {
 	            Fields = new List<FieldDefinitionDTO>
 	            {

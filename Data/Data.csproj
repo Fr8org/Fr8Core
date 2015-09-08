@@ -218,7 +218,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />

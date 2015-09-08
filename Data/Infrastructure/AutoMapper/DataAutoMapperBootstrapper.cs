@@ -21,7 +21,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
-                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.ConfigurationStore)))
+                .ForMember(a => a.ConfigurationStore, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.ConfigurationStore)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
@@ -92,10 +92,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
 
-            Mapper.CreateMap<ConfigurationSettingsDTO, string>()
-                .ConvertUsing<JSONToStringConverter<ConfigurationSettingsDTO>>();
-            Mapper.CreateMap<string, ConfigurationSettingsDTO>()
-                .ConvertUsing<StringToJSONConverter<ConfigurationSettingsDTO>>();
+            Mapper.CreateMap<CrateStorageDTO, string>()
+                .ConvertUsing<JSONToStringConverter<CrateStorageDTO>>();
+            Mapper.CreateMap<string, CrateStorageDTO>()
+                .ConvertUsing<StringToJSONConverter<CrateStorageDTO>>();
 
             Mapper.CreateMap<FieldMappingSettingsDTO, string>()
                 .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
