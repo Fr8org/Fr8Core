@@ -12,7 +12,6 @@ using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.PluginRegistrations;
 using Core.Security;
 using Core.Services;
 using Data.Entities;
@@ -98,9 +97,6 @@ namespace Core.StructureMap
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
-                For<IPluginRegistration>()
-                    .Use<AzureSqlServerPluginRegistration_v1>()
-                    .Named(typeof(AzureSqlServerPluginRegistration_v1).Name);
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
@@ -160,9 +156,6 @@ namespace Core.StructureMap
                 pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
                 For<IActionTemplate>().Use<ActionTemplate>();
-                For<IPluginRegistration>()
-                    .Use<AzureSqlServerPluginRegistration_v1>()
-                    .Named(typeof(AzureSqlServerPluginRegistration_v1).Name);
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();

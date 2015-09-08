@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -11,10 +10,6 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Microsoft.AspNet.Identity;
-using StructureMap;
-using Core.PluginRegistrations;
-using Newtonsoft.Json;
 
 namespace Web.Controllers
 {
