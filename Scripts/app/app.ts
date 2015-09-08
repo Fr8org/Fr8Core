@@ -8,7 +8,8 @@ var app = angular.module("app", [
     "ngSanitize",
     'ngResource',
     'ui.bootstrap',
-    "ngMockE2E"
+    "ngMockE2E",
+    "datatables"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */

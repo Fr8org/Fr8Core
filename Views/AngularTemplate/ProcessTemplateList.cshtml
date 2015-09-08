@@ -1,4 +1,3 @@
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <!-- BEGIN PAGE BREADCRUMB -->
 <ul class="page-breadcrumb breadcrumb hide">
     <li>
@@ -10,6 +9,7 @@
 </ul>
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
+
 <div ng-controller="ProcessTemplateListController" class="margin-top-10">
     <div class="note note-success note-bordered" ng-show="$root.lastResult === 'success'">
         <h3>Success!<span class="close" data-close="note"></span></h3>
@@ -35,7 +35,10 @@
                 <div class="portlet-body">
                     <div ng-show="ptvms.length == 0">You have no processes yet.</div>
                     <div class="table-scrollable table-scrollable-borderless" ng-show="ptvms.length > 0">
-                        <table class="table table-hover table-light table-linkrows table-process-templates">
+                        <div ng-controller="ProcessTemplateListController as showCase">
+                            <table datatable="" dt-options="showCase.DTOptionsBuilder" dt-columns="showCase.DTColumnBuilder" class="row-border hover"></table>
+                        </div>
+                        @*<table class="table table-hover table-light table-linkrows table-process-templates">
                             <thead>
                                 <tr>
                                     <th width="30%">
@@ -64,7 +67,7 @@
                                     <button type="button" class="btn btn-sm red" ng-click="remove(pt); $event.stopPropagation();">Delete</button>
                                 </td>
                             </tr>
-                        </table>
+                        </table>*@
                     </div>
                 </div>
             </div>
@@ -84,20 +87,6 @@
             <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
         </div>
     </script>
-    <script>
-        $(document).ready(function () {
-            $.ajax({
-                url: '/api/UserEmailsApi',
-                type: 'GET',
-                dataType: 'json',
-                contentType:'application/json',
-                success:function(data)
-                {
-                    debugger;
-                    alert(data);
-                }
-            });
-        });
-    </script>
+    
 </div>
 <!-- END MAIN CONTENT -->

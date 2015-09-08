@@ -8,6 +8,7 @@
     "jquery-migrate": "~1.2.1",
     "angular": "~1.4.3",
     "angular-bootstrap": "~0.13.0",
+	"angular-datatables":"~0.4.3",
     "angular-touch": "~1.4.3",
     "angular-sanitize": "~1.4.3",
     "angular-ui-router": "~0.2.15",
