@@ -118,7 +118,7 @@ module dockyard.tests.controller {
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1);
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
-                _$scope.currentAction = <any>currentAction;
+                _$scope.current.action = <any>currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id}, currentAction, null, null);
@@ -128,7 +128,7 @@ module dockyard.tests.controller {
             "Save method on ProcessTemplateService should NOT be called", () => {
                 var incomingEventArgs = new pwd.CriteriaSelectedEventArgs(1, true);
 
-                _$scope.currentAction = null;
+                _$scope.current.action = null;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).not.toHaveBeenCalled();
@@ -138,7 +138,7 @@ module dockyard.tests.controller {
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.CriteriaSelectedEventArgs(1, true);
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
-                _$scope.currentAction = <any>currentAction;
+                _$scope.current.action = <any>currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_CriteriaSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
@@ -148,7 +148,7 @@ module dockyard.tests.controller {
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.TemplateSelectedEventArgs();
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
-                _$scope.currentAction = <any>currentAction;
+                _$scope.current.action = <any>currentAction;
 
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
