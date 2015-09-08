@@ -248,7 +248,6 @@
     <Compile Include="Services\BasePluginRegistrationTests.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\EnvelopeServiceTests.cs" />
-    <Compile Include="Services\IDbContext.cs" />
     <Compile Include="Services\IPluginClient.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
