@@ -291,6 +291,10 @@
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>pluginAzureSqlServer</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
+      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
+      <Name>PluginBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Tools\DocusignApiWrapper\DocusignApiWrapper.csproj">
       <Project>{F0A732A2-D57E-46D3-B7BB-34050E3641C4}</Project>
       <Name>DocusignApiWrapper</Name>
