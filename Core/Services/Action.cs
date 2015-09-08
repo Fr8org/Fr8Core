@@ -28,6 +28,7 @@ namespace Core.Services
         private Task curAction;
         private IPluginRegistration _basePluginRegistration;
         private IPlugin _plugin;
+        private readonly AuthorizationToken _authorizationToken;
 
         public Action()
         {
@@ -35,8 +36,9 @@ namespace Core.Services
             _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
-           
+
             _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+            _authorizationToken = new AuthorizationToken();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -61,7 +63,7 @@ namespace Core.Services
 
             //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
             //var plugins = _plugin.GetAll();
-           // var curActionTemplates = plugins
+            // var curActionTemplates = plugins
             //    .SelectMany(p => p.AvailableActions)
             //    .OrderBy(s => s.ActionType);
 
@@ -116,12 +118,12 @@ namespace Core.Services
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if(curActionDO == null)
+            if (curActionDO == null)
                 throw new System.ArgumentNullException("Action parameter is null");
 
             if (curActionDO.ActionTemplate != null)
             {
-                if(curActionDO.Id == 0)
+                if (curActionDO.Id == 0)
                     throw new System.ArgumentNullException("Action ID is empty");
                 if (curActionDO.ActionTemplateId == 0)
                     throw new System.ArgumentNullException("Action Template ID is empty");
@@ -141,7 +143,7 @@ namespace Core.Services
 
         public void Delete(int id)
         {
-            var entity = new ActionDO {Id = id};
+            var entity = new ActionDO { Id = id };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -180,7 +182,7 @@ namespace Core.Services
                     //   else
                     //   {
                     curAction.ActionState = ActionState.Completed;
-                 //   }
+                    //   }
 
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
@@ -205,15 +207,15 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
-            
+            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId;
+
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
             //that's because an ActionList is essentially a template that's part of a processnodetemplate, from which N different Processes can be spawned
             //the confusion stems from design flaws that will be addressed in 921.   
             //in the short run, modify ActionList#Process to write the current processid into the ActionListDo, just to unblock this.                                                                    
-            
-            
+
+
             //If no existing payload, created and save it
             if (actionPayloadDTO.PayloadMappings.Count() == 0)
             {
@@ -288,5 +290,58 @@ namespace Core.Services
             var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
             return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
+
+        /// <summary>
+        /// Retrieve authorization token
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public string Authenticate(ActionDO curActionDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                var curPlugin = curActionDO.ActionTemplate.Plugin;
+                string curToken = string.Empty;
+
+                if (curDockyardAccountDO != null)
+                {
+                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
+
+                    if (!string.IsNullOrEmpty(curToken))
+                        return curToken;
+                }
+
+                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
+                if (!string.IsNullOrEmpty(curToken))
+                    return curToken;
+                return _plugin.Authorize();
+            }
+
+        }
+
+
+        /// <summary>
+        /// Retrieve account
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        {
+            if (curActionDO.ParentActivity != null
+                && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
+            {
+                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
+
+                return curActionListDO
+                    .Process
+                    .ProcessTemplate
+                    .DockyardAccount;
+            }
+
+            return null;
+
+        }
+
     }
 }

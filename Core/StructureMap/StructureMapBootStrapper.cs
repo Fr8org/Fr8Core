@@ -94,6 +94,7 @@ namespace Core.StructureMap
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
+					 For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
@@ -109,7 +110,7 @@ namespace Core.StructureMap
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
-                For<IPlugin>().Use<Plugin>();
+					 For<IPlugin>().Use<Plugin>();
             }
         }
 
@@ -145,6 +146,7 @@ namespace Core.StructureMap
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
+					 For<IActivity>().Use<Activity>();
 
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();

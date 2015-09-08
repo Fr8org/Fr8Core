@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using Data.Interfaces;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public abstract class ActivityDO : BaseDO
+    public class ActivityDO : BaseDO
     {
         [Key]
         public int Id { get; set; }
