@@ -126,17 +126,15 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("field_mapping_targets")]
-        public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
+        public string GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
 
-                return _action.GetFieldMappingTargets(curAction);
+                //Field mapping targets are as part of Confgiuration Store of Action DO
+                return _action.GetConfigurationSettings(curAction);
             }
         }
-
-
-
     }
 }

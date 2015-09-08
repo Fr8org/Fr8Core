@@ -392,7 +392,7 @@ namespace DockyardTest.Controllers
 
 
         [Test]
-        [Ignore]
+        [Ignore("Vas, Ignored as part of V2 changes")]
         // To run and pass this test 
         // pluginAzureSqlServer should be running 
         // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
@@ -415,10 +415,10 @@ namespace DockyardTest.Controllers
                     "{\"connection_string\":\"" + dataSource + "\"}")
             });
 
-            await task;
-            Assert.NotNull(task.Result);
-            Assert.Greater(task.Result.Count(), 0);
-            task.Result.ToList().ForEach(Console.WriteLine);
+            //await task;
+            //Assert.NotNull(task.Result);
+            //Assert.Greater(task.Result.Count(), 0);
+            //task.Result.ToList().ForEach(Console.WriteLine);
         }
 
         [Test, Ignore]

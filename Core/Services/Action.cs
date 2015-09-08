@@ -6,7 +6,6 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -14,7 +13,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
 using StructureMap;
-using Utilities.Serializers.Json;
 using System.Data.Entity;
 
 namespace Core.Services
@@ -175,8 +173,6 @@ namespace Core.Services
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
-            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint); 
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
             actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
             
@@ -199,8 +195,13 @@ namespace Core.Services
                 actionPayloadDTO.PayloadMappings = mappings;
             }
 
+
+            //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
+            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
+            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint);
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
+
             return jsonResult;
         }
 
@@ -251,15 +252,6 @@ namespace Core.Services
             {
                 return Enumerable.Empty<string>();
             }
-        }
-
-        /// <summary>
-        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
-        /// </summary>
-        public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
-        {
-            var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
-            return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
         }
     }
 }
