@@ -11,6 +11,7 @@
         public processNodeTemplateId: number;
         public conditions: Array<Condition>;
         public executionType: CriteriaExecutionType;
+        public userLabel: string;
         public actions: Array<ActionDesignDTO>;
 
         constructor(
