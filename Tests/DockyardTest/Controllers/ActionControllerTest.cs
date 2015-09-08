@@ -13,7 +13,6 @@ using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Web.ViewModels;
 using Moq;
-using Core.PluginRegistrations;
 using System;
 using Core.Interfaces;
 using System.Web.Http.Results;
@@ -261,39 +260,6 @@ namespace DockyardTest.Controllers
                 Assert.IsTrue(resultantConfigurationSettingsDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
             }
         }
-
-        [Test]
-        [Category("BasePluginRegistration.AssembleName")]
-        public void BasePluginRegistration_AssembleName__CanConcatinateParentPluginRegistrationAndVersion()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionTemplate = FixtureData.TestActionTemplateDO1();
-                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-                string assembeledName = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1";
-                Assert.AreEqual(_pluginRegistration.AssembleName(curActionTemplate), assembeledName);
-            }
-        }
-
-        [Test]
-        [Category("BasePluginRegistration.CallPluginRegistrationByString")]
-        public void BasePluginRegistration_CallPluginRegistrationByString__ShouldReturnConfigurationSettingsJson()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionTemplate = FixtureData.TestActionTemplateDO1();
-                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-                var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _pluginRegistration.CallPluginRegistrationByString("Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1", "GetConfigurationSettings", FixtureData.TestAction1());
-                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
-                Assert.AreEqual(1, result.Fields.Count);
-                Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
-                Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
-                Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
-                Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
-            }
-        }
-
 
         [Test]
         [Category("Controllers.ActionController")]

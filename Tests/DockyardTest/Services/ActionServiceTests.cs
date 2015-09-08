@@ -5,7 +5,6 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -35,23 +34,23 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
-            var pluginRegistration1Mock = new Mock<IPluginRegistration>();
-            pluginRegistration1Mock
-                .SetupGet(pr => pr.AvailableActions)
-                .Returns(_pr1Actions);
-            var pluginRegistration2Mock = new Mock<IPluginRegistration>();
-            pluginRegistration2Mock
-                .SetupGet(pr => pr.AvailableActions)
-                .Returns(_pr2Actions);
-            var subscriptionMock = new Mock<ISubscription>();
-            subscriptionMock
-                .Setup(s => s.GetAuthorizedPlugins(It.IsAny<IDockyardAccountDO>()))
-                .Returns(new[]
-                {
-                    pluginRegistration1Mock.Object,
-                    pluginRegistration2Mock.Object
-                });
-            ObjectFactory.Configure(cfg => cfg.For<ISubscription>().Use(subscriptionMock.Object));
+            //var pluginRegistration1Mock = new Mock<IPluginRegistration>();
+            //pluginRegistration1Mock
+            //    .SetupGet(pr => pr.AvailableActions)
+            //    .Returns(_pr1Actions);
+            //var pluginRegistration2Mock = new Mock<IPluginRegistration>();
+            //pluginRegistration2Mock
+            //    .SetupGet(pr => pr.AvailableActions)
+            //    .Returns(_pr2Actions);
+            //var subscriptionMock = new Mock<ISubscription>();
+            //subscriptionMock
+            //    .Setup(s => s.GetAuthorizedPlugins(It.IsAny<IDockyardAccountDO>()))
+            //    .Returns(new[]
+            //    {
+            //        pluginRegistration1Mock.Object,
+            //        pluginRegistration2Mock.Object
+            //    });
+            //ObjectFactory.Configure(cfg => cfg.For<ISubscription>().Use(subscriptionMock.Object));
             _action = ObjectFactory.GetInstance<IAction>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
@@ -253,10 +252,10 @@ namespace DockyardTest.Services
         [Test, Ignore("Vas, ignored due to V2 changes")]
         public void Dispatch_PayloadDTO_ShouldBeDispatched()
         {
-            ActionDO actionDo = FixtureData.TestActionUnstarted();
-            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            var pluginRegistration = BasePluginRegistration.GetPluginType(actionDo);
-            Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
+            //ActionDO actionDo = FixtureData.TestActionUnstarted();
+            //Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            //var pluginRegistration = BasePluginRegistration.GetPluginType(actionDo);
+            //Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
             //var response = _action.Dispatch(actionDo, baseUri);
             //Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
 
@@ -266,46 +265,46 @@ namespace DockyardTest.Services
         [Test,Ignore]
         public void GetAvailableActions_ReturnsActionsForAccount()
         {
-            const string unavailablePluginName = "UnavailablePlugin";
-            const string noAccessPluginName = "NoAccessPlugin";
-            const string userAccessPluginName = "AvailableWithUserAccessPlugin";
-            const string adminAccessPluginName = "AvailableWithAdminAccessPlugin";
-            var unavailablePluginRegistration = new Mock<IPluginRegistration>();
-            var noAccessPluginRegistration = new Mock<IPluginRegistration>();
-            var userAccessPluginRegistration = new Mock<IPluginRegistration>();
-            var adminAccessPluginRegistration = new Mock<IPluginRegistration>();
-            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(unavailablePluginRegistration.Object).Named(unavailablePluginName));
-            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(noAccessPluginRegistration.Object).Named(noAccessPluginName));
-            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(userAccessPluginRegistration.Object).Named(userAccessPluginName));
-            ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(adminAccessPluginRegistration.Object).Named(adminAccessPluginName));
-            var account = new DockyardAccountDO()
-            {
-                Subscriptions = new List<SubscriptionDO>()
-                {
-                    new SubscriptionDO()
-                    {
-                        AccessLevel = AccessLevel.None,
-                        Plugin = new PluginDO() {Name = noAccessPluginName}
-                    },
-                    new SubscriptionDO()
-                    {
-                        AccessLevel = AccessLevel.User,
-                        Plugin = new PluginDO() {Name = userAccessPluginName}
-                    },
-                    new SubscriptionDO()
-                    {
-                        AccessLevel = AccessLevel.Admin,
-                        Plugin = new PluginDO() {Name = adminAccessPluginName}
-                    },
-                }
-            };
+            //const string unavailablePluginName = "UnavailablePlugin";
+            //const string noAccessPluginName = "NoAccessPlugin";
+            //const string userAccessPluginName = "AvailableWithUserAccessPlugin";
+            //const string adminAccessPluginName = "AvailableWithAdminAccessPlugin";
+            //var unavailablePluginRegistration = new Mock<IPluginRegistration>();
+            //var noAccessPluginRegistration = new Mock<IPluginRegistration>();
+            //var userAccessPluginRegistration = new Mock<IPluginRegistration>();
+            //var adminAccessPluginRegistration = new Mock<IPluginRegistration>();
+            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(unavailablePluginRegistration.Object).Named(unavailablePluginName));
+            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(noAccessPluginRegistration.Object).Named(noAccessPluginName));
+            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(userAccessPluginRegistration.Object).Named(userAccessPluginName));
+            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(adminAccessPluginRegistration.Object).Named(adminAccessPluginName));
+            //var account = new DockyardAccountDO()
+            //{
+            //    Subscriptions = new List<SubscriptionDO>()
+            //    {
+            //        new SubscriptionDO()
+            //        {
+            //            AccessLevel = AccessLevel.None,
+            //            Plugin = new PluginDO() {Name = noAccessPluginName}
+            //        },
+            //        new SubscriptionDO()
+            //        {
+            //            AccessLevel = AccessLevel.User,
+            //            Plugin = new PluginDO() {Name = userAccessPluginName}
+            //        },
+            //        new SubscriptionDO()
+            //        {
+            //            AccessLevel = AccessLevel.Admin,
+            //            Plugin = new PluginDO() {Name = adminAccessPluginName}
+            //        },
+            //    }
+            //};
 
-            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            List<ActionTemplateDO> curActionTemplateDO = _action.GetAvailableActions(account).ToList();
+            //Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
+            //List<ActionTemplateDO> curActionTemplateDO = _action.GetAvailableActions(account).ToList();
 
-            //Assert
-            Assert.AreEqual(4, curActionTemplateDO.Count);
-            Assert.That(curActionTemplateDO, Is.Ordered.By("ActionType"));
+            ////Assert
+            //Assert.AreEqual(4, curActionTemplateDO.Count);
+            //Assert.That(curActionTemplateDO, Is.Ordered.By("ActionType"));
 
 
         }

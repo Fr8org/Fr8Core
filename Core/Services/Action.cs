@@ -45,6 +45,15 @@ namespace Core.Services
                 curActionTemplates = uow.ActionTemplateRepository.GetAll().ToList();
             }
 
+            //we're currently bypassing the subscription logic until we need it
+            //we're bypassing the pluginregistration logic here because it's going away in V2
+
+            //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
+            //var plugins = _plugin.GetAll();
+            // var curActionTemplates = plugins
+            //    .SelectMany(p => p.AvailableActions)
+            //    .OrderBy(s => s.ActionType);
+
             return curActionTemplates;
         }
 
