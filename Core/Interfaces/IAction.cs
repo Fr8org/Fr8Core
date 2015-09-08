@@ -19,5 +19,7 @@ namespace Core.Interfaces
         ActionDO GetById(int id);
         void Delete(int id);
         Task<int> Process(ActionDO curAction);
+
+        string Authenticate(ActionDO curActionDO);
     }
 }
