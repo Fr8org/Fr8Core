@@ -149,63 +149,63 @@ namespace UtilitiesTesting.Fixtures
 				  Id = 1,
 				  Version = "1"
 			  };
-			  ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "Fly To Kiev" };
-			  ActionDO a_23 = new ActionDO() { Id = 23, ActionTemplate = actionTempate, Name = "Drive to  Ariport" };
+			  ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1" };
+			  ActionDO a_23 = new ActionDO() { Id = 23, ActionTemplate = actionTempate, Name = "a_23" };
 			  al_1.Activities.Add(a_23);
 			  a_23.ParentActivity = al_1;
 
-			  ActionListDO al_43 = new ActionListDO() { Id = 43, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "Board Plane" };
+			  ActionListDO al_43 = new ActionListDO() { Id = 43, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "al_43" };
 			  al_43.ParentActivity = al_1;
-			  ActionDO a_44 = new ActionDO() { Id = 44, Ordering = 1, ActionTemplate = actionTempate, Name = "Check Baggage" };
+			  ActionDO a_44 = new ActionDO() { Id = 44, Ordering = 1, ActionTemplate = actionTempate, Name = "a_44"};
 			  a_44.ParentActivity = al_43;
 			  al_43.Activities.Add(a_44);
-			  ActionDO a_46 = new ActionDO() { Id = 46, Ordering = 2, ActionTemplate = actionTempate, Name = "Buy Ticket" };
+			  ActionDO a_46 = new ActionDO() { Id = 46, Ordering = 2, ActionTemplate = actionTempate, Name = "a_46" };
 			  a_46.ParentActivity = al_43;
 			  al_43.Activities.Add(a_46);
-			  ActionDO a_48 = new ActionDO() { Id = 48, Ordering = 3, ActionTemplate = actionTempate, Name = "Get on Plane" };
+			  ActionDO a_48 = new ActionDO() { Id = 48, Ordering = 3, ActionTemplate = actionTempate, Name = "a_48" };
 			  a_48.ParentActivity = al_43;
 			  al_43.Activities.Add(a_48);
 
-			  ActionListDO al_52 = new ActionListDO() { Id = 52, Ordering = 3, ActionListType = ActionListType.Immediate, Name = "BLA BLA" };
-			  ActionDO a_53 = new ActionDO() { Id = 53, Ordering = 1, ActionTemplate = actionTempate, Name = "A1" };
+			  ActionListDO al_52 = new ActionListDO() { Id = 52, Ordering = 3, ActionListType = ActionListType.Immediate, Name = "al_52" };
+			  ActionDO a_53 = new ActionDO() { Id = 53, Ordering = 1, ActionTemplate = actionTempate, Name = "a_53" };
 			  a_53.ParentActivity = al_52;
 			  al_52.Activities.Add(a_53);
 
-			  ActionListDO al_54 = new ActionListDO() { Id = 54, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "AL2" };
+			  ActionListDO al_54 = new ActionListDO() { Id = 54, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "al_54" };
 			  al_54.ParentActivity = al_52;
 
-			  ActionDO a_56 = new ActionDO() { Id = 56, Ordering = 1, ActionTemplate = actionTempate, Name = "A11" };
+			  ActionDO a_56 = new ActionDO() { Id = 56, Ordering = 1, ActionTemplate = actionTempate, Name = "a_56" };
 			  a_56.ParentActivity = al_54;
 			  al_54.Activities.Add(a_56);
-			  ActionDO a_57 = new ActionDO() { Id = 57, Ordering = 2, ActionTemplate = actionTempate, Name = "A22" };
+			  ActionDO a_57 = new ActionDO() { Id = 57, Ordering = 2, ActionTemplate = actionTempate, Name = "a_57" };
 			  a_57.ParentActivity = al_54;
 			  al_54.Activities.Add(a_57);
-			  ActionDO a_58 = new ActionDO() { Id = 58, Ordering = 3, ActionTemplate = actionTempate, Name = "A33" };
+			  ActionDO a_58 = new ActionDO() { Id = 58, Ordering = 3, ActionTemplate = actionTempate, Name = "a_58" };
 			  a_58.ParentActivity = al_54;
 			  al_54.Activities.Add(a_58);
 
-			  ActionDO a_55 = new ActionDO() { Id = 55, Ordering = 3, ActionTemplate = actionTempate, Name = "A3" };
+			  ActionDO a_55 = new ActionDO() { Id = 55, Ordering = 3, ActionTemplate = actionTempate, Name = "a_55" };
 			  a_55.ParentActivity = al_52;
 			  al_52.Activities.Add(a_55);
 
-			  ActionListDO al_59 = new ActionListDO() { Id = 59, Ordering = 4, ActionListType = ActionListType.Immediate, Name = "BLA BLA2" };
-			  ActionDO a_60 = new ActionDO() { Id = 60, Ordering = 1, ActionTemplate = actionTempate, Name = "A1" };
+			  ActionListDO al_59 = new ActionListDO() { Id = 59, Ordering = 4, ActionListType = ActionListType.Immediate, Name = "al_59" };
+			  ActionDO a_60 = new ActionDO() { Id = 60, Ordering = 1, ActionTemplate = actionTempate, Name = "a_60" };
 			  a_60.ParentActivity = al_59;
 			  al_59.Activities.Add(a_60);
 
-			  ActionListDO al_61 = new ActionListDO() { Id = 61, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "AL2" };
+			  ActionListDO al_61 = new ActionListDO() { Id = 61, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "al_61" };
 			  al_61.ParentActivity = al_59;
-			  ActionDO a_63 = new ActionDO() { Id = 63, Ordering = 1, ActionTemplate = actionTempate, Name = "A11" };
+			  ActionDO a_63 = new ActionDO() { Id = 63, Ordering = 1, ActionTemplate = actionTempate, Name = "a_63" };
 			  a_63.ParentActivity = al_61;
 			  al_61.Activities.Add(a_63);
-			  ActionDO a_64 = new ActionDO() { Id = 64, Ordering = 2, ActionTemplate = actionTempate, Name = "A22" };
+			  ActionDO a_64 = new ActionDO() { Id = 64, Ordering = 2, ActionTemplate = actionTempate, Name = "a_64" };
 			  a_64.ParentActivity = al_61;
 			  al_61.Activities.Add(a_64);
-			  ActionDO a_65 = new ActionDO() { Id = 65, Ordering = 3, ActionTemplate = actionTempate, Name = "A33" };
+			  ActionDO a_65 = new ActionDO() { Id = 65, Ordering = 3, ActionTemplate = actionTempate, Name = "a_65" };
 			  a_65.ParentActivity = al_61;
 			  al_61.Activities.Add(a_65);
 
-			  ActionDO a_62 = new ActionDO() { Id = 62, Ordering = 3, ActionTemplate = actionTempate, Name = "A3" };
+			  ActionDO a_62 = new ActionDO() { Id = 62, Ordering = 3, ActionTemplate = actionTempate, Name = "a_62" };
 			  a_62.ParentActivity = al_59;
 			  al_59.Activities.Add(a_62);
 

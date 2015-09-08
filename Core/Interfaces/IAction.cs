@@ -19,8 +19,5 @@ namespace Core.Interfaces
         ActionDO GetById(int id);
         void Delete(int id);
         Task<int> Process(ActionDO curAction);
-
-		  List<ActivityDO> GetUpstreamActivities(ActionDO curActionDO);
-		  List<ActivityDO> GetDownstreamActivities(ActionDO curActionDO);
     }
 }

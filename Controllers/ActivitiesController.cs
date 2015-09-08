@@ -15,34 +15,32 @@ namespace Web.Controllers
 	[RoutePrefix("mapping_actions")]
 	public class ActivitiesController : ApiController
 	{
-		private readonly IAction _action;
+		private readonly IActivity _activity;
 
 		public ActivitiesController()
 		{
-			_action = ObjectFactory.GetInstance<IAction>();
+			_activity = ObjectFactory.GetInstance<IActivity>();
 		}
 		[Route("upstream")]
-		[ResponseType(typeof(IEnumerable<ActionDTOBase>))]
+		[ResponseType(typeof(List<ActivityDO>))]
 		public IHttpActionResult GetUpstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var upstreamActivities = _action.GetUpstreamActivities(actionDO);
-				var result = upstreamActivities.Select(x => Mapper.Map<ActionDTOBase>(x)).ToList();
-				return Ok(result);
+				var upstreamActivities = _activity.GetUpstreamActivities(actionDO);
+				return Ok(upstreamActivities);
 			}
 		}
 		[Route("downstream")]
-		[ResponseType(typeof(IEnumerable<ActionDTOBase>))]
+		[ResponseType(typeof(List<ActivityDO>))]
 		public IHttpActionResult GetDownstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var downstreamActivities = _action.GetDownstreamActivities(actionDO);
-				var result = downstreamActivities.Select(x => Mapper.Map<ActionDTOBase>(x)).ToList();
-				return Ok(result);
+				var downstreamActivities = _activity.GetDownstreamActivities(actionDO);
+				return Ok(downstreamActivities);
 			}
 		}
 	}
