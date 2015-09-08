@@ -100,7 +100,7 @@ namespace Core.Services
             if (curActionDO != null)
             {
                 //prepare the current plugin URL
-                string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + curActionDO.ActionTemplate.Name + "/actions/configure/";
+                string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + "/actions/configure/";
 
                 var restClient = new RestfulServiceClient();
                 string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
