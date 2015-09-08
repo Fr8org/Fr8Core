@@ -116,27 +116,20 @@ namespace Core.Services
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if(curActionDO == null)
-                throw new System.ArgumentNullException("Action parameter is null");
-
-            if (curActionDO.ActionTemplate != null)
+            if (curActionDO != null)
             {
-                if(curActionDO.Id == 0)
-                    throw new System.ArgumentNullException("Action ID is empty");
-                if (curActionDO.ActionTemplateId == 0)
-                    throw new System.ArgumentNullException("Action Template ID is empty");
+                //prepare the current plugin URL
+                string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + curActionDO.ActionTemplate.Name + "/actions/configure/";
 
-                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
-                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
-                curActionDO.ConfigurationStore = settings;
+                var restClient = new RestfulServiceClient();
+                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
+
+                return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }
             else
             {
-                throw new System.ArgumentNullException("ActionTemplate is null");
+                throw new ArgumentNullException("ActionTemplateDO");
             }
-
-            return curActionDO.ConfigurationStore;
         }
 
         public void Delete(int id)
