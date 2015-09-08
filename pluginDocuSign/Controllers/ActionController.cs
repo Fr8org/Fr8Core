@@ -58,7 +58,7 @@ namespace pluginDocuSign.Controllers
 
         [HttpPost]
         [Route("activate")]
-        public string Actvate(ActionDesignDTO curActionDesignDTO)
+        public string Activate(ActionDesignDTO curActionDesignDTO)
         {
             //return HandleDockyardRequest("Actvate", curActionDesignDTO);
             return "Activate Request"; // Will be changed when implementation is plumbed in.
