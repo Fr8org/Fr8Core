@@ -25,10 +25,11 @@ namespace pluginAzureSqlServer.Actions {
         //maybe want to return the full Action here
         public ConfigurationSettingsDTO Configure(ActionDO curActionDO)
         {
-            return ProcessConfigurationRequest(curActionDO, ConfigurationRequestTypeChecker);
+            return ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
         }
 
-        private ConfigurationRequestType ConfigurationRequestTypeChecker(ActionDO curActionDO)
+        //this entire function gets passed as a delegate to the main processing code in the base class
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
             ConfigurationSettingsDTO curConfigurationStore = curActionDO.ConfigurationSettingsDTO();
 

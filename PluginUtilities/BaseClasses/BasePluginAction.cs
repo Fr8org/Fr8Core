@@ -5,17 +5,19 @@ using PluginBase.Infrastructure;
 
 namespace PluginBase.BaseClasses
 {
-    public delegate ConfigurationRequestType DetermineConfigurationRequestType(ActionDO curActionDO);
+    //this method allows a specific Action to inject its own evaluation function into the 
+    //standard ProcessConfigurationRequest
+    public delegate ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO);
 
     public class BasePluginAction
     {
-        protected ConfigurationSettingsDTO ProcessConfigurationRequest(ActionDO curActionDO, DetermineConfigurationRequestType curConfigurationRequestChecker)
+        protected ConfigurationSettingsDTO ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            if (curConfigurationRequestChecker(curActionDO) == ConfigurationRequestType.Initial)
+            if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
             {
                 return InitialConfigurationResponse(curActionDO);
             }
-            else if(curConfigurationRequestChecker(curActionDO) == ConfigurationRequestType.Followup)
+            else if(configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Followup)
             {
                 return FollowupConfigurationResponse(curActionDO);
             }
