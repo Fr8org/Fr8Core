@@ -9,10 +9,10 @@ module dockyard {
         function(input : number) : string {
             switch (input)
             {
-                case interfaces.ProcessState.Active:
+                case model.ProcessState.Active:
                     return "Active";
                     break;
-                case interfaces.ProcessState.Inactive:
+                case model.ProcessState.Inactive:
                     return "Inactive";
                     break;
                 default:

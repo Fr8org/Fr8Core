@@ -6,16 +6,16 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class ActionListDO : ActivityDO, IActionListChild
+    public class ActionListDO : ActivityDO /*, IActionListChild*/
 	{
 		public ActionListDO()
 		{
-			Actions = new List<ActionDO>();
+            Activities = new List<ActivityDO>();
 		}
 
-        [ForeignKey("ParentActionList")]
-        public int? ParentActionListId { get; set; }
-        public virtual ActionListDO ParentActionList { get; set; }
+        // [ForeignKey("ParentActionList")]
+        // public int? ParentActionListId { get; set; }
+        // public virtual ActionListDO ParentActionList { get; set; }
 
  		public string Name { get; set; }
 
@@ -34,11 +34,8 @@ namespace Data.Entities
 
 		public virtual _ExternalEventTypeTemplate TriggerEvent{ get; set; }
 
-		[InverseProperty("ParentActionList")]
-		public virtual List<ActionDO> Actions{ get; set; }
-
-        [InverseProperty("ParentActionList")]
-        public virtual List<ActionListDO> ActionLists { get; set; }
+        // [InverseProperty("ParentActionList")]
+        // public virtual List<ActionListDO> ActionLists { get; set; }
 
         [Required]
         [ForeignKey("ActionListTypeTemplate")]

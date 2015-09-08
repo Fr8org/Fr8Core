@@ -44,7 +44,6 @@ var dockyard;
                         returnedData = data;
                         console.log("Got it Sucessfully");
                         console.log(returnedData);
-                        //Delete after get
                         deleteInvoker(data, done);
                     }).fail(function (response) {
                         errorHandler(response, done);
@@ -60,7 +59,6 @@ var dockyard;
                     }).done(function (data, status) {
                         console.log("Saved it Sucessfully");
                         console.log(data);
-                        // Then GET, 
                         getInvoker(data, done);
                     }).fail(function (response) {
                         errorHandler(response, done);
@@ -75,9 +73,10 @@ var dockyard;
                         actionTemplateId: 1,
                         isTempId: false,
                         id: 0,
-                        fieldMappingSettings: tests.utils.Fixtures.fieldMappingSettings,
-                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                        actionListId: null
+                            fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
+                            // ActionListId is set to null, since there is no ActionsLists on a blank db.
+                            actionListId: null,
+                            actionTemplate: new dockyard.model.ActionTemplate(1, "Write to SQL", "1")
                     };
                     postInvoker(done, actions);
                 });

@@ -6,6 +6,13 @@
 module dockyard.controllers {
     'use strict';
 
+    export interface IProcessTemplateScope extends ng.IScope {
+        ptvm: interfaces.IProcessTemplateVM;
+        submit: (isValid: boolean) => void;
+        errorMessage: string;
+        processBuilder: any
+    }
+
     class ProcessTemplateFormController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -21,7 +28,7 @@ module dockyard.controllers {
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
-            private $scope: interfaces.IProcessTemplateScope,
+            private $scope: IProcessTemplateScope,
             private ProcessTemplateService: services.IProcessTemplateService,
             private $stateParams: any,
             private StringService: services.IStringService) {
@@ -40,7 +47,7 @@ module dockyard.controllers {
             $scope.submit = function (isValid) {
                 if (isValid) {
                     if (!$scope.ptvm.processTemplateState) {
-                        $scope.ptvm.processTemplateState = dockyard.interfaces.ProcessState.Inactive;
+                        $scope.ptvm.processTemplateState = dockyard.model.ProcessState.Inactive;
                     }
 
                     var result = ProcessTemplateService.save($scope.ptvm);
