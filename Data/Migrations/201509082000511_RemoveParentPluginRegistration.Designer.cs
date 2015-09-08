@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201509081103145_RemoveParentPluginRegistration"; }
+            get { return "201509082000511_RemoveParentPluginRegistration"; }
         }
         
         string IMigrationMetadata.Source

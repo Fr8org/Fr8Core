@@ -22,15 +22,12 @@ namespace Core.Services
         private IEnvelope _envelope;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
-        private IPluginRegistration _basePluginRegistration;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
-
-            _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
             _authorizationToken = new AuthorizationToken();
         }
 
