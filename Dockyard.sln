@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginAzureSqlServer", "plu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\UtilitiesTesting\UtilitiesTesting.csproj", "{B2C4526E-DE57-495D-8599-D61ABC54C21F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginUtilities", "PluginUtilities\PluginUtilities.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "PluginUtilities\PluginBase.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginDocuSign", "pluginDocuSign\pluginDocuSign.csproj", "{4E04FEB2-B452-4739-8336-EA2CEFB18D87}"
 EndProject

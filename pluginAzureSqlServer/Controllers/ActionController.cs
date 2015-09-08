@@ -4,7 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Services;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using AutoMapper;
 using Data.Entities;
 //using Utilities.Serializers.Json;
@@ -14,57 +14,24 @@ using StructureMap;
 using System.Data.SqlClient;
 using System.Data;
 using pluginAzureSqlServer.Actions;
-using PluginUtilities;
+using PluginBase;
 using System.Reflection;
+using PluginBase.BaseClasses;
 
 
 namespace pluginAzureSqlServer.Controllers
 {    
-    [RoutePrefix("plugin_azure_sql_server/actions")]
+    [RoutePrefix("actions")]
     public class ActionController : ApiController
-    {       
-        //public const string Version = "1.0";
-
-        //private readonly Write_To_Sql_Server_v1 _actionHandler;
-
-        public ActionController() {
-            //_actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>(); //remove this initialization once Process is modified, below
-        }
-
-        [HttpPost]
-        [Route("Write_To_Sql_Server/{path}")]
-        public string Process(string path, ActionDesignDTO curActionDTO)
-        {
-            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
-
-            string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
-            //extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
-            //instantiate the class corresponding to that action by:
-            //   a) Capitalizing each word
-            //   b) adding "_v1" onto the end (this will get smarter later)
-            //   c) Create an instance. probably create a Type using the string and then use ObjectFactory.GetInstance<T>. you want to end up with this:
-            //            "_actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();"
-            //   d) call that instance's Process method, passing it the remainder of the path and an ActionDO
-
-
-            //Redirects to the action handler with fallback in case of a null retrn
-
-            Type calledType = Type.GetType(curAssemblyName);
-            MethodInfo curMethodInfo = calledType.GetMethod("Process");
-            object curObject = Activator.CreateInstance(calledType);
-
-            return JsonConvert.SerializeObject(
-                //_actionHandler.Process(path, curAction) ?? new { }
-                (object)curMethodInfo.Invoke(curObject, new Object[] { path, curAction }) ?? new { }
-            );
-        }
+    {
+        private const string curPlugin = "pluginAzureSqlServer";
+        private BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]
         [Route("configure")]
         public string Configure(ActionDO curActionDO)
         {
-            return HandleDockyardRequest("Configure", curActionDO);
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDO);
         }
        
         [HttpPost]
@@ -81,24 +48,56 @@ namespace pluginAzureSqlServer.Controllers
             return string.Empty;
         }
 
+
+
+        //----------------------------------------------------------
+
+
         [HttpPost]
         [Route("Write_To_Sql_Server")]
         public IHttpActionResult Process(ActionPayloadDTO curActionDTO)
         {
-            var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
-            ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
-            return Ok(_actionHandler.GetFieldMappings(curAction));
+            //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
+            //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
+            return
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                   "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
+
         }
 
-        private string HandleDockyardRequest(string curActionPath, ActionDO curActionDO)
+        [HttpPost]
+        [Route("Write_To_Sql_Server/{path}")]
+        public IHttpActionResult Process(string path, ActionDesignDTO curActionDTO)
+
         {
-            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.Write_To_Sql_Server_v{0}", curActionDO.ActionTemplate.Version);
+            //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
 
-            Type calledType = Type.GetType(curAssemblyName);
-            MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
-            object curObject = Activator.CreateInstance(calledType);
+            //string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            //string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
+            ////extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
+            ////instantiate the class corresponding to that action by:
+            ////   a) Capitalizing each word
+            ////   b) adding "_v1" onto the end (this will get smarter later)
+            ////   c) Create an instance. probably create a Type using the string and then use ObjectFactory.GetInstance<T>. you want to end up with this:
+            ////            "_actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();"
+            ////   d) call that instance's Process method, passing it the remainder of the path and an ActionDO
 
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+
+            ////Redirects to the action handler with fallback in case of a null retrn
+
+            //Type calledType = Type.GetType(curAssemblyName);
+            //MethodInfo curMethodInfo = calledType.GetMethod("Process");
+            //object curObject = Activator.CreateInstance(calledType);
+
+            //return JsonConvert.SerializeObject(
+            //    //_actionHandler.Process(path, curAction) ?? new { }
+            //    (object)curMethodInfo.Invoke(curObject, new Object[] { path, curAction }) ?? new { }
+            //);
+
+            return
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                   "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
+
         }
     }
 }

@@ -8,36 +8,29 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Services;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using StructureMap;
-using PluginUtilities;
+using PluginBase;
+using PluginBase.BaseClasses;
 
 namespace pluginAzureSqlServer.Actions {
     
     //Handler Action Delegates
     public delegate object WriteToSqlServerAction(ActionDO curActionDO);
+
     //Action container class
     public class Write_To_Sql_Server_v1 : BasePluginAction {        
 
-        //Public entry point, maps to actions from the controller
-        public object Process(string path, ActionDO curActionDO) {
-            switch (path) {
-                case "execute":               return Execute(curActionDO);
-                case "field_mappings":        return GetFieldMappings(curActionDO);
-                case "configurationsettings": return GetConfigurationSettings(curActionDO);
-                case "available":             return GetAvailable(curActionDO);
-                default:                      return new {};
-            }
-        }
-
+       
+        //maybe want to return the full Action here
         public ConfigurationSettingsDTO Configure(ActionDO curActionDO)
         {
-            return DetermineConfigurationRequest(curActionDO, ConfigurationRequestTypeChecker);
+            return ProcessConfigurationRequest(curActionDO, ConfigurationRequestTypeChecker);
         }
 
         private ConfigurationRequestType ConfigurationRequestTypeChecker(ActionDO curActionDO)
         {
-            ConfigurationSettingsDTO curConfigurationStore = GetConfigurationStore(curActionDO);
+            ConfigurationSettingsDTO curConfigurationStore = curActionDO.ConfigurationSettingsDTO();
 
             var curConnectionStringField =
                 curConfigurationStore.Fields.First(field => field.Name.Equals("connection_string"));
@@ -90,7 +83,7 @@ namespace pluginAzureSqlServer.Actions {
         protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {
             //In all followup calls, update data fields of the configuration store
-            ConfigurationSettingsDTO curConfigurationStore = GetConfigurationStore(curActionDO);
+            ConfigurationSettingsDTO curConfigurationStore = curActionDO.ConfigurationSettingsDTO();
 
             curConfigurationStore.DataFields = (List<string>)GetFieldMappings(curActionDO);
 
@@ -107,10 +100,7 @@ namespace pluginAzureSqlServer.Actions {
             return null;
         }
 
-        private ConfigurationSettingsDTO GetConfigurationStore(ActionDO curActionDO)
-        {
-            return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
-        }
+      
 
         private const string ProviderName = "System.Data.SqlClient";
         private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
@@ -215,6 +205,21 @@ namespace pluginAzureSqlServer.Actions {
             return null;
         }
 
+        //Public entry point, maps to actions from the controller
+        public object Process(string path, ActionDO curActionDO)
+        {
+            //switch (path)
+            //{
+            //    case "execute": return Execute(curActionDO);
+            //    case "field_mappings": return GetFieldMappings(curActionDO);
+            //    case "configurationsettings": return GetConfigurationSettings(curActionDO);
+            //    case "available": return GetAvailable(curActionDO);
+            //    default: return new { };
+            //}
+
+            throw new ApplicationException("this method has been deprecated. Please use the new mechanisms described at https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
+        }
+
         //private readonly IDbProvider _dbProvider;
         //private readonly JsonSerializer _serializer;
 
@@ -233,7 +238,7 @@ namespace pluginAzureSqlServer.Actions {
         //    try
         //    {
         //        // Creating ExtrationHelper and parsing WriteCommandArgs.
-                //var parser = new DbServiceJsonParser();
+        //var parser = new DbServiceJsonParser();
         //        var writeArgs = parser.ExtractWriteCommandArgs(data);
 
         //        // Creating DbService and running WriteCommand logic.

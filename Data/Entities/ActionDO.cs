@@ -1,8 +1,11 @@
 ﻿using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AutoMapper;
 using Data.Wrappers;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace Data.Entities
 {
@@ -35,5 +38,11 @@ namespace Data.Entities
 
         [NotMapped]
         public bool IsTempId { get; set; }
-	}
+
+        public ConfigurationSettingsDTO ConfigurationSettingsDTO()
+        {
+                return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(this.ConfigurationStore);
+
+        }
+    }
 }
