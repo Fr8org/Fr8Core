@@ -181,6 +181,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\FilterUsingRunTimeData_v1.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActionRegistration.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
     <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
+    <Compile Include="PluginRegistrations\FilterUsingRunTimeDataPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
     <Compile Include="PluginRegistrations\NotifierPluginRegistration_v1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
