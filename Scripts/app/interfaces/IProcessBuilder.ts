@@ -1,19 +1,8 @@
 ﻿/// <reference path="../_all.ts" />
 
 module dockyard.interfaces {
-    export enum ProcessState {
-        Inactive = 1,
-        Active = 2 
-    }
 
-    export interface IProcessTemplateVM extends ng.resource.IResource<IProcessTemplateVM> {
-        id: number;
-        name: string;
-        description: string;
-        processTemplateState: ProcessState;
-        subscribedDocuSignTemplates: Array<string>;
-        externalEventSubscription: Array<number>; 
-    }
+    export interface IProcessTemplateVM extends ng.resource.IResource<model.ProcessTemplateDTO>, model.ProcessTemplateDTO { }
 
     export interface ISubscribedDocuSignTemplates {
         processTemplateId?: number;
@@ -32,18 +21,8 @@ module dockyard.interfaces {
         name: string
     }
 
-    export interface IProcessNodeTemplateVM extends ng.resource.IResource<IProcessNodeTemplateVM> {
-        id: number;
-        processTemplateId: number;
-        name: string;
-    }
-
-    export interface ICriteriaVM extends ng.resource.IResource<ICriteriaDTO> {
-        //Id: number;
-        //ExecutionType: number;
-        //Conditions: Array<model.Condition>;
-    }
-
+    export interface IProcessNodeTemplateVM extends ng.resource.IResource<model.ProcessNodeTemplateDTO>, model.ProcessNodeTemplateDTO { }
+    export interface ICriteriaVM extends ng.resource.IResource<model.CriteriaDTO>, model.CriteriaDTO { }
     export interface IActionVM extends ng.resource.IResource<model.ActionDesignDTO>, model.ActionDesignDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
@@ -64,4 +43,7 @@ module dockyard.interfaces {
 
     export interface IConfigurationStoreVM extends ng.resource.IResource<model.ConfigurationStore>, model.ConfigurationStore {
     }
+    export interface IActionListVM extends ng.resource.IResource<model.ActionList>, model.ActionList {
+    }
+
 }
