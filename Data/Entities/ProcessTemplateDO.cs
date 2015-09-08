@@ -13,6 +13,7 @@ namespace Data.Entities
             SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
             DockyardAccount = new DockyardAccountDO();
             StartingProcessNodeTemplate = new ProcessNodeTemplateDO();
+            ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
         }
 
         [Key]
