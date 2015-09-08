@@ -9,6 +9,6 @@ namespace Core.Interfaces
 {
     public interface ICrate
     {
-        CrateDTO Create(string crateStorage);
+        CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
     }
 }

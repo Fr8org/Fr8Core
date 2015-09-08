@@ -27,30 +27,11 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void Create_EmptyCrateStorageJSON_ThrowsException()
+        public void Create_CreateNewCrate_ReturnsCrateDTO()
         {
-            _crate.Create("");
-        }
-
-        [Test]
-        [ExpectedException(ExpectedException = typeof(Newtonsoft.Json.JsonSerializationException))]
-        public void AddCrate_InvalidJSON_ThrowsException()
-        {
-            _crate.Create("{test: 1}");
-        }
-
-        [Test]
-        public void Create_ValidCrateJSON_ReturnsCrateDTO()
-        {
-            CrateDTO crateDTO = FixtureData.CrateDTO1();
-            List<CrateDTO> crates = new List<CrateDTO>() { crateDTO };
-            string currentCratesStorage = JsonConvert.SerializeObject(crates);
-
-           CrateDTO createdCrateDTO = _crate.Create(currentCratesStorage);
-
-           Assert.IsNotNull(createdCrateDTO);
-           Assert.IsNotEmpty(createdCrateDTO.Id);
+            CrateDTO crateDTO = _crate.Create("Label 1", "Content 1");
+            Assert.NotNull(crateDTO);
+            Assert.IsNotEmpty(crateDTO.Id);
         }
     }
 }
