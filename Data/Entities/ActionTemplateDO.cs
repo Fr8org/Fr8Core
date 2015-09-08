@@ -1,17 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Data.States;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
     public class ActionTemplateDO : BaseDO
     {
-        public ActionTemplateDO() { }
+        public ActionTemplateDO() {
+            Plugin = new PluginDO() { Name = "", PluginStatus = PluginStatus.Active };
+        }
 
         public ActionTemplateDO(string name, string defaultEndPoint, string version)
         {
             this.Name = name;
             this.DefaultEndPoint = defaultEndPoint;
             this.Version = version;
+            this.Plugin = new PluginDO()
+            {
+                Name = defaultEndPoint,
+                PluginStatus = PluginStatus.Active
+            };
         }
 
         [Key]
@@ -22,5 +30,11 @@ namespace Data.Entities
         public string Version { get; set; }
 
         public string DefaultEndPoint { get; set; }
+
+        public string AuthenticationType { get; set; }
+
+        [ForeignKey("Plugin")]
+        public int PluginID { get; set; }
+        public virtual PluginDO Plugin { get; set; }
     }
 }
