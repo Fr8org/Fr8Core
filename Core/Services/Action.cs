@@ -29,6 +29,7 @@ namespace Core.Services
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
             _authorizationToken = new AuthorizationToken();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
