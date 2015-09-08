@@ -212,9 +212,6 @@ module dockyard.directives.paneDefineCriteria {
                             )
                         );
                     console.log('DefineCriteriaPane::save succeded');
-                    
-                    // Invoke callback, after all asynchronous HTTP operations were completed.
-                    callback(new SaveCallbackArgs(curProcessNodeTemplate.id, tempId));
                 });
             }
             else if (operationResult.actionType == services.ActionTypeEnum.Update) {
@@ -231,9 +228,6 @@ module dockyard.directives.paneDefineCriteria {
                             )
                         );
                     console.log('DefineCriteriaPane update succeded');
-
-                    // Invoke callback, after all asynchronous HTTP operations were completed.
-                    callback(new SaveCallbackArgs(scope.processNodeTemplate.id, null));
                 });
             }
             else {
