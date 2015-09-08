@@ -21,5 +21,10 @@ namespace Core.Services
                 return uow.PluginRepository.GetAll();
             }
         }
+
+        public string Authorize()
+        {
+            return "AuthorizationToken";
+        }
     }
 }

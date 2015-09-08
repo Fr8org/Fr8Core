@@ -3,7 +3,7 @@ using System.Linq;
 using Data.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 
 namespace pluginAzureSqlServer.Infrastructure
 {

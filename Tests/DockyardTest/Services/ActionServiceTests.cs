@@ -18,7 +18,6 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Core.Services.Action;
 using System.Threading.Tasks;
-using Utilities;
 
 namespace DockyardTest.Services
 {
@@ -241,6 +240,7 @@ namespace DockyardTest.Services
 
             Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
         }
+
         [Test]
         public void Process_ActionUnstarted_ShouldBeCompleted()
         {
@@ -309,5 +309,48 @@ namespace DockyardTest.Services
 
 
         }
+
+        [Test]
+        public void Authenticate_AuthorizationTokenIsActive_ReturnsAuthorizationToken()
+        {
+            var curActionDO = FixtureData.TestActionAuthenticate1();
+            var curActionListDO = (ActionListDO)curActionDO.ParentActivity;
+
+
+            AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
+            curAuthorizationTokenDO.Plugin = curActionDO.ActionTemplate.Plugin;
+            curAuthorizationTokenDO.UserDO = curActionListDO.Process.ProcessTemplate.DockyardAccount;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
+                uow.SaveChanges();
+            }
+            string result = _action.Authenticate(curActionDO);
+            Assert.AreEqual("TestToken", result);
+        }
+
+        [Test]
+        public void Authenticate_AuthorizationTokenIsRevoke_RedirectsToPluginAuthenticate()
+        {
+            var curActionDO = FixtureData.TestActionAuthenticate1();
+            var curActionListDO = (ActionListDO)curActionDO.ParentActivity;
+
+            AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
+            curAuthorizationTokenDO.Plugin = curActionDO.ActionTemplate.Plugin;
+            curAuthorizationTokenDO.UserDO = curActionListDO.Process.ProcessTemplate.DockyardAccount;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
+                uow.SaveChanges();
+            }
+            string result = _action.Authenticate(curActionDO);
+            Assert.AreEqual("AuthorizationToken", result);
+        }
+
+     
+
+
+
+
     }
 }
