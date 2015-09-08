@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using Data.Entities;
 
 namespace Data.Interfaces
@@ -14,7 +15,7 @@ namespace Data.Interfaces
         /// <param name="curRemoteFile">File Stream to be stored in remote Azure Storage</param>
         /// <param name="curFileName">Name of the BLOB</param>
         /// <returns>Azure Storage URL of the saved file</returns>
-        string SaveRemoteFile(FileStream curRemoteFile, string curFileName);
+        string SaveRemoteFile(Stream curRemoteFile, string curFileName);
 
         /// <summary>
         /// Retrieves a file stream from the Azure Storage

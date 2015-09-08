@@ -227,6 +227,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
@@ -250,6 +251,10 @@
     <Compile Include="Migrations\201509031000594_DO_947_Migration.cs" />
     <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs" />
+    <Compile Include="Migrations\201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.Designer.cs">
+      <DependentUpon>201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -479,6 +484,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.resx">
+      <DependentUpon>201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
