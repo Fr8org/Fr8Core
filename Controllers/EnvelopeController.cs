@@ -1,18 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using Data.Wrappers;
 
 namespace Web.Controllers
 {
     public class EnvelopeController : Controller
     {
-        private DocuSignPackager _API;
-
-        public EnvelopeController()
-        {
-            _API = new DocuSignPackager();
-        }
-
         // GET: Envelope
         public ActionResult Index()
         {

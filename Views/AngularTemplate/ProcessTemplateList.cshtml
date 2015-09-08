@@ -51,13 +51,13 @@
                             </thead>
                             <tr ng-repeat="pt in ptvms" ng-click="nav(pt)">
                                 <td>
-                                    {{pt.Name}}
+                                    {{pt.name}}
                                 </td>
                                 <td>
-                                    {{pt.Description}}
+                                    {{pt.description}}
                                 </td>
                                 <td>
-                                    <span class="bold font-green-haze">{{pt.ProcessState|ProcessTemplateState}}</span>
+                                    <span class="bold font-green-haze">{{pt.processState|ProcessTemplateState}}</span>
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm red" ng-click="remove(pt); $event.stopPropagation();">Delete</button>

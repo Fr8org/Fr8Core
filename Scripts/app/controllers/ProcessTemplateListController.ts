@@ -6,6 +6,12 @@
 module dockyard.controllers {
     'use strict';
 
+    export interface IProcessTemplateListScope extends ng.IScope {
+        ptvms: angular.resource.IResourceArray<dockyard.interfaces.IProcessTemplateVM>;
+        nav: (pt: interfaces.IProcessTemplateVM) => void,
+        remove: (pt: interfaces.IProcessTemplateVM) => void
+    }
+
     /*
         List controller
     */
@@ -24,7 +30,7 @@ module dockyard.controllers {
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
-            private $scope: interfaces.IProcessTemplatesScope,
+            private $scope: IProcessTemplateListScope,
             private ProcessTemplateService: services.IProcessTemplateService,
             private $modal,
             private $filter) {
@@ -43,8 +49,11 @@ module dockyard.controllers {
             $scope.ptvms = ProcessTemplateService.query();
 
             //Detail/edit link
-            $scope.nav = function (pt) {
-                window.location.href = '#processes/' + pt.Id;
+            $scope.nav = function (pt) {                
+                if (pt != null)
+                {
+                    window.location.href = '#processes/' + pt.id + '/builder';
+                }
             }
 
             //Delete link
@@ -56,14 +65,14 @@ module dockyard.controllers {
  
                 }).result.then(function (selectedItem) {
                     //Deletion confirmed
-                    ProcessTemplateService.delete({ id: pt.Id }).$promise.then(function () {
+                    ProcessTemplateService.delete({ id: pt.id }).$promise.then(function () {
                         $rootScope.lastResult = "success";
                         $scope.ptvms
                         window.location.href = '#processes';
                     });
 
                     //Remove from local collection
-                    $scope.ptvms = $filter('filter')($scope.ptvms, function (value, index) { return value.Id !== pt.Id; })
+                    $scope.ptvms = $filter('filter')($scope.ptvms, function (value, index) { return value.Id !== pt.id; })
 
                 }, function () {
                     //Deletion cancelled

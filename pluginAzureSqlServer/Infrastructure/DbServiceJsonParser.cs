@@ -3,7 +3,7 @@ using System.Linq;
 using Data.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 
 namespace pluginAzureSqlServer.Infrastructure
 {
@@ -33,7 +33,7 @@ namespace pluginAzureSqlServer.Infrastructure
         public string ExtractConnectionString(ActionDO curActionDO)
         {
             var curConnectionString = string.Empty;
-            var curSettings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationSettings);
+            var curSettings = JsonConvert.DeserializeObject<JObject>(curActionDO.ConfigurationStore);
             var curConnStringObject = curSettings.ExtractPropertyValue<JArray>("configurationSettings");
 
             foreach (var v in curConnStringObject.Select(item => item.SelectToken("textField")).Where(v => v != null))

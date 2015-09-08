@@ -1,15 +1,15 @@
 ﻿module dockyard.model {
     export class ActionTemplate {
         id: number;
-        actionType: string;
+        name: string;
         version: string;
-        //parentPluginRegistration: string;
+        defaultEndPoint: string;
 
-        constructor(id: number, actionType: string,
+        constructor(id: number, name: string,
             version: string) {
 
             this.id = id;
-            this.actionType = actionType;
+            this.name = name;
             this.version = version;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
         }
@@ -17,7 +17,7 @@
         clone(): ActionTemplate {
             var result = new ActionTemplate(
                 this.id,
-                this.actionType,
+                this.name,
                 this.version
                // this.parentPluginRegistration
             );
