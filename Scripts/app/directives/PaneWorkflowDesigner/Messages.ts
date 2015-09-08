@@ -9,10 +9,10 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ProcessNodeTemplateAdding,
         PaneWorkflowDesigner_AddCriteria,
         PaneWorkflowDesigner_CriteriaSelected,
-        PaneWorkflowDesigner_ProcessNodeTemplateRemoved,
+        PaneWorkflowDesigner_RemoveCriteria,
         PaneWorkflowDesigner_UpdateProcessNodeTemplateName,
         PaneWorkflowDesigner_ActionAdding,
-        PaneWorkflowDesigner_ActionAdded,
+        PaneWorkflowDesigner_AddAction,
         PaneWorkflowDesigner_ActionSelected,
         PaneWorkflowDesigner_ActionRemoved,
         PaneWorkflowDesigner_ActionNameUpdated,
@@ -48,7 +48,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ProcessNodeTemplateRemovedEventArgs {
+    export class RemoveCriteriaEventArgs {
         public id: number;
         public isTempId: boolean;
 
@@ -78,7 +78,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ActionAddedEventArgs {
+    export class AddActionEventArgs {
         public criteriaId: number;
         public action: model.ActionDesignDTO;
         public actionListType: model.ActionListType;

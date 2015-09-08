@@ -49,33 +49,6 @@ module dockyard.directives.paneDefineCriteria {
             }
         };
 
-        // Create and return empty ProcessNodeTemplate object,
-        // if user selects just newly created Criteria diamond on WorkflowDesigner pane.
-        var createEmptyProcessNodeTemplate = function (
-            processTemplateId,
-            processNodeTemplateId,
-            criteriaId): model.ProcessNodeTemplateDTO {
-
-            // Create new ProcessNodeTemplate object with default name and provided temporary id.
-            var processNodeTemplate = new model.ProcessNodeTemplateDTO(
-                processNodeTemplateId,
-                true,
-                processTemplateId,
-                'New criteria'
-                );
-
-            // Create criteria with default conditions, and temporary criteria.id.
-            var criteria = new model.CriteriaDTO(
-                criteriaId,
-                true,
-                processNodeTemplate.id,
-                model.CriteriaExecutionType.WithConditions
-                );
-
-            processNodeTemplate.criteria = criteria;
-
-            return processNodeTemplate;
-        };
 
         // Load existing ProcessNodeTemplate and Criteria objects from REST api.
         var loadProcessNodeTemplate = function (http: ng.IHttpService, urlPrefix: string, id, callback) {
@@ -133,7 +106,7 @@ module dockyard.directives.paneDefineCriteria {
             urlPrefix: string,
             LocalIdentityGenerator: services.LocalIdentityGenerator,
             ActionService: services.IActionService,
-            CriteriaServiceWrapper: services.ICriteriaWrapperService) {
+            CriteriaServiceWrapper: services.ICriteriaServiceWrapper) {
 
             console.log('PaneDefineCriteria::onRender', eventArgs);
             console.log('PaneDefineCriteria: currentAction: ' + scope.currentAction);
@@ -144,7 +117,7 @@ module dockyard.directives.paneDefineCriteria {
             // If we deal with newly created object (i.e. isTempId === true),
             // then create blank temporary object in the scope of DefineCriteria pane.
             if (eventArgs.isTempId) {
-                scope.processNodeTemplate = createEmptyProcessNodeTemplate(
+                scope.processNodeTemplate = model.ProcessNodeTemplateDTO.create(
                     eventArgs.processTemplateId,
                     eventArgs.id,
                     LocalIdentityGenerator.getNextId()
@@ -180,8 +153,7 @@ module dockyard.directives.paneDefineCriteria {
         };
 
         // Callback for handling PaneDefineCriteria_Hide.
-        var onHide = function (scope: IPaneDefineCriteriaScope, CriteriaWrapperService: services.ICriteriaWrapperService) {
-            save(scope, null, CriteriaWrapperService);
+        var onHide = function (scope: IPaneDefineCriteriaScope, CriteriaWrapperService: services.ICriteriaServiceWrapper) {
             cleanUp(scope);
             scope.isVisible = false;
         };
@@ -214,89 +186,12 @@ module dockyard.directives.paneDefineCriteria {
                 });
         };
 
-        // Save newly created object on server.
-        var saveNew = function (
-            scope: IPaneDefineCriteriaScope,
-            http: ng.IHttpService,
-            urlPrefix: string,
-            callback: (args: SaveCallbackArgs) => void
-            ) {
-            // Save ProcessNodeTemplate object to server.
-            // Server automatically creates empty criteria node.
-            http.post(getProcessNodeTemplateUrl(urlPrefix), scope.processNodeTemplate)
-                .success(function (processNodeTemplateResult: any) {
-                    var processNodeTemplateTempId: number = scope.processNodeTemplate.id;
-
-                    scope.processNodeTemplate.isTempId = false;
-                    scope.processNodeTemplate.id = processNodeTemplateResult.id;
-
-                    // Fetch criteria object from server by ProcessNodeTemplate global ID.
-                    var url = getCriteriaIdUrl(urlPrefix, processNodeTemplateResult.id);
-                    http.get(url).success(function (criteriaResult: any) {
-                        scope.processNodeTemplate.criteria.id = criteriaResult.id;
-                        scope.processNodeTemplate.criteria.isTempId = false;
-
-                        // Update criteria object on server.
-                        http.put(getCriteriaUrl(urlPrefix), scope.processNodeTemplate.criteria)
-                            .success(function () {
-                                // Emit PaneDefineCriteria_ProcessNodeTemplateUpdating message,
-                                // to replace temporary id with global id, and update name on WorkflowDesigner pane.
-                                scope.$emit(
-                                    MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
-                                    new ProcessNodeTemplateUpdatedEventArgs(
-                                        scope.processNodeTemplate.id,
-                                        scope.processNodeTemplate.name,
-                                        processNodeTemplateTempId
-                                        )
-                                    );
-
-                                console.log('DefineCriteriaPane::save succeded');
-
-                                // Invoke callback, after all asynchronous HTTP operations were completed.
-                                callback(new SaveCallbackArgs(processNodeTemplateResult.id, processNodeTemplateTempId));
-                            });
-                    });
-                });
-        };
-
-        // Update existing object on server.
-        var saveExisting = function (
-            scope: IPaneDefineCriteriaScope,
-            http: ng.IHttpService,
-            urlPrefix: string,
-            callback: (args: SaveCallbackArgs) => void
-            ) {
-            // Call REST api to update ProcessNodeTemplate entity on server.
-            http.put(getProcessNodeTemplateUrl(urlPrefix), scope.processNodeTemplate)
-                .success(function () {
-                    // Call REST api to update Criteria entity on server.
-                    http.put(getCriteriaUrl(urlPrefix), scope.processNodeTemplate.criteria)
-                        .success(function () {
-                            // Emit PaneDefineCriteria_ProcessNodeTemplateUpdating message,
-                            // to replace temporary id with global id, and update name on WorkflowDesigner pane.
-                            scope.$emit(
-                                MessageType[MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
-                                new ProcessNodeTemplateUpdatedEventArgs(
-                                    scope.processNodeTemplate.id,
-                                    scope.processNodeTemplate.name,
-                                    null
-                                    )
-                                );
-
-                            console.log('DefineCriteriaPane update succeded');
-
-                            // Invoke callback, after all asynchronous HTTP operations were completed.
-                            callback(new SaveCallbackArgs(scope.processNodeTemplate.id, null));
-                        });
-                });
-        };
-
         // Callback to handle PaneDefineCriteria_Save message,
         // or handle "Save" button click event.
         var save = function (
             scope: IPaneDefineCriteriaScope,
             callback: (args: SaveCallbackArgs) => void,
-            CriteriaServiceWrapper: services.ICriteriaWrapperService
+            CriteriaServiceWrapper: services.ICriteriaServiceWrapper
             ) {
 
             var curProcessNodeTemplate: model.ProcessNodeTemplateDTO = scope.processNodeTemplate;
@@ -358,7 +253,7 @@ module dockyard.directives.paneDefineCriteria {
                 urlPrefix: string,
                 LocalIdentityGenerator: services.LocalIdentityGenerator,
                 ActionService: services.IActionService,
-                CriteriaServiceWrapper: services.ICriteriaWrapperService
+                CriteriaServiceWrapper: services.ICriteriaServiceWrapper
                 ): void => {
 
                 $scope.operators = [

@@ -19,7 +19,10 @@ module dockyard.services {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
-    export interface ICriteriaWrapperService {
+    export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
+        byProcessNodeTemplate: (id: { id: number }) => interfaces.IActionListVM;
+    }
+    export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -28,19 +31,34 @@ module dockyard.services {
             promise: ng.IPromise<model.ProcessNodeTemplateDTO>
         }
     }
+    export interface IProcessBuilderService {
+        saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
+    }
 
-    app.factory('ProcessTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService> $resource('api/processTemplate/:id', { id: '@id' })
+    /*
+        ProcessTemplateDTO CRUD service.
+    */
+    app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
+        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' })
     ]);
 
-    app.factory('DocuSignTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): IDocuSignTemplateService =>
-        <IDocuSignTemplateService> $resource('api/docusigntemplate')
+    /*
+        DocuSignTemplateDTO CRUD service.
+    */
+    app.factory('DocuSignTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTemplateService =>
+        <IDocuSignTemplateService> $resource('/api/docusigntemplate')
     ]);
 
+    /* 
+        DocuSignExternalEventDTO CRUD service.
+    */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService> $resource('/api/processtemplate/triggersettings')
     ]);
 
+    /* 
+        ActionDTO CRUD service.
+    */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
         <IActionService> $resource('/api/actions/:id',
             {
@@ -77,7 +95,12 @@ module dockyard.services {
             })
     ]);
 
-    app.factory('CriteriaService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __ICriteriaService =>
+    /* 
+        CriteriaDTO CRUD service.
+        This service is not intended to be used by anything except CriteriaServiceWrapper,
+        that's why its name starts with underscores. 
+    */
+    app.factory('__CriteriaService', ['$resource', ($resource: ng.resource.IResourceService): __ICriteriaService =>
         <__ICriteriaService> $resource('/api/criteria', null,
             {
                 'update': {
@@ -93,7 +116,25 @@ module dockyard.services {
             })
     ]);
 
-    app.factory('ProcessNodeTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __IProcessNodeTemplateService =>
+    /* 
+        ActionListDTO CRUD service.
+    */
+    app.factory('ActionListService', ['$resource', ($resource: ng.resource.IResourceService): IActionListService =>
+        <IActionListService> $resource('/api/actionList', null,
+            {
+                'byProcessNodeTemplate': {
+                    method: 'GET',
+                    url: '/api/actionList/byProcessNodeTemplate/'
+                }
+            })
+    ]);
+
+    /* 
+        ProcessNodeTemplateDTO CRUD service.
+        This service is not intended to be used by anything except CriteriaServiceWrapper,
+        that's why its name starts with underscores. 
+    */
+    app.factory('__ProcessNodeTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __IProcessNodeTemplateService =>
         <__IProcessNodeTemplateService> $resource('/api/processnodetemplate', null,
             {
                 'add': {
@@ -105,7 +146,97 @@ module dockyard.services {
             })
     ]);
 
-    class CriteriaWrapperService implements ICriteriaWrapperService {
+    /*
+        General data persistance methods for ProcessBuilder.
+    */
+    class ProcessBuilderService implements IProcessBuilderService {
+        constructor(
+            private $q: ng.IQService,
+            private CriteriaServiceWrapper: ICriteriaServiceWrapper,
+            private ActionService: IActionService
+            ) { }
+
+        /*
+            The function saves current entities if they are new or changed (dirty).
+            At this time not all entities whose state we maintain on ProcessBuilder are saved here. 
+            I (@alexavrutin) will add them one-by-one during the course of refactoring. 
+            Dirty checking is missing at this moment, too, I will add it later. Now it saves entities no matter 
+            if they were or were not changed. 
+        */
+        public saveCurrent(currentState: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState> {
+            var deferred = this.$q.defer<model.ProcessBuilderState>(),
+                newState = new model.ProcessBuilderState()
+
+            // TODO: bypass save for unchanged entities
+            debugger;
+              
+            // Save processNodeTemplate if not null
+            if (currentState.processNodeTemplate) {
+                this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
+                    .then((result: interfaces.IProcessNodeTemplateVM) => {
+                        debugger;
+                        //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
+                        newState.processNodeTemplate = result;
+                    
+                        // If an Action is selected, save it
+                        if (currentState.action) {
+                            return this.ActionService.save({ id: currentState.action.id },
+                                currentState.action, null, null);
+                        }
+                        else {
+                            return deferred.resolve(newState);
+                        }
+                    })
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
+
+            //Save only Action 
+            else if (currentState.action) {
+                this.ActionService.save(
+                    { id: currentState.action.id },
+                    currentState.action, null, null).$promise
+                    .then((result: interfaces.IActionVM) => {
+                        newState.action = result;
+                        return deferred.resolve(newState);
+                    })
+                    .catch((reason: any) => {
+                        return deferred.reject(reason);
+                    });
+            }
+            else {
+                //Nothing to save
+                deferred.resolve(newState);
+            }
+
+            return deferred.promise;
+
+        }
+    }
+
+    /*
+        Register ProcessBuilderService with AngularJS
+    */
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', (
+        $q: ng.IQService,
+        CriteriaServiceWrapper: ICriteriaServiceWrapper,
+        ActionService: IActionService) => {
+            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService);
+    }
+    ]);
+
+    /*
+        A Service which is trying to encapsulate the fact that working with a Criteria in UI 
+        involves updating two entities: CriteriaDTO and ProcessNodeTemplateDTO. 
+        The name is not good but I could not come up with a better one. 
+        If we combined CriteriaDTO and ProcessNodeTemplateDTO, this complexity would not be necessary.
+    */
+    class CriteriaServiceWrapper implements ICriteriaServiceWrapper {
         public constructor(
             private CriteriaService: __ICriteriaService,
             private ProcessNodeTemplateService: __IProcessNodeTemplateService,
@@ -193,16 +324,18 @@ module dockyard.services {
             return deferred.promise;
         }
 
-        public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO):
-            {
-                actionType: ActionTypeEnum,
-                promise: ng.IPromise<model.ProcessNodeTemplateDTO>
-            }
-        {
+        /*
+            This method does adding or updating depending on whether 
+            ProcessNodeTemplate has been saved or not yet.
+        */
+        public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
+            actionType: ActionTypeEnum,
+            promise: ng.IPromise<model.ProcessNodeTemplateDTO>
+        } {
             // Don't save anything if there is no criteria selected, 
             // just return a null- valued resolved promise
             if (!curProcessNodeTemplate) {
-                var deferred = this.$q.defer < model.ProcessNodeTemplateDTO>();
+                var deferred = this.$q.defer<model.ProcessNodeTemplateDTO>();
                 deferred.resolve(null);
                 return {
                     actionType: ActionTypeEnum.None,
@@ -224,6 +357,7 @@ module dockyard.services {
                 };
             }
         }
+
     }
 
     export enum ActionTypeEnum {
@@ -232,7 +366,11 @@ module dockyard.services {
         Update = 2
     }
 
-    app.factory('CriteriaServiceWrapper', ['CriteriaService', 'ProcessNodeTemplateService', '$q', (CriteriaService, ProcessNodeTemplateService, $q) => {
-        return new CriteriaService(CriteriaService, ProcessNodeTemplateService, $q)
+    /*
+        Register CriteriaServiceWrapper with AngularJS.
+    */
+    app.factory('CriteriaServiceWrapper', ['__CriteriaService', '__ProcessNodeTemplateService', '$q',
+        (CriteriaService, ProcessNodeTemplateService, $q) => {
+            return new CriteriaServiceWrapper(CriteriaService, ProcessNodeTemplateService, $q)
     }]);
 }

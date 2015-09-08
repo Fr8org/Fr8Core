@@ -16,14 +16,11 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -741,6 +738,8 @@
     <TypeScriptCompile Include="Scripts\app\model\ActionType.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
@@ -778,9 +777,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />

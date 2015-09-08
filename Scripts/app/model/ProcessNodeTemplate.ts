@@ -29,6 +29,35 @@
 
             return result;
         }
+
+        // Create and return empty ProcessNodeTemplate object,
+        // if user selects just newly created Criteria diamond on WorkflowDesigner pane.
+        static create(
+            processTemplateId,
+            processNodeTemplateId,
+            criteriaId): model.ProcessNodeTemplateDTO {
+
+            // Create new ProcessNodeTemplate object with default name and provided temporary id.
+            var processNodeTemplate = new model.ProcessNodeTemplateDTO(
+                processNodeTemplateId,
+                true,
+                processTemplateId,
+                'New criteria'
+                );
+
+            // Create criteria with default conditions, and temporary criteria.id.
+            var criteria = new model.CriteriaDTO(
+                criteriaId,
+                true,
+                processNodeTemplate.id,
+                model.CriteriaExecutionType.WithConditions
+                );
+
+            processNodeTemplate.criteria = criteria;
+
+            return processNodeTemplate;
+        };
+
     }
 }
  

@@ -1,19 +1,8 @@
 ﻿/// <reference path="../_all.ts" />
 
 module dockyard.interfaces {
-    export enum ProcessState {
-        Inactive = 1,
-        Active = 2 
-    }
 
-    export interface IProcessTemplateVM extends ng.resource.IResource<IProcessTemplateVM> {
-        id: number;
-        name: string;
-        description: string;
-        processTemplateState: ProcessState;
-        subscribedDocuSignTemplates: Array<string>;
-        externalEventSubscription: Array<number>; 
-    }
+    export interface IProcessTemplateVM extends ng.resource.IResource<model.ProcessTemplateDTO>, model.ProcessTemplateDTO { }
 
     export interface ISubscribedDocuSignTemplates {
         processTemplateId?: number;
@@ -54,4 +43,7 @@ module dockyard.interfaces {
 
     export interface IConfigurationStoreVM extends ng.resource.IResource<model.ConfigurationStore>, model.ConfigurationStore {
     }
+    export interface IActionListVM extends ng.resource.IResource<model.ActionList>, model.ActionList {
+    }
+
 }

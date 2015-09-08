@@ -134,11 +134,16 @@ module dockyard.directives.paneSelectTemplate {
                     );
                 
                 //Save and return promise 
-                return this.ProcessTemplateService.save(
+                var deferred = this.ProcessTemplateService.save(
                     {
                         updateRegistrations: true //update template and trigger registrations
                     },
-                    this._$scope.processTemplate).$promise;
+                    this._$scope.processTemplate)
+
+                deferred.$promise.then(() => {
+                    this._$scope.visible = false;
+                });
+                return deferred.$promise;
             }   
         }
 

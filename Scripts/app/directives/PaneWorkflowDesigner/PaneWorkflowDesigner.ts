@@ -26,14 +26,14 @@ module dockyard.directives.paneWorkflowDesigner {
         };
 
 
-        var onProcessNodeTemplateRemoved = function (eventArgs: ProcessNodeTemplateRemovedEventArgs, scope: IPaneWorkflowDesignerScope) {
+        var onProcessNodeTemplateRemoved = function (eventArgs: RemoveCriteriaEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onCriteriaRemoved', eventArgs);
 
             scope.widget.removeCriteria(eventArgs.id, eventArgs.isTempId);
         };
 
 
-        var onActionAdded = function (eventArgs: ActionAddedEventArgs, scope: IPaneWorkflowDesignerScope) {
+        var onActionAdded = function (eventArgs: AddActionEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
             var actionObj = <any>eventArgs.action;
             actionObj.id = actionObj.id;
@@ -133,11 +133,11 @@ module dockyard.directives.paneWorkflowDesigner {
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_AddCriteria],
                     (event: ng.IAngularEvent, eventArgs: AddProcessNodeTemplateEventArgs) => onProcessNodeTemplateAdded(eventArgs, scope));
 
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateRemoved],
-                    (event: ng.IAngularEvent, eventArgs: ProcessNodeTemplateRemovedEventArgs) => onProcessNodeTemplateRemoved(eventArgs, scope));
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_RemoveCriteria],
+                    (event: ng.IAngularEvent, eventArgs: RemoveCriteriaEventArgs) => onProcessNodeTemplateRemoved(eventArgs, scope));
 
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionAdded],
-                    (event: ng.IAngularEvent, eventArgs: ActionAddedEventArgs) => onActionAdded(eventArgs, scope));
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_AddAction],
+                    (event: ng.IAngularEvent, eventArgs: AddActionEventArgs) => onActionAdded(eventArgs, scope));
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionRemoved],
                     (event: ng.IAngularEvent, eventArgs: ActionRemovedEventArgs) => onActionRemoved(eventArgs, scope));

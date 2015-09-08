@@ -6,10 +6,8 @@
 */
 /// <reference path="interfaces/iapprootscope.ts" />
 /// <reference path="interfaces/icriteria.ts" />
-/// <reference path="interfaces/ipaneselectactionscope.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
 /// <reference path="interfaces/iprocessbuilder.ts" />
-/// <reference path="interfaces/iprocesstemplate.ts" />
 
 
 /*
@@ -20,6 +18,8 @@
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
 /// <reference path="model/configurationstore.ts" />
+/// <reference path="model/processtemplate.ts" />
+/// <reference path="model/processbuilderstate.ts" />
 
 /*
     SERVICES

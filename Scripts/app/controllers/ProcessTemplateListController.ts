@@ -6,6 +6,12 @@
 module dockyard.controllers {
     'use strict';
 
+    export interface IProcessTemplateListScope extends ng.IScope {
+        ptvms: angular.resource.IResourceArray<dockyard.interfaces.IProcessTemplateVM>;
+        nav: (pt: interfaces.IProcessTemplateVM) => void,
+        remove: (pt: interfaces.IProcessTemplateVM) => void
+    }
+
     /*
         List controller
     */
@@ -24,7 +30,7 @@ module dockyard.controllers {
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
-            private $scope: interfaces.IProcessTemplatesScope,
+            private $scope: IProcessTemplateListScope,
             private ProcessTemplateService: services.IProcessTemplateService,
             private $modal,
             private $filter) {
