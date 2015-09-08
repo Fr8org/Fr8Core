@@ -12,8 +12,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
-        public string ParentPluginRegistration { get; set; }
-
         public int? ActionTemplateId { get; set; }
 
         [JsonProperty("actionTemplate")]

@@ -14,7 +14,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 54,
                 Name = "Write to Sql Server",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 ConfigurationStore = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
@@ -158,7 +157,6 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
                 ParentActivity = FixtureData.TestActionList6(),
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
                 PayloadMappings = "x",
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -232,7 +230,6 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 ConfigurationStore = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
-                ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -281,7 +278,6 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FieldMappings,
                 Id = 1,
                 ActionTemplateId = actionTemplate.Id,
@@ -296,7 +292,6 @@ namespace UtilitiesTesting.Fixtures
             var actionDo = new ActionDO
             {
                 Id = 1,
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
@@ -331,7 +326,6 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 ParentActivity = actionListDo,
                 FieldMappingSettings = FixtureData.FieldMappings,
                 ActionTemplateId = actionTemplate.Id,

@@ -8,8 +8,6 @@
 
         public string ConfigurationStore { get; set; }
 
-        public string ParentPluginRegistration { get; set; }
-
         public PayloadMappingsDTO PayloadMappings { get; set; }
 
         public string EnvelopeId { get; set; }
