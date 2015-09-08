@@ -738,6 +738,8 @@
     <TypeScriptCompile Include="Scripts\app\model\ActionType.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
@@ -775,9 +777,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IPaneSelectActionScope.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />

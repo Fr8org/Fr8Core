@@ -3,6 +3,15 @@
 module dockyard.directives.paneSelectAction {
     'use strict';
 
+    export interface IPaneSelectActionScope extends ng.IScope {
+        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) => void;
+        currentAction: model.ActionDesignDTO;
+        isVisible: boolean;
+        actionTypes: Array<model.ActionTemplate>;
+        ActionTypeSelected: () => void;
+        RemoveAction: () => void;
+    }
+
     export enum MessageType {
         PaneSelectAction_ActionUpdated,
         PaneSelectAction_Render,
@@ -89,7 +98,7 @@ module dockyard.directives.paneSelectAction {
             ) {
 
             PaneSelectAction.prototype.link = (
-                scope: interfaces.IPaneSelectActionScope,
+                scope: IPaneSelectActionScope,
                 element: ng.IAugmentedJQuery,
                 attrs: ng.IAttributes) => {
 
@@ -97,7 +106,7 @@ module dockyard.directives.paneSelectAction {
             };
 
             PaneSelectAction.prototype.controller = (
-                $scope: interfaces.IPaneSelectActionScope,
+                $scope: IPaneSelectActionScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
                 $http: ng.IHttpService) => {
@@ -105,7 +114,7 @@ module dockyard.directives.paneSelectAction {
                 this.PopulateData($scope, $http);
 
                 $scope.$watch<model.ActionDesignDTO>(
-                    (scope: interfaces.IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
+                    (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
                     var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
@@ -134,17 +143,17 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: interfaces.IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) {
 
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            var scope = (<interfaces.IPaneSelectActionScope> event.currentScope);
+            var scope = (<IPaneSelectActionScope> event.currentScope);
             scope.isVisible = true;
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<interfaces.IPaneSelectActionScope>event.currentScope).isVisible = false;
+            (<IPaneSelectActionScope>event.currentScope).isVisible = false;
         }
 
         private onUpdate(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -152,7 +161,7 @@ module dockyard.directives.paneSelectAction {
         }
 
         private PopulateData(
-            $scope: interfaces.IPaneSelectActionScope,
+            $scope: IPaneSelectActionScope,
             $http: ng.IHttpService) {
 
             $scope.actionTypes = [];
