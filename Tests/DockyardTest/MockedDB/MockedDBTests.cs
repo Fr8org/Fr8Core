@@ -116,7 +116,7 @@ namespace DockyardTest.MockedDB
                 if (exceptionMessages.Any())
                     Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
             }
-		  [Test]
+		  [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
 		  public void ActivityRepository_AddActionDOandActivityListDO_Failed()
 		  {
 			  var actionTempate = new ActionTemplateDO()
@@ -146,7 +146,7 @@ namespace DockyardTest.MockedDB
 
 			  }
 		  }
-		  [Test]
+		  [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
 		  public void ActivityRepository_AddActionDOandActivityListDO_Failed2()
 		  {
 			  var actionTempate = new ActionTemplateDO()
