@@ -1,10 +1,11 @@
 ﻿using Data.Entities;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Data.Interfaces.DataTransferObjects;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
