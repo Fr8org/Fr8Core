@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace PluginUtilities.Infrastructure
+namespace PluginBase.Infrastructure
 {
     public static class Validations
     {

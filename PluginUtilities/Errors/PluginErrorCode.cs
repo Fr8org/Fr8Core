@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PluginUtilities {
+namespace PluginBase {
     public enum PluginErrorCode {
         [Description("The plugin was passed a request that required a connection string, and it was not found.")]
         SQL_SERVER_CONNECTION_STRING_MISSING = 10000,

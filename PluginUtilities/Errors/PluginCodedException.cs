@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace PluginUtilities {
+namespace PluginBase {
     public class PluginCodedException : Exception {
         public HttpStatusCode StatusCode { get; private set; }
         public PluginErrorCode ErrorCode { get; private set; }
