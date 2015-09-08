@@ -83,8 +83,8 @@ namespace DockyardTest.Entities
                 Assert.NotNull(curActionListDO2);
                 Assert.NotNull(savedActionListDO2);
                 Assert.AreEqual(curActionListDO2.Name, savedActionListDO2.Name);
-                Assert.AreEqual(curActionListDO2.Actions.FirstOrDefault().Id,
-                    savedActionListDO2.Actions.FirstOrDefault().Id);
+                Assert.AreEqual(curActionListDO2.Activities.FirstOrDefault().Id,
+                    savedActionListDO2.Activities.FirstOrDefault().Id);
             }
         }
     }
