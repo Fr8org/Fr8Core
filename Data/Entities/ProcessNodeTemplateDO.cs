@@ -15,6 +15,7 @@ namespace Data.Entities
         {
             this.Criteria = new List<CriteriaDO>();
             this.ActionLists = new List<ActionListDO>();
+            this.ProcessNode = new List<ProcessNodeDO>();
         }
 
         [Key]
@@ -37,6 +38,8 @@ namespace Data.Entities
         public virtual List<CriteriaDO> Criteria { get; set; }
 
         public virtual List<ActionListDO> ActionLists { get; set; }
+
+        public virtual List<ProcessNodeDO> ProcessNode { get; set; }
 
         public override string ToString()
         {

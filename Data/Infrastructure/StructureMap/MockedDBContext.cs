@@ -141,7 +141,7 @@ namespace Data.Infrastructure.StructureMap
         {
             lock (_cachedSets)
             {
-                foreach (var set in _cachedSets)
+                foreach (var set in _cachedSets.ToList())
                 {
                     foreach (object row in set.Value)
                     {
@@ -303,6 +303,7 @@ namespace Data.Infrastructure.StructureMap
                             if (fkID == null)
                                 continue;
 
+                            // TODO: @yakov.gnusin: here, wrong _cachedSet for ActivityDO.
                             var foreignSet = Set(parentFKDOProperty.PropertyType);
                             foreach (var foreignRow in foreignSet)
                             {

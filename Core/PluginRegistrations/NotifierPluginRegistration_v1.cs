@@ -26,19 +26,19 @@ namespace Core.PluginRegistrations
             if (curActionTemplate == null)
                 throw new ArgumentNullException("curActionTemplate");
 
-            if (String.IsNullOrEmpty(curActionTemplate.ActionType))
+            if (String.IsNullOrEmpty(curActionTemplate.Name))
                 throw new ArgumentNullException("curActionTemplate.ActionType");
 
             ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
 
-            if (curActionTemplate.ActionType.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
+            if (curActionTemplate.Name.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
             {
                 curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", "Email Address"));
                 curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", "Friendly Name"));
                 curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Subject", true, "", "Subject"));
                 curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Body", true, "", "Body"));
             }
-            else if (curActionTemplate.ActionType.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
+            else if (curActionTemplate.Name.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
             {
                 curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", "Phone Number"));
                 curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Message", true, "", "Message"));
@@ -57,12 +57,12 @@ namespace Core.PluginRegistrations
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             curActionNameList.ActionNames.Add(new ActionNameDTO
             {
-                ActionType = "Send an Email",
+                Name = "Send an Email",
                 Version = "1.0"
             });
             curActionNameList.ActionNames.Add(new ActionNameDTO
             {
-                ActionType = "Send a Text (SMS) Message",
+                Name = "Send a Text (SMS) Message",
                 Version = "1.0"
             });
             return curActionNameList;

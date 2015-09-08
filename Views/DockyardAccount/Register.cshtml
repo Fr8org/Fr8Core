@@ -1,4 +1,4 @@
-﻿@model Web.ViewModels.RegisterVM
+﻿@model Web.ViewModels.RegistrationVM
 @{
     ViewBag.Title = "Create a new user";
 }
@@ -14,7 +14,7 @@
     </div>
     <div class="portlet-body form metronic-validation-section">
 
-        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        @using (Html.BeginForm("Register", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
             @Html.AntiForgeryToken()
             @Html.ValidationSummary()

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
@@ -14,6 +15,7 @@ using Data.States;
 using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
+using System.Data.Entity;
 
 namespace Core.Services
 {
@@ -86,11 +88,11 @@ namespace Core.Services
 
                 if (existingActionDo != null)
                 {
-                    existingActionDo.ActionList = currentActionDo.ActionList;
-                    existingActionDo.ActionListId = currentActionDo.ActionListId;
+                    existingActionDo.ParentActivity = currentActionDo.ParentActivity;
+                    existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                     existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }
@@ -108,26 +110,33 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetByKey(id);
+                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
 
-        public string GetConfigurationSettings(
-            ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionTemplateDo != null)
-            {
-                var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                var curConfigurationSettingsJson =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+            if(curActionDO == null)
+                throw new System.ArgumentNullException("Action parameter is null");
 
-                return curConfigurationSettingsJson;
+            if (curActionDO.ActionTemplate != null)
+            {
+                if(curActionDO.Id == 0)
+                    throw new System.ArgumentNullException("Action ID is empty");
+                if (curActionDO.ActionTemplateId == 0)
+                    throw new System.ArgumentNullException("Action Template ID is empty");
+
+                var _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+                string typeName = _pluginRegistration.AssembleName(curActionDO.ActionTemplate);
+                var settings = _pluginRegistration.CallPluginRegistrationByString(typeName, "GetConfigurationSettings", curActionDO);
+                curActionDO.ConfigurationStore = settings;
             }
             else
             {
-                throw new ArgumentNullException("ActionTemplateDO");
+                throw new System.ArgumentNullException("ActionTemplate is null");
             }
+
+            return curActionDO.ConfigurationStore;
         }
 
         public void Delete(int id)
@@ -196,7 +205,7 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ActionList.Process.EnvelopeId; 
+            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
             
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
@@ -239,12 +248,11 @@ namespace Core.Services
         {
             DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
 
-            if (curActionDO.ActionList != null)
+            if (curActionDO.ParentActivity != null)
             {
                 // Try to get ProcessTemplate.Id from relation chain
                 // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
-                var curProcessTemplateId = curActionDO
-                    .ActionList
+                var curProcessTemplateId = ((ActionListDO)curActionDO.ParentActivity)
                     .ProcessNodeTemplate
                     .ProcessTemplate
                     .Id;

@@ -94,9 +94,8 @@ module dockyard.directives.paneSelectTemplate {
                 curScope.processTemplate.$promise]
                 ).then(
                     () => {
-                        console.log(curScope);
-                        if (curScope.processTemplate && curScope.processTemplate.SubscribedDocuSignTemplates.length > 0) {
-                            curScope.docuSignTemplateId = curScope.processTemplate.SubscribedDocuSignTemplates[0];
+                        if (curScope.processTemplate && curScope.processTemplate.subscribedDocuSignTemplates.length > 0) {
+                            curScope.docuSignTemplateId = curScope.processTemplate.subscribedDocuSignTemplates[0];
                         }
                         curScope.doneLoading = true
                     }
@@ -120,7 +119,7 @@ module dockyard.directives.paneSelectTemplate {
         public save(scope) {
             if (this._$scope.processTemplate != null && this._$scope.visible) {
                 //Add selected DocuSign template
-                this._$scope.processTemplate.SubscribedDocuSignTemplates.splice(
+                this._$scope.processTemplate.subscribedDocuSignTemplates.splice(
                     0,
                     1,
                     $('#docuSignTemplate').val().replace('string:', '')); //a hack required since $scope contained old value when save is triggered by 'Hide' message
@@ -129,17 +128,22 @@ module dockyard.directives.paneSelectTemplate {
                 this._$scope.$emit(
                     MessageType[MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
                     new ProcessTemplateUpdatedEventArgs(
-                        this._$scope.processTemplate.Id,
-                        this._$scope.processTemplate.Name,
-                        this._$scope.processTemplate.SubscribedDocuSignTemplates)
+                        this._$scope.processTemplate.id,
+                        this._$scope.processTemplate.name,
+                        this._$scope.processTemplate.subscribedDocuSignTemplates)
                     );
                 
                 //Save and return promise 
-                return this.ProcessTemplateService.save(
+                var deferred = this.ProcessTemplateService.save(
                     {
                         updateRegistrations: true //update template and trigger registrations
                     },
-                    this._$scope.processTemplate).$promise;
+                    this._$scope.processTemplate)
+
+                deferred.$promise.then(() => {
+                    this._$scope.visible = false;
+                });
+                return deferred.$promise;
             }   
         }
 

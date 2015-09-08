@@ -1,19 +1,23 @@
 ﻿using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AutoMapper;
 using Data.Wrappers;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace Data.Entities
 {
-    public class ActionDO : ActivityDO
+    public class ActionDO : ActivityDO /*, IActionListChild*/
 	{
         public string Name { get; set; }
 
-        [ForeignKey("ActionList")]
-        public int? ActionListId { get; set; }
-        public virtual ActionListDO ActionList { get; set; }
+        // [ForeignKey("ParentActionList")]
+        // public int? ParentActionListId { get; set; }
+        // public virtual ActionListDO ParentActionList { get; set; }
 
-        public string ConfigurationSettings { get; set; }
+        public string ConfigurationStore { get; set; }
 
         public string FieldMappingSettings { get; set; }
 
@@ -34,5 +38,11 @@ namespace Data.Entities
 
         [NotMapped]
         public bool IsTempId { get; set; }
-	}
+
+        public ConfigurationSettingsDTO ConfigurationSettingsDTO()
+        {
+                return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(this.ConfigurationStore);
+
+        }
+    }
 }

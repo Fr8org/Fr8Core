@@ -227,9 +227,14 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\IActionListChild.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
@@ -250,6 +255,34 @@
     <Compile Include="Migrations\201509031000594_DO_947_Migration.cs" />
     <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.cs" />
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.Designer.cs">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509061256255_DO_990_2_Migration.cs" />
+    <Compile Include="Migrations\201509061256255_DO_990_2_Migration.Designer.cs">
+      <DependentUpon>201509061256255_DO_990_2_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051956279_ActionConfigStoreChange.cs" />
+    <Compile Include="Migrations\201509051956279_ActionConfigStoreChange.Designer.cs">
+      <DependentUpon>201509051956279_ActionConfigStoreChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.cs" />
+    <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.Designer.cs">
+      <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509062154535_Templates.cs" />
+    <Compile Include="Migrations\201509062154535_Templates.Designer.cs">
+      <DependentUpon>201509062154535_Templates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509070740036_DO_990_Merged_Migration.cs" />
+    <Compile Include="Migrations\201509070740036_DO_990_Merged_Migration.Designer.cs">
+      <DependentUpon>201509070740036_DO_990_Merged_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs" />
+    <Compile Include="Migrations\201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.Designer.cs">
+      <DependentUpon>201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -274,7 +307,6 @@
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
-    <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTypeListDTO.cs" />
@@ -290,7 +322,6 @@
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
     <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
-    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginDO.cs" />
@@ -449,7 +480,9 @@
     <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -479,6 +512,27 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
       <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051519518_DO_990_Migration.resx">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509061256255_DO_990_2_Migration.resx">
+      <DependentUpon>201509061256255_DO_990_2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051956279_ActionConfigStoreChange.resx">
+      <DependentUpon>201509051956279_ActionConfigStoreChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509061125516_RenameActionTemplateFields.resx">
+      <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509062154535_Templates.resx">
+      <DependentUpon>201509062154535_Templates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509070740036_DO_990_Merged_Migration.resx">
+      <DependentUpon>201509070740036_DO_990_Merged_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.resx">
+      <DependentUpon>201509051221513_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

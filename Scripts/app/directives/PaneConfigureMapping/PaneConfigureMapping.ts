@@ -39,15 +39,15 @@ module dockyard.directives.paneConfigureMapping {
 
                 if ($scope.mode === 'param') {
                     $scope.toBeMappedFrom.forEach((it) => {
-                        if (it.mappedTo && it.mappedTo.Name) {
-                            fields.push(new model.FieldMapping(it.mappedTo.Name, it.Name));
+                        if (it.mappedTo && it.mappedTo.name) {
+                            fields.push(new model.FieldMapping(it.mappedTo.name, it.name));
                         }
                     });
                 }
                 else {
                     $scope.toBeMappedFrom.forEach((it) => {
-                        if (it.mappedTo && it.mappedTo.Name) {
-                            fields.push(new model.FieldMapping(it.Name, it.mappedTo.Name));
+                        if (it.mappedTo && it.mappedTo.name) {
+                            fields.push(new model.FieldMapping(it.name, it.mappedTo.name));
                         }
                     });
                 }

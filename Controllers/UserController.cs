@@ -333,7 +333,7 @@ namespace Web.Controllers
                 if (curUserDO == null)
                 {
                     // if we found no user then assume that this user doesn't exists any more and force log off action.
-                    return RedirectToAction("LogOff", "Account");
+                    return RedirectToAction("LogOff", "DockyardAccount");
                 }
                 var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
                 var tuple = new Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);

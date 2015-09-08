@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
 
-    export class Condition {
+    export class Condition implements interfaces.ICondition {
         public field: string;
         public operator: string;
         public value: string;

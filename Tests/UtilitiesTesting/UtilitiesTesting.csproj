@@ -86,8 +86,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
+    <Compile Include="CsvReaderTests.cs" />
     <Compile Include="DocusignTools\DocusignApiHelper.cs" />
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
+    <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\FixtureData - FactDO.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />
     <Compile Include="Fixtures\FixtureData - ActionList.cs" />
@@ -129,6 +131,30 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Tools\FileTools\TestFiles\10Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\10Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\1Column.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\1Column.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\2Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\2Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\3Columns.xls">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Tools\FileTools\TestFiles\3Columns.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Tools\FileTools\TestFiles\small_pdf_file.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -143,9 +169,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\PluginUtilities\PluginUtilities.csproj">
+    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginUtilities</Name>
+      <Name>PluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
