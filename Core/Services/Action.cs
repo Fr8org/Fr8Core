@@ -137,9 +137,8 @@ namespace Core.Services
                     uow.SaveChanges();
 
                     EventManager.ActionStarted(curAction);
-                    var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
-                    var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-                    var jsonResult = await Dispatch(curAction, baseUri);
+
+                    var jsonResult = await Dispatch(curAction);
 
 
                     //this JSON error check is broken because it triggers on standard success messages, which look like this:
@@ -170,14 +169,14 @@ namespace Core.Services
             return curAction.ActionState.Value;
         }
 
-        public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
+        public async Task<string> Dispatch(ActionDO curActionDO)
         {
             PayloadMappingsDTO mappings;
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = curBaseUri;
+            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint); 
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
             actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
             
