@@ -283,12 +283,17 @@
     <Compile Include="Migrations\201509081103145_RemoveParentPluginRegistration.Designer.cs">
       <DependentUpon>201509081103145_RemoveParentPluginRegistration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509081611131_AddAuthenticationManagement.cs" />
+    <Compile Include="Migrations\201509081611131_AddAuthenticationManagement.Designer.cs">
+      <DependentUpon>201509081611131_AddAuthenticationManagement.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\ActionState.cs" />
+    <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -369,6 +374,7 @@
     <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
     <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
     <Compile Include="States\Templates\_ActionStateTemplate.cs" />
+    <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
@@ -463,6 +469,7 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
+    <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ProcessValidator.cs" />
     <Compile Include="Validations\ProcessNodeTemplateValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
@@ -532,6 +539,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509081103145_RemoveParentPluginRegistration.resx">
       <DependentUpon>201509081103145_RemoveParentPluginRegistration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509081611131_AddAuthenticationManagement.resx">
+      <DependentUpon>201509081611131_AddAuthenticationManagement.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

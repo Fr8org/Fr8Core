@@ -22,10 +22,16 @@ namespace Core.Services
         private IEnvelope _envelope;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
+        private IPluginRegistration _basePluginRegistration;
+        private IPlugin _plugin;
+        private readonly AuthorizationToken _authorizationToken;
 
         public Action()
         {
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
+
+            _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+            _authorizationToken = new AuthorizationToken();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -50,7 +56,7 @@ namespace Core.Services
 
             //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
             //var plugins = _plugin.GetAll();
-            // var curActionTemplates = plugins
+           // var curActionTemplates = plugins
             //    .SelectMany(p => p.AvailableActions)
             //    .OrderBy(s => s.ActionType);
 
@@ -122,7 +128,7 @@ namespace Core.Services
 
         public void Delete(int id)
         {
-            var entity = new ActionDO {Id = id};
+            var entity = new ActionDO { Id = id };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -262,5 +268,58 @@ namespace Core.Services
                 return Enumerable.Empty<string>();
             }
         }
+
+        /// <summary>
+        /// Retrieve authorization token
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public string Authenticate(ActionDO curActionDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                var curPlugin = curActionDO.ActionTemplate.Plugin;
+                string curToken = string.Empty;
+
+                if (curDockyardAccountDO != null)
+                {
+                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
+
+                    if (!string.IsNullOrEmpty(curToken))
+                        return curToken;
+                }
+
+                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
+                if (!string.IsNullOrEmpty(curToken))
+                    return curToken;
+                return _plugin.Authorize();
+            }
+
+        }
+
+
+        /// <summary>
+        /// Retrieve account
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        {
+            if (curActionDO.ParentActivity != null
+                && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
+            {
+                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
+
+                return curActionListDO
+                    .Process
+                    .ProcessTemplate
+                    .DockyardAccount;
+            }
+
+            return null;
+
+        }
+
     }
 }
