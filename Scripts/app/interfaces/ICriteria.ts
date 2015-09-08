@@ -35,6 +35,11 @@ module dockyard.interfaces {
         name: string;
     }
 
+    export interface IFileDTO {
+        id: number;
+        originalFileName: string;
+    }
+
     export interface IDocuSignTemplate {
         id: number;
         name: string;

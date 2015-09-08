@@ -732,7 +732,9 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FileDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
@@ -746,6 +748,7 @@
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
@@ -3914,6 +3917,7 @@
     <Content Include="RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
+    <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

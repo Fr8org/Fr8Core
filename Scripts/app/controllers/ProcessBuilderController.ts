@@ -347,7 +347,7 @@ module dockyard.controllers {
                 var id = self.LocalIdentityGenerator.getNextId();
                 
                 // TODO: Check ID behavior
-                processNodeTemplateId = (result.processNodeTemplate.id ? result.processNodeTemplate.id : eventArgs.processNodeTemplateId);
+                processNodeTemplateId = (result.processNodeTemplate && result.processNodeTemplate.id ? result.processNodeTemplate.id : eventArgs.processNodeTemplateId);
 
                 // Retrieve ActionList
                 return this.ActionListService.get({
