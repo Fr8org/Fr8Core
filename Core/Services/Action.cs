@@ -300,30 +300,46 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (curActionDO.ParentActivity != null
-                    && curActionDO.ParentActivity.GetType() == typeof(ActionListDO)
-                    && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
+                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                var curPlugin = curActionDO.ActionTemplate.Plugin;
+                string curToken = string.Empty;
+
+                if (curDockyardAccountDO != null)
                 {
-                    ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
-
-                    var userId = curActionListDO
-                        .Process
-                        .ProcessTemplate
-                        .DockyardAccount
-                        .Id;
-
-                    var pluginId = curActionDO
-                        .ActionTemplate
-                        .Plugin
-                        .Id;
-
-                    string curToken = _authorizationToken.GetToken(userId, pluginId);
+                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
 
                     if (!string.IsNullOrEmpty(curToken))
                         return curToken;
                 }
+
+                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
+                if (!string.IsNullOrEmpty(curToken))
+                    return curToken;
                 return _plugin.Authorize();
             }
+
+        }
+
+
+        /// <summary>
+        /// Retrieve account
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        {
+            if (curActionDO.ParentActivity != null
+                && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
+            {
+                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
+
+                return curActionListDO
+                    .Process
+                    .ProcessTemplate
+                    .DockyardAccount;
+            }
+
+            return null;
 
         }
 

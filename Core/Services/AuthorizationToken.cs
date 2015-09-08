@@ -38,6 +38,21 @@ namespace Core.Services
             return null;
         }
 
+        public string GetPluginToken(int pluginId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+                    at.PluginID == pluginId
+                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+
+                if (curAuthToken != null)
+                    return curAuthToken.Token;
+            }
+            return null;
+        }
+
+
         public void AddOrUpdateToken(string userId, string token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
