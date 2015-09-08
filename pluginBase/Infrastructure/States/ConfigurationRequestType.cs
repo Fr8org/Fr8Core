@@ -1,4 +1,4 @@
-﻿namespace PluginUtilities.Infrastructure
+﻿namespace PluginBase.Infrastructure
 {
     public enum ConfigurationRequestType
     {

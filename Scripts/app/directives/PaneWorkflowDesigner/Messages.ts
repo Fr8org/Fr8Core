@@ -5,28 +5,28 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export enum MessageType {
         PaneWorkflowDesigner_Render,
-        PaneWorkflowDesigner_TemplateSelecting,
+        PaneWorkflowDesigner_TemplateSelected,
         PaneWorkflowDesigner_ProcessNodeTemplateAdding,
-        PaneWorkflowDesigner_ProcessNodeTemplateAdded,
+        PaneWorkflowDesigner_AddCriteria,
         PaneWorkflowDesigner_CriteriaSelected,
-        PaneWorkflowDesigner_ProcessNodeTemplateRemoved,
-        PaneWorkflowDesigner_ProcessNodeTemplateNameUpdated,
+        PaneWorkflowDesigner_RemoveCriteria,
+        PaneWorkflowDesigner_UpdateProcessNodeTemplateName,
         PaneWorkflowDesigner_ActionAdding,
-        PaneWorkflowDesigner_ActionAdded,
-        PaneWorkflowDesigner_ActionSelecting,
+        PaneWorkflowDesigner_AddAction,
+        PaneWorkflowDesigner_ActionSelected,
         PaneWorkflowDesigner_ActionRemoved,
         PaneWorkflowDesigner_ActionNameUpdated,
-        PaneWorkflowDesigner_ProcessNodeTemplateTempIdReplaced,
+        PaneWorkflowDesigner_ReplaceTempIdForProcessNodeTemplate,
         PaneWorkflowDesigner_ActionTempIdReplaced
     }
 
     export class RenderEventArgs {
     }
 
-    export class ProcessNodeTemplateAddingEventArgs {
+    export class CriteriaAddingEventArgs {
     }
 
-    export class ProcessNodeTemplateAddedEventArgs {
+    export class AddProcessNodeTemplateEventArgs {
         public id: number;
         public isTempId: boolean;
         public name: string;
@@ -48,7 +48,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ProcessNodeTemplateRemovedEventArgs {
+    export class RemoveCriteriaEventArgs {
         public id: number;
         public isTempId: boolean;
 
@@ -58,7 +58,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ProcessNodeTemplateNameUpdatedEventArgs {
+    export class UpdateProcessNodeTemplateNameEventArgs {
         public id: number;
         public text: string;
 
@@ -78,7 +78,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ActionAddedEventArgs {
+    export class AddActionEventArgs {
         public criteriaId: number;
         public action: model.ActionDesignDTO;
         public actionListType: model.ActionListType;
@@ -93,7 +93,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ActionSelectingEventArgs {
+    export class ActionSelectedEventArgs {
         public processNodeTemplateId: number;
         public actionId: number;
         public actionListId: number;
@@ -119,7 +119,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class TemplateSelectingEventArgs {
+    export class TemplateSelectedEventArgs {
     }
 
     export class ActionNameUpdatedEventArgs {
@@ -132,7 +132,7 @@ module dockyard.directives.paneWorkflowDesigner {
         }
     }
 
-    export class ProcessNodeTemplateTempIdReplacedEventArgs {
+    export class ReplaceTempIdForProcessNodeTemplateEventArgs {
         public tempId: number;
         public id: number;
 
