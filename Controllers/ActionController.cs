@@ -33,7 +33,7 @@ namespace Web.Controllers
             _action = service;
         }
 
-        [Route("get_configuration")]
+        [Route("configuration")]
         [Route("process")]
         [HttpGet]
         public string HandleDockyardRequest(ActionDesignDTO actionDTO)
@@ -41,7 +41,7 @@ namespace Web.Controllers
             // Extract from current request URL.
             var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
 
-            if (curActionPath == "get_configuration")
+            if (curActionPath == "configuration")
             {
                 curActionPath = "GetConfiguration";
             }
