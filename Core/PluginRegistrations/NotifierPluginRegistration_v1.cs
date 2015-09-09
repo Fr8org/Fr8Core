@@ -29,22 +29,22 @@ namespace Core.PluginRegistrations
             if (String.IsNullOrEmpty(curActionTemplate.Name))
                 throw new ArgumentNullException("curActionTemplate.ActionType");
 
-            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
+            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
 
             if (curActionTemplate.Name.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", "Email Address"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", "Friendly Name"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Subject", true, "", "Subject"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Body", true, "", "Body"));
+                curCrateStorage.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", "Email Address"));
+                curCrateStorage.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", "Friendly Name"));
+                curCrateStorage.Fields.Add(new FieldDefinitionDTO("Subject", true, "", "Subject"));
+                curCrateStorage.Fields.Add(new FieldDefinitionDTO("Body", true, "", "Body"));
             }
             else if (curActionTemplate.Name.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", "Phone Number"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Message", true, "", "Message"));
+                curCrateStorage.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", "Phone Number"));
+                curCrateStorage.Fields.Add(new FieldDefinitionDTO("Message", true, "", "Message"));
             }
 
-            return Newtonsoft.Json.JsonConvert.SerializeObject(curConfigurationSettings);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(curCrateStorage);
         }
 
         public List<string> GetFieldMappingTargets(string curActionName, string ConfigUIData)

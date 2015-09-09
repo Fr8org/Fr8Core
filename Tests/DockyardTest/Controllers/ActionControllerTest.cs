@@ -131,7 +131,7 @@ namespace DockyardTest.Controllers
 
                 var expectedResult = FixtureData.TestConfigurationSettings();
                 string curJsonResult = _action.GetConfigurationSettings(curActionDO);
-                ConfigurationSettingsDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curJsonResult);
+                CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
                 Assert.AreEqual(1, result.Fields.Count);
                 Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
                 Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
@@ -173,18 +173,18 @@ namespace DockyardTest.Controllers
                     new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
-                ConfigurationSettingsDTO resultantConfigurationSettingsDto =
-                    JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(result.Content);
+                CrateStorageDTO resultantCrateStorageDto =
+                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
 
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
-                Assert.IsNotNull(resultantConfigurationSettingsDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantConfigurationSettingsDto.Fields.Count == 1, "Configure is not assuming this is the first request from the client");
-                Assert.AreEqual("connection_string", resultantConfigurationSettingsDto.Fields[0].Name, "Configure does not return one connection string with empty value");
-                Assert.IsEmpty(resultantConfigurationSettingsDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
+                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+                Assert.IsTrue(resultantCrateStorageDto.Fields.Count == 1, "Configure is not assuming this is the first request from the client");
+                Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
+                Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
                 
                 //There should be no data fields as this is the first request from the client
-                Assert.IsTrue(resultantConfigurationSettingsDto.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
+                Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
             }
         }
 
@@ -212,13 +212,13 @@ namespace DockyardTest.Controllers
                     new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
-                ConfigurationSettingsDTO resultantConfigurationSettingsDto =
-                    JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(result.Content);
+                CrateStorageDTO resultantCrateStorageDto =
+                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
 
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
-                Assert.IsNotNull(resultantConfigurationSettingsDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantConfigurationSettingsDto.DataFields.Count == 3, "Configure returned invalid data fields");
+                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+                Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 3, "Configure returned invalid data fields");
             }
         }
 
@@ -250,14 +250,14 @@ namespace DockyardTest.Controllers
                     new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
-                ConfigurationSettingsDTO resultantConfigurationSettingsDto =
-                    JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(result.Content);
+                CrateStorageDTO resultantCrateStorageDto =
+                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
 
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
-                Assert.IsNotNull(resultantConfigurationSettingsDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantConfigurationSettingsDto.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
-                Assert.IsTrue(resultantConfigurationSettingsDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
+                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+                Assert.IsTrue(resultantCrateStorageDto.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
+                Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
             }
         }
 
@@ -334,7 +334,7 @@ namespace DockyardTest.Controllers
                 Id = actionId,
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
-                ConfigurationStore = new ConfigurationSettingsDTO(),
+                ConfigurationStore = new CrateStorageDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActionTemplateId = 1,
                 ActionTemplate = FixtureData.TestActionTemplateDTOV2()
@@ -377,7 +377,7 @@ namespace DockyardTest.Controllers
 
             var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
             {
-                ConfigurationStore = Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(
+                ConfigurationStore = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(
                     "{\"connection_string\":\"" + dataSource + "\"}")
             });
 

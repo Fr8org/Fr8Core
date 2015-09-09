@@ -35,9 +35,9 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
-        public ConfigurationSettingsDTO ConfigurationSettingsDTO()
+        public CrateStorageDTO CrateStorageDTO()
         {
-                return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(this.ConfigurationStore);
+                return JsonConvert.DeserializeObject<CrateStorageDTO>(this.ConfigurationStore);
 
         }
     }

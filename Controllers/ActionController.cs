@@ -93,7 +93,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("actions/configuration")]
-        [ResponseType(typeof(ConfigurationSettingsDTO))]
+        [ResponseType(typeof(CrateStorageDTO))]
         public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);

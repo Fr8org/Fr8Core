@@ -11,7 +11,7 @@ namespace PluginBase.BaseClasses
 
     public class BasePluginAction
     {
-        protected ConfigurationSettingsDTO ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult)
+        protected CrateStorageDTO ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
             {
@@ -26,14 +26,14 @@ namespace PluginBase.BaseClasses
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
-        protected virtual ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
+        protected virtual CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
-            return curActionDO.ConfigurationSettingsDTO();
+            return curActionDO.CrateStorageDTO();
         }
         //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
-        protected virtual ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            return curActionDO.ConfigurationSettingsDTO();
+            return curActionDO.CrateStorageDTO();
         }
     }
 }
