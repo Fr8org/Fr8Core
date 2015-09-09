@@ -11,14 +11,10 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public CrateStorageDTO()
         {
-            Fields = new List<FieldDefinitionDTO>();
-            DataFields = new List<string>();
+            CratesDTO = new List<CrateDTO>();
         }
 
-        [JsonProperty("fields")]
-        public List<FieldDefinitionDTO> Fields { get; set; }
-
-        [JsonProperty("data-fields")]
-        public List<string> DataFields { get; set; }
+        [JsonProperty("CratesDTO")]
+        public List<CrateDTO> CratesDTO { get; set; }
     }
 }

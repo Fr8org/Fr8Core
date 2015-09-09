@@ -12,6 +12,7 @@ using PluginBase.Infrastructure;
 using StructureMap;
 using PluginBase;
 using PluginBase.BaseClasses;
+using Core.Interfaces;
 
 namespace pluginAzureSqlServer.Actions {
     
@@ -33,7 +34,7 @@ namespace pluginAzureSqlServer.Actions {
             CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             var curConnectionStringField =
-                curCrates.Fields.First(field => field.Name.Equals("connection_string")); //this needs to be updated to use the new Crate structures
+                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CratesDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
             if (curConnectionStringField != null)
             {
@@ -54,27 +55,21 @@ namespace pluginAzureSqlServer.Actions {
             else
             {
                 throw new ApplicationException("this value should never be null");
-            }
+        }
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
+            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             //Return one field with empty connection string
             CrateStorageDTO curConfigurationStore = new CrateStorageDTO
             {
 
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                Fields = new List<FieldDefinitionDTO>
+                CratesDTO = new List<CrateDTO>
                 {
-                    new FieldDefinitionDTO
-                    {
-                        Type = "textField",
-                        Name = "connection_string",
-                        Required = true,
-                        Value = string.Empty,
-                        FieldLabel = "SQL Connection String"
-                    }
+                    _crate.Create("Write to SQL Server", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
                 }
             };
 
@@ -87,7 +82,7 @@ namespace pluginAzureSqlServer.Actions {
             //In all followup calls, update data fields of the configuration store
             CrateStorageDTO curConfigurationStore = curActionDO.CrateStorageDTO();
 
-            curConfigurationStore.DataFields = (List<string>)GetFieldMappings(curActionDO);
+            curConfigurationStore = curActionDO.CrateStorageDTO();
 
             return curConfigurationStore;
         }
@@ -125,18 +120,18 @@ namespace pluginAzureSqlServer.Actions {
      
         public object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            if (string.IsNullOrEmpty(curActionDO.ConfigurationStore))
+            if (string.IsNullOrEmpty(curActionDO.CrateStorage))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<CrateStorageDTO>(curActionDO.ConfigurationStore);
-            if (configuration == null || configuration.Fields.Count == 0)
+            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CratesDTO.First().Contents);
+            if (configuration == null || curActionDO.CrateStorageDTO().CratesDTO.Count == 0)
                 {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
                 }
 
-            var connStringField = configuration.Fields.Find(f => f.Name == "connection_string");
+            var connStringField = configuration;
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
@@ -192,7 +187,7 @@ namespace pluginAzureSqlServer.Actions {
             return new List<Table> {table};
         }
 
-      
+
 
     }
 }
