@@ -1,6 +1,8 @@
-﻿using Data.Entities;
+﻿using Core.Interfaces;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using StructureMap;
 using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
@@ -66,80 +68,24 @@ namespace UtilitiesTesting.Fixtures
             return curActionTemplate;
         }
 
-        public static ConfigurationSettingsDTO TestConfigurationSettings()
+        public static CrateStorageDTO TestConfigurationSettings()
         {
-            return new ConfigurationSettingsDTO()
-            {
-                Fields = new List<FieldDefinitionDTO>(){
-                    new FieldDefinitionDTO()
-                    {
-                        Type= "textField",
-                        FieldLabel = "SQL Connection String",
-                        Value = "",
-                        Name = "connection_string",
-                        Required = true,
-                        Selected = false
-                    }
-                }
-            };
-
+            return FixtureData.CrateStorageDTO();
         }
 
-	    public static ConfigurationSettingsDTO TestConfigurationStore()
+	    public static CrateStorageDTO TestConfigurationStore()
 	    {
-	        return new ConfigurationSettingsDTO
+            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+	        return new CrateStorageDTO
 	        {
-	            Fields = new List<FieldDefinitionDTO>
+	            CratesDTO = new List<CrateDTO>
 	            {
-	                new FieldDefinitionDTO
-	                {
-	                    Type = "textField",
-	                    Name = "connection_string",
-	                    Required = true,
-	                    Value = "",
-	                    FieldLabel = "SQL Connection String"
-	                },
-
-	                new FieldDefinitionDTO
-	                {
-	                    Type = "textField",
-	                    Name = "query",
-	                    Required = true,
-	                    Value = "",
-	                    FieldLabel = "Custom SQL Query"
-	                },
-
-	                new FieldDefinitionDTO
-	                {
-	                    Type = "checkboxField",
-	                    Name = "log_transactions",
-	                    Selected = false,
-	                    FieldLabel = "Log All Transactions?"
-	                },
-
-	                new FieldDefinitionDTO
-	                {
-	                    Type = "checkboxField",
-	                    Name = "log_transactions1",
-	                    Selected = false,
-	                    FieldLabel = "Log Some Transactions?"
-	                },
-
-	                new FieldDefinitionDTO
-	                {
-	                    Type = "checkboxField",
-	                    Name = "log_transactions2",
-	                    Selected = false,
-	                    FieldLabel = "Log No Transactions?"
-	                },
-
-	                new FieldDefinitionDTO
-	                {
-	                    Type = "checkboxField",
-	                    Name = "log_transactions3",
-	                    Selected = false,
-	                    FieldLabel = "Log Failed Transactions?"
-	                }
+                    _crate.Create("SQL Connection String", "{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}"),
+                    _crate.Create("Custom SQL Query", "{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}"),
+	                _crate.Create("Log All Transactions", "{type: 'checkboxField', name: 'log_transactions', required: true, fieldLabel: 'Log All Transactions?'}"),
+	                _crate.Create("Log Some Transactions", "{type: 'checkboxField', name: 'log_transactions1', required: true, fieldLabel: 'Log Some Transactions?'}"),
+	                _crate.Create("Log No Transactions", "{type: 'checkboxField', name: 'log_transactions2', required: true, fieldLabel: 'Log No Transactions?'}"),
+                    _crate.Create("Log Failed Transactions", "{type: 'checkboxField', name: 'log_transactions3', required: true, fieldLabel: 'Log Failed Transactions?'}")
 	            }
 	        };
         }

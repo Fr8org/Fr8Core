@@ -34,7 +34,7 @@ module dockyard.directives.paneConfigureAction {
         action: interfaces.IActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
-        configurationStore: ng.resource.IResource<model.ConfigurationStore> | model.ConfigurationStore;
+        crateStorage: ng.resource.IResource<model.CrateStorage> | model.CrateStorage;
         mapFields: (scope: IPaneConfigureActionScope) => void;
     }
 
@@ -81,7 +81,7 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
-            model.ConfigurationStore
+            model.CrateStorage
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -95,15 +95,15 @@ module dockyard.directives.paneConfigureAction {
 
             // Get configuration settings template from the server if the current action does not 
             // contain those or user has selected another action template.
-            if (scope.currentAction.configurationStore == null
-                || scope.currentAction.configurationStore.fields == null
-                || scope.currentAction.configurationStore.fields.length == 0
+            if (scope.currentAction.crateStorage == null
+                || scope.currentAction.crateStorage.fields == null
+                || scope.currentAction.crateStorage.fields.length == 0
                 || (eventArgs.action.id == this._currentAction.id &&
                     eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
 
                 if (eventArgs.action.actionTemplateId > 0) {
-                    (<any>scope.currentAction).configurationSettings =
-                    this.ActionService.getConfigurationStore(scope.action);                    
+                    (<any>scope.currentAction).crateStorage =
+                    this.ActionService.getCrateStorage(scope.action);
                 }
             }
 

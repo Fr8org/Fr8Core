@@ -13,6 +13,7 @@ namespace Data.Entities
             SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
             DockyardAccount = new DockyardAccountDO();
             StartingProcessNodeTemplate = new ProcessNodeTemplateDO();
+            ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
         }
 
         [Key]
@@ -46,5 +47,8 @@ namespace Data.Entities
 
         [InverseProperty("ProcessTemplate")]
         public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
+
+        [InverseProperty("ProcessNodeTemplate")]
+        public virtual IList<ProcessNodeTemplateDO> ProcessNodeTemplates { get; set; }
     }
 }

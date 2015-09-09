@@ -41,7 +41,7 @@ module dockyard.interfaces {
         processBuilder: any
     }
 
-    export interface IConfigurationStoreVM extends ng.resource.IResource<model.ConfigurationStore>, model.ConfigurationStore {
+    export interface ICrateStorageVM extends ng.resource.IResource<model.CrateStorage>, model.CrateStorage {
     }
     export interface IActionListVM extends ng.resource.IResource<model.ActionList>, model.ActionList {
     }

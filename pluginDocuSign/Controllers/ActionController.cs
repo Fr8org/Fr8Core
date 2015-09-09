@@ -4,7 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Services;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using AutoMapper;
 using Data.Entities;
 //using Utilities.Serializers.Json;
@@ -14,7 +14,7 @@ using StructureMap;
 using System.Data.SqlClient;
 using System.Data;
 using pluginDocuSign.Actions;
-using PluginUtilities;
+using PluginBase;
 using System.Reflection;
 
 
@@ -58,7 +58,7 @@ namespace pluginDocuSign.Controllers
 
         [HttpPost]
         [Route("activate")]
-        public string Actvate(ActionDesignDTO curActionDesignDTO)
+        public string Activate(ActionDesignDTO curActionDesignDTO)
         {
             //return HandleDockyardRequest("Actvate", curActionDesignDTO);
             return "Activate Request"; // Will be changed when implementation is plumbed in.

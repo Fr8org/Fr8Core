@@ -17,7 +17,7 @@ module dockyard.interfaces {
         processNodeTemplateId: number,
         actionListId: number,
         name: string;
-        configurationStore: model.ConfigurationStore;
+        crateStorage: model.CrateStorage;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
         actionTemplate: model.ActionTemplate;

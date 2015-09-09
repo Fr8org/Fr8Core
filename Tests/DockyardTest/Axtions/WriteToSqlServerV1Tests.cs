@@ -24,16 +24,6 @@ namespace DockyardTest.Axtions
                 ConfigurationManager.ConnectionStrings["HealthDB"].ConnectionString;
         }
 
-        [Test,Ignore]
-        [Category("Write_To_Sql_Server_v1.Execute")]
-        public void WriteToSqlServerV1_CanWriteData()
-        {
-            var curActionData = FixtureData.TestAction1();
-            curActionData.PayloadMappings = PayloadData;
-            curActionData.ConfigurationStore = CreateConfigurationStore();
-
-            _sqServerWriter.Process("execute", curActionData);
-        }
 
         private string CreateConfigurationStore()
         {
