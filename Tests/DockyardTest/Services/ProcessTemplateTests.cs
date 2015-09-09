@@ -34,6 +34,22 @@ namespace DockyardTest.Services
             }
 		}
 
+        [Test]
+        public void ProcessTemplateService_GetProcessNodeTemplates()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplateDO = FixtureData.TestProcessTemplateWithProcessNodeTemplates();
+                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                uow.SaveChanges();
+
+                var curProcessNodeTemplates = _processTemplateService.GetProcessNodeTemplates(curProcessTemplateDO);
+
+                Assert.IsNotNull(curProcessNodeTemplates);
+                Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates.Count, curProcessNodeTemplates.Count);
+            }
+        }
+
 		//[Test]
   //      public void TemplateRegistrationCollections_ShouldMakeIdentical()
   //      {
