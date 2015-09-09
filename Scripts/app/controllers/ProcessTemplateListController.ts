@@ -45,15 +45,19 @@ module dockyard.controllers {
 
             //Load Process Templates view model
             $scope.ptvms = ProcessTemplateService.query();
-
             var vm = this;
+            //console.log(vm.DTOptionsBuilder.fromSource($scope.ptvms));
             vm.DTOptionsBuilder = DTOptionsBuilder.fromSource('/api/processTemplate')
                 .withPaginationType('full_numbers');
+
+            console.log(vm.DTColumnBuilder);
+
             vm.DTColumnBuilder = [
                 DTColumnBuilder.newColumn('Id').withTitle('Id').notVisible(),
                 DTColumnBuilder.newColumn('Name').withTitle('Name'),
                 DTColumnBuilder.newColumn('Description').withTitle('Description')
             ];
+            console.log($scope.ptvms);
             //Detail/edit link
             $scope.nav = function (pt) {
                 window.location.href = '#processes/' + pt.Id;

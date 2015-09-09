@@ -513,16 +513,7 @@ namespace Data.Infrastructure
             {
                 return _subscriptionRepository ?? (_subscriptionRepository = new SubscriptionRepository(this));
             }
-        }
-
-        private UserEmailsRepository _UserEmailsRepository;
-        public IUserEmailsRepository UserEmailsRepository
-        {
-            get
-            {
-                return _UserEmailsRepository ?? (_UserEmailsRepository = new UserEmailsRepository(this));
-            }
-        }
+        }        
 
 	    public void Save()
         {

@@ -282,7 +282,6 @@
     <Compile Include="Services\SMSMessage.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Template.cs" />
-    <Compile Include="Services\UserEmails.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>
