@@ -431,7 +431,14 @@ namespace Data.Infrastructure
                 return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
             }
         }
-
+	  private ActivityRepository _activityRepository;
+	  public ActivityRepository ActivityRepository
+	  {
+		  get
+		  {
+			  return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
+		  }
+	  }
       private IProcessTemplateRepository _processTemplateRepository;
 
         public IProcessTemplateRepository ProcessTemplateRepository

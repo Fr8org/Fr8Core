@@ -9,6 +9,9 @@ using AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
+using Core.Interfaces;
+using Core.Services;
 
 namespace Core.PluginRegistrations
 {
@@ -31,10 +34,11 @@ namespace Core.PluginRegistrations
 #else
         public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1/";
 #endif
+        ICrate _crate;
         public AzureSqlServerPluginRegistration_v1()
             : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
-
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         private static ActionNameListDTO InitAvailableActions()
@@ -50,14 +54,14 @@ namespace Core.PluginRegistrations
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
-            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
-            curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("connection_string", true, "", "SQL Connection String"));
+            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
+            string contents = "{ name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }";
+            curCrateStorage.CratesDTO.Add(_crate.Create("Configuration Data for WriteToAzureSqlServer", contents));
 
-            return JsonConvert.SerializeObject(curConfigurationSettings);
+            return JsonConvert.SerializeObject(curCrateStorage);
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)

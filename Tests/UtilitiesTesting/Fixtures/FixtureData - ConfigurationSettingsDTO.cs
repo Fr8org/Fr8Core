@@ -1,17 +1,24 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Core.Interfaces;
+using Core.Services;
+using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 
 namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static ConfigurationSettingsDTO TestConfigurationSettings_healthdemo()
+        public static CrateStorageDTO TestConfigurationSettings_healthdemo()
         {
-            return new ConfigurationSettingsDTO
-            {
-                Fields =  {
-                    TestConnectionString1()
-                }
-            };
+            return CrateStorageDTO();
+        }
+
+        public static CrateStorageDTO CrateStorageDTO()
+        {
+            string contents = "{ name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }";
+            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
+            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+            curCrateStorage.CratesDTO.Add(_crate.Create("Configuration Data for WriteToAzureSqlServer", contents));
+            return curCrateStorage;
         }
 
         public static FieldDefinitionDTO TestConnectionString1()
