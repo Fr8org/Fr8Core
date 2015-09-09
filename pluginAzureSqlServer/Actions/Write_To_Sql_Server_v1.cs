@@ -12,29 +12,29 @@ using PluginBase.Infrastructure;
 using StructureMap;
 using PluginBase;
 using PluginBase.BaseClasses;
+using Core.Interfaces;
 
 namespace pluginAzureSqlServer.Actions {
     
-    //Handler Action Delegates
-    public delegate object WriteToSqlServerAction(ActionDO curActionDO);
-
-    //Action container class
     public class Write_To_Sql_Server_v1 : BasePluginAction {        
 
-       
+       //================================================================================
+       //General Methods (every Action class has these)
+
         //maybe want to return the full Action here
-        public ConfigurationSettingsDTO Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDO curActionDO)
         {
             return ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
+        //currently many actions have two stages of configuration, and this method determines which stage should be applied
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
         {
-            ConfigurationSettingsDTO curConfigurationStore = curActionDO.ConfigurationSettingsDTO();
+            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
 
             var curConnectionStringField =
-                curConfigurationStore.Fields.First(field => field.Name.Equals("connection_string"));
+                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CratesDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
             if (curConnectionStringField != null)
             {
@@ -47,61 +47,65 @@ namespace pluginAzureSqlServer.Actions {
                 else
                 {
                     //This else block covers 2nd and 3rd scenarios as mentioned below
-
                     //Scenario 2 - This is the seond request, being made after the user filled in the value of the connection string
                     //Scenario 3 - A data_fields was previously constructed, but perhaps the connection string has changed.
-
                     //in either scenario, we have to return Followup configuration request type
                     return ConfigurationRequestType.Followup;
                 }
             }
-
-            //This should not happen
-            return ConfigurationRequestType.Initial;
+            else
+            {
+                throw new ApplicationException("this value should never be null");
+            }
         }
 
-        protected override ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
+        //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
+            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             //Return one field with empty connection string
-            ConfigurationSettingsDTO curConfigurationStore = new ConfigurationSettingsDTO
+            CrateStorageDTO curConfigurationStore = new CrateStorageDTO
             {
-                Fields = new List<FieldDefinitionDTO>
+
+                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                CratesDTO = new List<CrateDTO>
                 {
-                    new FieldDefinitionDTO
-                    {
-                        Type = "textField",
-                        Name = "connection_string",
-                        Required = true,
-                        Value = string.Empty,
-                        FieldLabel = "SQL Connection String"
-                    }
+                    _crate.Create("Write to SQL Server", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
                 }
             };
 
             return curConfigurationStore;
         }
 
-        protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
+        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {
             //In all followup calls, update data fields of the configuration store
-            ConfigurationSettingsDTO curConfigurationStore = curActionDO.ConfigurationSettingsDTO();
+            CrateStorageDTO curConfigurationStore = curActionDO.CrateStorageDTO();
 
-            curConfigurationStore.DataFields = (List<string>)GetFieldMappings(curActionDO);
+            curConfigurationStore = curActionDO.CrateStorageDTO();
 
             return curConfigurationStore;
         }
 
         public object Activate(ActionDO curActionDO)
         {
+            //not currently any requirements that need attention at Activation Time
             return null;
         }
 
-        public object ExecuteV2(ActionDO curActionDO)
+        public object Execute(ActionDO curActionDO)
         {
-            return null;
+            var curCommandArgs = PrepareSQLWrite(curActionDO);
+            var dbService = new DbService();
+
+            dbService.WriteCommand(curCommandArgs);
+
+            return true;
         }
 
-      
+      //===============================================================================================
+      //Specialized Methods (Only found in this Action class)
 
         private const string ProviderName = "System.Data.SqlClient";
         private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
@@ -111,22 +115,24 @@ namespace pluginAzureSqlServer.Actions {
                                                  @") r " +
                                                  @"ORDER BY r.NAME, r.COLUMN_NAME";
 
-        //[HttpPost]
-        //[Route("write_to_sql_server/field_mappings")]
+
+        //CONFIGURATION-Related Methods
+        //-----------------------------------------
+     
         public object GetFieldMappings(ActionDO curActionDO) {
             //Get configuration settings and check for connection string
-            if (string.IsNullOrEmpty(curActionDO.ConfigurationStore))
+            if (string.IsNullOrEmpty(curActionDO.CrateStorage))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(curActionDO.ConfigurationStore);
-            if (configuration == null || configuration.Fields.Count == 0)
+            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CratesDTO.First().Contents);
+            if (configuration == null || curActionDO.CrateStorageDTO().CratesDTO.Count == 0)
                 {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
                 }
 
-            var connStringField = configuration.Fields.Find(f => f.Name == "connection_string");
+            var connStringField = configuration;
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
@@ -153,29 +159,21 @@ namespace pluginAzureSqlServer.Actions {
             });
         }
 
-        //The original method still exists at the top of the plugin code
-        //[HttpPost]
-        //[Route("write_to_sql_server/execute")]
-        private object Execute(ActionDO curActionDO)
-        {
-            var curCommandArgs = CreateCommandArgs(curActionDO);
-            var dbService = new DbService();
 
-            dbService.WriteCommand(curCommandArgs);
-
-            return true;
-        }
-
-        private WriteCommandArgs CreateCommandArgs(ActionDO curActionDO)
+        //EXECUTION-Related Methods
+        //-----------------------------------------
+        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO)
         {
             var parser = new DbServiceJsonParser();
             var curConnStringObject = parser.ExtractConnectionString(curActionDO);
-            var curCustomerData = ExtractCustomerData(curActionDO, parser);
+            var curSQLData = ConvertActionPayloadToSqlInputs(curActionDO, parser);
 
-            return new WriteCommandArgs(ProviderName, curConnStringObject, curCustomerData);
+            return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);
         }
 
-        private IEnumerable<Table> ExtractCustomerData(ActionDO curActionDO,DbServiceJsonParser parser)
+
+
+        private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO,DbServiceJsonParser parser)
         {
             var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
             var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
@@ -190,69 +188,7 @@ namespace pluginAzureSqlServer.Actions {
             return new List<Table> {table};
         }
 
-        //[HttpGet]
-        //[Route("available")]
-        private static readonly ActionTypeListDTO AvailableActions = new ActionTypeListDTO {
-            TypeName = "write to azure sql server",
-            Version = "4.3"
-        };
-        private object GetAvailable(ActionDO curActionDO) {
-            return AvailableActions;
-        }
 
-        //[HttpGet]
-        //[Route("configurationsettings")]
-        private object GetConfigurationSettings(ActionDO curActionDO) {
-            return null;
-        }
-
-        //Public entry point, maps to actions from the controller
-        public object Process(string path, ActionDO curActionDO)
-        {
-            //switch (path)
-            //{
-            //    case "execute": return Execute(curActionDO);
-            //    case "field_mappings": return GetFieldMappings(curActionDO);
-            //    case "configurationsettings": return GetConfigurationSettings(curActionDO);
-            //    case "available": return GetAvailable(curActionDO);
-            //    default: return new { };
-            //}
-
-            throw new ApplicationException("this method has been deprecated. Please use the new mechanisms described at https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
-        }
-
-        //private readonly IDbProvider _dbProvider;
-        //private readonly JsonSerializer _serializer;
-
-        //public ActionController(IDbProvider dbProvider, JsonSerializer serializer) {
-        //    _dbProvider = dbProvider;
-        //    _serializer = serializer;
-        //}
-
-        /// <summary>
-        /// Insert user data to remote database tables.
-        /// </summary>
-        //[HttpPost]
-        //[Route("writeSQL")]
-        //public CommandResponse Write(JObject data)
-        //{                 
-        //    try
-        //    {
-        //        // Creating ExtrationHelper and parsing WriteCommandArgs.
-        //var parser = new DbServiceJsonParser();
-        //        var writeArgs = parser.ExtractWriteCommandArgs(data);
-
-        //        // Creating DbService and running WriteCommand logic.
-        //        var dbService = new DbService();
-        //        dbService.WriteCommand(writeArgs);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return CommandResponse.ErrorResponse(ex.Message);
-        //    }
-
-        //    return CommandResponse.SuccessResponse();
-        //}
 
     }
 }

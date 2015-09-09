@@ -1,21 +1,6 @@
-﻿using System;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json.Linq;
-using pluginAzureSqlServer.Infrastructure;
-using pluginAzureSqlServer.Services;
-using PluginBase.Infrastructure;
-using AutoMapper;
 using Data.Entities;
-//using Utilities.Serializers.Json;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using StructureMap;
-using System.Data.SqlClient;
-using System.Data;
-using pluginAzureSqlServer.Actions;
-using PluginBase;
-using System.Reflection;
 using PluginBase.BaseClasses;
 
 

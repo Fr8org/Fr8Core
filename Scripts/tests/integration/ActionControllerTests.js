@@ -70,7 +70,7 @@ var dockyard;
                         // First POST, create a dummy entry
                         var actions = {
                             name: "test action type",
-                            configurationStore: fx.ActionDesignDTO.configurationStore,
+                            crateStorage: fx.ActionDesignDTO.crateStorage,
                             processNodeTemplateId: 1,
                             actionTemplateId: 1,
                             isTempId: false,
@@ -90,7 +90,7 @@ var dockyard;
                     var endpoint = "/actions";
                     var currentActionDesignDTO = {
                         name: "test action type",
-                        configurationStore: fx.ActionDesignDTO.configurationStore,
+                        crateStorage: fx.ActionDesignDTO.crateStorage,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,

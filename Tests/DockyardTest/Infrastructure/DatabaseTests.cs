@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using AutoMapper;
 using Core.Interfaces;
-using Core.Managers;
-using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.PluginRegistrations;
 using Core.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Data.Wrappers;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
-using StructureMap.Building;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Action = Core.Services.Action;
 
 namespace DockyardTest.Services
 {

@@ -25,7 +25,9 @@ module dockyard.controllers {
             '$scope',
             'ProcessTemplateService',
             '$modal',
-            '$filter'
+            '$filter',
+            'DTOptionsBuilder',
+            'DTColumnBuilder'
         ];
 
         constructor(
@@ -33,7 +35,9 @@ module dockyard.controllers {
             private $scope: IProcessTemplateListScope,
             private ProcessTemplateService: services.IProcessTemplateService,
             private $modal,
-            private $filter) {
+            private $filter,
+            private DTOptionsBuilder,
+            private DTColumnBuilder) {
 
             //Clear the last result value (but still allow time for the confirmation message to show up)
             setTimeout(function () {
@@ -47,7 +51,31 @@ module dockyard.controllers {
 
             //Load Process Templates view model
             $scope.ptvms = ProcessTemplateService.query();
+            var vm = this; 
+            vm.DTOptionsBuilder = DTOptionsBuilder.fromSource('/api/processTemplate')
+                .withPaginationType('full_numbers');            
 
+            vm.DTColumnBuilder = [
+                DTColumnBuilder.newColumn('Id').withTitle('Id').notVisible(),
+                DTColumnBuilder.newColumn('Name').withTitle('Name'),
+                DTColumnBuilder.newColumn('Description').withTitle('Description'),
+                DTColumnBuilder.newColumn('ProcessTemplateState').withTitle('Status')
+                    .renderWith(function (data, type, full, meta) {
+
+                        if (data.ProcessTemplateState === 1) {
+                            return '<span class="bold font-green-haze">Inactive</span>'
+                        }
+                        else {
+                            return '<span class="bold font-green-haze">Active</span>'
+                        }
+
+                    }),
+                DTColumnBuilder.newColumn(null).withTitle('Actions').notSortable()
+                    .renderWith(function (data, type, full, meta) {
+                        return '<button type="button" class="btn btn-sm red" ng-click="remove(' + data + '); $event.stopPropagation();">Delete</button>'
+                    })
+            ];            
+            
             //Detail/edit link
             $scope.nav = function (pt) {                
                 if (pt != null)

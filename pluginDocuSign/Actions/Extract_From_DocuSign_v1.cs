@@ -11,30 +11,20 @@ namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_v1 : BasePluginAction
     {
-        public object HandleConfigureRequest(ActionDO curActionDTO)
+        public object Configure(ActionDO curActionDO)
         {
-            return "Configure Request"; // Will be changed when implementation is plumbed in.
+            //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
+            return ProcessConfigurationRequest(curActionDO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
-        public object HandleActivateRequest(ActionDO curActionDTO)
+        public object Activate(ActionDO curActionDO)
         {
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public object HandleExecuteRequest(ActionDO curActionDTO)
+        public object Execute(ActionDO curActionDO)
         {
             return "Execute Request"; // Will be changed when implementation is plumbed in.
         }
-
-        protected override ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
-        {
-            return new ConfigurationSettingsDTO();//this is nyi
-        }
-
-        protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
-        {
-            return new ConfigurationSettingsDTO();//this is nyi
-        }
-
     }
 }

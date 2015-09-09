@@ -6,6 +6,8 @@ using Data.Wrappers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System;
 
 namespace Data.Entities
 {
@@ -17,13 +19,9 @@ namespace Data.Entities
         // public int? ParentActionListId { get; set; }
         // public virtual ActionListDO ParentActionList { get; set; }
 
-        public string ConfigurationStore { get; set; }
+        public string CrateStorage { get; set; }
 
         public string FieldMappingSettings { get; set; }
-
-        // TODO: We should probably remove this property.
-        // TODO: We can access ParentPluginRegistration via ActionDO.ActionTemplate.ParentPluginRegistration.
-        public string ParentPluginRegistration { get; set; }
 
         [ForeignKey("ActionStateTemplate")]
         public int? ActionState { get; set; }
@@ -39,10 +37,21 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
-        public ConfigurationSettingsDTO ConfigurationSettingsDTO()
+        public CrateStorageDTO CrateStorageDTO()
         {
-                return JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(this.ConfigurationStore);
+            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+        }
 
+        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+        {
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+
+            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
+                crateStorageDTO = this.CrateStorageDTO();
+
+            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+
+            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
         }
     }
 }

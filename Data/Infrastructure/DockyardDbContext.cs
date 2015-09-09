@@ -325,6 +325,18 @@ namespace Data.Infrastructure
                .HasForeignKey(x => x.StartingProcessNodeTemplateId)
                .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<AuthorizationTokenDO>()
+             .HasRequired(x => x.Plugin)
+             .WithMany()
+             .HasForeignKey(x => x.PluginID)
+             .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ActionTemplateDO>()
+                .HasRequired(x => x.Plugin)
+                .WithMany()
+                .HasForeignKey(x => x.PluginID)
+                .WillCascadeOnDelete(false);
+
             base.OnModelCreating(modelBuilder);
         }
 

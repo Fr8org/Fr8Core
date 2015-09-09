@@ -9,6 +9,7 @@ var app = angular.module("app", [
     'ngResource',
     'ui.bootstrap',
     "ngMockE2E",
+    "datatables",
     "ngFileUpload"
 ]);
 
