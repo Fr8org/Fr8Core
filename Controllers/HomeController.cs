@@ -131,5 +131,9 @@ namespace Web.Controllers
             }
             return Content(result);
         }
+        public ActionResult UserEmails()
+        {
+            return View();
+        }
     }
 }
