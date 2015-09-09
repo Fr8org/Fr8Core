@@ -39,28 +39,7 @@ namespace Core.Services
                 return uow.ActionRepository.GetAll().Select(Mapper.Map<TViewModel>);
             }
         }
-
-        //public IEnumerable<ActivityTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
-        //{
-        //    List<ActivityTemplateDO> curActionTemplates;
-
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        curActionTemplates = uow.ActionTemplateRepository.GetAll().ToList();
-        //    }
-
-        //    //we're currently bypassing the subscription logic until we need it
-        //    //we're bypassing the pluginregistration logic here because it's going away in V2
-
-        //    //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-        //    //var plugins = _plugin.GetAll();
-        //   // var curActionTemplates = plugins
-        //    //    .SelectMany(p => p.AvailableActions)
-        //    //    .OrderBy(s => s.ActionType);
-
-        //    return curActionTemplates;
-        //}
-
+        
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
             ActionDO existingActionDo = null;

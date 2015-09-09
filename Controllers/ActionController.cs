@@ -37,24 +37,6 @@ namespace Web.Controllers
                 }
         */
 
-        //[DockyardAuthorize]
-        //[Route("available")]
-        //[ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
-        //public IHttpActionResult GetAvailableActions()
-        //{
-        //    var userId = User.Identity.GetUserId();
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var curDockyardAccount = uow.UserRepository.GetByKey(userId);
-        //        var availableActions = _action
-        //            .GetAvailableActions(curDockyardAccount)
-        //            .Select(x => Mapper.Map<ActionTemplateDTO>(x))
-        //            .ToList();
-
-        //        return Ok(availableActions);
-        //    }
-        //}
-
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
