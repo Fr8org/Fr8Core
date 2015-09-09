@@ -9,12 +9,10 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Core.Interfaces;
-using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
-using Web.Infrastructure;
 
 namespace Web.Controllers
 {
@@ -25,44 +23,36 @@ namespace Web.Controllers
         [ResponseType(typeof(FileDTO))]
         [Route("")]
         [HttpPost]
-        public async Task<IHttpActionResult> UploadExcelFile()
+        public async Task<IHttpActionResult> UploadFile()
         {
             if (!Request.Content.IsMimeMultipartContent())
             {
                 //TODO maybe we should create an event handler for this and log these messages
-                return BadRequest("Multipart content data is required to upload files");
+                throw new InvalidDataException("Multipart content data is required to upload files");
             }
 
-            var provider = new ExcelOnlyMultiPartMemoryStreamProvider();
-            try
-            {
-                await Request.Content.ReadAsMultipartAsync(provider);
-            }
-            //this exception is thrown by ExcelOnlyMultiPartMemoryStreamProvider when file extension is not an excel extension
-            catch (InvalidDataException exc) 
-            {
-                return BadRequest(exc.Message);
-            }
+            var provider = new MultipartMemoryStreamProvider();
+            await Request.Content.ReadAsMultipartAsync(provider);
 
             if (provider.Contents.Count != 1)
             {
-                return BadRequest("It is only allowed to upload single excel file");
+                throw new InvalidDataException("It is only allowed to upload single file");
             }
 
             try
             {
-                var excelFile = provider.Contents.First();
+                var _file = provider.Contents.First();
                 var fileService = ObjectFactory.GetInstance<IFile>();
                 var curFile = new FileDO();
                 //upload file to azure and save to db
-                fileService.Store(curFile, await excelFile.ReadAsStreamAsync(), excelFile.Headers.ContentDisposition.FileName.Replace("\"", string.Empty));
+                fileService.Store(curFile, await _file.ReadAsStreamAsync(), _file.Headers.ContentDisposition.FileName.Replace("\"", string.Empty));
                 return Ok(Mapper.Map<FileDO, FileDTO>(curFile));
             }
             catch (Exception e)
             {
                 //perhaps we couldn't upload file to azure
                 //TODO log exception
-                return InternalServerError(e);
+                throw new Exception("File upload was failed. Please retry.");
 
             }
         }
