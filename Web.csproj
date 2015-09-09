@@ -3917,6 +3917,7 @@
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
+    <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

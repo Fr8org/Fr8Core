@@ -39,22 +39,12 @@ namespace Web.Controllers
                 throw new InvalidDataException("It is only allowed to upload single file");
             }
 
-            try
-            {
-                var _file = provider.Contents.First();
-                var fileService = ObjectFactory.GetInstance<IFile>();
-                var curFile = new FileDO();
-                //upload file to azure and save to db
-                fileService.Store(curFile, await _file.ReadAsStreamAsync(), _file.Headers.ContentDisposition.FileName.Replace("\"", string.Empty));
-                return Ok(Mapper.Map<FileDO, FileDTO>(curFile));
-            }
-            catch (Exception e)
-            {
-                //perhaps we couldn't upload file to azure
-                //TODO log exception
-                throw new Exception("File upload was failed. Please retry.");
-
-            }
+            var _file = ObjectFactory.GetInstance<IFile>();
+            var file = provider.Contents.First();
+            var curFile = new FileDO();
+            //upload file to azure and save to db
+            _file.Store(curFile, await file.ReadAsStreamAsync(), file.Headers.ContentDisposition.FileName.Replace("\"", string.Empty));
+            return Ok(Mapper.Map<FileDO, FileDTO>(curFile));
         }
 
         [ResponseType(typeof(List<FileDTO>))]

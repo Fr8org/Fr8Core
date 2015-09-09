@@ -2,14 +2,12 @@
 module dockyard.directives.filePicker {
     'use strict';
 
-    export enum MessageType {
-    }
-
     export interface IFilePickerScope extends ng.IScope {
         OnFileSelect: ($file: any) => void;
         ListExistingFiles: () => void;
         Save: () => void;
         field: model.FileField;
+        selectedFile: interfaces.IFileDTO;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -19,13 +17,11 @@ module dockyard.directives.filePicker {
         public templateUrl = '/AngularTemplate/FilePicker';
         public controller: ($scope: IFilePickerScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            field: '=',
-            accept: '@'
+            field: '='
         };
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IFilePickerScope;
-        private _fileDTO: interfaces.IFileDTO;
 
         constructor(private $rootScope: interfaces.IAppRootScope, private $modal: any, private FileService: IFileService) {
             FilePicker.prototype.link = (
@@ -43,7 +39,7 @@ module dockyard.directives.filePicker {
                 this._$element = $element;
                 this._$scope = $scope;
                 this.FileService = FileService;
-                //Controller goes here
+                this._$scope.selectedFile = null;
                 $scope.OnFileSelect = <($file: any) => void> angular.bind(this, this.OnFileSelect);
                 $scope.ListExistingFiles = <() => void> angular.bind(this, this.ListExistingFiles);
                 $scope.Save = <() => void> angular.bind(this, this.Save);
@@ -51,24 +47,21 @@ module dockyard.directives.filePicker {
         }
 
         private OnFileUploadSuccess(fileDTO: interfaces.IFileDTO) {
-            console.log('File was uploaded successfully');
-            console.log(fileDTO);
-            this._fileDTO = fileDTO;
+            this._$scope.selectedFile = fileDTO;
         }
 
         private OnFileUploadFail(status: any) {
-            console.log('error status: ' + status);
+            alert('sorry file upload failed with status: ' + status);
         }
 
         private OnFileSelect($file) {
             var onFileUploadSuccess = <(fileDTO: interfaces.IFileDTO) => void> angular.bind(this, this.OnFileUploadSuccess);
             var onFileUploadFail = <(status: any) => void> angular.bind(this, this.OnFileUploadFail);
-            console.log('Uploading file');
             this.FileService.uploadFile($file).then(onFileUploadSuccess, onFileUploadFail);
         }
 
         private Save() {
-            if (this._fileDTO === null) {
+            if (this._$scope.selectedFile === null) {
                 //raise some kind of error to prevent continuing
                 alert('No file was selected!!!!!!');
                 return;
@@ -76,23 +69,20 @@ module dockyard.directives.filePicker {
             
             //we should assign id of selected file to model value
             //this._$scope.field.value = this._fileDTO.id.toString();
-            alert('Selected FileDO ID -> ' + this._fileDTO.id.toString());
+            alert('Selected FileDO ID -> ' + this._$scope.selectedFile.id.toString());
+            //TODO add this file's id to CrateDO
         }
 
         private OnExistingFileSelected(fileDTO: interfaces.IFileDTO) {
-            console.log('File was selected successfully');
-            console.log(fileDTO);
-            this._fileDTO = fileDTO;
+            this._$scope.selectedFile = fileDTO;
         }
 
         private OnFilesLoaded(filesDTO: Array<interfaces.IFileDTO>) {
-            console.log('Listing files');
-            console.log(filesDTO);
-            
+
             //THIS IS FOR DEMO ONLY. i (@bahadirbozdag) will fix this -----------------------------------
 
             var modalInstance = this.$modal.open({
-                templateUrl: 'fileSelectorModal.html',
+                templateUrl: '/AngularTemplate/FileSelectorModal',
                 controller: ['$scope', '$modalInstance', 'files', ($modalScope: any, $modalInstance: any, files: Array<interfaces.IFileDTO>) => {
                     $modalScope.files = files;
 
@@ -118,8 +108,6 @@ module dockyard.directives.filePicker {
 
         private ListExistingFiles() {
             var onFilesLoaded = <(filesDTO: Array<interfaces.IFileDTO>) => void> angular.bind(this, this.OnFilesLoaded);
-            //load existing files
-            console.log('List existing files was clicked');
             this.FileService.listFiles().then(onFilesLoaded);
         }
 
@@ -136,7 +124,7 @@ module dockyard.directives.filePicker {
 
     app.directive('filePicker', FilePicker.Factory());
 
-    //TODO talk to alex and move this class to services folder !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //TODO talk to alex and move this class to services folder? !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     interface IFileService {
         uploadFile(file: any): any;

@@ -71,8 +71,6 @@ module dockyard.directives.paneConfigureAction {
                 this._$element = $element;
 
                 //Controller goes here
-                //TODO remove this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                $scope.isVisible = true;
                 $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
