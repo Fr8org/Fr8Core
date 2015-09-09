@@ -14,6 +14,7 @@ using Data.States;
 using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
+using Newtonsoft.Json;
 
 namespace Core.Services
 {
@@ -85,7 +86,7 @@ namespace Core.Services
                     existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationStore = currentActionDo.ConfigurationStore;
+                    existingActionDo.CrateStorage = currentActionDo.CrateStorage;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
                 }
                 else
@@ -306,7 +307,7 @@ namespace Core.Services
         {
             if (curActionDO.ParentActivity != null
                 && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
-            {
+        {
                 ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
 
                 return curActionListDO
@@ -319,5 +320,18 @@ namespace Core.Services
 
         }
 
+
+        public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
+        {
+            if (curCrateDTOLists == null)
+                throw new ArgumentNullException("CrateDTO is null");
+            if (curActionDO == null)
+                throw new ArgumentNullException("ActionDO is null");
+
+            if (curCrateDTOLists.Count > 0)
+            {
+                curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
+            }
+        }
     }
 }

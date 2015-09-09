@@ -6,6 +6,8 @@ using Data.Wrappers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System;
 
 namespace Data.Entities
 {
@@ -17,7 +19,7 @@ namespace Data.Entities
         // public int? ParentActionListId { get; set; }
         // public virtual ActionListDO ParentActionList { get; set; }
 
-        public string ConfigurationStore { get; set; }
+        public string CrateStorage { get; set; }
 
         public string FieldMappingSettings { get; set; }
 
@@ -37,8 +39,19 @@ namespace Data.Entities
 
         public CrateStorageDTO CrateStorageDTO()
         {
-                return JsonConvert.DeserializeObject<CrateStorageDTO>(this.ConfigurationStore);
+            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+        }
 
+        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+        {
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+
+            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
+                crateStorageDTO = this.CrateStorageDTO();
+
+            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+
+            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
         }
     }
 }

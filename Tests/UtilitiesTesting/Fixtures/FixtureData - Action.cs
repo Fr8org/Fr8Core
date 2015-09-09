@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 54,
                 Name = "Write to Sql Server",
-                ConfigurationStore = "",
+                CrateStorage = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
                 Ordering = 1,
@@ -78,7 +78,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = null,
                 Name = "type 1",
                 Id = 34,
-                ConfigurationStore= "config settings",
+                CrateStorage= "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 Ordering = 3,
                 ActionTemplateId = actionTemplate.Id,
@@ -228,7 +228,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 10,
                 Name = "WriteToAzureSql",
                 ParentActivityId = 1,
-                ConfigurationStore = "JSON Config Settings",
+                CrateStorage = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
@@ -295,7 +295,7 @@ namespace UtilitiesTesting.Fixtures
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ConfigurationStore= "config settings",
+                CrateStorage= "config settings",
                 ParentActivityId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };

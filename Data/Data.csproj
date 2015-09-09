@@ -219,6 +219,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
+	<Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
@@ -228,6 +229,7 @@
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
@@ -286,6 +288,10 @@
     <Compile Include="Migrations\201509082000511_RemoveParentPluginRegistration.cs" />
     <Compile Include="Migrations\201509082000511_RemoveParentPluginRegistration.Designer.cs">
       <DependentUpon>201509082000511_RemoveParentPluginRegistration.cs</DependentUpon>
+    </Compile>
+	<Compile Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs" />
+    <Compile Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.Designer.cs">
+      <DependentUpon>201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -543,6 +549,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509082000511_RemoveParentPluginRegistration.resx">
       <DependentUpon>201509082000511_RemoveParentPluginRegistration.cs</DependentUpon>
+    </EmbeddedResource>
+	<EmbeddedResource Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.resx">
+      <DependentUpon>201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

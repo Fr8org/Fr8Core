@@ -90,7 +90,10 @@ namespace Core.Services
                     string nodeExecutionResultKey = _processNode.Execute(curEnvelopeData, curProcessNode);
                     if (nodeExecutionResultKey != string.Empty)
                     {
-                        List<ProcessNodeTransition> nodeTransitions = JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
+                        List<ProcessNodeTransition> nodeTransitions =
+                            JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(
+                                curProcessNode.ProcessNodeTemplate.NodeTransitions
+                            );
                         string nodeID = GetNextProcessNodeId(nodeTransitions, nodeExecutionResultKey);
                         curProcessNode = uow.ProcessNodeRepository.GetByKey(Convert.ToInt32(nodeID));
                     }
