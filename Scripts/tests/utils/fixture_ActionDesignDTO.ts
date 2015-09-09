@@ -17,14 +17,16 @@ module dockyard.tests.utils.fixtures {
                     "name": "connection_string",
                     "required": true,
                     "value": "",
-                    "fieldLabel": "SQL Connection String"
+                    "fieldLabel": "SQL Connection String",
+                    "events": ""
                 },
                 {
                     "type": "textField",
                     "name": "query",
                     "required": true,
                     "value": "",
-                    "fieldLabel": "Custom SQL Query"
+                    "fieldLabel": "Custom SQL Query",
+                    "events": ""
                 },
                 {
                     "type": "checkboxField",
