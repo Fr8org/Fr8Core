@@ -1,28 +1,29 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Entities;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDesignDTO : ActionDTOBase
     {
-        [JsonProperty("actionListId")]
         public int? ActionListId { get; set; }
 
-        [JsonProperty("configurationSettings")]
-        public ConfigurationSettingsDTO ConfigurationSettings { get; set; }
+        [JsonProperty("configurationStore")]
+        public CrateStorageDTO CrateStorage { get; set; }
 
-        [JsonProperty("fieldMappingSettings")]
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
-        [JsonProperty("parentPluginRegistration")]
-        public string ParentPluginRegistration { get; set; }
+        public int? ActionTemplateId { get; set; }
 
-        [JsonProperty("docuSignTemplateId")]
-	    public string DocuSignTemplateId { get; set; }
-
-        [JsonProperty("actionTemplateId")]
-        public int ActionTemplateId { get; set; }
+        [JsonProperty("actionTemplate")]
+        public ActionTemplateDTO ActionTemplate { get; set; }
 
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }
+
+        [JsonProperty("action_name")]
+        public string ActionName { get; set; }
+
+        [JsonProperty("action_version")]
+        public string ActionVersion { get; set; }
     }
 }

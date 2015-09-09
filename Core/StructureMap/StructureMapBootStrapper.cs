@@ -1,3 +1,4 @@
+using System.Net.Http.Formatting;
 using AutoMapper;
 using Core.ExternalServices;
 using Core.Interfaces;
@@ -11,7 +12,6 @@ using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.PluginRegistrations;
 using Core.Security;
 using Core.Services;
 using Data.Entities;
@@ -93,11 +93,11 @@ namespace Core.StructureMap
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
+					 For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
-                For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
@@ -106,7 +106,8 @@ namespace Core.StructureMap
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
-
+                For<IPlugin>().Use<Plugin>();
+                For<ICrate>().Use<Crate>();
             }
         }
 
@@ -142,6 +143,7 @@ namespace Core.StructureMap
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
+					 For<IActivity>().Use<Activity>();
 
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
@@ -157,7 +159,6 @@ namespace Core.StructureMap
                 pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
                 For<IActionTemplate>().Use<ActionTemplate>();
-                For<IPluginRegistration>().Use<AzureSqlServerPluginRegistration_v1>().Named("AzureSql");
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
@@ -165,6 +166,8 @@ namespace Core.StructureMap
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
+                For<IPlugin>().Use<Plugin>();
+                For<ICrate>().Use<Crate>();
             }
         }
 

@@ -10,10 +10,10 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("EventStatusTemplate")]
-        public int ExternalEvent { get; set; }
+        [ForeignKey("ExternalEventTypeTemplate")]
+        public int? ExternalEvent { get; set; }
 
-        public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
+        public virtual _ExternalEventTypeTemplate ExternalEventTypeTemplate { get; set; }
 
         [ForeignKey("ExternalProcessTemplate")]
         public int ExternalProcessTemplateId { get; set; }

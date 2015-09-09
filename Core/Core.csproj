@@ -183,10 +183,12 @@
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Interfaces\IActionRegistration.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
+    <Compile Include="Interfaces\ICrate.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
@@ -251,7 +253,6 @@
     <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
     <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
     <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
-    <Compile Include="PluginRegistrations\NotifierPluginRegistration_v1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -261,17 +262,21 @@
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
     <Compile Include="Services\ActionRegistration.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
+    <Compile Include="Services\Crate.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Interfaces\IPlugin.cs" />
+    <Compile Include="Services\Plugin.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />

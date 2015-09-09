@@ -1,4 +1,11 @@
-﻿using Data.Entities;
+﻿using Core.Services;
+using Data.Entities;
+using Data.Interfaces;
+using Data.States;
+using Microsoft.AspNet.Identity.EntityFramework;
+using StructureMap;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -37,6 +44,30 @@ namespace UtilitiesTesting.Fixtures
                 FirstName = "developer",
                 State = 1
             };
+        }
+
+        public static DockyardAccountDO TestDockyardAccount3()
+        {
+            DockyardAccount _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return _dockyardAccount.Register(uow, "alexlucre", "Alex", "Lucre1", "alex@123", Roles.Admin);
+            }
+        }
+
+        public static DockyardAccountDO TestDockyardAccount4()
+        {
+            var curEmailAddressDO = TestEmailAddress1();
+            return new DockyardAccountDO()
+            {
+                EmailAddress = curEmailAddressDO,
+                FirstName = "Alex",
+                LastName = "Lucre1",
+                UserName = "alexlucre"
+               
+            };
+
+
         }
 
         /* public DockyardAccountDO TestDockyardAccount2()

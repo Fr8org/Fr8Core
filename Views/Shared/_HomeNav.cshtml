@@ -5,13 +5,14 @@
    {
      
   <ul class="pull-right welcomemsg">
-      <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+      <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
   </ul>
 
 <ul class="nav pull-right">
     <li data-section="2"><a href="#how_to_works" class="how_to_works" title="How it Works">How it Works</a></li>
     <li><a href="/Home/About" title="About Us">About Us</a></li>
     <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
+    <li><a href="http://dsigndocs.azurewebsites.net/RestApiDocs/RestAPIGuide.html">DocuSign Rest API Documentation</a></li>
     <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
     <li>@Html.ActionLink("My Account", "MyAccount", "User") </li>
     <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>

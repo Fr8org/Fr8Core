@@ -2,11 +2,10 @@
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 
 module dockyard.tests.controller {
+    import fx = utils.fixtures; // just an alias
 
     describe("Action Controller ", function () {
         var testData = {};
-
-        var returnedData = null;
 
         var errorHandler = function (response, done) {
             if (response.status === 401) {
@@ -18,10 +17,13 @@ module dockyard.tests.controller {
             done.fail(response.responseText);
         };
 
+        describe("Action#Get,Delete,Save", function () {
+            var returnedData = null;
+
         var deleteInvoker = function (data, done) {
             $.ajax({
                 type: "Delete",
-                url: "/api/action/" + data.Id,
+                url: "/actions/" + data.id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -35,7 +37,7 @@ module dockyard.tests.controller {
         var getInvoker = function (data, done) {
             $.ajax({
                 type: "GET",
-                url: "/api/action/" + data[0].Id,
+                url: "/actions/" + data[0].id,
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function (data, status) {
@@ -52,7 +54,7 @@ module dockyard.tests.controller {
         var postInvoker = function (done, dataToSave) {
             $.ajax({
                 type: "POST",
-                url: "/api/action/save",
+                url: "/actions/save",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(dataToSave),
                 dataType: "json"
@@ -72,13 +74,15 @@ module dockyard.tests.controller {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationSettings: utils.Fixtures.configurationSettings,
+                    crateStorage: fx.ActionDesignDTO.crateStorage,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
-                    id:0,
-                    fieldMappingSettings: "test",
-                    actionListId: 1
+                    id: 0,
+                    fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
+                    // ActionListId is set to null, since there is no ActionsLists on a blank db.
+                        actionListId: null,
+                        actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
                 };
 
             postInvoker(done, actions);
@@ -87,6 +91,45 @@ module dockyard.tests.controller {
 
         it("can save action", function () {
             expect(returnedData).not.toBe(null);
+        });
+    });
+
+        describe("Action#GetConfigurationSettings", function () {
+            var endpoint = "/actions";
+
+            var currentActionDesignDTO: interfaces.IActionDesignDTO =
+                    {
+                        name: "test action type",
+                        crateStorage: fx.ActionDesignDTO.crateStorage,
+                        processNodeTemplateId: 1,
+                        actionTemplateId: 1,
+                        isTempId: false,
+                        id: 1,
+                        fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
+                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
+                        actionListId: null,
+                        actionTemplate: fx.ActionTemplate.actionTemplateDO
+                    };
+
+            beforeAll(function () {
+                $(document).ajaxError(errorHandler);
+                $.ajaxSetup({ async: false, url: endpoint, dataType: "json", contentType: "text/json" });
+            });
+
+            it("Should get the correct configuration settings (AzureSqlServerPluginRegistration_v1)", function () {
+                var expectedSettings = JSON.stringify({ "fields": [{ "name": "connection_string", "required": true, "value": "", "fieldLabel": "SQL Connection String", "type": "textField", "selected": false }], "data-fields": [] });
+                $.ajax({
+                    type: "POST",
+                    url: "/actions/actions/configuration",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(currentActionDesignDTO),
+                    dataType: "json"
+                }).done(function (data, status) {
+                    expect(data).not.toBe(null);
+
+                    expect(angular.equals(data, expectedSettings)).toBe(true);
+                });
+            });
         });
     });
 

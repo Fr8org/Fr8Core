@@ -9,6 +9,9 @@ using AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
+using Core.Interfaces;
+using Core.Services;
 
 namespace Core.PluginRegistrations
 {
@@ -18,15 +21,24 @@ namespace Core.PluginRegistrations
         //private readonly ActionNameListDTO availableActions;
         // private const string availableActions = @"[{ ""ActionType"" : ""Write to Sql Server"" , ""Version"": ""1.0"", ""ParentPluginRegistration"": ""AzureSql""}]";
         //private const string availableActions = @"[{ ""ActionType"" : ""Write"" , ""Version"": ""1.0""}]";
-#if DEBUG
-        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server";
-#else
-        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1";
-#endif
-        public AzureSqlServerPluginRegistration_v1()
-            : base(InitAvailableActions(), baseUrl)
-        {
 
+        public const string PluginRegistrationName = "AzureSqlServer";
+
+#if DEBUG
+        // IMPORTANT
+        // Please always use training slash in the end of plugin URL. For details see: 
+        // http://stackoverflow.com/questions/23438416/why-is-httpclient-baseaddress-not-working
+        //
+        public const string baseUrl = "http://localhost:46281/plugin_azure_sql_server/";
+        // public const string baseUrl = "http://ipv4.fiddler:46281/plugin_azure_sql_server/";
+#else
+        public const string baseUrl = "http://services.dockyard.company/azure_sql_server/v1/";
+#endif
+        ICrate _crate;
+        public AzureSqlServerPluginRegistration_v1()
+            : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
+        {
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         private static ActionNameListDTO InitAvailableActions()
@@ -34,29 +46,27 @@ namespace Core.PluginRegistrations
             ActionNameListDTO curActionNameList = new ActionNameListDTO();
             ActionNameDTO curActionName = new ActionNameDTO();
 
-            curActionName.ActionType = "Write";
+            curActionName.Name = "Write";
             curActionName.Version = "1";
             curActionNameList.ActionNames.Add(curActionName);
             return curActionNameList;
         }
 
-        public string GetConfigurationSettings(ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            return @"
-                {'fields':
-                    [{
-                        'type': 'textField',
-                        'name': 'connection_string',
-                        'required': true,
-                        'value':'',
-                        'fieldLabel':'SQL Connection String'
-                     }]
-                }";
+            if (curActionDO == null)
+                throw new ArgumentNullException("curAction");
+
+            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
+            string contents = "{ name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }";
+            curCrateStorage.CratesDTO.Add(_crate.Create("Configuration Data for WriteToAzureSqlServer", contents));
+
+            return JsonConvert.SerializeObject(curCrateStorage);
         }
 
         public async override Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction)
         {
-           
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(baseUrl);
@@ -69,7 +79,9 @@ namespace Core.PluginRegistrations
                 var response = await client.PostAsync(baseUrl + "/actions/Write_To_Sql_Server/field_mappings", contentPost).ContinueWith(postTask => postTask.Result.EnsureSuccessStatusCode());
 
                 var curMappingTargets = await response.Content.ReadAsStringAsync();
-                return JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());
+                var curResultJson = JArray.Parse(curMappingTargets.Replace("\\\"", "'").Replace("\"", "")).Select(t => t.ToString());
+
+                return curResultJson;
             }
         }
     }

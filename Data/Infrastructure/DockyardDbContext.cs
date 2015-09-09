@@ -265,7 +265,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
-            modelBuilder.Entity<TemplateDO>().ToTable("Templates");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
             modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventSubscriptions");
@@ -325,6 +324,18 @@ namespace Data.Infrastructure
                .WithMany()
                .HasForeignKey(x => x.StartingProcessNodeTemplateId)
                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<AuthorizationTokenDO>()
+             .HasRequired(x => x.Plugin)
+             .WithMany()
+             .HasForeignKey(x => x.PluginID)
+             .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ActionTemplateDO>()
+                .HasRequired(x => x.Plugin)
+                .WithMany()
+                .HasForeignKey(x => x.PluginID)
+                .WillCascadeOnDelete(false);
 
             base.OnModelCreating(modelBuilder);
         }

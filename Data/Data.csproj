@@ -199,11 +199,13 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
+    <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionTemplateDO.cs" />
+    <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
@@ -216,17 +218,24 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ConfigurationSettingsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\IActionListChild.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
@@ -236,12 +245,66 @@
     <Compile Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.Designer.cs">
       <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509011428137_ActionTemplateIdNullable.cs" />
+    <Compile Include="Migrations\201509011428137_ActionTemplateIdNullable.Designer.cs">
+      <DependentUpon>201509011428137_ActionTemplateIdNullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509011535465_DO_849_Migration.cs" />
+    <Compile Include="Migrations\201509011535465_DO_849_Migration.Designer.cs">
+      <DependentUpon>201509011535465_DO_849_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509031000594_DO_947_Migration.cs" />
+    <Compile Include="Migrations\201509031000594_DO_947_Migration.Designer.cs">
+      <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.cs" />
+    <Compile Include="Migrations\201509051519518_DO_990_Migration.Designer.cs">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509061256255_DO_990_2_Migration.cs" />
+    <Compile Include="Migrations\201509061256255_DO_990_2_Migration.Designer.cs">
+      <DependentUpon>201509061256255_DO_990_2_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509051956279_ActionConfigStoreChange.cs" />
+    <Compile Include="Migrations\201509051956279_ActionConfigStoreChange.Designer.cs">
+      <DependentUpon>201509051956279_ActionConfigStoreChange.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.cs" />
+    <Compile Include="Migrations\201509061125516_RenameActionTemplateFields.Designer.cs">
+      <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509062154535_Templates.cs" />
+    <Compile Include="Migrations\201509062154535_Templates.Designer.cs">
+      <DependentUpon>201509062154535_Templates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509070740036_DO_990_Merged_Migration.cs" />
+    <Compile Include="Migrations\201509070740036_DO_990_Merged_Migration.Designer.cs">
+      <DependentUpon>201509070740036_DO_990_Merged_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509081611131_AddAuthenticationManagement.cs" />
+    <Compile Include="Migrations\201509081611131_AddAuthenticationManagement.Designer.cs">
+      <DependentUpon>201509081611131_AddAuthenticationManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509082000511_RemoveParentPluginRegistration.cs" />
+    <Compile Include="Migrations\201509082000511_RemoveParentPluginRegistration.Designer.cs">
+      <DependentUpon>201509082000511_RemoveParentPluginRegistration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs" />
+    <Compile Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.Designer.cs">
+      <DependentUpon>201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509091537463_forcemerge.cs" />
+    <Compile Include="Migrations\201509091537463_forcemerge.Designer.cs">
+      <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\ActionState.cs" />
+    <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -259,7 +322,6 @@
     <Compile Include="Entities\ProcessTemplateDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
-    <Compile Include="Entities\TemplateDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTypeListDTO.cs" />
@@ -275,7 +337,6 @@
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
     <Compile Include="Interfaces\IDocusignAccountDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
-    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IHistoryItemDO.cs" />
     <Compile Include="Interfaces\IMailerDO.cs" />
     <Compile Include="Interfaces\IPluginDO.cs" />
@@ -324,6 +385,7 @@
     <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
     <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
     <Compile Include="States\Templates\_ActionStateTemplate.cs" />
+    <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_PluginStatusTemplate.cs" />
     <Compile Include="Entities\ProcessNodeTemplateDO.cs" />
@@ -343,7 +405,7 @@
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
-    <Compile Include="States\Templates\_EventStatusTemplate.cs" />
+    <Compile Include="States\Templates\_ExternalEventTypeTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
@@ -418,6 +480,7 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
+    <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ProcessValidator.cs" />
     <Compile Include="Validations\ProcessNodeTemplateValidator.cs" />
     <Compile Include="Validations\IncidentValidator.cs" />
@@ -434,7 +497,9 @@
     <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -447,6 +512,7 @@
     <Folder Include="Authentication\" />
     <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
+    <Folder Include="Infrastructure\JsonNet\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509010217565_inital_migration.resx">
@@ -454,6 +520,45 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509010300496_AddStartingProcessNodeTemplate.resx">
       <DependentUpon>201509010300496_AddStartingProcessNodeTemplate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509011428137_ActionTemplateIdNullable.resx">
+      <DependentUpon>201509011428137_ActionTemplateIdNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509011535465_DO_849_Migration.resx">
+      <DependentUpon>201509011535465_DO_849_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509031000594_DO_947_Migration.resx">
+      <DependentUpon>201509031000594_DO_947_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051519518_DO_990_Migration.resx">
+      <DependentUpon>201509051519518_DO_990_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509061256255_DO_990_2_Migration.resx">
+      <DependentUpon>201509061256255_DO_990_2_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509051956279_ActionConfigStoreChange.resx">
+      <DependentUpon>201509051956279_ActionConfigStoreChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509061125516_RenameActionTemplateFields.resx">
+      <DependentUpon>201509061125516_RenameActionTemplateFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509062154535_Templates.resx">
+      <DependentUpon>201509062154535_Templates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509070740036_DO_990_Merged_Migration.resx">
+      <DependentUpon>201509070740036_DO_990_Merged_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509081611131_AddAuthenticationManagement.resx">
+      <DependentUpon>201509081611131_AddAuthenticationManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509082000511_RemoveParentPluginRegistration.resx">
+      <DependentUpon>201509082000511_RemoveParentPluginRegistration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.resx">
+      <DependentUpon>201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509091537463_forcemerge.resx">
+      <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

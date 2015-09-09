@@ -5,7 +5,8 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using PluginUtilities;
+using PluginBase;
+using PluginBase.BaseClasses;
 
 [assembly: OwinStartup(typeof(pluginAzureSqlServer.Startup))]
 
@@ -15,7 +16,8 @@ namespace pluginAzureSqlServer
     {
         public void Configuration(IAppBuilder app)
         {
-            PluginBase.AfterStartup("plugin_azure_sql_server");
+            BasePluginController curController = new BasePluginController();
+            curController.AfterStartup("plugin_azure_sql_server");
         }
     }
 }

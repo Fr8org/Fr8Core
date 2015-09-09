@@ -15,6 +15,7 @@ namespace Data.Entities
         {
             this.Criteria = new List<CriteriaDO>();
             this.ActionLists = new List<ActionListDO>();
+            this.ProcessNode = new List<ProcessNodeDO>();
         }
 
         [Key]
@@ -38,6 +39,8 @@ namespace Data.Entities
 
         public virtual List<ActionListDO> ActionLists { get; set; }
 
+        public virtual List<ProcessNodeDO> ProcessNode { get; set; }
+
         public override string ToString()
         {
             return this.Name;
@@ -46,11 +49,12 @@ namespace Data.Entities
         {
             base.BeforeSave();
 
-
-            ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
-            curValidator.ValidateAndThrow(this);
-
-            
+            // TODO: commented out.
+            // TODO: Currently crashes on ProcessTemplate creation.
+            //       When ProcessTemplate is created, empty StartProcessNodeTemplate is created and assigned to ProcessTemplate.
+            //       Need to create another issue to fix that.
+            // ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
+            // curValidator.ValidateAndThrow(this);
         }
     }
 }

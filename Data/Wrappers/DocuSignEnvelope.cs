@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Utilities.Serializers.Json;
 
 namespace Data.Wrappers
 {
@@ -52,19 +53,22 @@ namespace Data.Wrappers
             return GetEnvelopeData(this);
         }
 
-        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
-        {
-            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
-            if (curSignersSet != null)
-            {
-                foreach (var curSigner in curSignersSet)
-                {
-                    return _tab.ExtractEnvelopeData(envelope, curSigner);
-                }
-            }
+        // TODO: This implementation of the interface method is no different than what is already implemented in the other overload. Hence commenting out here and in the interface definition.
+        // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the plugin project and the Data project  and interface expects it to be in Data.Wrappers 
+        // namespace, where it will not belong. 
+        //public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
+        //{
+        //    Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
+        //    if (curSignersSet != null)
+        //    {
+        //        foreach (var curSigner in curSignersSet)
+        //        {
+        //            return _tab.ExtractEnvelopeData(envelope, curSigner);
+        //        }
+        //    }
 
-            return new List<EnvelopeDataDTO>();
-        }
+        //    return new List<EnvelopeDataDTO>();
+        //}
 
 
         /// <summary>
@@ -100,22 +104,26 @@ namespace Data.Wrappers
         public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId,
             IList<EnvelopeDataDTO> curEnvelopeData)
         {
-            var mappings = new FieldMappingSettingsDTO();
-            mappings.Deserialize(curFieldMappingsJSON);
+            var serializer = new JsonSerializer();
+            var mappings = serializer.Deserialize<FieldMappingSettingsDTO>(curFieldMappingsJSON);
+
             var payload = new PayloadMappingsDTO();
 
-            mappings.ForEach(m =>
+            if (mappings.Fields != null)
             {
-                var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
-                if (newValue == null)
+                mappings.Fields.ForEach(m =>
                 {
-                    EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
-                }
-                else
-                {
-                    payload.Add(new FieldMappingDTO() {Name = m.Name, Value = newValue});
-                }
-            });
+                    var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
+                    if (newValue == null)
+                    {
+                        EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
+                    }
+                    else
+                    {
+                        payload.Add(new FieldMappingDTO() { Name = m.Name, Value = newValue });
+                    }
+                });
+            }
             return payload;
         }
 

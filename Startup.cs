@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Configuration;
 using Daemons;
 using Data.Entities;
@@ -15,9 +14,6 @@ using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
 using Utilities.Logging;
-using Core.PluginRegistrations;
-using Core.Interfaces;
-using DocuSign.Integrations.Client;
 using Utilities;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
@@ -30,17 +26,16 @@ namespace Web
         {
             ConfigureDaemons();
             ConfigureAuth(app);
-            //ConfigureCommunicationConfigs();
+
             RegisterPluginActions();
 
-            //var forwardingMiddleware = new 
             app.Use(async (context, next) =>
             {
                 if (string.Equals(context.Request.Method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(context.Request.Uri.AbsolutePath, "/api/DocuSignNotification", StringComparison.OrdinalIgnoreCase))
                 {
                     var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    var notificationPortForwardsCsv = configRepository.Get("DocuSignNotificationPortForwards");
+                    var notificationPortForwardsCsv = configRepository.Get<string>("DocuSignNotificationPortForwards", "");
                     var notificationPortForwards = !string.IsNullOrEmpty(notificationPortForwardsCsv)
                         ? notificationPortForwardsCsv.Split(',')
                         : new string[0];
@@ -51,10 +46,11 @@ namespace Web
                         {
                             foreach (var notificationPortForward in notificationPortForwards)
                             {
-                                await
+                                var response = await
                                     forwarder.PostAsync(
                                         new Uri(string.Concat("http://", notificationPortForward, context.Request.Uri.PathAndQuery)),
                                         new StreamContent(context.Request.Body));
+                                Logger.GetLogger().DebugFormat("Forwarding request {0} to {1}: {2}", context.Request.Uri.PathAndQuery, notificationPortForward, response);
                             }
                         }
                     }
@@ -131,14 +127,19 @@ namespace Web
 
         public void RegisterPluginActions()
         {
-            IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
-                .Assembly.GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
-            foreach (var plugin in plugins)
-            {
-                plugin.RegisterActions();
-            }
+            /*
+             * TODO: This Plugin registration logic should be changed in V2
+             */
+
+
+            //IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
+            //    .Assembly.GetTypes()
+            //    .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
+            //    .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
+            //foreach (var plugin in plugins)
+            //{
+            //    plugin.RegisterActions();
+            //}
         }
     }
 }

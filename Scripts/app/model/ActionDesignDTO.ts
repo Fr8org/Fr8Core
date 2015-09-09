@@ -5,9 +5,10 @@
         isTempId: boolean;
         actionListId: number;
         name: string;
-        configurationSettings: model.ConfigurationSettings;
-        fieldMappingSettings: string;
+        crateStorage: model.CrateStorage;
+        fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
+        actionTemplate: model.ActionTemplate;
 
         constructor(
             processNodeTemplateId: number,
@@ -28,8 +29,9 @@
                 processNodeTemplateId: this.processNodeTemplateId,
                 actionListId: this.actionListId,
                 name: this.name,
-                configurationSettings: this.configurationSettings,
-                fieldMappingSettings: this.fieldMappingSettings
+                crateStorage: this.crateStorage,
+                fieldMappingSettings: this.fieldMappingSettings,
+                actionTemplate: this.actionTemplate
             };
         }
 
@@ -37,6 +39,24 @@
             var result = new ActionDesignDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
             result.name = this.name;
 
+            return result;
+        }
+
+        static isActionValid(action: interfaces.IActionVM) {
+            return action && action.$resolved && !action.isTempId
+        }
+
+        static create(dataObject: interfaces.IActionDesignDTO): ActionDesignDTO {
+            var result = new ActionDesignDTO(0, 0, false, 0);
+            result.actionListId = dataObject.actionListId;
+            result.actionTemplateId = dataObject.actionTemplateId;
+            result.crateStorage = dataObject.crateStorage;
+            result.fieldMappingSettings = dataObject.fieldMappingSettings;
+            result.id = dataObject.id;
+            result.isTempId = dataObject.isTempId;
+            result.name = dataObject.name;
+            result.processNodeTemplateId = dataObject.processNodeTemplateId;
+            result.actionTemplate = dataObject.actionTemplate;
             return result;
         }
     }

@@ -152,13 +152,26 @@ namespace Core.Services
             if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
             {
                 _process.Launch(curProcessTemplate, curEvent);
-
+               
                 //todo: what does this do?
                 ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
                     process =>
                         process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEvent.EnvelopeId.ToString()) &&
                         process.ProcessState == ProcessState.Executing);
                 EventManager.ProcessLaunched(launchedProcess);
+            }
+        }
+
+        public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
+        {
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
+                    .Include("ProcessNodeTemplates")
+                    .Where(x => x.Id == curProcessTemplateDO.Id);
+
+                return queryableRepo.SelectMany<ProcessTemplateDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
+                    .ToList();
             }
         }
     }

@@ -1,20 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.UI.WebControls;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Services
 {
     public class ActionList : IActionList
     {
         private readonly IAction _action;
+
         public ActionList()
         {
             _action = ObjectFactory.GetInstance<IAction>();
@@ -42,17 +41,20 @@ namespace Core.Services
 
         public void AddAction(ActionDO curActionDO, string position)
         {
-            if (!curActionDO.ActionListId.HasValue)
+            if (!curActionDO.ParentActivityId.HasValue)
                 throw new NullReferenceException("ActionListId");
 
-            var curActionList = GetByKey(curActionDO.ActionListId.Value);
+            var curActionList = GetByKey(curActionDO.ParentActivityId.Value);
             if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
                 Reorder(curActionList, curActionDO, position);
             else
                 throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
-            curActionList.Actions.Add(curActionDO);
+            curActionList.Activities.Add(curActionDO);
             if (curActionList.CurrentActivity == null)
-                curActionList.CurrentActivity = curActionList.Actions.OrderBy(action => action.Ordering).FirstOrDefault();
+            {
+                curActionList.CurrentActivity =
+                    curActionList.Activities.OrderBy(action => action.Ordering).FirstOrDefault();
+            }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActionListRepository.Add(curActionList);
@@ -62,44 +64,67 @@ namespace Core.Services
 
         private void Reorder(ActionListDO curActionListDO, ActionDO curActionDO, string position)
         {
-            int ordering = curActionListDO.Actions.Select(action => action.Ordering).Max();
+            int ordering = curActionListDO.Activities.Select(action => action.Ordering).Max();
             curActionDO.Ordering = ordering + 1;
         }
 
-        public void Process(ActionListDO curActionListDO)
+        //if the list is unstarted, set it to inprocess
+        
+        //until curActionList is Completed  
+        //    if currentActivity is an Action, process it
+        //    else it's an ActionList, call recursively
+        public void Process(ActionListDO curActionList)
         {
-            if (curActionListDO.CurrentActivity == null)
+
+            //We assume that any unstarted ActionList that makes it to here should be put into process
+            if (curActionList.ActionListState == ActionListState.Unstarted && curActionList.CurrentActivity!=null) //need to add pending state for asynchronous cases
             {
-                throw new ArgumentNullException("ActionList is missing a CurrentActivity");
+                SetState(curActionList, ActionListState.Inprocess);
             }
-            else
+
+            
+            if (curActionList.ActionListState != ActionListState.Inprocess) //need to add pending state for asynchronous cases
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                throw new ArgumentException("tried to process an ActionList that was not in state=InProcess");
+            }
+
+            if (curActionList.CurrentActivity == null)
+            {
+                throw new ArgumentException("An ActionList with a null CurrentActivity should not get this far. It should be Completed or Unstarted");
+            }
+
+            //main processing loop for the Activities belonging to this ActionList
+            while (curActionList.ActionListState == ActionListState.Inprocess)
+            {
+                try
                 {
-                    //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                    try
-                    {
-                        if (curActionListDO.ActionListState == ActionListState.Unstarted)
+                        var currentActivity = curActionList.CurrentActivity;
+
+                        //if the current activity is an Action, just process it
+                        //if the current activity is iself an ActionList, then recursively call ActionList#Process
+                        if (currentActivity is ActionListDO)
                         {
-                            SetState(curActionListDO, ActionListState.Inprocess);
-
-                            ProcessNextActivity(curActionListDO);
-
-                            SetState(curActionListDO, ActionListState.Completed);
+                            Process((ActionListDO)currentActivity);
                         }
                         else
                         {
-                            throw new Exception(string.Format("Action List ID: {0} status is not unstarted.", curActionListDO.Id));
+                            ProcessAction(curActionList);
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        SetState(curActionListDO, ActionListState.Error);
 
-                        throw new Exception(ex.Message);
-                    }
+        
                 }
+                catch (Exception ex)
+                {
+                    SetState(curActionList, ActionListState.Error);
+                    throw new Exception(ex.Message);
+                }
+
+                
             }
+            SetState(curActionList, ActionListState.Completed); //TODO probably need to test for this
+
+
+
         }
 
         private void SetState(ActionListDO actionListDO, int actionListState)
@@ -112,41 +137,50 @@ namespace Core.Services
             }
         }
 
-        public void ProcessNextActivity(ActionListDO curActionListDO)
-        {
-            if (curActionListDO.CurrentActivity is ActionListDO)
-            {
-                Process((ActionListDO)curActionListDO.CurrentActivity);
-            }
-            else if (curActionListDO.CurrentActivity is ActionDO)
-            {
-                var actionOrdering = curActionListDO.Actions.OrderBy(o => o.Ordering).Select(s => s.Ordering);
-                foreach (var order in actionOrdering)
-                {
-                    _action.Process((ActionDO)curActionListDO.CurrentActivity);
-
-                    UpdateCurrentActivityPointer(curActionListDO);
-                }
-            }
+        public void ProcessAction(ActionListDO curActionList)
+        {  
+            _action.Process((ActionDO) curActionList.CurrentActivity);
+            UpdateActionListState(curActionList);
         }
+        
 
-        public void UpdateCurrentActivityPointer(ActionListDO curActionListDO)
+        public void UpdateActionListState(ActionListDO curActionListDO)
         {
-            if (curActionListDO.CurrentActivity is ActionDO)
-            {
-                if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed || ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
-                {
-                    ActionDO actionDO = curActionListDO.Actions.OrderBy(o => o.Ordering)
-                        .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering).DefaultIfEmpty(null).FirstOrDefault();
 
-                    if (actionDO != null)
-                        curActionListDO.CurrentActivity = actionDO;
-                }
-                else
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //update CurrentActivity pointer
+                if (curActionListDO.CurrentActivity is ActionDO)
                 {
-                    throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}", curActionListDO.Id, ((ActionDO)curActionListDO.CurrentActivity).ActionState));
+                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed ||
+                        ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
+                    {
+                        ActionDO actionDO = curActionListDO.Activities
+                            .OfType<ActionDO>()
+                            .OrderBy(o => o.Ordering)
+                            .Where(o => o.Ordering > curActionListDO.CurrentActivity.Ordering)
+                            .DefaultIfEmpty(null)
+                            .FirstOrDefault();
+
+                        if (actionDO != null)
+                            curActionListDO.CurrentActivity = actionDO;
+                        else
+                        {
+                            //we're done, no more activities to process in this list
+                            curActionListDO.CurrentActivity = null;
+                            curActionListDO.ActionListState = ActionListState.Completed;
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception(string.Format("Action List ID: {0}. Action status returned: {1}",
+                            curActionListDO.Id, ((ActionDO)curActionListDO.CurrentActivity).ActionState));
+                    }
+                    uow.ActionListRepository.Attach(curActionListDO);
+                    uow.SaveChanges();
                 }
             }
+                
         }
     }
 }
