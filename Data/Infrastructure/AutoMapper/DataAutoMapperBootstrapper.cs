@@ -21,9 +21,8 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
-                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<ConfigurationSettingsDTO>(ad.CrateStorage)))
+                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
-                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration))
                 .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
                 .ForMember(a => a.ActionTemplate, opts => opts.ResolveUsing(ad => ad.ActionTemplate));
 
@@ -34,8 +33,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ActionTemplate, opts => opts.ResolveUsing(ad => ad.ActionTemplate))
                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
-                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId))
-                .ForMember(a => a.ParentPluginRegistration, opts => opts.ResolveUsing(ad => ad.ParentPluginRegistration));
+                .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
 
             Mapper.CreateMap<ActionTemplateDO, ActionTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -55,8 +53,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ParentActivityId))
                 .ForMember(dest => dest.CrateStorage,
                     opts => opts.ResolveUsing(src => src.CrateStorage))
-                .ForMember(dest => dest.ParentPluginRegistration,
-                    opts => opts.ResolveUsing(src => src.ParentPluginRegistration))
                 .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());
               
             Mapper.CreateMap<ActionPayloadDTO, ActionDO>()
@@ -92,10 +88,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
 
-            Mapper.CreateMap<ConfigurationSettingsDTO, string>()
-                .ConvertUsing<JSONToStringConverter<ConfigurationSettingsDTO>>();
-            Mapper.CreateMap<string, ConfigurationSettingsDTO>()
-                .ConvertUsing<StringToJSONConverter<ConfigurationSettingsDTO>>();
+            Mapper.CreateMap<CrateStorageDTO, string>()
+                .ConvertUsing<JSONToStringConverter<CrateStorageDTO>>();
+            Mapper.CreateMap<string, CrateStorageDTO>()
+                .ConvertUsing<StringToJSONConverter<CrateStorageDTO>>();
 
             Mapper.CreateMap<FieldMappingSettingsDTO, string>()
                 .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();

@@ -3,7 +3,7 @@
     export class ActionTemplate {
         public static actionTemplateDO = <model.ActionTemplate> {
             id: 1,
-            actionType: "Write to SQL",
+            name: "Write to SQL",
             version: "1",
             defaultEndPoint: "AzureSqlServer"
         };

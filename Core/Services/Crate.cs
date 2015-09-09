@@ -13,7 +13,8 @@ namespace Core.Services
     {
         public CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
         {
-            CrateDTO crateDTO = new CrateDTO() { 
+            CrateDTO crateDTO = new CrateDTO() 
+            { 
                 Id = Guid.NewGuid().ToString(), 
                 Label = label, 
                 Contents = contents, 

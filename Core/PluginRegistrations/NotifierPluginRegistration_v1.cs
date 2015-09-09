@@ -1,5 +1,8 @@
-﻿using Data.Entities;
+﻿using Core.Interfaces;
+using Core.Services;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +19,12 @@ namespace Core.PluginRegistrations
 
         //private ActionNameListDTO availableActions = InitAvailableActions();//@"[{ ""ActionType"" : """" , ""Version"": ""1.0""},{ ""ActionType"" : """" , ""Version"": ""1.0""}]";
         // ActionNameListDTO availableActions = InitAvailableActions();
+        ICrate _crate;
+        string label = "Notifier Plugin Registration";
         public NotifierPluginRegistration_v1()
             : base(InitAvailableActions(), baseUrl, PluginRegistrationName)
         {
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         public string GetConfigurationSettings(ActionTemplateDO curActionTemplate)
@@ -29,22 +35,25 @@ namespace Core.PluginRegistrations
             if (String.IsNullOrEmpty(curActionTemplate.Name))
                 throw new ArgumentNullException("curActionTemplate.ActionType");
 
-            ConfigurationSettingsDTO curConfigurationSettings = new ConfigurationSettingsDTO();
+            CrateStorageDTO curCrateStorage = new CrateStorageDTO();
 
             if (curActionTemplate.Name.Equals("Send an Email", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Email Address", true, "", "Email Address"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Friendly Name", true, "", "Friendly Name"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Subject", true, "", "Subject"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Body", true, "", "Body"));
+                label = "Send an Email";
+                curCrateStorage.CratesDTO.Add(_crate.Create(label, "{ name: 'Email Address', required: true, value: '', fieldLabel: 'Email Address' }"));
+                curCrateStorage.CratesDTO.Add(_crate.Create(label, "{ name: 'Friendly Name', required: true, value: '', fieldLabel: 'Friendly Name' }"));
+                curCrateStorage.CratesDTO.Add(_crate.Create(label, "{ name: 'Subject', required: true, value: '', fieldLabel: 'Subject' }"));
+                curCrateStorage.CratesDTO.Add(_crate.Create(label, "{ name: 'Body', required: true, value: '', fieldLabel: 'Body' }"));
             }
             else if (curActionTemplate.Name.Equals("Send a Text (SMS) Message", StringComparison.OrdinalIgnoreCase))
             {
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Phone Number", true, "", "Phone Number"));
-                curConfigurationSettings.Fields.Add(new FieldDefinitionDTO("Message", true, "", "Message"));
+                label = "Send a Text (SMS) Message";
+
+                curCrateStorage.CratesDTO.Add(_crate.Create(label, "{ name: 'Phone Number', required: true, value: '', fieldLabel: 'Phone Number' }"));
+                curCrateStorage.CratesDTO.Add(_crate.Create(label, "{ name: 'Message', required: true, value: '', fieldLabel: 'Message' }"));
             }
 
-            return Newtonsoft.Json.JsonConvert.SerializeObject(curConfigurationSettings);
+            return Newtonsoft.Json.JsonConvert.SerializeObject(curCrateStorage);
         }
 
         public List<string> GetFieldMappingTargets(string curActionName, string ConfigUIData)
