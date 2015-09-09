@@ -30,7 +30,7 @@ namespace Data.Entities
 
         [ForeignKey("ActionTemplate")]
         public int? ActionTemplateId { get; set; }
-        public virtual ActionTemplateDO ActionTemplate { get; set; }
+        public virtual ActivityTemplateDO ActionTemplate { get; set; }
 
         [NotMapped]
         public bool IsTempId { get; set; }

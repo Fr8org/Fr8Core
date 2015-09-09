@@ -12,7 +12,7 @@ namespace Core.Services
 {
     public class ActionTemplate :IActionTemplate
     {
-        public IEnumerable<ActionTemplateDO> GetAll()
+        public IEnumerable<ActivityTemplateDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -20,7 +20,7 @@ namespace Core.Services
             }
         }
 
-        public ActionTemplateDO GetByKey(int curActionTemplateId)
+        public ActivityTemplateDO GetByKey(int curActionTemplateId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

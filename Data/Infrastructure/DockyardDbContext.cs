@@ -270,7 +270,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventSubscriptions");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
-            modelBuilder.Entity<ActionTemplateDO>().ToTable("ActionTemplate");
+            modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActionTemplate");
             modelBuilder.Entity<DocuSignTemplateSubscriptionDO>().ToTable("DocuSignTemplateSubscriptions");
 
             modelBuilder.Entity<EmailDO>()
@@ -331,7 +331,7 @@ namespace Data.Infrastructure
              .HasForeignKey(x => x.PluginID)
              .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<ActionTemplateDO>()
+            modelBuilder.Entity<ActivityTemplateDO>()
                 .HasRequired(x => x.Plugin)
                 .WithMany()
                 .HasForeignKey(x => x.PluginID)

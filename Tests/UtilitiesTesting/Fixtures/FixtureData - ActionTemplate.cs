@@ -7,9 +7,9 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-        public static ActionTemplateDO TestActionTemplate1()
+        public static ActivityTemplateDO TestActionTemplate1()
 		{
-            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
+            ActivityTemplateDO actionTemplateDo = new ActivityTemplateDO
 			{
 				Id = 1,
                 Name = "Write to Sql Server",
@@ -19,18 +19,18 @@ namespace UtilitiesTesting.Fixtures
             return actionTemplateDo;
 		}
 
-        public static ActionTemplateDO TestActionTemplate2()
+        public static ActivityTemplateDO TestActionTemplate2()
         {
-            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
+            ActivityTemplateDO actionTemplateDo = new ActivityTemplateDO
             {
                 Id = 1,
                 Version = "v4"                
             };
             return actionTemplateDo;
         }
-        public static ActionTemplateDO TestActionTemplateDO1()
+        public static ActivityTemplateDO TestActionTemplateDO1()
         {
-            var curActionDO = new ActionTemplateDO
+            var curActionDO = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Type1",
@@ -40,9 +40,9 @@ namespace UtilitiesTesting.Fixtures
             return curActionDO;
         }
 
-	    public static ActionTemplateDO TestActionTemplateV2()
+	    public static ActivityTemplateDO TestActionTemplateV2()
 	    {
-	        var curActionTemplate = new ActionTemplateDO
+	        var curActionTemplate = new ActivityTemplateDO
 	        {
 	            Id = 1,
                 Name = "plugin_azure_sql_server",
@@ -144,9 +144,9 @@ namespace UtilitiesTesting.Fixtures
 	        };
         }
 
-        public static ActionTemplateDO TestActionTemplateDO2()
+        public static ActivityTemplateDO TestActionTemplateDO2()
         {
-            var curActionDO = new ActionTemplateDO
+            var curActionDO = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Write to SQL",

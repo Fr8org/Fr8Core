@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Data.Interfaces.DataTransferObjects;
 using Microsoft.Owin;
 using Microsoft.WindowsAzure;
 using Owin;
@@ -28,6 +29,8 @@ namespace Web
             ConfigureAuth(app);
 
             RegisterPluginActions();
+
+            LoadLocalActionLists();
 
             app.Use(async (context, next) =>
             {
@@ -140,6 +143,66 @@ namespace Web
             //{
             //    plugin.RegisterActions();
             //}
+        }
+
+        /// <summary>
+        /// Loads Local Action Lists
+        /// </summary>
+        public void LoadLocalActionLists()
+        {
+            using(IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            { 
+                ActivityTemplateRepository activityTemplateRepositary = uow.ActionTemplateRepository;
+                List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                if(activityTemplateRepositaryItems.Find(item=>item.Name=="Extract From DocuSign Envelopes Into Azure Sql Server")==null)
+                { 
+
+                List<ComponentActivitiesDTO> componentActivities = new List<ComponentActivitiesDTO>();               
+
+                ComponentActivitiesDTO componentActivityOne = new ComponentActivitiesDTO();
+                componentActivityOne.Id = 1;
+                componentActivityOne.Name = "Wait for notification that an envelope has arrived at DocuSign";
+                componentActivityOne.Version = "1";
+                componentActivityOne.DefaultEndPoint = "AzureSqlServerPluginRegistration_v1";
+                componentActivities.Add(componentActivityOne);
+                
+                ComponentActivitiesDTO componentActivityTwo = new ComponentActivitiesDTO();
+                componentActivityTwo.Id = 2;
+                componentActivityTwo.Name = "Filter the Envelope against some Criteria";
+                componentActivityTwo.Version = "1";
+                componentActivityTwo.DefaultEndPoint = "AzureSqlServerPluginRegistration_v1";
+                componentActivities.Add(componentActivityTwo);
+
+                ComponentActivitiesDTO componentActivityThree = new ComponentActivitiesDTO();
+                componentActivityThree.Id = 3;
+                componentActivityThree.Name = "Extract Data from the Envelope";
+                componentActivityThree.Version = "1";
+                componentActivityThree.DefaultEndPoint = "AzureSqlServerPluginRegistration_v1";
+                componentActivities.Add(componentActivityThree);
+
+                ComponentActivitiesDTO componentActivityFour = new ComponentActivitiesDTO();
+                componentActivityFour.Id = 4;
+                componentActivityFour.Name = "Map the Data to Target Fields";
+                componentActivityFour.Version = "1";
+                componentActivityFour.DefaultEndPoint = "AzureSqlServerPluginRegistration_v1";
+                componentActivities.Add(componentActivityFour);
+
+                ComponentActivitiesDTO componentActivityFive = new ComponentActivitiesDTO();
+                componentActivityFive.Id = 5;
+                componentActivityFive.Name = "Write the Data to AzureSqlServer";
+                componentActivityFive.Version = "1";
+                componentActivityFive.DefaultEndPoint = "AzureSqlServerPluginRegistration_v1";
+                componentActivities.Add(componentActivityFive);
+
+                ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "AzureSqlServerPluginRegistration_v1","1");             
+                activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivities));
+                
+                    activityTemplateRepositary.Add(activityTemplate);
+                    uow.SaveChanges();
+
+                }
+            }
         }
     }
 }

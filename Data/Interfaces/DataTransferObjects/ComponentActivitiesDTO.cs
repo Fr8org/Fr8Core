@@ -2,8 +2,9 @@
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ActionTemplateDTO
+    public class ComponentActivitiesDTO
     {
+
         [JsonProperty("id")]
         public int Id { get; set; }
 
@@ -15,8 +16,5 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("defaultEndPoint")]
         public string DefaultEndPoint { get; set; }
-
-        [JsonProperty("componentActivities")]
-        public string ComponentActivities { get; set; }
     }
 }

@@ -35,16 +35,17 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
 
-            Mapper.CreateMap<ActionTemplateDO, ActionTemplateDTO>()
+            Mapper.CreateMap<ActivityTemplateDO, ActionTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 
-            Mapper.CreateMap<ActionTemplateDTO, ActionTemplateDO>()
+            Mapper.CreateMap<ActionTemplateDTO, ActivityTemplateDO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
+                 .ForMember(x => x.ComponentActivities, opts => opts.ResolveUsing(x => x.ComponentActivities))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 
             Mapper.CreateMap<ActionDO, ActionPayloadDTO>()

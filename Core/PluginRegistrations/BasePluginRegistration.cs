@@ -37,7 +37,7 @@ namespace Core.PluginRegistrations
             set { }
         }
 
-        public IEnumerable<ActionTemplateDO> AvailableActions
+        public IEnumerable<ActivityTemplateDO> AvailableActions
         {
             get
             {
@@ -55,15 +55,15 @@ namespace Core.PluginRegistrations
             }
         }
 
-        private IEnumerable<ActionTemplateDO> ActionsToBeRegistered
+        private IEnumerable<ActivityTemplateDO> ActionsToBeRegistered
         {
             get
             {
-                var curActionTemplates = new List<ActionTemplateDO>();
+                var curActionTemplates = new List<ActivityTemplateDO>();
                 
                 foreach (var item in availableActions.ActionNames)
                 {
-                    var curActionRegistration = new ActionTemplateDO();
+                    var curActionRegistration = new ActivityTemplateDO();
                     Mapper.Map(item, curActionRegistration);
                     curActionTemplates.Add(curActionRegistration);
                 }
@@ -90,7 +90,7 @@ namespace Core.PluginRegistrations
 
         public void RegisterActions()
         {
-            IEnumerable<ActionTemplateDO> curAvailableCommands = this.ActionsToBeRegistered;
+            IEnumerable<ActivityTemplateDO> curAvailableCommands = this.ActionsToBeRegistered;
             foreach (var action in curAvailableCommands)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -99,7 +99,7 @@ namespace Core.PluginRegistrations
                     if (!uow.ActionTemplateRepository.GetQuery().Where(a => a.Name == action.Name
                         && a.Version == action.Version && a.DefaultEndPoint == pluginRegistrationName).Any())
                     {
-                        ActionTemplateDO actionTemplateDo = new ActionTemplateDO(action.Name,
+                        ActivityTemplateDO actionTemplateDo = new ActivityTemplateDO(action.Name,
                                                                         pluginRegistrationName,
                                                                         action.Version);
                         uow.ActionTemplateRepository.Add(actionTemplateDo);
@@ -119,12 +119,12 @@ namespace Core.PluginRegistrations
             return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
         }
 
-        string IPluginRegistration.AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDO)
+        string IPluginRegistration.AssembleName(Data.Entities.ActivityTemplateDO curActionTemplateDO)
         {
             return AssembleName(curActionTemplateDO);
         }
 
-        public static string AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDo)
+        public static string AssembleName(Data.Entities.ActivityTemplateDO curActionTemplateDo)
         {
             return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.DefaultEndPoint, curActionTemplateDo.Version);
         }

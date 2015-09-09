@@ -9,13 +9,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Core.Managers;
+using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
 {
 	[RoutePrefix("mapping_actions")]
 	public class ActivitiesController : ApiController
 	{
-		private readonly IActivity _activity;
+      		private readonly IActivity _activity;
 
 		public ActivitiesController()
 		{
@@ -43,5 +45,23 @@ namespace Web.Controllers
 				return Ok(downstreamActivities);
 			}
 		}
+
+        [DockyardAuthorize]
+        [Route("available")]
+        [ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
+        public IHttpActionResult GetAvailableActivities()
+        {
+            var userId = User.Identity.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curDockyardAccount = uow.UserRepository.GetByKey(userId);
+                var availableActivities = _activity
+                    .GetAvailableActions(curDockyardAccount)
+                    .Select(x => Mapper.Map<ActionTemplateDTO>(x))
+                    .ToList();
+
+                return Ok(availableActivities);
+            }
+        }
 	}
 }

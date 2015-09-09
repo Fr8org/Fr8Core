@@ -322,6 +322,7 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
+            debugger;
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var processNodeTemplateId: number,

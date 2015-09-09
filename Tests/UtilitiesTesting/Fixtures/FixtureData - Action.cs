@@ -25,9 +25,9 @@ namespace UtilitiesTesting.Fixtures
             return curActionDO;
         }
 
-        public static ActionTemplateDO ActionTemplate()
+        public static ActivityTemplateDO ActionTemplate()
         {
-            return new ActionTemplateDO()
+            return new ActivityTemplateDO()
             {
                 Id = 1,
                 Name = "Send an Email",
@@ -36,9 +36,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionTemplateDO ActionTemplateSMS()
+        public static ActivityTemplateDO ActionTemplateSMS()
         {
-            return new ActionTemplateDO()
+            return new ActivityTemplateDO()
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
@@ -343,7 +343,7 @@ namespace UtilitiesTesting.Fixtures
 
             };
 
-            ActionTemplateDO curActionTemplateDO = new ActionTemplateDO
+            ActivityTemplateDO curActionTemplateDO = new ActivityTemplateDO
             {
                 Id = 1,
                 //ActionType = "Write to Sql Server",

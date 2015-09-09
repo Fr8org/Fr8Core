@@ -166,7 +166,7 @@ module dockyard.directives.paneSelectAction {
 
             $scope.actionTypes = [];
 
-            $http.get('/actions/available')
+            $http.get('/mapping_actions/available')
                 .then(function (resp) {
                     angular.forEach(resp.data, function (it) {
                         console.log(it);

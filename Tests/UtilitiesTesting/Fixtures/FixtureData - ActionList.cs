@@ -144,7 +144,7 @@ namespace UtilitiesTesting.Fixtures
 		  {
 			  List<ActionListDO> actionLists = new List<ActionListDO>();
 
-			  var actionTempate = new ActionTemplateDO()
+			  var actionTempate = new ActivityTemplateDO()
 			  {
 				  Id = 1,
 				  Version = "1"

@@ -9,7 +9,7 @@ namespace Core.Interfaces
     {
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
 
-        IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
+        //IEnumerable<ActivityTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
 
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         
