@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ConfigurationSettingsDTO
+    public class CrateStorageDTO
     {
-        public ConfigurationSettingsDTO()
+        public CrateStorageDTO()
         {
             Fields = new List<FieldDefinitionDTO>();
             DataFields = new List<string>();

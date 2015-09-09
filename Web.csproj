@@ -17,10 +17,14 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -320,6 +324,7 @@
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
+    <Compile Include="Controllers\ActivitiesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
@@ -4044,9 +4049,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="PluginUtilities\PluginUtilities.csproj">
+    <ProjectReference Include="pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginUtilities</Name>
+      <Name>PluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

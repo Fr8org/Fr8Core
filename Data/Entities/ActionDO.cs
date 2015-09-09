@@ -1,8 +1,11 @@
 ﻿using Data.States.Templates;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using AutoMapper;
 using Data.Wrappers;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace Data.Entities
 {
@@ -18,10 +21,6 @@ namespace Data.Entities
 
         public string FieldMappingSettings { get; set; }
 
-        // TODO: We should probably remove this property.
-        // TODO: We can access ParentPluginRegistration via ActionDO.ActionTemplate.ParentPluginRegistration.
-        public string ParentPluginRegistration { get; set; }
-
         [ForeignKey("ActionStateTemplate")]
         public int? ActionState { get; set; }
 
@@ -35,5 +34,11 @@ namespace Data.Entities
 
         [NotMapped]
         public bool IsTempId { get; set; }
-	}
+
+        public CrateStorageDTO CrateStorageDTO()
+        {
+                return JsonConvert.DeserializeObject<CrateStorageDTO>(this.ConfigurationStore);
+
+        }
+    }
 }

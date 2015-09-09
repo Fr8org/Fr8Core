@@ -1,10 +1,11 @@
 ﻿using Data.Entities;
-using PluginUtilities.Infrastructure;
+using PluginBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Data.Interfaces.DataTransferObjects;
+using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -25,14 +26,14 @@ namespace pluginDocuSign.Actions
             return "Execute Request"; // Will be changed when implementation is plumbed in.
         }
 
-        protected override ConfigurationSettingsDTO InitialConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
-            return new ConfigurationSettingsDTO();//this is nyi
+            return new CrateStorageDTO();//this is nyi
         }
 
-        protected override ConfigurationSettingsDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            return new ConfigurationSettingsDTO();//this is nyi
+            return new CrateStorageDTO();//this is nyi
         }
 
     }

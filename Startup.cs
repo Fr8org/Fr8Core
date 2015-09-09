@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Configuration;
 using Daemons;
 using Data.Entities;
@@ -15,9 +14,6 @@ using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
 using Utilities.Logging;
-using Core.PluginRegistrations;
-using Core.Interfaces;
-using DocuSign.Integrations.Client;
 using Utilities;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
@@ -131,14 +127,19 @@ namespace Web
 
         public void RegisterPluginActions()
         {
-            IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
-                .Assembly.GetTypes()
-                .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-                .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
-            foreach (var plugin in plugins)
-            {
-                plugin.RegisterActions();
-            }
+            /*
+             * TODO: This Plugin registration logic should be changed in V2
+             */
+
+
+            //IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
+            //    .Assembly.GetTypes()
+            //    .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
+            //    .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
+            //foreach (var plugin in plugins)
+            //{
+            //    plugin.RegisterActions();
+            //}
         }
     }
 }

@@ -45,12 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClasses\BasePluginAction.cs" />
+    <Compile Include="BaseClasses\BasePluginController.cs" />
     <Compile Include="Errors\PluginErrorCode.cs" />
-    <Compile Include="Infrastructure\Action\BasePluginAction.cs" />
-    <Compile Include="Infrastructure\Action\ConfigurationRequestType.cs" />
+    <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
-    <Compile Include="PluginBase.cs" />
     <Compile Include="Errors\PluginCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,7 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">
-      <Project>{9891496C-8512-4708-925A-EE9D0F9199D4}</Project>
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">

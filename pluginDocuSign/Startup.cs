@@ -5,7 +5,8 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using PluginUtilities;
+using PluginBase;
+using PluginBase.BaseClasses;
 
 [assembly: OwinStartup(typeof(pluginDocuSign.Startup))]
 
@@ -15,7 +16,10 @@ namespace pluginDocuSign
     {
         public void Configuration(IAppBuilder app)
         {
-            PluginBase.AfterStartup("plugin_docusign");
+
+            BasePluginController curController = new BasePluginController();
+            curController.AfterStartup("plugin_docusign");
+           
         }
     }
 }

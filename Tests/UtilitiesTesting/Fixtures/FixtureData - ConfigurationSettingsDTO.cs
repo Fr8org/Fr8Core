@@ -4,9 +4,9 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static ConfigurationSettingsDTO TestConfigurationSettings_healthdemo()
+        public static CrateStorageDTO TestConfigurationSettings_healthdemo()
         {
-            return new ConfigurationSettingsDTO
+            return new CrateStorageDTO
             {
                 Fields =  {
                     TestConnectionString1()

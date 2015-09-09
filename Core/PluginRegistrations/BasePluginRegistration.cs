@@ -85,13 +85,7 @@ namespace Core.PluginRegistrations
                 throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ActionTemplate.DefaultEndPoint), "curAction");
             }
 
-            var pluginRegistration = Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
-            if (pluginRegistration == null)
-            {
-                throw new ArgumentException(string.Format("Can't find a valid plugin registration type: {0}", curAction.ParentPluginRegistration), "curAction");
-            }
-
-            return pluginRegistration;
+            return Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
         }
 
         public void RegisterActions()

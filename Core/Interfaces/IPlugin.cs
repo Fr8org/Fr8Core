@@ -6,5 +6,6 @@ namespace Core.Services
     public interface IPlugin
     {
         IEnumerable<PluginDO> GetAll();
+        string Authorize();
     }
 }
