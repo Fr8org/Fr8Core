@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201509081721475_AddedOriginalFileNameFieldToFileDO_DO_977_Migration"; }
+            get { return "201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration"; }
         }
         
         string IMigrationMetadata.Source

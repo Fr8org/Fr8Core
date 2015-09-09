@@ -298,11 +298,11 @@
     <Compile Include="Migrations\201509091537463_forcemerge.Designer.cs">
       <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
     </Compile>
-    <Compile Include="Repositories\ActivityRepository.cs" />
-    <Compile Include="Migrations\201509081721475_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs" />
-    <Compile Include="Migrations\201509081721475_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.Designer.cs">
-      <DependentUpon>201509081721475_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs" />
+    <Compile Include="Migrations\201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.Designer.cs">
+      <DependentUpon>201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -565,8 +565,8 @@
     <EmbeddedResource Include="Migrations\201509091537463_forcemerge.resx">
       <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509081721475_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.resx">
-      <DependentUpon>201509081721475_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.resx">
+      <DependentUpon>201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
