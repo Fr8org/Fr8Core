@@ -7,6 +7,7 @@
         type: string;
         fieldLabel: string;
         name: string;
+        //events: string;
     }
 
     export class CheckboxField extends ConfigurationField {

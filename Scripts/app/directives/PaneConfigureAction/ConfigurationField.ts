@@ -34,6 +34,8 @@ module dockyard.directives.paneConfigureAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
+                $scope.$on('onBlur', <any>angular.bind(this, this.onBlur));
+                
             };
         }
 
@@ -45,6 +47,12 @@ module dockyard.directives.paneConfigureAction {
 
             directive['$inject'] = [];
             return directive;
+        }
+
+        public onBlur(scope: IConfigurationFieldScope) {
+            scope.$emit('onExitFocus', scope.field);
+                //new MapFieldsClickedEventArgs(angular.extend({}, scope.field)) //clone action to prevent msg recipient from modifying orig. object
+                //);
         }
     }
 

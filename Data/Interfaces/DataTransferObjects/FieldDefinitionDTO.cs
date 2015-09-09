@@ -49,8 +49,5 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("selected")]
         public bool Selected { get; set; }
-
-        [JsonProperty("events")]
-        public string Events { get; set; }
     }
 }
