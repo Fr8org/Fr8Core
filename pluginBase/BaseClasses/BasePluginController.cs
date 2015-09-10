@@ -5,7 +5,7 @@ using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Utilities.Crates.Helpers;
+using Data.Crates.Helpers;
 using Newtonsoft.Json;
 
 namespace PluginBase.BaseClasses

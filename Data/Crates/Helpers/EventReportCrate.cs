@@ -7,7 +7,7 @@ using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 using Utilities.Serializers.Json;
 
-namespace Data.Utilities.Crates.Helpers
+namespace Data.Crates.Helpers
 {
     public static class EventReportCrate
     {

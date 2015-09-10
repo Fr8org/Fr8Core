@@ -718,7 +718,7 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogPluginEvent(EventData eventData)
+        private void LogPluginEvent(LoggingData eventData)
         {
             var fact = new FactDO
             {
