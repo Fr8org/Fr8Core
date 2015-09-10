@@ -1,10 +1,11 @@
 ﻿/// <reference path="../../app/_all.ts" />
 /// <reference path="../../typings/angularjs/angular-mocks.d.ts" />
 /// <reference path="../../typings/jquery/jquery.d.ts" />
-/// <reference path="../utils/fixtures.ts" />
+/// <reference path="../utils/fixture_processbuilder.ts" />
+
 
 module dockyard.tests.controller {
-    import fx = utils.Fixtures; // just an alias
+    import fx = utils.fixtures.ProcessBuilder; // just an alias
 
     var errorHandler = function (response, detail) {
         if (detail.status === 401) {
@@ -30,13 +31,13 @@ module dockyard.tests.controller {
         });
 
         it("should get a Process Template successfully", function () {
-            $.getJSON(endpoint, { id: currentProcessTemplate.Id })
+            $.getJSON(endpoint, { id: currentProcessTemplate.id })
                 .done((data: interfaces.IProcessTemplateVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
-                    expect(data.Name).toBe(fx.newProcessTemplate.Name);
-                    expect(data.Description).toBe(fx.newProcessTemplate.Description);
-                    expect(data.ProcessTemplateState).toBe(fx.newProcessTemplate.ProcessTemplateState);
+                    expect(data.name).toBe(fx.newProcessTemplate.name);
+                    expect(data.description).toBe(fx.newProcessTemplate.description);
+                    expect(data.processTemplateState).toBe(fx.newProcessTemplate.processTemplateState);
                 });
         });
 
@@ -45,12 +46,12 @@ module dockyard.tests.controller {
                 .done((data: interfaces.IProcessTemplateVM, status: string) => {
                     expect(data).not.toBe(null);
                     expect(status).toBe("success");
-                    expect(data.Name).toBe(fx.updatedProcessTemplate.Name);
-                    expect(data.Description).toBe(fx.updatedProcessTemplate.Description);
-                    expect(data.ProcessTemplateState).toBe(fx.updatedProcessTemplate.ProcessTemplateState);
-                    expect($.isArray(data.SubscribedDocuSignTemplates)).toBeTruthy();
-                    expect(data.SubscribedDocuSignTemplates.length).toBe(1);
-                    expect(data.SubscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.SubscribedDocuSignTemplates[0]);
+                    expect(data.name).toBe(fx.updatedProcessTemplate.name);
+                    expect(data.description).toBe(fx.updatedProcessTemplate.description);
+                    expect(data.processTemplateState).toBe(fx.updatedProcessTemplate.processTemplateState);
+                    expect($.isArray(data.subscribedDocuSignTemplates)).toBeTruthy();
+                    expect(data.subscribedDocuSignTemplates.length).toBe(1);
+                    expect(data.subscribedDocuSignTemplates[0]).toBe(fx.updatedProcessTemplate.subscribedDocuSignTemplates[0]);
                 });
         });
 

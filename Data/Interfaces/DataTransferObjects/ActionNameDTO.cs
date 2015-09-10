@@ -9,8 +9,8 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionNameDTO
     {
-        [JsonProperty("actionType")]
-        public string ActionType { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
         [JsonProperty("version")]
         public string Version  { get; set; }

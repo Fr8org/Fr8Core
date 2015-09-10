@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -11,7 +10,6 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
 
 namespace Web.Controllers
 {
@@ -93,18 +91,13 @@ namespace Web.Controllers
             return new List<ActionDesignDTO>();
         }
 
-        [HttpGet]
-        [Route("configuration/{actionTemplateId:int}")]
-        [ResponseType(typeof(ConfigurationSettingsDTO))]
-        public IHttpActionResult GetConfigurationSettings(int actionTemplateId)
+        [HttpPost]
+        [Route("actions/configuration")]
+        [ResponseType(typeof(CrateStorageDTO))]
+        public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
         {
-            var curActionTemplateDO = _actionTemplate.GetByKey(actionTemplateId);
-            var curConfigurationSettingsJson = _action.GetConfigurationSettings(curActionTemplateDO);
-
-            var curConfigurationSettingsDTO = JsonConvert
-                .DeserializeObject<ConfigurationSettingsDTO>(curConfigurationSettingsJson);
-
-            return Ok(curConfigurationSettingsDTO);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            return Ok(_action.GetConfigurationSettings(curActionDO));  
         }
 
 
@@ -128,17 +121,15 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("field_mapping_targets")]
-        public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
+        public string GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
 
-                return _action.GetFieldMappingTargets(curAction);
+                //Field mapping targets are as part of Confgiuration Store of Action DO
+                return _action.GetConfigurationSettings(curAction);
             }
         }
-
-
-
     }
 }

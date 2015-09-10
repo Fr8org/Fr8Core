@@ -6,9 +6,7 @@
 
         public int? ActionListId { get; set; }
 
-        public string ConfigurationSettings { get; set; }
-
-        public string ParentPluginRegistration { get; set; }
+        public string CrateStorage { get; set; }
 
         public PayloadMappingsDTO PayloadMappings { get; set; }
 

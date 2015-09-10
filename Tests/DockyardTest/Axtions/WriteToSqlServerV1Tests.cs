@@ -24,23 +24,13 @@ namespace DockyardTest.Axtions
                 ConfigurationManager.ConnectionStrings["HealthDB"].ConnectionString;
         }
 
-        [Test,Ignore]
-        [Category("Write_To_Sql_Server_v1.Execute")]
-        public void WriteToSqlServerV1_CanWriteData()
+
+        private string CreateConfigurationStore()
         {
-            var curActionData = FixtureData.TestAction1();
-            curActionData.PayloadMappings = PayloadData;
-            curActionData.ConfigurationSettings = CreateConfigurationSettings();
+            const string configurationStore =
+                "{'configurationStore': [{'textField': {'value': 'connection_string'}}]";
 
-            _sqServerWriter.Process("execute", curActionData);
-        }
-
-        private string CreateConfigurationSettings()
-        {
-            const string configurationSettings =
-                "{'configurationSettings': [{'textField': {'value': 'connection_string'}}]";
-
-            return configurationSettings.Replace("connection_string", _connectionString);
+            return configurationStore.Replace("connection_string", _connectionString);
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.PluginRegistrations;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -13,28 +13,24 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
 using StructureMap;
-using Utilities.Serializers.Json;
+using System.Data.Entity;
+using Newtonsoft.Json;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        private readonly ISubscription _subscription;
-        private IPluginRegistration _pluginRegistration;
         private IEnvelope _envelope;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
-        private IPluginRegistration _basePluginRegistration;
         private IPlugin _plugin;
+        private readonly AuthorizationToken _authorizationToken;
 
         public Action()
         {
-            _subscription = ObjectFactory.GetInstance<ISubscription>();
-            _pluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
-            _plugin = ObjectFactory.GetInstance<IPlugin>();
             _envelope = ObjectFactory.GetInstance<IEnvelope>();
-           
-            _basePluginRegistration = ObjectFactory.GetInstance<IPluginRegistration>();
+            _authorizationToken = new AuthorizationToken();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -86,13 +82,12 @@ namespace Core.Services
 
                 if (existingActionDo != null)
                 {
-                    existingActionDo.ParentActionList = currentActionDo.ParentActionList;
-                    existingActionDo.ParentActionListId = currentActionDo.ParentActionListId;
+                    existingActionDo.ParentActivity = currentActionDo.ParentActivity;
+                    existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
                     existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.ConfigurationSettings = currentActionDo.ConfigurationSettings;
+                    existingActionDo.CrateStorage = currentActionDo.CrateStorage;
                     existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
-                    existingActionDo.ParentPluginRegistration = currentActionDo.ParentPluginRegistration;
                 }
                 else
                 {
@@ -108,21 +103,21 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetByKey(id);
+                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
 
-        public string GetConfigurationSettings(
-            ActionTemplateDO curActionTemplateDo)
+        public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionTemplateDo != null)
+            if (curActionDO != null)
             {
-                var pluginRegistrationName = _pluginRegistration.AssembleName(curActionTemplateDo);
-                var curConfigurationSettingsJson =
-                    _pluginRegistration.CallPluginRegistrationByString(pluginRegistrationName,
-                        "GetConfigurationSettings", curActionTemplateDo);
+                //prepare the current plugin URL
+                string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + "/actions/configure/";
 
-                return curConfigurationSettingsJson;
+                var restClient = new RestfulServiceClient();
+                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
+
+                return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }
             else
             {
@@ -132,7 +127,7 @@ namespace Core.Services
 
         public void Delete(int id)
         {
-            var entity = new ActionDO {Id = id};
+            var entity = new ActionDO { Id = id };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -154,9 +149,8 @@ namespace Core.Services
                     uow.SaveChanges();
 
                     EventManager.ActionStarted(curAction);
-                    var pluginRegistration = BasePluginRegistration.GetPluginType(curAction);
-                    var baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-                    var jsonResult = await Dispatch(curAction, baseUri);
+
+                    var jsonResult = await Dispatch(curAction);
 
 
                     //this JSON error check is broken because it triggers on standard success messages, which look like this:
@@ -187,16 +181,14 @@ namespace Core.Services
             return curAction.ActionState.Value;
         }
 
-        public async Task<string> Dispatch(ActionDO curActionDO, Uri curBaseUri)
+        public async Task<string> Dispatch(ActionDO curActionDO)
         {
             PayloadMappingsDTO mappings;
             if (curActionDO == null)
                 throw new ArgumentNullException("curAction");
 
-            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = curBaseUri;
             var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = curActionDO.ParentActionList.Process.EnvelopeId; 
+            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
             
             //this is currently null because ProcessId isn't being written to ActionList.
             //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
@@ -217,8 +209,13 @@ namespace Core.Services
                 actionPayloadDTO.PayloadMappings = mappings;
             }
 
+
+            //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
+            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
+            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint);
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
+
             return jsonResult;
         }
 
@@ -239,12 +236,11 @@ namespace Core.Services
         {
             DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
 
-            if (curActionDO.ParentActionList != null)
+            if (curActionDO.ParentActivity != null)
             {
                 // Try to get ProcessTemplate.Id from relation chain
                 // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
-                var curProcessTemplateId = curActionDO
-                    .ParentActionList
+                var curProcessTemplateId = ((ActionListDO)curActionDO.ParentActivity)
                     .ProcessNodeTemplate
                     .ProcessTemplate
                     .Id;
@@ -273,12 +269,69 @@ namespace Core.Services
         }
 
         /// <summary>
-        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
+        /// Retrieve authorization token
         /// </summary>
-        public Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curActionDO)
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public string Authenticate(ActionDO curActionDO)
         {
-            var _parentPluginRegistration = BasePluginRegistration.GetPluginType(curActionDO);
-            return _parentPluginRegistration.GetFieldMappingTargets(curActionDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
+                var curPlugin = curActionDO.ActionTemplate.Plugin;
+                string curToken = string.Empty;
+
+                if (curDockyardAccountDO != null)
+                {
+                    curToken = _authorizationToken.GetToken(curDockyardAccountDO.Id, curPlugin.Id);
+
+                    if (!string.IsNullOrEmpty(curToken))
+                        return curToken;
+                }
+
+                curToken = _authorizationToken.GetPluginToken(curPlugin.Id);
+                if (!string.IsNullOrEmpty(curToken))
+                    return curToken;
+                return _plugin.Authorize();
+            }
+
+        }
+
+
+        /// <summary>
+        /// Retrieve account
+        /// </summary>
+        /// <param name="curActionDO"></param>
+        /// <returns></returns>
+        public DockyardAccountDO GetAccount(ActionDO curActionDO)
+        {
+            if (curActionDO.ParentActivity != null
+                && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
+        {
+                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
+
+                return curActionListDO
+                    .Process
+                    .ProcessTemplate
+                    .DockyardAccount;
+            }
+
+            return null;
+
+        }
+
+
+        public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
+        {
+            if (curCrateDTOLists == null)
+                throw new ArgumentNullException("CrateDTO is null");
+            if (curActionDO == null)
+                throw new ArgumentNullException("ActionDO is null");
+
+            if (curCrateDTOLists.Count > 0)
+            {
+                curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
+            }
         }
     }
 }

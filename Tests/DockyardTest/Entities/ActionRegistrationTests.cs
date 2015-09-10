@@ -26,8 +26,8 @@ namespace DockyardTest.Entities
                 var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
                 Assert.NotNull(savedActionTemplateDO);
 
-                Assert.AreEqual(actionTemplateDO.ActionType, savedActionTemplateDO.ActionType);
-                Assert.AreEqual(actionTemplateDO.ParentPluginRegistration, savedActionTemplateDO.ParentPluginRegistration);
+                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
+                Assert.AreEqual(actionTemplateDO.DefaultEndPoint, savedActionTemplateDO.DefaultEndPoint);
 
             }
         }
@@ -49,7 +49,7 @@ namespace DockyardTest.Entities
 
 
                 Assert.NotNull(savedActionTemplateDO);
-                Assert.AreEqual(actionTemplateDO.ActionType, savedActionTemplateDO.ActionType);
+                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
                 Assert.AreEqual(actionTemplateDO.Version, savedActionTemplateDO.Version);
 
                 // remove saved instance

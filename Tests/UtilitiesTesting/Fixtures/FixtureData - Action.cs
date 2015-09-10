@@ -14,8 +14,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 54,
                 Name = "Write to Sql Server",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
-                ConfigurationSettings = "",
+                CrateStorage = "",
                 FieldMappingSettings = "",
                 PayloadMappings = "",
                 Ordering = 1,
@@ -31,8 +30,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Send an Email",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Send an Email",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }
@@ -42,8 +41,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionTemplateDO()
             {
                 Id = 1,
-                ActionType = "Send a Text (SMS) Message",
-                ParentPluginRegistration = "AzureSqlServer",
+                Name = "Send a Text (SMS) Message",
+                DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }        public static ActionDO TestAction1()
@@ -56,16 +55,6 @@ namespace UtilitiesTesting.Fixtures
                 ActionTemplate = actionTemplate,
             };
             return curActionDO;
-        }
-
-        public static TemplateDO TestTemplate1()
-        {
-            var curTemplateDO = new TemplateDO(new DocuSignTemplate())
-            {
-                Id = 1
-            };
-
-            return curTemplateDO;
         }
 
         public static ActionDO TestAction2()
@@ -86,10 +75,10 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             var origActionDO = new ActionDO()
             {
-                ParentActionListId = null,
+                ParentActivityId = null,
                 Name = "type 1",
                 Id = 34,
-                ConfigurationSettings = "config settings",
+                CrateStorage= "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 Ordering = 3,
                 ActionTemplateId = actionTemplate.Id,
@@ -129,12 +118,12 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestAction6()
         {
             var actionTemplate = ActionTemplate();
-            actionTemplate.ActionType = null;
+            actionTemplate.Name = null;
 
             return new ActionDO
             {
                 Id = 6,
-                ParentActionListId = 1,
+                ParentActivityId = 1,
                 Ordering = 2,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -149,7 +138,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 7,
                 Name = "Action 7",
-                ParentActionListId = 1,
+                ParentActivityId = 1,
                 Ordering = 3,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -164,11 +153,10 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 8,
                 Name = "Action 8",
-                ParentActionListId = 1,
+                ParentActivityId = 1,
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
-                ParentActionList = FixtureData.TestActionList6(),
-                ParentPluginRegistration = "AzureSqlServerPluginRegistration_v1",
+                ParentActivity = FixtureData.TestActionList6(),
                 PayloadMappings = "x",
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -182,7 +170,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 5,
                 Name = "Action 5",
-                ParentActionListId = 1,
+                ParentActivityId = 1,
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
@@ -210,7 +198,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Action 1",
-                ParentActionListId = 1,
+                ParentActivityId = 1,
                 Ordering = 1,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -224,7 +212,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 Name = "Action 2",
-                ParentActionListId = 1,
+                ParentActivityId = 1,
                 Ordering = 2,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
@@ -239,15 +227,27 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 10,
                 Name = "WriteToAzureSql",
-                ParentActionListId = 1,
-                ConfigurationSettings = "JSON Config Settings",
+                ParentActivityId = 1,
+                CrateStorage = "JSON Config Settings",
                 FieldMappingSettings = "JSON Field Mapping Settings",
-                ParentPluginRegistration = "AzureSql",
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
 
+            };
+        }
+
+        public static ActionDO TestAction23()
+        {
+            var actionTemplate = FixtureData.TestActionTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action 2",
+                Ordering = 2,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
             };
         }
 
@@ -274,11 +274,10 @@ namespace UtilitiesTesting.Fixtures
 
             var actionDo = new ActionDO()
             {
-                ParentActionList = actionListDo,
-                ParentActionListId = 1,
+                ParentActivity = actionListDo,
+                ParentActivityId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FieldMappings,
                 Id = 1,
                 ActionTemplateId = actionTemplate.Id,
@@ -293,12 +292,11 @@ namespace UtilitiesTesting.Fixtures
             var actionDo = new ActionDO
             {
                 Id = 1,
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ConfigurationSettings = "config settings",
-                ParentActionListId = 88,
+                CrateStorage= "config settings",
+                ParentActivityId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };
             return actionDo;
@@ -328,12 +326,104 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentPluginRegistration = "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1",
-                ParentActionList = actionListDo,
+                ParentActivity = actionListDo,
                 FieldMappingSettings = FixtureData.FieldMappings,
                 ActionTemplateId = actionTemplate.Id,
                 ActionTemplate = actionTemplate
             };
         }
+
+        public static ActionDO TestActionAuthenticate1()
+        {
+            PluginDO curPluginDO = new PluginDO()
+            {
+                Id = 1,
+                Name = "AzureSqlServer",
+                PluginStatus = 1
+
+            };
+
+            ActionTemplateDO curActionTemplateDO = new ActionTemplateDO
+            {
+                Id = 1,
+                //ActionType = "Write to Sql Server",
+                //ParentPluginRegistration = "pluginAzureSqlServer",
+                Version = "v1",
+                AuthenticationType = "OAuth",
+                Plugin = curPluginDO,
+                PluginID = 1,
+            };
+
+
+
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "descr 1",
+                Name = "template1",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                DockyardAccount = FixtureData.TestDockyardAccount1()
+            };
+
+            var curProcessDO = new ProcessDO()
+            {
+                Id = 1,
+                ProcessTemplateId = 1,
+                ProcessTemplate = curProcessTemplateDO
+            };
+
+            var curActionListDO = new ActionListDO()
+            {
+                ProcessID = ProcessState.Unstarted,
+                Id = 1,
+                ActionListType = ActionListType.Immediate,
+                Process = curProcessDO,
+            };
+
+            
+
+
+            ActionDO curActionDO = new ActionDO();
+            curActionDO.Id = 1;
+            curActionDO.ActionTemplateId = 1;
+            curActionDO.ActionTemplate = curActionTemplateDO;
+            curActionDO.ActionState = 1;
+            curActionDO.Name = "testaction";
+            curActionDO.ParentActivityId = 1;
+            curActionDO.ParentActivity = curActionListDO;
+
+                //  curActionDO.ConfigurationSettings = "config settings";
+          //  curActionDO.ParentActionListId = 1;
+
+           // curActionListDO.Actions.Add(curActionDO);
+
+         //   curActionDO.ParentActionList = curActionListDO;
+
+
+
+            return curActionDO;
+        }
+
+
+        public static AuthorizationTokenDO TestActionAuthenticate2()
+        {
+            AuthorizationTokenDO curAuthorizationTokenDO = new AuthorizationTokenDO()
+            {
+                Token = "TestToken",
+                AuthorizationTokenState = AuthorizationTokenState.Active
+            };
+            return curAuthorizationTokenDO;
+        }
+
+        public static AuthorizationTokenDO TestActionAuthenticate3()
+        {
+            AuthorizationTokenDO curAuthorizationTokenDO = new AuthorizationTokenDO()
+            {
+                Token = "TestToken",
+                AuthorizationTokenState = AuthorizationTokenState.Revoked
+            };
+            return curAuthorizationTokenDO;
+        }
+
     }
 }

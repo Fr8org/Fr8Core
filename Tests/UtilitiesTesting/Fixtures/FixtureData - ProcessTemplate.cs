@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.States;
+using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -44,6 +45,31 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplateState = ProcessTemplateState.Active,
             };
             return healthProcessTemplate;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplateWithProcessNodeTemplates()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-982 Process Node Template Test",
+                Name = "ProcessTemplateWithProcessNodeTemplates",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            for(int i = 1; i <= 4; ++i)
+            {
+                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    Id = i,
+                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    ProcessTemplate = curProcessTemplateDO,
+                };
+                curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+            }
+
+            return curProcessTemplateDO;
         }
     }
 }

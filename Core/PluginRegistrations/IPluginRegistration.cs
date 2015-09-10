@@ -11,7 +11,7 @@ namespace Core.PluginRegistrations
 
         void RegisterActions();
 
-        string CallPluginRegistrationByString(string typeName, string methodName, ActionTemplateDO curActionTemplateDo);
+        string CallPluginRegistrationByString(string typeName, string methodName, ActionDO curActionDO);
 
         IEnumerable<ActionTemplateDO> AvailableActions { get; }
 		
