@@ -45,7 +45,8 @@ namespace pluginAzureSqlServer.Actions {
                     return ConfigurationRequestType.Initial;
                 }
                 else
-                {   //This else block covers 2nd and 3rd scenarios as mentioned below
+                {
+                    //This else block covers 2nd and 3rd scenarios as mentioned below
                     //Scenario 2 - This is the seond request, being made after the user filled in the value of the connection string
                     //Scenario 3 - A data_fields was previously constructed, but perhaps the connection string has changed.
                     //in either scenario, we have to return Followup configuration request type
@@ -55,7 +56,7 @@ namespace pluginAzureSqlServer.Actions {
             else
             {
                 throw new ApplicationException("this value should never be null");
-        }
+            }
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
