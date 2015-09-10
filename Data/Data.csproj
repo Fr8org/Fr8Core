@@ -199,6 +199,10 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
+    <Compile Include="Entities\MT_DataDO.cs" />
+    <Compile Include="Entities\MT_FieldDO.cs" />
+    <Compile Include="Entities\MT_ObjectDO.cs" />
+    <Compile Include="Entities\MT_OrganizationDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
