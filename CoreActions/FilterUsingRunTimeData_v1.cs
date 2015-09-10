@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Core.Interfaces;
@@ -32,10 +33,10 @@ namespace CoreActions
 
             // Find crate with id "Criteria Filter Conditions".
             var curCrateStorage = actionDO.CrateStorageDTO();
-            var curCrate = curCrateStorage.CratesDTO
+            var curFilterCrate = curCrateStorage.CratesDTO
                 .FirstOrDefault(x => x.Id == "Criteria Filter Conditions");
 
-            if (curCrate == null)
+            if (curFilterCrate == null)
             {
                 throw new ApplicationException("No crate found with Id == \"Criteria Filter Conditions\"");
             }
@@ -45,7 +46,8 @@ namespace CoreActions
             var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(curDocuSignEnvelope);
 
             // Evaluate criteria using Contents json body of found Crate.
-            var result = Evaluate(curCrate.Contents, curActionList.ProcessID.Value, curEnvelopeData);
+            var result = Evaluate(curFilterCrate.Contents,
+                curActionList.ProcessID.Value, curEnvelopeData);
 
             // Process result.
             if (result)
@@ -157,8 +159,28 @@ namespace CoreActions
         /// </summary>
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
+            var curCrate = GetUpstreamPayloadKeysCrate(curActionDO);
+
+            if (curCrate != null)
+            {
+                return new CrateStorageDTO()
+                {
+                    CratesDTO = new List<CrateDTO>()
+                    {
+                        curCrate
+                    }
+                };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private CrateDTO GetUpstreamPayloadKeysCrate(ActivityDO activityDO)
+        {
             var curActivityService = ObjectFactory.GetInstance<IActivity>();
-            var curUpstreamActivities = curActivityService.GetUpstreamActivities(curActionDO);
+            var curUpstreamActivities = curActivityService.GetUpstreamActivities(activityDO);
 
             foreach (var curUpstreamAction in curUpstreamActivities.OfType<ActionDO>())
             {
@@ -167,13 +189,7 @@ namespace CoreActions
 
                 if (curCrate != null)
                 {
-                    return new CrateStorageDTO()
-                    {
-                        CratesDTO = new List<CrateDTO>()
-                        {
-                            curCrate
-                        }
-                    };
+                    return curCrate;
                 }
             }
 
