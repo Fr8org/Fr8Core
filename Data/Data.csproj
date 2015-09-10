@@ -215,6 +215,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />

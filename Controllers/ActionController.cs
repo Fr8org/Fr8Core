@@ -43,12 +43,12 @@ namespace Web.Controllers
 
             if (curActionPath == "configuration")
             {
-                curActionPath = "GetConfiguration";
+                curActionPath = "Configure";
             }
 
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
-            var curAssemblyName = string.Format("Core.Actions.{0}_v{1}",
+            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
                 curActionDO.ActionTemplate.Name,
                 curActionDO.ActionTemplate.Version);
 

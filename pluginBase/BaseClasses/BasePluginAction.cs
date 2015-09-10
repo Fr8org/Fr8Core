@@ -17,7 +17,8 @@ namespace PluginBase.BaseClasses
             {
                 return InitialConfigurationResponse(curActionDO);
             }
-            else if(configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Followup)
+
+            else if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Followup)
             {
                 return FollowupConfigurationResponse(curActionDO);
             }
@@ -30,6 +31,7 @@ namespace PluginBase.BaseClasses
         {
             return curActionDO.CrateStorageDTO();
         }
+
         //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
         protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {

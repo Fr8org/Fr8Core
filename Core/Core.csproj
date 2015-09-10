@@ -181,7 +181,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Actions\FilterUsingRunTimeData_v1.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActivity.cs" />

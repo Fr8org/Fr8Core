@@ -11,13 +11,9 @@ using System;
 
 namespace Data.Entities
 {
-    public class ActionDO : ActivityDO /*, IActionListChild*/
+    public class ActionDO : ActivityDO
 	{
         public string Name { get; set; }
-
-        // [ForeignKey("ParentActionList")]
-        // public int? ParentActionListId { get; set; }
-        // public virtual ActionListDO ParentActionList { get; set; }
 
         public string CrateStorage { get; set; }
 
