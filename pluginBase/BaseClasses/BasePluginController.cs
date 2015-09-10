@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Reflection;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Core.Services;
 using Data.Entities;
 using Newtonsoft.Json;
 
@@ -51,7 +52,7 @@ namespace PluginBase.BaseClasses
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
             restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                new
+                new Crate
                 {
                     Source = pluginName,
                     EventType = eventType,

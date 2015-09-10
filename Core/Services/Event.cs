@@ -11,13 +11,13 @@ namespace Core.Services
     public class Event : IEvent
     {
         /// <see cref="IEvent.HandlePluginIncident"/>
-        public void HandlePluginIncident(EventData incident)
+        public void HandlePluginIncident(LoggingData incident)
         {
             EventManager.ReportPluginIncident(incident);
         }
 
 
-        public void HandlePluginEvent(EventData eventData)
+        public void HandlePluginEvent(LoggingData eventData)
         {
             EventManager.ReportPluginEvent(eventData);
         }
