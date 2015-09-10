@@ -59,10 +59,7 @@
             if (actionType !== ns.ActionType.immediate) {
                 throw 'Only immediate action types are supported so far.';
             }
-
-            var criteria = this._findCriteria(criteriaId);
-            if (!criteria) { throw 'No criteria found with id = ' + criteriaId.toString(); }
-
+            
             var actionDescr = {
                 id: action.id,
                 isTempId: action.isTempId || false,
@@ -72,7 +69,7 @@
             };
 
             actionDescr.actionNode = this._factory.createActionNode(
-                action.name || ('Action #' + action.id.toString())
+                action.name
             );
 
             actionDescr.actionNode.on(
@@ -83,7 +80,7 @@
             );
 
             this._canvas.add(actionDescr.actionNode);
-            criteria.actions.push(actionDescr);
+            this._actions.push(actionDescr);
 
             this.relayout();
         },
@@ -120,45 +117,30 @@
 
         // Replace temporary ID with global ID.
         replaceActionTempId: function (tempId, id) {
-             
-
-            var i, j, criteria;
-            for (i = 0; i < this._criteria.length; ++i) {
-                criteria = this._criteria[i];
-
-                for (j = 0; j < criteria.actions.length; ++j) {
-                    if (criteria.actions[j].id === tempId
-                        && criteria.actions[j].isTempId) {
-                        criteria.actions[j].id = id;
-                        criteria.actions[j].isTempId = false;
-
-                        return;
-                    }
+            for (var i = 0; i < this._actions.length; ++i) {
+                if (this._actions[i].id === tempId
+                    && this._actions[i].isTempId) {
+                    this._actions[i].id = id;
+                    this._actions[i].isTempId = false;
+                    return;
                 }
             }
         },
 
         // Rename action with global ID.
         renameAction: function (id, text) {
-           
+            for (var i = 0; i < this._actions.length; ++i) {
+                if (this._actions[i].id == id
+                    && !this._actions[i].isTempId) {
 
-            var i, j, criteria;
-            for (i = 0; i < this._criteria.length; ++i) {
-                criteria = this._criteria[i];
+                    this._actions[i].actionNode.setText(text);
 
-                for (j = 0; j < criteria.actions.length; ++j) {
-                    if (criteria.actions[j].id == id
-                        && !criteria.actions[j].isTempId) {
-
-                        criteria.actions[j].actionNode.setText(text);
-
-                        this.relayout();
-                        return;
-                    }
+                    this.relayout();
+                    return;
                 }
             }
         },
-                
+
         // Resize canvas according to actual workflow size.
         _resizeCanvas: function () {
             var addActionNodeBottom = this._getAddActionNodeBottomPoint();
@@ -182,7 +164,7 @@
         _relayoutActionNodes: function () {
             var prevAction = null;
             for (i = 0; i < this._actions.length; ++i) {
-                this._placeActionNode(this._criteria[i], this._actions[i], prevAction);
+                this._placeActionNode(this._actions[i], prevAction);
                 prevAction = this._actions[i];
             }
         },
@@ -197,7 +179,6 @@
 
         // Create predefined objects.
         _predefinedObjects: function () {
-            debugger;
             //this._predefineStartNode();
             //this._predefineAddCriteriaNode();
             this._predefineActionsNode();
@@ -245,7 +226,7 @@
             addActionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('addActionNode:click', e, criteriaDescr.id, ns.ActionType.immediate);
+                    this.fire('addActionNode:click', e, 1, ns.ActionType.immediate);
                 }, this)
             );
 
@@ -275,10 +256,10 @@
         },
 
         // Set position of user defined action.
-        _placeActionNode: function (criteria, action, prevAction) {
+        _placeActionNode: function (action, prevAction) {
             var topOffset;
             if (!prevAction) {
-                topOffset = criteria.addActionNode.getTop();
+                topOffset = this._addActionNode.getTop();
             }
             else {
                 topOffset = this._getActionNodeBottomPoint(prevAction);
@@ -286,12 +267,12 @@
 
             topOffset += ns.WidgetConsts.actionNodePadding;
 
-            action.actionNode.setLeft(criteria.addActionNode.getLeft());
+            action.actionNode.setLeft(this._addActionNode.getLeft());
             action.actionNode.setTop(topOffset);
             action.actionNode.relayout();
 
-            criteria.addActionNode.setTop(topOffset + action.actionNode.getHeight() + ns.WidgetConsts.actionNodePadding);
-            criteria.addActionNode.relayout();
+            this._addActionNode.setTop(topOffset + action.actionNode.getHeight() + ns.WidgetConsts.actionNodePadding);
+            this._addActionNode.relayout();
         },
 
         // Get bottom Y point of user defined action.

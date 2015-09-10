@@ -335,9 +335,7 @@ module dockyard.controllers {
 
             // Make sure that current Action is null to prevent an action save 
             // request from being unnecessarily sent to web api 
-            this._scope.current.action = null;
-
-            debugger;
+            this._scope.current.action = null;            
 
             // TODO: Do not react on clicking on currently visible Criteria
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
@@ -345,36 +343,19 @@ module dockyard.controllers {
 
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
-                
-                // TODO: Check ID behavior
-                processNodeTemplateId = (result.processNodeTemplate.id ? result.processNodeTemplate.id : eventArgs.processNodeTemplateId);
+                                
+                // Create new action object.
+                var action = new model.ActionDesignDTO(null, id, true, null);
 
-                // Retrieve ActionList
-                return this.ActionListService.get({
-                    'id': processNodeTemplateId,
-                    'actionListType': eventArgs.actionListType
-                })
-            })
-                .then((result: interfaces.IActionListVM) => {
+                action.name = 'New Action #' + Math.abs(id).toString();
 
-                    // Create new action object.
-                    var action = new model.ActionDesignDTO(
-                        processNodeTemplateId,
-                        id,
-                        true,
-                        result.id
-                        );
-
-                    action.name = 'New Action #' + Math.abs(id).toString();
-
-                    // Add action to Workflow Designer.
-                    self._scope.current.action = action.toActionVM();
-                    self._scope.$broadcast(
-                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                        new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
-                        );
-                });
-
+                // Add action to Workflow Designer.
+                self._scope.current.action = action.toActionVM();
+                self._scope.$broadcast(
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
+                    new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
+                    );                
+            });
         }
 
         /*
@@ -384,7 +365,10 @@ module dockyard.controllers {
             console.log("ProcessBuilderController: action selected", eventArgs);
 
             debugger;
-
+            var originalId;
+            if (this._scope.current.action) {
+                originalId = this._scope.current.action.id;
+            }
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
 
@@ -397,7 +381,7 @@ module dockyard.controllers {
                     );
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                this.handleActionUpdate(result.action[0]);
 
                 //if (this._scope.current.action != null) {
                 //    this._scope.$broadcast(
@@ -406,10 +390,10 @@ module dockyard.controllers {
                 //        );
                 //}
 
-                var wasTemporaryAction = (this._scope.current.action.id == eventArgs.actionId);
+                var wasTemporaryAction = (originalId == eventArgs.actionId);
 
-                var actionId = wasTemporaryAction && result.action
-                    ? result.action.id
+                var actionId = wasTemporaryAction && result.action[0]
+                    ? result.action[0].id
                     : eventArgs.actionId;
 
                 this._scope.current.action = this.ActionService.get({ id: actionId });
