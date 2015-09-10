@@ -16,7 +16,7 @@ namespace Web.Controllers
     {
         private readonly IEvent _event;
 
-        delegate void EventHandler(LoggingData loggingData);
+        private delegate void EventHandler(LoggingData loggingData);
 
         public EventController()
         {
