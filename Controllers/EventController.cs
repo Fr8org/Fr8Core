@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Core.Interfaces;
@@ -24,29 +25,34 @@ namespace Web.Controllers
         public IHttpActionResult Post(CrateDTO submittedEvents)
         {
             var serializer = new JsonSerializer();
-            var eventCrateList = serializer.DeserializeList<CrateDTO>(submittedEvents.Contents);
+            var eventDTO = serializer.Deserialize<EventDTO>(submittedEvents.Contents);
 
-            //This??????????
-            if (eventCrateList.Any(crateDTO => crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report"))
+            //Request of alex to keep things simple for now
+            if (eventDTO.CrateStorage.Count != 1)
             {
-                throw new InvalidOperationException("Unknown crate in request");
+                throw new InvalidOperationException("Only single crate can be processed for now.");
             }
 
-            //or this??????????????????
-
-
-            //Make sure there are no invalid crates before starting processing operation
-            foreach (var crateDTO in eventCrateList.Where(crateDTO => crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report"))
+            var errorMsgList = new List<string>();
+            foreach (var crateDTO in eventDTO.CrateStorage)
             {
-                throw new InvalidOperationException("Don't know how to process an EventReport with the Contents: " + crateDTO.Contents);
-            }
+                if (crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report")
+                {
+                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + crateDTO.Contents);
+                    continue;
+                }
 
-            foreach (var crateDTO in eventCrateList)
-            {
                 var loggingData = serializer.Deserialize<LoggingData>(crateDTO.Contents);
-                _event.HandlePluginIncident(loggingData);
+                _event.HandlePluginEvent(loggingData);
             }
+
+            if (errorMsgList.Count > 0)
+            {
+                throw new InvalidOperationException(String.Join(";;;", errorMsgList));
+            }
+
             return Ok();
+            
         }
     }
 }

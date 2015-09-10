@@ -11,20 +11,31 @@ namespace Data.Crates.Helpers
 {
     public static class EventReportCrate
     {
-        public static CrateDTO Create(params CrateDTO[] crates)
+        public static CrateDTO Create(String eventName, String palletId, params CrateDTO[] crates)
         {
-            return Create(crates.ToList());
+            return Create(eventName, palletId, crates.ToList());
         }
 
-        public static CrateDTO Create(List<CrateDTO> crates)
+        public static CrateDTO Create(String eventName, String palletId, List<CrateDTO> crates)
+        {
+            var eventDTO = new EventDTO
+            {
+                EventName = eventName,
+                PalletId = palletId,
+                CrateStorage = crates
+            };
+            return Create(eventDTO);
+        }
+
+        public static CrateDTO Create(EventDTO eventDTO)
         {
             var serializer = new JsonSerializer();
-            var contents = serializer.Serialize(crates);
+            var eventDTOContent = serializer.Serialize(eventDTO);
             return new CrateDTO()
             {
                 Id = Guid.NewGuid().ToString(),
                 Label = "Dockyard Plugin Event or Incident Report",
-                Contents = contents,
+                Contents = eventDTOContent,
                 ManifestType = "Dockyard Plugin Event or Incident Report",
                 ManifestId = 3
             };
