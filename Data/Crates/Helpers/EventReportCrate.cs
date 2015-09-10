@@ -37,7 +37,7 @@ namespace Data.Crates.Helpers
                 Label = "Dockyard Plugin Event or Incident Report",
                 Contents = eventDTOContent,
                 ManifestType = "Dockyard Plugin Event or Incident Report",
-                ManifestId = 3
+                ManifestId = 2
             };
         }
     }
