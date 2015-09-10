@@ -60,7 +60,6 @@ namespace Data.Interfaces
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
 
-
 	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>

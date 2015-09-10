@@ -522,7 +522,6 @@ namespace Data.Infrastructure
             }
         }
 
-
 	    public void Save()
         {
             _context.SaveChanges();

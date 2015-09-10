@@ -69,7 +69,7 @@ namespace PluginBase.BaseClasses
         }
         public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO)
         {
-            string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curActionDO.ActionTemplate.Name, curActionDO.ActionTemplate.Version);
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDO.ActionTemplate.Name, curActionDO.ActionTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);

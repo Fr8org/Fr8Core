@@ -161,5 +161,18 @@ namespace Core.Services
                 EventManager.ProcessLaunched(launchedProcess);
             }
         }
+
+        public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
+        {
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
+                    .Include("ProcessNodeTemplates")
+                    .Where(x => x.Id == curProcessTemplateDO.Id);
+
+                return queryableRepo.SelectMany<ProcessTemplateDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
+                    .ToList();
+            }
+        }
     }
 }
