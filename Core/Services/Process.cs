@@ -73,32 +73,27 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                Execute(curEvent, curProcessDO);
+                Execute(curProcessDO);
             }
         }
 
-        public void Execute(DocuSignEventDO curEvent, ProcessDO curProcessDO)
+        public void Execute(ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
-            if (curEvent == null)
-                throw new ArgumentNullException("DocuSignEventDO is null");
 
             if (curProcessDO.CurrentActivity != null)
             {
                 IActivity _activity = ObjectFactory.GetInstance<IActivity>();
 
 
-                //Process the CurrentActivity after processing move the NextActivity as the CurrentActivity
-                //loop until the NextActivity is null AND CurrentActivity is the same as before (mean it didnt moved to the nextactivity)
-
-                ActivityDO tmpCurrentActivity = curProcessDO.CurrentActivity;
+                //break if CurrentActivity Is NULL, it means all activities 
+                //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    tmpCurrentActivity = curProcessDO.CurrentActivity;//store current activity to be evaluated if the originated current activity is moved to next activity
                     _activity.Process(curProcessDO.CurrentActivity);
                     SetProcessDOActivities(curProcessDO, _activity);
-                } while (curProcessDO.NextActivity != null && !tmpCurrentActivity.Equals(curProcessDO.CurrentActivity));
+                } while (curProcessDO.CurrentActivity != null);
             }
             else
             {
@@ -117,7 +112,8 @@ namespace Core.Services
                 //if ProcessDO.NextActivity is not set, 
                 //get the downstream activities of the current activity and set the next current activity based on those downstream as CurrentActivity
                 List<ActivityDO> activityLists = curActivity.GetDownstreamActivities(curProcessDO.CurrentActivity);
-                if (activityLists.Count > 0)
+                if ((activityLists != null && activityLists.Count > 0) &&
+                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in DownStream
                 {
                     curProcessDO.CurrentActivity = activityLists[0];
                 }
@@ -133,9 +129,10 @@ namespace Core.Services
             if (curProcessDO.CurrentActivity != null)
             {
                 List<ActivityDO> activityLists = curActivity.GetDownstreamActivities(curProcessDO.CurrentActivity);
-                if (activityLists.Count > 0)
+                if ((activityLists != null && activityLists.Count > 0) &&
+                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in DownStream
                 {
-                    curProcessDO.NextActivity = activityLists[0];
+                   curProcessDO.NextActivity = activityLists[0];
                 }
                 else
                 {

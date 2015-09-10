@@ -3,16 +3,16 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class _201509101040_ProcessDO_AddedCurrentAndNextActivity : DbMigration
+    public partial class ProcessDO_AddedCurrentActivityAndNextActivity : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.Processes", "CurrentActivityId", c => c.Int(nullable: false));
-            AddColumn("dbo.Processes", "NextActivityId", c => c.Int(nullable: false));
+            AddColumn("dbo.Processes", "CurrentActivityId", c => c.Int());
+            AddColumn("dbo.Processes", "NextActivityId", c => c.Int());
             CreateIndex("dbo.Processes", "CurrentActivityId");
             CreateIndex("dbo.Processes", "NextActivityId");
-            AddForeignKey("dbo.Processes", "CurrentActivityId", "dbo.ActivityDOes", "Id", cascadeDelete: true);
-            AddForeignKey("dbo.Processes", "NextActivityId", "dbo.ActivityDOes", "Id", cascadeDelete: true);
+            AddForeignKey("dbo.Processes", "CurrentActivityId", "dbo.ActivityDOes", "Id");
+            AddForeignKey("dbo.Processes", "NextActivityId", "dbo.ActivityDOes", "Id");
         }
         
         public override void Down()

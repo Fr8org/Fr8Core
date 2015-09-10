@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class _201509101040_ProcessDO_AddedCurrentAndNextActivity : IMigrationMetadata
+    public sealed partial class ProcessDO_AddedCurrentActivityAndNextActivity : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(_201509101040_ProcessDO_AddedCurrentAndNextActivity));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ProcessDO_AddedCurrentActivityAndNextActivity));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509100242590_201509101040_ProcessDO_AddedCurrentAndNextActivity"; }
+            get { return "201509101343575_ProcessDO_AddedCurrentActivityAndNextActivity"; }
         }
         
         string IMigrationMetadata.Source

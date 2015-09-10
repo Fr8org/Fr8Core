@@ -35,11 +35,11 @@ namespace Data.Entities
         public virtual _ProcessStateTemplate ProcessStateTemplate { get; set; }
 
         [ForeignKey("CurrentActivity")]
-        public int CurrentActivityId { get; set; }
+        public int? CurrentActivityId { get; set; }
         public virtual ActivityDO CurrentActivity { get; set; }
 
         [ForeignKey("NextActivity")]
-        public int NextActivityId { get; set; }
+        public int? NextActivityId { get; set; }
         public virtual ActivityDO NextActivity { get; set; }
 
         public override void BeforeSave()
