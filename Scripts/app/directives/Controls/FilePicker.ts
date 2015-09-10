@@ -7,7 +7,7 @@ module dockyard.directives.filePicker {
         ListExistingFiles: () => void;
         Save: () => void;
         field: model.FileField;
-        selectedFile: interfaces.IFileDTO;
+        selectedFile: interfaces.IFileDescriptionDTO;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -46,7 +46,7 @@ module dockyard.directives.filePicker {
             };
         }
 
-        private OnFileUploadSuccess(fileDTO: interfaces.IFileDTO) {
+        private OnFileUploadSuccess(fileDTO: interfaces.IFileDescriptionDTO) {
             this._$scope.selectedFile = fileDTO;
         }
 
@@ -73,41 +73,28 @@ module dockyard.directives.filePicker {
             //TODO add this file's id to CrateDO
         }
 
-        private OnExistingFileSelected(fileDTO: interfaces.IFileDTO) {
+        private OnExistingFileSelected(fileDTO: interfaces.IFileDescriptionDTO) {
             this._$scope.selectedFile = fileDTO;
         }
 
-        private OnFilesLoaded(filesDTO: Array<interfaces.IFileDTO>) {
-
-            //THIS IS FOR DEMO ONLY. i (@bahadirbozdag) will fix this -----------------------------------
+        private OnFilesLoaded(filesDTO: Array<interfaces.IFileDescriptionDTO>) {
 
             var modalInstance = this.$modal.open({
+                animation: true,
                 templateUrl: '/AngularTemplate/FileSelectorModal',
-                controller: ['$scope', '$modalInstance', 'files', ($modalScope: any, $modalInstance: any, files: Array<interfaces.IFileDTO>) => {
-                    $modalScope.files = files;
-
-                    $modalScope.selectFile = (file: interfaces.IFileDTO) => {
-                        $modalInstance.close(file);
-                    };
-
-                    $modalScope.cancel  = () => {
-                        $modalInstance.dismiss();
-                    };
-                }],
+                controller: 'FilePicker__FileSelectorModalController',
                 size: 'm',
                 resolve: {
                     files: () => filesDTO
                 }
             });
 
-            var onExistingFileSelected = <(fileDTO: interfaces.IFileDTO) => void> angular.bind(this, this.OnExistingFileSelected);
+            var onExistingFileSelected = <(fileDTO: interfaces.IFileDescriptionDTO) => void> angular.bind(this, this.OnExistingFileSelected);
             modalInstance.result.then(onExistingFileSelected);
-
-            //END OF DIRTY CODE
         }
 
         private ListExistingFiles() {
-            var onFilesLoaded = <(filesDTO: Array<interfaces.IFileDTO>) => void> angular.bind(this, this.OnFilesLoaded);
+            var onFilesLoaded = <(filesDTO: Array<interfaces.IFileDescriptionDTO>) => void> angular.bind(this, this.OnFilesLoaded);
             this.FileService.listFiles().then(onFilesLoaded);
         }
 
@@ -128,7 +115,7 @@ module dockyard.directives.filePicker {
 
     interface IFileService {
         uploadFile(file: any): any;
-        listFiles(): ng.IPromise<Array<interfaces.IFileDTO>>
+        listFiles(): ng.IPromise<Array<interfaces.IFileDescriptionDTO>>
     }
 
 
@@ -147,12 +134,12 @@ module dockyard.directives.filePicker {
             var deferred = this.$q.defer();
 
             this.UploadService.upload({
-                url: '/api/files',
+                url: '/files',
                 file: file
             }).progress((event: any) => {
                 console.log('Loaded: ' + event.loaded + ' / ' + event.total);
             })
-            .success((fileDTO: interfaces.IFileDTO) => {
+                .success((fileDTO: interfaces.IFileDescriptionDTO) => {
                  deferred.resolve(fileDTO);
             })
             .error((data: any, status: any) => {
@@ -162,9 +149,9 @@ module dockyard.directives.filePicker {
             return deferred.promise;
         }
 
-        public listFiles(): ng.IPromise<Array<interfaces.IFileDTO>> {
+        public listFiles(): ng.IPromise<Array<interfaces.IFileDescriptionDTO>> {
             var deferred = this.$q.defer();
-            this.$http.get<Array<interfaces.IFileDTO>>('/api/files').then(resp => {
+            this.$http.get<Array<interfaces.IFileDescriptionDTO>>('/files').then(resp => {
                 deferred.resolve(resp.data);
             }, err => {
                 deferred.reject(err);
@@ -180,6 +167,25 @@ module dockyard.directives.filePicker {
     app.factory('FileService', ['$http', '$q', 'Upload',
         ($http, $q, UploadService) => {
             return new FileService($http, $q, UploadService);
+    }]);
+
+    /*
+    A simple controller for Listing existing files dialog.
+    Note: here goes a simple (not really a TypeScript) way to define a controller. 
+    Not as a class but as a lambda function.
+*/
+    app.controller('FilePicker__FileSelectorModalController', ['$scope', '$modalInstance', 'files', ($scope: any, $modalInstance: any, files: Array<interfaces.IFileDescriptionDTO>): void => {
+
+        $scope.files = files;
+
+        $scope.selectFile = (file: interfaces.IFileDescriptionDTO) => {
+            $modalInstance.close(file);
+        };
+
+        $scope.cancel = () => {
+            $modalInstance.dismiss();
+        };
+
     }]);
 
 }

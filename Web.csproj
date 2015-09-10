@@ -734,7 +734,7 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\FileDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />

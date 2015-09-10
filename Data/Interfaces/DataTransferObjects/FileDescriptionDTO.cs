@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class FileDTO
+    public class FileDescriptionDTO 
     {
         public int Id { get; set; }
 

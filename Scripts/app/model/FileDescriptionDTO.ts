@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class FileDTO implements interfaces.IFileDTO {
+    export class FileDescriptionDTO implements interfaces.IFileDescriptionDTO {
         id: number;
         originalFileName: string;
 
@@ -13,13 +13,13 @@
         }
 
 
-        clone(): FileDTO {
-            var result = new FileDTO(this.id, this.originalFileName);
+        clone(): FileDescriptionDTO {
+            var result = new FileDescriptionDTO(this.id, this.originalFileName);
             return result;
         }
 
-        static create(dataObject: interfaces.IFileDTO): FileDTO {
-            var result = new FileDTO(0, '');
+        static create(dataObject: interfaces.IFileDescriptionDTO): FileDescriptionDTO {
+            var result = new FileDescriptionDTO(0, '');
             result.id = dataObject.id;
             result.originalFileName = dataObject.originalFileName;
             return result;

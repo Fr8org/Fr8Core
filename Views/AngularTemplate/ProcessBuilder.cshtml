@@ -41,6 +41,13 @@
         <div class="col-md-6 col-sm-6">
             <pane-configure-mapping id="paneConfigureMapping" current-action="current.action" mode="field"></pane-configure-mapping>
         </div>
+
+        @*Demo Only*@
+        <div class="col-md-12 col-sm-12">
+            <file-picker field='field'></file-picker>
+        </div>
+        @*END OF DEMO CODE*@
+
         <div class="col-md-4 col-sm-4" ng-show="current.action.id">
             <div class="form-group">
                 <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>

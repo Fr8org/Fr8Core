@@ -35,7 +35,7 @@ module dockyard.interfaces {
         name: string;
     }
 
-    export interface IFileDTO {
+    export interface IFileDescriptionDTO {
         id: number;
         originalFileName: string;
     }

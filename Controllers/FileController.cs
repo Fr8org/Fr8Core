@@ -16,45 +16,49 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/files")]
+    [RoutePrefix("files")]
     public class FileController : ApiController
     {
+        private readonly IFile _file;
 
-        [ResponseType(typeof(FileDTO))]
+        public FileController()
+        {
+            _file = ObjectFactory.GetInstance<IFile>();
+        }
+
+        [ResponseType(typeof(FileDescriptionDTO))]
         [Route("")]
         [HttpPost]
         public async Task<IHttpActionResult> UploadFile()
         {
             if (!Request.Content.IsMimeMultipartContent())
             {
-                //TODO maybe we should create an event handler for this and log these messages
                 throw new InvalidDataException("Multipart content data is required to upload files");
             }
 
+            //Read File to Memorystream
             var provider = new MultipartMemoryStreamProvider();
             await Request.Content.ReadAsMultipartAsync(provider);
 
             if (provider.Contents.Count != 1)
             {
-                throw new InvalidDataException("It is only allowed to upload single file");
+                throw new InvalidDataException("Expected to receive a single file but received either more or less");
             }
 
-            var _file = ObjectFactory.GetInstance<IFile>();
             var file = provider.Contents.First();
             var curFile = new FileDO();
-            //upload file to azure and save to db
             _file.Store(curFile, await file.ReadAsStreamAsync(), file.Headers.ContentDisposition.FileName.Replace("\"", string.Empty));
-            return Ok(Mapper.Map<FileDO, FileDTO>(curFile));
+            return Ok(Mapper.Map<FileDO, FileDescriptionDTO>(curFile));
         }
 
-        [ResponseType(typeof(List<FileDTO>))]
+        [ResponseType(typeof(List<FileDescriptionDTO>))]
         [Route("")]
         [HttpGet]
         public async Task<IHttpActionResult> GetUploadedFiles()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var fileList = uow.FileRepository.GetAll().Select(Mapper.Map<FileDTO>);
+                var fileList = uow.FileRepository.GetAll().Select(Mapper.Map<FileDescriptionDTO>);
                 return Ok(fileList);
             }
         }
