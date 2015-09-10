@@ -1,30 +1,48 @@
 ﻿@using Microsoft.AspNet.Identity
 @if (Request.IsAuthenticated)
 {
-   using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+   using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = " " }))
    {
      
   <ul class="pull-right welcomemsg">
       <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
   </ul>
 
-<ul class="nav pull-right">
-    <li data-section="2"><a href="#how_to_works" class="how_to_works" title="How it Works">How it Works</a></li>
-    <li><a href="/Home/About" title="About Us">About Us</a></li>
-    <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
+<ul class="nav navbar-nav">
+    <li data-section="1"><a href="#welcome" class="home-welcome" title="Home">Home</a></li>
+    <li data-section="2" class="dropdown"><a href="#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+        <ul class="dropdown-menu">
+            <li><a href="#">Multi-Part Workflows</a></li>
+            <li><a href="#">Conditional Logic Branching</a></li>
+            <li><a href="#">Integration with Other Data Services</a></li>
+            <li><a href="#">Inter-Organization Workflows</a></li>
+            <li><a href="#">Data Extraction into SQL Server</a></li>
+        </ul>
+    </li>
+    <li data-section="3"><a href="#about-us" class="about-us" title="About Us">About Us</a></li>
     <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
     <li>@Html.ActionLink("My Account", "MyAccount", "User") </li>
     <li>@Html.ActionLink("Sign Out", "LogOff", "DockyardAccount", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
+
 </ul>
 }
 }
 else
 {
-    <ul class="nav pull-right">
-        <li data-section="2"><a href="#how_to_works" class="how_to_works" title="How it Works">How it Works</a></li>
-        <li><a href="/Home/About" title="About Us">About Us</a></li>
-        <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
-        <li><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>
+    <ul class="nav navbar-nav">
+        <li data-section="1"><a href="#home-welcome" class="home-welcome" title="Home">Home</a></li>
+        <li data-section="2" class="dropdown"><a href="#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
+            <ul class="dropdown-menu">
+                <li><a href="#">Multi-Part Workflows</a></li>
+                <li><a href="#">Conditional Logic Branching</a></li>
+                <li><a href="#">Integration with Other Data Services</a></li>
+                <li><a href="#">Inter-Organization Workflows</a></li>
+                <li><a href="#">Data Extraction into SQL Server</a></li>
+            </ul>
+        </li>
+        <li data-section="3"><a href="#about-us" class="about-us" title="About Us">About Us</a></li>
         <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
+        <li><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>
+
     </ul>
 }
