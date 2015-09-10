@@ -104,5 +104,16 @@ namespace UtilitiesTesting.Fixtures
 			return result;
 		}
 
+        public static ProcessDO TestProcesswithCurrentActivity()
+        {
+            var process = new ProcessDO();
+            process.Id = 49;
+            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.ProcessState = 1;
+            process.ProcessNodes.Add(TestProcessNode1());
+            process.CurrentActivity = FixtureData.TestAction7();
+            return process;
+        }
+
 	}
 }

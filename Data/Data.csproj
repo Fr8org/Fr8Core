@@ -297,6 +297,10 @@
     <Compile Include="Migrations\201509091537463_forcemerge.Designer.cs">
       <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509100242590_201509101040_ProcessDO_AddedCurrentAndNextActivity.cs" />
+    <Compile Include="Migrations\201509100242590_201509101040_ProcessDO_AddedCurrentAndNextActivity.Designer.cs">
+      <DependentUpon>201509100242590_201509101040_ProcessDO_AddedCurrentAndNextActivity.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -559,6 +563,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509091537463_forcemerge.resx">
       <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509100242590_201509101040_ProcessDO_AddedCurrentAndNextActivity.resx">
+      <DependentUpon>201509100242590_201509101040_ProcessDO_AddedCurrentAndNextActivity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

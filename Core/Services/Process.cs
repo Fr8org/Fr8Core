@@ -70,42 +70,79 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                Execute(curEvent, curProcessNode);
+                Execute(curEvent, curProcessDO);
             }
         }
 
-        public void Execute(DocuSignEventDO curEvent, ProcessNodeDO curProcessNode)
+        public void Execute(DocuSignEventDO curEvent, ProcessDO curProcessDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curDocuSignEnvelope = new DocuSignEnvelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
-                List<EnvelopeDataDTO> curEnvelopeData = _envelope.GetEnvelopeData(curDocuSignEnvelope);
+            if (curProcessDO == null)
+                throw new ArgumentNullException("ProcessDO is null");
+            if (curEvent == null)
+                throw new ArgumentNullException("DocuSignEventDO is null");
 
-                while (curProcessNode != null)
+            if (curProcessDO.CurrentActivity != null)
+            {
+                IActivity _activity = ObjectFactory.GetInstance<IActivity>();
+
+
+                //Process the CurrentActivity after processing move the NextActivity as the CurrentActivity
+                //loop until the NextActivity is null AND CurrentActivity is the same as before (mean it didnt moved to the nextactivity)
+
+                ActivityDO tmpCurrentActivity = curProcessDO.CurrentActivity;
+                do
                 {
-                    string nodeExecutionResultKey = _processNode.Execute(curEnvelopeData, curProcessNode);
-                    if (nodeExecutionResultKey != string.Empty)
-                    {
-                        List<ProcessNodeTransition> nodeTransitions = JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(curProcessNode.ProcessNodeTemplate.NodeTransitions);
-                        string nodeID = GetNextProcessNodeId(nodeTransitions, nodeExecutionResultKey);
-                        curProcessNode = uow.ProcessNodeRepository.GetByKey(Convert.ToInt32(nodeID));
-                    }
+                    tmpCurrentActivity = curProcessDO.CurrentActivity;//store current activity to be evaluated if the originated current activity is moved to next activity
+                    _activity.Process(curProcessDO.CurrentActivity);
+                    SetProcessDOActivities(curProcessDO, _activity);
+                } while (curProcessDO.NextActivity != null && !tmpCurrentActivity.Equals(curProcessDO.CurrentActivity));
+            }
+            else
+            {
+                throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
+            }
+        }
+
+        private void SetProcessDOActivities(ProcessDO curProcessDO, IActivity curActivity)
+        {
+            if (curProcessDO.NextActivity != null)
+            {
+                curProcessDO.CurrentActivity = curProcessDO.NextActivity;
+            }
+            else
+            {
+                //if ProcessDO.NextActivity is not set, 
+                //get the downstream activities of the current activity and set the next current activity based on those downstream as CurrentActivity
+                List<ActivityDO> activityLists = curActivity.GetDownstreamActivities(curProcessDO.CurrentActivity);
+                if (activityLists.Count > 0)
+                {
+                    curProcessDO.CurrentActivity = activityLists[0];
+                }
+                else
+                    curProcessDO.CurrentActivity = null;
+            }
+
+            SetNextActivity(curProcessDO, curActivity);
+        }
+
+        private void SetNextActivity(ProcessDO curProcessDO, IActivity curActivity)
+        {
+            if (curProcessDO.CurrentActivity != null)
+            {
+                List<ActivityDO> activityLists = curActivity.GetDownstreamActivities(curProcessDO.CurrentActivity);
+                if (activityLists.Count > 0)
+                {
+                    curProcessDO.NextActivity = activityLists[0];
+                }
+                else
+                {
+                    curProcessDO.NextActivity = null;
                 }
             }
         }
 
-        private string GetNextProcessNodeId(List<ProcessNodeTransition> nodeTransitions, string nodeTransitionKey)
-        {
-            string nodeID = nodeTransitions.Where(k => k.TransitionKey.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new ProcessNodeTransition()).FirstOrDefault().ProcessNodeId;
-            if (nodeID == null)
-            {
-                throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
-            }
-            return nodeID;
-        }
     }
 }

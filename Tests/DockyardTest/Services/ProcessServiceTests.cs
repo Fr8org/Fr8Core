@@ -243,7 +243,7 @@ namespace DockyardTest.Services
 
             _processService = ObjectFactory.GetInstance<IProcess>();
 
-            _processService.Execute(docusignEventDO, processNodeDO);
+            _processService.Execute(docusignEventDO, FixtureData.TestProcesswithCurrentActivity());
         }
 
         [Test]
@@ -273,7 +273,7 @@ namespace DockyardTest.Services
             var processNodeDO = FixtureData.TestProcessNode3();
 
 
-            _processService.Execute(docusignEventDO, processNodeDO);
+            _processService.Execute(docusignEventDO, FixtureData.TestProcesswithCurrentActivity());
 
             Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
         }
