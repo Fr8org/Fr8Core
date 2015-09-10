@@ -33,8 +33,8 @@ module dockyard.directives.paneConfigureAction {
                 $scope: IConfigurationFieldScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
-
-                $scope.$on('onBlur', <any>angular.bind(this, this.onBlur));
+                debugger;
+                $scope.$on('onblur', <any>angular.bind(this, this.onBlur));
                 
             };
         }
@@ -50,6 +50,7 @@ module dockyard.directives.paneConfigureAction {
         }
 
         public onBlur(scope: IConfigurationFieldScope) {
+            debugger;
             scope.$emit('onExitFocus', scope.field);
                 //new MapFieldsClickedEventArgs(angular.extend({}, scope.field)) //clone action to prevent msg recipient from modifying orig. object
                 //);
