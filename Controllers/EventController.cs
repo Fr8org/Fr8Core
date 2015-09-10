@@ -16,6 +16,8 @@ namespace Web.Controllers
     {
         private readonly IEvent _event;
 
+        delegate void EventHandler(LoggingData loggingData);
+
         public EventController()
         {
             _event = ObjectFactory.GetInstance<IEvent>();
@@ -33,6 +35,22 @@ namespace Web.Controllers
                 throw new InvalidOperationException("Only single crate can be processed for now.");
             }
 
+            EventHandler currentHandler;
+
+            if (eventDTO.EventName.Equals("Plugin Incident"))
+            {
+                currentHandler = _event.HandlePluginIncident;
+            }
+            else if (eventDTO.EventName.Equals("Plugin Event"))
+            {
+                currentHandler = _event.HandlePluginEvent;
+            }
+            else
+            {
+                throw new InvalidOperationException("Unknown EventDTO with name: " + eventDTO.EventName);
+            }
+
+
             var errorMsgList = new List<string>();
             foreach (var crateDTO in eventDTO.CrateStorage)
             {
@@ -43,7 +61,7 @@ namespace Web.Controllers
                 }
 
                 var loggingData = serializer.Deserialize<LoggingData>(crateDTO.Contents);
-                _event.HandlePluginEvent(loggingData);
+                currentHandler(loggingData);
             }
 
             if (errorMsgList.Count > 0)
