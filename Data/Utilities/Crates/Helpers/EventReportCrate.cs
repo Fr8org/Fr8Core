@@ -9,12 +9,17 @@ using Utilities.Serializers.Json;
 
 namespace Data.Utilities.Crates.Helpers
 {
-    public static class LoggingDataCrate
+    public static class EventReportCrate
     {
-        public static CrateDTO Create(LoggingData loggingData)
+        public static CrateDTO Create(params CrateDTO[] crates)
+        {
+            return Create(crates.ToList());
+        }
+
+        public static CrateDTO Create(List<CrateDTO> crates)
         {
             var serializer = new JsonSerializer();
-            var contents = serializer.Serialize(loggingData);
+            var contents = serializer.Serialize(crates);
             return new CrateDTO()
             {
                 Id = Guid.NewGuid().ToString(),

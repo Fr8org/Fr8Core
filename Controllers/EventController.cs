@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Http;
 using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
+using Utilities.Serializers.Json;
 
 namespace Web.Controllers
 {
@@ -19,20 +21,32 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult Post(CrateDTO submittedEvent)
+        public IHttpActionResult Post(CrateDTO submittedEvents)
         {
-            if (submittedEvent.EventType.Equals("Plugin Incident"))
+            var serializer = new JsonSerializer();
+            var eventCrateList = serializer.DeserializeList<CrateDTO>(submittedEvents.Contents);
+
+            //This??????????
+            if (eventCrateList.Any(crateDTO => crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report"))
             {
-                _event.HandlePluginIncident(submittedEvent.Data);
-                return Ok();
-            }
-            else if (submittedEvent.EventType.Equals("Plugin Event"))
-            {
-                _event.HandlePluginEvent(submittedEvent.Data);
-                return Ok();
+                throw new InvalidOperationException("Unknown crate in request");
             }
 
-            throw new InvalidOperationException("Only plugin incidents and events are handled.");
+            //or this??????????????????
+
+
+            //Make sure there are no invalid crates before starting processing operation
+            foreach (var crateDTO in eventCrateList.Where(crateDTO => crateDTO.ManifestType != "Dockyard Plugin Event or Incident Report"))
+            {
+                throw new InvalidOperationException("Don't know how to process an EventReport with the Contents: " + crateDTO.Contents);
+            }
+
+            foreach (var crateDTO in eventCrateList)
+            {
+                var loggingData = serializer.Deserialize<LoggingData>(crateDTO.Contents);
+                _event.HandlePluginIncident(loggingData);
+            }
+            return Ok();
         }
     }
 }

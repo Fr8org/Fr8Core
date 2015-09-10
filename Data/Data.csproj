@@ -480,6 +480,7 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
+    <Compile Include="Utilities\Crates\Helpers\EventReportCrate.cs" />
     <Compile Include="Utilities\Crates\Helpers\LoggingDataCrate.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ProcessValidator.cs" />

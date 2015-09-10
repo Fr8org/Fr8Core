@@ -4,6 +4,8 @@ using System.Reflection;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Services;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Utilities.Crates.Helpers;
 using Newtonsoft.Json;
 
 namespace PluginBase.BaseClasses
@@ -51,21 +53,18 @@ namespace PluginBase.BaseClasses
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            var loggingDataCrate = LoggingDataCrate.Create(new LoggingData
+            {
+                ObjectId = pluginName,
+                CustomerId = "not_applicable",
+                Data = "service_start_up",
+                PrimaryCategory = "Operations",
+                SecondaryCategory = "System Startup",
+                Activity = "system startup"
+            });
+            
             restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                new Crate
-                {
-                    Source = pluginName,
-                    EventType = eventType,
-                    Data = new
-                    {
-                        ObjectId = pluginName,
-                        CustomerId = "not_applicable",
-                        Data = "service_start_up",
-                        PrimaryCategory = "Operations",
-                        SecondaryCategory = "System Startup",
-                        Activity = "system startup",
-                    }
-                }).Wait();
+                EventReportCrate.Create(loggingDataCrate)).Wait();
 
         }
         public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO)
