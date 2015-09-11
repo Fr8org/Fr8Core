@@ -64,6 +64,7 @@ namespace Data.Migrations
             AddDockyardAccounts(uow);
             AddProfiles(uow);
             AddPlugins(uow);
+            AddActionTemplates(uow);
         }
 
         //Method to let us seed into memory as well
@@ -358,6 +359,26 @@ namespace Data.Migrations
             }
         }
 
+        private void AddActionTemplates(IUnitOfWork uow)
+        {
+            AddActionTemplate(uow, "Filter Using Run-Time Data", "FilterUsingRunTimeData", "1");
+            uow.SaveChanges();
+        }
+
+        private void AddActionTemplate(IUnitOfWork uow, string name, string defaultEndPoint, string version)
+        {
+            var existingActionTemplateDO = uow.ActionTemplateRepository
+                .GetQuery()
+                .SingleOrDefault(x => x.Name == name && x.Plugin.Name == defaultEndPoint);
+
+            var curActionTemplateDO = new ActionTemplateDO(
+                name, defaultEndPoint, version);
+
+            if (existingActionTemplateDO == null)
+            {
+                uow.ActionTemplateRepository.Add(curActionTemplateDO);
+            }
+        }
         
 
         //Getting random working time within next 3 days

@@ -1,0 +1,11 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Please select a file below</h3>
+</div>
+<div class="modal-body">
+    <ul>
+        <li style="cursor:pointer; background-color: orange;" ng-repeat="file in files" ng-click="selectFile(file)">{{file.originalFileName}}</li>
+    </ul>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>
