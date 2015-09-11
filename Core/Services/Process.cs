@@ -21,11 +21,12 @@ namespace Core.Services
     {
         private readonly IProcessNode _processNode;
         private readonly DocuSignEnvelope _envelope;
-
+        private readonly IActivity _activity;
         public Process()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _envelope = new DocuSignEnvelope();
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         /// <summary>
@@ -70,45 +71,73 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessNode = uow.ProcessNodeRepository.GetByKey(curProcessDO.ProcessNodes.First().Id);
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                Execute(curEvent, curProcessNode);
+                Execute(curProcessDO);
             }
         }
 
-        public void Execute(DocuSignEventDO curEvent, ProcessNodeDO curProcessNode)
+        public void Execute(ProcessDO curProcessDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curDocuSignEnvelope = new DocuSignEnvelope(); //should just change GetEnvelopeData to pass an EnvelopeDO
-                List<EnvelopeDataDTO> curEnvelopeData = _envelope.GetEnvelopeData(curDocuSignEnvelope);
+            if (curProcessDO == null)
+                throw new ArgumentNullException("ProcessDO is null");
 
-                while (curProcessNode != null)
+            if (curProcessDO.CurrentActivity != null)
+            {
+                //break if CurrentActivity Is NULL, it means all activities 
+                //are processed that there is no Next Activity to set as Current Activity
+                do
                 {
-                    string nodeExecutionResultKey = _processNode.Execute(curEnvelopeData, curProcessNode);
-                    if (nodeExecutionResultKey != string.Empty)
-                    {
-                        List<ProcessNodeTransition> nodeTransitions =
-                            JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(
-                                curProcessNode.ProcessNodeTemplate.NodeTransitions
-                            );
-                        string nodeID = GetNextProcessNodeId(nodeTransitions, nodeExecutionResultKey);
-                        curProcessNode = uow.ProcessNodeRepository.GetByKey(Convert.ToInt32(nodeID));
-                    }
+                    _activity.Process(curProcessDO.CurrentActivity);
+                    UpdateNextActivity(curProcessDO);
+                } while (curProcessDO.CurrentActivity != null);
+            }
+            else
+            {
+                throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
+            }
+        }
+
+        private void UpdateNextActivity(ProcessDO curProcessDO)
+        {
+            if (curProcessDO.NextActivity != null)
+            {
+                curProcessDO.CurrentActivity = curProcessDO.NextActivity;
+            }
+            else
+            {
+                //if ProcessDO.NextActivity is not set, 
+                //get the downstream activities of the current activity and set the next current activity based on those downstream as CurrentActivity
+                List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
+                if ((activityLists != null && activityLists.Count > 0) &&
+                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in GetNextActivities and possible infinite loop
+                {
+                    curProcessDO.CurrentActivity = activityLists[0];
+                }
+                else
+                    curProcessDO.CurrentActivity = null;
+            }
+
+            SetProcessNextActivity(curProcessDO);
+        }
+
+        private void SetProcessNextActivity(ProcessDO curProcessDO)
+        {
+            if (curProcessDO.CurrentActivity != null)
+            {
+                List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
+                if ((activityLists != null && activityLists.Count > 0) &&
+                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in GetNextActivities and possible infinite loop
+                {
+                   curProcessDO.NextActivity = activityLists[0];
+                }
+                else
+                {
+                    curProcessDO.NextActivity = null;
                 }
             }
         }
 
-        private string GetNextProcessNodeId(List<ProcessNodeTransition> nodeTransitions, string nodeTransitionKey)
-        {
-            string nodeID = nodeTransitions.Where(k => k.TransitionKey.Equals(nodeTransitionKey, StringComparison.InvariantCultureIgnoreCase)).DefaultIfEmpty(new ProcessNodeTransition()).FirstOrDefault().ProcessNodeId;
-            if (nodeID == null)
-            {
-                throw new Exception("ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera");
-            }
-            return nodeID;
-        }
     }
 }
