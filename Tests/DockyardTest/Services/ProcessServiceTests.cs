@@ -305,7 +305,7 @@ namespace DockyardTest.Services
             _activity
                 .Setup(c => c.Process(It.IsAny<ActivityDO>())).Verifiable();
             //Setup 3rd ActivityDO
-            _activity.Setup(c => c.GetDownstreamActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
+            _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
             _processService = ObjectFactory.GetInstance<IProcess>();
             ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();

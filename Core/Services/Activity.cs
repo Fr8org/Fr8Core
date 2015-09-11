@@ -102,5 +102,21 @@ namespace Core.Services
                 _action.Process((ActionDO)curActivityDO);
             }
         }
-	}
+
+
+        public IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO)
+        {
+            IEnumerable<ActivityDO> activityLists = new List<ActivityDO>();
+
+            if (curActivityDO == null)
+                throw new ArgumentNullException("ActivityDO is null");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                activityLists = this.GetChildren(uow, curActivityDO);
+            }
+
+            return activityLists;
+        }
+    }
 }
