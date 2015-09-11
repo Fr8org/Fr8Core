@@ -90,7 +90,6 @@ namespace Data.Wrappers
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
             }
-
             return new List<EnvelopeDataDTO>();
         }
 
