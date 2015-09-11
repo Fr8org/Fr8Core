@@ -55,14 +55,15 @@ namespace DockyardTest.Actions
         }
 
         [Test]
-        public void ActionTemplateController_ShouldReturnActionTemplate()
+        public void ActionTemplateController_ShouldReturnActionTemplateList()
         {
             var controller = new ActionTemplateController();
-            var response = controller.Configure();
-            var result = (response as OkNegotiatedContentResult<ActionTemplateDTO>).Content;
-            Assert.AreEqual("localhost:53234", result.DefaultEndPoint);
-            Assert.AreEqual("1.0", result.Version);
-            Assert.AreEqual("Wait For DocuSign Event", result.Name);
+            var response = controller.Get();
+            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActionTemplateDTO>>).Content;
+            var actionTemplate = actionTemplateList[0];
+            Assert.AreEqual("localhost:53234", actionTemplate.DefaultEndPoint);
+            Assert.AreEqual("1.0", actionTemplate.Version);
+            Assert.AreEqual("Wait For DocuSign Event", actionTemplate.Name);
         }
     }
 }
