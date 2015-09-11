@@ -10,7 +10,7 @@ using PluginBase.BaseClasses;
 
 namespace pluginDocuSign.Controllers
 {    
-    [RoutePrefix("action_templates")]
+    [RoutePrefix("actions")]
     public class ActionTemplateController : ApiController
     {
         [HttpGet]
