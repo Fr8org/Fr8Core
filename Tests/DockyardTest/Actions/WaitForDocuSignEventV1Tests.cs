@@ -31,16 +31,15 @@ namespace DockyardTest.Actions
             var action = FixtureData.TestAction1();
             CrateStorageDTO result = (CrateStorageDTO) pluginAction.Configure(action);
 
-            Assert.AreEqual(5, result.CratesDTO.Count);
-            Assert.IsTrue(result.CratesDTO.Any(c => c.Label == "Selected_DocuSign_Template"));
-            Assert.IsTrue(result.CratesDTO.Any(c => c.Label == "Event_Envelope_Sent"));
-            Assert.IsTrue(result.CratesDTO.Any(c => c.Label == "Event_Envelope_Received"));
-            Assert.IsTrue(result.CratesDTO.Any(c => c.Label == "Event_Recipient_Signed"));
-            Assert.IsTrue(result.CratesDTO.Any(c => c.Label == "Event_Recipient_Sent"));
+            Assert.AreEqual(1, result.CratesDTO.Count);
+            var fieds = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CratesDTO[0].Contents);
+            Assert.IsTrue(fieds.Any(c => c.Name == "Selected_DocuSign_Template"));
+            Assert.IsTrue(fieds.Any(c => c.Name == "Event_Envelope_Sent"));
+            Assert.IsTrue(fieds.Any(c => c.Name == "Event_Envelope_Received"));
+            Assert.IsTrue(fieds.Any(c => c.Name == "Event_Recipient_Signed"));
+            Assert.IsTrue(fieds.Any(c => c.Name == "Event_Recipient_Sent"));
 
-            string json = result.CratesDTO.SingleOrDefault(c => c.Label == "Selected_DocuSign_Template").Contents;
-            var field = Newtonsoft.Json.JsonConvert.DeserializeObject<FieldDefinitionDTO>(json);
-            var events = field.Events;
+            var events = fieds.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Events;
             Assert.AreEqual(1, events.Count);
             Assert.AreEqual("requestConfiguration", events[0].Handler);
             Assert.AreEqual("onSelect", events[0].Name);
@@ -52,7 +51,7 @@ namespace DockyardTest.Actions
             var action = FixtureData.WaitForDocuSignEvent_Action();
             CrateStorageDTO result = (CrateStorageDTO)pluginAction.Configure(action, true);
             List<FieldDefinitionDTO> fields = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CratesDTO[1].Contents);
-            Assert.AreEqual(4, fields.Count);
+            Assert.AreEqual(10, fields.Count);
         }
 
         [Test]

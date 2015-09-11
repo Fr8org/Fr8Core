@@ -152,10 +152,24 @@ namespace Data.Wrappers
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,
-                Name = tab.name,
+                Name = tab.tabLabel,
                 TabId = tab.tabId,
-                Value = value
+                Value = value,
+                Type = GetFieldType((string)tab.name)
             };
+        }
+
+        private string GetFieldType(string name)
+        {
+            switch (name)
+            {
+                case "Checkbox":
+                    return FieldDefinitionDTO.CHECKBOX_FIELD;
+                case "Text":
+                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                default:
+                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+            }
         }
     }
 }

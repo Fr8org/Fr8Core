@@ -24,9 +24,9 @@ namespace pluginDocuSign.Actions
         public object Configure(ActionDO curActionDO, bool forceFollowupConfiguration = false)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDO, 
-                actionDo => (forceFollowupConfiguration) ? 
-                    ConfigurationRequestType.Followup : 
+            return ProcessConfigurationRequest(curActionDO,
+                actionDo => (forceFollowupConfiguration) ?
+                    ConfigurationRequestType.Followup :
                     ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
@@ -42,7 +42,7 @@ namespace pluginDocuSign.Actions
 
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
-            var fieldSelectDockusignTemplate = new FieldDefinitionDTO()
+            var fieldSelectDocusignTemplate = new FieldDefinitionDTO()
             {
                 FieldLabel = "Select DocuSign Template",
                 Type = "dropdownlistField",
@@ -81,13 +81,18 @@ namespace pluginDocuSign.Actions
                 Name = "Event_Recipient_Sent"
             };
 
+            var fields = new List<FieldDefinitionDTO>()
+            {
+                fieldSelectDocusignTemplate,
+                fieldEnvelopeSent,
+                fieldEnvelopeReceived,
+                fieldRecipientSigned,
+                fieldEventRecipientSent
+            };
+
             var crateConfiguration = new List<CrateDTO>()
             {
-                _crate.Create("Selected_DocuSign_Template", JsonConvert.SerializeObject(fieldSelectDockusignTemplate)),
-                _crate.Create("Event_Envelope_Sent", JsonConvert.SerializeObject(fieldEnvelopeSent)),
-                _crate.Create("Event_Envelope_Received", JsonConvert.SerializeObject(fieldEnvelopeReceived)),
-                _crate.Create("Event_Recipient_Signed", JsonConvert.SerializeObject(fieldRecipientSigned)),
-                _crate.Create("Event_Recipient_Sent", JsonConvert.SerializeObject(fieldEventRecipientSent))
+                _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
             };
 
             _action.AddCrate(curActionDO, crateConfiguration);
@@ -96,42 +101,42 @@ namespace pluginDocuSign.Actions
 
         protected override CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {
-            var crateStorage = curActionDO.CrateStorageDTO().CratesDTO;
+            var curCrates = _action.GetCrates(curActionDO);
 
-            if (crateStorage == null || crateStorage.Count == 0)
+            if (curCrates == null || curCrates.Count == 0)
             {
                 return curActionDO.CrateStorageDTO();
             }
 
             // Extract DocuSign Template Id
-            var docusignTemplateCrate = crateStorage.SingleOrDefault(c => c.Label == "Selected_DocuSign_Template");
+            var configurationFieldsCrate = curCrates.SingleOrDefault(c => c.Label == "Configuration_Controls");
 
-            if (docusignTemplateCrate == null || String.IsNullOrEmpty(docusignTemplateCrate.Contents))
+            if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
             {
                 return curActionDO.CrateStorageDTO();
             }
 
-            var docusignTemplateField = JsonConvert.DeserializeObject<FieldDefinitionDTO>(docusignTemplateCrate.Contents);
+            var configurationFields = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(configurationFieldsCrate.Contents);
 
-            if (docusignTemplateField == null || string.IsNullOrEmpty(docusignTemplateField.Value))
+            if (configurationFields == null || !configurationFields.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
                 return curActionDO.CrateStorageDTO();
             }
 
-            var docusignTemplateId = docusignTemplateField.Value;
-            var userDefinedFields = _docusignEnvelope.GetEnvelopeData(docusignTemplateId);
+            var docusignTemplateId = configurationFields.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
+            var userDefinedFields = _docusignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId);
             var crateConfiguration = new List<CrateDTO>();
             var fieldCollection = userDefinedFields.Select(f => new FieldDefinitionDTO()
             {
                 FieldLabel = f.Name,
-                Type = "textboxField",
+                Type = f.Type,
                 Name = f.Name,
                 Value = f.Value
             });
 
             crateConfiguration.Add(_crate.Create(
-                "DocuSignTemplateUserDefinedFields", 
-                JsonConvert.SerializeObject(fieldCollection), 
+                "DocuSignTemplateUserDefinedFields",
+                JsonConvert.SerializeObject(fieldCollection),
                 "DocuSignTemplateUserDefinedFields"));
 
             //crateConfiguration.Add(_crate.Create(

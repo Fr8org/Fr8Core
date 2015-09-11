@@ -411,7 +411,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO WaitForDocuSignEvent_Action()
         {
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            string templateId = "58521204-58af-4e65-8a77-4f4b51fef626";
             var actionTemplate = ActionTemplate();
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
@@ -422,7 +422,7 @@ namespace UtilitiesTesting.Fixtures
                 Type = "dropdownlistField",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
-                Value = envelopeId,
+                Value = templateId,
                 Events = new List<FieldEvent>() {
                      new FieldEvent("onSelect", "requestConfiguration")
                 }
@@ -439,9 +439,14 @@ namespace UtilitiesTesting.Fixtures
                 ActionTemplate = actionTemplate
             };
 
+            var fields = new List<FieldDefinitionDTO>()
+            {
+                fieldSelectDockusignTemplate
+            };
+
             var crateConfiguration = new List<CrateDTO>()
             {
-                _crate.Create("Selected_DocuSign_Template", JsonConvert.SerializeObject(fieldSelectDockusignTemplate)),
+                _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
             };
 
             _action.AddCrate(actionDo, crateConfiguration);
