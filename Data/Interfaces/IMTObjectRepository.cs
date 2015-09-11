@@ -2,7 +2,7 @@
 
 namespace Data.Interfaces
 {
-    public interface IMTObjectRepository : IGenericRepository<MT_ObjectDO>
+    public interface IMTObjectRepository : IGenericRepository<MT_Object>
     {
 
     }

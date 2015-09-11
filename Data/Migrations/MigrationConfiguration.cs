@@ -68,7 +68,7 @@ namespace Data.Migrations
             AddPlugins(uow);
             AddActionTemplates(uow);
 
-            SeedMultiTenantTables(uow);
+            //SeedMultiTenantTables(uow);
         }
 
         //Method to let us seed into memory as well
@@ -397,19 +397,19 @@ namespace Data.Migrations
 
         private void AddMultiTenantOrganizations(UnitOfWork uow)
         {
-            uow.MTOrganizationRepository.Add(new MT_OrganizationDO { Id = "1", Name = "Dockyard" });
-            uow.MTOrganizationRepository.Add(new MT_OrganizationDO { Id = "2", Name = "DocuSign" });
+            uow.MTOrganizationRepository.Add(new MT_Organization { Id = "1", Name = "Dockyard" });
+            uow.MTOrganizationRepository.Add(new MT_Organization { Id = "2", Name = "DocuSign" });
 
             uow.SaveChanges();
         }
 
         private void AddMultiTenantObjects(UnitOfWork uow)
         {
-            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "1", MtOrganizationId = "1", Name = "DockyardEvent" });
-            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "2", MtOrganizationId = "1", Name = "DockyardIncident" });
+            uow.MTObjectRepository.Add(new MT_Object { Id = "1", MT_OrganizationId = "1", Name = "DockyardEvent" });
+            uow.MTObjectRepository.Add(new MT_Object { Id = "2", MT_OrganizationId = "1", Name = "DockyardIncident" });
 
-            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "3", MtOrganizationId = "2", Name = "DocuSignEnvelopeStatusReport" });
-            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "4", MtOrganizationId = "2", Name = "DocuSignRecipientStatusReport" });
+            uow.MTObjectRepository.Add(new MT_Object { Id = "3", MT_OrganizationId = "2", Name = "DocuSignEnvelopeStatusReport" });
+            uow.MTObjectRepository.Add(new MT_Object { Id = "4", MT_OrganizationId = "2", Name = "DocuSignRecipientStatusReport" });
 
             uow.SaveChanges();
         }
@@ -506,23 +506,23 @@ namespace Data.Migrations
             int maxFieldOffset = existingFieldsCount == 0
                 ? 1
                 : uow.MTFieldRepository.GetQuery()
-                    .Include(f => f.MtObject)
-                    .Any(f => f.MtObjectId.Equals(curObjectId))
+                    .Include(f => f.MT_Object)
+                    .Any(f => f.MT_ObjectId.Equals(curObjectId))
                     ? uow.MTFieldRepository.GetQuery()
-                        .Include(f => f.MtObject)
-                        .Where(f => f.MtObjectId.Equals(curObjectId))
+                        .Include(f => f.MT_Object)
+                        .Where(f => f.MT_ObjectId.Equals(curObjectId))
                         .Max(f => f.FieldColumnOffset) + 1
                     : 1;
 
             //for each field
             foreach (PropertyInfo propertyInfo in curMtoProperties)
             {
-                MT_FieldDO mtField = new MT_FieldDO();
+                MT_Field mtField = new MT_Field();
 
                 //set property name, type and Object ID
                 mtField.Name = propertyInfo.Name;
                 mtField.Type = typeMap[propertyInfo.PropertyType];
-                mtField.MtObjectId = curObjectId;
+                mtField.MT_ObjectId = curObjectId;
 
                 //Primary key
                 mtField.Id = (existingFieldsCount + 1).ToStr();
@@ -535,7 +535,7 @@ namespace Data.Migrations
 
                 mtField.FieldColumnOffset = maxFieldOffset;
 
-                if (!uow.MTFieldRepository.GetQuery().Any(f => f.MtObjectId.Equals(mtField.MtObjectId) && f.Name.Equals(mtField.Name)))
+                if (!uow.MTFieldRepository.GetQuery().Any(f => f.MT_ObjectId.Equals(mtField.MT_ObjectId) && f.Name.Equals(mtField.Name)))
                 {
                     uow.MTFieldRepository.Add(mtField);
 

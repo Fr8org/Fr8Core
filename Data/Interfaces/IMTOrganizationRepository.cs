@@ -2,7 +2,7 @@
 
 namespace Data.Interfaces
 {
-    public interface IMTOrganizationRepository : IGenericRepository<MT_OrganizationDO>
+    public interface IMTOrganizationRepository : IGenericRepository<MT_Organization>
     {
 
     }

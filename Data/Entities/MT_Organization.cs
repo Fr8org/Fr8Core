@@ -3,17 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class MT_ObjectDO
+    public class MT_Organization
     {
-        [Key, MaxLength(100)]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), MaxLength(100)]
         public string Id { get; set; }
 
         [Required]
         public string Name { get; set; }
-
-        [Required, ForeignKey("MtOrganization")]
-        public string MtOrganizationId { get; set; }
-
-        public MT_OrganizationDO MtOrganization { get; set; }
     }
 }

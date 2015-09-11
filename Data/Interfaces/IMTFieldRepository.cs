@@ -2,7 +2,7 @@
 
 namespace Data.Interfaces
 {
-    public interface IMTFieldRepository : IGenericRepository<MT_FieldDO>
+    public interface IMTFieldRepository : IGenericRepository<MT_Field>
     {
 
     }

@@ -11,25 +11,25 @@ namespace Data.Entities
         Boolean
     }
 
-    public class MT_FieldDO
+    public class MT_Field
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), MaxLength(100)]
         public string Id { get; set; }
 
         [Required, MaxLength(150)]
-        [Index("IX_Object_FieldName_Offset", 2, IsUnique = true)]
+        [Index("FieldColumnOffsetIndex", 2)]
         public string Name { get; set; }
 
         [Required]
         public MT_FieldType Type { get; set; }
 
-        [Required, Index("IX_Object_FieldName_Offset", 3, IsUnique = true)]
+        [Required, Index("FieldColumnOffsetIndex", 3)]
         public int FieldColumnOffset { get; set; }
 
-        [Required, ForeignKey("MtObject"), MaxLength(100)]
-        [Index("IX_Object_FieldName_Offset", 1)]
-        public string MtObjectId { get; set; }
+        [Required, ForeignKey("MT_Object"), MaxLength(100)]
+        [Index("FieldColumnOffsetIndex", 1)]
+        public string MT_ObjectId { get; set; }
 
-        public MT_ObjectDO MtObject { get; set; }
+        public MT_Object MT_Object { get; set; }
     }
 }

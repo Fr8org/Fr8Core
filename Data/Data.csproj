@@ -199,10 +199,10 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
-    <Compile Include="Entities\MT_DataDO.cs" />
-    <Compile Include="Entities\MT_FieldDO.cs" />
-    <Compile Include="Entities\MT_ObjectDO.cs" />
-    <Compile Include="Entities\MT_OrganizationDO.cs" />
+    <Compile Include="Entities\MT_Data.cs" />
+    <Compile Include="Entities\MT_Field.cs" />
+    <Compile Include="Entities\MT_Object.cs" />
+    <Compile Include="Entities\MT_Organization.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
@@ -322,9 +322,9 @@
     <Compile Include="Migrations\201509110515385_forcemerge1.Designer.cs">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509111251068_AddedMultiTenantObjects.cs" />
-    <Compile Include="Migrations\201509111251068_AddedMultiTenantObjects.Designer.cs">
-      <DependentUpon>201509111251068_AddedMultiTenantObjects.cs</DependentUpon>
+    <Compile Include="Migrations\201509111946240_AddedMultiTenantObjects.cs" />
+    <Compile Include="Migrations\201509111946240_AddedMultiTenantObjects.Designer.cs">
+      <DependentUpon>201509111946240_AddedMultiTenantObjects.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -602,8 +602,8 @@
     <EmbeddedResource Include="Migrations\201509110515385_forcemerge1.resx">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509111251068_AddedMultiTenantObjects.resx">
-      <DependentUpon>201509111251068_AddedMultiTenantObjects.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509111946240_AddedMultiTenantObjects.resx">
+      <DependentUpon>201509111946240_AddedMultiTenantObjects.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
