@@ -1,7 +1,10 @@
 using System.IO;
+using System.Linq;
+using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.Infrastructure;
+using StructureMap;
 
 namespace PluginBase.BaseClasses
 {
@@ -11,6 +14,12 @@ namespace PluginBase.BaseClasses
 
     public class BasePluginAction
     {
+        public enum GetCrateDirection
+        {
+            Upstream,
+            Downstream
+        }
+
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDO) == ConfigurationRequestType.Initial)
@@ -36,6 +45,29 @@ namespace PluginBase.BaseClasses
         protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO();
+        }
+
+        protected virtual CrateDTO GetCrate(ActivityDO activityDO,
+            string searchId, GetCrateDirection direction)
+        {
+            var curActivityService = ObjectFactory.GetInstance<IActivity>();
+
+            var curUpstreamActivities = (direction == GetCrateDirection.Upstream)
+                ? curActivityService.GetUpstreamActivities(activityDO)
+                : curActivityService.GetDownstreamActivities(activityDO);
+
+            foreach (var curUpstreamAction in curUpstreamActivities.OfType<ActionDO>())
+            {
+                var curCrateStorage = curUpstreamAction.CrateStorageDTO();
+                var curCrate = curCrateStorage.CratesDTO.FirstOrDefault(x => x.Id == searchId);
+
+                if (curCrate != null)
+                {
+                    return curCrate;
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -33,19 +33,13 @@ namespace Web.Controllers
             _action = service;
         }
 
-        [Route("configuration")]
+        [Route("configure")]
         [Route("process")]
         [HttpGet]
         public string HandleDockyardRequest(ActionDesignDTO actionDTO)
         {
             // Extract from current request URL.
             var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
-
-            if (curActionPath == "configuration")
-            {
-                curActionPath = "Configure";
-            }
-
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
             var curAssemblyName = string.Format("CoreActions.{0}_v{1}",

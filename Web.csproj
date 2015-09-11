@@ -4033,10 +4033,6 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CoreActions\CoreActions.csproj">
-      <Project>{c62625a1-4cd1-4ec3-98e3-0aeaa24be3bf}</Project>
-      <Name>CoreActions</Name>
-    </ProjectReference>
     <ProjectReference Include="Configuration\Configuration.csproj">
       <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
       <Name>Configuration</Name>
