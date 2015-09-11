@@ -75,7 +75,7 @@
             actionDescr.actionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('actionNode:click', e, criteria.id, actionDescr.id, actionDescr.actionType);
+                    this.fire('actionNode:click', e, null, actionDescr.id, actionDescr.actionType);
                 }, this)
             );
 
