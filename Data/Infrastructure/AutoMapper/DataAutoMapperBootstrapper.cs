@@ -87,6 +87,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
+            Mapper.CreateMap<FileDO, FileDescriptionDTO>();
 
             Mapper.CreateMap<CrateStorageDTO, string>()
                 .ConvertUsing<JSONToStringConverter<CrateStorageDTO>>();

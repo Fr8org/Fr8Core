@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
@@ -16,7 +17,7 @@ namespace Data.Repositories
             
         }
 
-        public string SaveRemoteFile(FileStream curRemoteFile, string curFileName)
+        public string SaveRemoteFile(Stream curRemoteFile, string curFileName)
         {
             var blobContainer = GetDefaultBlobContainer();
             CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(curFileName);
