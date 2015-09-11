@@ -21,7 +21,7 @@ namespace CoreActions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public ActionProcessResultDTO Process(ActionDO actionDO)
+        public ActionProcessResultDTO Execute(ActionDO actionDO)
         {
             // Get parent action-list.
             var curActionList = ((ActionListDO)actionDO.ParentActivity);
@@ -159,7 +159,7 @@ namespace CoreActions
         /// </summary>
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
         {
-            var curCrate = GetUpstreamPayloadKeysCrate(curActionDO);
+            var curCrate = GetCrate(curActionDO, "PayloadKeys", GetCrateDirection.Upstream);
 
             if (curCrate != null)
             {
@@ -175,25 +175,6 @@ namespace CoreActions
             {
                 return null;
             }
-        }
-
-        private CrateDTO GetUpstreamPayloadKeysCrate(ActivityDO activityDO)
-        {
-            var curActivityService = ObjectFactory.GetInstance<IActivity>();
-            var curUpstreamActivities = curActivityService.GetUpstreamActivities(activityDO);
-
-            foreach (var curUpstreamAction in curUpstreamActivities.OfType<ActionDO>())
-            {
-                var curCrateStorage = curUpstreamAction.CrateStorageDTO();
-                var curCrate = curCrateStorage.CratesDTO.FirstOrDefault(x => x.Id == "PayloadKeys");
-
-                if (curCrate != null)
-                {
-                    return curCrate;
-                }
-            }
-
-            return null;
         }
 
         /// <summary>

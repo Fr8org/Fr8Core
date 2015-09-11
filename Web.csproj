@@ -325,6 +325,7 @@
     <Compile Include="Controllers\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\ActivitiesController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
@@ -443,22 +444,35 @@
     <Content Include="Content\DO-823.sql" />
     <Content Include="Content\documents\Medical_Form_v2.xml" />
     <Content Include="Content\img\ajax-loader.gif" />
+    <Content Include="Content\img\backgrounds\about-bg.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
+    <Content Include="Content\img\backgrounds\contact-bg.jpg" />
     <Content Include="Content\img\backgrounds\cup-and-coffe-bg.png" />
     <Content Include="Content\img\backgrounds\dockyard_main1600.jpg" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\backgrounds\login-wrapper-bg.png" />
+    <Content Include="Content\img\backgrounds\services-bg.jpg" />
+    <Content Include="Content\img\backgrounds\welocome-bg.jpg" />
+    <Content Include="Content\img\backgrounds\white-bg-overlay.png" />
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\dockyard_logo.png" />
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\googleCalendar.png" />
     <Content Include="Content\img\icloud-logo.png" />
+    <Content Include="Content\img\icons\facebook.png" />
+    <Content Include="Content\img\icons\googleplus.png" />
+    <Content Include="Content\img\icons\linkedin.png" />
+    <Content Include="Content\img\icons\next-page-bnt.png" />
+    <Content Include="Content\img\icons\rss.png" />
     <Content Include="Content\img\icons\sort_asc.png" />
     <Content Include="Content\img\icons\sort_asc_disabled.png" />
     <Content Include="Content\img\icons\sort_both.png" />
     <Content Include="Content\img\icons\sort_desc.png" />
     <Content Include="Content\img\icons\sort_desc_disabled.png" />
+    <Content Include="Content\img\icons\twitter.png" />
+    <Content Include="Content\img\icons\vimeo.png" />
+    <Content Include="Content\img\icons\youtube.png" />
     <Content Include="Content\img\Management\alexhead.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
@@ -482,6 +496,7 @@
     <Content Include="Content\img\site\logo.png" />
     <Content Include="Content\img\site\perfect-krawsant.jpg" />
     <Content Include="Content\img\site\perfect-krawsant.png" />
+    <Content Include="Content\img\site\site-logo.png" />
     <Content Include="Content\img\temp\background-test9.jpg" />
     <Content Include="Content\img\temp\homepage89.png" />
     <Content Include="Content\img\temp\homepagesecond.jpg" />
@@ -731,7 +746,9 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
@@ -745,6 +762,7 @@
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
@@ -3835,6 +3853,7 @@
     <Content Include="newrelic\extensions\extension.xsd">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Content\img\site\Thumbs.db" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP %283%29.pubxml" />
     <None Include="Properties\PublishProfiles\kwasant-rc - FTP.pubxml" />
@@ -3913,6 +3932,8 @@
     <Content Include="RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
     <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
+    <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
+    <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -4033,10 +4054,6 @@
     <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="CoreActions\CoreActions.csproj">
-      <Project>{c62625a1-4cd1-4ec3-98e3-0aeaa24be3bf}</Project>
-      <Name>CoreActions</Name>
-    </ProjectReference>
     <ProjectReference Include="Configuration\Configuration.csproj">
       <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
       <Name>Configuration</Name>
