@@ -65,6 +65,8 @@ namespace Data.Migrations
             AddProfiles(uow);
             AddPlugins(uow);
             AddActionTemplates(uow);
+
+            SeedMultiTenantTables(uow);
         }
 
         //Method to let us seed into memory as well
@@ -378,6 +380,82 @@ namespace Data.Migrations
             {
                 uow.ActionTemplateRepository.Add(curActionTemplateDO);
             }
+        }
+
+        private void SeedMultiTenantTables(UnitOfWork uow)
+        {
+            AddMultiTenantOrganizations(uow);
+            AddMultiTenantObjects(uow);
+            AddMultiTenantFields(uow);
+        }
+
+        private void AddMultiTenantOrganizations(UnitOfWork uow)
+        {
+            uow.MTOrganizationRepository.Add(new MT_OrganizationDO { Id = "1", Name = "Dockyard" });
+            uow.MTOrganizationRepository.Add(new MT_OrganizationDO { Id = "2", Name = "DocuSign" });
+
+            uow.SaveChanges();
+        }
+
+        private void AddMultiTenantObjects(UnitOfWork uow)
+        {
+            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "1", MtOrganizationId = "1", Name = "DockyardEvent" });
+            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "2", MtOrganizationId = "1", Name = "DockyardIncident" });
+
+            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "3", MtOrganizationId = "2", Name = "DocuSignEnvelopeStatusReport" });
+            uow.MTObjectRepository.Add(new MT_ObjectDO { Id = "4", MtOrganizationId = "2", Name = "DocuSignRecipientStatusReport" });
+
+            uow.SaveChanges();
+        }
+
+        private void AddMultiTenantFields(UnitOfWork uow)
+        {
+            uow.MTFieldRepository.Add(new MT_FieldDO
+            {
+                Id = "1",
+                Name = "Status",
+                Type = MT_FieldType.String,
+                FieldColumnOffset = 1,
+                MtObjectId = "3"
+            });
+
+            uow.MTFieldRepository.Add(new MT_FieldDO
+            {
+                Id = "2",
+                Name = "CreateDate",
+                Type = MT_FieldType.String,
+                FieldColumnOffset = 2,
+                MtObjectId = "3"
+            });
+
+            uow.MTFieldRepository.Add(new MT_FieldDO
+            {
+                Id = "3",
+                Name = "SentDate",
+                Type = MT_FieldType.String,
+                FieldColumnOffset = 3,
+                MtObjectId = "3"
+            });
+
+            uow.MTFieldRepository.Add(new MT_FieldDO
+            {
+                Id = "4",
+                Name = "DeliveredDate",
+                Type = MT_FieldType.String,
+                FieldColumnOffset = 4,
+                MtObjectId = "3"
+            });
+
+            uow.MTFieldRepository.Add(new MT_FieldDO
+            {
+                Id = "5",
+                Name = "CompletedDate",
+                Type = MT_FieldType.String,
+                FieldColumnOffset = 5,
+                MtObjectId = "3"
+            });
+
+            uow.SaveChanges();
         }
         
 
