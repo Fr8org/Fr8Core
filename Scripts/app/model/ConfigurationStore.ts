@@ -17,4 +17,8 @@
         value: string;
         required: boolean;
     }
+
+    export class FileField extends ConfigurationField {
+        value: string;
+    }
 }
