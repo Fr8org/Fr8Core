@@ -8,7 +8,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int? ActionListId { get; set; }
 
         [JsonProperty("configurationStore")]
-        public CrateStorageDTO ConfigurationStore { get; set; }
+        public CrateStorageDTO CrateStorage { get; set; }
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 

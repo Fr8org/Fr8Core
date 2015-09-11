@@ -6,7 +6,7 @@
 
         public int? ActionListId { get; set; }
 
-        public string ConfigurationStore { get; set; }
+        public string CrateStorage { get; set; }
 
         public PayloadMappingsDTO PayloadMappings { get; set; }
 

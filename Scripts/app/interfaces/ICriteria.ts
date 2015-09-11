@@ -17,7 +17,7 @@ module dockyard.interfaces {
         processNodeTemplateId: number,
         actionListId: number,
         name: string;
-        configurationStore: model.ConfigurationStore;
+        crateStorage: model.CrateStorage;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
         actionTemplate: model.ActionTemplate;
@@ -33,6 +33,11 @@ module dockyard.interfaces {
     export interface IField {
         key: string;
         name: string;
+    }
+
+    export interface IFileDescriptionDTO {
+        id: number;
+        originalFileName: string;
     }
 
     export interface IDocuSignTemplate {

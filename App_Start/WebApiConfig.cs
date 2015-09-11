@@ -16,7 +16,9 @@ namespace Web
 				routeTemplate : "api/{controller}/{id}",
 				defaults : new { id = RouteParameter.Optional }
 				);
-		   
+            HttpConfiguration config1 = GlobalConfiguration.Configuration;
+            config.Formatters.JsonFormatter.SerializerSettings.Formatting =
+                Newtonsoft.Json.Formatting.Indented;
 		}
 	}
 }

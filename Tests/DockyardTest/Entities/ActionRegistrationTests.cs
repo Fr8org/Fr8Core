@@ -20,10 +20,10 @@ namespace DockyardTest.Entities
                 
                 var actionTemplateDO = FixtureData.TestActionTemplate1();
 
-                uow.ActionTemplateRepository.Add(actionTemplateDO);
+                uow.ActivityTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                var savedActionTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
                 Assert.NotNull(savedActionTemplateDO);
 
                 Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
@@ -42,10 +42,10 @@ namespace DockyardTest.Entities
 
                 var actionTemplateDO = FixtureData.TestActionTemplate1();
 
-                uow.ActionTemplateRepository.Add(actionTemplateDO);
+                uow.ActivityTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                var savedActionTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
 
 
                 Assert.NotNull(savedActionTemplateDO);
@@ -53,10 +53,10 @@ namespace DockyardTest.Entities
                 Assert.AreEqual(actionTemplateDO.Version, savedActionTemplateDO.Version);
 
                 // remove saved instance
-                uow.ActionTemplateRepository.Remove(savedActionTemplateDO);
+                uow.ActivityTemplateRepository.Remove(savedActionTemplateDO);
                 uow.SaveChanges();
 
-                var deletedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActionTemplateDO.Id);
+                var deletedActionTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActionTemplateDO.Id);
 
                 Assert.IsNull(deletedActionTemplateDO);
 

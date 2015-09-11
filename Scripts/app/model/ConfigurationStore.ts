@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ConfigurationStore {
+    export class CrateStorage {
         fields: Array<ConfigurationField>
     }
 
@@ -16,5 +16,9 @@
     export class TextField extends ConfigurationField {
         value: string;
         required: boolean;
+    }
+
+    export class FileField extends ConfigurationField {
+        value: string;
     }
 }

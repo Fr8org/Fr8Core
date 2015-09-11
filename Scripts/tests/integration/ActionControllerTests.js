@@ -70,7 +70,7 @@ var dockyard;
                         // First POST, create a dummy entry
                         var actions = {
                             name: "test action type",
-                            configurationStore: fx.ActionDesignDTO.configurationStore,
+                            crateStorage: fx.ActionDesignDTO.crateStorage,
                             processNodeTemplateId: 1,
                             actionTemplateId: 1,
                             isTempId: false,
@@ -78,7 +78,7 @@ var dockyard;
                             fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                             // ActionListId is set to null, since there is no ActionsLists on a blank db.
                             actionListId: null,
-                            actionTemplate: new dockyard.model.ActionTemplate(1, "Write to SQL", "1")
+                            actionTemplate: new dockyard.model.ActionTemplate(1, "Write to SQL", "1", "")
                         };
                         postInvoker(done, actions);
                     });
@@ -90,7 +90,7 @@ var dockyard;
                     var endpoint = "/actions";
                     var currentActionDesignDTO = {
                         name: "test action type",
-                        configurationStore: fx.ActionDesignDTO.configurationStore,
+                        crateStorage: fx.ActionDesignDTO.crateStorage,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,

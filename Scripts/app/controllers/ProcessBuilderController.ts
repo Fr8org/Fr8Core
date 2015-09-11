@@ -133,6 +133,9 @@ module dockyard.controllers {
             //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionRemovedEventArgs) => this.PaneSelectAction_ActionRemoved(eventArgs));
+            //Handles Save Request From PaneSelectAction
+            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -348,7 +351,7 @@ module dockyard.controllers {
                 var id = self.LocalIdentityGenerator.getNextId();
                 
                 // TODO: Check ID behavior
-                processNodeTemplateId = (result.processNodeTemplate.id ? result.processNodeTemplate.id : eventArgs.processNodeTemplateId);
+                processNodeTemplateId = (result.processNodeTemplate && result.processNodeTemplate.id ? result.processNodeTemplate.id : eventArgs.processNodeTemplateId);
 
                 // Retrieve ActionList
                 return this.ActionListService.get({
@@ -503,6 +506,13 @@ module dockyard.controllers {
             var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
         }
+
+        /*
+           Handles message 'SelectActionPane_InitiateSaveAction'
+       */
+        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {           
+            var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
+        }
          
         // TODO: do we need this?
         // /*
@@ -576,7 +586,7 @@ module dockyard.controllers {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationStore: new model.ConfigurationStore(),
+                    crateStorage: new model.CrateStorage(),
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     id: 1,
@@ -585,7 +595,7 @@ module dockyard.controllers {
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0,
-                    actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
+                    actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1","")
                 };
 
             $httpBackend

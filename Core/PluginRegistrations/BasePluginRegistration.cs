@@ -45,7 +45,7 @@ namespace Core.PluginRegistrations
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var curActionTemplates = uow.ActionTemplateRepository
+                    var curActionTemplates = uow.ActivityTemplateRepository
                         .GetQuery()
                         .Where(x => x.DefaultEndPoint == curParentPluginRegistration)
                         .ToList();
@@ -96,13 +96,13 @@ namespace Core.PluginRegistrations
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     // string curParentPluginRegistration = this.GetType().Name;
-                    if (!uow.ActionTemplateRepository.GetQuery().Where(a => a.Name == action.Name
+                    if (!uow.ActivityTemplateRepository.GetQuery().Where(a => a.Name == action.Name
                         && a.Version == action.Version && a.DefaultEndPoint == pluginRegistrationName).Any())
                     {
                         ActivityTemplateDO actionTemplateDo = new ActivityTemplateDO(action.Name,
                                                                         pluginRegistrationName,
                                                                         action.Version);
-                        uow.ActionTemplateRepository.Add(actionTemplateDo);
+                        uow.ActivityTemplateRepository.Add(actionTemplateDo);
                         uow.SaveChanges();
                     }
                 }

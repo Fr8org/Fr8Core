@@ -16,7 +16,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionTemplateRepository.GetAll();
+                return uow.ActivityTemplateRepository.GetAll();
             }
         }
 
@@ -24,7 +24,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionTemplateDO = uow.ActionTemplateRepository.GetByKey(curActionTemplateId);
+                var curActionTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActionTemplateId);
                 if (curActionTemplateDO == null)
                     throw new ArgumentNullException("ActionTemplateId");
 

@@ -5,7 +5,7 @@
         isTempId: boolean;
         actionListId: number;
         name: string;
-        configurationStore: model.ConfigurationStore;
+        crateStorage: model.CrateStorage;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
         actionTemplate: model.ActionTemplate;
@@ -29,7 +29,7 @@
                 processNodeTemplateId: this.processNodeTemplateId,
                 actionListId: this.actionListId,
                 name: this.name,
-                configurationStore: this.configurationStore,
+                crateStorage: this.crateStorage,
                 fieldMappingSettings: this.fieldMappingSettings,
                 actionTemplate: this.actionTemplate
             };
@@ -50,7 +50,7 @@
             var result = new ActionDesignDTO(0, 0, false, 0);
             result.actionListId = dataObject.actionListId;
             result.actionTemplateId = dataObject.actionTemplateId;
-            result.configurationStore = dataObject.configurationStore;
+            result.crateStorage = dataObject.crateStorage;
             result.fieldMappingSettings = dataObject.fieldMappingSettings;
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;

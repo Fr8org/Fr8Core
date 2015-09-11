@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -22,5 +23,6 @@ namespace Core.Interfaces
         Task<int> Process(ActionDO curAction);
 
         string Authenticate(ActionDO curActionDO);
+        void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
     }
 }

@@ -74,7 +74,7 @@ module dockyard.tests.controller {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
-                    configurationStore: fx.ActionDesignDTO.configurationStore,
+                    crateStorage: fx.ActionDesignDTO.crateStorage,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
@@ -82,7 +82,7 @@ module dockyard.tests.controller {
                     fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                     // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
-                        actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
+                        actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1","")
                 };
 
             postInvoker(done, actions);
@@ -100,7 +100,7 @@ module dockyard.tests.controller {
             var currentActionDesignDTO: interfaces.IActionDesignDTO =
                     {
                         name: "test action type",
-                        configurationStore: fx.ActionDesignDTO.configurationStore,
+                        crateStorage: fx.ActionDesignDTO.crateStorage,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,

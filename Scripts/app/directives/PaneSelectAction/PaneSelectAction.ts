@@ -10,6 +10,10 @@ module dockyard.directives.paneSelectAction {
         actionTypes: Array<model.ActionTemplate>;
         ActionTypeSelected: () => void;
         RemoveAction: () => void;
+        componentActivities: string[];
+        ChildActivityTypeSelected: (actionTemplateId: number) => void;
+        childActivityStepId: number;
+        childActivity: model.ActionDesignDTO;
     }
 
     export enum MessageType {
@@ -18,7 +22,8 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_Hide,
         PaneSelectAction_UpdateAction,
         PaneSelectAction_ActionTypeSelected,
-        PaneSelectAction_ActionRemoved
+        PaneSelectAction_ActionRemoved,
+        PaneSelectAction_InitiateSaveAction
     }
 
     export class ActionTypeSelectedEventArgs {
@@ -117,8 +122,29 @@ module dockyard.directives.paneSelectAction {
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
-                    var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
-                    $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
+                    var currentSelectedActivity: model.ActionTemplate;
+                    var activities = $scope.actionTypes;
+                    //find the selected activity
+                    currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.actionTemplateId })[0];
+
+                    if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
+                        //Check for component activity
+                        if (currentSelectedActivity.componentActivities != null) {
+                            var componentActivities = angular.fromJson(currentSelectedActivity.componentActivities);
+                            $scope.componentActivities = componentActivities;                           
+                            //Default configuration for the first child component activity will be shown
+                            $scope.childActivityStepId = componentActivities[0].id;
+                            $scope.childActivity = angular.extend({}, $scope.currentAction);
+                            $scope.childActivity.actionTemplateId = $scope.childActivityStepId;
+                            var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
+                            $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
+                        }
+                        else {
+                            $scope.componentActivities = null;
+                            var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
+                            $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
+                        }
+                    }
                 }
 
                 $scope.RemoveAction = () => {
@@ -136,6 +162,16 @@ module dockyard.directives.paneSelectAction {
                     $scope.currentAction = null;
                     $scope.isVisible = false;
                 };
+
+                $scope.ChildActivityTypeSelected = (childActionTemplateId) => {
+                    if (childActionTemplateId != null) {
+                        $scope.$emit(MessageType[MessageType.PaneSelectAction_InitiateSaveAction], eventArgs);
+                        $scope.childActivity.actionTemplateId = childActionTemplateId;
+                        var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
+                        $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
+
+                    }
+                }
 
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Render], this.onRender);
                 $scope.$on(MessageType[MessageType.PaneSelectAction_Hide], this.onHide);
@@ -174,7 +210,9 @@ module dockyard.directives.paneSelectAction {
                             new model.ActionTemplate(
                                 it.id,
                                 it.name,
-                                it.version)
+                                it.version,
+                                it.componentActivities
+                                )
                             );
                     });
                 });

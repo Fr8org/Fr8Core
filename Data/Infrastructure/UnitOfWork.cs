@@ -415,7 +415,7 @@ namespace Data.Infrastructure
         }
 
         private ActivityTemplateRepository _actionTemplateRepository;
-        public ActivityTemplateRepository ActionTemplateRepository
+        public ActivityTemplateRepository ActivityTemplateRepository
         {
             get
             {
@@ -521,7 +521,6 @@ namespace Data.Infrastructure
                 return _subscriptionRepository ?? (_subscriptionRepository = new SubscriptionRepository(this));
             }
         }
-
 
 	    public void Save()
         {

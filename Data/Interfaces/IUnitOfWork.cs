@@ -47,7 +47,7 @@ namespace Data.Interfaces
         IProcessTemplateRepository ProcessTemplateRepository { get; }
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
-        ActivityTemplateRepository ActionTemplateRepository { get; }
+        ActivityTemplateRepository ActivityTemplateRepository { get; }
         ActionListRepository ActionListRepository { get; }
 		  ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
@@ -59,7 +59,6 @@ namespace Data.Interfaces
 
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
-
 
 	    /// <summary>
         /// Call this to commit the unit of work

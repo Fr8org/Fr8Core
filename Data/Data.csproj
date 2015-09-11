@@ -215,11 +215,13 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ComponentActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
@@ -228,7 +230,9 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
@@ -288,9 +292,29 @@
     <Compile Include="Migrations\201509082000511_RemoveParentPluginRegistration.Designer.cs">
       <DependentUpon>201509082000511_RemoveParentPluginRegistration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509090724396_AddedComponentActivitiesToActivityTemplateDO.cs" />
-    <Compile Include="Migrations\201509090724396_AddedComponentActivitiesToActivityTemplateDO.Designer.cs">
-      <DependentUpon>201509090724396_AddedComponentActivitiesToActivityTemplateDO.cs</DependentUpon>
+    <Compile Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs" />
+    <Compile Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.Designer.cs">
+      <DependentUpon>201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509091537463_forcemerge.cs" />
+    <Compile Include="Migrations\201509091537463_forcemerge.Designer.cs">
+      <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509101343575_ProcessDO_AddedCurrentActivityAndNextActivity.cs" />
+    <Compile Include="Migrations\201509101343575_ProcessDO_AddedCurrentActivityAndNextActivity.Designer.cs">
+      <DependentUpon>201509101343575_ProcessDO_AddedCurrentActivityAndNextActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs" />
+    <Compile Include="Migrations\201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.Designer.cs">
+      <DependentUpon>201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509110515385_forcemerge1.cs" />
+    <Compile Include="Migrations\201509110515385_forcemerge1.Designer.cs">
+      <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509111214564_AddedComponentActivitytoActivityTemplateRepositary.cs" />
+    <Compile Include="Migrations\201509111214564_AddedComponentActivitytoActivityTemplateRepositary.Designer.cs">
+      <DependentUpon>201509111214564_AddedComponentActivitytoActivityTemplateRepositary.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -549,8 +573,23 @@
     <EmbeddedResource Include="Migrations\201509082000511_RemoveParentPluginRegistration.resx">
       <DependentUpon>201509082000511_RemoveParentPluginRegistration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509090724396_AddedComponentActivitiesToActivityTemplateDO.resx">
-      <DependentUpon>201509090724396_AddedComponentActivitiesToActivityTemplateDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509071636331_201509080035_RenameConfigureStoreToCrateStorage.resx">
+      <DependentUpon>201509071636331_201509080035_RenameConfigureStoreToCrateStorage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509091537463_forcemerge.resx">
+      <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509101343575_ProcessDO_AddedCurrentActivityAndNextActivity.resx">
+      <DependentUpon>201509101343575_ProcessDO_AddedCurrentActivityAndNextActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.resx">
+      <DependentUpon>201509091930590_AddedOriginalFileNameFieldToFileDO_DO_977_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509110515385_forcemerge1.resx">
+      <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509111214564_AddedComponentActivitytoActivityTemplateRepositary.resx">
+      <DependentUpon>201509111214564_AddedComponentActivitytoActivityTemplateRepositary.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
