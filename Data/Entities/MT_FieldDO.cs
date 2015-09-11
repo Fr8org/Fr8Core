@@ -16,17 +16,18 @@ namespace Data.Entities
         [Key]
         public string Id { get; set; }
 
-        [Required]
+        [Required, MaxLength(150)]
+        [Index("IX_Object_FieldName_Offset", 2, IsUnique = true)]
         public string Name { get; set; }
 
         [Required]
         public MT_FieldType Type { get; set; }
 
-        [Required, Index("IX_OrganizationObjectOffset", 2, IsUnique = true)]
+        [Required, Index("IX_Object_FieldName_Offset", 3, IsUnique = true)]
         public int FieldColumnOffset { get; set; }
 
-        [Required, ForeignKey("MtObject")]
-        [Index("IX_OrganizationObjectOffset", 1)]
+        [Required, ForeignKey("MtObject"), MaxLength(100)]
+        [Index("IX_Object_FieldName_Offset", 1)]
         public string MtObjectId { get; set; }
 
         public MT_ObjectDO MtObject { get; set; }

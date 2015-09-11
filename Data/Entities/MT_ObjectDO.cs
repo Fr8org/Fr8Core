@@ -5,7 +5,7 @@ namespace Data.Entities
 {
     public class MT_ObjectDO
     {
-        [Key]
+        [Key, MaxLength(100)]
         public string Id { get; set; }
 
         [Required]

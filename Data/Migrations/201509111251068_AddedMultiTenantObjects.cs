@@ -12,20 +12,20 @@ namespace Data.Migrations
                 c => new
                     {
                         Id = c.String(nullable: false, maxLength: 128),
-                        Name = c.String(nullable: false),
+                        Name = c.String(nullable: false, maxLength: 150),
                         Type = c.Int(nullable: false),
                         FieldColumnOffset = c.Int(nullable: false),
-                        MtObjectId = c.String(nullable: false, maxLength: 128),
+                        MtObjectId = c.String(nullable: false, maxLength: 100),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MT_Objects", t => t.MtObjectId, cascadeDelete: true)
-                .Index(t => new { t.MtObjectId, t.FieldColumnOffset }, unique: true, name: "IX_OrganizationObjectOffset");
+                .Index(t => new { t.MtObjectId, t.Name, t.FieldColumnOffset }, unique: true, name: "IX_Object_FieldName_Offset");
             
             CreateTable(
                 "dbo.MT_Objects",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.String(nullable: false, maxLength: 100),
                         Name = c.String(nullable: false),
                         MtOrganizationId = c.String(nullable: false, maxLength: 128),
                     })
@@ -51,7 +51,7 @@ namespace Data.Migrations
                         Name = c.String(nullable: false),
                         CreatedAt = c.DateTime(nullable: false),
                         UpdatedAt = c.DateTime(nullable: false),
-                        MtObjectId = c.String(nullable: false, maxLength: 128),
+                        MtObjectId = c.String(nullable: false, maxLength: 100),
                         Value1 = c.String(),
                         Value2 = c.String(),
                         Value3 = c.String(),
@@ -76,7 +76,7 @@ namespace Data.Migrations
             DropForeignKey("dbo.MT_Objects", "MtOrganizationId", "dbo.MT_Organizations");
             DropIndex("dbo.MT_Data", new[] { "MtObjectId" });
             DropIndex("dbo.MT_Objects", new[] { "MtOrganizationId" });
-            DropIndex("dbo.MT_Fields", "IX_OrganizationObjectOffset");
+            DropIndex("dbo.MT_Fields", "IX_Object_FieldName_Offset");
             DropTable("dbo.MT_Data");
             DropTable("dbo.MT_Organizations");
             DropTable("dbo.MT_Objects");
