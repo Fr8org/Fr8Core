@@ -12,7 +12,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
         [Required, ForeignKey("MtOrganization")]
-        public int MtOrganizationId { get; set; }
+        public string MtOrganizationId { get; set; }
 
         public MT_OrganizationDO MtOrganization { get; set; }
     }

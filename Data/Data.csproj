@@ -241,6 +241,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
+    <Compile Include="Interfaces\IMTDataRepository.cs" />
+    <Compile Include="Interfaces\IMTFieldRepository.cs" />
+    <Compile Include="Interfaces\IMTObjectRepository.cs" />
+    <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.cs" />
     <Compile Include="Migrations\201509010217565_inital_migration.Designer.cs">
       <DependentUpon>201509010217565_inital_migration.cs</DependentUpon>
@@ -301,8 +305,16 @@
     <Compile Include="Migrations\201509091537463_forcemerge.Designer.cs">
       <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509110838486_AddedMultiTenantObjects.cs" />
+    <Compile Include="Migrations\201509110838486_AddedMultiTenantObjects.Designer.cs">
+      <DependentUpon>201509110838486_AddedMultiTenantObjects.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
+    <Compile Include="Repositories\MTDataRepository.cs" />
+    <Compile Include="Repositories\MTFieldRepository.cs" />
+    <Compile Include="Repositories\MTObjectRepository.cs" />
+    <Compile Include="Repositories\MTOrganizationRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -563,6 +575,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509091537463_forcemerge.resx">
       <DependentUpon>201509091537463_forcemerge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509110838486_AddedMultiTenantObjects.resx">
+      <DependentUpon>201509110838486_AddedMultiTenantObjects.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
