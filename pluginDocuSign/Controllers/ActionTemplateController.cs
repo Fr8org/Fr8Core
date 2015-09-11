@@ -6,7 +6,7 @@ using Data.Entities;
 using Newtonsoft.Json;
 using System.Reflection;
 using PluginBase.BaseClasses;
-
+using System.Collections.Generic;
 
 namespace pluginDocuSign.Controllers
 {    
@@ -14,7 +14,7 @@ namespace pluginDocuSign.Controllers
     public class ActionTemplateController : ApiController
     {
         [HttpGet]
-        public IHttpActionResult Configure()
+        public IHttpActionResult Get()
         {
             var actionTemplate = new ActionTemplateDTO()
             {
@@ -22,7 +22,13 @@ namespace pluginDocuSign.Controllers
                 Version = "1.0",
                 Name = "Wait For DocuSign Event"
             };
-            return Ok(actionTemplate);
+
+            var actionList = new List<ActionTemplateDTO>()
+            {
+                actionTemplate
+            };
+
+            return Ok(actionList);
         }
     }
 }
