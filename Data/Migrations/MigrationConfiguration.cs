@@ -484,8 +484,6 @@ namespace Data.Migrations
 
         private void AddMultiTenantFields(IUnitOfWork uow, string curObjectId, MultiTenantObject curMto)
         {
-            System.Diagnostics.Debugger.Launch();
-
             //Prepare the available type maps
             IDictionary<Type, MT_FieldType> typeMap = new Dictionary<Type, MT_FieldType>()
             {
