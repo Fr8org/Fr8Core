@@ -319,9 +319,9 @@
     <Compile Include="Migrations\201509110515385_forcemerge1.Designer.cs">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509110838486_AddedMultiTenantObjects.cs" />
-    <Compile Include="Migrations\201509110838486_AddedMultiTenantObjects.Designer.cs">
-      <DependentUpon>201509110838486_AddedMultiTenantObjects.cs</DependentUpon>
+    <Compile Include="Migrations\201509110859271_AddedMultiTenantObjects.cs" />
+    <Compile Include="Migrations\201509110859271_AddedMultiTenantObjects.Designer.cs">
+      <DependentUpon>201509110859271_AddedMultiTenantObjects.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -599,8 +599,8 @@
     <EmbeddedResource Include="Migrations\201509110515385_forcemerge1.resx">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509110838486_AddedMultiTenantObjects.resx">
-      <DependentUpon>201509110838486_AddedMultiTenantObjects.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509110859271_AddedMultiTenantObjects.resx">
+      <DependentUpon>201509110859271_AddedMultiTenantObjects.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

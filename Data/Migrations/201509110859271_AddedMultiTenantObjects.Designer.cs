@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201509110838486_AddedMultiTenantObjects"; }
+            get { return "201509110859271_AddedMultiTenantObjects"; }
         }
         
         string IMigrationMetadata.Source
