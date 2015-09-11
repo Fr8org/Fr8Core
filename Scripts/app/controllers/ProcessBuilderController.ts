@@ -335,7 +335,7 @@ module dockyard.controllers {
 
             // Make sure that current Action is null to prevent an action save 
             // request from being unnecessarily sent to web api 
-            this._scope.current.action = null;            
+            this._scope.current.action = null;
 
             // TODO: Do not react on clicking on currently visible Criteria
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
@@ -343,19 +343,19 @@ module dockyard.controllers {
 
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
-                                
-                // Create new action object.
+                
+                    // Create new action object.
                 var action = new model.ActionDesignDTO(null, id, true, null);
 
-                action.name = 'New Action #' + Math.abs(id).toString();
+                    action.name = 'New Action #' + Math.abs(id).toString();
 
-                // Add action to Workflow Designer.
-                self._scope.current.action = action.toActionVM();
-                self._scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                    new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
-                    );                
-            });
+                    // Add action to Workflow Designer.
+                    self._scope.current.action = action.toActionVM();
+                    self._scope.$broadcast(
+                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
+                        new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
+                        );
+                });
         }
 
         /*
