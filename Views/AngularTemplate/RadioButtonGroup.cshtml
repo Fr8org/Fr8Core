@@ -2,8 +2,22 @@
 <div style="margin-top: 30px;">
     <span>Values for Demo -> {{field || json}}</span>
     <br />
-    <label ng-repeat="radio in field.radios" ng-click="ChangeSelection(radio)">
-        <input type="radio" name="{{field.groupName}}" ng-checked="radio.selected" ng-value="true" />
-        {{radio.value}}
-    </label>
+    <br />
+    <h4>{{field.groupName}}</h4>
+    <br />
+    <br />
+    <pre>With Pure HTML</pre>
+    <div class="well well-lg">
+        <label ng-repeat="radio in field.radios" ng-click="ChangeSelection(radio)">
+            <input type="radio" name="pca__chk__{{field.groupName}}" ng-checked="radio.selected" ng-value="true" />
+            {{radio.value}}
+        </label>
+    </div>
+    <br />
+    <pre>With UI-Bootstrap</pre>
+    <div class="well well-lg">
+        <div class="btn-group">
+            <label ng-click="ChangeSelection(radio)" name="pca__chk__{{field.groupName}}" ng-repeat="radio in field.radios" class="btn btn-primary" ng-model="radio.selected" btn-radio="true">{{radio.value}}</label>
+        </div>
+    </div>
 </div>
