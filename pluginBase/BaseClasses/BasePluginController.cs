@@ -73,7 +73,7 @@ namespace PluginBase.BaseClasses
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _eventReportCrateHelper.Create(pluginName, eventType, loggingDataCrate)).Wait();
+                _eventReportCrateHelper.Create(eventType, pluginName, loggingDataCrate)).Wait();
 
         }
         public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO)
