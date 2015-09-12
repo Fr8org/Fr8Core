@@ -3,17 +3,14 @@ using System.Data;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using Data.Entities;
 using Data.Interfaces;
 
 namespace Data.Infrastructure.MultiTenant
 {
     public class MT_Field : IMT_Field
     {
-
         public void Add(IUnitOfWork uow, Entities.MT_Field curMtField)
         {
-            //int? mtFieldOffset = GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId);
             Entities.MT_Field existingMtField = GetField(uow, curMtField.Name, curMtField.MT_ObjectId);
 
             if (existingMtField == null)
