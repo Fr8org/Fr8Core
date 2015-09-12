@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
 using Data.Validations;
 using FluentValidation;
+using Newtonsoft.Json;
 
 namespace Data.Entities
 {
@@ -41,6 +43,13 @@ namespace Data.Entities
         [ForeignKey("NextActivity")]
         public int? NextActivityId { get; set; }
         public virtual ActivityDO NextActivity { get; set; }
+
+        public string CrateStorage { get; set; }
+
+        public CrateStorageDTO CrateStorageDTO()
+        {
+            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+        }
 
         public override void BeforeSave()
         {
