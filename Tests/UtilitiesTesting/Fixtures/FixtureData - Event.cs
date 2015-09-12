@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
@@ -12,8 +13,8 @@ namespace UtilitiesTesting.Fixtures
 
         public static EventDTO TestPluginIncidentDto()
         {
-            var loggingDataCrate =
-                Data.Crates.Helpers.LoggingDataCrate.Create(new LoggingData
+
+            var loggingDataCrate = new LoggingDataCrate().Create(new LoggingData
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
@@ -28,8 +29,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static EventDTO TestPluginEventDto()
         {
-            var loggingDataCrate =
-                Data.Crates.Helpers.LoggingDataCrate.Create(new LoggingData
+            var loggingDataCrate = new LoggingDataCrate().Create(new LoggingData
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
