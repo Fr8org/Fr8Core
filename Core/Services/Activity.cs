@@ -85,5 +85,38 @@ namespace Core.Services
 				.OrderBy(z => z.Ordering);
 			return orderedActivities;
 		}
-	}
+
+        public void Process(ActivityDO curActivityDO)
+        {
+            if (curActivityDO == null)
+                throw new ArgumentNullException("ActivityDO is null");
+
+            if (curActivityDO is ActionListDO)
+            {
+                IActionList _actionList = ObjectFactory.GetInstance<IActionList>();
+                _actionList.Process((ActionListDO)curActivityDO);
+            }
+            else if (curActivityDO is ActionDO)
+            {
+                IAction _action = ObjectFactory.GetInstance<IAction>();
+                _action.Process((ActionDO)curActivityDO);
+            }
+        }
+
+
+        public IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO)
+        {
+            IEnumerable<ActivityDO> activityLists = new List<ActivityDO>();
+
+            if (curActivityDO == null)
+                throw new ArgumentNullException("ActivityDO is null");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                activityLists = this.GetChildren(uow, curActivityDO);
+            }
+
+            return activityLists;
+        }
+    }
 }

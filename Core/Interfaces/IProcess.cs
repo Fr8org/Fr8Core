@@ -6,6 +6,6 @@ namespace Core.Interfaces
     {
         ProcessDO Create(int processTemplateId, string envelopeId);
         void Launch(ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent);
-        void Execute(DocuSignEventDO curEvent, ProcessNodeDO curProcessNode);
+        void Execute(ProcessDO curProcessDO);
     }
 }

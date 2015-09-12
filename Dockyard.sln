@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -36,6 +36,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginDocuSign", "pluginDocuSign\pluginDocuSign.csproj", "{4E04FEB2-B452-4739-8336-EA2CEFB18D87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "pluginBase\PluginBase.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreActions", "CoreActions\CoreActions.csproj", "{AD226A7F-0641-4589-93EB-06E5EE7E767B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +151,15 @@ Global
 		{D6A0A493-E926-439A-9CE2-E093E75132CD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6A0A493-E926-439A-9CE2-E093E75132CD}.Release|x86.ActiveCfg = Release|Any CPU
 		{D6A0A493-E926-439A-9CE2-E093E75132CD}.Release|x86.Build.0 = Release|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
