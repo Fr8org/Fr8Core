@@ -746,6 +746,7 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
@@ -3934,6 +3935,7 @@
     <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonGroup.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
