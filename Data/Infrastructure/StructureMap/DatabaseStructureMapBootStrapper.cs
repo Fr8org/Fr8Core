@@ -1,10 +1,11 @@
 using System.Data.Entity;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
+using Data.Infrastructure.MultiTenant;
 using Data.Interfaces;
 using Data.Wrappers;
-using DocuSign.Integrations.Client;
 using StructureMap.Configuration.DSL;
+using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -23,6 +24,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IAspNetUserRolesDO>().Use<AspNetUserRolesDO>();
                 For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
 
+                For<IMT_Field>().Use<MT_FieldService>();
             }
         }
 

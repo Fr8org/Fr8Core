@@ -5,14 +5,14 @@ namespace Data.Entities
 {
     public class MT_Object
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), MaxLength(100)]
-        public string Id { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }
 
         [Required, ForeignKey("MT_Organization")]
-        public string MT_OrganizationId { get; set; }
+        public int MT_OrganizationId { get; set; }
 
         public MT_Organization MT_Organization { get; set; }
     }

@@ -210,6 +210,8 @@
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActionTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
@@ -322,9 +324,9 @@
     <Compile Include="Migrations\201509110515385_forcemerge1.Designer.cs">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509111946240_AddedMultiTenantObjects.cs" />
-    <Compile Include="Migrations\201509111946240_AddedMultiTenantObjects.Designer.cs">
-      <DependentUpon>201509111946240_AddedMultiTenantObjects.cs</DependentUpon>
+    <Compile Include="Migrations\201509120832390_AddedMultiTenantObjects.cs" />
+    <Compile Include="Migrations\201509120832390_AddedMultiTenantObjects.Designer.cs">
+      <DependentUpon>201509120832390_AddedMultiTenantObjects.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -602,8 +604,8 @@
     <EmbeddedResource Include="Migrations\201509110515385_forcemerge1.resx">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509111946240_AddedMultiTenantObjects.resx">
-      <DependentUpon>201509111946240_AddedMultiTenantObjects.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509120832390_AddedMultiTenantObjects.resx">
+      <DependentUpon>201509120832390_AddedMultiTenantObjects.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

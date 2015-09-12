@@ -11,11 +11,11 @@ namespace Data.Migrations
                 "dbo.MT_Fields",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 100),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 150),
                         Type = c.Int(nullable: false),
                         FieldColumnOffset = c.Int(nullable: false),
-                        MT_ObjectId = c.String(nullable: false, maxLength: 100),
+                        MT_ObjectId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MT_Objects", t => t.MT_ObjectId, cascadeDelete: true)
@@ -25,9 +25,9 @@ namespace Data.Migrations
                 "dbo.MT_Objects",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 100),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false),
-                        MT_OrganizationId = c.String(nullable: false, maxLength: 100),
+                        MT_OrganizationId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MT_Organizations", t => t.MT_OrganizationId, cascadeDelete: true)
@@ -37,7 +37,7 @@ namespace Data.Migrations
                 "dbo.MT_Organizations",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 100),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
@@ -46,12 +46,12 @@ namespace Data.Migrations
                 "dbo.MT_Data",
                 c => new
                     {
-                        Id = c.Int(nullable: false),
+                        Id = c.Int(nullable: false, identity: true),
                         GUID = c.Guid(nullable: false, identity: true),
                         Name = c.String(nullable: false),
                         CreatedAt = c.DateTime(nullable: false),
                         UpdatedAt = c.DateTime(nullable: false),
-                        MT_ObjectId = c.String(nullable: false, maxLength: 100),
+                        MT_ObjectId = c.Int(nullable: false),
                         IsDeleted = c.Boolean(nullable: false),
                         Value1 = c.String(),
                         Value2 = c.String(),

@@ -13,8 +13,8 @@ namespace Data.Entities
 
     public class MT_Field
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), MaxLength(100)]
-        public string Id { get; set; }
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 
         [Required, MaxLength(150)]
         [Index("FieldColumnOffsetIndex", 2)]
@@ -26,9 +26,9 @@ namespace Data.Entities
         [Required, Index("FieldColumnOffsetIndex", 3)]
         public int FieldColumnOffset { get; set; }
 
-        [Required, ForeignKey("MT_Object"), MaxLength(100)]
+        [Required, ForeignKey("MT_Object")]
         [Index("FieldColumnOffsetIndex", 1)]
-        public string MT_ObjectId { get; set; }
+        public int MT_ObjectId { get; set; }
 
         public MT_Object MT_Object { get; set; }
     }

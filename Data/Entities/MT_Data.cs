@@ -9,7 +9,7 @@ namespace Data.Entities
         [Required, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid GUID { get; set; }
 
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -21,8 +21,8 @@ namespace Data.Entities
         [Required]
         public DateTime UpdatedAt { get; set; }
 
-        [Required, ForeignKey("MT_Object"), MaxLength(100)]
-        public string MT_ObjectId { get; set; }
+        [Required, ForeignKey("MT_Object")]
+        public int MT_ObjectId { get; set; }
 
         public MT_Object MT_Object { get; set; }
 

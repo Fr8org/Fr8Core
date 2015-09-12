@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Web;
+using Data.Infrastructure.MultiTenant;
 using Data.Interfaces.MultiTenantObjects;
 using Data.Repositories;
 using Data.States;
@@ -18,6 +19,8 @@ using Data.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using Utilities;
+using MT_Field = Data.Entities.MT_Field;
+using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {
@@ -68,7 +71,7 @@ namespace Data.Migrations
             AddPlugins(uow);
             AddActionTemplates(uow);
 
-            //SeedMultiTenantTables(uow);
+            SeedMultiTenantTables(uow);
         }
 
         //Method to let us seed into memory as well
@@ -386,32 +389,52 @@ namespace Data.Migrations
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
+            System.Diagnostics.Debugger.Launch();
+
             AddMultiTenantOrganizations(uow);
             AddMultiTenantObjects(uow);
+
+            //add field for DocuSignEnvelopeStatusReport Object in DocuSign organization
+
+            int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
+                "DocuSignEnvelopeStatusReport");
+            
             //AddMultiTenantFields(uow);
-            AddMultiTenantFields(uow, "3", new DocuSignEnvelopeStatusReportMTO());
-            AddMultiTenantFields(uow, "3", new DocuSignEnvelopeStatusReportMTO());
-            AddMultiTenantFields(uow, "4", new DocuSignRecipientStatusReportMTO());
-            AddMultiTenantFields(uow, "4", new DocuSignRecipientStatusReportMTO());
+            AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
+            AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
+            //AddMultiTenantFields(uow, "4", new DocuSignRecipientStatusReportMTO());
+            //AddMultiTenantFields(uow, "4", new DocuSignRecipientStatusReportMTO());
         }
 
         private void AddMultiTenantOrganizations(UnitOfWork uow)
         {
-            uow.MTOrganizationRepository.Add(new MT_Organization { Id = "1", Name = "Dockyard" });
-            uow.MTOrganizationRepository.Add(new MT_Organization { Id = "2", Name = "DocuSign" });
+            uow.MTOrganizationRepository.Add(new MT_Organization { Name = "Dockyard" });
+            uow.MTOrganizationRepository.Add(new MT_Organization { Name = "DocuSign" });
 
             uow.SaveChanges();
         }
 
         private void AddMultiTenantObjects(UnitOfWork uow)
         {
-            uow.MTObjectRepository.Add(new MT_Object { Id = "1", MT_OrganizationId = "1", Name = "DockyardEvent" });
-            uow.MTObjectRepository.Add(new MT_Object { Id = "2", MT_OrganizationId = "1", Name = "DockyardIncident" });
 
-            uow.MTObjectRepository.Add(new MT_Object { Id = "3", MT_OrganizationId = "2", Name = "DocuSignEnvelopeStatusReport" });
-            uow.MTObjectRepository.Add(new MT_Object { Id = "4", MT_OrganizationId = "2", Name = "DocuSignRecipientStatusReport" });
+            var orgDockyard = uow.MTOrganizationRepository.GetQuery().First(org => org.Name.Equals("Dockyard"));
+            var orgDocuSign = uow.MTOrganizationRepository.GetQuery().First(org => org.Name.Equals("DocuSign"));
+
+            uow.MTObjectRepository.Add(new MT_Object {Name = "DockyardEvent", MT_OrganizationId = orgDockyard.Id});
+            uow.MTObjectRepository.Add(new MT_Object {Name = "DockyardIncident", MT_OrganizationId = orgDockyard.Id});
+
+            uow.MTObjectRepository.Add(new MT_Object {Name = "DocuSignEnvelopeStatusReport", MT_OrganizationId = orgDocuSign.Id});
+            uow.MTObjectRepository.Add(new MT_Object {Name = "DocuSignRecipientStatusReport", MT_OrganizationId = orgDocuSign.Id});
 
             uow.SaveChanges();
+        }
+
+        private int GetMultiTenantObjectID(IUnitOfWork uow, string curMtOrganizationName, string curMtObjectName)
+        {
+            return
+                uow.MTObjectRepository.FindOne(
+                    obj => obj.MT_Organization.Name.Equals(curMtOrganizationName) && obj.Name.Equals(curMtObjectName))
+                    .Id;
         }
 
         private void AddMultiTenantFields(UnitOfWork uow)
@@ -482,10 +505,11 @@ namespace Data.Migrations
             //uow.SaveChanges();
         }
 
-        private void AddMultiTenantFields(IUnitOfWork uow, string curObjectId, MultiTenantObject curMto)
+        private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, MultiTenantObject curMto)
         {
-            //Prepare the available type maps
-            IDictionary<Type, MT_FieldType> typeMap = new Dictionary<Type, MT_FieldType>()
+            var _mtField = new MT_FieldService();
+
+            var typeMap = new Dictionary<Type, MT_FieldType>()
             {
                 {typeof (string), MT_FieldType.String},
                 {typeof (int), MT_FieldType.Int},
@@ -498,51 +522,57 @@ namespace Data.Migrations
 
 
             //calculate existing # of rows in MT_Fields table
-            int existingFieldsCount = uow.MTFieldRepository.GetAll().Count();
+            //int existingFieldsCount = uow.MTFieldRepository.GetAll().Count();
 
             //calculate maximum field offset for the given Object ID
             //If there are no rows in the table, the default offset is 1
             //Else, calculate the maximum field offset used by given Object ID
-            int maxFieldOffset = existingFieldsCount == 0
-                ? 1
-                : uow.MTFieldRepository.GetQuery()
-                    .Include(f => f.MT_Object)
-                    .Any(f => f.MT_ObjectId.Equals(curObjectId))
-                    ? uow.MTFieldRepository.GetQuery()
-                        .Include(f => f.MT_Object)
-                        .Where(f => f.MT_ObjectId.Equals(curObjectId))
-                        .Max(f => f.FieldColumnOffset) + 1
-                    : 1;
+            //int maxFieldOffset = existingFieldsCount == 0
+            //    ? 1
+            //    : uow.MTFieldRepository.GetQuery()
+            //        .Include(f => f.MT_Object)
+            //        .Any(f => f.MT_ObjectId.Equals(curObjectId))
+            //        ? uow.MTFieldRepository.GetQuery()
+            //            .Include(f => f.MT_Object)
+            //            .Where(f => f.MT_ObjectId.Equals(curObjectId))
+            //            .Max(f => f.FieldColumnOffset) + 1
+            //        : 1;
 
             //for each field
             foreach (PropertyInfo propertyInfo in curMtoProperties)
             {
-                MT_Field mtField = new MT_Field();
+
+                MT_Field curMtField = new MT_Field();
 
                 //set property name, type and Object ID
-                mtField.Name = propertyInfo.Name;
-                mtField.Type = typeMap[propertyInfo.PropertyType];
-                mtField.MT_ObjectId = curObjectId;
+                curMtField.Name = propertyInfo.Name;
+                curMtField.Type = typeMap[propertyInfo.PropertyType];
+                curMtField.MT_ObjectId = curObjectId;
+                curMtField.FieldColumnOffset =
+                    _mtField.GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId) ??
+                    _mtField.GenerateFieldColumnOffset(uow, curMtField.MT_ObjectId);
 
                 //Primary key
-                mtField.Id = (existingFieldsCount + 1).ToStr();
+                //mtField.Id = (existingFieldsCount + 1).ToStr();
 
-                if (maxFieldOffset > 10)
+                if (curMtField.FieldColumnOffset > 50)
                 {
                     throw new InvalidOperationException(
-                        "MTO fields are limited to only 10 Columns. Check your MTO to keep its number of Properties to be less than 10.");
+                        "MTO fields are limited to only 50 Columns. Check your MTO to keep its number of Properties to be less than or equal to 50.");
                 }
 
-                mtField.FieldColumnOffset = maxFieldOffset;
+                _mtField.Add(uow, curMtField);
 
-                if (!uow.MTFieldRepository.GetQuery().Any(f => f.MT_ObjectId.Equals(mtField.MT_ObjectId) && f.Name.Equals(mtField.Name)))
-                {
-                    uow.MTFieldRepository.Add(mtField);
+                //mtField.FieldColumnOffset = maxFieldOffset;
 
-                    //increment indices
-                    maxFieldOffset += 1;
-                    existingFieldsCount += 1;
-                }
+                //if (!uow.MTFieldRepository.GetQuery().Any(f => f.MT_ObjectId.Equals(mtField.MT_ObjectId) && f.Name.Equals(mtField.Name)))
+                //{
+                //    uow.MTFieldRepository.Add(mtField);
+
+                //    //increment indices
+                //    maxFieldOffset += 1;
+                //    existingFieldsCount += 1;
+                //}
             }
 
             uow.SaveChanges();
