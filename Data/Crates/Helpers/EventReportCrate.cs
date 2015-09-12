@@ -9,14 +9,14 @@ using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
 {
-    public static class EventReportCrate
+    public class EventReportCrate
     {
-        public static CrateDTO Create(String eventName, String palletId, params CrateDTO[] crates)
+        public CrateDTO Create(String eventName, String palletId, params CrateDTO[] crates)
         {
             return Create(eventName, palletId, crates.ToList());
         }
 
-        public static CrateDTO Create(String eventName, String palletId, List<CrateDTO> crates)
+        public CrateDTO Create(String eventName, String palletId, List<CrateDTO> crates)
         {
             var eventDTO = new EventDTO
             {
@@ -27,7 +27,7 @@ namespace Data.Crates.Helpers
             return Create(eventDTO);
         }
 
-        public static CrateDTO Create(EventDTO eventDTO)
+        public CrateDTO Create(EventDTO eventDTO)
         {
             var serializer = new JsonSerializer();
             var eventDTOContent = serializer.Serialize(eventDTO);

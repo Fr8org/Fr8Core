@@ -15,6 +15,14 @@ namespace PluginBase.BaseClasses
     //we can generate instances of this.
     public class BasePluginController
     {
+        private readonly EventReportCrate _eventReportCrateHelper;
+        private readonly LoggingDataCrate _loggingDataCrateHelper;
+        public BasePluginController()
+        {
+            _eventReportCrateHelper = new EventReportCrate();
+            _loggingDataCrateHelper = new LoggingDataCrate();
+        }
+
         /// <summary>
         /// Reports start up incident
         /// </summary>
@@ -53,7 +61,7 @@ namespace PluginBase.BaseClasses
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
-            var loggingDataCrate = LoggingDataCrate.Create(new LoggingData
+            var loggingDataCrate = _loggingDataCrateHelper.Create(new LoggingData
             {
                 ObjectId = pluginName,
                 CustomerId = "not_applicable",
@@ -65,7 +73,7 @@ namespace PluginBase.BaseClasses
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                EventReportCrate.Create(pluginName, eventType, loggingDataCrate)).Wait();
+                _eventReportCrateHelper.Create(pluginName, eventType, loggingDataCrate)).Wait();
 
         }
         public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO)

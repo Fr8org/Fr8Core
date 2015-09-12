@@ -9,9 +9,9 @@ using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
 {
-    public static class LoggingDataCrate
+    public class LoggingDataCrate
     {
-        public static CrateDTO Create(LoggingData loggingData)
+        public CrateDTO Create(LoggingData loggingData)
         {
             var serializer = new JsonSerializer();
             var contents = serializer.Serialize(loggingData);

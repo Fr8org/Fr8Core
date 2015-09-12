@@ -1,7 +1,9 @@
 ﻿
 using System.Linq;
 using System.Web.Http.Results;
+using Core.Interfaces;
 using Core.Managers;
+using Data.Crates.Helpers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
@@ -21,6 +23,8 @@ namespace DockyardTest.Controllers
         private EventController _eventController;
         private EventReporter _eventReporter;
         private IncidentReporter _incidentReporter;
+        private EventReportCrate _eventReportCrateHelper;
+        private ICrate _crate;
 
 
         [SetUp]
@@ -30,6 +34,9 @@ namespace DockyardTest.Controllers
             _eventController = new EventController();
             _eventReporter = new EventReporter();
             _incidentReporter = new IncidentReporter();
+            _eventReportCrateHelper = new EventReportCrate();
+            _crate = ObjectFactory.GetInstance<ICrate>();
+
         }
 
         [Test]
@@ -42,7 +49,7 @@ namespace DockyardTest.Controllers
 
             //Act
 
-            var result = _eventController.Post(Data.Crates.Helpers.EventReportCrate.Create(eventDto));
+            var result = _eventController.Post(_eventReportCrateHelper.Create(eventDto));
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -65,14 +72,13 @@ namespace DockyardTest.Controllers
                 var curEventDTO = FixtureData.TestPluginEventDto();
 
                 //Act
-                var result = _eventController.Post(Data.Crates.Helpers.EventReportCrate.Create(curEventDTO));
+                var result = _eventController.Post(_eventReportCrateHelper.Create(curEventDTO));
 
                 //Assert
                 Assert.IsTrue(result is OkResult);
-                var serializer = new JsonSerializer();
                 List<FactDO> savedFactDoList = uow.FactRepository.GetAll().ToList();
                 Assert.AreEqual(1, savedFactDoList.Count());
-                var loggingData = serializer.Deserialize<LoggingData>(curEventDTO.CrateStorage.First().Contents);
+                var loggingData = _crate.GetContents<LoggingData>(curEventDTO.CrateStorage.First());
                 Assert.AreEqual(loggingData.PrimaryCategory, savedFactDoList[0].PrimaryCategory);
                 Assert.AreEqual(loggingData.SecondaryCategory, savedFactDoList[0].SecondaryCategory);
                 _eventReporter.UnsubscribeFromAlerts();
