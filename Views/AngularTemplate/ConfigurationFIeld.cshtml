@@ -28,6 +28,14 @@
         <label class='control-label'>{{field.fieldLabel}}</label>
         <file-picker field='field'></file-picker>
     </div>  
+    
+    @*
+        RadioButtonGroup template
+    *@
+    <div ng-if='field.type == "radioButtonGroup"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <radio-button-group field='field'></radio-button-group>
+    </div>  
 
     @* Add more configuration field templates below *@
 </div>
