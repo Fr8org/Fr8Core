@@ -35,6 +35,9 @@ namespace Data.Entities
 
         [ForeignKey("Plugin")]
         public int? PluginID { get; set; }
+        
         public virtual PluginDO Plugin { get; set; }
+
+        public string ActionProcessor { get; set; }
     }
 }

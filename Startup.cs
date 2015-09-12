@@ -15,6 +15,9 @@ using Owin;
 using StructureMap;
 using Utilities.Logging;
 using Utilities;
+using System.Threading.Tasks;
+using System.IO;
+using Utilities.Serializers.Json;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -125,21 +128,59 @@ namespace Web
             }
         }
 
-        public void RegisterPluginActions()
+        public async Task RegisterPluginActions()
         {
-            /*
-             * TODO: This Plugin registration logic should be changed in V2
-             */
+            var path = Server.ServerPhysicalPath + "DockyardPlugins.txt";
+
+            IList<string> urls = null;
+            try
+            {
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    if (sr.Peek() < 0)
+                        throw new ApplicationException("DockyardPlugins.txt is empty.");
+                    urls = new List<string>();
+                    while (sr.Peek() >= 0)
+                    {
+                        urls.Add(sr.ReadLine());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().ErrorFormat("Error register plugins actions: '{0}'", ex.Message);
+            }
+
+            try
+            {
 
 
-            //IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
-            //    .Assembly.GetTypes()
-            //    .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-            //    .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
-            //foreach (var plugin in plugins)
-            //{
-            //    plugin.RegisterActions();
-            //}
+                foreach (string url in urls)
+                {
+                    var uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri += "/actions/action_templates";
+
+                    using (HttpClient client = new HttpClient())
+                    using (HttpResponseMessage response = await client.GetAsync(uri))
+                    using (HttpContent content = response.Content)
+                    {
+                        var data = await content.ReadAsStringAsync();
+                        var actionList = new JsonSerializer().DeserializeList<ActionTemplateDO>(data);
+                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            foreach (ActionTemplateDO item in actionList)
+                            {
+                                uow.ActionTemplateRepository.Add(item);
+                            }
+                            uow.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
+            }
         }
     }
 }

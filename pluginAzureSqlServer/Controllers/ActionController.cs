@@ -2,6 +2,9 @@
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
+using System.Collections.Generic;
+using Data.States;
+using System;
 
 
 namespace pluginAzureSqlServer.Controllers
@@ -83,6 +86,34 @@ namespace pluginAzureSqlServer.Controllers
                 Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
+        }
+
+        [HttpGet]
+        [Route("action_templates")]
+        //public IHttpActionResult ActionTemplates()
+        public List<ActionTemplateDO> ActionTemplates()
+        {
+            var result = new List<ActionTemplateDO>();
+            var template = new ActionTemplateDO
+            {
+                Name = "WriteToAzureSqlServer",
+                Version = "1.0",
+                ActionProcessor = "DockyardAzureSqlServerService",
+            };
+            var plugin = new PluginDO
+            {
+                Endpoint = "localhost:46281",
+                PluginStatus = PluginStatus.Active,
+                Name = template.Name
+            };
+         //   template.Plugin = plugin;
+
+            result.Add(template);
+            throw new Exception(template.Name); 
+            return result;            
+            //return Json(result);
+            //return Ok("Hello World");
+            //return "Hello World";
         }
     }
 }

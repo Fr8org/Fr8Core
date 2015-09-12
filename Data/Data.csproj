@@ -311,6 +311,14 @@
     <Compile Include="Migrations\201509110515385_forcemerge1.Designer.cs">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509112046091_UpdateActionTemplateDO.cs" />
+    <Compile Include="Migrations\201509112046091_UpdateActionTemplateDO.Designer.cs">
+      <DependentUpon>201509112046091_UpdateActionTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509112208098_UpdatePluginDO.cs" />
+    <Compile Include="Migrations\201509112208098_UpdatePluginDO.Designer.cs">
+      <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
@@ -582,6 +590,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509110515385_forcemerge1.resx">
       <DependentUpon>201509110515385_forcemerge1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509112046091_UpdateActionTemplateDO.resx">
+      <DependentUpon>201509112046091_UpdateActionTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509112208098_UpdatePluginDO.resx">
+      <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
