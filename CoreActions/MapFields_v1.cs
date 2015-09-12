@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -28,8 +29,31 @@ namespace CoreActions
         /// </summary>
         public ActionProcessResultDTO Execute(ActionDO actionDO)
         {
-            // ((ActionListDO)actionDO.ParentActivity).Process.Payload;
-            throw new NotImplementedException();
+            var curFieldMappingSettings = actionDO.CrateStorageDTO()
+                .CratesDTO
+                .Where(x => x.Label == "Field Mappings")
+                .FirstOrDefault();
+
+            if (curFieldMappingSettings == null)
+            {
+                throw new ApplicationException("No Field Mapping cratefound for current action.");
+            }
+
+            var curFieldMappingJson = JsonConvert.SerializeObject(curFieldMappingSettings);
+
+            var crates = new List<CrateDTO>()
+            {
+                new CrateDTO()
+                {
+                    Contents = curFieldMappingJson,
+                    Label = "Payload",
+                    ManifestType = "Payload Data"
+                }
+            };
+
+            ((ActionListDO)actionDO.ParentActivity).Process.UpdateCrateStorageDTO(crates);
+
+            return new ActionProcessResultDTO() { Success = true };
         }
 
         /// <summary>
@@ -101,6 +125,8 @@ namespace CoreActions
                     }
                 }
             };
+
+            actionDO.UpdateCrateStorageDTO(curResultDTO.CratesDTO);
 
             return curResultDTO;
         }

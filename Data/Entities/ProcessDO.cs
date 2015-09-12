@@ -51,6 +51,20 @@ namespace Data.Entities
             return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
         }
 
+        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+        {
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+
+            if (!string.IsNullOrEmpty(CrateStorage))
+            {
+                crateStorageDTO = this.CrateStorageDTO();
+            }
+
+            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+
+            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+        }
+
         public override void BeforeSave()
         {
             base.BeforeSave();
