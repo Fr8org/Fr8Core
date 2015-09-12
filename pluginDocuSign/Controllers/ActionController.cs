@@ -27,16 +27,14 @@ namespace pluginDocuSign.Controllers
         [Route("activate")]
         public string Activate(ActionDO curActionDO)
         {
-            //return HandleDockyardRequest("Actvate", curActionDesignDTO);
-            return "Activate Request"; // Will be changed when implementation is plumbed in.
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDO);
         }
 
         [HttpPost]
         [Route("execute")]
         public string Execute(ActionDO curActionDO)
         {
-            //return HandleDockyardRequest("Execute", curActionDesignDTO);
-            return "Execute Request"; // Will be changed when implementation is plumbed in.
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDO);
         }
     }
 }

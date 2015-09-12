@@ -21,6 +21,7 @@ namespace pluginDocuSign.Actions
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
         IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
 
+
         public object Configure(ActionDO curActionDO, bool forceFollowupConfiguration = false)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
@@ -37,7 +38,25 @@ namespace pluginDocuSign.Actions
 
         public object Execute(ActionDO curActionDO)
         {
-            return "Execute Request"; // Will be changed when implementation is plumbed in.
+            string envelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43"; //TODO: how to extract envelope it?
+
+            //Create a field
+            var fields = new List<FieldDTO>()
+            {
+                new FieldDTO()
+                {
+                    Key = "EnvelopeId",
+                    Value = envelopeId
+                }
+            };
+
+            var crateEnvelopeId = new List<CrateDTO>()
+            {
+                _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID)
+            };
+
+            _action.AddCrate(curActionDO, crateEnvelopeId);
+            return null;
         }
 
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)

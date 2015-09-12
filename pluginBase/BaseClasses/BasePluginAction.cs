@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.Infrastructure;
 using StructureMap;
+using System;
 
 namespace PluginBase.BaseClasses
 {
@@ -19,6 +20,9 @@ namespace PluginBase.BaseClasses
             Upstream,
             Downstream
         }
+
+        protected const int STANDARD_PAYLOAD_MANIFEST_ID = 5;
+        protected const string STANDARD_PAYLOAD_MANIFEST_NAME = "Standard Payload Data";
 
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDO curActionDO, ConfigurationEvaluator configurationEvaluationResult)
         {
@@ -50,6 +54,11 @@ namespace PluginBase.BaseClasses
         protected virtual CrateDTO GetCrate(ActivityDO activityDO,
             string searchId, GetCrateDirection direction)
         {
+            return GetCrate(activityDO, x => x.Id == searchId, direction);
+        }
+
+        protected virtual CrateDTO GetCrate(ActivityDO activityDO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
+        {
             var curActivityService = ObjectFactory.GetInstance<IActivity>();
 
             var curUpstreamActivities = (direction == GetCrateDirection.Upstream)
@@ -59,7 +68,7 @@ namespace PluginBase.BaseClasses
             foreach (var curUpstreamAction in curUpstreamActivities.OfType<ActionDO>())
             {
                 var curCrateStorage = curUpstreamAction.CrateStorageDTO();
-                var curCrate = curCrateStorage.CratesDTO.FirstOrDefault(x => x.Id == searchId);
+                var curCrate = curCrateStorage.CratesDTO.FirstOrDefault(predicate);
 
                 if (curCrate != null)
                 {
