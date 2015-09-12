@@ -34,5 +34,4 @@ function getLogiTop() {
 
 function landingWelcomeWidth() {
     containerWidth = $("#welcome .inner-bg").width();
-    $(".landing-welcome-area").width(containerWidth);
 }

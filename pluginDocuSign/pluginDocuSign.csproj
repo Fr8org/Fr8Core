@@ -171,8 +171,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Wait_For_DocuSign_Event_v1.cs" />
     <Compile Include="Actions\Extract_From_DocuSign_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\ActionTemplateController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

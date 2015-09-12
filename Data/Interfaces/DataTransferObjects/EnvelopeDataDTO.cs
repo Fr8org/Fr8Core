@@ -19,5 +19,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string Value { get; set; }
 
         public int DocumentId { get; set; }
+
+        public string Type { get; set; }
     }
 }
