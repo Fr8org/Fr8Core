@@ -20,27 +20,25 @@ namespace pluginDocuSign.Actions
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IAction _action = ObjectFactory.GetInstance<IAction>();
 
-        public object Configure(ActionDataPackageDTO curDataPackage)
+        public object Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curDataPackage, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
-        public void Activate(ActionDataPackageDTO curDataPackage)
+        public void Activate(ActionDTO curDataPackage)
         {
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public void Execute(ActionDataPackageDTO curDataPackage)
+        public void Execute(ActionDataPackageDTO curActionDataPackageDTO)
         {
             //Get envlopeId
-            string envelopeId = GetEnvelopeId(curDataPackage.ActionDTO);
+            string envelopeId = GetEnvelopeId(curActionDataPackageDTO.ActionDTO);
             if (envelopeId == null)
             {
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
-
-
         }
 
         private string GetEnvelopeId(ActionDTO curActionDTO)

@@ -21,9 +21,9 @@ namespace CoreActions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public ActionProcessResultDTO Execute(ActionDataPackageDTO curActionDataPackageDTO)
+        public ActionProcessResultDTO Execute(ActionDTO curActionDTO)
         {
-            var actionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDataPackageDTO.ActionDTO);
+            var actionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 
             // Get parent action-list.
             var curActionList = ((ActionListDO)actionDO.ParentActivity);
@@ -151,7 +151,7 @@ namespace CoreActions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDataPackageDTO curActionDataPackageDTO)
+        public CrateStorageDTO Configure(ActionDTO curActionDataPackageDTO)
         {
 
             return ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
@@ -160,9 +160,9 @@ namespace CoreActions
         /// <summary>
         /// Looks for first Create with Id == "PayloadKeys" among all upcoming Actions.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDataPackageDTO curActionDataPackageDTO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curCrate = GetCrate(curActionDataPackageDTO.ActionDTO, "PayloadKeys", GetCrateDirection.Upstream);
+            var curCrate = GetCrate(curActionDTO, "PayloadKeys", GetCrateDirection.Upstream);
 
             if (curCrate != null)
             {
@@ -184,7 +184,7 @@ namespace CoreActions
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDataPackageDTO curActionDataPackageDTO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
             return ConfigurationRequestType.Initial;
         }

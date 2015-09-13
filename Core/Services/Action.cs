@@ -55,7 +55,7 @@ namespace Core.Services
 
             //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
             //var plugins = _plugin.GetAll();
-           // var curActionTemplates = plugins
+            // var curActionTemplates = plugins
             //    .SelectMany(p => p.AvailableActions)
             //    .OrderBy(s => s.ActionType);
 
@@ -116,11 +116,12 @@ namespace Core.Services
         {
             if (curActionDO != null)
             {
+                var curActionDTO = Mapper.Map<ActionDTO>(curAction);
                 //prepare the current plugin URL
                 string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + "/actions/configure/";
 
                 var restClient = new RestfulServiceClient();
-                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
+                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
 
                 return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }
@@ -169,7 +170,7 @@ namespace Core.Services
                     //   else
                     //   {
                     curAction.ActionState = ActionState.Completed;
-                 //   }
+                    //   }
 
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
@@ -290,7 +291,7 @@ namespace Core.Services
         {
             if (curActionDO.ParentActivity != null
                 && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
-        {
+            {
                 ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
 
                 return curActionListDO

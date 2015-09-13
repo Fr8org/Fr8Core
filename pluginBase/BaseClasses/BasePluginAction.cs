@@ -12,7 +12,7 @@ namespace PluginBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest
-    public delegate ConfigurationRequestType ConfigurationEvaluator(ActionDataPackageDTO curActionDataPackage);
+    public delegate ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO);
 
     public class BasePluginAction
     {
@@ -25,31 +25,31 @@ namespace PluginBase.BaseClasses
         protected const int STANDARD_PAYLOAD_MANIFEST_ID = 5;
         protected const string STANDARD_PAYLOAD_MANIFEST_NAME = "Standard Payload Data";
 
-        protected CrateStorageDTO ProcessConfigurationRequest(ActionDataPackageDTO curActionDataPackage, ConfigurationEvaluator configurationEvaluationResult)
+        protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
-            if (configurationEvaluationResult(curActionDataPackage) == ConfigurationRequestType.Initial)
+            if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
-                return InitialConfigurationResponse(curActionDataPackage);
+                return InitialConfigurationResponse(curActionDTO);
             }
 
-            else if (configurationEvaluationResult(curActionDataPackage) == ConfigurationRequestType.Followup)
+            else if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Followup)
             {
-                return FollowupConfigurationResponse(curActionDataPackage);
+                return FollowupConfigurationResponse(curActionDTO);
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
-        protected virtual CrateStorageDTO InitialConfigurationResponse(ActionDataPackageDTO curActionDataPackage)
+        protected virtual CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDataPackage.ActionDTO.CrateStorage;
+            return curActionDTO.CrateStorage;
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
-        protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDataPackageDTO curActionDataPackage)
+        protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDataPackage.ActionDTO.CrateStorage;
+            return curActionDTO.CrateStorage;
         }
 
         protected virtual CrateDTO GetCrate(ActivityDO activityDO,
