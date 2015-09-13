@@ -748,7 +748,7 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\RoutingControl.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />

@@ -10,8 +10,8 @@ module dockyard.directives.paneConfigureAction {
 
     interface IRoutingControlScope extends ng.IScope {
         route: model.Route;
-        ChangeSelection: (scope: IRoutingControlScope) => void;
-        //ChangeSelection: (radio: model.Route) => void;
+        //ChangeSelection: (scope: IRoutingControlScope) => void;
+        ChangeSelection: (route: model.Route) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -24,6 +24,8 @@ module dockyard.directives.paneConfigureAction {
         };
         public templateUrl = '/AngularTemplate/RoutingControl';
         public restrict = 'E';
+        private _$element: ng.IAugmentedJQuery;
+        private _$scope: IRoutingControlScope;
 
         constructor() {
             RoutingControl.prototype.link = (
@@ -37,15 +39,19 @@ module dockyard.directives.paneConfigureAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
-                $scope.ChangeSelection = <(scope: IRoutingControlScope) => void> angular.bind(this, this.ChangeSelection);
-                //$scope.ChangeSelection = <(route: model.Route) => void> angular.bind(this, this.ChangeSelection);
+                this._$element = $element;
+                this._$scope = $scope;
+
+                //$scope.ChangeSelection = <(scope: IRoutingControlScope) => void> angular.bind(this, this.ChangeSelection);
+                $scope.ChangeSelection = <(route: model.Route) => void> angular.bind(this, this.ChangeSelection);
 
             };
         }
 
-        private ChangeSelection(scope: IRoutingControlScope) {
+        private ChangeSelection(route: model.Route) {
             debugger;
-            scope.route.selection
+            this._$scope.route.selection = route.selection;
+            //route.selection
         }
 
         //The factory function returns Directive object as per Angular requirements

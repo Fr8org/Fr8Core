@@ -31,4 +31,17 @@
         groupName: string;
         radios: Array<RadioField>;
     }
+
+    export class RoutingControlGroup extends ConfigurationField {
+        sourceField: string;
+        routes: Array<Route>
+    }
+
+    export class Route extends ConfigurationField {
+        measurementValue: string;
+        selection: string;
+        previousActionList: string;
+        previousActionSelectedId: string;
+        availableProcessNode: string;
+    }
 }
