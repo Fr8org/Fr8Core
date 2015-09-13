@@ -60,7 +60,7 @@ module dockyard.services {
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService> $resource('/api/actions/:id',
+        <IActionService> $resource('/actions/:id',
             {
                 id: '@id'
             },
@@ -68,7 +68,7 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: true,
-                    url: '/api/actions/save'
+                    url: '/actions/save'
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -87,7 +87,7 @@ module dockyard.services {
                 'getFieldDataSources': {
                     method: 'POST',
                     isArray: true,
-                    url: '/api/actions/field_data_sources'
+                    url: '/actions/field_data_sources'
                 },
                 'params': {
                     id: 'id'
@@ -168,7 +168,6 @@ module dockyard.services {
                 newState = new model.ProcessBuilderState()
 
             // TODO: bypass save for unchanged entities
-            debugger;
               
             // Save processNodeTemplate if not null
             if (currentState.processNodeTemplate) {
