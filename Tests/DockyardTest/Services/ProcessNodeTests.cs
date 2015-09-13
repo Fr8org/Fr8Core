@@ -90,7 +90,7 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
             //setup mock IActionList
             var actionListMock = new Mock<IActionList>();
-            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
+            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
             ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
 
@@ -122,7 +122,7 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
             //setup mock IActionList
             var actionListMock = new Mock<IActionList>();
-            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
+            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
             ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
 
@@ -138,7 +138,7 @@ namespace DockyardTest.Services
 
             string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
 
-            actionListMock.Verify(v => v.Process((ActionListDO)It.IsAny<object>()));
+            actionListMock.Verify(v => v.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>()));
         }
 	}
 }

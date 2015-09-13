@@ -30,7 +30,7 @@ namespace DockyardTest.Services
             {
                 var curEvent = FixtureData.TestDocuSignEvent1();
                 ProcessTemplateDO processTemplate = null;
-                _processTemplateService.LaunchProcess(uow, processTemplate, curEvent);
+                _processTemplateService.LaunchProcess(uow, processTemplate, FixtureData.DocuSignEventToCrate(curEvent));
             }
 		}
 
