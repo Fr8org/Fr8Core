@@ -377,7 +377,7 @@ namespace Data.Migrations
                 return;
 
             var curActionTemplateDO = new ActionTemplateDO(
-                name, defaultEndPoint, version);
+                name, version, defaultEndPoint, defaultEndPoint, defaultEndPoint);
             uow.ActionTemplateRepository.Add(curActionTemplateDO);
         }
         }

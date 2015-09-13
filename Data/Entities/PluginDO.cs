@@ -21,5 +21,9 @@ namespace Data.Entities
         [ForeignKey("PluginStatusTemplate")]
         public int PluginStatus { get; set; }
         public _PluginStatusTemplate PluginStatusTemplate { get; set; }
+
+        public string BaseEndPoint { get; set; }
+
+        public string Endpoint { get; set; }
     }
 }

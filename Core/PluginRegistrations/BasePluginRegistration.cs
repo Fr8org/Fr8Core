@@ -9,6 +9,7 @@ using System;
 using System.Reflection;
 using Data.Interfaces;
 using System.Linq;
+using System.Data.Entity;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
 namespace Core.PluginRegistrations
@@ -41,13 +42,13 @@ namespace Core.PluginRegistrations
         {
             get
             {
-                var curParentPluginRegistration = pluginRegistrationName;
+                var curParentPluginRegistration = pluginRegistrationName; // TODO: What is point?
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var curActionTemplates = uow.ActionTemplateRepository
-                        .GetQuery()
-                        .Where(x => x.DefaultEndPoint == curParentPluginRegistration)
+                        .GetQuery().Include("Plugin")
+                        .Where(x => x.Plugin.Name == pluginRegistrationName)
                         .ToList();
 
                     return curActionTemplates;
@@ -82,7 +83,7 @@ namespace Core.PluginRegistrations
             var pluginRegistrationType = Type.GetType(AssembleName(curAction.ActionTemplate));
             if (pluginRegistrationType == null)
             {
-                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ActionTemplate.DefaultEndPoint), "curAction");
+                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ActionTemplate.Plugin.Name), "curAction");
             }
 
             return Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
@@ -97,11 +98,12 @@ namespace Core.PluginRegistrations
                 {
                     // string curParentPluginRegistration = this.GetType().Name;
                     if (!uow.ActionTemplateRepository.GetQuery().Where(a => a.Name == action.Name
-                        && a.Version == action.Version && a.DefaultEndPoint == pluginRegistrationName).Any())
+                        && a.Version == action.Version && a.Plugin.Name == pluginRegistrationName).Any())
                     {
                         ActionTemplateDO actionTemplateDo = new ActionTemplateDO(action.Name,
+                                                                        action.Version,
                                                                         pluginRegistrationName,
-                                                                        action.Version);
+                                                                        action.Plugin.BaseEndPoint, action.Plugin.Endpoint);
                         uow.ActionTemplateRepository.Add(actionTemplateDo);
                         uow.SaveChanges();
                     }
@@ -126,7 +128,7 @@ namespace Core.PluginRegistrations
 
         public static string AssembleName(Data.Entities.ActionTemplateDO curActionTemplateDo)
         {
-            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.DefaultEndPoint, curActionTemplateDo.Version);
+            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.Plugin.BaseEndPoint, curActionTemplateDo.Version);
         }
 
         public virtual Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)

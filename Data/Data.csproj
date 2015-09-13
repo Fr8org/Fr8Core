@@ -327,6 +327,18 @@
     <Compile Include="Migrations\201509121914485_AddedMultiTenantObjects.cs" />
     <Compile Include="Migrations\201509121914485_AddedMultiTenantObjects.Designer.cs">
       <DependentUpon>201509121914485_AddedMultiTenantObjects.cs</DependentUpon>
+   </Compile>	
+    <Compile Include="Migrations\201509112046091_UpdateActionTemplateDO.cs" />
+    <Compile Include="Migrations\201509112046091_UpdateActionTemplateDO.Designer.cs">
+      <DependentUpon>201509112046091_UpdateActionTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509112208098_UpdatePluginDO.cs" />
+    <Compile Include="Migrations\201509112208098_UpdatePluginDO.Designer.cs">
+      <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509131436466_UpdateActionTemplateDOPluginDO.cs" />
+    <Compile Include="Migrations\201509131436466_UpdateActionTemplateDOPluginDO.Designer.cs">
+      <DependentUpon>201509131436466_UpdateActionTemplateDOPluginDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -606,6 +618,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509121914485_AddedMultiTenantObjects.resx">
       <DependentUpon>201509121914485_AddedMultiTenantObjects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509112046091_UpdateActionTemplateDO.resx">
+      <DependentUpon>201509112046091_UpdateActionTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509112208098_UpdatePluginDO.resx">
+      <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509131436466_UpdateActionTemplateDOPluginDO.resx">
+      <DependentUpon>201509131436466_UpdateActionTemplateDOPluginDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

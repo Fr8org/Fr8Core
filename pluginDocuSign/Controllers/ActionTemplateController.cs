@@ -7,23 +7,26 @@ using Newtonsoft.Json;
 using System.Reflection;
 using PluginBase.BaseClasses;
 using System.Collections.Generic;
+using Data.States;
 
 namespace pluginDocuSign.Controllers
 {    
-    [RoutePrefix("action_templates")]
+    [RoutePrefix("actions")]
     public class ActionTemplateController : ApiController
     {
         [HttpGet]
+        [Route("action_templates")]
         public IHttpActionResult Get()
         {
-            var actionTemplate = new ActionTemplateDTO()
+            var actionTemplate = new ActionTemplateDO()
             {
-                DefaultEndPoint = "localhost:53234",
+                Plugin = new PluginDO { Name = "localhost:53234", BaseEndPoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
-                Name = "Wait For DocuSign Event"
+                Name = "Wait For DocuSign Event",
+                ActionProcessor = "DockyardAzureDocuSignService" 
             };
 
-            var actionList = new List<ActionTemplateDTO>()
+            var actionList = new List<ActionTemplateDO>()
             {
                 actionTemplate
             };
