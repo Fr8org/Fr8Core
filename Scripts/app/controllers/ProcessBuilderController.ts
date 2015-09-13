@@ -137,7 +137,7 @@ module dockyard.controllers {
 
         private loadProcessTemplate() {
             var processTemplatePromise = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
-            processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
+     //       processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
             this._scope.current.processTemplate = processTemplatePromise;
         }
          
@@ -163,19 +163,18 @@ module dockyard.controllers {
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
                     new pwd.ActionTempIdReplacedEventArgs(this._scope.current.action.id, action.id)
                     );
+            }
+            
+            if (action) {
+                this._scope.current.action = action;
+                //self._scope.current.action.id = result.action.id;
+                //self._scope.current.action.isTempId = false;
 
-                // If a new action created, set new id
-                if (action) {
-                    this._scope.current.action = action;
-                    //self._scope.current.action.id = result.action.id;
-                    //self._scope.current.action.isTempId = false;
-
-                    //Notify workflow designer of action update
-                    this._scope.$broadcast(
-                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-                        );
-                }
+                //Notify workflow designer of action update
+                this._scope.$broadcast(
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                    new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
+                    );
             }
         }
 
@@ -514,7 +513,7 @@ module dockyard.controllers {
             promise.then((result: model.ProcessBuilderState) => {
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                this.handleActionUpdate(result.action[0]);
 
             });
         }
