@@ -23,7 +23,7 @@ module dockyard.directives.filePicker {
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IFilePickerScope;
 
-        constructor(private $rootScope: interfaces.IAppRootScope, private $modal: any, private FileService: IFileService) {
+        constructor(private $modal: any, private FileService: IFileService) {
             FilePicker.prototype.link = (
                 scope: IFilePickerScope,
                 element: ng.IAugmentedJQuery,
@@ -100,11 +100,11 @@ module dockyard.directives.filePicker {
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = ($rootScope: interfaces.IAppRootScope, $modal: any, FileService: any) => {
-                return new FilePicker($rootScope, $modal, FileService);
+            var directive = ($modal: any, FileService: IFileService) => {
+                return new FilePicker($modal, FileService);
             };
 
-            directive['$inject'] = ['$rootScope', '$modal', 'FileService'];
+            directive['$inject'] = ['$modal', 'FileService'];
             return directive;
         }
     }

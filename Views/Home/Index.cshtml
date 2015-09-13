@@ -27,14 +27,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Kwasant</title>
+    <title>Cargo</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='shortcut icon' type='image/x-icon' href='Content/img/favicon.ico' />
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/cookies")
     @Scripts.Render("~/bundles/js/customjs")
-    @Styles.Render("~/bundles/css/bootstrap23")
+    @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/bootstrap-responsive")
     @Styles.Render("~/bundles/css/colorbox")
     @Styles.Render("~/bundles/css/frontpage")
@@ -80,34 +80,6 @@
         //The below is vimeo's API. Since we cannot track events in an IFrame, we need to post messages to vimeo to retrieve play events.
         $(function () {
             $(function () {
-                var player = $('#video');
-                var url = window.location.protocol + player.attr('src').split('?')[0];
-
-                // Listen for messages from the player
-                if (window.addEventListener) {
-                    window.addEventListener('message', onMessageReceived, false);
-                }
-                else {
-                    window.attachEvent('onmessage', onMessageReceived, false);
-                }
-
-                // Handle messages received from the player
-                function onMessageReceived(e) {
-                    if (e.data === 'tic!')
-                        return;
-
-                    var data = JSON.parse(e.data);
-
-                    switch (data.event) {
-                        case 'ready':
-                            onReady();
-                            break;
-
-                        case 'play':
-                            play();
-                            break;
-                    }
-                }
 
                 // Call the API when a button is pressed
                 $('button').on('click', function () {
@@ -125,16 +97,9 @@
                     }
 
                     var message = JSON.stringify(data);
-                    player[0].contentWindow.postMessage(data, url);
                 }
 
-                function onReady() {
-                    post('addEventListener', 'play');
-                };
 
-                function play() {
-                    analytics.track('Played video', {});
-                };                 
             });
         });
 
@@ -144,168 +109,171 @@
     <!--[if lt IE 7]>
         <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </a>
-                <a class="brand goTop" href="/">
-                    <img class="floating" src="Content/img/site/Replace.png" alt="Dockyard" title="Dockyard"></a>
-                <br />
-                <div class="nav-collapse">
-                    @Html.Partial("_HomeNav")
+    <div id="wrap">
+        <header id="site-header" class="container-fluid">
+            <div class="navbar navbar-default navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse" aria-expanded="false">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <h1 class="site-logo"><a class="navbar-brand" href="/" title="Cargo"><img src="Content/img/site/site-logo.png" alt="Cargo" title="Cargo"></a></h1>
+                    </div>
+                </div>
+                <div class="main-nav">
+                    <div class="container">
+                        <div class="collapse navbar-collapse">
+                            <nav>
+                                @Html.Partial("_HomeNav")
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </header>
 
-    <div id="welcome" class="parallax top-banner home-welcome" data-section="2">
-        <div class="inner-bg">
-            <div class="landing-welcome-area">
-
-                <div id="logotext" class="text">
-                    <h1>Dockyard</h1>
-                    <p>Advanced Docusign Services.</p>
-                </div>
-                <div class="clearfix">&nbsp;</div>
-            </div>
-        </div>
-    </div>
-            
-     
-        <section id="about" class="row text-block" data-section="1">
-            <div class="container">
-                <div class="row-fluid">
-                    <h2 class="text-center"><b>CONTENT</b></h2> 
+        <section id="welcome" class="top-banner home-welcome text-block full-height-block" data-section="1">
+            <div class="inner-bg full-size-bg"></div>
+            <div class="container full-height-block">
+                <div class="inner-wrap cetered">
+                    <div class="landing-welcome-area">
+                        <div id="logotext" class="text">
+                            <h2><span class="bordered-top-green">CARGO</span></h2>
+                            <p class="descr"><span class="bordered-bottom-grey">ADVANCED DOCUSIGN SERVICES</span></p>
+                        </div>
+                        <div class="next-page-bnt"><img src="Content/img/icons/next-page-bnt.png" alt="Next" title="Next"></div>
+                    </div>
                 </div>
             </div>
         </section>
+
+
+        <section id="services" class="text-block full-height-block" data-section="2">
+            <div class="inner-bg full-size-bg"></div>
+            <div class="container full-height-block">
+                <div class="inner-wrap cetered">
+                    <div class="base-block-white title-block">
+                        <p><span class="text green">Cargo</span> is a secure web service built using the DocuSign API and platform.<br />
+                            It extends the power of DocuSign, providing support for:</p>
+                    </div>
+                    <div class="base-block-white content-block">
+                        <p><a href="#">Multi-Part Workflows</a></p>
+                        <p><a href="#">Conditional Logic Branching</a></p>
+                        <p><a href="#">Integration with Other Data Services</a></p>
+                        <p><a href="#">Inter-Organization Workflows</a></p>
+                        <p><a href="#">Data Extraction Into Salesforce.com</a></p>
+                        <p><a href="#">Data Extraction into SQL Server</a></p>
+                        <p><a href="#">Data Extraction into AWS, Azure, and other services</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="about-us" class="text-block full-height-block" data-section="3">
+            <div class="inner-bg full-size-bg"></div>
+            <div class="container full-height-block">
+                <div class="inner-wrap cetered">
+                    <p><span class="bordered-top-green"><span class="text green">Cargo</span> is a San Francisco-based startup</span><br />
+                            focused on delivering advanced tools<br />
+                            and services for the DocuSign platform.</p>
+                   <p>Our executive team has worked at<br />
+                       <span class="bordered-bottom-grey">Microsoft, Netscape, Inktomi, and many internet startups.</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacts" class="text-block full-height-block" data-section="4">
+            <div class="inner-bg full-size-bg"></div>
+            <div class="container full-height-block">
+                <div class="inner-wrap cetered">
+                    <h2>Get in touch</h2>
+                    <div class="row-fluid section">
+                        <div class="col-md-8 col-md-offset-2">
+                            <div class="span12 cform">
+                                <h3>Want to ask something?</h3>
+                                <form class="form clearfix contact-form" action="#">
+                                    <p><span id="spMessage" class="contact-hint"></span></p>
+                                    <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                                    <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                                    <button class="btn btn-large submit-btn" type="button" onclick="SendMail();">Submit</button>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="clear"></div>
     </div>
 
-    
-    <section id="how_to_works" class="row text-block" data-section="2">
-        <div class="light-bg">
-            <div class="container how-it-works-section">
-                <div class="col1">
-                    <div>
-                       
-                        <p></p>
-                        <img class="pull-center" src="Content/img/site/REPLACE.png" alt="Example using Dockyard email" />
-                    </div>
-                </div>
-                <div class="col2 try-it-out-form">
-                    
-                </div>
-            </div>
-            <!-- this is a section that breaks up the website -->
-            <div id="services-bg" class="parallax services-section">
-                <div class="text">
-                    <blockquote>
-                        <h2>Dockyard</h2>
-                        
-                    </blockquote>
-                </div>
-                <a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
-            </div>
+    <footer id="site-footer">
+        <div class="page-prefooter ng-scope">
             <div class="container">
-                <section id="details" class="details-section">
-                    <div>
-                        <h2>Details</h2>
-                        <p></p>
-                        <p>
-                          CONTENT
-                            </p>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h2>About</h2>
+                        <p>Dockyard is the leading provider of advanced services for the DocuSign Platform.</p>
                     </div>
-                    <div class="row-fluid section">
-                        <div class="span12 text-center">
-                            <!-- <h3 class="with-border">Watch who we are</h3> -->
-                            <img src="Content/img/site/REPLACE.png" alt="How it works" />
-                            <!-- <div class="videoWrapper">
-                            <iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-                            </div> -->
+                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h2>Subscribe Email</h2>
+                        <div class="subscribe-form">
+                            <div class="input-group">
+                                <input type="text" placeholder="mail@email.com" class="form-control">
+                                <span class="input-group-btn">
+                                    <button class="btn" type="button" onclick="SendMail();">Submit</button>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </section>
-            </div>
-            <!-- this is a section that breaks up the website -->
-            <div id="services-bg-sec" class="parallax next-thing-section">
-                <div class="text">
-                    <blockquote>
-                        <h2>Dockyard</h2>
-                        <small>Content</small>
-                    </blockquote>
-                </div>
-                <a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
-            </div>
-            <div class="text-block" data-section="3">
-                <div class="container faq-section">
-                    <!-- this is the faq section -->
-                    <section id="faq">
-                        <h1 class="text-center">FAQ</h1>
-                        
-                                 
-                    </section>
+                    <div class="clearfix visible-sm-block"></div>
+                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h2>Follow Us On</h2>
+                        <ul class="social-icons">
+                            <li>
+                                <a href="#" data-original-title="rss" class="rss"></a>
+                            </li>
+                            <li>
+                                <a href="#" data-original-title="facebook" class="facebook"></a>
+                            </li>
+                            <li>
+                                <a href="#" data-original-title="twitter" class="twitter"></a>
+                            </li>
+                            <li>
+                                <a href="#" data-original-title="googleplus" class="googleplus"></a>
+                            </li>
+                            <li>
+                                <a href="#" data-original-title="linkedin" class="linkedin"></a>
+                            </li>
+                            <li>
+                                <a href="#" data-original-title="youtube" class="youtube"></a>
+                            </li>
+                            <li>
+                                <a href="#" data-original-title="vimeo" class="vimeo"></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
+                        <h2>Contacts</h2>
+                        <address class="margin-bottom-40">
+                            Phone: 415 806 7915<br>
+                            Email: <a href="mailto:info@metronic.com">info@dockyard.company</a>
+                        </address>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+        <div class="page-footer ng-scope">
+            <div class="container">
+                2015 © Maginot Technologies, LLC. All Rights Reserved.
+            </div>
+        </div>
 
-    <section id="contacts" class="text-block" data-section="4">
-        <div class="dark-bg">
-            <div class="container">
-                <h2><i class="fa fa-map-marker"></i>Get in touch</h2>
-                <p>Drop us a line.</p>
-                <div class="row-fluid section">
-                    <div class="span8 cform">
-                        <h3 class="with-border">Want to ask something?</h3>
-                        <form class="form clearfix" action="#">
-                            <input type="text" class="span12" placeholder="Name" name="name" id="name">
-                            <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
-                            <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
-                            <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>
-                            <span id="spMessage" class="contact-hint"></span>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- <iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ru/?ie=UTF8&amp;ll=37.775735,-122.422543&amp;spn=0.070962,0.153122&amp;t=m&amp;z=13&amp;output=embed"></iframe> -->
-    <footer>
-        <div class="light-bg">
-            <div class="container">
-                <div class="row-fluid">
-                    <div class="span6">
-                        <h4>Get in touch</h4>
-                        <div class="info-block">
-                            <article class="clearfix">
-                                <i class="fa fa-globe"></i>
-                                <address>2200 Sacramento St. #1603 , San Francisco, CA 94115</address>
-                            </article>
-                            <article class="clearfix">
-                                <i class="fa fa-envelope"></i>
-                                <p><a href="mailto:info@dockyard.company">info@dockyard.company</a></p>
-                            </article>
-                        </div>
-                    </div>
-                    <div class="span6">
-
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="copyright-block dark-bg clearfix">
-            <div class="container">
-                <div>
-                    <p class="text-center">Copyright &copy; 2015 by Maginot Technologies, LLC. All Rights Reserved</p>
-                    <a href="https://mixpanel.com/f/partner"><img src="//cdn.mxpnl.com/site_media/images/partner/badge_light.png" alt="Mobile Analytics" /></a>
-                 </div>
-            </div>
-        </div>
     </footer>
+
 
     <a class="goTop goTop-link" title="Go Top"><i class="fa fa-arrow-up"></i></a>
 

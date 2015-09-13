@@ -19,6 +19,9 @@ module dockyard.controllers {
         current: model.ProcessBuilderState,
         save: Function;
         cancel: Function;
+
+        //this is for demo only, should be deleted on production
+        radioDemoField: model.RadioButtonGroupField;
     }
 
     //Setup aliases
@@ -84,6 +87,28 @@ module dockyard.controllers {
 
             this.setupMessageProcessing();
             this.loadProcessTemplate();
+
+            //THIS IS FOR DEMO ONLY
+            var radioDemoField = new model.RadioButtonGroupField();
+            radioDemoField.fieldLabel = 'Demo Label';
+            radioDemoField.groupName = 'Demo Group Name';
+            radioDemoField.type = 'radioButtonGroup';
+            var demoRadio1 = new model.RadioField();
+            demoRadio1.value = "Selection 1";
+            demoRadio1.selected = false;
+            var demoRadio2 = new model.RadioField();
+            demoRadio2.value = "Selection 2";
+            demoRadio2.selected = false;
+            var demoRadio3 = new model.RadioField();
+            demoRadio3.value = "Selection 3";
+            demoRadio3.selected = true;
+            var radios = new Array<model.RadioField>();
+            radios.push(demoRadio1);
+            radios.push(demoRadio2);
+            radios.push(demoRadio3);
+            radioDemoField.radios = radios;
+            this._scope.radioDemoField = radioDemoField;
+            //END OF DEMO CODE
         }
 
         /*
