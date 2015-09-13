@@ -21,4 +21,14 @@
     export class FileField extends ConfigurationField {
         value: string;
     }
+
+    export class RadioField extends ConfigurationField {
+        value: string;
+        selected: boolean;
+    }
+
+    export class RadioButtonGroupField extends ConfigurationField {
+        groupName: string;
+        radios: Array<RadioField>;
+    }
 }
