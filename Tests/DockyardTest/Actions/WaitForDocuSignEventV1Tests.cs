@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using pluginDocuSign.Controllers;
 using System.Web.Http.Results;
+using Data.Entities;
 
 namespace DockyardTest.Actions
 {
@@ -59,9 +60,9 @@ namespace DockyardTest.Actions
         {
             var controller = new ActionTemplateController();
             var response = controller.Get();
-            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActionTemplateDTO>>).Content;
+            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActionTemplateDO>>).Content;
             var actionTemplate = actionTemplateList[0];
-            Assert.AreEqual("localhost:53234", actionTemplate.DefaultEndPoint);
+            Assert.AreEqual("localhost:53234", actionTemplate.Plugin.BaseEndPoint);
             Assert.AreEqual("1.0", actionTemplate.Version);
             Assert.AreEqual("Wait For DocuSign Event", actionTemplate.Name);
         }
