@@ -31,7 +31,7 @@ namespace pluginDocuSign.Controllers
                 actionTemplate
             };
 
-            return Json(actionList);
+            return Ok(actionList);
         }
     }
 }
