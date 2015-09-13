@@ -4,7 +4,8 @@ module dockyard.directives.paneConfigureAction {
 
     enum FieldType {
         textField,
-        checkboxField
+        checkboxField,
+        routing,
     }
 
     interface IConfigurationFieldScope extends ng.IScope {

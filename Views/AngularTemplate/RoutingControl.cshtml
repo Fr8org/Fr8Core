@@ -1,0 +1,38 @@
+﻿<div class='form-group'>
+    <label class='control-label'>If the result is {{route.measurement_value}}</label>
+    <div class="radio">
+        <label>
+            <input type="radio" name="routing" value="none" ng-model="route.selection" />
+            <span>Go to Next Action</span>
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="routing" value="stop" ng-model="route.selection" />
+            <span>Stop</span>
+        </label>
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="routing" value="return" ng-model="route.selection" />
+            <span>Return to Previous Action:</span>
+        </label>
+        <div class="previous-action-selection">
+            <select name="repeatSelect" ng-model="route.previous_action_list.selection_id" ng-disabled="routing.Selection != return">
+                <option ng-repeat="option in route.previous_action_list.choices" value="{{option.Id}}">{{option.Label}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="radio">
+        <label>
+            <input type="radio" name="routing" value="jump" ng-model="route.selection" />
+            <span>Jump to a Different Process Node</span>
+        </label>
+        <div class="process-node-selection">
+            <!--TODO: To be updated when finalized-->
+            @*<select name="repeatSelect" ng-model="route.available_process_node.selection_id" ng-disabled="routing.Selection != jump">
+                <option ng-repeat="option in route.available_process_node.choices" value="{{option.Id}}">{{option.Label}}</option>
+            </select>*@
+        </div>
+    </div>
+</div>

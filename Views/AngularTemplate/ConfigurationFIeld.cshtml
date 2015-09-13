@@ -21,5 +21,14 @@
         <input type='text' ng-model='field.value' ng-required='field.required' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
     </div> 
 
+    @*
+        Routing control group template
+    *@
+    <div ng-if='field.type == "routing"'>
+        <div ng-repeat="route in field.routes">
+            <routing-control route="route" />
+        </div>
+    </div>
+
     @* Add more configuration field templates below *@
 </div>

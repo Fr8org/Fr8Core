@@ -17,4 +17,17 @@
         value: string;
         required: boolean;
     }
+
+    export class RoutingControlGroup extends ConfigurationField {
+        sourceField: string;
+        routes : Array<Route>
+    }
+
+    export class Route extends ConfigurationField {
+        measurementValue: string;
+        selection: string;
+        previousActionList: string;
+        previousActionSelectedId: string;
+        availableProcessNode: string;
+    }
 }
