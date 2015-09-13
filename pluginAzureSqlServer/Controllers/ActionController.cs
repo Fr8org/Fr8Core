@@ -90,8 +90,7 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpGet]
         [Route("action_templates")]
-        //public IHttpActionResult ActionTemplates()
-        public List<ActionTemplateDO> ActionTemplates()
+        public IHttpActionResult ActionTemplates()
         {
             var result = new List<ActionTemplateDO>();
             var template = new ActionTemplateDO
@@ -107,8 +106,9 @@ namespace pluginAzureSqlServer.Controllers
                 PluginStatus = PluginStatus.Active,
                 Name = template.Name
             };
+            template.Plugin = plugin;
             result.Add(template);
-            return result;            
+            return Json(result);           
         }
     }
 }

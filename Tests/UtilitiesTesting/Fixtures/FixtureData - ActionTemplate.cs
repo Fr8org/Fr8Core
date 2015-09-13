@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using DocuSign.Integrations.Client;
 using StructureMap;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to Sql Server",
-                Plugin = new PluginDO { Name = "pluginAzureSqlServer", BaseEndPoint = "pluginAzureSqlServer" },
+                Plugin = new PluginDO { Name = "pluginAzureSqlServer", BaseEndPoint = "pluginAzureSqlServer", PluginStatus = PluginStatus.Active  },
                 Version = "v3"
             };
             return actionTemplateDo;
@@ -36,7 +37,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Type1",
-                Plugin = new PluginDO { Name = "AzureSqlServer", BaseEndPoint = "AzureSqlServer" },
+                Plugin = new PluginDO { Name = "AzureSqlServer", BaseEndPoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
             return curActionDO;
@@ -48,7 +49,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "plugin_azure_sql_server",
-                Plugin = new PluginDO { Name = "http://localhost:46281/", BaseEndPoint = "http://localhost:46281/" },
+                Plugin = new PluginDO { Name = "http://localhost:46281/", BaseEndPoint = "http://localhost:46281/", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
 
@@ -95,7 +96,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to SQL",
-                Plugin = new PluginDO { Name = "AzureSqlServer", BaseEndPoint = "AzureSqlServer" },
+                Plugin = new PluginDO { Name = "AzureSqlServer", BaseEndPoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
             return curActionDO;

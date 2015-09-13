@@ -13,7 +13,9 @@ namespace Data.Entities
 
         public ActionTemplateDO(string name, string version, int pluginId)
         {
- 
+            this.Name = name;
+            this.Version = version;
+            this.PluginID = pluginId;
         }
 
         /// <summary>
