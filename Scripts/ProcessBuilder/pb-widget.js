@@ -50,7 +50,7 @@
         // Parameters:
         //     criteriaId - id of criteria
         //     action - object to define action; minimum required set of properties: { id: 'someId' }
-        addAction: function (criteriaId, action, actionType) {            
+        addAction: function (criteriaId, action, actionType) {
 
             if (!action || !action.id) {
                 throw 'Action must contain "id" property.';
@@ -59,7 +59,7 @@
             if (actionType !== ns.ActionType.immediate) {
                 throw 'Only immediate action types are supported so far.';
             }
-            
+
             var actionDescr = {
                 id: action.id,
                 isTempId: action.isTempId || false,
@@ -90,24 +90,11 @@
         //     actionId - id of action.
         //     isTempId - flag.
         removeAction: function (actionId, isTempId) {
-            var i, j, criteria, foundFlag;
-            for (i = 0; i < this._criteria.length; ++i) {
-                var criteria = this._criteria[i];
+            for (var i = 0; i < this._actions.length; ++i) {
+                if (this._actions[i].id == actionId && this._actions[i].isTempId == isTempId) {
+                    this._canvas.remove(this._actions[i].actionNode);
+                    this._actions.splice(i, 1);
 
-                foundFlag = false;
-                for (j = 0; j < criteria.actions.length; ++j) {
-                    if (criteria.actions[j].id == actionId
-                        && criteria.actions[j].isTempId == isTempId) {
-
-                        this._canvas.remove(criteria.actions[j].actionNode);
-                        criteria.actions.splice(j, 1);
-
-                        foundFlag = true;
-                        break;
-                    }
-                }
-
-                if (foundFlag) {
                     break;
                 }
             }

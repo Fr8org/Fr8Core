@@ -380,7 +380,7 @@ module dockyard.controllers {
                     );
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action[0]);
+                this.handleActionUpdate(result.action && result.action[0]);
 
                 //if (this._scope.current.action != null) {
                 //    this._scope.$broadcast(
@@ -513,7 +513,7 @@ module dockyard.controllers {
             promise.then((result: model.ProcessBuilderState) => {
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action[0]);
+                this.handleActionUpdate(result.action && result.action[0]);
 
             });
         }
