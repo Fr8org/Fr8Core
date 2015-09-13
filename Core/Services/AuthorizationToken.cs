@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
+using Data.States;
 
 namespace Core.Services
 {
@@ -21,6 +22,36 @@ namespace Core.Services
             }
             return null;
         }
+
+        public string GetToken(string userId, int pluginId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+                    at.UserID == userId
+                    && at.PluginID == pluginId
+                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+
+                if (curAuthToken != null)
+                    return curAuthToken.Token;
+            }
+            return null;
+        }
+
+        public string GetPluginToken(int pluginId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAuthToken = uow.AuthorizationTokenRepository.FindOne(at =>
+                    at.PluginID == pluginId
+                    && at.AuthorizationTokenState == AuthorizationTokenState.Active);
+
+                if (curAuthToken != null)
+                    return curAuthToken.Token;
+            }
+            return null;
+        }
+
 
         public void AddOrUpdateToken(string userId, string token)
         {

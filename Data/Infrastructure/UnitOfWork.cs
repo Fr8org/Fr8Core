@@ -431,7 +431,14 @@ namespace Data.Infrastructure
                 return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
             }
         }
-
+	  private ActivityRepository _activityRepository;
+	  public ActivityRepository ActivityRepository
+	  {
+		  get
+		  {
+			  return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
+		  }
+	  }
       private IProcessTemplateRepository _processTemplateRepository;
 
         public IProcessTemplateRepository ProcessTemplateRepository
@@ -493,6 +500,46 @@ namespace Data.Infrastructure
             }
         }
 
+        private MTFieldRepository _mtFieldRepository;
+
+        public IMTFieldRepository MTFieldRepository
+        {
+            get
+            {
+                return _mtFieldRepository ?? (_mtFieldRepository = new MTFieldRepository(this));
+            }
+        }
+
+        private MTObjectRepository _mtObjectdRepository;
+
+        public IMTObjectRepository MTObjectRepository
+        {
+            get
+            {
+                return _mtObjectdRepository ?? (_mtObjectdRepository = new MTObjectRepository(this));
+            }
+        }
+
+        private MTOrganizationRepository _mtOrganizationdRepository;
+
+        public IMTOrganizationRepository MTOrganizationRepository
+        {
+            get
+            {
+                return _mtOrganizationdRepository ?? (_mtOrganizationdRepository = new MTOrganizationRepository(this));
+            }
+        }
+
+        private MTDataRepository _mtDataRepository;
+
+        public IMTDataRepository MTDataRepository
+        {
+            get
+            {
+                return _mtDataRepository ?? (_mtDataRepository = new MTDataRepository(this));
+            }
+        }
+
 
         private PluginRepository _pluginRepository;
 
@@ -514,7 +561,6 @@ namespace Data.Infrastructure
                 return _subscriptionRepository ?? (_subscriptionRepository = new SubscriptionRepository(this));
             }
         }
-
 
 	    public void Save()
         {

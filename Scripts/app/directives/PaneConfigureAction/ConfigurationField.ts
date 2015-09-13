@@ -5,6 +5,8 @@ module dockyard.directives.paneConfigureAction {
     enum FieldType {
         textField,
         checkboxField,
+        filePicker,
+        radioGroupButton,
         routing,
     }
 

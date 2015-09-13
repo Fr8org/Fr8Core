@@ -13,7 +13,7 @@ namespace Core.Interfaces
         /// Stores the file into file repository
         /// </summary>
         /// <remarks>WARNING: THIS METHOD IS NOT TRANSACTIONAL. It is possible to successfuly save to the remote store and then have the FileDO update fail.</remarks>
-        void Store(FileDO curFileDO, FileStream curFile, string curFileName);
+        void Store(FileDO curFileDO, Stream curFile, string curFileName);
 
         /// <summary>
         /// Retrieves file from repository

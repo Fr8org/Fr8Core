@@ -228,7 +228,7 @@ namespace DockyardTest.Services
 			}
 		}
 
-        [Test]
+        [Test, Ignore("Process Execute has new implementation that uses CurrentActivity and NextActivity")]
         [ExpectedException(ExpectedMessage = "ProcessNode.NodeTransitions did not have a key matching the returned transition target from Critera")]
         public void Execute_NoMatchedNodeTransition_ThrowExceptionProcessNodeTransitions()
         {
@@ -243,10 +243,10 @@ namespace DockyardTest.Services
 
             _processService = ObjectFactory.GetInstance<IProcess>();
 
-            _processService.Execute(docusignEventDO, processNodeDO);
+            _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
         }
 
-        [Test]
+        [Test, Ignore("Process Execute has new implementation that uses CurrentActivity and NextActivity")]
         public void Execute_MatchedNodeTransition_ProcessNodeNull()
         {
             //mock processnode
@@ -273,9 +273,78 @@ namespace DockyardTest.Services
             var processNodeDO = FixtureData.TestProcessNode3();
 
 
-            _processService.Execute(docusignEventDO, processNodeDO);
+            _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
 
             Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
+        }
+
+        [Test]
+        public void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
+        {
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.Process(It.IsAny<ActivityDO>())).Verifiable();
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
+            ActivityDO originalNextActivity = processDO.NextActivity;
+
+            _processService.Execute(processDO);
+
+            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
+            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
+            Assert.IsNull(processDO.CurrentActivity);
+            _activity.Verify(p => p.Process(It.IsAny<ActivityDO>()));
+        }
+
+        [Test]
+        public void Execute_ProcessUntil3rdActivities_ProcessAllActivities()
+        {
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.Process(It.IsAny<ActivityDO>())).Verifiable();
+            //Setup 3rd ActivityDO
+            _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
+            ActivityDO originalNextActivity = processDO.NextActivity;
+
+            _processService.Execute(processDO);
+
+            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
+            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
+            Assert.IsNull(processDO.CurrentActivity);
+            _activity.Verify(p => p.Process(It.IsAny<ActivityDO>()));
+        }
+
+        [Test]
+        public void Execute_SetNextActivityNull_ProcessCurrentActivity()
+        {
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.Process(It.IsAny<ActivityDO>())).Verifiable();
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+            processDO.NextActivity = null;
+
+            _processService.Execute(processDO);
+
+            Assert.IsNull(processDO.CurrentActivity);
+            _activity.Verify(p => p.Process(It.IsAny<ActivityDO>()));
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Execute_SetCurrentActivityNull_ThrowsException()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            
+            _processService.Execute(FixtureData.TestProcessCurrentActivityNULL());
+
         }
 	}
 }

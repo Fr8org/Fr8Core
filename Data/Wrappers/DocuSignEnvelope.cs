@@ -53,19 +53,22 @@ namespace Data.Wrappers
             return GetEnvelopeData(this);
         }
 
-        public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
-        {
-            Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
-            if (curSignersSet != null)
-            {
-                foreach (var curSigner in curSignersSet)
-                {
-                    return _tab.ExtractEnvelopeData(envelope, curSigner);
-                }
-            }
+        // TODO: This implementation of the interface method is no different than what is already implemented in the other overload. Hence commenting out here and in the interface definition.
+        // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the plugin project and the Data project  and interface expects it to be in Data.Wrappers 
+        // namespace, where it will not belong. 
+        //public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
+        //{
+        //    Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
+        //    if (curSignersSet != null)
+        //    {
+        //        foreach (var curSigner in curSignersSet)
+        //        {
+        //            return _tab.ExtractEnvelopeData(envelope, curSigner);
+        //        }
+        //    }
 
-            return new List<EnvelopeDataDTO>();
-        }
+        //    return new List<EnvelopeDataDTO>();
+        //}
 
 
         /// <summary>
@@ -87,7 +90,6 @@ namespace Data.Wrappers
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
             }
-
             return new List<EnvelopeDataDTO>();
         }
 
@@ -150,10 +152,24 @@ namespace Data.Wrappers
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,
-                Name = tab.name,
+                Name = tab.tabLabel,
                 TabId = tab.tabId,
-                Value = value
+                Value = value,
+                Type = GetFieldType((string)tab.name)
             };
+        }
+
+        private string GetFieldType(string name)
+        {
+            switch (name)
+            {
+                case "Checkbox":
+                    return FieldDefinitionDTO.CHECKBOX_FIELD;
+                case "Text":
+                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                default:
+                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+            }
         }
     }
 }

@@ -3,10 +3,9 @@ module dockyard.interfaces {
 
     // TODO: Do we really need all these interfaces, since we have model type safe classes?
 
-    export interface ICriteria {
+    export interface ICriteriaDTO {
         id: number;
         isTempId: boolean;
-        userLabel: string;
         actions: Array<IActionDesignDTO>;
         conditions: Array<ICondition>;
         executionType: model.CriteriaExecutionType;
@@ -18,9 +17,10 @@ module dockyard.interfaces {
         processNodeTemplateId: number,
         actionListId: number,
         name: string;
-        configurationSettings: model.ConfigurationSettings;
+        crateStorage: model.CrateStorage;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
+        actionTemplate: model.ActionTemplate;
     }
 
     export interface ICondition {
@@ -33,6 +33,11 @@ module dockyard.interfaces {
     export interface IField {
         key: string;
         name: string;
+    }
+
+    export interface IFileDescriptionDTO {
+        id: number;
+        originalFileName: string;
     }
 
     export interface IDocuSignTemplate {

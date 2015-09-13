@@ -209,7 +209,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Axtions\WriteToSqlServerV1Tests.cs" />
+    <Compile Include="Actions\WaitForDocuSignEventV1Tests.cs" />
+    <Compile Include="Actions\WriteToSqlServerV1Tests.cs" />
     <Compile Include="Controllers\ActionListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />
+    <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
@@ -239,6 +241,7 @@
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CrateServiceTests.cs" />
     <Compile Include="Services\DockyardAccountTest.cs" />
     <Compile Include="Services\ActionDTO.cs" />
     <Compile Include="Services\ActionListServiceTests.cs" />
@@ -291,9 +294,13 @@
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>pluginAzureSqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\PluginUtilities\PluginUtilities.csproj">
+    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginUtilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\pluginDocuSign\pluginDocuSign.csproj">
+      <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
+      <Name>pluginDocuSign</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Tools\DocusignApiWrapper\DocusignApiWrapper.csproj">
       <Project>{F0A732A2-D57E-46D3-B7BB-34050E3641C4}</Project>

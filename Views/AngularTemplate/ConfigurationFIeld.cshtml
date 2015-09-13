@@ -5,7 +5,7 @@
 <div class='form-group'>
     @*
         Check box template
-    *@    
+    *@
     <div class='col-sm-offset-1' ng-if='field.type == "checkboxField"'>
         <div class='checkbox checkbox-primary'>
             <input type='checkbox' ng-model='field.selected' id='pca__chk__{{field.name}}' name='pca__chk__{{field.name}}'>
@@ -19,7 +19,23 @@
     <div ng-if='field.type == "textField"'>
         <label class='control-label'>{{field.fieldLabel}}</label>
         <input type='text' ng-model='field.value' ng-required='field.required' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
-    </div> 
+    </div>
+
+    @*
+        Filepicker template
+    *@
+    <div ng-if='field.type == "filePicker"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <file-picker field='field'></file-picker>
+    </div>  
+    
+    @*
+        RadioButtonGroup template
+    *@
+    <div ng-if='field.type == "radioButtonGroup"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <radio-button-group field='field'></radio-button-group>
+    </div>  
 
     @*
         Routing control group template
