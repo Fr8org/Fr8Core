@@ -212,7 +212,9 @@
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionDesignDTO.cs" />
+
+    <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
@@ -234,10 +236,12 @@
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />

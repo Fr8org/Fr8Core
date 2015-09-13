@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
@@ -18,7 +18,7 @@ namespace pluginDocuSign.Controllers
         [Route("action_templates")]
         public IHttpActionResult Get()
         {
-            var actionTemplate = new ActionTemplateDO()
+            var waitForDocusignEventActionTemplate = new ActionTemplateDO()
             {
                 Plugin = new PluginDO { Name = "localhost:53234", BaseEndPoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
@@ -26,9 +26,17 @@ namespace pluginDocuSign.Controllers
                 ActionProcessor = "DockyardAzureDocuSignService" 
             };
 
+            var extractDataFromEnvelopeActionTemplate = new ActionTemplateDO()
+            {
+                Plugin = new PluginDO { Name = "localhost:53234", BaseEndPoint = "localhost:53234", PluginStatus = PluginStatus.Active },
+                Version = "1.0",
+                Name = "Extract Data From DocuSign Envelopes"
+            };
+
             var actionList = new List<ActionTemplateDO>()
             {
-                actionTemplate
+                waitForDocusignEventActionTemplate,
+                extractDataFromEnvelopeActionTemplate
             };
 
             return Ok(actionList);

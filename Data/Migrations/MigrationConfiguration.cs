@@ -380,7 +380,7 @@ namespace Data.Migrations
                 name, version, defaultEndPoint, defaultEndPoint, defaultEndPoint);
             uow.ActionTemplateRepository.Add(curActionTemplateDO);
         }
-        }
+        
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
@@ -474,7 +474,7 @@ namespace Data.Migrations
             }
 
             uow.SaveChanges();
-
+        }
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()

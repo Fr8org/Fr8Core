@@ -123,7 +123,7 @@ namespace Data.Infrastructure
         public delegate void EventActionStartedHandler(ActionDO action);
         public static event EventActionStartedHandler EventActionStarted;
 
-        public delegate void EventActionDispatchedHandler(ActionPayloadDTO curAction);
+        public delegate void EventActionDispatchedHandler(ActionDTO curAction);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
         public delegate void PluginEventHandler(EventData eventData);
@@ -370,7 +370,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ActionDispatched(ActionPayloadDTO curAction)
+        public static void ActionDispatched(ActionDTO curAction)
         {
             var handler = EventActionDispatched;
             if (handler != null) handler(curAction);

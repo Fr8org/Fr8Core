@@ -6,25 +6,58 @@ using System.Linq;
 using System.Web;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
+using Newtonsoft.Json;
+using Core.Interfaces;
+using StructureMap;
+using System.Web.Http;
+using System.Web.Http.Results;
+using PluginBase;
 
 namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_v1 : BasePluginAction
     {
-        public object Configure(ActionDO curActionDO)
+        ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+        IAction _action = ObjectFactory.GetInstance<IAction>();
+
+        public object Configure(ActionDataPackageDTO curDataPackage)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            return ProcessConfigurationRequest(curDataPackage, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
-        public object Activate(ActionDO curActionDO)
+        public void Activate(ActionDataPackageDTO curDataPackage)
         {
-            return "Activate Request"; // Will be changed when implementation is plumbed in.
+            return; // Will be changed when implementation is plumbed in.
         }
 
-        public object Execute(ActionDO curActionDO)
+        public void Execute(ActionDataPackageDTO curDataPackage)
         {
-            return "Execute Request"; // Will be changed when implementation is plumbed in.
+            //Get envlopeId
+            string envelopeId = GetEnvelopeId(curDataPackage.ActionDTO);
+            if (envelopeId == null)
+            {
+                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+            }
+
+
+        }
+
+        private string GetEnvelopeId(ActionDTO curActionDTO)
+        {
+            var crate = GetCrate(curActionDTO, c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID, GetCrateDirection.Upstream);
+            if (crate == null) return null; //TODO: log it
+            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            if (fields == null || fields.Count == 0)
+            {
+                return null; // TODO: log it
+            }
+            var envelopeIdField = fields.SingleOrDefault(f => f.Key == "EnvelopeId");
+            if (envelopeIdField == null || string.IsNullOrEmpty(envelopeIdField.Value))
+            {
+                return null; // TODO: log it
+            }
+            return envelopeIdField.Value;
         }
     }
 }

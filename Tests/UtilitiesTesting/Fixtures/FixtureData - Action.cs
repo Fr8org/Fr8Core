@@ -6,6 +6,7 @@ using Data.Wrappers;
 using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
+using System;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -85,7 +86,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = null,
                 Name = "type 1",
                 Id = 34,
-                CrateStorage= "config settings",
+                CrateStorage = "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 Ordering = 3,
                 ActionTemplateId = actionTemplate.Id,
@@ -266,7 +267,7 @@ namespace UtilitiesTesting.Fixtures
             var processDo = new ProcessDO()
             {
                 Id = 1,
-                EnvelopeId = envelopeId,
+                CrateStorage = EnvelopeIdCrateJson(),
                 ProcessTemplateId = TestProcessTemplate2().Id,
                 ProcessState = 1
             };
@@ -293,6 +294,28 @@ namespace UtilitiesTesting.Fixtures
 
             return actionDo;
         }
+        public static CrateDTO GetEnvelopeIdCrate(string curEnvelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43")
+        {
+            var crateFields = new List<FieldDTO>()
+                    {
+                        new FieldDTO() { Key = "EnvelopeId", Value = curEnvelopeId },
+                        new FieldDTO() { Key = "ExternalEventType", Value = "1" },
+                        new FieldDTO() { Key = "RecipientId", Value= "1" }
+                    };
+            var curEventData = new CrateDTO()
+            {
+                Contents = JsonConvert.SerializeObject(crateFields),
+                Label = "Event Data",
+                Id = Guid.NewGuid().ToString()
+            };
+
+            return curEventData;
+        }
+
+        public static string EnvelopeIdCrateJson()
+        {
+            return JsonConvert.SerializeObject(GetEnvelopeIdCrate());
+        }
 
         public static ActionDO TestActionHealth1()
         {
@@ -302,7 +325,7 @@ namespace UtilitiesTesting.Fixtures
                 FieldMappingSettings = FieldMappings,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                CrateStorage= "config settings",
+                CrateStorage = "config settings",
                 ParentActivityId = 88,
                 ActionTemplateId = FixtureData.TestActionTemplate1().Id
             };
@@ -316,7 +339,7 @@ namespace UtilitiesTesting.Fixtures
             var processDo = new ProcessDO()
             {
                 Id = 1,
-                EnvelopeId = envelopeId,
+                CrateStorage = EnvelopeIdCrateJson(),
                 ProcessState = 1
             };
 
@@ -387,7 +410,7 @@ namespace UtilitiesTesting.Fixtures
                 Process = curProcessDO,
             };
 
-            
+
 
 
             ActionDO curActionDO = new ActionDO();
@@ -399,12 +422,12 @@ namespace UtilitiesTesting.Fixtures
             curActionDO.ParentActivityId = 1;
             curActionDO.ParentActivity = curActionListDO;
 
-                //  curActionDO.ConfigurationSettings = "config settings";
-          //  curActionDO.ParentActionListId = 1;
+            //  curActionDO.ConfigurationSettings = "config settings";
+            //  curActionDO.ParentActionListId = 1;
 
-           // curActionListDO.Actions.Add(curActionDO);
+            // curActionListDO.Actions.Add(curActionDO);
 
-         //   curActionDO.ParentActionList = curActionListDO;
+            //   curActionDO.ParentActionList = curActionListDO;
 
 
 

@@ -22,16 +22,16 @@ namespace pluginAzureSqlServer.Actions {
        //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public CrateStorageDTO Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDataPackageDTO curActionDataPackageDTO)
         {
-            return ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
+            return ProcessConfigurationRequest(curActionDataPackageDTO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDataPackageDTO curActionDataPackageDTO)
         {
-            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
+            CrateStorageDTO curCrates = curActionDataPackageDTO.ActionDTO.CrateStorage;
 
             var curConnectionStringField =
                 JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CratesDTO.First(field => field.Contents.Contains("connection_string")).Contents);
@@ -60,7 +60,7 @@ namespace pluginAzureSqlServer.Actions {
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDataPackageDTO curActionDataPackageDTO)
         {
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             //Return one field with empty connection string
@@ -78,12 +78,10 @@ namespace pluginAzureSqlServer.Actions {
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDataPackageDTO curActionDataPackageDTO)
         {
             //In all followup calls, update data fields of the configuration store
-            CrateStorageDTO curConfigurationStore = curActionDO.CrateStorageDTO();
-
-            curConfigurationStore = curActionDO.CrateStorageDTO();
+            CrateStorageDTO curConfigurationStore = curActionDataPackageDTO.ActionDTO.CrateStorage;
 
             return curConfigurationStore;
         }

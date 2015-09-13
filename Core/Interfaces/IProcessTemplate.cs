@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -10,7 +11,7 @@ namespace Core.Interfaces
 
 		int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool withTemplate);
 		void Delete(IUnitOfWork uow, int id);
-        void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent);
+        void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, CrateDTO curEventData = null);
 
         void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class;
 

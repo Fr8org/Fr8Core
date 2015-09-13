@@ -36,7 +36,7 @@ namespace Web.Controllers
         [Route("configure")]
         [Route("process")]
         [HttpGet]
-        public string HandleDockyardRequest(ActionDesignDTO actionDTO)
+        public string HandleDockyardRequest(ActionDTO actionDTO)
         {
             // Extract from current request URL.
             var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
@@ -78,9 +78,9 @@ namespace Web.Controllers
         /// </summary>
         [HttpGet]
         [Route("{id:int}")]
-        public ActionDesignDTO Get(int id)
+        public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDesignDTO>(_action.GetById(id));
+            return Mapper.Map<ActionDTO>(_action.GetById(id));
         }
 
         /// <summary>
@@ -98,21 +98,21 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("save")]
-        public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO curActionDesignDTO)
+        public IEnumerable<ActionDTO> Save(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             if (_action.SaveOrUpdateAction(curActionDO))
             {
                 curActionDesignDTO.Id = curActionDO.Id;
-                return new List<ActionDesignDTO> { curActionDesignDTO };
+                return new List<ActionDTO> { curActionDesignDTO };
             }
-            return new List<ActionDesignDTO>();
+            return new List<ActionDTO>();
         }
 
         [HttpPost]
         [Route("actions/configuration")]
         [ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
+        public IHttpActionResult GetConfigurationSettings(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             return Ok(_action.GetConfigurationSettings(curActionDO));  
@@ -124,7 +124,7 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("field_data_sources")]
-        public IEnumerable<string> GetFieldDataSources(ActionDesignDTO curActionDesignDTO)
+        public IEnumerable<string> GetFieldDataSources(ActionDTO curActionDesignDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -139,7 +139,7 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("field_mapping_targets")]
-        public string GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
+        public string GetFieldMappingTargets(ActionDTO curActionDesignDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
