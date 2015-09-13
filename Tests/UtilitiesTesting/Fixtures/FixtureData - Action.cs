@@ -1,6 +1,11 @@
-﻿using Data.Entities;
+﻿using Core.Interfaces;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
+using Newtonsoft.Json;
+using StructureMap;
+using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -404,6 +409,51 @@ namespace UtilitiesTesting.Fixtures
 
 
             return curActionDO;
+        }
+
+        public static ActionDO WaitForDocuSignEvent_Action()
+        {
+            string templateId = "58521204-58af-4e65-8a77-4f4b51fef626";
+            var actionTemplate = ActionTemplate();
+            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+            IAction _action = ObjectFactory.GetInstance<IAction>();
+
+            var fieldSelectDockusignTemplate = new FieldDefinitionDTO()
+            {
+                FieldLabel = "Select DocuSign Template",
+                Type = "dropdownlistField",
+                Name = "Selected_DocuSign_Template",
+                Required = true,
+                Value = templateId,
+                Events = new List<FieldEvent>() {
+                     new FieldEvent("onSelect", "requestConfiguration")
+                }
+            };
+
+            var actionDo = new ActionDO()
+            {
+
+                ActionState = ActionState.Unstarted,
+                Name = "testaction",
+                FieldMappingSettings = FieldMappings,
+                Id = 1,
+                ActionTemplateId = actionTemplate.Id,
+                ActionTemplate = actionTemplate
+            };
+
+            var fields = new List<FieldDefinitionDTO>()
+            {
+                fieldSelectDockusignTemplate
+            };
+
+            var crateConfiguration = new List<CrateDTO>()
+            {
+                _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
+            };
+
+            _action.AddCrate(actionDo, crateConfiguration);
+
+            return actionDo;
         }
 
 

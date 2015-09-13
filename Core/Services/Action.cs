@@ -99,6 +99,11 @@ namespace Core.Services
             }
         }
 
+        public List<CrateDTO> GetCrates(ActionDO curActionDO)
+        {
+            return curActionDO.CrateStorageDTO().CratesDTO;
+        }
+
         public ActionDO GetById(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
