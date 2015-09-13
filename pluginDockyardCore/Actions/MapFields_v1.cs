@@ -4,23 +4,22 @@ using System.Linq;
 using System.Web;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using StructureMap;
+using Utilities;
 
-namespace CoreActions
+namespace pluginDockyardCore.Actions
 {
     public class MapFields_v1 : BasePluginAction
     {
         private class CrateConfigurationDTO
         {
-            [JsonProperty("id")]
             public string Id { get; set; }
-
-            [JsonProperty("label")]
             public string Label { get; set; }
         }
 
@@ -39,7 +38,7 @@ namespace CoreActions
                 throw new ApplicationException("No Field Mapping cratefound for current action.");
             }
 
-            var curFieldMappingJson = JsonConvert.SerializeObject(curFieldMappingSettings);
+            var curFieldMappingJson = JsonConvert.SerializeObject(curFieldMappingSettings, JsonSettings.CamelCase);
 
             var crates = new List<CrateDTO>()
             {
@@ -103,8 +102,8 @@ namespace CoreActions
                     + "Try configuring some Actions first, then try this page again.");
             }
 
-            var curUpstreamJson = JsonConvert.SerializeObject(curUpstreamFields);
-            var curDownstreamJson = JsonConvert.SerializeObject(curDownstreamFields);
+            var curUpstreamJson = JsonConvert.SerializeObject(curUpstreamFields, JsonSettings.CamelCase);
+            var curDownstreamJson = JsonConvert.SerializeObject(curDownstreamFields, JsonSettings.CamelCase);
 
             var curResultDTO = new CrateStorageDTO()
             {

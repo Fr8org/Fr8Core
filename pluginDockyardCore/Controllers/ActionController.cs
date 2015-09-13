@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
-namespace Web.Controllers
+namespace pluginDockyardCore.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
@@ -51,7 +51,7 @@ namespace Web.Controllers
             // Extract from current request URL.
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
-            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
+            var curAssemblyName = string.Format("CoreActions.Actions.{0}_v{1}",
                 curActionDO.ActionTemplate.Name,
                 curActionDO.ActionTemplate.Version);
 
