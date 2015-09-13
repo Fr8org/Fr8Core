@@ -4,7 +4,7 @@ using pluginAzureSqlServer.Actions;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace DockyardTest.Axtions
+namespace DockyardTest.Actions
 {
     [TestFixture]
     public class WriteToSqlServerV1Tests : BaseTest

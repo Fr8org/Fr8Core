@@ -6,8 +6,8 @@ namespace Data.Entities
 {
     public class ActivityTemplateDO : BaseDO
     {
-        public ActivityTemplateDO() {
-            Plugin = new PluginDO() { Name = "", PluginStatus = PluginStatus.Active };
+        public ActionTemplateDO() {
+
         }
 
         public ActivityTemplateDO(string name, string defaultEndPoint, string version)
@@ -36,7 +36,7 @@ namespace Data.Entities
         public string ComponentActivities { get; set; }
 
         [ForeignKey("Plugin")]
-        public int PluginID { get; set; }
+        public int? PluginID { get; set; }
         public virtual PluginDO Plugin { get; set; }
     }
 }
