@@ -16,14 +16,14 @@ namespace Core.Services
         /// Stores the file into file repository
         /// </summary>
         /// <remarks>WARNING: THIS METHOD IS NOT TRANSACTIONAL. It is possible to successfuly save to the remote store and then have the FileDO update fail.</remarks>
-        public void Store(FileDO curFileDO, FileStream curFile, string curFileName)
+        public void Store(FileDO curFileDO, Stream curFile, string curFileName)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 string remoteFileUrl = uow.FileRepository.SaveRemoteFile(curFile, curFileName);
 
                 curFileDO.CloudStorageUrl = remoteFileUrl;
-
+                curFileDO.OriginalFileName = curFileName;
                 uow.FileRepository.Add(curFileDO);
                 uow.SaveChanges();
             }

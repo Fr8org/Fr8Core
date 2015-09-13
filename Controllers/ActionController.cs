@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
@@ -30,12 +33,27 @@ namespace Web.Controllers
             _action = service;
         }
 
-        /*
-                public IEnumerable< curActionDesignDTO > Get()
-                {
-                    return this._action.GetAllActions();
-                }
-        */
+        [Route("configure")]
+        [Route("process")]
+        [HttpGet]
+        public string HandleDockyardRequest(ActionDesignDTO actionDTO)
+        {
+            // Extract from current request URL.
+            var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
+            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
+
+            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
+                curActionDO.ActionTemplate.Name,
+                curActionDO.ActionTemplate.Version);
+
+            var calledType = Type.GetType(curAssemblyName);
+            var curMethodInfo = calledType
+                .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
+            var curObject = Activator.CreateInstance(calledType);
+
+            return JsonConvert.SerializeObject(
+                (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+        }
 
         [DockyardAuthorize]
         [Route("available")]
