@@ -99,13 +99,13 @@ module dockyard.controllers {
                 this.DTColumnBuilder.newColumn('description').withTitle('Description'),
                 this.DTColumnBuilder.newColumn('processTemplateState').withTitle('Status')
                 .renderWith(function(data, type, full, meta) {
-                    if (data.ProcessTemplateState === 1) {
+                        if (data.ProcessTemplateState === 1) {
                         return '<span class="bold font-green-haze">Inactive</span>';
                     } else {
                         return '<span class="bold font-green-haze">Active</span>';
-                    }
+                        }
 
-                }),
+                    }),
                 this.DTColumnBuilder.newColumn(null)
                     .withTitle('Actions')
                     .notSortable()
@@ -113,26 +113,26 @@ module dockyard.controllers {
                     var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id +');">Delete</button>';
                     var editButton = '<button type="button" class="btn btn-sm green" ng-click="GoToProcessTemplatePage(' + data.id +');">Edit</button>';
                     return deleteButton+editButton;
-                })
-            ];
+                    })
+            ];            
         }
 
         private GoToProcessTemplatePage(processTemplateId) {
             //i think we should find a prettier way to change between controllers
             window.location.href = '#processes/' + processTemplateId + '/builder';
             
-        }
+            }
 
         private DeleteProcessTemplate(processTemplateId) {
             //to save closure of our controller
             var me = this;
             this.$modal.open({
-                animation: true,
-                templateUrl: 'modalDeleteConfirmation',
-                controller: 'ProcessTemplateListController__DeleteConfirmation',
-
+                    animation: true,
+                    templateUrl: 'modalDeleteConfirmation',
+                    controller: 'ProcessTemplateListController__DeleteConfirmation',
+ 
             }).result.then(function () {
-                //Deletion confirmed
+                    //Deletion confirmed
                 me.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(function () {
                     me.$rootScope.lastResult = "success";
                     //now loop through our existing templates and remove from local memory
@@ -143,8 +143,8 @@ module dockyard.controllers {
                             break;
                         }
                     }
+                    });
                 });
-            });
         }
     }
     app.controller('ProcessTemplateListController', ProcessTemplateListController);
