@@ -4,6 +4,7 @@ using System.Reflection;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Newtonsoft.Json;
+using Data.Interfaces.DataTransferObjects;
 
 namespace PluginBase.BaseClasses
 {
@@ -67,15 +68,16 @@ namespace PluginBase.BaseClasses
                 }).Wait();
 
         }
-        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO)
+        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDataPackageDTO curDataPackage)
         {
+            var curActionDO = curDataPackage.ActionDTO;
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDO.ActionTemplate.Name, curActionDO.ActionTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
 
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curDataPackage }) ?? new { });
         }
 
 

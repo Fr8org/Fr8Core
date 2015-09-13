@@ -20,21 +20,21 @@ namespace pluginDocuSign.Actions
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IAction _action = ObjectFactory.GetInstance<IAction>();
 
-        public object Configure(ActionDO curActionDO)
+        public object Configure(ActionDataPackageDTO curDataPackage)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            return ProcessConfigurationRequest(curDataPackage, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
-        public void Activate(ActionDO curActionDO)
+        public void Activate(ActionDataPackageDTO curDataPackage)
         {
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public void Execute(ActionDO curActionDO)
+        public void Execute(ActionDataPackageDTO curDataPackage)
         {
             //Get envlopeId
-            string envelopeId = GetEnvelopeId(curActionDO);
+            string envelopeId = GetEnvelopeId(curDataPackage.ActionDTO);
             if (envelopeId == null)
             {
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
@@ -43,11 +43,11 @@ namespace pluginDocuSign.Actions
 
         }
 
-        private string GetEnvelopeId(ActionDO curActionDO)
+        private string GetEnvelopeId(ActionDTO curActionDTO)
         {
-            var crate = GetCrate(curActionDO, c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID, GetCrateDirection.Upstream);
+            var crate = GetCrate(curActionDTO, c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID, GetCrateDirection.Upstream);
             if (crate == null) return null; //TODO: log it
-            var fields = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0)
             {
                 return null; // TODO: log it
@@ -58,7 +58,6 @@ namespace pluginDocuSign.Actions
                 return null; // TODO: log it
             }
             return envelopeIdField.Value;
-
         }
     }
 }

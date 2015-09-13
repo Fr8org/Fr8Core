@@ -35,7 +35,7 @@ namespace Core.Services
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ProcessDO Create(int processTemplateId, string envelopeId)
+        public ProcessDO Create(int processTemplateId, CrateDTO curEvent)
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -47,7 +47,7 @@ namespace Core.Services
 
                 curProcessDO.Name = curProcessTemplate.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.EnvelopeId = envelopeId;
+                curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO>() { curEvent });
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
@@ -63,9 +63,9 @@ namespace Core.Services
 
 
 
-        public void Launch(ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent)
+        public void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
-            var curProcessDO = Create(curProcessTemplate.Id, curEvent.EnvelopeId);
+            var curProcessDO = Create(curProcessTemplate.Id, curEvent);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
 
@@ -89,7 +89,7 @@ namespace Core.Services
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    _activity.Process(curProcessDO.CurrentActivity);
+                    _activity.Process(curProcessDO.CurrentActivity, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }

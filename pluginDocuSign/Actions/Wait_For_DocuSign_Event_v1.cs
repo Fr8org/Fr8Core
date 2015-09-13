@@ -22,21 +22,21 @@ namespace pluginDocuSign.Actions
         IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
 
 
-        public object Configure(ActionDO curActionDO, bool forceFollowupConfiguration = false)
+        public object Configure(ActionDataPackageDTO curDataPackageDTO, bool forceFollowupConfiguration = false)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDO,
+            return ProcessConfigurationRequest(curDataPackageDTO,
                 actionDo => (forceFollowupConfiguration) ?
                     ConfigurationRequestType.Followup :
                     ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
-        public object Activate(ActionDO curActionDO)
+        public object Activate(ActionDataPackageDTO curDataPackage)
         {
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public object Execute(ActionDO curActionDO)
+        public object Execute(ActionDataPackageDTO curDataPackage)
         {
             string envelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43"; //TODO: how to extract envelope it?
 
@@ -50,16 +50,13 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var crateEnvelopeId = new List<CrateDTO>()
-            {
-                _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID)
-            };
+            var cratePayload = _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID);
+            curDataPackage.ActionDTO.CrateStorage.CratesDTO.Add(cratePayload);
 
-            _action.AddCrate(curActionDO, crateEnvelopeId);
             return null;
         }
 
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDataPackageDTO curDataPackage)
         {
             var fieldSelectDocusignTemplate = new FieldDefinitionDTO()
             {
@@ -109,22 +106,20 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent
             };
 
-            var crateConfiguration = new List<CrateDTO>()
-            {
-                _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields)),
-            };
+            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields));
 
-            _action.AddCrate(curActionDO, crateConfiguration);
-            return curActionDO.CrateStorageDTO();
+            curDataPackage.ActionDTO.CrateStorage.CratesDTO.Add(crateControls);
+
+            return curDataPackage.ActionDTO.CrateStorage;
         }
 
-        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDataPackageDTO curDataPackage)
         {
-            var curCrates = _action.GetCrates(curActionDO);
+            var curCrates = curDataPackage.ActionDTO.CrateStorage.CratesDTO;
 
             if (curCrates == null || curCrates.Count == 0)
             {
-                return curActionDO.CrateStorageDTO();
+                return curDataPackage.ActionDTO.CrateStorage;
             }
 
             // Extract DocuSign Template Id
@@ -132,14 +127,14 @@ namespace pluginDocuSign.Actions
 
             if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
             {
-                return curActionDO.CrateStorageDTO();
+                return curDataPackage.ActionDTO.CrateStorage;
             }
 
             var configurationFields = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(configurationFieldsCrate.Contents);
 
             if (configurationFields == null || !configurationFields.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
-                return curActionDO.CrateStorageDTO();
+                return curDataPackage.ActionDTO.CrateStorage;
             }
 
             var docusignTemplateId = configurationFields.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
@@ -163,8 +158,8 @@ namespace pluginDocuSign.Actions
             //    JsonConvert.SerializeObject(fieldCollection), 
             //    "DocuSignEnvelopeStandardFields"));
 
-            _action.AddCrate(curActionDO, crateConfiguration);
-            return curActionDO.CrateStorageDTO();
+            curDataPackage.ActionDTO.CrateStorage.CratesDTO.AddRange(crateConfiguration);
+            return curDataPackage.ActionDTO.CrateStorage;
         }
     }
 }

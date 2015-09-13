@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ActionDesignDTO : ActionDTOBase
+    public class ActionDTO : ActionDTOBase
     {
         public int? ActionListId { get; set; }
 

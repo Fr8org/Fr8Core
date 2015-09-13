@@ -11,6 +11,8 @@ using Data.States;
 using System.Data.Entity;
 using StructureMap;
 using System.Data;
+using Newtonsoft.Json;
+
 namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
@@ -144,21 +146,21 @@ namespace Core.Services
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
         }
 
-        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, DocuSignEventDO curEvent)
+        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
         {
             if (curProcessTemplate == null)
                 throw new EntityNotFoundException(curProcessTemplate);
 
             if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
             {
-                _process.Launch(curProcessTemplate, curEvent);
-               
+                _process.Launch(curProcessTemplate, curEventData);
+
                 //todo: what does this do?
-                ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
-                    process =>
-                        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(curEvent.EnvelopeId.ToString()) &&
-                        process.ProcessState == ProcessState.Executing);
-                EventManager.ProcessLaunched(launchedProcess);
+                //ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
+                //    process =>
+                //        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(envelopeIdField.Value) &&
+                //        process.ProcessState == ProcessState.Executing);
+                //EventManager.ProcessLaunched(launchedProcess);
             }
         }
 
