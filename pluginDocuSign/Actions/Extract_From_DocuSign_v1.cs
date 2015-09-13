@@ -26,7 +26,7 @@ namespace pluginDocuSign.Actions
             return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
-        public void Activate(ActionDTO curDataPackage)
+        public void Activate(ActionDTO curActionDTO)
         {
             return; // Will be changed when implementation is plumbed in.
         }
@@ -34,16 +34,18 @@ namespace pluginDocuSign.Actions
         public void Execute(ActionDataPackageDTO curActionDataPackageDTO)
         {
             //Get envlopeId
-            string envelopeId = GetEnvelopeId(curActionDataPackageDTO.ActionDTO);
+            string envelopeId = GetEnvelopeId(curActionDataPackageDTO.PayloadDTO);
             if (envelopeId == null)
             {
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
+
+
         }
 
-        private string GetEnvelopeId(ActionDTO curActionDTO)
+        private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = GetCrate(curActionDTO, c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID, GetCrateDirection.Upstream);
+            var crate = curPayloadDTO.CrateStorageDTO().CratesDTO.SingleOrDefault(c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID);
             if (crate == null) return null; //TODO: log it
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0)

@@ -11,6 +11,7 @@ using StructureMap;
 using Newtonsoft.Json;
 using Data.Wrappers;
 using Data.Interfaces;
+using PluginBase;
 
 namespace pluginDocuSign.Actions
 {
@@ -41,18 +42,22 @@ namespace pluginDocuSign.Actions
             // Extract envelope id from the payload Crate
             string envelopeId = GetEnvelopeId(curActionDataPackage.PayloadDTO);
 
-            //Create a field
-            var fields = new List<FieldDTO>()
-            {
-                new FieldDTO()
-                {
-                    Key = "EnvelopeId",
-                    Value = envelopeId
-                }
-            };
+            // Make sure that it exists
+            if (String.IsNullOrEmpty(envelopeId))
+                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
-            var cratePayload = _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID);
-            curActionDataPackage.ActionDTO.CrateStorage.CratesDTO.Add(cratePayload);
+            ////Create a field
+            //var fields = new List<FieldDTO>()
+            //{
+            //    new FieldDTO()
+            //    {
+            //        Key = "EnvelopeId",
+            //        Value = envelopeId
+            //    }
+            //};
+
+            //var cratePayload = _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID);
+            //curActionDataPackage.ActionDTO.CrateStorage.CratesDTO.Add(cratePayload);
 
             return null;
         }
