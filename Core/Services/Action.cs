@@ -112,7 +112,7 @@ namespace Core.Services
             if (curActionDO != null)
             {
                 //prepare the current plugin URL
-                string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + "/actions/configure/";
+                string curPluginUrl = curActionDO.ActionTemplate.Plugin.BaseEndPoint + "/actions/configure/";
 
                 var restClient = new RestfulServiceClient();
                 string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
@@ -212,7 +212,7 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint);
+            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.Plugin.BaseEndPoint);
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
             EventManager.ActionDispatched(actionPayloadDTO);
 

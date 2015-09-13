@@ -31,7 +31,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send an Email",
-                DefaultEndPoint = "AzureSqlServer",
+                //DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }
@@ -42,7 +42,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
-                DefaultEndPoint = "AzureSqlServer",
+                //DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
         }        public static ActionDO TestAction1()

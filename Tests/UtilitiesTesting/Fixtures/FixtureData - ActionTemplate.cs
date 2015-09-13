@@ -7,26 +7,26 @@ using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
 {
-	public partial class FixtureData
-	{
+    public partial class FixtureData
+    {
         public static ActionTemplateDO TestActionTemplate1()
-		{
+        {
             ActionTemplateDO actionTemplateDo = new ActionTemplateDO
-			{
-				Id = 1,
+            {
+                Id = 1,
                 Name = "Write to Sql Server",
-                DefaultEndPoint = "pluginAzureSqlServer",
-                Version="v3"
-			};
+                Plugin = new PluginDO { Name = "pluginAzureSqlServer", BaseEndPoint = "pluginAzureSqlServer" },
+                Version = "v3"
+            };
             return actionTemplateDo;
-		}
+        }
 
         public static ActionTemplateDO TestActionTemplate2()
         {
             ActionTemplateDO actionTemplateDo = new ActionTemplateDO
             {
                 Id = 1,
-                Version = "v4"                
+                Version = "v4"
             };
             return actionTemplateDo;
         }
@@ -36,24 +36,24 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Type1",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = new PluginDO { Name = "AzureSqlServer", BaseEndPoint = "AzureSqlServer" },
                 Version = "1"
             };
             return curActionDO;
         }
 
-	    public static ActionTemplateDO TestActionTemplateV2()
-	    {
-	        var curActionTemplate = new ActionTemplateDO
-	        {
-	            Id = 1,
+        public static ActionTemplateDO TestActionTemplateV2()
+        {
+            var curActionTemplate = new ActionTemplateDO
+            {
+                Id = 1,
                 Name = "plugin_azure_sql_server",
-                DefaultEndPoint = "http://localhost:46281/",
-	            Version = "1"
-	        };
+                Plugin = new PluginDO { Name = "http://localhost:46281/", BaseEndPoint = "http://localhost:46281/" },
+                Version = "1"
+            };
 
-	        return curActionTemplate;
-	    }
+            return curActionTemplate;
+        }
 
         public static ActionTemplateDTO TestActionTemplateDTOV2()
         {
@@ -61,7 +61,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "plugin_azure_sql_server",
-                DefaultEndPoint = "http://localhost:46281/",
                 Version = "1"
             };
 
@@ -73,12 +72,12 @@ namespace UtilitiesTesting.Fixtures
             return FixtureData.CrateStorageDTO();
         }
 
-	    public static CrateStorageDTO TestConfigurationStore()
-	    {
+        public static CrateStorageDTO TestConfigurationStore()
+        {
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-	        return new CrateStorageDTO
-	        {
-	            CratesDTO = new List<CrateDTO>
+            return new CrateStorageDTO
+            {
+                CratesDTO = new List<CrateDTO>
 	            {
                     _crate.Create("SQL Connection String", "{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}"),
                     _crate.Create("Custom SQL Query", "{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}"),
@@ -87,7 +86,7 @@ namespace UtilitiesTesting.Fixtures
 	                _crate.Create("Log No Transactions", "{type: 'checkboxField', name: 'log_transactions2', required: true, fieldLabel: 'Log No Transactions?'}"),
                     _crate.Create("Log Failed Transactions", "{type: 'checkboxField', name: 'log_transactions3', required: true, fieldLabel: 'Log Failed Transactions?'}")
 	            }
-	        };
+            };
         }
 
         public static ActionTemplateDO TestActionTemplateDO2()
@@ -96,7 +95,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to SQL",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = new PluginDO { Name = "AzureSqlServer", BaseEndPoint = "AzureSqlServer" },
                 Version = "1"
             };
             return curActionDO;

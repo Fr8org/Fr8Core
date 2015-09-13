@@ -102,18 +102,13 @@ namespace pluginAzureSqlServer.Controllers
             };
             var plugin = new PluginDO
             {
+                BaseEndPoint = "localhost:46281",
                 Endpoint = "localhost:46281",
                 PluginStatus = PluginStatus.Active,
                 Name = template.Name
             };
-         //   template.Plugin = plugin;
-
             result.Add(template);
-            throw new Exception(template.Name); 
             return result;            
-            //return Json(result);
-            //return Ok("Hello World");
-            //return "Hello World";
         }
     }
 }

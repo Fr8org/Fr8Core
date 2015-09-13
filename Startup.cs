@@ -149,12 +149,11 @@ namespace Web
             catch (Exception ex)
             {
                 Logger.GetLogger().ErrorFormat("Error register plugins actions: '{0}'", ex.Message);
+                return; 
             }
 
             try
             {
-
-
                 foreach (string url in urls)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
