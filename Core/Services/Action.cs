@@ -28,7 +28,6 @@ namespace Core.Services
 
         public Action()
         {
-            _envelope = ObjectFactory.GetInstance<IEnvelope>();
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
@@ -201,16 +200,6 @@ namespace Core.Services
             EventManager.ActionDispatched(curActionDTO);
 
             return jsonResult;
-        }
-
-        public PayloadMappingsDTO CreateActionPayload(ActionDO curActionDO, string curEnvelopeId)
-        {
-            var curEnvelopeData = _envelope.GetEnvelopeData(curEnvelopeId);
-            if (String.IsNullOrEmpty(curActionDO.FieldMappingSettings))
-            {
-                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
-            }
-            return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
         /// <summary>

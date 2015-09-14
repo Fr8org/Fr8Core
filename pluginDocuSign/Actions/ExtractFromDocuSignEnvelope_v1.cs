@@ -12,13 +12,15 @@ using StructureMap;
 using System.Web.Http;
 using System.Web.Http.Results;
 using PluginBase;
+using Data.Interfaces;
 
 namespace pluginDocuSign.Actions
 {
-    public class Extract_From_DocuSign_v1 : BasePluginAction
+    public class ExtractFromDocuSignEnvelope_v1 : BasePluginAction
     {
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IAction _action = ObjectFactory.GetInstance<IAction>();
+        IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
 
         public object Configure(ActionDTO curActionDTO)
         {
@@ -39,8 +41,38 @@ namespace pluginDocuSign.Actions
             {
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
+            var payload = CreateActionPayload(curActionDataPackageDTO.ActionDTO, envelopeId);
+            var cratesList = new List<CrateDTO>()
+            {
+                _crate.Create("DocuSign Envelope Data",
+                JsonConvert.SerializeObject(payload),
+                STANDARD_PAYLOAD_MANIFEST_NAME,
+                STANDARD_PAYLOAD_MANIFEST_ID)
+            };
+            curActionDataPackageDTO.PayloadDTO.UpdateCrateStorageDTO(cratesList);     
+        }
 
+        public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDO, string curEnvelopeId)
+        {
+            var curEnvelopeData = _envelope.GetEnvelopeData(curEnvelopeId);
+            var fields = GetFields(curActionDO);
 
+            if (fields.Count == 0)
+            {
+                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
+            }
+            return _envelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
+        }
+
+        private List<FieldDTO> GetFields(ActionDTO curActionDO)
+        {
+            var crate = curActionDO.CrateStorage.CratesDTO.SingleOrDefault(c => c.ManifestId == DESIGNTIME_FIELDS_MANIFEST_ID);
+            if (crate == null) return null;
+
+            var fieldsList = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            if (fieldsList == null || fieldsList.Count == 0) return null;
+
+            return fieldsList;
         }
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)

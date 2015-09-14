@@ -49,7 +49,7 @@ namespace Data.Wrappers
 
         public List<string> GetMappableSourceFields(DocuSignEnvelope envelope)
         {
-            List<EnvelopeDataDTO> curEnvelopeDataList = _docusignEnvelope.GetEnvelopeData(envelope);
+            IList<EnvelopeDataDTO> curEnvelopeDataList = _docusignEnvelope.GetEnvelopeData(envelope);
             List<int> curDistinctDocIds = curEnvelopeDataList.Select(x => x.DocumentId).Distinct().ToList();
             if (curDistinctDocIds.Count == 1)
             {

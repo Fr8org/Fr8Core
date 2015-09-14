@@ -25,6 +25,9 @@ namespace PluginBase.BaseClasses
         protected const int STANDARD_PAYLOAD_MANIFEST_ID = 5;
         protected const string STANDARD_PAYLOAD_MANIFEST_NAME = "Standard Payload Data";
 
+        protected const int DESIGNTIME_FIELDS_MANIFEST_ID = 3;
+        protected const string DESIGNTIME_FIELDS_MANIFEST_NAME = "Standard Design-Time Fields";
+
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)

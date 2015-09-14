@@ -7,7 +7,6 @@ using DocuSign.Integrations.Client;
 using NUnit.Framework;
 
 using Utilities;
-
 using UtilitiesTesting;
 using UtilitiesTesting.DocusignTools;
 using UtilitiesTesting.DocusignTools.Interfaces;
@@ -43,8 +42,8 @@ namespace DockyardTest.Services
                 "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
             IEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
-            var env = new Data.Wrappers.DocuSignEnvelope();
-            List<EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
+            var env = new DocuSignEnvelope();
+            IList<EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 
             Assert.IsNotNull(envelopeDatas);
             //Assert.IsTrue(envelopeDatas.Count > 0); //Todo orkan: remove back when you completed the EnvelopeService.

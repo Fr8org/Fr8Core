@@ -171,7 +171,8 @@ namespace pluginDocuSign.Actions
             crateConfiguration.Add(_crate.Create(
                 "DocuSignTemplateUserDefinedFields",
                 JsonConvert.SerializeObject(fieldCollection),
-                "DocuSignTemplateUserDefinedFields"));
+                DESIGNTIME_FIELDS_MANIFEST_NAME,
+                DESIGNTIME_FIELDS_MANIFEST_ID));
 
             //crateConfiguration.Add(_crate.Create(
             //    "DocuSignEnvelopeStandardFields", 
