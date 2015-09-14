@@ -48,3 +48,36 @@
     z-index: 3;
     opacity: 0.5;
 }
+
+.processActionStep
+{
+    background-image: URL("/Content/img/ProcessBuilder/circle.png");
+    display: inline-flex;;
+    width: 80px;
+    height: 50px;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    padding-top: 14px;    
+    font-weight: 900;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.processActionStepSelected
+{
+    background-image: URL("/Content/img/ProcessBuilder/circle-selected.png");
+    display: inline-flex;
+    width: 75px;
+    height: 50px;
+    background-repeat: no-repeat;
+    padding-left: 20px;
+    padding-top: 14px;    
+    font-weight: 900;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.processActionStepsRightArrow{
+        padding-left: 15px;    
+    margin-top: -15px;
+}

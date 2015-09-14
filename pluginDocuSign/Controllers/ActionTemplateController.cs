@@ -16,21 +16,21 @@ namespace pluginDocuSign.Controllers
         [HttpGet]
         public IHttpActionResult Get()
         {
-            var waitForDocusignEventActionTemplate = new ActionTemplateDTO()
+            var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 DefaultEndPoint = "localhost:53234",
                 Version = "1.0",
                 Name = "Wait For DocuSign Event"
             };
 
-            var extractDataFromEnvelopeActionTemplate = new ActionTemplateDTO()
+            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 DefaultEndPoint = "localhost:53234",
                 Version = "1.0",
                 Name = "Extract Data From DocuSign Envelopes"
             };
 
-            var actionList = new List<ActionTemplateDTO>()
+            var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate

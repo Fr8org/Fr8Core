@@ -43,8 +43,8 @@ namespace Web.Controllers
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
             var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-                curActionDO.ActionTemplate.Name,
-                curActionDO.ActionTemplate.Version);
+                curActionDO.ActivityTemplate.Name,
+                curActionDO.ActivityTemplate.Version);
 
             var calledType = Type.GetType(curAssemblyName);
             var curMethodInfo = calledType
@@ -53,24 +53,6 @@ namespace Web.Controllers
 
             return JsonConvert.SerializeObject(
                 (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
-        }
-
-        [DockyardAuthorize]
-        [Route("available")]
-        [ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
-        public IHttpActionResult GetAvailableActions()
-        {
-            var userId = User.Identity.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curDockyardAccount = uow.UserRepository.GetByKey(userId);
-                var availableActions = _action
-                    .GetAvailableActions(curDockyardAccount)
-                    .Select(x => Mapper.Map<ActionTemplateDTO>(x))
-                    .ToList();
-
-                return Ok(availableActions);
-            }
         }
 
         /// <summary>
