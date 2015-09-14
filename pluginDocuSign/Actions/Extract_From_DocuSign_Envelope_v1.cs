@@ -16,7 +16,7 @@ using Data.Interfaces;
 
 namespace pluginDocuSign.Actions
 {
-    public class ExtractFromDocuSignEnvelope_v1 : BasePluginAction
+    public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
     {
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IAction _action = ObjectFactory.GetInstance<IAction>();

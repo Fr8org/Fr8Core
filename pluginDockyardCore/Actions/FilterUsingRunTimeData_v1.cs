@@ -14,7 +14,7 @@ using Data.Wrappers;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 
-namespace CoreActions
+namespace pluginDockyardCore.Actions
 {
     public class FilterUsingRunTimeData_v1 : BasePluginAction
     {

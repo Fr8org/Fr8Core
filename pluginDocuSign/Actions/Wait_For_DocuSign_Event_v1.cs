@@ -23,13 +23,11 @@ namespace pluginDocuSign.Actions
         IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
 
 
-        public object Configure(ActionDTO curActionDTO, bool forceFollowupConfiguration = false)
+        public object Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
             return ProcessConfigurationRequest(curActionDTO,
-                actionDo => (forceFollowupConfiguration) ?
-                    ConfigurationRequestType.Followup :
-                    ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+                actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
         public object Activate(ActionDTO curDataPackage)
@@ -128,6 +126,10 @@ namespace pluginDocuSign.Actions
 
             var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields));
 
+            if (curActionDTO.CrateStorage == null)
+            {
+                curActionDTO.CrateStorage = new CrateStorageDTO();
+            }
             curActionDTO.CrateStorage.CratesDTO.Add(crateControls);
 
             return curActionDTO.CrateStorage;
@@ -179,6 +181,10 @@ namespace pluginDocuSign.Actions
             //    JsonConvert.SerializeObject(fieldCollection), 
             //    "DocuSignEnvelopeStandardFields"));
 
+            if (curActionDTO.CrateStorage == null)
+            {
+                curActionDTO.CrateStorage = new CrateStorageDTO();
+            }
             curActionDTO.CrateStorage.CratesDTO.AddRange(crateConfiguration);
             return curActionDTO.CrateStorage;
         }

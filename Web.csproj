@@ -477,7 +477,10 @@
     <Content Include="Content\img\ProcessBuilder\actions-node-bottom.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-top.png" />
     <Content Include="Content\img\ProcessBuilder\add-criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\circle-selected.png" />
+    <Content Include="Content\img\ProcessBuilder\circle.png" />
     <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
     <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />

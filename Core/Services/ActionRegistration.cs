@@ -12,19 +12,19 @@ namespace Core.Services
 {
     public class ActionTemplate :IActionTemplate
     {
-        public IEnumerable<ActionTemplateDO> GetAll()
+        public IEnumerable<ActivityTemplateDO> GetAll()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionTemplateRepository.GetAll();
+                return uow.ActivityTemplateRepository.GetAll();
             }
         }
 
-        public ActionTemplateDO GetByKey(int curActionTemplateId)
+        public ActivityTemplateDO GetByKey(int curActivityTemplateId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionTemplateDO = uow.ActionTemplateRepository.GetByKey(curActionTemplateId);
+                var curActionTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
                 if (curActionTemplateDO == null)
                     throw new ArgumentNullException("ActionTemplateId");
 

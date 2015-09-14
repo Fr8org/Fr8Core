@@ -25,15 +25,15 @@ namespace UtilitiesTesting.Fixtures
                 PayloadMappings = "",
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
             return curActionDO;
         }
 
-        public static ActionTemplateDO ActionTemplate()
+        public static ActivityTemplateDO ActionTemplate()
         {
-            return new ActionTemplateDO()
+            return new ActivityTemplateDO()
             {
                 Id = 1,
                 Name = "Send an Email",
@@ -43,9 +43,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionTemplateDO ActionTemplateSMS()
+        public static ActivityTemplateDO ActivityTemplateSMS()
         {
-            return new ActionTemplateDO()
+            return new ActivityTemplateDO()
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
@@ -59,8 +59,8 @@ namespace UtilitiesTesting.Fixtures
             var curActionDO = new ActionDO
             {
                 Name = "Action 1",
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
             };
             return curActionDO;
         }
@@ -72,8 +72,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 Name = "Action 2",
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
             return curActionDO;
         }
@@ -89,8 +89,8 @@ namespace UtilitiesTesting.Fixtures
                 CrateStorage = "config settings",
                 FieldMappingSettings = "fieldMappingSettings",
                 Ordering = 3,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
 
             return origActionDO;
@@ -104,21 +104,21 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 3,
                 Name = "Send an Email",
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
             return curActionDO;
         }
 
         public static ActionDO TestAction5()
         {
-            var actionTemplate = ActionTemplateSMS();
+            var actionTemplate = ActivityTemplateSMS();
             var curActionDO = new ActionDO
             {
                 Id = 4,
                 Name = "Send a Text (SMS) Message",
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
             return curActionDO;
         }
@@ -134,8 +134,8 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 Ordering = 2,
                 ActionState = ActionState.Unstarted,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -149,8 +149,8 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 Ordering = 3,
                 ActionState = ActionState.Unstarted,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -166,8 +166,8 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.Unstarted,
                 ParentActivity = FixtureData.TestActionList6(),
                 PayloadMappings = "x",
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -181,8 +181,8 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -193,8 +193,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 2,
                 ActionState = ActionState.Error,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -208,8 +208,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Action 1",
                 ParentActivityId = 1,
                 Ordering = 1,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -222,8 +222,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Action 2",
                 ParentActivityId = 1,
                 Ordering = 2,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -240,22 +240,22 @@ namespace UtilitiesTesting.Fixtures
                 FieldMappingSettings = "JSON Field Mapping Settings",
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
 
             };
         }
 
         public static ActionDO TestAction23()
         {
-            var actionTemplate = FixtureData.TestActionTemplateDO1();
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
             return new ActionDO
             {
                 Id = 2,
                 Name = "Action 2",
                 Ordering = 2,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -288,8 +288,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "testaction",
                 FieldMappingSettings = FieldMappings,
                 Id = 1,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
 
             return actionDo;
@@ -327,7 +327,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "testaction",
                 CrateStorage = "config settings",
                 ParentActivityId = 88,
-                ActionTemplateId = FixtureData.TestActionTemplate1().Id
+                ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
             };
             return actionDo;
         }
@@ -358,8 +358,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "testaction",
                 ParentActivity = actionListDo,
                 FieldMappingSettings = FixtureData.FieldMappings,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
         }
 
@@ -373,7 +373,7 @@ namespace UtilitiesTesting.Fixtures
 
             };
 
-            ActionTemplateDO curActionTemplateDO = new ActionTemplateDO
+            ActivityTemplateDO curActivityTemplateDO = new ActivityTemplateDO
             {
                 Id = 1,
                 //ActionType = "Write to Sql Server",
@@ -415,8 +415,8 @@ namespace UtilitiesTesting.Fixtures
 
             ActionDO curActionDO = new ActionDO();
             curActionDO.Id = 1;
-            curActionDO.ActionTemplateId = 1;
-            curActionDO.ActionTemplate = curActionTemplateDO;
+            curActionDO.ActivityTemplateId = 1;
+            curActionDO.ActivityTemplate = curActivityTemplateDO;
             curActionDO.ActionState = 1;
             curActionDO.Name = "testaction";
             curActionDO.ParentActivityId = 1;
@@ -460,8 +460,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "testaction",
                 FieldMappingSettings = FieldMappings,
                 Id = 1,
-                ActionTemplateId = actionTemplate.Id,
-                ActionTemplate = actionTemplate
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate
             };
 
             var fields = new List<FieldDefinitionDTO>()

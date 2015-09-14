@@ -6,7 +6,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
-//using Core.PluginRegistrations;
+
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -117,6 +117,27 @@ namespace Core.Services
             }
 
             return activityLists;
+        }
+
+        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount)
+        {
+            List<ActivityTemplateDO> curActivityTemplates;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+            }
+
+            //we're currently bypassing the subscription logic until we need it
+            //we're bypassing the pluginregistration logic here because it's going away in V2
+
+            //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
+            //var plugins = _plugin.GetAll();
+            // var curActionTemplates = plugins
+            //    .SelectMany(p => p.AvailableActions)
+            //    .OrderBy(s => s.ActionType);
+
+            return curActivityTemplates;
         }
     }
 }

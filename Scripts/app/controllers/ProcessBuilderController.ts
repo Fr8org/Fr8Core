@@ -158,6 +158,9 @@ module dockyard.controllers {
             //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionRemovedEventArgs) => this.PaneSelectAction_ActionRemoved(eventArgs));
+            //Handles Save Request From PaneSelectAction
+            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -346,6 +349,7 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
+            debugger;
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var processNodeTemplateId: number,
@@ -509,6 +513,13 @@ module dockyard.controllers {
             var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
         }
+
+        /*
+           Handles message 'SelectActionPane_InitiateSaveAction'
+       */
+        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {           
+            var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
+        }
          
         // TODO: do we need this?
         // /*
@@ -591,7 +602,7 @@ module dockyard.controllers {
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0,
-                    actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
                 };
 
             $httpBackend

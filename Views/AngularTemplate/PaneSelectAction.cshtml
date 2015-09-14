@@ -20,5 +20,13 @@
             <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
                    required size="20" maxlength="20" ng-model="currentAction.name" />
         </div>
+        <div class="form-group" ng-if="componentActivities">
+            <span class="bold">Steps</span>
+            <span ng-class="activity.id==childActivity.actionTemplateId ? 'processActionStepSelected' : 'processActionStep'" ng-repeat="activity in componentActivities" ng-click="ChildActivityTypeSelected(activity.id)">
+                {{$index+1}}
+
+                <img ng-if="!$last" class="processActionStepsRightArrow" src="~/Content/img/ProcessBuilder/right-arrow.png" />
+            </span>
+        </div>       
     </div>
 </div>

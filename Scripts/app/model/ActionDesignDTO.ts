@@ -8,7 +8,7 @@
         crateStorage: model.CrateStorage;
         fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
-        actionTemplate: model.ActionTemplate;
+        activityTemplate: model.ActivityTemplate;
 
         constructor(
             processNodeTemplateId: number,
@@ -31,7 +31,7 @@
                 name: this.name,
                 crateStorage: this.crateStorage,
                 fieldMappingSettings: this.fieldMappingSettings,
-                actionTemplate: this.actionTemplate
+                activityTemplate: this.activityTemplate
             };
         }
 
@@ -56,7 +56,7 @@
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
             result.processNodeTemplateId = dataObject.processNodeTemplateId;
-            result.actionTemplate = dataObject.actionTemplate;
+            result.activityTemplate = dataObject.activityTemplate;
             return result;
         }
     }

@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Data.Interfaces.DataTransferObjects;
 using Microsoft.Owin;
 using Microsoft.WindowsAzure;
 using Owin;
@@ -31,6 +32,8 @@ namespace Web
             ConfigureAuth(app);
 
             RegisterPluginActions();
+
+            LoadLocalActionLists();
 
             app.Use(async (context, next) =>
             {
@@ -162,5 +165,114 @@ namespace Web
                 Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
             }
         }
+
+        /// <summary>
+        /// Loads Local Action Lists
+        /// </summary>
+        public void LoadLocalActionLists()
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
+                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                    if (!CheckForActivityTemplate("Extract From DocuSign Envelopes Into Azure Sql Server"))
+                    {
+                        ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
+                        componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
+
+                        if (!CheckForActivityTemplate("Wait for notification that an envelope has arrived at DocuSign"))
+                        {
+                            ActivityTemplateDO componentActivityOne = new ActivityTemplateDO("Wait for notification that an envelope has arrived at DocuSign"
+                                , "localhost:46281", "1");
+                            activityTemplateRepositary.Add(componentActivityOne);
+                        }
+                        if (!CheckForActivityTemplate("Filter the Envelope against some Criteria"))
+                        {
+                            ActivityTemplateDO componentActivityTwo = new ActivityTemplateDO("Filter the Envelope against some Criteria"
+                             , "localhost:46281", "1");
+                            activityTemplateRepositary.Add(componentActivityTwo);
+                        }
+                        if (!CheckForActivityTemplate("Extract Data from the Envelope"))
+                        {
+                            ActivityTemplateDO componentActivityThree = new ActivityTemplateDO("Extract Data from the Envelope"
+                         , "localhost:46281", "1");
+                            activityTemplateRepositary.Add(componentActivityThree);
+                        }
+                        if (!CheckForActivityTemplate("Map the Data to Target Fields"))
+                        {
+                            ActivityTemplateDO componentActivityFour = new ActivityTemplateDO("Map the Data to Target Fields"
+                           , "localhost:46281", "1");
+                            activityTemplateRepositary.Add(componentActivityFour);
+                        }
+                        if (!CheckForActivityTemplate("Write the Data to AzureSqlServer"))
+                        {
+                            ActivityTemplateDO componentActivityFive = new ActivityTemplateDO("Write the Data to AzureSqlServer"
+                               , "localhost:46281", "1");
+                            activityTemplateRepositary.Add(componentActivityFive);
+                        }
+                        uow.SaveChanges();
+
+                        activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                            (item => item.Name == "Wait for notification that an envelope has arrived at DocuSign"));
+
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                           (item => item.Name == "Filter the Envelope against some Criteria"));
+
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                            (item => item.Name == "Extract Data from the Envelope"));
+
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                          (item => item.Name == "Map the Data to Target Fields"));
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                            (item => item.Name == "Write the Data to AzureSqlServer"));
+
+                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", "1");
+                        activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
+
+                        activityTemplateRepositary.Add(activityTemplate);
+                        uow.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error in LoadLocalActionLists Method ", e);
+            }
+        }
+
+
+        public bool CheckForActivityTemplate(string templateName)
+        {
+            bool found = true;
+            try
+            {               
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
+                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                    if (activityTemplateRepositaryItems.Find(item => item.Name == templateName) == null)
+                    {
+                        found = false;
+                    }
+                    
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error checking for activity template ", e);
+            }
+            return found;
+        }
+
     }
 }

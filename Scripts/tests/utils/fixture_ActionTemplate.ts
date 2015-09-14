@@ -1,7 +1,7 @@
 ﻿module dockyard.tests.utils.fixtures {
 
-    export class ActionTemplate {
-        public static actionTemplateDO = <model.ActionTemplate> {
+    export class ActivityTemplate {
+        public static activityTemplateDO = <model.ActivityTemplate> {
             id: 1,
             name: "Write to SQL",
             version: "1",

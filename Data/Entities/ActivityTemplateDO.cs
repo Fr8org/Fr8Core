@@ -4,9 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class ActionTemplateDO : BaseDO
+    public class ActivityTemplateDO : BaseDO
     {
-        public ActionTemplateDO() {
+        public ActivityTemplateDO()
+        {
 
         }
 
@@ -49,6 +50,8 @@ namespace Data.Entities
 
 
         public string AuthenticationType { get; set; }
+
+        public string ComponentActivities { get; set; }
 
         [ForeignKey("Plugin")]
         public int PluginID { get; set; }
