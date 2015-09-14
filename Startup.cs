@@ -130,31 +130,12 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            var path = Server.ServerPhysicalPath + "DockyardPlugins.txt";
 
-            IList<string> urls = null;
-            try
-            {
-                using (StreamReader sr = new StreamReader(path))
-                {
-                    if (sr.Peek() < 0)
-                        throw new ApplicationException("DockyardPlugins.txt is empty.");
-                    urls = new List<string>();
-                    while (sr.Peek() >= 0)
-                    {
-                        urls.Add(sr.ReadLine());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.GetLogger().ErrorFormat("Error register plugins actions: '{0}'", ex.Message);
-                return; 
-            }
+            var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
 
             try
             {
-                foreach (string url in urls)
+                foreach (string url in actionTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/actions/action_templates";

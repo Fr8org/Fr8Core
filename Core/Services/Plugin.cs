@@ -6,6 +6,9 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
+using System;
+using System.Threading.Tasks;
+using Core.Managers.APIManagers.Transmitters.Restful;
 
 namespace Core.Services
 {
@@ -25,6 +28,14 @@ namespace Core.Services
         public string Authorize()
         {
             return "AuthorizationToken";
+        }
+
+        public async Task<IList<ActionTemplateDO>> GetAvailableActions(string uri)
+        {
+            // IList<ActionTemplateDO> actionTemplateList = null; ;
+            var restClient = new RestfulServiceClient();
+            var actionTemplateList = await restClient.GetAsync<Task<IList<ActionTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
+            return actionTemplateList;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces;
+using Core.Managers.APIManagers;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
@@ -6,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Services
 {
@@ -32,5 +32,7 @@ namespace Core.Services
             }
 
         }
+
+        
     }
 }
