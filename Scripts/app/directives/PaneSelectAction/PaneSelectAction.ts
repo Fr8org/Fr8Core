@@ -122,6 +122,7 @@ module dockyard.directives.paneSelectAction {
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
+                    debugger;
                     var currentSelectedActivity: model.ActionTemplate;
                     var activities = $scope.actionTypes;
                     //find the selected activity
@@ -202,7 +203,7 @@ module dockyard.directives.paneSelectAction {
 
             $scope.actionTypes = [];
 
-            $http.get('/mapping_actions/available')
+            $http.get('/activities/available')
                 .then(function (resp) {
                     angular.forEach(resp.data, function (it) {
                         console.log(it);

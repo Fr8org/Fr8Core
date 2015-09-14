@@ -14,7 +14,7 @@ using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
 {
-	[RoutePrefix("mapping_actions")]
+    [RoutePrefix("activities")]
 	public class ActivitiesController : ApiController
 	{
       		private readonly IActivity _activity;
