@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -9,11 +10,11 @@ namespace UtilitiesTesting.Fixtures
         public static List<EnvelopeDataDTO> TestEnvelopeDataList1()
         {
             return new List<EnvelopeDataDTO>()
-		           {
-		               new EnvelopeDataDTO() {Name = "test 1", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 1"},
-		               new EnvelopeDataDTO() {Name = "test 2", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 2"},
-		               new EnvelopeDataDTO() {Name = "test 3", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 3"},
-		           };
+                   {
+                       new EnvelopeDataDTO() {Name = "test 1", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 1"},
+                       new EnvelopeDataDTO() {Name = "test 2", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 2"},
+                       new EnvelopeDataDTO() {Name = "test 3", EnvelopeId = "1", RecipientId = "2", TabId = "0", Value = "test value 3"},
+                   };
         }
 
         public static string TestTeamplateId = "58521204-58AF-4E65-8A77-4F4B51FEF626";
@@ -41,6 +42,43 @@ namespace UtilitiesTesting.Fixtures
                      Value = "Marthambles"
                 }
             };
+        }
+
+        public static List<FieldDTO> ListFieldMappings
+        {
+            get
+            {
+                return  new List<FieldDTO>(){
+                    new FieldDTO()
+                    {
+                        Key = "Doctor",
+                        Value = "[Customer].physician_string"
+                    },
+                    new FieldDTO()
+                    {
+                        Key="Condition",
+                        Value = "[Customer].medical_condition"
+                    }
+                };
+            }
+        }
+        public static List<FieldDTO> ListFieldMappings2
+        {
+            get
+            {
+                return  new List<FieldDTO>(){
+                    new FieldDTO()
+                    {
+                        Key = "Physician",
+                        Value = "[Customer].physician_string"
+                    },
+                    new FieldDTO()
+                    {
+                        Key="Condition",
+                        Value = "[Customer].medical_condition"
+                    }
+                };
+            }
         }
 
         public static string FieldMappings

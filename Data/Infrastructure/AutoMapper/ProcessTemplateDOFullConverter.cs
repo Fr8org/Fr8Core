@@ -43,7 +43,7 @@ namespace Data.Infrastructure.AutoMapper
                             ActionList = Mapper.Map<ActionListDTO>(y),
                             Actions = y.Activities
                                 .OfType<ActionDO>()
-                                .Select(z => Mapper.Map<ActionDesignDTO>(z))
+                                .Select(z => Mapper.Map<ActionDTO>(z))
                                 .ToList()
                         })
                         .ToList()

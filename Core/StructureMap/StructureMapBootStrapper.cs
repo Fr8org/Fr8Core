@@ -156,7 +156,7 @@ namespace Core.StructureMap
                 For<IEnvelope>().Use<DocuSignEnvelope>();
 
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
-                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
+                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
                 For<IActionTemplate>().Use<ActionTemplate>();
                 For<IEvent>().Use<Event>();

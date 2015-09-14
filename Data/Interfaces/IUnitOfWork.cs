@@ -57,6 +57,14 @@ namespace Data.Interfaces
 
         IFileRepository FileRepository { get; }
 
+        IMTFieldRepository MTFieldRepository { get; }
+
+        IMTObjectRepository MTObjectRepository { get; }
+
+        IMTOrganizationRepository MTOrganizationRepository  { get; }
+
+        IMTDataRepository MTDataRepository { get; }
+
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
 

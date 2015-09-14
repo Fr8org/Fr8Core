@@ -10,13 +10,6 @@ namespace pluginAzureSqlServerTests.Controllers
     [TestFixture]
     public class ActionControllerTest : BaseTest
     {
-        [Test]
-        [Category("Controllers.ActionController.GetAvailable")]
-        public void ActionController_CanGetAvailable()
-        {
-            var controller = new ActionController();
-            var actions = controller.GetAvailable();
-            Assert.IsNotNull(actions);
-        }
+
     }
 }

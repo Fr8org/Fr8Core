@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
 using Data.Validations;
 using FluentValidation;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using System;
 
 namespace Data.Entities
 {
@@ -19,7 +22,7 @@ namespace Data.Entities
 
         public string Name { get; set; }
         public string DockyardAccountId { get; set; }
-        public string EnvelopeId { get; set; }
+        public string CrateStorage  { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplate")]
@@ -49,6 +52,16 @@ namespace Data.Entities
             ProcessValidator curValidator = new ProcessValidator();
             curValidator.ValidateAndThrow(this);
 
+        }
+
+        public CrateStorageDTO CrateStorageDTO()
+        {
+            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+        }
+
+        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+        {
+            this.CrateStorage = JsonConvert.SerializeObject(curCratesDTO);
         }
     }
 }

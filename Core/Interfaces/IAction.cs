@@ -22,7 +22,7 @@ namespace Core.Interfaces
 
         void Delete(int id);
 
-        Task<int> Process(ActionDO curAction);
+        Task<int> Process(ActionDO curAction, ProcessDO curProcessDO);
 
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);

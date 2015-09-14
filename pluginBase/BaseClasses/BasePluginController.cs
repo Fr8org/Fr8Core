@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Crates.Helpers;
 using Newtonsoft.Json;
+using Data.Interfaces.DataTransferObjects;
 
 namespace PluginBase.BaseClasses
 {
@@ -76,17 +77,20 @@ namespace PluginBase.BaseClasses
                 _eventReportCrateHelper.Create(eventType, pluginName, loggingDataCrate)).Wait();
 
         }
-        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDO curActionDO)
+
+        // For /Configure and /Activate actions that accept ActionDTO
+        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDO.ActionTemplate.Name, curActionDO.ActionTemplate.Version);
+            if (dataObject == null) dataObject = curActionDTO;
+
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActionTemplate.Name, curActionDTO.ActionTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
 
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { dataObject }) ?? new { });
         }
-
 
         /// <summary>
         /// Initializes a new rest call
