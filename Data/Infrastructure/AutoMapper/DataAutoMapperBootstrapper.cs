@@ -74,7 +74,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<Signer, Wrappers.Signer>();
 
-            Mapper.CreateMap<Account, DocuSignAccount>();
+            //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
 

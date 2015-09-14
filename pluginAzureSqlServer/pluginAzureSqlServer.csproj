@@ -14,7 +14,7 @@
     <RootNamespace>pluginAzureSqlServer</RootNamespace>
     <AssemblyName>pluginAzureSqlServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
