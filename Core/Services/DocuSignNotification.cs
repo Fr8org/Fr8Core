@@ -10,6 +10,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Services
 {
@@ -69,10 +70,19 @@ namespace Core.Services
 
         private void ProcessEvents(IEnumerable<DocuSignEventDO> curEvents, string curUserID)
         {
+            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 foreach (var curEvent in curEvents)
                 {
+                    var crateFields = new List<FieldDTO>()
+                    {
+                        new FieldDTO() { Key = "EnvelopeId", Value = curEvent.EnvelopeId },
+                        new FieldDTO() { Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString() },
+                        new FieldDTO() { Key = "RecipientId", Value = curEvent.RecipientId.ToString() }
+                    };
+                    var curEventData = _crate.Create("Event Data", Newtonsoft.Json.JsonConvert.SerializeObject(crateFields));
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
                     var subscriptions =
                         uow.ExternalEventSubscriptionRepository.GetQuery().Include(p => p.ExternalProcessTemplate)
@@ -82,7 +92,7 @@ namespace Core.Services
                     foreach (var subscription in subscriptions)
                     {
                         //checkpoint: figure out why the processnode is not the "50" one that was configured
-                        _processTemplate.LaunchProcess(uow, subscription.ExternalProcessTemplate, curEvent);
+                        _processTemplate.LaunchProcess(uow, subscription.ExternalProcessTemplate, curEventData);
                     }
                 }
 

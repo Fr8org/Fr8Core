@@ -272,6 +272,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
             modelBuilder.Entity<ActionTemplateDO>().ToTable("ActionTemplate");
             modelBuilder.Entity<DocuSignTemplateSubscriptionDO>().ToTable("DocuSignTemplateSubscriptions");
+            modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
+            modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");
+            modelBuilder.Entity<MT_Organization>().ToTable("MT_Organizations");
+            modelBuilder.Entity<MT_Data>().ToTable("MT_Data");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

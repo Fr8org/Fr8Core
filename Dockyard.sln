@@ -10,7 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99D5A9
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
-		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}"
@@ -38,6 +37,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "pluginBase\PluginBase.csproj", "{D6A0A493-E926-439A-9CE2-E093E75132CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginDockyardCore", "pluginDockyardCore\pluginDockyardCore.csproj", "{AD226A7F-0641-4589-93EB-06E5EE7E767B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginAzureSqlServerTests", "pluginAzureSqlServerTests\pluginAzureSqlServerTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -160,6 +161,15 @@ Global
 		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD226A7F-0641-4589-93EB-06E5EE7E767B}.Release|x86.ActiveCfg = Release|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -171,5 +181,6 @@ Global
 		{4E04FEB2-B452-4739-8336-EA2CEFB18D87} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{D6A0A493-E926-439A-9CE2-E093E75132CD} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{AD226A7F-0641-4589-93EB-06E5EE7E767B} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
+		{40625AD3-D5D2-4CF0-8E3E-FD232A54A808} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 	EndGlobalSection
 EndGlobal

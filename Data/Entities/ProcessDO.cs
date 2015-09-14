@@ -5,7 +5,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
 using Data.Validations;
 using FluentValidation;
+using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using System;
 
 namespace Data.Entities
 {
@@ -21,7 +23,6 @@ namespace Data.Entities
 
         public string Name { get; set; }
         public string DockyardAccountId { get; set; }
-        public string EnvelopeId { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplate")]

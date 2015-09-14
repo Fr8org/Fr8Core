@@ -26,7 +26,7 @@ namespace Core.Services
 
         public List<string> GetMappableSourceFields(Envelope envelope)
         {
-            List<EnvelopeDataDTO> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
+            IList<EnvelopeDataDTO> curLstEnvelopeData = _envelope.GetEnvelopeData(envelope);
             List<int> curLstDistinctDocIds = curLstEnvelopeData.Select(x => x.DocumentId).Distinct().ToList();
             if (curLstDistinctDocIds.Count == 1)
             {

@@ -10,7 +10,7 @@ module dockyard.directives.paneWorkflowDesigner {
             console.log('PaneWorkflowDesigner::onRender', eventArgs);
         };
 
-
+        
         var onProcessNodeTemplateAdded = function (eventArgs: AddProcessNodeTemplateEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onCriteriaAdded', eventArgs);
             scope.widget.addCriteria({
@@ -31,13 +31,12 @@ module dockyard.directives.paneWorkflowDesigner {
 
             scope.widget.removeCriteria(eventArgs.id, eventArgs.isTempId);
         };
-
+        
 
         var onActionAdded = function (eventArgs: AddActionEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
+            
             var actionObj = <any>eventArgs.action;
-            actionObj.id = actionObj.id;
-            actionObj.name = actionObj.userLabel;
 
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
 

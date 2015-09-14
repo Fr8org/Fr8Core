@@ -29,7 +29,7 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        List<EnvelopeDataDTO> GetEnvelopeData(string envelopeId);
+        IList<EnvelopeDataDTO> GetEnvelopeData(string envelopeId);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 
@@ -40,16 +40,16 @@ namespace Data.Interfaces
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        List<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
+        IList<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope);
 
         /// <summary>
-        /// Creates payload in JSON format based on field mappings created by user 
+        /// Creates payload based on field mappings created by user 
         /// and field values retrieved from a DocuSign envelope.
         /// </summary>
-        /// <param name="curFieldMappingsJSON">Field mappings created by user for an action.</param>
+        /// <param name="curFields">Field mappings created by user for an action.</param>
         /// <param name="envelopeId">Envelope id which is being processed.</param>
         /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string envelopeId, IList<EnvelopeDataDTO> curEnvelopeData);
+        IList<FieldDTO> ExtractPayload(List<FieldDTO> curFields, string envelopeId, IList<EnvelopeDataDTO> curEnvelopeData);
 
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 

@@ -11,15 +11,17 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
         /// <summary>
         /// Posts ActionDTO object to "/actions/&lt;actionType&gt;"
         /// </summary>
-        /// <param name="actionType">Action Type</param>
-        /// <param name="actionDTO"></param>
-        /// <remarks>Uses <paramref name="actionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
+        /// <param name="curActionType">Action Type</param>
+        /// <param name="curActionDTO"></param>
+        /// <remarks>Uses <paramref name="curActionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task<string> PostActionAsync(string actionType, ActionPayloadDTO actionPayloadDTO)
+        public async Task<string> PostActionAsync(string curActionType, ActionDTO curActionDTO, PayloadDTO curPayloadDTO)
         {
-            var action = Regex.Replace(actionType, @"[^-_\w\d]", "_");
+            var action = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             var requestUri = new Uri(string.Format("actions/{0}", action), UriKind.Relative);
-            return await PostAsync(requestUri, actionPayloadDTO);
+            var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
+
+            return await PostAsync(requestUri, dataPackage);
         }
     }
 }

@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using AutoMapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
-using StructureMap;
 using Utilities;
 
 namespace pluginDockyardCore.Actions
@@ -58,9 +59,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDO actionDO)
+        public CrateStorageDTO Configure(ActionDTO actionDTO)
         {
-            return ProcessConfigurationRequest(actionDO, ConfigurationEvaluator);
+            return ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
 
         private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
@@ -83,12 +84,13 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO actionDO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO actionDTO)
         {
+            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
             var curActivityService = ObjectFactory.GetInstance<IActivity>();
 
-            var curUpstreamActivities = curActivityService.GetUpstreamActivities(actionDO);
-            var curDownstreamActivities = curActivityService.GetDownstreamActivities(actionDO);
+            var curUpstreamActivities = curActivityService.GetUpstreamActivities(curActionDO);
+            var curDownstreamActivities = curActivityService.GetDownstreamActivities(curActionDO);
 
             var curUpstreamFields = new List<CrateConfigurationDTO>();
             FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curUpstreamFields);
@@ -125,7 +127,7 @@ namespace pluginDockyardCore.Actions
                 }
             };
 
-            actionDO.UpdateCrateStorageDTO(curResultDTO.CratesDTO);
+            curActionDO.UpdateCrateStorageDTO(curResultDTO.CratesDTO);
 
             return curResultDTO;
         }
@@ -134,7 +136,7 @@ namespace pluginDockyardCore.Actions
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDO)
         {
             return ConfigurationRequestType.Initial;
         }
