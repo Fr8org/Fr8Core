@@ -748,6 +748,7 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
@@ -3999,6 +4000,7 @@
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
+    <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
