@@ -94,7 +94,7 @@ namespace Core.StructureMap
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
 				For<IActivity>().Use<Activity>();
-                //For<ISubscription>().Use<Subscription>();
+                For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
@@ -141,7 +141,7 @@ namespace Core.StructureMap
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
-                //For<ISubscription>().Use<Subscription>();
+                For<ISubscription>().Use<Subscription>();
                 For<IAction>().Use<Action>();
 					 For<IActivity>().Use<Activity>();
 

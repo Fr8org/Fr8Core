@@ -11,7 +11,7 @@ using StructureMap;
 
 namespace Core.Services
 {
-    class Subscription : ISubscription
+    public class Subscription : ISubscription
     {
     }
 }
