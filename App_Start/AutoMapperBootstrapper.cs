@@ -51,7 +51,7 @@ namespace Web.App_Start
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
                 .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
 
-            Mapper.CreateMap<ActionNameDTO, ActionTemplateDO>()
+            Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
                   .ForMember(actionTemplateDO => actionTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(actionTemplateDO => actionTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
                // .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))

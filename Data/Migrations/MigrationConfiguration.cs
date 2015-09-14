@@ -370,16 +370,16 @@ namespace Data.Migrations
 
         private void AddActionTemplate(IUnitOfWork uow, string name, string defaultEndPoint, string version)
         {
-            var existingActionTemplateDO = uow.ActionTemplateRepository
+            var existingActionTemplateDO = uow.ActivityTemplateRepository
                 .GetQuery()
                 .SingleOrDefault(x => x.Name == name && x.Plugin.Name == defaultEndPoint);
 
-            var curActionTemplateDO = new ActionTemplateDO(
+            var curActivityTemplateDO = new ActivityTemplateDO(
                 name, defaultEndPoint, version);
 
             if (existingActionTemplateDO == null)
             {
-                uow.ActionTemplateRepository.Add(curActionTemplateDO);
+                uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }
         }
 

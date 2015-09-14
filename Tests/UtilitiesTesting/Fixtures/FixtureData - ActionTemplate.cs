@@ -9,42 +9,42 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-        public static ActionTemplateDO TestActionTemplate1()
+        public static ActivityTemplateDO TestActivityTemplate1()
 		{
-            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
+            ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO
 			{
 				Id = 1,
                 Name = "Write to Sql Server",
                 DefaultEndPoint = "pluginAzureSqlServer",
                 Version="v3"
 			};
-            return actionTemplateDo;
+            return activityTemplateDo;
 		}
 
-        public static ActionTemplateDO TestActionTemplate2()
+        public static ActivityTemplateDO TestActivityTemplate2()
         {
-            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
+            ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO
             {
                 Id = 1,
                 Version = "v4"                
             };
-            return actionTemplateDo;
+            return activityTemplateDo;
         }
-        public static ActionTemplateDO TestActionTemplateDO1()
+        public static ActivityTemplateDO TestActivityTemplateDO1()
         {
-            var curActionDO = new ActionTemplateDO
+            var curActivityDO = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Type1",
                 DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
-            return curActionDO;
+            return curActivityDO;
         }
 
-	    public static ActionTemplateDO TestActionTemplateV2()
+	    public static ActivityTemplateDO TestActivityTemplateV2()
 	    {
-	        var curActionTemplate = new ActionTemplateDO
+	        var curActivityTemplate = new ActivityTemplateDO
 	        {
 	            Id = 1,
                 Name = "plugin_azure_sql_server",
@@ -52,12 +52,12 @@ namespace UtilitiesTesting.Fixtures
 	            Version = "1"
 	        };
 
-	        return curActionTemplate;
+	        return curActivityTemplate;
 	    }
 
-        public static ActionTemplateDTO TestActionTemplateDTOV2()
+        public static ActivityTemplateDTO TestActionTemplateDTOV2()
         {
-            var curActionTemplate = new ActionTemplateDTO
+            var curActionTemplate = new ActivityTemplateDTO
             {
                 Id = 1,
                 Name = "plugin_azure_sql_server",
@@ -90,16 +90,16 @@ namespace UtilitiesTesting.Fixtures
 	        };
         }
 
-        public static ActionTemplateDO TestActionTemplateDO2()
+        public static ActivityTemplateDO TestActivityTemplateDO2()
         {
-            var curActionDO = new ActionTemplateDO
+            var curActivityDO = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Write to SQL",
                 DefaultEndPoint = "AzureSqlServer",
                 Version = "1"
             };
-            return curActionDO;
+            return curActivityDO;
 
         }
     }

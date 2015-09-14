@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 
-namespace CoreActions
+namespace pluginDockyardCore
 {
     public static class WebApiConfig
     {
@@ -14,8 +14,8 @@ namespace CoreActions
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "PluginAzureSqlServer",
-                routeTemplate: "plugin_azure_sql_server/{controller}/{id}"
+                name: "PluginDockyardCoreServer",
+                routeTemplate: "pluginDockyardCore/{controller}/{id}"
             );
         }
     }

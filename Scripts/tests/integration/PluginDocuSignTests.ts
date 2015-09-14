@@ -81,7 +81,7 @@ module dockyard.tests.controller {
                     fieldMappingSettings: utils.fixtures.ActionDesignDTO.fieldMappingSettings,
                     // ActionListId is set to null, since there is no ActionsLists on a blank db.
                     actionListId: null,
-                    actionTemplate: utils.fixtures.ActionTemplate.actionTemplateDO
+                    activityTemplate: utils.fixtures.ActivityTemplate.activityTemplateDO
                 };
 
             postInvoker(done, actions);

@@ -1,5 +1,5 @@
 /**
- * @license AngularJS v1.4.5
+ * @license AngularJS v1.4.3
  * (c) 2010-2015 Google, Inc. http://angularjs.org
  * License: MIT
  */
@@ -353,7 +353,6 @@ function shallowClearAndCopy(src, dst) {
  */
 angular.module('ngResource', ['ng']).
   provider('$resource', function() {
-    var PROTOCOL_AND_DOMAIN_REGEX = /^https?:\/\/[^\/]*/;
     var provider = this;
 
     this.defaults = {
@@ -428,8 +427,7 @@ angular.module('ngResource', ['ng']).
           var self = this,
             url = actionUrl || self.template,
             val,
-            encodedVal,
-            protocolAndDomain = '';
+            encodedVal;
 
           var urlParams = self.urlParams = {};
           forEach(url.split(/\W/), function(param) {
@@ -442,10 +440,6 @@ angular.module('ngResource', ['ng']).
             }
           });
           url = url.replace(/\\:/g, ':');
-          url = url.replace(PROTOCOL_AND_DOMAIN_REGEX, function(match) {
-            protocolAndDomain = match;
-            return '';
-          });
 
           params = params || {};
           forEach(self.urlParams, function(_, urlParam) {
@@ -476,7 +470,7 @@ angular.module('ngResource', ['ng']).
           // E.g. `http://url.com/id./format?q=x` becomes `http://url.com/id.format?q=x`
           url = url.replace(/\/\.(?=\w+($|\?))/, '.');
           // replace escaped `/\.` with `/.`
-          config.url = protocolAndDomain + url.replace(/\/\\\./, '/.');
+          config.url = url.replace(/\/\\\./, '/.');
 
 
           // set params - delegate param encoding to $http

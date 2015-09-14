@@ -297,7 +297,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginUtilities</Name>
+      <Name>PluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\pluginDocuSign\pluginDocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>

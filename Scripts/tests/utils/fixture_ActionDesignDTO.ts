@@ -75,7 +75,7 @@ module dockyard.tests.utils.fixtures {
             id: 1,
             fieldMappingSettings: ActionDesignDTO.fieldMappingSettings,
             actionListId: null,
-            actionTemplate: ActionTemplate.actionTemplateDO
+            activityTemplate: ActivityTemplate.activityTemplateDO
         };
 
         public static paneConfiguration = <dockyard.directives.paneConfigureAction.IPaneConfigureActionScope> {
