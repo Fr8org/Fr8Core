@@ -20,15 +20,14 @@ namespace pluginDocuSign.Controllers
         {
             var waitForDocusignEventActionTemplate = new ActionTemplateDO()
             {
-                Plugin = new PluginDO { Name = "localhost:53234", BaseEndPoint = "localhost:53234", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
-                Name = "Wait For DocuSign Event",
-                ActionProcessor = "DockyardAzureDocuSignService" 
+                Name = "Wait For DocuSign Event"
             };
 
             var extractDataFromEnvelopeActionTemplate = new ActionTemplateDO()
             {
-                Plugin = new PluginDO { Name = "localhost:53234", BaseEndPoint = "localhost:53234", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
                 Name = "Extract Data From DocuSign Envelopes"
             };

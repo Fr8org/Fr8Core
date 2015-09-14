@@ -6,7 +6,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
-using Core.PluginRegistrations;
+//using Core.PluginRegistrations;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;

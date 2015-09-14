@@ -369,7 +369,7 @@ namespace Data.Migrations
             uow.SaveChanges();
         }
 
-        private void AddActionTemplate(IUnitOfWork uow, string name, string defaultEndPoint, string version)
+        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
         {
             var existingActionTemplateDO = uow.ActionTemplateRepository
                 .GetQuery().Include("Plugin")
@@ -379,7 +379,7 @@ namespace Data.Migrations
                 return;
 
             var curActionTemplateDO = new ActionTemplateDO(
-                name, version, defaultEndPoint, defaultEndPoint, defaultEndPoint);
+                name, version, endPoint, endPoint);
             uow.ActionTemplateRepository.Add(curActionTemplateDO);
         }
         

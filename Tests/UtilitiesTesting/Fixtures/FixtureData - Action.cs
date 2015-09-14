@@ -37,7 +37,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send an Email",
-                Plugin = new PluginDO { Name = "Send an Email", BaseEndPoint = "", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "Send an Email", Endpoint = "", PluginStatus = PluginStatus.Active },
                 
                 Version = "1"
             };
@@ -49,7 +49,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
-                Plugin = new PluginDO { Name = "Send a Text (SMS) Message", BaseEndPoint = "", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "Send a Text (SMS) Message", Endpoint = "", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
         }        

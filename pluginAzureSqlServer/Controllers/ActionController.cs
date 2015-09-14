@@ -96,12 +96,10 @@ namespace pluginAzureSqlServer.Controllers
             var template = new ActionTemplateDO
             {
                 Name = "WriteToAzureSqlServer",
-                Version = "1.0",
-                ActionProcessor = "DockyardAzureSqlServerService",
+                Version = "1.0"
             };
             var plugin = new PluginDO
             {
-                BaseEndPoint = "localhost:46281",
                 Endpoint = "localhost:46281",
                 PluginStatus = PluginStatus.Active,
                 Name = template.Name

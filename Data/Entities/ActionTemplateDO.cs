@@ -24,9 +24,9 @@ namespace Data.Entities
         /// <param name="name"></param>
         /// <param name="version"></param>
         /// <param name="pluginName">Name of the new PluginDO</param>
-        /// <param name="baseEndPoint">New PluginDO base end point</param>
+        /*<param name="baseEndPoint">New PluginDO base end point</param>*/
         /// <param name="Endpoint">New PluginDO end point</param>
-        public ActionTemplateDO(string name, string version, string pluginName, string baseEndpoint, string endPoint)
+        public ActionTemplateDO(string name, string version, /*string baseEndpoint,*/ string pluginName, string endPoint)
         {
             this.Name = name;
             //this.DefaultEndPoint = defaultEndPoint;
@@ -35,7 +35,7 @@ namespace Data.Entities
             {
                 Name = name,
                 PluginStatus = PluginStatus.Active,
-                BaseEndPoint = baseEndpoint,
+                //BaseEndPoint = baseEndpoint,
                 Endpoint = endPoint
             };
         }
@@ -55,6 +55,6 @@ namespace Data.Entities
         
         public virtual PluginDO Plugin { get; set; }
 
-        public string ActionProcessor { get; set; }
+        //public string ActionProcessor { get; set; }
     }
 }

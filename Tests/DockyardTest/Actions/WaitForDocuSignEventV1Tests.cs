@@ -65,7 +65,7 @@ namespace DockyardTest.Actions
             var response = controller.Get();
             var actionTemplateList = (response as OkNegotiatedContentResult<List<ActionTemplateDO>>).Content;
             var actionTemplate = actionTemplateList[0];
-            Assert.AreEqual("localhost:53234", actionTemplate.Plugin.BaseEndPoint);
+            Assert.AreEqual("localhost:53234", actionTemplate.Plugin.Endpoint);
             Assert.AreEqual("1.0", actionTemplate.Version);
             Assert.AreEqual("Wait For DocuSign Event", actionTemplate.Name);
         }

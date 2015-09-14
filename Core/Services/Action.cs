@@ -130,7 +130,7 @@ namespace Core.Services
                     // prepare the current plugin URL
                     // TODO: Add logic to use https:// for production
 		
-                    string curPluginUrl = "http://" + curActionTemplate.DefaultEndPoint + "/actions/configure/";
+                    string curPluginUrl = "http://" + curActionTemplate.Plugin.Endpoint + "/actions/configure/";
 
                     var restClient = new RestfulServiceClient();
                     string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
@@ -213,7 +213,11 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.Plugin.BaseEndPoint);
+            
+            //TODO : Cut base Url from PluginDO.Endpoint
+
+            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.Plugin.Endpoint);
+
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);
 
