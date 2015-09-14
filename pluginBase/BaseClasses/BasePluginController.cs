@@ -76,7 +76,7 @@ namespace PluginBase.BaseClasses
 
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
-            Type calledType = Type.GetType(curTypeName + ", " + curPlugin);
+            Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
 
