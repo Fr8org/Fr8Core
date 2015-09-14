@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddedComponentActivitytoActivityTemplateRepositary : IMigrationMetadata
+    public sealed partial class AddedMultiTenantObjects : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedComponentActivitytoActivityTemplateRepositary));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedMultiTenantObjects));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509111214564_AddedComponentActivitytoActivityTemplateRepositary"; }
+            get { return "201509121914485_AddedMultiTenantObjects"; }
         }
         
         string IMigrationMetadata.Source

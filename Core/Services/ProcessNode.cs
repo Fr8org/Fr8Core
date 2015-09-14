@@ -81,8 +81,7 @@ namespace Core.Services
                     List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
                     foreach (var actionList in actionListSet)
                     {
-                        
-                        _curActionList.Process(actionList);
+                        _curActionList.Process(actionList, curProcessNode.ParentProcess);
                     }
                 }
 

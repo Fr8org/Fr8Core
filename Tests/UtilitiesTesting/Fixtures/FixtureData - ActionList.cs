@@ -13,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
             var processDo = new ProcessDO
             {
                 Id = 1,
-                EnvelopeId = envelopeId,
+                CrateStorage = EnvelopeIdCrateJson(),
                 ProcessState = 1,
                 Name = "test name",
                 ProcessTemplateId = TestProcessTemplateHealthDemo().Id
@@ -111,7 +111,7 @@ namespace UtilitiesTesting.Fixtures
         public static ActionListDO TestActionList6()
         {
             ProcessDO processDO = FixtureData.TestProcess1();
-            processDO.EnvelopeId = "";
+            processDO.CrateStorage = "";
             return new ActionListDO
             {
                 Id = 2,

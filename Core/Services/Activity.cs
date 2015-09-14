@@ -86,7 +86,7 @@ namespace Core.Services
 			return orderedActivities;
 		}
 
-        public void Process(ActivityDO curActivityDO)
+        public void Process(ActivityDO curActivityDO, ProcessDO curProcessDO)
         {
             if (curActivityDO == null)
                 throw new ArgumentNullException("ActivityDO is null");
@@ -94,12 +94,12 @@ namespace Core.Services
             if (curActivityDO is ActionListDO)
             {
                 IActionList _actionList = ObjectFactory.GetInstance<IActionList>();
-                _actionList.Process((ActionListDO)curActivityDO);
+                _actionList.Process((ActionListDO)curActivityDO, curProcessDO);
             }
             else if (curActivityDO is ActionDO)
             {
                 IAction _action = ObjectFactory.GetInstance<IAction>();
-                _action.Process((ActionDO)curActivityDO);
+                _action.Process((ActionDO)curActivityDO, curProcessDO);
             }
         }
 

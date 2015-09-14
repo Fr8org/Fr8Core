@@ -42,7 +42,7 @@ namespace Data.Wrappers
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </summary>
-        public List<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
+        public IList<EnvelopeDataDTO> GetEnvelopeData(string curEnvelopeId)
         {
             if (string.IsNullOrEmpty(curEnvelopeId))
             {
@@ -80,7 +80,7 @@ namespace Data.Wrappers
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public List<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope)
+        public IList<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)
@@ -90,37 +90,33 @@ namespace Data.Wrappers
                     return _tab.ExtractEnvelopeData(envelope, curSigner);
                 }
             }
-
             return new List<EnvelopeDataDTO>();
         }
 
         /// <summary>
-        /// Creates payload in JSON format based on field mappings created by user 
+        /// Creates payload as a collection of fields based on field mappings created by user 
         /// and field values retrieved from a DocuSign envelope.
         /// </summary>
-        /// <param name="curFieldMappingsJSON">Field mappings created by user for an action.</param>
+        /// <param name="curFields">Field mappings created by user for an action.</param>
         /// <param name="curEnvelopeId">Envelope id which is being processed.</param>
         /// <param name="curEnvelopeData">A collection of form fields extracted from the DocuSign envelope.</param>
-        public PayloadMappingsDTO ExtractPayload(string curFieldMappingsJSON, string curEnvelopeId,
+        public IList<FieldDTO> ExtractPayload(List<FieldDTO> curFields, string curEnvelopeId,
             IList<EnvelopeDataDTO> curEnvelopeData)
         {
-            var serializer = new JsonSerializer();
-            var mappings = serializer.Deserialize<FieldMappingSettingsDTO>(curFieldMappingsJSON);
+            var payload = new List<FieldDTO>();
 
-            var payload = new PayloadMappingsDTO();
-
-            if (mappings.Fields != null)
+            if (curFields != null)
             {
-                mappings.Fields.ForEach(m =>
+                curFields.ForEach(f =>
                 {
-                    var newValue = curEnvelopeData.Where(e => e.Name == m.Name).Select(e => e.Value).SingleOrDefault();
+                    var newValue = curEnvelopeData.Where(e => e.Name == f.Key).Select(e => e.Value).SingleOrDefault();
                     if (newValue == null)
                     {
-                        EventManager.DocuSignFieldMissing(curEnvelopeId, m.Name);
+                        EventManager.DocuSignFieldMissing(curEnvelopeId, f.Key);
                     }
                     else
                     {
-                        payload.Add(new FieldMappingDTO() { Name = m.Name, Value = newValue });
+                        payload.Add(new FieldDTO() { Key = f.Key, Value = newValue });
                     }
                 });
             }
@@ -153,10 +149,24 @@ namespace Data.Wrappers
             {
                 DocumentId = tab.documentId,
                 RecipientId = tab.recipientId,
-                Name = tab.name,
+                Name = tab.tabLabel,
                 TabId = tab.tabId,
-                Value = value
+                Value = value,
+                Type = GetFieldType((string)tab.name)
             };
+        }
+
+        private string GetFieldType(string name)
+        {
+            switch (name)
+            {
+                case "Checkbox":
+                    return FieldDefinitionDTO.CHECKBOX_FIELD;
+                case "Text":
+                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                default:
+                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+            }
         }
     }
 }

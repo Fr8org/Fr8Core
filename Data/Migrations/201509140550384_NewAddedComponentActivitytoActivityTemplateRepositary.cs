@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedComponentActivitiesToActivityTemplateDO : DbMigration
+    public partial class NewAddedComponentActivitytoActivityTemplateRepositary : DbMigration
     {
         public override void Up()
         {

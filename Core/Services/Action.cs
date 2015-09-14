@@ -28,7 +28,6 @@ namespace Core.Services
 
         public Action()
         {
-            _envelope = ObjectFactory.GetInstance<IEnvelope>();
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
@@ -40,7 +39,7 @@ namespace Core.Services
                 return uow.ActionRepository.GetAll().Select(Mapper.Map<TViewModel>);
             }
         }
-        
+
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
             ActionDO existingActionDo = null;
@@ -78,6 +77,11 @@ namespace Core.Services
             }
         }
 
+        public List<CrateDTO> GetCrates(ActionDO curActionDO)
+        {
+            return curActionDO.CrateStorageDTO().CratesDTO;
+        }
+
         public ActionDO GetById(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -88,16 +92,34 @@ namespace Core.Services
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionDO != null)
+            ActivityTemplateDO curActionTemplate;
+
+            if (curActionDO != null && curActionDO.ActionTemplateId != 0)
             {
-                //prepare the current plugin URL
-                string curPluginUrl = curActionDO.ActionTemplate.DefaultEndPoint + "/actions/configure/";
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    curActionTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActionTemplateId);
+                }
+
+                if (curActionTemplate != null)
+                {
+                    var curActionDTO = Mapper.Map<ActionDTO>(curAction);
+
+                    // prepare the current plugin URL
+                    // TODO: Add logic to use https:// for production
+                    string curPluginUrl = "http://" + curActionTemplate.DefaultEndPoint + "/actions/configure/";
 
                 var restClient = new RestfulServiceClient();
-                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
+                    string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
 
                 return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
             }
+            else
+            {
+                throw new ArgumentNullException("ActionTemplateDO");
+            }
+        }
             else
             {
                 throw new ArgumentNullException("ActionTemplateDO");
@@ -116,7 +138,7 @@ namespace Core.Services
             }
         }
 
-        public async Task<int> Process(ActionDO curAction)
+        public async Task<int> Process(ActionDO curAction, ProcessDO curProcessDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -129,8 +151,7 @@ namespace Core.Services
 
                     EventManager.ActionStarted(curAction);
 
-                    var jsonResult = await Dispatch(curAction);
-
+                    var jsonResult = await Execute(curAction, curProcessDO);
 
                     //this JSON error check is broken because it triggers on standard success messages, which look like this:
                     //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
@@ -160,52 +181,21 @@ namespace Core.Services
             return curAction.ActionState.Value;
         }
 
-        public async Task<string> Dispatch(ActionDO curActionDO)
+        public async Task<string> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
         {
-            PayloadMappingsDTO mappings;
             if (curActionDO == null)
-                throw new ArgumentNullException("curAction");
+                throw new ArgumentNullException("curActionDO");
 
-            var actionPayloadDTO = Mapper.Map<ActionPayloadDTO>(curActionDO);
-            actionPayloadDTO.EnvelopeId = ((ActionListDO)curActionDO.ParentActivity).Process.EnvelopeId; 
-            
-            //this is currently null because ProcessId isn't being written to ActionList.
-            //that probably wasn't implemented because it doesn't actually make much sense to store a ProcessID on an ActionList
-            //that's because an ActionList is essentially a template that's part of a processnodetemplate, from which N different Processes can be spawned
-            //the confusion stems from design flaws that will be addressed in 921.   
-            //in the short run, modify ActionList#Process to write the current processid into the ActionListDo, just to unblock this.                                                                    
-            
-            
-            //If no existing payload, created and save it
-            if (actionPayloadDTO.PayloadMappings.Count() == 0)
-            {
-                mappings = CreateActionPayload(curActionDO, actionPayloadDTO.EnvelopeId);
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    curActionDO.PayloadMappings = mappings.Serialize();
-                    uow.SaveChanges();
-                }
-                actionPayloadDTO.PayloadMappings = mappings;
-            }
-
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
             curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint);
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, actionPayloadDTO);
-            EventManager.ActionDispatched(actionPayloadDTO);
+            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
+            EventManager.ActionDispatched(curActionDTO);
 
             return jsonResult;
-        }
-
-        public PayloadMappingsDTO CreateActionPayload(ActionDO curActionDO, string curEnvelopeId)
-        {
-            var curEnvelopeData = _envelope.GetEnvelopeData(curEnvelopeId);
-            if (String.IsNullOrEmpty(curActionDO.FieldMappingSettings))
-            {
-                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
-            }
-            return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
         /// <summary>
@@ -298,7 +288,6 @@ namespace Core.Services
             return null;
 
         }
-
 
         public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
         {

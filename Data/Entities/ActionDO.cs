@@ -43,7 +43,7 @@ namespace Data.Entities
             CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
 
             if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
-                crateStorageDTO = this.CrateStorageDTO();
+                crateStorageDTO = CrateStorageDTO();
 
             crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
 

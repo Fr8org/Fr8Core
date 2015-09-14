@@ -21,8 +21,10 @@ namespace CoreActions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public ActionProcessResultDTO Execute(ActionDO actionDO)
+        public ActionProcessResultDTO Execute(ActionDTO curActionDTO)
         {
+            var actionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+
             // Get parent action-list.
             var curActionList = ((ActionListDO)actionDO.ParentActivity);
 
@@ -149,17 +151,18 @@ namespace CoreActions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDO actionDO)
+        public CrateStorageDTO Configure(ActionDTO curActionDataPackageDTO)
         {
-            return ProcessConfigurationRequest(actionDO, ConfigurationEvaluator);
+
+            return ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
 
         /// <summary>
         /// Looks for first Create with Id == "PayloadKeys" among all upcoming Actions.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curCrate = GetCrate(curActionDO, "PayloadKeys", GetCrateDirection.Upstream);
+            var curCrate = GetCrate(curActionDTO, "PayloadKeys", GetCrateDirection.Upstream);
 
             if (curCrate != null)
             {
@@ -181,7 +184,7 @@ namespace CoreActions
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDO curActionDO)
+        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
             return ConfigurationRequestType.Initial;
         }
