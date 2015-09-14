@@ -335,7 +335,7 @@ namespace Data.Migrations
         {
             const string azureSqlPluginName = "AzureSqlServerPluginRegistration_v1";
 
-            // Create test Dockaard account for plugin subscription.
+            // Create test DockYard account for plugin subscription.
             var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             // Check that plugin does not exist yet.
@@ -362,7 +362,9 @@ namespace Data.Migrations
 
         private void AddActionTemplates(IUnitOfWork uow)
         {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "FilterUsingRunTimeData", "1");
+            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
+            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract Data From DocuSign Envelopes", "localhost:53234", "1");
             uow.SaveChanges();
         }
 
@@ -384,7 +386,7 @@ namespace Data.Migrations
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
             
-            AddMultiTenantOrganizations(uow);
+            AddMultiTenantOrganizations(uow);   
             AddMultiTenantObjects(uow);
 
             //add field for DocuSignEnvelopeStatusReport Object in DocuSign organization
