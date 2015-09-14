@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
-namespace Web.Controllers
+namespace pluginDockyardCore.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
@@ -51,9 +51,9 @@ namespace Web.Controllers
             // Extract from current request URL.
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
-            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-                curActionDO.ActionTemplate.Name,
-                curActionDO.ActionTemplate.Version);
+            var curAssemblyName = string.Format("CoreActions.Actions.{0}_v{1}",
+                curActionDO.ActivityTemplate.Name,
+                curActionDO.ActivityTemplate.Version);
 
             var calledType = Type.GetType(curAssemblyName);
             var curMethodInfo = calledType
@@ -61,7 +61,7 @@ namespace Web.Controllers
             var curObject = Activator.CreateInstance(calledType);
 
             return JsonConvert.SerializeObject(
-                (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+                (object)curMethodInfo.Invoke(curObject, new Object[] { actionDTO }) ?? new { });
         }
     }
 }
