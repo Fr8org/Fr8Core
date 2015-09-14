@@ -1,9 +1,9 @@
 ﻿using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartup(typeof(CoreActions.Startup))]
+[assembly: OwinStartup(typeof(pluginDockyardCore.Startup))]
 
-namespace CoreActions
+namespace pluginDockyardCore
 {
     public class Startup
     {

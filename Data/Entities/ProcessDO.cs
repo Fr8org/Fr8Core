@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
 using Data.Validations;
 using FluentValidation;
@@ -22,7 +23,6 @@ namespace Data.Entities
 
         public string Name { get; set; }
         public string DockyardAccountId { get; set; }
-        public string CrateStorage  { get; set; }
 
         [Required]
         [ForeignKey("ProcessTemplate")]
@@ -45,14 +45,7 @@ namespace Data.Entities
         public int? NextActivityId { get; set; }
         public virtual ActivityDO NextActivity { get; set; }
 
-        public override void BeforeSave()
-        {
-            base.BeforeSave();
-
-            ProcessValidator curValidator = new ProcessValidator();
-            curValidator.ValidateAndThrow(this);
-
-        }
+        public string CrateStorage { get; set; }
 
         public CrateStorageDTO CrateStorageDTO()
         {
@@ -61,7 +54,25 @@ namespace Data.Entities
 
         public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
         {
-            this.CrateStorage = JsonConvert.SerializeObject(curCratesDTO);
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+
+            if (!string.IsNullOrEmpty(CrateStorage))
+            {
+                crateStorageDTO = this.CrateStorageDTO();
+            }
+
+            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+
+            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+        }
+
+        public override void BeforeSave()
+        {
+            base.BeforeSave();
+
+            ProcessValidator curValidator = new ProcessValidator();
+            curValidator.ValidateAndThrow(this);
+
         }
     }
 }
