@@ -21,8 +21,6 @@ namespace UtilitiesTesting.Fixtures
                 Id = 54,
                 Name = "Write to Sql Server",
                 CrateStorage = "",
-                FieldMappingSettings = "",
-                PayloadMappings = "",
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
@@ -87,7 +85,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "type 1",
                 Id = 34,
                 CrateStorage = "config settings",
-                FieldMappingSettings = "fieldMappingSettings",
+              
                 Ordering = 3,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -165,7 +163,7 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
                 ParentActivity = FixtureData.TestActionList6(),
-                PayloadMappings = "x",
+               
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -237,7 +235,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "WriteToAzureSql",
                 ParentActivityId = 1,
                 CrateStorage = "JSON Config Settings",
-                FieldMappingSettings = "JSON Field Mapping Settings",
+                
                 Ordering = 1,
                 ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
@@ -286,7 +284,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                FieldMappingSettings = FieldMappings,
+              
                 Id = 1,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -322,7 +320,7 @@ namespace UtilitiesTesting.Fixtures
             var actionDo = new ActionDO
             {
                 Id = 1,
-                FieldMappingSettings = FieldMappings,
+               
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 CrateStorage = "config settings",
@@ -357,7 +355,7 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 ParentActivity = actionListDo,
-                FieldMappingSettings = FixtureData.FieldMappings,
+                
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -458,7 +456,7 @@ namespace UtilitiesTesting.Fixtures
 
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                FieldMappingSettings = FieldMappings,
+               
                 Id = 1,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate

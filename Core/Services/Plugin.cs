@@ -30,11 +30,11 @@ namespace Core.Services
             return "AuthorizationToken";
         }
 
-        public async Task<IList<ActionTemplateDO>> GetAvailableActions(string uri)
+        public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
         {
-            // IList<ActionTemplateDO> actionTemplateList = null; ;
+            // IList<ActivityTemplateDO> actionTemplateList = null; ;
             var restClient = new RestfulServiceClient();
-            var actionTemplateList = await restClient.GetAsync<Task<IList<ActionTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
+            var actionTemplateList = await restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
             return actionTemplateList;
         }
     }

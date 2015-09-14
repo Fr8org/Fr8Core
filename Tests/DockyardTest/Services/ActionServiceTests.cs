@@ -97,7 +97,7 @@ namespace DockyardTest.Services
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
-                Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
+             
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete
@@ -313,11 +313,11 @@ namespace DockyardTest.Services
             //};
 
             //Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            //List<ActionTemplateDO> curActionTemplateDO = _action.GetAvailableActions(account).ToList();
+            //List<ActivityTemplateDO> curActivityTemplateDO = _action.GetAvailableActions(account).ToList();
 
             ////Assert
-            //Assert.AreEqual(4, curActionTemplateDO.Count);
-            //Assert.That(curActionTemplateDO, Is.Ordered.By("ActionType"));
+            //Assert.AreEqual(4, curActivityTemplateDO.Count);
+            //Assert.That(curActivityTemplateDO, Is.Ordered.By("ActionType"));
 
 
         }

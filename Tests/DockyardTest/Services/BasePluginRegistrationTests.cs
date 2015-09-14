@@ -70,12 +70,12 @@
 //            //Assert.AreEqual(actionType, result.ToList()[0].ActionType);
 //            //Assert.AreEqual(version, result.ToList()[0].Version);
 
-//            Assert.AreEqual(actionType, ((List<ActionTemplateDO>)result)[0].Name);
-//            Assert.AreEqual(version, ((List<ActionTemplateDO>)result)[0].Version);
+//            Assert.AreEqual(actionType, ((List<ActivityTemplateDO>)result)[0].Name);
+//            Assert.AreEqual(version, ((List<ActivityTemplateDO>)result)[0].Version);
 //        }
 
 //        [Test]
-//        public void RegisterActions_RegisterNew_CreatesActionTemplateDO()
+//        public void RegisterActions_RegisterNew_CreatesActivityTemplateDO()
 //        {
 //            var basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
 //            ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
@@ -83,7 +83,7 @@
 //            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
 //            basePluginRegistration.RegisterActions();
 
-//            var newActionTemplate = _uow.ActionTemplateRepository.GetQuery()
+//            var newActionTemplate = _uow.ActivityTemplateRepository.GetQuery()
 //                .FirstOrDefault(i => i.Name == actionType && i.Version == version);
 
 //            Assert.AreEqual(actionType, newActionTemplate.Name);
@@ -98,12 +98,12 @@
 
 //            var basePluginRegistration = ObjectFactory.GetInstance<BasePluginRegistration>();
 //            basePluginRegistration.RegisterActions();
-//            int totalRecords = _uow.ActionTemplateRepository.GetQuery().Count();
+//            int totalRecords = _uow.ActivityTemplateRepository.GetQuery().Count();
 
 //            basePluginRegistrationMock = new Mock<BasePluginRegistration>(curActionNameList, baseUrl, "Test");
 //            ObjectFactory.Configure(cfg => cfg.For<BasePluginRegistration>().Use(basePluginRegistrationMock.Object));
 //            basePluginRegistration.RegisterActions();
-//            int totalRecordsAfterExistingRegister = _uow.ActionTemplateRepository.GetQuery().Count();
+//            int totalRecordsAfterExistingRegister = _uow.ActivityTemplateRepository.GetQuery().Count();
 
 //            Assert.AreEqual(totalRecords, totalRecordsAfterExistingRegister);
 //        }

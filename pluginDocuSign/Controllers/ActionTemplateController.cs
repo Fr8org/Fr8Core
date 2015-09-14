@@ -20,14 +20,15 @@ namespace pluginDocuSign.Controllers
         {
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
-                Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
+               
                 Version = "1.0",
                 Name = "Wait For DocuSign Event"
+
             };
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
-                Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
+               
                 Version = "1.0",
                 Name = "Extract Data From DocuSign Envelopes"
             };

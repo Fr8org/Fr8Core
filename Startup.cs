@@ -148,12 +148,12 @@ namespace Web
                     using (HttpContent content = response.Content)
                     {
                         var data = await content.ReadAsStringAsync();
-                        var actionList = new JsonSerializer().DeserializeList<ActionTemplateDO>(data);
+                        var actionList = new JsonSerializer().DeserializeList<ActivityTemplateDO>(data);
                         using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
-                            foreach (ActionTemplateDO item in actionList)
+                            foreach (ActivityTemplateDO item in actionList)
                             {
-                                uow.ActionTemplateRepository.Add(item);
+                                uow.ActivityTemplateRepository.Add(item);
                             }
                             uow.SaveChanges();
                         }
@@ -186,31 +186,31 @@ namespace Web
                         if (!CheckForActivityTemplate("Wait for notification that an envelope has arrived at DocuSign"))
                         {
                             ActivityTemplateDO componentActivityOne = new ActivityTemplateDO("Wait for notification that an envelope has arrived at DocuSign"
-                                , "localhost:46281", "1");
+                                , "localhost:46281", 1);
                             activityTemplateRepositary.Add(componentActivityOne);
                         }
                         if (!CheckForActivityTemplate("Filter the Envelope against some Criteria"))
                         {
                             ActivityTemplateDO componentActivityTwo = new ActivityTemplateDO("Filter the Envelope against some Criteria"
-                             , "localhost:46281", "1");
+                             , "localhost:46281", 1);
                             activityTemplateRepositary.Add(componentActivityTwo);
                         }
                         if (!CheckForActivityTemplate("Extract Data from the Envelope"))
                         {
                             ActivityTemplateDO componentActivityThree = new ActivityTemplateDO("Extract Data from the Envelope"
-                         , "localhost:46281", "1");
+                         , "localhost:46281", 1);
                             activityTemplateRepositary.Add(componentActivityThree);
                         }
                         if (!CheckForActivityTemplate("Map the Data to Target Fields"))
                         {
                             ActivityTemplateDO componentActivityFour = new ActivityTemplateDO("Map the Data to Target Fields"
-                           , "localhost:46281", "1");
+                           , "localhost:46281", 1);
                             activityTemplateRepositary.Add(componentActivityFour);
                         }
                         if (!CheckForActivityTemplate("Write the Data to AzureSqlServer"))
                         {
                             ActivityTemplateDO componentActivityFive = new ActivityTemplateDO("Write the Data to AzureSqlServer"
-                               , "localhost:46281", "1");
+                               , "localhost:46281", 1);
                             activityTemplateRepositary.Add(componentActivityFive);
                         }
                         uow.SaveChanges();
@@ -235,7 +235,7 @@ namespace Web
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
                             (item => item.Name == "Write the Data to AzureSqlServer"));
 
-                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", "1");
+                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", 1);
                         activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
 
                         activityTemplateRepositary.Add(activityTemplate);

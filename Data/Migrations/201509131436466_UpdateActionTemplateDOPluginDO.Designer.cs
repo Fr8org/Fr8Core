@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class UpdateActionTemplateDOPluginDO : IMigrationMetadata
+    public sealed partial class UpdateActivityTemplateDOPluginDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateActionTemplateDOPluginDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateActivityTemplateDOPluginDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509131436466_UpdateActionTemplateDOPluginDO"; }
+            get { return "201509131436466_UpdateActivityTemplateDOPluginDO"; }
         }
         
         string IMigrationMetadata.Source

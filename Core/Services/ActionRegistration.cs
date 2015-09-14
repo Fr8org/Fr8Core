@@ -24,11 +24,11 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
-                if (curActionTemplateDO == null)
+                var curActivityTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
+                if (curActivityTemplateDO == null)
                     throw new ArgumentNullException("ActionTemplateId");
 
-                return curActionTemplateDO;
+                return curActivityTemplateDO;
             }
 
         }

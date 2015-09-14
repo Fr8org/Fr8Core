@@ -92,8 +92,8 @@ namespace pluginAzureSqlServer.Controllers
         [Route("action_templates")]
         public IHttpActionResult ActionTemplates()
         {
-            var result = new List<ActionTemplateDO>();
-            var template = new ActionTemplateDO
+            var result = new List<ActivityTemplateDO>();
+            var template = new ActivityTemplateDO
             {
                 Name = "WriteToAzureSqlServer",
                 Version = "1.0"

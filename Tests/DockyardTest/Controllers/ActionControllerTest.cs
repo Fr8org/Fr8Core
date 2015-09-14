@@ -338,7 +338,7 @@ namespace DockyardTest.Controllers
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActionTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
-                //,ActionTemplate = FixtureData.TestActionTemplateDO2()
+                //,ActionTemplate = FixtureData.TestActivityTemplateDO2()
             };
         }
 

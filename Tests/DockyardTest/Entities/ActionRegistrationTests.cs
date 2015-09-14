@@ -23,11 +23,11 @@ namespace DockyardTest.Entities
                 uow.ActivityTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
-                Assert.NotNull(savedActionTemplateDO);
+                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                Assert.NotNull(savedActivityTemplateDO);
 
-                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
-                Assert.AreEqual(actionTemplateDO.Plugin.Endpoint, savedActionTemplateDO.Plugin.Endpoint);
+                Assert.AreEqual(actionTemplateDO.Name, savedActivityTemplateDO.Name);
+                Assert.AreEqual(actionTemplateDO.Plugin.Endpoint, savedActivityTemplateDO.Plugin.Endpoint);
 
             }
         }
@@ -45,20 +45,20 @@ namespace DockyardTest.Entities
                 uow.ActivityTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
 
 
-                Assert.NotNull(savedActionTemplateDO);
-                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
-                Assert.AreEqual(actionTemplateDO.Version, savedActionTemplateDO.Version);
+                Assert.NotNull(savedActivityTemplateDO);
+                Assert.AreEqual(actionTemplateDO.Name, savedActivityTemplateDO.Name);
+                Assert.AreEqual(actionTemplateDO.Version, savedActivityTemplateDO.Version);
 
                 // remove saved instance
-                uow.ActivityTemplateRepository.Remove(savedActionTemplateDO);
+                uow.ActivityTemplateRepository.Remove(savedActivityTemplateDO);
                 uow.SaveChanges();
 
-                var deletedActionTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActionTemplateDO.Id);
+                var deletedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActivityTemplateDO.Id);
 
-                Assert.IsNull(deletedActionTemplateDO);
+                Assert.IsNull(deletedActivityTemplateDO);
 
             }
         }
