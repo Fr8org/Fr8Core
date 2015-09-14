@@ -244,6 +244,7 @@
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IEnvelope.cs">
       <SubType>Code</SubType>
