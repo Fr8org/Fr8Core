@@ -208,7 +208,7 @@ module dockyard.controllers {
 
         private loadProcessTemplate() {
             var processTemplatePromise = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
-            processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
+     //       processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
             this._scope.current.processTemplate = processTemplatePromise;
         }
          
@@ -234,19 +234,18 @@ module dockyard.controllers {
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionTempIdReplaced],
                     new pwd.ActionTempIdReplacedEventArgs(this._scope.current.action.id, action.id)
                     );
+            }
+            
+            if (action) {
+                this._scope.current.action = action;
+                //self._scope.current.action.id = result.action.id;
+                //self._scope.current.action.isTempId = false;
 
-                // If a new action created, set new id
-                if (action) {
-                    this._scope.current.action = action;
-                    //self._scope.current.action.id = result.action.id;
-                    //self._scope.current.action.isTempId = false;
-
-                    //Notify workflow designer of action update
-                    this._scope.$broadcast(
-                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                        new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-                        );
-                }
+                //Notify workflow designer of action update
+                this._scope.$broadcast(
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                    new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
+                    );
             }
         }
 
@@ -408,8 +407,6 @@ module dockyard.controllers {
             // request from being unnecessarily sent to web api 
             this._scope.current.action = null;
 
-            debugger;
-
             // TODO: Do not react on clicking on currently visible Criteria
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
@@ -417,24 +414,8 @@ module dockyard.controllers {
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
                 
-                // TODO: Check ID behavior
-                processNodeTemplateId = (result.processNodeTemplate && result.processNodeTemplate.id ? result.processNodeTemplate.id : eventArgs.processNodeTemplateId);
-
-                // Retrieve ActionList
-                return this.ActionListService.get({
-                    'id': processNodeTemplateId,
-                    'actionListType': eventArgs.actionListType
-                })
-            })
-                .then((result: interfaces.IActionListVM) => {
-
                     // Create new action object.
-                    var action = new model.ActionDesignDTO(
-                        processNodeTemplateId,
-                        id,
-                        true,
-                        result.id
-                        );
+                var action = new model.ActionDesignDTO(null, id, true, null);
 
                     action.name = 'New Action #' + Math.abs(id).toString();
 
@@ -445,7 +426,6 @@ module dockyard.controllers {
                         new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
                         );
                 });
-
         }
 
         /*
@@ -454,8 +434,10 @@ module dockyard.controllers {
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("ProcessBuilderController: action selected", eventArgs);
 
-            debugger;
-
+            var originalId;
+            if (this._scope.current.action) {
+                originalId = this._scope.current.action.id;
+            }
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
 
@@ -468,7 +450,7 @@ module dockyard.controllers {
                     );
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                this.handleActionUpdate(result.action && result.action[0]);
 
                 //if (this._scope.current.action != null) {
                 //    this._scope.$broadcast(
@@ -477,10 +459,10 @@ module dockyard.controllers {
                 //        );
                 //}
 
-                var wasTemporaryAction = (this._scope.current.action.id == eventArgs.actionId);
+                var wasTemporaryAction = (originalId == eventArgs.actionId);
 
-                var actionId = wasTemporaryAction && result.action
-                    ? result.action.id
+                var actionId = wasTemporaryAction && result.action[0]
+                    ? result.action[0].id
                     : eventArgs.actionId;
 
                 this._scope.current.action = this.ActionService.get({ id: actionId });
@@ -601,7 +583,7 @@ module dockyard.controllers {
             promise.then((result: model.ProcessBuilderState) => {
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                this.handleActionUpdate(result.action && result.action[0]);
 
             });
         }

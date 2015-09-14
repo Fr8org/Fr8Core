@@ -27,26 +27,26 @@ namespace Web.Controllers
 
         [HttpGet]
         [Route("configure")]
-        public string Configure(ActionDesignDTO curActionDO)
+        public string Configure(ActionDTO curActionDO)
         {
             return HandleDockyardRequest(curActionDO, "Configure");
         }
 
         [HttpPost]
         [Route("activate")]
-        public string Activate(ActionDesignDTO curActionDO)
+        public string Activate(ActionDTO curActionDO)
         {
             return HandleDockyardRequest(curActionDO, "Activate");
         }
 
         [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDesignDTO curActionDO)
+        public string Execute(ActionDTO curActionDO)
         {
             return HandleDockyardRequest(curActionDO, "Execute");
         }
 
-        private string HandleDockyardRequest(ActionDesignDTO actionDTO, string actionPath)
+        private string HandleDockyardRequest(ActionDTO actionDTO, string actionPath)
         {
             // Extract from current request URL.
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);

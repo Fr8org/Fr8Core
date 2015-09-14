@@ -163,7 +163,7 @@ namespace DockyardTest.Controllers
                 curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
                 uow.SaveChanges();
 
-                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
+                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
                 var result =
                     new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
@@ -204,7 +204,7 @@ namespace DockyardTest.Controllers
                 //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
                 curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
-                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
+                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
                 var result =
                     new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
@@ -243,7 +243,7 @@ namespace DockyardTest.Controllers
                 //configurationStore.DataFields.Add("data fields");
                 curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
-                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
+                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
                 var result =
                     new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
@@ -327,9 +327,9 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates a new Action with the given action ID
         /// </summary>
-        private ActionDesignDTO CreateActionWithId(int actionId)
+        private ActionDTO CreateActionWithId(int actionId)
         {
-            return new ActionDesignDTO
+            return new ActionDTO
             {
                 Id = actionId,
                 Name = "WriteToAzureSql",
@@ -375,7 +375,7 @@ namespace DockyardTest.Controllers
             var cntroller = new ActionController();
             //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
 
-            var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
+            var task = cntroller.GetFieldMappingTargets(new ActionDTO()
             {
                 CrateStorage = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(
                     "{\"connection_string\":\"" + dataSource + "\"}")
@@ -392,7 +392,7 @@ namespace DockyardTest.Controllers
         public void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionController();
-            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.ActionTemplate = FixtureData.TestActionTemplateDTOV2();
             var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
 
@@ -408,7 +408,7 @@ namespace DockyardTest.Controllers
         public void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
-            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.Id = 0;
             var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
 
@@ -424,7 +424,7 @@ namespace DockyardTest.Controllers
         public void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();
-            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.ActionTemplateId = 0;
             var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
 
