@@ -4,13 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class ActionTemplateDO : BaseDO
+    public class ActivityTemplateDO : BaseDO
     {
-        public ActionTemplateDO() {
+        public ActivityTemplateDO()
+        {
 
         }
 
-        public ActionTemplateDO(string name, string defaultEndPoint, string version)
+        public ActivityTemplateDO(string name, string defaultEndPoint, string version)
         {
             this.Name = name;
             this.DefaultEndPoint = defaultEndPoint;
@@ -32,6 +33,8 @@ namespace Data.Entities
         public string DefaultEndPoint { get; set; }
 
         public string AuthenticationType { get; set; }
+
+        public string ComponentActivities { get; set; }
 
         [ForeignKey("Plugin")]
         public int? PluginID { get; set; }

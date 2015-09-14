@@ -49,7 +49,7 @@ namespace DockyardTest.Services
 		[Test]
 		public void GetUpstreamActivities_1Level_ShoudBeOk()
 		{
-			var actionTempate = new ActionTemplateDO()
+			var actionTempate = new ActivityTemplateDO()
 			 {
 				 Id = 1,
 				 Version = "1"
@@ -80,7 +80,7 @@ namespace DockyardTest.Services
 		[Test]
 		public void GetUpstreamActivities_2Levels_ShoudBeOk()
 		{
-			var actionTempate = new ActionTemplateDO()
+			var actionTempate = new ActivityTemplateDO()
 			{
 				Id = 1,
 				Version = "1"
@@ -128,7 +128,7 @@ namespace DockyardTest.Services
 		[Test]
 		public void GetUpstreamActivities_3Levels_ShoudBeOk()
 		{
-			var actionTempate = new ActionTemplateDO()
+			var actionTempate = new ActivityTemplateDO()
 			{
 				Id = 1,
 				Version = "1"
@@ -196,7 +196,7 @@ namespace DockyardTest.Services
 		[Test]
 		public void GetUpstreamActivities_4Levels_ShoudBeOk()
 		{
-			var actionTempate = new ActionTemplateDO()
+			var actionTempate = new ActivityTemplateDO()
 			{
 				Id = 1,
 				Version = "1"
@@ -306,7 +306,7 @@ namespace DockyardTest.Services
 		[Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
 		public void GetDownstreamActivities_1Levels_ShoudBeOk()
 		{
-			var actionTempate = new ActionTemplateDO()
+			var actionTempate = new ActivityTemplateDO()
 			{
 				Id = 1,
 				Version = "1"

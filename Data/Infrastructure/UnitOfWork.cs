@@ -414,12 +414,12 @@ namespace Data.Infrastructure
             }
         }
 
-        private ActionTemplateRepository _actionTemplateRepository;
-        public ActionTemplateRepository ActionTemplateRepository
+        private ActivityTemplateRepository _activityTemplateRepository;
+        public ActivityTemplateRepository ActivityTemplateRepository
         {
             get
             {
-                return _actionTemplateRepository ?? (_actionTemplateRepository = new ActionTemplateRepository(this));
+                return _activityTemplateRepository ?? (_activityTemplateRepository = new ActivityTemplateRepository(this));
             }
         }
 

@@ -52,8 +52,8 @@ namespace pluginDockyardCore.Controllers
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
             var curAssemblyName = string.Format("CoreActions.Actions.{0}_v{1}",
-                curActionDO.ActionTemplate.Name,
-                curActionDO.ActionTemplate.Version);
+                curActionDO.ActivityTemplate.Name,
+                curActionDO.ActivityTemplate.Version);
 
             var calledType = Type.GetType(curAssemblyName);
             var curMethodInfo = calledType

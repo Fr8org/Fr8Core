@@ -29,8 +29,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "Write", Version = "1.0" }, new ActionTemplateDO() { Name = "Read", Version = "1.0" } };
-        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { Name = "SQL Read", Version = "1.0" } };
+        private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
+        private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
         [SetUp]
         public override void SetUp()
@@ -330,7 +330,7 @@ namespace DockyardTest.Services
 
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActionTemplate.Plugin;
+            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
             curAuthorizationTokenDO.UserDO = curActionListDO.Process.ProcessTemplate.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -348,7 +348,7 @@ namespace DockyardTest.Services
             var curActionListDO = (ActionListDO)curActionDO.ParentActivity;
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActionTemplate.Plugin;
+            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
             curAuthorizationTokenDO.UserDO = curActionListDO.Process.ProcessTemplate.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

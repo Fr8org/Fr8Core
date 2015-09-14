@@ -74,7 +74,7 @@ namespace PluginBase.BaseClasses
         {
             if (dataObject == null) dataObject = curActionDTO;
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActionTemplate.Name, curActionDTO.ActionTemplate.Version);
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);

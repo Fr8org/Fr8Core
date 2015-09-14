@@ -155,7 +155,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //remvoe existing action templates
-                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
                 uow.SaveChanges();
 
                 //create action
@@ -194,7 +194,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //remvoe existing action templates
-                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
                 uow.SaveChanges();
 
                 //create action
@@ -229,7 +229,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //remvoe existing action templates
-                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
                 uow.SaveChanges();
 
                 //create action
@@ -319,7 +319,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionTemplateRepository.Add(FixtureData.TestActionTemplateDO1());
+                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO1());
                 uow.SaveChanges();
             }
         }
@@ -337,7 +337,7 @@ namespace DockyardTest.Controllers
                 CrateStorage = new CrateStorageDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActionTemplateId = 1,
-                ActionTemplate = FixtureData.TestActionTemplateDTOV2()
+                ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
                 //,ActionTemplate = FixtureData.TestActionTemplateDO2()
             };
         }
@@ -345,12 +345,12 @@ namespace DockyardTest.Controllers
         private ActionDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
         {
 
-            var curActionTemplate = FixtureData.TestActionTemplateV2();
-            uow.ActionTemplateRepository.Add(curActionTemplate);
+            var curActionTemplate = FixtureData.TestActivityTemplateV2();
+            uow.ActivityTemplateRepository.Add(curActionTemplate);
 
             var curAction = FixtureData.TestAction1();
-            curAction.ActionTemplateId = curActionTemplate.Id;
-            curAction.ActionTemplate = curActionTemplate;
+            curAction.ActivityTemplateId = curActionTemplate.Id;
+            curAction.ActivityTemplate = curActionTemplate;
             uow.ActionRepository.Add(curAction);
 
             return curAction;
@@ -393,7 +393,7 @@ namespace DockyardTest.Controllers
         {
             var controller = new ActionController();
             ActionDTO actionDesignDTO = CreateActionWithId(2);
-            actionDesignDTO.ActionTemplate = FixtureData.TestActionTemplateDTOV2();
+            actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
             var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;

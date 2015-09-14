@@ -9,8 +9,8 @@ namespace Core.Interfaces
 {
     public interface IActionTemplate
     {
-        IEnumerable<ActionTemplateDO> GetAll();
-        ActionTemplateDO GetByKey(int curActionTemplateDOId);
+        IEnumerable<ActivityTemplateDO> GetAll();
+        ActivityTemplateDO GetByKey(int curActionTemplateDOId);
        // string AssemblePluginRegistrationName(ActionTemplateDO curActionTemplateDO);
     }
 }

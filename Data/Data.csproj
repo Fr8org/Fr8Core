@@ -208,7 +208,7 @@
     <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
-    <Compile Include="Entities\ActionTemplateDO.cs" />
+    <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
@@ -226,6 +226,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionNameListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ComponentActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
@@ -339,6 +340,14 @@
     <Compile Include="Migrations\201509140050401_v2CoreRefactoring.Designer.cs">
       <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.cs" />
+    <Compile Include="Migrations\201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.Designer.cs">
+      <DependentUpon>201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509140923448_RenamedTableActionTemplatetoActivityTemplate.cs" />
+    <Compile Include="Migrations\201509140923448_RenamedTableActionTemplatetoActivityTemplate.Designer.cs">
+      <DependentUpon>201509140923448_RenamedTableActionTemplatetoActivityTemplate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -390,7 +399,7 @@
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActionListRepository.cs" />
-    <Compile Include="Repositories\ActionTemplateRepository.cs" />
+    <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -623,6 +632,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509140050401_v2CoreRefactoring.resx">
       <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.resx">
+      <DependentUpon>201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509140923448_RenamedTableActionTemplatetoActivityTemplate.resx">
+      <DependentUpon>201509140923448_RenamedTableActionTemplatetoActivityTemplate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
