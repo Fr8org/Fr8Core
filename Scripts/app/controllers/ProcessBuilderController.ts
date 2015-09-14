@@ -388,7 +388,6 @@ module dockyard.controllers {
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("ProcessBuilderController: action selected", eventArgs);
 
-            debugger;
             var originalId;
             if (this._scope.current.action) {
                 originalId = this._scope.current.action.id;

@@ -28,7 +28,6 @@ namespace Core.Services
 
         public Action()
         {
-            _envelope = ObjectFactory.GetInstance<IEnvelope>();
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
@@ -55,7 +54,7 @@ namespace Core.Services
 
             //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
             //var plugins = _plugin.GetAll();
-           // var curActionTemplates = plugins
+            // var curActionTemplates = plugins
             //    .SelectMany(p => p.AvailableActions)
             //    .OrderBy(s => s.ActionType);
 
@@ -114,15 +113,34 @@ namespace Core.Services
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            if (curActionDO != null)
+            ActionTemplateDO curActionTemplate;
+
+            if (curActionDO != null && curActionDO.ActionTemplateId != 0)
             {
-                //prepare the current plugin URL
-                string curPluginUrl = curActionDO.ActionTemplate.Plugin.BaseEndPoint + "/actions/configure/";
 
-                var restClient = new RestfulServiceClient();
-                string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDO).Result;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    curActionTemplate = uow.ActionTemplateRepository.GetByKey(curActionDO.ActionTemplateId);
+                }
 
-                return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                if (curActionTemplate != null)
+                {
+                    var curActionDTO = Mapper.Map<ActionDTO>(curAction);
+
+                    // prepare the current plugin URL
+                    // TODO: Add logic to use https:// for production
+		
+                    string curPluginUrl = "http://" + curActionTemplate.DefaultEndPoint + "/actions/configure/";
+
+                    var restClient = new RestfulServiceClient();
+                    string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+
+                    return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                }
+                else
+                {
+                    throw new ArgumentNullException("ActionTemplateDO");
+                }
             }
             else
             {
@@ -169,7 +187,7 @@ namespace Core.Services
                     //   else
                     //   {
                     curAction.ActionState = ActionState.Completed;
-                 //   }
+                    //   }
 
                     uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
@@ -200,16 +218,6 @@ namespace Core.Services
             EventManager.ActionDispatched(curActionDTO);
 
             return jsonResult;
-        }
-
-        public PayloadMappingsDTO CreateActionPayload(ActionDO curActionDO, string curEnvelopeId)
-        {
-            var curEnvelopeData = _envelope.GetEnvelopeData(curEnvelopeId);
-            if (String.IsNullOrEmpty(curActionDO.FieldMappingSettings))
-            {
-                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
-            }
-            return _envelope.ExtractPayload(curActionDO.FieldMappingSettings, curEnvelopeId, curEnvelopeData);
         }
 
         /// <summary>
@@ -290,7 +298,7 @@ namespace Core.Services
         {
             if (curActionDO.ParentActivity != null
                 && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
-        {
+            {
                 ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
 
                 return curActionListDO

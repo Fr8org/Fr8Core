@@ -32,7 +32,7 @@ namespace DockyardTest.Actions
         {
             var action = FixtureData.TestAction1();
             var package = new ActionDataPackageDTO(AutoMapper.Mapper.Map<ActionDTO>(action), null);
-            CrateStorageDTO result = (CrateStorageDTO) pluginAction.Configure(package);
+            CrateStorageDTO result = (CrateStorageDTO) pluginAction.Configure(package.ActionDTO);
 
             Assert.AreEqual(1, result.CratesDTO.Count);
             var fieds = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CratesDTO[0].Contents);
@@ -52,8 +52,8 @@ namespace DockyardTest.Actions
         public void FollowupConfigurationResponse_ShouldAddCrates()
         {
             var action = FixtureData.WaitForDocuSignEvent_Action();
-            var actionDTO = new ActionDataPackageDTO(AutoMapper.Mapper.Map<ActionDTO>(action), null);
-            CrateStorageDTO result = (CrateStorageDTO)pluginAction.Configure(actionDTO, true);
+            var actionDataPackageDTO = new ActionDataPackageDTO(AutoMapper.Mapper.Map<ActionDTO>(action), null);
+            CrateStorageDTO result = (CrateStorageDTO)pluginAction.Configure(actionDataPackageDTO.ActionDTO, true);
             List<FieldDefinitionDTO> fields = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CratesDTO[1].Contents);
             Assert.AreEqual(10, fields.Count);
         }

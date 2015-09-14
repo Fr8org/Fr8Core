@@ -212,7 +212,6 @@
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
-
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
@@ -335,6 +334,10 @@
     <Compile Include="Migrations\201509112046091_UpdateActionTemplateDO.cs" />
     <Compile Include="Migrations\201509112046091_UpdateActionTemplateDO.Designer.cs">
       <DependentUpon>201509112046091_UpdateActionTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509140050401_v2CoreRefactoring.cs" />
+    <Compile Include="Migrations\201509140050401_v2CoreRefactoring.Designer.cs">
+      <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201509112208098_UpdatePluginDO.cs" />
     <Compile Include="Migrations\201509112208098_UpdatePluginDO.Designer.cs">
@@ -541,9 +544,9 @@
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
     <Compile Include="Wrappers\DocuSignAccount.cs" />
+    <Compile Include="Wrappers\DocuSignEnvelope.cs" />
     <Compile Include="Wrappers\DocuSignPackager.cs" />
     <Compile Include="Wrappers\DocuSignTemplate.cs" />
-    <Compile Include="Wrappers\DocuSignEnvelope.cs" />
     <Compile Include="Wrappers\Signer.cs" />
     <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
@@ -625,6 +628,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509112046091_UpdateActionTemplateDO.resx">
       <DependentUpon>201509112046091_UpdateActionTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509140050401_v2CoreRefactoring.resx">
+      <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509112208098_UpdatePluginDO.resx">
       <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
