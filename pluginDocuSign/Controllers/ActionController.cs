@@ -18,23 +18,23 @@ namespace pluginDocuSign.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public string Configure(ActionDataPackageDTO curActionDataPackage)
+        public string Configure(ActionDTO curActionDTO)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("activate")]
-        public string Activate(ActionDataPackageDTO curActionDataPackage)
+        public string Activate(ActionDTO curActionDTO)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDataPackage);
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("execute")]
         public string Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage);
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
         }
     }
 }

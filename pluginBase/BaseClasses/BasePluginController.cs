@@ -68,18 +68,20 @@ namespace PluginBase.BaseClasses
                 }).Wait();
 
         }
-        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDataPackageDTO curDataPackage)
+
+        // For /Configure and /Activate actions that accept ActionDTO
+        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
-            var curActionDO = curDataPackage.ActionDTO;
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDO.ActionTemplate.Name, curActionDO.ActionTemplate.Version);
+            if (dataObject == null) dataObject = curActionDTO;
+
+            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActionTemplate.Name, curActionDTO.ActionTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
 
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { curDataPackage }) ?? new { });
+            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { dataObject }) ?? new { });
         }
-
 
         /// <summary>
         /// Initializes a new rest call

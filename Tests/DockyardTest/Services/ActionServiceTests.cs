@@ -109,15 +109,15 @@ namespace DockyardTest.Services
         public void CanParsePayload()
         {
             var envelope = new DocuSignEnvelope();
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
-                payloadMappings = FixtureData.FieldMappings;
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            var payloadMappings = FixtureData.ListFieldMappings;
 
             List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
 
             var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
 
-            Assert.AreEqual("Johnson", result.Where(p => p.Name == "Doctor").Single().Value);
-            Assert.AreEqual("Marthambles", result.Where(p => p.Name == "Condition").Single().Value);
+            Assert.AreEqual("Johnson", result.Where(p => p.Key == "Doctor").Single().Value);
+            Assert.AreEqual("Marthambles", result.Where(p => p.Key == "Condition").Single().Value);
         }
 
         [Test]
@@ -127,8 +127,8 @@ namespace DockyardTest.Services
             incidentReporter.SubscribeToAlerts();
 
             var envelope = new DocuSignEnvelope();
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09",
-                payloadMappings = FixtureData.FieldMappings2; //Wrong mappings
+            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            var payloadMappings = FixtureData.ListFieldMappings2; //Wrong mappings
 
             List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
             var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
@@ -200,7 +200,7 @@ namespace DockyardTest.Services
             {
                 var curActionDo = uow.ActionRepository.FindOne((a) => true);
                 Assert.NotNull(curActionDo);
-                
+
                 //Need an update due to v2 changes
                 //var curActionDto = Mapper.Map<ActionPayloadDTO>(curActionDo);
                 //Assert.IsTrue(IsPayloadValid(curActionDto));
@@ -363,7 +363,7 @@ namespace DockyardTest.Services
         public void AddCrate_AddCratesDTO_UpdatesActionCratesStorage()
         {
             ActionDO actionDO = FixtureData.TestAction23();
-            
+
             _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CratesDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);

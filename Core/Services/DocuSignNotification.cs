@@ -78,13 +78,13 @@ namespace Core.Services
                 {
                     var crateFields = new List<FieldDTO>()
                     {
-                        new FieldDTO () { Key = "EnvelopeId", Value = curEvent.EnvelopeId },
+                        new FieldDTO() { Key = "EnvelopeId", Value = curEvent.EnvelopeId },
                         new FieldDTO() { Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString() },
-                        new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId.ToString() }
+                        new FieldDTO() { Key = "RecipientId", Value = curEvent.RecipientId.ToString() }
                     };
                     var curEventData = _crate.Create("Event Data", Newtonsoft.Json.JsonConvert.SerializeObject(crateFields));
                     //load a list of all of the ProcessTemplateDO that have subscribed to this particular DocuSign event
-                    var subscriptions = 
+                    var subscriptions =
                         uow.ExternalEventSubscriptionRepository.GetQuery().Include(p => p.ExternalProcessTemplate)
                             .Where(s => s.ExternalEvent == curEvent.ExternalEventType && s.ExternalProcessTemplate.DockyardAccount.Id == curUserID)
                             .ToList();
@@ -95,7 +95,7 @@ namespace Core.Services
                         _processTemplate.LaunchProcess(uow, subscription.ExternalProcessTemplate, curEventData);
                     }
                 }
-                
+
                 uow.SaveChanges();
             }
         }
