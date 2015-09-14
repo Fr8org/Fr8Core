@@ -751,6 +751,7 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
@@ -3946,6 +3947,7 @@
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonGroup.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
+    <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
