@@ -110,7 +110,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        [Route("actions/configuration")]
+        [Route("configuration")]
         [ResponseType(typeof(CrateStorageDTO))]
         public IHttpActionResult GetConfigurationSettings(ActionDTO curActionDesignDTO)
         {
