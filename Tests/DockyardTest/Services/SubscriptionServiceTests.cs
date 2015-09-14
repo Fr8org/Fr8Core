@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Interfaces;
-using Core.PluginRegistrations;
+
 using Data.Entities;
 using Data.States;
 using Moq;
