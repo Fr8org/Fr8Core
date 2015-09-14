@@ -335,6 +335,10 @@
     <Compile Include="Migrations\201509140050401_v2CoreRefactoring.Designer.cs">
       <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509141941160_test.cs" />
+    <Compile Include="Migrations\201509141941160_test.Designer.cs">
+      <DependentUpon>201509141941160_test.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -616,6 +620,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509140050401_v2CoreRefactoring.resx">
       <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509141941160_test.resx">
+      <DependentUpon>201509141941160_test.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
