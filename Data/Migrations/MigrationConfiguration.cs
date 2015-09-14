@@ -364,7 +364,7 @@ namespace Data.Migrations
         {
             AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
             AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Data From DocuSign Envelopes", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
             uow.SaveChanges();
         }
 

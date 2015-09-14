@@ -9,6 +9,8 @@ namespace pluginDocuSign
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            // StructureMap Dependencies configuration
+            Core.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
         }
     }
 }

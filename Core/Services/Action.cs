@@ -113,23 +113,25 @@ namespace Core.Services
 
         public string GetConfigurationSettings(ActionDO curActionDO)
         {
-            ActionTemplateDO curActionTemplate;
+            ActionTemplateDO curActionTemplateDO;
 
             if (curActionDO != null && curActionDO.ActionTemplateId != 0)
             {
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    curActionTemplate = uow.ActionTemplateRepository.GetByKey(curActionDO.ActionTemplateId);
+                    curActionTemplateDO = uow.ActionTemplateRepository.GetByKey(curActionDO.ActionTemplateId);
                 }
 
-                if (curActionTemplate != null)
+                if (curActionTemplateDO != null)
                 {
-                    var curActionDTO = Mapper.Map<ActionDTO>(curAction);
+                    var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+                    var curActionTemplateDTO =  Mapper.Map<ActionTemplateDTO>(curActionTemplateDO);
+                    curActionDTO.ActionTemplate = curActionTemplateDTO;
 
                     // prepare the current plugin URL
                     // TODO: Add logic to use https:// for production
-                    string curPluginUrl = "http://" + curActionTemplate.DefaultEndPoint + "/actions/configure/";
+                    string curPluginUrl = "http://" + curActionTemplateDO.DefaultEndPoint + "/actions/configure/";
 
                     var restClient = new RestfulServiceClient();
                     string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
