@@ -22,6 +22,7 @@ module dockyard.controllers {
 
         //this is for demo only, should be deleted on production
         radioDemoField: model.RadioButtonGroupField;
+        routingControlGroup: model.RoutingControlGroup;
     }
 
     //Setup aliases
@@ -108,6 +109,51 @@ module dockyard.controllers {
             radios.push(demoRadio3);
             radioDemoField.radios = radios;
             this._scope.radioDemoField = radioDemoField;
+
+            var routingControlGroup = new model.RoutingControlGroup();
+            routingControlGroup.fieldLabel = "routing";
+            routingControlGroup.name = "routing";
+            routingControlGroup.sourceField = "test_criteria_1";
+            routingControlGroup.type = "routing";
+            var routes = new Array<model.Route>();
+            var routeTruthy = new model.Route();
+            routeTruthy.measurementValue = "TRUE";
+            routeTruthy.selection = "none";
+            var routeActionList = new model.RouteActionList();
+            var choices = new Array<model.Choice>();
+            var choice = new model.Choice();
+            choice.Id = "34";
+            choice.Label = "Write Email";
+            choices.push(choice);
+            choice = new model.Choice();
+            choice.Id = "50";
+            choice.Label = "Extract Foo From Bar";
+            choices.push(choice);
+            routeActionList.choices = choices;
+            routeTruthy.previousActionList = routeActionList; 
+            routeTruthy.previousActionSelectedId = "";
+            routeTruthy.availableProcessNode = "";
+            var routeFalsy = new model.Route();
+            routeFalsy.measurementValue = "FALSE";
+            routeFalsy.selection = "none";
+            var routeActionList2 = new model.RouteActionList();
+            var choices2 = new Array<model.Choice>();
+            var choice2 = new model.Choice();
+            choice2.Id = "341";
+            choice2.Label = "Write Email (Falsy)";
+            choices2.push(choice2);
+            choice2 = new model.Choice();
+            choice2.Id = "501";
+            choice2.Label = "Extract Foo From Bar (Falsy)";
+            choices2.push(choice2);
+            routeActionList2.choices = choices2;
+            routeFalsy.previousActionList = routeActionList2; 
+            routeFalsy.previousActionSelectedId = "";
+            routeFalsy.availableProcessNode = "";
+            routes.push(routeTruthy);
+            routes.push(routeFalsy);
+            routingControlGroup.routes = routes;
+            this._scope.routingControlGroup = routingControlGroup;
             //END OF DEMO CODE
         }
 

@@ -40,8 +40,18 @@
     export class Route extends ConfigurationField {
         measurementValue: string;
         selection: string;
-        previousActionList: string;
+        previousActionList: RouteActionList;
         previousActionSelectedId: string;
         availableProcessNode: string;
+    }
+
+    export class RouteActionList extends ConfigurationField {
+        choices: Array<Choice>;
+        selectionId: string;
+    }
+
+    export class Choice extends ConfigurationField {
+        Label: string;
+        Id: string;
     }
 }
