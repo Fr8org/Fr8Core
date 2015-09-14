@@ -48,7 +48,7 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        [ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
+        [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         public IHttpActionResult GetAvailableActivities()
         {
             var userId = User.Identity.GetUserId();
@@ -56,8 +56,8 @@ namespace Web.Controllers
             {
                 var curDockyardAccount = uow.UserRepository.GetByKey(userId);
                 var availableActivities = _activity
-                    .GetAvailableActions(curDockyardAccount)
-                    .Select(x => Mapper.Map<ActionTemplateDTO>(x))
+                    .GetAvailableActivities(curDockyardAccount)
+                    .Select(x => Mapper.Map<ActivityTemplateDTO>(x))
                     .ToList();
 
                 return Ok(availableActivities);

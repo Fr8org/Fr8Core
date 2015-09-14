@@ -119,13 +119,13 @@ namespace Core.Services
             return activityLists;
         }
 
-        public IEnumerable<ActivityTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
+        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount)
         {
-            List<ActivityTemplateDO> curActionTemplates;
+            List<ActivityTemplateDO> curActivityTemplates;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActionTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
             }
 
             //we're currently bypassing the subscription logic until we need it
@@ -137,7 +137,7 @@ namespace Core.Services
             //    .SelectMany(p => p.AvailableActions)
             //    .OrderBy(s => s.ActionType);
 
-            return curActionTemplates;
+            return curActivityTemplates;
         }
 	}
 }

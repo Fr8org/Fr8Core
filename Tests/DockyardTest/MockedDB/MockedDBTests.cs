@@ -119,19 +119,19 @@ namespace DockyardTest.MockedDB
 		  [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
 		  public void ActivityRepository_AddActionDOandActivityListDO_Failed()
 		  {
-			  var actionTempate = new ActivityTemplateDO()
+			  var activityTempate = new ActivityTemplateDO()
 			 {
 				 Id = 1,
 				 Version = "1"
 			 };
 
 			  ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a1 = new ActionDO() { Id = 23, ActionTemplate = actionTempate };
+			  ActionDO a1 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate };
 			  al1.Activities.Add(a1);
 			  a1.ParentActivity = al1;
 
 			  ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a2 = new ActionDO() { Id = 24, ActionTemplate = actionTempate };
+			  ActionDO a2 = new ActionDO() { Id = 24, ActivityTemplate = activityTempate };
 			  al2.Activities.Add(a2);
 			  a2.ParentActivity = al2;
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -149,19 +149,19 @@ namespace DockyardTest.MockedDB
 		  [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
 		  public void ActivityRepository_AddActionDOandActivityListDO_Failed2()
 		  {
-			  var actionTempate = new ActivityTemplateDO()
+			  var activityTempate = new ActivityTemplateDO()
 			  {
 				  Id = 1,
 				  Version = "1"
 			  };
 
 			  ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a1 = new ActionDO() { Id = 23, ActionTemplate = actionTempate };
+			  ActionDO a1 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate };
 			  al1.Activities.Add(a1);
 			  a1.ParentActivity = al1;
 
 			  ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a2 = new ActionDO() { Id = 24, ActionTemplate = actionTempate };
+			  ActionDO a2 = new ActionDO() { Id = 24, ActivityTemplate = activityTempate };
 			  al2.Activities.Add(a2);
 			  a2.ParentActivity = al2;
 			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

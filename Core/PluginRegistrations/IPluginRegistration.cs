@@ -13,11 +13,11 @@ namespace Core.PluginRegistrations
 
         string CallPluginRegistrationByString(string typeName, string methodName, ActionDO curActionDO);
 
-        IEnumerable<ActivityTemplateDO> AvailableActions { get; }
+        IEnumerable<ActivityTemplateDO> AvailableActivities { get; }
 		
       //  JObject GetConfigurationSettings();
 
-        string AssembleName(ActivityTemplateDO curActionTemplateDo);
+        string AssembleName(ActivityTemplateDO curActivityTemplateDo);
         Task<IEnumerable<string>> GetFieldMappingTargets(ActionDO curAction);
     }
 }

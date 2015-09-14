@@ -20,11 +20,11 @@ namespace Core.Services
             }
         }
 
-        public ActivityTemplateDO GetByKey(int curActionTemplateId)
+        public ActivityTemplateDO GetByKey(int curActivityTemplateId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActionTemplateId);
+                var curActionTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
                 if (curActionTemplateDO == null)
                     throw new ArgumentNullException("ActionTemplateId");
 

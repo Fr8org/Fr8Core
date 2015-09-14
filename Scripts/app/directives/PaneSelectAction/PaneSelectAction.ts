@@ -7,7 +7,7 @@ module dockyard.directives.paneSelectAction {
         onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) => void;
         currentAction: model.ActionDesignDTO;
         isVisible: boolean;
-        actionTypes: Array<model.ActionTemplate>;
+        actionTypes: Array<model.ActivityTemplate>;
         ActionTypeSelected: () => void;
         RemoveAction: () => void;
         componentActivities: string[];
@@ -123,7 +123,7 @@ module dockyard.directives.paneSelectAction {
 
                 $scope.ActionTypeSelected = () => {
                     debugger;
-                    var currentSelectedActivity: model.ActionTemplate;
+                    var currentSelectedActivity: model.ActivityTemplate;
                     var activities = $scope.actionTypes;
                     //find the selected activity
                     currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.actionTemplateId })[0];
@@ -208,7 +208,7 @@ module dockyard.directives.paneSelectAction {
                     angular.forEach(resp.data, function (it) {
                         console.log(it);
                         $scope.actionTypes.push(
-                            new model.ActionTemplate(
+                            new model.ActivityTemplate(
                                 it.id,
                                 it.name,
                                 it.version,

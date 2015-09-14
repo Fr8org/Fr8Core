@@ -11,6 +11,6 @@ namespace Core.Interfaces
 		List<ActivityDO> GetDownstreamActivities(ActivityDO curActivityDO);
         void Process(ActivityDO curActivityDO, ProcessDO curProcessDO);
         IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO);
-        IEnumerable<ActivityTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
+        IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount);
 	}
 }

@@ -78,7 +78,7 @@ var dockyard;
                             fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                             // ActionListId is set to null, since there is no ActionsLists on a blank db.
                             actionListId: null,
-                            actionTemplate: new dockyard.model.ActionTemplate(1, "Write to SQL", "1", "")
+                            activityTemplate: new dockyard.model.ActivityTemplate(1, "Write to SQL", "1", "")
                         };
                         postInvoker(done, actions);
                     });
@@ -98,7 +98,7 @@ var dockyard;
                         fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                         // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
-                        actionTemplate: fx.ActionTemplate.actionTemplateDO
+                        activityTemplate: fx.ActivityTemplate.activityTemplateDO
                     };
                     beforeAll(function () {
                         $(document).ajaxError(errorHandler);

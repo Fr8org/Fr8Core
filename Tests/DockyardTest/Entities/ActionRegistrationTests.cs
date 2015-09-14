@@ -11,14 +11,14 @@ namespace DockyardTest.Entities
     public class ActionTemplateTests : BaseTest
     {
         [Test]
-        [Category("ActionTemplate")]
-        public void ActionTemplate_Add_CanCreateActionTemplate()
+        [Category("ActivityTemplate")]
+        public void ActivityTemplate_Add_CanCreateActivityTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
                 
-                var actionTemplateDO = FixtureData.TestActionTemplate1();
+                var actionTemplateDO = FixtureData.TestActivityTemplate1();
 
                 uow.ActivityTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();
@@ -33,14 +33,14 @@ namespace DockyardTest.Entities
         }
 
         [Test]
-        [Category("ActionTemplate")]
-        public void ActionTemplate_Remove_CanRemoveActionTemplate()
+        [Category("ActivityTemplate")]
+        public void ActivityTemplate_Remove_CanRemoveActivityTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
 
-                var actionTemplateDO = FixtureData.TestActionTemplate1();
+                var actionTemplateDO = FixtureData.TestActivityTemplate1();
 
                 uow.ActivityTemplateRepository.Add(actionTemplateDO);
                 uow.SaveChanges();

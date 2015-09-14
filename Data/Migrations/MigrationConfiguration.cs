@@ -374,12 +374,12 @@ namespace Data.Migrations
                 .GetQuery()
                 .SingleOrDefault(x => x.Name == name && x.Plugin.Name == defaultEndPoint);
 
-            var curActionTemplateDO = new ActivityTemplateDO(
+            var curActivityTemplateDO = new ActivityTemplateDO(
                 name, defaultEndPoint, version);
 
             if (existingActionTemplateDO == null)
             {
-                uow.ActivityTemplateRepository.Add(curActionTemplateDO);
+                uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }
         }
 

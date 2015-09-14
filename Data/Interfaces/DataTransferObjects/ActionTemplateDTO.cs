@@ -2,7 +2,7 @@
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ActionTemplateDTO
+    public class ActivityTemplateDTO
     {
         [JsonProperty("id")]
         public int Id { get; set; }

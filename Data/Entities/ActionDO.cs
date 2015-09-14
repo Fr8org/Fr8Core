@@ -26,9 +26,9 @@ namespace Data.Entities
 
         public string PayloadMappings { get; set; }
 
-        [ForeignKey("ActionTemplate")]
-        public int? ActionTemplateId { get; set; }
-        public virtual ActivityTemplateDO ActionTemplate { get; set; }
+        [ForeignKey("ActivityTemplate")]
+        public int? ActivityTemplateId { get; set; }
+        public virtual ActivityTemplateDO ActivityTemplate { get; set; }
 
         [NotMapped]
         public bool IsTempId { get; set; }

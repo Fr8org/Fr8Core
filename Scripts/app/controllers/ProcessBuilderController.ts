@@ -602,7 +602,7 @@ module dockyard.controllers {
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0,
-                    actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1","")
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
                 };
 
             $httpBackend

@@ -37,7 +37,7 @@ namespace Core.PluginRegistrations
             set { }
         }
 
-        public IEnumerable<ActivityTemplateDO> AvailableActions
+        public IEnumerable<ActivityTemplateDO> AvailableActivities
         {
             get
             {
@@ -55,34 +55,34 @@ namespace Core.PluginRegistrations
             }
         }
 
-        private IEnumerable<ActivityTemplateDO> ActionsToBeRegistered
+        private IEnumerable<ActivityTemplateDO> ActivitiesToBeRegistered
         {
             get
             {
-                var curActionTemplates = new List<ActivityTemplateDO>();
+                var curActivityTemplates = new List<ActivityTemplateDO>();
                 
                 foreach (var item in availableActions.ActionNames)
                 {
-                    var curActionRegistration = new ActivityTemplateDO();
-                    Mapper.Map(item, curActionRegistration);
-                    curActionTemplates.Add(curActionRegistration);
+                    var curActivityRegistration = new ActivityTemplateDO();
+                    Mapper.Map(item, curActivityRegistration);
+                    curActivityTemplates.Add(curActivityRegistration);
                 }
 
-                return curActionTemplates;
+                return curActivityTemplates;
             }
         }
 
         public static IPluginRegistration GetPluginType(ActionDO curAction)
         {
-            if (curAction.ActionTemplate == null)
+            if (curAction.ActivityTemplate == null)
             {
                 throw new ArgumentException("ActionTemplate is not specified for current action.");
             }
 
-            var pluginRegistrationType = Type.GetType(AssembleName(curAction.ActionTemplate));
+            var pluginRegistrationType = Type.GetType(AssembleName(curAction.ActivityTemplate));
             if (pluginRegistrationType == null)
             {
-                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ActionTemplate.DefaultEndPoint), "curAction");
+                throw new ArgumentException(string.Format("Can't find plugin registration type: {0}", curAction.ActivityTemplate.DefaultEndPoint), "curAction");
             }
 
             return Activator.CreateInstance(pluginRegistrationType) as IPluginRegistration;
@@ -90,7 +90,7 @@ namespace Core.PluginRegistrations
 
         public void RegisterActions()
         {
-            IEnumerable<ActivityTemplateDO> curAvailableCommands = this.ActionsToBeRegistered;
+            IEnumerable<ActivityTemplateDO> curAvailableCommands = this.ActivitiesToBeRegistered;
             foreach (var action in curAvailableCommands)
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -99,10 +99,10 @@ namespace Core.PluginRegistrations
                     if (!uow.ActivityTemplateRepository.GetQuery().Where(a => a.Name == action.Name
                         && a.Version == action.Version && a.DefaultEndPoint == pluginRegistrationName).Any())
                     {
-                        ActivityTemplateDO actionTemplateDo = new ActivityTemplateDO(action.Name,
+                        ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO(action.Name,
                                                                         pluginRegistrationName,
                                                                         action.Version);
-                        uow.ActivityTemplateRepository.Add(actionTemplateDo);
+                        uow.ActivityTemplateRepository.Add(activityTemplateDo);
                         uow.SaveChanges();
                     }
                 }
@@ -119,14 +119,14 @@ namespace Core.PluginRegistrations
             return (string)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
         }
 
-        string IPluginRegistration.AssembleName(Data.Entities.ActivityTemplateDO curActionTemplateDO)
+        string IPluginRegistration.AssembleName(Data.Entities.ActivityTemplateDO curActivityTemplateDO)
         {
-            return AssembleName(curActionTemplateDO);
+            return AssembleName(curActivityTemplateDO);
         }
 
-        public static string AssembleName(Data.Entities.ActivityTemplateDO curActionTemplateDo)
+        public static string AssembleName(Data.Entities.ActivityTemplateDO curActivityTemplateDo)
         {
-            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActionTemplateDo.DefaultEndPoint, curActionTemplateDo.Version);
+            return string.Format("Core.PluginRegistrations.{0}PluginRegistration_v{1}", curActivityTemplateDo.DefaultEndPoint, curActivityTemplateDo.Version);
         }
 
         public virtual Task<IEnumerable<string>> GetFieldMappingTargets(Data.Entities.ActionDO curAction)

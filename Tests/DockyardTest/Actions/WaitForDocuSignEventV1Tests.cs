@@ -62,7 +62,7 @@ namespace DockyardTest.Actions
         {
             var controller = new ActionTemplateController();
             var response = controller.Get();
-            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActionTemplateDTO>>).Content;
+            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActivityTemplateDTO>>).Content;
             var actionTemplate = actionTemplateList[0];
             Assert.AreEqual("localhost:53234", actionTemplate.DefaultEndPoint);
             Assert.AreEqual("1.0", actionTemplate.Version);
