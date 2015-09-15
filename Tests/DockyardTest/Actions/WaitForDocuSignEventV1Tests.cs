@@ -64,13 +64,13 @@ namespace DockyardTest.Actions
         [Test]
         public void ActionTemplateController_ShouldReturnActionTemplateList()
         {
-            var controller = new ActivityTemplateController();
+            var controller = new PluginController();
             var response = controller.Get();
-            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActivityTemplateDTO>>).Content;
-            ActivityTemplateDTO activityTemplate = actionTemplateList[0];
+            var actionTemplateList = (response as OkNegotiatedContentResult<List<ActivityTemplateDO>>).Content;
+            ActivityTemplateDO activityTemplate = actionTemplateList[0];
            //FIX Assert.AreEqual("localhost:53234", activityTemplate.PluginID.Endpoint);
-            Assert.AreEqual("1.0", activityTemplate.Version);
-            Assert.AreEqual("Wait For DocuSign Event", activityTemplate.Name);
+            Assert.AreEqual("1", activityTemplate.Version);
+            Assert.AreEqual("Wait_For_DocuSign_Event", activityTemplate.Name);
         }
     }
 }

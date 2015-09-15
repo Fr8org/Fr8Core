@@ -87,26 +87,5 @@ namespace pluginAzureSqlServer.Controllers
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }
-
-        [HttpGet]
-        [Route("action_templates")]
-        public IHttpActionResult ActionTemplates()
-        {
-            var result = new List<ActivityTemplateDO>();
-            var template = new ActivityTemplateDO
-            {
-                Name = "WriteToAzureSqlServer",
-                Version = "1.0"
-            };
-            var plugin = new PluginDO
-            {
-                Endpoint = "localhost:46281",
-                PluginStatus = PluginStatus.Active,
-                Name = template.Name
-            };
-            template.Plugin = plugin;
-            result.Add(template);
-            return Json(result);           
-        }
     }
 }
