@@ -79,7 +79,7 @@ namespace PluginBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
+        public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
             if (dataObject == null) dataObject = curActionDTO;
 
@@ -89,8 +89,7 @@ namespace PluginBase.BaseClasses
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
             var response = (object) curMethodInfo.Invoke(curObject, new Object[] {dataObject});
-
-            return JsonConvert.SerializeObject( response ?? new { });
+            return  response ;
         }
 
         /// <summary>

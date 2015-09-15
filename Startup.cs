@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.WindowsAzure;
-using Newtonsoft.Json;
 using Owin;
 using StructureMap;
 
@@ -18,6 +17,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using Utilities;
 using Utilities.Logging;
 using Utilities.Serializers.Json;
@@ -36,6 +36,28 @@ namespace Web
             await RegisterPluginActions();
 
             LoadLocalActionLists();
+
+            string test =
+                "\"{\\\"CrateStorageDTO\\\":[{\\\"Id\\\":\\\"30eae6dd-99c6-45b4-b26f-f48adaff53c4\\\",\\\"label\\\":\\\"AzureSqlServer Design-Time Fields\\\",\\\"contents\\\":\\\"{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }\\\",\\\"parentCrateId\\\":null,\\\"manifestType\\\":\\\"\\\",\\\"manifestId\\\":0,\\\"manufacturer\\\":null}]}\"";
+            var crate1 = new CrateDTO();
+            var foo = new CrateStorageDTO();
+            foo.CrateDTO.Add(crate1);
+
+            string s1 = JsonConvert.SerializeObject(foo, JsonSettings.CamelCase);
+
+            CrateStorageDTO bar = JsonConvert.DeserializeObject<CrateStorageDTO>(s1);
+
+            var quz = 3;
+
+
+
+
+
+
+
+
+
+
 
             app.Use(async (context, next) =>
             {

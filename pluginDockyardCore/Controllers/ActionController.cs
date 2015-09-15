@@ -24,23 +24,23 @@ namespace pluginDockyardCore.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public string Configure(ActionDTO curActionDTO)
+        public CrateStorageDTO Configure(ActionDTO curActionDTO)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("activate")]
-        public string Activate(ActionDTO curActionDTO)
+        public ActionDTO Activate(ActionDTO curActionDTO)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDTO curActionDTO)
+        public ActionDTO Execute(ActionDTO curActionDTO)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
         }
     }
 }
