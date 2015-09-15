@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Web.Http;
+using Core.Interfaces;
+using Core.Services;
 using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap.Configuration.DSL;
@@ -12,6 +14,7 @@ namespace pluginAzureSqlServer
         public class CoreRegistry : Registry {
             public CoreRegistry() {
                 For<IDbProvider>().Use<SqlClientDbProvider>();
+                For<ICrate>().Use<Crate>();
             }
         }
 

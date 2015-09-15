@@ -33,6 +33,9 @@ namespace pluginAzureSqlServer.Actions {
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
+            if (curCrates.CratesDTO.Count == 0)
+                return ConfigurationRequestType.Initial;
+
             var curConnectionStringField =
                 JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CratesDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
@@ -70,7 +73,7 @@ namespace pluginAzureSqlServer.Actions {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CratesDTO = new List<CrateDTO>
                 {
-                    _crate.Create("Write to SQL Server", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
+                    _crate.Create("AzureSqlServer Design-Time Fields", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
                 }
             };
 

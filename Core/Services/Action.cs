@@ -102,31 +102,34 @@ namespace Core.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-                }
 
 
-                if (curActivityTemplate != null)
-                {
-                    //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                    var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
-                    //convert the ActivityTemplate to a DTO as well
-                    ActivityTemplateDTO curActivityTemplateDTO =  Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-                    curActionDTO.ActivityTemplate = curActivityTemplateDTO;
+                    if (curActivityTemplate != null)
+                    {
+                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
-                    // prepare the current plugin URL
-                    // TODO: Add logic to use https:// for production
-               
-                    string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
+                        //convert the ActivityTemplate to a DTO as well
+                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
 
-                    var restClient = new RestfulServiceClient();
-                    string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                        // prepare the current plugin URL
+                        // TODO: Add logic to use https:// for production
 
-                    return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
-                }
-                else
-                {
-                    throw new ArgumentNullException("ActivityTemplateDO");
+                        string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
+
+                        var restClient = new RestfulServiceClient();
+                        string curConfigurationStoreJson =
+                            restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+
+                        return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                    }
+
+                    else
+                    {
+                        throw new ArgumentNullException("ActivityTemplateDO");
+                    }
                 }
             }
             else
