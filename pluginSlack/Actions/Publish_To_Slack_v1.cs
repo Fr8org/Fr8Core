@@ -19,9 +19,11 @@ using System.Text;
 namespace pluginSlack.Actions
 {
 
-    public class Publish_To_Slack_v1
+    public class Publish_To_Slack_v1 : BasePluginAction
     {
-        public string Process(SlackPayloadDTO curSlackPayloadDTO)
+
+   
+        public object Execute(SlackPayloadDTO curSlackPayload)
         {
             string responseText = string.Empty;
             Encoding encoding = new UTF8Encoding();
@@ -29,7 +31,7 @@ namespace pluginSlack.Actions
             const string webhookUrl = "WebhookUrl";
             Uri uri = new Uri(ConfigurationManager.AppSettings[webhookUrl]);
 
-            string payloadJson = JsonConvert.SerializeObject(curSlackPayloadDTO);
+            string payloadJson = JsonConvert.SerializeObject(curSlackPayload);
 
             using (WebClient client = new WebClient())
             {
@@ -41,7 +43,7 @@ namespace pluginSlack.Actions
                 responseText = encoding.GetString(response);
             }
             return responseText;
-
         }
+
     }
 }

@@ -7,13 +7,12 @@ using pluginSlack.Actions;
 using StructureMap;
 
 namespace pluginSlack.Controllers
-{    
+{
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
         private const string curPlugin = "pluginSlack";
         private BasePluginController _basePluginController = new BasePluginController();
-        private readonly Publish_To_Slack_v1 _publish_To_Slack_v1;
 
         [HttpPost]
         [Route("configure")]
@@ -21,7 +20,7 @@ namespace pluginSlack.Controllers
         {
             return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
         }
-       
+
         [HttpPost]
         [Route("activate")]
         public string Activate(ActionDTO curActionDataPackage)
@@ -38,13 +37,13 @@ namespace pluginSlack.Controllers
 
         [HttpPost]
         [Route("Publish_To_Slack")]
-        public string PublishToSlack(SlackPayloadDTO curSlackPayloadDTO)
+        public IHttpActionResult PublishToSlack(SlackPayloadDTO curSlackPayload)
         {
             var _actionHandler = ObjectFactory.GetInstance<Publish_To_Slack_v1>();
-            return _actionHandler.Process(curSlackPayloadDTO);
-          
+            return Ok(_actionHandler.Execute(curSlackPayload));
+
         }
 
-      
+
     }
 }
