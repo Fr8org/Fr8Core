@@ -79,7 +79,7 @@ namespace Core.Services
 
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
-            return curActionDO.CrateStorageDTO().CratesDTO;
+            return curActionDO.CrateStorageDTO().CrateDTO;
         }
 
         public ActionDO GetById(int id)
@@ -90,7 +90,7 @@ namespace Core.Services
             }
         }
 
-        public string Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDO curActionDO)
         {
 
             ActivityTemplateDO curActivityTemplate;
@@ -120,10 +120,10 @@ namespace Core.Services
                         string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
                         var restClient = new RestfulServiceClient();
-                        string curConfigurationStoreJson;
+                        string pluginConfigurationCrateListJSON;
                         try
                         {
-                           curConfigurationStoreJson =
+                            pluginConfigurationCrateListJSON =
                            restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
                         }
                         catch (Exception)
@@ -131,9 +131,10 @@ namespace Core.Services
                             EventManager.PluginConfigureFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
                             throw;
                         }
-                       
 
-                        return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
+                        return configurationCrates;
+                        //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
                     }
 
                     else

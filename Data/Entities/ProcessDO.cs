@@ -61,7 +61,7 @@ namespace Data.Entities
                 crateStorageDTO = this.CrateStorageDTO();
             }
 
-            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
 
             this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
         }

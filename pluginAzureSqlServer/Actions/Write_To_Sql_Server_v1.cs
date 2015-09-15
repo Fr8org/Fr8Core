@@ -33,11 +33,11 @@ namespace pluginAzureSqlServer.Actions {
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
-            if (curCrates.CratesDTO.Count == 0)
+            if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
 
             var curConnectionStringField =
-                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CratesDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
             if (curConnectionStringField != null)
             {
@@ -71,7 +71,7 @@ namespace pluginAzureSqlServer.Actions {
             {
 
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                CratesDTO = new List<CrateDTO>
+                CrateDTO = new List<CrateDTO>
                 {
                     _crate.Create("AzureSqlServer Design-Time Fields", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
                 }
@@ -128,8 +128,8 @@ namespace pluginAzureSqlServer.Actions {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CratesDTO.First().Contents);
-            if (configuration == null || curActionDO.CrateStorageDTO().CratesDTO.Count == 0)
+            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CrateDTO.First().Contents);
+            if (configuration == null || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
                 {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
                 }

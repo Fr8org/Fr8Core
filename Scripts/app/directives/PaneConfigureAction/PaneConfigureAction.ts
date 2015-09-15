@@ -102,7 +102,8 @@ module dockyard.directives.paneConfigureAction {
 
                 if (eventArgs.action.actionTemplateId > 0) {
                     (<any>scope.currentAction).crateStorage =
-                    this.ActionService.getCrateStorage(scope.action);
+                    this.ActionService.configure(scope.action);
+
                 }
             }
 

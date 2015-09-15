@@ -78,7 +78,7 @@ namespace UtilitiesTesting.Fixtures
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
 	        return new CrateStorageDTO
 	        {
-	            CratesDTO = new List<CrateDTO>
+	            CrateDTO = new List<CrateDTO>
 	            {
                     _crate.Create("SQL Connection String", "{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}"),
                     _crate.Create("Custom SQL Query", "{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}"),

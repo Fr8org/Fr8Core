@@ -6,7 +6,6 @@
         actionListId: number;
         name: string;
         crateStorage: model.CrateStorage;
-        fieldMappingSettings: model.FieldMappingSettings;
         actionTemplateId: number;
         activityTemplate: model.ActivityTemplate;
 
@@ -30,7 +29,6 @@
                 actionListId: this.actionListId,
                 name: this.name,
                 crateStorage: this.crateStorage,
-                fieldMappingSettings: this.fieldMappingSettings,
                 activityTemplate: this.activityTemplate
             };
         }
@@ -51,7 +49,6 @@
             result.actionListId = dataObject.actionListId;
             result.actionTemplateId = dataObject.actionTemplateId;
             result.crateStorage = dataObject.crateStorage;
-            result.fieldMappingSettings = dataObject.fieldMappingSettings;
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;

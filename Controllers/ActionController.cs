@@ -94,11 +94,12 @@ namespace Web.Controllers
         [HttpPost]
         [Route("configuration")]
         [Route("configure")]
-        [ResponseType(typeof(CrateStorageDTO))]
+        //[ResponseType(typeof(CrateStorageDTO))]
         public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            return Ok(_action.Configure(curActionDO));  
+            var configurationCrates = _action.Configure(curActionDO);
+            return Ok(configurationCrates);  
         }
 
 
@@ -117,20 +118,6 @@ namespace Web.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
-        /// </summary>
-        [HttpPost]
-        [Route("field_mapping_targets")]
-        public string GetFieldMappingTargets(ActionDTO curActionDesignDTO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
-
-                //Field mapping targets are as part of Confgiuration Store of Action DO
-                return _action.Configure(curAction);
-            }
-        }
+        
     }
 }

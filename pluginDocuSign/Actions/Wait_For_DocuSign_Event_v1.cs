@@ -62,7 +62,7 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CratesDTO.SingleOrDefault();
+            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
             if (crate == null) return null;
 
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
@@ -130,14 +130,14 @@ namespace pluginDocuSign.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-            curActionDTO.CrateStorage.CratesDTO.Add(crateControls);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
             return curActionDTO.CrateStorage;
         }
 
         protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curCrates = curActionDTO.CrateStorage.CratesDTO;
+            var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
             if (curCrates == null || curCrates.Count == 0)
             {
@@ -185,7 +185,7 @@ namespace pluginDocuSign.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-            curActionDTO.CrateStorage.CratesDTO.AddRange(crateConfiguration);
+            curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
             return curActionDTO.CrateStorage;
         }
     }
