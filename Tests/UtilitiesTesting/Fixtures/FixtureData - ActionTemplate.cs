@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using DocuSign.Integrations.Client;
 using StructureMap;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 1,
                 Name = "Write to Sql Server",
-                DefaultEndPoint = "pluginAzureSqlServer",
-                Version="v3"
+                Plugin = new PluginDO { Name = "pluginAzureSqlServer", Endpoint = "pluginAzureSqlServer", PluginStatus = PluginStatus.Active  },
+                Version = "v3"
 			};
             return activityTemplateDo;
 		}
@@ -36,7 +37,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Type1",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = new PluginDO { Name = "AzureSqlServer", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
             return curActivityDO;
@@ -48,7 +49,7 @@ namespace UtilitiesTesting.Fixtures
 	        {
 	            Id = 1,
                 Name = "plugin_azure_sql_server",
-                DefaultEndPoint = "http://localhost:46281/",
+                Plugin = new PluginDO { Name = "http://localhost:46281/", Endpoint = "http://localhost:46281/", PluginStatus = PluginStatus.Active },
 	            Version = "1"
 	        };
 
@@ -61,7 +62,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "plugin_azure_sql_server",
-                DefaultEndPoint = "http://localhost:46281/",
                 Version = "1"
             };
 
@@ -96,7 +96,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to SQL",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = new PluginDO { Name = "AzureSqlServer", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
             return curActivityDO;

@@ -31,4 +31,13 @@
         groupName: string;
         radios: Array<RadioField>;
     }
+
+    export class DropDownListItem {
+        text: string;
+        value: string;
+    }
+    export class DropDownListBoxField extends ConfigurationField {
+        listItems: Array<DropDownListItem>;
+        value: string;
+    }
 }

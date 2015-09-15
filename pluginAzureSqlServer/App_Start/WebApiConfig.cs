@@ -13,11 +13,11 @@ namespace pluginAzureSqlServer
         public static void Register(HttpConfiguration config)
         {
            
-            ObjectFactory.Initialize(i =>
+          /*  ObjectFactory.Initialize(i =>
             {
                 i.For<IDbProvider>().Use<SqlClientDbProvider>();
                 
-            });
+            });*/
 
             // Web API configuration and services
             new  Container().Inject<IDbProvider>(new SqlClientDbProvider());

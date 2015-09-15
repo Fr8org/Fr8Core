@@ -102,7 +102,7 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void PluginIncidentHandler(EventData incidentItem);
+        public delegate void PluginIncidentHandler(LoggingData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
         public delegate void EventDocuSignNotificationReceivedHandler();
@@ -126,7 +126,7 @@ namespace Data.Infrastructure
         public delegate void EventActionDispatchedHandler(ActionDTO curAction);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
-        public delegate void PluginEventHandler(EventData eventData);
+        public delegate void PluginEventHandler(LoggingData eventData);
         public static event PluginEventHandler PluginEventReported;
 
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
@@ -139,7 +139,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportPluginIncident(EventData incidentItem)
+        public static void ReportPluginIncident(LoggingData incidentItem)
         {
             PluginIncidentHandler handler = PluginIncidentReported;
             if (handler != null) handler(incidentItem);
@@ -376,7 +376,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(curAction);
         }
 
-        public static void ReportPluginEvent(EventData eventData)
+        public static void ReportPluginEvent(LoggingData eventData)
         {
             PluginEventHandler handler = PluginEventReported;
             if (handler != null) handler(eventData);

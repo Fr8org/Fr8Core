@@ -94,6 +94,7 @@
     <Compile Include="ExcelUtils.cs" />
     <Compile Include="ExceptionHandling.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="FileUtils.cs" />
     <Compile Include="FilterUtility.cs" />
     <Compile Include="Interfaces\ICsvReader.cs" />
     <Compile Include="JsonPackager.cs" />

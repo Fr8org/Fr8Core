@@ -8,14 +8,14 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class EventDTO
     {
-        public string Source { get; set; }
+        public string EventName { get; set; }
 
-        public string EventType { get; set; }
+        public string PalletId { get; set; }
 
-        public EventData Data { get; set; }
+        public List<CrateDTO> CrateStorage { get; set; }
     }
 
-    public class EventData
+    public class LoggingData
     {
         public string ObjectId { get; set; }
 

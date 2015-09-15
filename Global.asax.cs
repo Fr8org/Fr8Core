@@ -58,7 +58,7 @@ namespace Web
             //Register global Exception Filter for WebAPI 
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
-            // StructureMap Dependencies configuration
+            // StructureMap Dependencies configuration 
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
                 //set to either "test" or "live"
 

@@ -2,6 +2,8 @@
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
+using System.Collections.Generic;
+using Data.States;
 using System;
 
 namespace pluginAzureSqlServer.Controllers

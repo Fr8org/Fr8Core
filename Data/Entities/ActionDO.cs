@@ -17,14 +17,10 @@ namespace Data.Entities
 
         public string CrateStorage { get; set; }
 
-        public string FieldMappingSettings { get; set; }
-
         [ForeignKey("ActionStateTemplate")]
         public int? ActionState { get; set; }
 
         public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
-
-        public string PayloadMappings { get; set; }
 
         [ForeignKey("ActivityTemplate")]
         public int? ActivityTemplateId { get; set; }

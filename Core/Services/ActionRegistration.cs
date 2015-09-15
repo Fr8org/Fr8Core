@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces;
+using Core.Managers.APIManagers;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
@@ -6,11 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Core.Services
 {
-    public class ActionTemplate :IActionTemplate
+    public class ActivityTemplate :IActivityTemplate
     {
         public IEnumerable<ActivityTemplateDO> GetAll()
         {
@@ -24,13 +24,15 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActionTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
-                if (curActionTemplateDO == null)
+                var curActivityTemplateDO = uow.ActivityTemplateRepository.GetByKey(curActivityTemplateId);
+                if (curActivityTemplateDO == null)
                     throw new ArgumentNullException("ActionTemplateId");
 
-                return curActionTemplateDO;
+                return curActivityTemplateDO;
             }
 
         }
+
+        
     }
 }

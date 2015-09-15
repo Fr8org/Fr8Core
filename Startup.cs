@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Owin;
+using Microsoft.WindowsAzure;
+using Newtonsoft.Json;
+using Owin;
+using StructureMap;
+
 using Configuration;
 using Daemons;
 using Data.Entities;
@@ -10,12 +18,9 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Interfaces.DataTransferObjects;
-using Microsoft.Owin;
-using Microsoft.WindowsAzure;
-using Owin;
-using StructureMap;
-using Utilities.Logging;
 using Utilities;
+using Utilities.Logging;
+using Utilities.Serializers.Json;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -23,12 +28,12 @@ namespace Web
 {
     public partial class Startup
     {
-        public void Configuration(IAppBuilder app)
+        public async void Configuration(IAppBuilder app)
         {
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            RegisterPluginActions();
+            await RegisterPluginActions();
 
             LoadLocalActionLists();
 
@@ -78,20 +83,20 @@ namespace Web
 
 
             if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
-            // it is not true that there is at least one commConfig that has the Main alert number
-            {
-                CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
-                curCommConfig.CommunicationType = CommunicationType.Sms;
-                curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
-                communicationConfigurationRepo.Add(curCommConfig);
-                uow.SaveChanges();
+                // it is not true that there is at least one commConfig that has the Main alert number
+                {
+                    CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
+                    curCommConfig.CommunicationType = CommunicationType.Sms;
+                    curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
+                        communicationConfigurationRepo.Add(curCommConfig);
+                        uow.SaveChanges();
+                }
+           
             }
-
-        }
 
         public void AddMainSMSAlertToDb(CommunicationConfigurationRepository communicationConfigurationRepo)
         {
-
+           
         }
 
 
@@ -128,21 +133,64 @@ namespace Web
             }
         }
 
-        public void RegisterPluginActions()
+        public async Task RegisterPluginActions()
         {
-            /*
-             * TODO: This Plugin registration logic should be changed in V2
-             */
+            var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
 
+            try
+            {
+                foreach (var url in actionTemplateHosts)
+                {
+                    var uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri += "/plugins/discover";
 
-            //IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
-            //    .Assembly.GetTypes()
-            //    .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-            //    .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
-            //foreach (var plugin in plugins)
-            //{
-            //    plugin.RegisterActions();
-            //}
+                    using (var client = new HttpClient())
+                    using (var response = await client.GetAsync(uri))
+                    using (var content = response.Content)
+                    {
+                        // For discover serialization see:
+                        //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
+                        //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
+                        //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
+                        var data = await content.ReadAsStringAsync();
+                        var curActionList = JsonConvert.DeserializeObject<List<ActivityTemplateDO>>(data);
+
+                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            PluginDO curPlugin = null;
+
+                            foreach (var curItem in curActionList)
+                            {
+                                // Create only one plugin record.
+                                if (curPlugin == null)
+                                {
+                                    uow.PluginRepository.Add(curItem.Plugin);
+                                    curPlugin = curItem.Plugin;
+                                }
+
+                                // Check that ActivityTemplate with specified plugin does not exist yet.
+                                var curTemplateExists = uow.ActivityTemplateRepository
+                                    .GetQuery()
+                                    .Any(x => x.Name == curItem.Name && x.Plugin.Name == curItem.Plugin.Name);
+
+                                // If it doesn't exist, then create one.
+                                if (!curTemplateExists)
+                                {
+                                    // Reassign Plugin to single plugin instance.
+                                    curItem.Plugin = curPlugin;
+                                    uow.ActivityTemplateRepository.Add(curItem);
+                                }
+                            }
+
+                            uow.SaveChanges();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
+            }
         }
 
         /// <summary>
@@ -162,60 +210,29 @@ namespace Web
                         ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
                         componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
 
-                        if (!CheckForActivityTemplate("Wait for notification that an envelope has arrived at DocuSign"))
-                        {
-                            ActivityTemplateDO componentActivityOne = new ActivityTemplateDO("Wait for notification that an envelope has arrived at DocuSign"
-                                , "localhost:46281", "1");
-                            activityTemplateRepositary.Add(componentActivityOne);
-                        }
-                        if (!CheckForActivityTemplate("Filter the Envelope against some Criteria"))
-                        {
-                            ActivityTemplateDO componentActivityTwo = new ActivityTemplateDO("Filter the Envelope against some Criteria"
-                             , "localhost:46281", "1");
-                            activityTemplateRepositary.Add(componentActivityTwo);
-                        }
-                        if (!CheckForActivityTemplate("Extract Data from the Envelope"))
-                        {
-                            ActivityTemplateDO componentActivityThree = new ActivityTemplateDO("Extract Data from the Envelope"
-                         , "localhost:46281", "1");
-                            activityTemplateRepositary.Add(componentActivityThree);
-                        }
-                        if (!CheckForActivityTemplate("Map the Data to Target Fields"))
-                        {
-                            ActivityTemplateDO componentActivityFour = new ActivityTemplateDO("Map the Data to Target Fields"
-                           , "localhost:46281", "1");
-                            activityTemplateRepositary.Add(componentActivityFour);
-                        }
-                        if (!CheckForActivityTemplate("Write the Data to AzureSqlServer"))
-                        {
-                            ActivityTemplateDO componentActivityFive = new ActivityTemplateDO("Write the Data to AzureSqlServer"
-                               , "localhost:46281", "1");
-                            activityTemplateRepositary.Add(componentActivityFive);
-                        }
-                        uow.SaveChanges();
-
                         activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Wait for notification that an envelope has arrived at DocuSign"));
+                            (item => item.Name == "Wait_For_DocuSign_Event"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                           (item => item.Name == "Filter the Envelope against some Criteria"));
+                           (item => item.Name == "FilterUsingRunTimeData"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Extract Data from the Envelope"));
+                            (item => item.Name == "Extract_From_DocuSign_Envelope"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                          (item => item.Name == "Map the Data to Target Fields"));
+                          (item => item.Name == "MapFields"));
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Write the Data to AzureSqlServer"));
+                            (item => item.Name == "Write_To_Sql_Server"));
 
-                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", "1");
+                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", 1);
                         activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
+                        activityTemplate.Plugin = uow.PluginRepository.FindOne(x => x.Name == "pluginAzureSqlServer");
 
                         activityTemplateRepositary.Add(activityTemplate);
                         uow.SaveChanges();

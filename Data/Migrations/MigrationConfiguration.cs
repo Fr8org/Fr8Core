@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -62,8 +63,6 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow);
-            AddPlugins(uow);
-            AddActionTemplates(uow);
 
             SeedMultiTenantTables(uow);
         }
@@ -330,59 +329,6 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-
-        private void AddPlugins(IUnitOfWork uow)
-        {
-            const string azureSqlPluginName = "AzureSqlServerPluginRegistration_v1";
-
-            // Create test DockYard account for plugin subscription.
-            var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
-
-            // Check that plugin does not exist yet.
-            var azureSqlPluginExists = uow.PluginRepository.GetQuery()
-                .Any(x => x.Name == azureSqlPluginName);
-
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!azureSqlPluginExists)
-            {
-                // Create plugin instance.
-                var azureSqlPlugin = new PluginDO()
-                {
-                    Name = azureSqlPluginName,
-                    PluginStatus = PluginStatus.Active
-                };
-
-                uow.PluginRepository.Add(azureSqlPlugin);
-
-                // Create subscription instance.
-                AddSubscription(uow,account,azureSqlPlugin,AccessLevel.User);
-               
-            }
-        }
-
-        private void AddActionTemplates(IUnitOfWork uow)
-        {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Data From DocuSign Envelopes", "localhost:53234", "1");
-            uow.SaveChanges();
-        }
-
-        private void AddActionTemplate(IUnitOfWork uow, string name, string defaultEndPoint, string version)
-        {
-            var existingActionTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery()
-                .SingleOrDefault(x => x.Name == name && x.Plugin.Name == defaultEndPoint);
-
-            var curActivityTemplateDO = new ActivityTemplateDO(
-                name, defaultEndPoint, version);
-
-            if (existingActionTemplateDO == null)
-            {
-                uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-            }
-        }
-
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
             
@@ -477,7 +423,6 @@ namespace Data.Migrations
             uow.SaveChanges();
         }
         
-
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {

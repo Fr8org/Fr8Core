@@ -20,12 +20,12 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
-        private readonly IActionTemplate _actionTemplate;
+        private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
-            _actionTemplate = ObjectFactory.GetInstance<IActionTemplate>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         public ActionController(IAction service)
@@ -93,11 +93,12 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("configuration")]
+        [Route("configure")]
         [ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult GetConfigurationSettings(ActionDTO curActionDesignDTO)
+        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            return Ok(_action.GetConfigurationSettings(curActionDO));  
+            return Ok(_action.Configure(curActionDO));  
         }
 
 
@@ -128,7 +129,7 @@ namespace Web.Controllers
                 var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
 
                 //Field mapping targets are as part of Confgiuration Store of Action DO
-                return _action.GetConfigurationSettings(curAction);
+                return _action.Configure(curAction);
             }
         }
     }

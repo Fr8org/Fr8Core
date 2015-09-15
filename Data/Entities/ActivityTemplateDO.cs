@@ -11,16 +11,12 @@ namespace Data.Entities
 
         }
 
-        public ActivityTemplateDO(string name, string defaultEndPoint, string version)
+
+        public ActivityTemplateDO(string name, string version, int pluginId)
         {
             this.Name = name;
-            this.DefaultEndPoint = defaultEndPoint;
             this.Version = version;
-            this.Plugin = new PluginDO()
-            {
-                Name = defaultEndPoint,
-                PluginStatus = PluginStatus.Active
-            };
+            this.PluginID = pluginId;
         }
 
         [Key]
@@ -30,14 +26,16 @@ namespace Data.Entities
 
         public string Version { get; set; }
 
-        public string DefaultEndPoint { get; set; }
 
         public string AuthenticationType { get; set; }
 
         public string ComponentActivities { get; set; }
 
         [ForeignKey("Plugin")]
-        public int? PluginID { get; set; }
+        public int PluginID { get; set; }
+        
         public virtual PluginDO Plugin { get; set; }
+
+
     }
 }

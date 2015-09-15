@@ -236,7 +236,6 @@
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />
-    <Compile Include="PluginRegistrations\NotifierPluginRegistration_v1Test.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
@@ -246,7 +245,6 @@
     <Compile Include="Services\ActionDTO.cs" />
     <Compile Include="Services\ActionListServiceTests.cs" />
     <Compile Include="Services\ActionServiceTests.cs" />
-    <Compile Include="Services\BasePluginRegistrationTests.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\EnvelopeServiceTests.cs" />
     <Compile Include="Services\IPluginClient.cs" />

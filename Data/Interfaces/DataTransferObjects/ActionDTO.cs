@@ -5,6 +5,11 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDTO : ActionDTOBase
     {
+        public ActionDTO() : base()
+        {
+            CrateStorage = new CrateStorageDTO();
+        }
+
         public int? ActionListId { get; set; }
 
         [JsonProperty("configurationStore")]
