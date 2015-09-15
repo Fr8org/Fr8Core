@@ -81,20 +81,20 @@ namespace Web
 
 
             if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
-            // it is not true that there is at least one commConfig that has the Main alert number
-            {
-                CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
-                curCommConfig.CommunicationType = CommunicationType.Sms;
-                curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
-                communicationConfigurationRepo.Add(curCommConfig);
-                uow.SaveChanges();
+                // it is not true that there is at least one commConfig that has the Main alert number
+                {
+                    CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
+                    curCommConfig.CommunicationType = CommunicationType.Sms;
+                    curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
+                        communicationConfigurationRepo.Add(curCommConfig);
+                        uow.SaveChanges();
+                }
+           
             }
-
-        }
 
         public void AddMainSMSAlertToDb(CommunicationConfigurationRepository communicationConfigurationRepo)
         {
-
+           
         }
 
 

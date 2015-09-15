@@ -58,6 +58,6 @@ namespace Data.Entities
         
         public virtual PluginDO Plugin { get; set; }
 
-        //public string ActionProcessor { get; set; }
+
     }
 }

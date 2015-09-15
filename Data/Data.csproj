@@ -340,6 +340,14 @@
     <Compile Include="Migrations\201509140050401_v2CoreRefactoring.Designer.cs">
       <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509112208098_UpdatePluginDO.cs" />
+    <Compile Include="Migrations\201509112208098_UpdatePluginDO.Designer.cs">
+      <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509131436466_UpdateActionTemplateDOPluginDO.cs" />
+    <Compile Include="Migrations\201509131436466_UpdateActionTemplateDOPluginDO.Designer.cs">
+      <DependentUpon>201509131436466_UpdateActionTemplateDOPluginDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.cs" />
     <Compile Include="Migrations\201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.Designer.cs">
       <DependentUpon>201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.cs</DependentUpon>
@@ -352,17 +360,13 @@
     <Compile Include="Migrations\201509142342108_DO-951.Designer.cs">
       <DependentUpon>201509142342108_DO-951.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509142357467_DO-951-Ignore.cs" />
-    <Compile Include="Migrations\201509142357467_DO-951-Ignore.Designer.cs">
-      <DependentUpon>201509142357467_DO-951-Ignore.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509150000065_DO-951-Ignore2.cs" />
-    <Compile Include="Migrations\201509150000065_DO-951-Ignore2.Designer.cs">
-      <DependentUpon>201509150000065_DO-951-Ignore2.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201509150013253_UpdateActivityDO.cs" />
     <Compile Include="Migrations\201509150013253_UpdateActivityDO.Designer.cs">
       <DependentUpon>201509150013253_UpdateActivityDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509151219496_EmptyMigration.cs" />
+    <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
+      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -649,6 +653,12 @@
     <EmbeddedResource Include="Migrations\201509140050401_v2CoreRefactoring.resx">
       <DependentUpon>201509140050401_v2CoreRefactoring.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509112208098_UpdatePluginDO.resx">
+      <DependentUpon>201509112208098_UpdatePluginDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509131436466_UpdateActionTemplateDOPluginDO.resx">
+      <DependentUpon>201509131436466_UpdateActionTemplateDOPluginDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.resx">
       <DependentUpon>201509140550384_NewAddedComponentActivitytoActivityTemplateRepositary.cs</DependentUpon>
     </EmbeddedResource>
@@ -658,14 +668,11 @@
     <EmbeddedResource Include="Migrations\201509142342108_DO-951.resx">
       <DependentUpon>201509142342108_DO-951.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509142357467_DO-951-Ignore.resx">
-      <DependentUpon>201509142357467_DO-951-Ignore.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509150000065_DO-951-Ignore2.resx">
-      <DependentUpon>201509150000065_DO-951-Ignore2.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509150013253_UpdateActivityDO.resx">
       <DependentUpon>201509150013253_UpdateActivityDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
+      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

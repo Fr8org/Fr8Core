@@ -35,7 +35,7 @@
 //            Startup startup = new Startup();
 //            startup.RegisterPluginActions();
 
-//            var recordCount = _uow.ActionTemplateRepository.GetQuery().Count();
+//            var recordCount = _uow.ActivityTemplateRepository.GetQuery().Count();
 
 //            Assert.GreaterOrEqual(recordCount, 1);
 //        }

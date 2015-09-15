@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class DO951Ignore2 : IMigrationMetadata
+    public sealed partial class EmptyMigration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(DO951Ignore2));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(EmptyMigration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509150000065_DO-951-Ignore2"; }
+            get { return "201509151219496_EmptyMigration"; }
         }
         
         string IMigrationMetadata.Source

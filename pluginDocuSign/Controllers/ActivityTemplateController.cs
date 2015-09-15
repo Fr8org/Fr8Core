@@ -12,7 +12,7 @@ using Data.States;
 namespace pluginDocuSign.Controllers
 {    
     [RoutePrefix("actions")]
-    public class ActionTemplateController : ApiController
+    public class ActivityTemplateController : ApiController
     {
         [HttpGet]
         [Route("action_templates")]
@@ -23,6 +23,7 @@ namespace pluginDocuSign.Controllers
                 Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
                 Name = "Wait For DocuSign Event"
+
             };
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()

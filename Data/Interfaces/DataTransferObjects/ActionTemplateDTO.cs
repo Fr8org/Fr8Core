@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Data.Entities;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -13,9 +14,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("version")]
         public string Version { get; set; }
 
-        //[JsonProperty("defaultEndPoint")]
-        //public string DefaultEndPoint { get; set; }
-
+        public int PluginID { get; set; }
+        public virtual PluginDO Plugin { get; set; }
         [JsonProperty("componentActivities")]
         public string ComponentActivities { get; set; }
     }

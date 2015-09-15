@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class DO951Ignore : IMigrationMetadata
+    public sealed partial class UpdatePluginDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(DO951Ignore));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatePluginDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509142357467_DO-951-Ignore"; }
+            get { return "201509112208098_UpdatePluginDO"; }
         }
         
         string IMigrationMetadata.Source

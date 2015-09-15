@@ -174,7 +174,8 @@ namespace pluginAzureSqlServer.Actions {
 
         private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO,DbServiceJsonParser parser)
         {
-            var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
+            //replace this with a Crate-based solution
+            JObject payload = new JObject();//JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
             var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
             
             if (payloadArray.Count == 0)
