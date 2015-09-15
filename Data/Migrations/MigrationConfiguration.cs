@@ -378,9 +378,10 @@ namespace Data.Migrations
             if (existingActivityTemplateDO != null)
                 return;
 
-            var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint);
-            uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
+            //TODO fix these seed methods to use the latest V2 syntax for creating Plugins and then ActivityTemplates
+            //var curActivityTemplateDO = new ActivityTemplateDO(
+            //    name, version, endPoint);
+            //uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }
 
 

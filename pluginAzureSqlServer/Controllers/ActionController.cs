@@ -90,7 +90,7 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpGet]
         [Route("action_templates")]
-        public IHttpActionResult ActionTemplates()
+        public IHttpActionResult DiscoverPlugins()
         {
             var activities = new List<ActivityTemplateDTO>();
             var template = new ActivityTemplateDTO

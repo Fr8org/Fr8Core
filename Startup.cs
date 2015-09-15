@@ -141,7 +141,7 @@ namespace Web
                 foreach (string url in actionTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
-                    uri += "/actions/action_templates";
+                    uri += "/actions/discover_plugins";
 
                     using (HttpClient client = new HttpClient())
                     using (HttpResponseMessage response = await client.GetAsync(uri))
