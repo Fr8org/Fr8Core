@@ -210,60 +210,29 @@ namespace Web
                         ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
                         componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
 
-                        if (!CheckForActivityTemplate("Wait for notification that an envelope has arrived at DocuSign"))
-                        {
-                            ActivityTemplateDO componentActivityOne = new ActivityTemplateDO("Wait for notification that an envelope has arrived at DocuSign"
-                                , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityOne);
-                        }
-                        if (!CheckForActivityTemplate("Filter the Envelope against some Criteria"))
-                        {
-                            ActivityTemplateDO componentActivityTwo = new ActivityTemplateDO("Filter the Envelope against some Criteria"
-                             , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityTwo);
-                        }
-                        if (!CheckForActivityTemplate("Extract Data from the Envelope"))
-                        {
-                            ActivityTemplateDO componentActivityThree = new ActivityTemplateDO("Extract Data from the Envelope"
-                         , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityThree);
-                        }
-                        if (!CheckForActivityTemplate("Map the Data to Target Fields"))
-                        {
-                            ActivityTemplateDO componentActivityFour = new ActivityTemplateDO("Map the Data to Target Fields"
-                           , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityFour);
-                        }
-                        if (!CheckForActivityTemplate("Write the Data to AzureSqlServer"))
-                        {
-                            ActivityTemplateDO componentActivityFive = new ActivityTemplateDO("Write the Data to AzureSqlServer"
-                               , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityFive);
-                        }
-                        uow.SaveChanges();
-
                         activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Wait for notification that an envelope has arrived at DocuSign"));
+                            (item => item.Name == "Wait_For_DocuSign_Event"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                           (item => item.Name == "Filter the Envelope against some Criteria"));
+                           (item => item.Name == "FilterUsingRunTimeData"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Extract Data from the Envelope"));
+                            (item => item.Name == "Extract_From_DocuSign_Envelope"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                          (item => item.Name == "Map the Data to Target Fields"));
+                          (item => item.Name == "MapFields"));
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Write the Data to AzureSqlServer"));
+                            (item => item.Name == "Write_To_Sql_Server"));
 
                         ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", 1);
                         activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
+                        activityTemplate.Plugin = uow.PluginRepository.FindOne(x => x.Name == "pluginAzureSqlServer");
 
                         activityTemplateRepositary.Add(activityTemplate);
                         uow.SaveChanges();
