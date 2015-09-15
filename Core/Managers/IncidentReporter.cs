@@ -28,7 +28,7 @@ namespace Core.Managers
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
         }
 
-        private void LogPluginIncident(EventData incidentItem)
+        private void LogPluginIncident(LoggingData incidentItem)
         {
             var currentIncident = new IncidentDO
             {
