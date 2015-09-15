@@ -47,7 +47,7 @@ namespace pluginDockyardCore.Actions
                 {
                     Contents = curFieldMappingJson,
                     Label = "Payload",
-                    ManifestType = "Payload Data"
+                    ManifestType = "Standard Payload Data"
                 }
             };
 

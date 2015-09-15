@@ -73,7 +73,7 @@ namespace pluginAzureSqlServer.Actions {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
                 {
-                    _crate.Create("AzureSqlServer Design-Time Fields", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
+                    _crate.Create("AzureSqlServer Design-Time Fields", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }", "Standard Configuration Controls")
                 }
             };
 

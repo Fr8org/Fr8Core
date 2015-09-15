@@ -124,7 +124,7 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent
             };
 
-            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields));
+            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields),  "Standard Configuration Controls");
 
             if (curActionDTO.CrateStorage == null)
             {
