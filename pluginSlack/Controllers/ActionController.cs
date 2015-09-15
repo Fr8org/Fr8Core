@@ -37,8 +37,8 @@ namespace pluginSlack.Controllers
         }
 
         [HttpPost]
-        [Route("PublishToSlack")]
-        public string Process(SlackPayloadDTO curSlackPayloadDTO)
+        [Route("Publish_To_Slack")]
+        public string PublishToSlack(SlackPayloadDTO curSlackPayloadDTO)
         {
             var _actionHandler = ObjectFactory.GetInstance<Publish_To_Slack_v1>();
             return _actionHandler.Process(curSlackPayloadDTO);
