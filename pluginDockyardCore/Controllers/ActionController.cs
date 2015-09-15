@@ -12,56 +12,35 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using PluginBase.BaseClasses;
 
 namespace pluginDockyardCore.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private readonly IAction _action;
-
-        public ActionController()
-        {
-            _action = ObjectFactory.GetInstance<IAction>();
-        }
+        private const string curPlugin = "pluginDockyardCore";
+        private BasePluginController _basePluginController = new BasePluginController();
 
         [HttpGet]
         [Route("configure")]
-        public string Configure(ActionDTO curActionDO)
+        public string Configure(ActionDTO curActionDTO)
         {
-            return HandleDockyardRequest(curActionDO, "Configure");
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("activate")]
-        public string Activate(ActionDTO curActionDO)
+        public string Activate(ActionDTO curActionDTO)
         {
-            return HandleDockyardRequest(curActionDO, "Activate");
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDTO curActionDO)
+        public string Execute(ActionDTO curActionDTO)
         {
-            return HandleDockyardRequest(curActionDO, "Execute");
-        }
-
-        private string HandleDockyardRequest(ActionDTO actionDTO, string actionPath)
-        {
-            // Extract from current request URL.
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
-
-            var curAssemblyName = string.Format("CoreActions.Actions.{0}_v{1}",
-                curActionDO.ActivityTemplate.Name,
-                curActionDO.ActivityTemplate.Version);
-
-            var calledType = Type.GetType(curAssemblyName);
-            var curMethodInfo = calledType
-                .GetMethod(actionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
-            var curObject = Activator.CreateInstance(calledType);
-
-            return JsonConvert.SerializeObject(
-                (object)curMethodInfo.Invoke(curObject, new Object[] { actionDTO }) ?? new { });
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
         }
     }
 }

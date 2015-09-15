@@ -1,8 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Owin;
+using Microsoft.WindowsAzure;
+using Newtonsoft.Json;
+using Owin;
+using StructureMap;
+
 using Configuration;
 using Daemons;
 using Data.Entities;
@@ -10,14 +18,8 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Interfaces.DataTransferObjects;
-using Microsoft.Owin;
-using Microsoft.WindowsAzure;
-using Owin;
-using StructureMap;
-using Utilities.Logging;
 using Utilities;
-using System.Threading.Tasks;
-using System.IO;
+using Utilities.Logging;
 using Utilities.Serializers.Json;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
@@ -26,12 +28,12 @@ namespace Web
 {
     public partial class Startup
     {
-        public void Configuration(IAppBuilder app)
+        public async void Configuration(IAppBuilder app)
         {
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            RegisterPluginActions();
+            await RegisterPluginActions();
 
             LoadLocalActionLists();
 
@@ -133,34 +135,53 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-
             var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
 
             try
             {
-                foreach (string url in actionTemplateHosts)
+                foreach (var url in actionTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
-                    uri += "/actions/discover_plugins";
+                    uri += "/plugins/discover";
 
-                    using (HttpClient client = new HttpClient())
-                    using (HttpResponseMessage response = await client.GetAsync(uri))
-                    using (HttpContent content = response.Content)
+                    using (var client = new HttpClient())
+                    using (var response = await client.GetAsync(uri))
+                    using (var content = response.Content)
                     {
+                        // For discover serialization see:
+                        //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
+                        //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
+                        //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
                         var data = await content.ReadAsStringAsync();
-                        var pluginData = new JsonSerializer().Deserialize<PluginDiscoveryDTO>(data);
-                       
+                        var curActionList = JsonConvert.DeserializeObject<List<ActivityTemplateDO>>(data);
+
                         using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
-                            //sync plugin
-                            //TODO: add a PluginDO to the Plugin table unless there's already one with the same Name and Endpoint.
+                            PluginDO curPlugin = null;
 
-                            //sync activities
-                            foreach (ActivityTemplateDTO curActivityTemplate in pluginData.Activities)
+                            foreach (var curItem in curActionList)
                             {
-                                //TODO: if there's already an ActivityTemplate in the table with the same Name, Version, and PluginId, don't add another one
-                                uow.ActivityTemplateRepository.Add(AutoMapper.Mapper.Map<ActivityTemplateDO>(curActivityTemplate));
+                                // Create only one plugin record.
+                                if (curPlugin == null)
+                                {
+                                    uow.PluginRepository.Add(curItem.Plugin);
+                                    curPlugin = curItem.Plugin;
+                                }
+
+                                // Check that ActivityTemplate with specified plugin does not exist yet.
+                                var curTemplateExists = uow.ActivityTemplateRepository
+                                    .GetQuery()
+                                    .Any(x => x.Name == curItem.Name && x.Plugin.Name == curItem.Plugin.Name);
+
+                                // If it doesn't exist, then create one.
+                                if (!curTemplateExists)
+                                {
+                                    // Reassign Plugin to single plugin instance.
+                                    curItem.Plugin = curPlugin;
+                                    uow.ActivityTemplateRepository.Add(curItem);
+                                }
                             }
+
                             uow.SaveChanges();
                         }
                     }
@@ -189,60 +210,29 @@ namespace Web
                         ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
                         componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
 
-                        if (!CheckForActivityTemplate("Wait for notification that an envelope has arrived at DocuSign"))
-                        {
-                            ActivityTemplateDO componentActivityOne = new ActivityTemplateDO("Wait for notification that an envelope has arrived at DocuSign"
-                                , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityOne);
-                        }
-                        if (!CheckForActivityTemplate("Filter the Envelope against some Criteria"))
-                        {
-                            ActivityTemplateDO componentActivityTwo = new ActivityTemplateDO("Filter the Envelope against some Criteria"
-                             , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityTwo);
-                        }
-                        if (!CheckForActivityTemplate("Extract Data from the Envelope"))
-                        {
-                            ActivityTemplateDO componentActivityThree = new ActivityTemplateDO("Extract Data from the Envelope"
-                         , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityThree);
-                        }
-                        if (!CheckForActivityTemplate("Map the Data to Target Fields"))
-                        {
-                            ActivityTemplateDO componentActivityFour = new ActivityTemplateDO("Map the Data to Target Fields"
-                           , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityFour);
-                        }
-                        if (!CheckForActivityTemplate("Write the Data to AzureSqlServer"))
-                        {
-                            ActivityTemplateDO componentActivityFive = new ActivityTemplateDO("Write the Data to AzureSqlServer"
-                               , "localhost:46281", 1);
-                            activityTemplateRepositary.Add(componentActivityFive);
-                        }
-                        uow.SaveChanges();
-
                         activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Wait for notification that an envelope has arrived at DocuSign"));
+                            (item => item.Name == "Wait_For_DocuSign_Event"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                           (item => item.Name == "Filter the Envelope against some Criteria"));
+                           (item => item.Name == "FilterUsingRunTimeData"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Extract Data from the Envelope"));
+                            (item => item.Name == "Extract_From_DocuSign_Envelope"));
 
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                          (item => item.Name == "Map the Data to Target Fields"));
+                          (item => item.Name == "MapFields"));
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Write the Data to AzureSqlServer"));
+                            (item => item.Name == "Write_To_Sql_Server"));
 
                         ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", 1);
                         activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
+                        activityTemplate.Plugin = uow.PluginRepository.FindOne(x => x.Name == "pluginAzureSqlServer");
 
                         activityTemplateRepositary.Add(activityTemplate);
                         uow.SaveChanges();

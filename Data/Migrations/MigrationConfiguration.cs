@@ -63,8 +63,6 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow);
-            AddPlugins(uow);
-            //AddActionTemplates(uow); See Alex about this. there are problems with this implementation
 
             SeedMultiTenantTables(uow);
         }
@@ -330,60 +328,6 @@ namespace Data.Migrations
 
             uow.SubscriptionRepository.Add(curSub);
         }
-
-
-        private void AddPlugins(IUnitOfWork uow)
-        {
-            const string azureSqlPluginName = "AzureSqlServer";
-
-            // Create test DockYard account for plugin subscription.
-            var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
-
-            // Check that plugin does not exist yet.
-            var azureSqlPluginExists = uow.PluginRepository.GetQuery()
-                .Any(x => x.Name == azureSqlPluginName);
-
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!azureSqlPluginExists)
-            {
-                // Create plugin instance.
-                var azureSqlPlugin = new PluginDO()
-                {
-                    Name = azureSqlPluginName,
-                    PluginStatus = PluginStatus.Active
-                };
-
-                uow.PluginRepository.Add(azureSqlPlugin);
-
-                // Create subscription instance.
-                AddSubscription(uow, account, azureSqlPlugin, AccessLevel.User);
-               
-            }
-        }
-
-        private void AddActionTemplates(IUnitOfWork uow)
-        {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
-            uow.SaveChanges();
-        }
-
-        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
-        {
-            var existingActivityTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery().Include("Plugin")
-                .SingleOrDefault(x => x.Name == name);
-
-            if (existingActivityTemplateDO != null)
-                return;
-
-            //TODO fix these seed methods to use the latest V2 syntax for creating Plugins and then ActivityTemplates
-            //var curActivityTemplateDO = new ActivityTemplateDO(
-            //    name, version, endPoint);
-            //uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-            }
-
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
