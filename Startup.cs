@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.IO;
 using Utilities.Serializers.Json;
 using Core.Services;
+using Core.Managers;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -137,9 +138,9 @@ namespace Web
 
             try
             {
-                var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-
-                foreach (string url in actionTemplateHosts)
+                var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+                int count = 0;
+                foreach (string url in activityTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/actions/action_templates";
@@ -148,13 +149,16 @@ namespace Web
                     foreach (var template in activityTemplateList)
                     {
                         new ActivityTemplate().Register(template);
+                        count++;
                     }
                 }
 
-                //var alertReporter = uow.
+                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
             }
             catch (Exception ex)
             {
+                
                 Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
             }
         }
