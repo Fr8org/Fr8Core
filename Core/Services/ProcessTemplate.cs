@@ -176,5 +176,29 @@ namespace Core.Services
                     .ToList();
             }
         }
+
+        public IList<ProcessTemplateDO> GetStandardEventSubscribers(string userId, CrateDTO curStandardEventReport)
+        {
+            if (String.IsNullOrEmpty(userId))
+                throw new ArgumentNullException("Parameter UserId is null");
+            if (curStandardEventReport == null)
+                throw new ArgumentNullException("Parameter Standard Event Report is null");
+
+            //1. Query all ProcessTemplateDO that are Active
+            //2. are associated with the determined DockyardAccount
+            //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
+            //in the Crate of Class "Standard Event Reports" which was passed in.
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(i => i.ProcessNodeTemplates).Include(i => i.DockyardAccount);
+
+                queryableRepo
+                    .Where(status => status.ProcessTemplateState == ProcessTemplateState.Active)//1.
+                    .Where(id => id.DockyardAccount.Id == userId);//2
+
+                var resultProcessTemplate = queryableRepo.ToList();
+                return queryableRepo;
+            }
+        }
     }
 }

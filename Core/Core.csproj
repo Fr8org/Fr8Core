@@ -190,6 +190,7 @@
     <Compile Include="Interfaces\IActionList.cs" />
     <Compile Include="Interfaces\ICrate.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
+    <Compile Include="Interfaces\IDockyardEvent.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
@@ -270,6 +271,7 @@
     <Compile Include="Services\Crate.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\DockyardEvent.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />

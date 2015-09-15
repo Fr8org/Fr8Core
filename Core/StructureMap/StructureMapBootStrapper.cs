@@ -108,6 +108,7 @@ namespace Core.StructureMap
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
+                For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }
 
@@ -168,6 +169,7 @@ namespace Core.StructureMap
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
+                For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }
 
