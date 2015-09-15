@@ -158,8 +158,9 @@ namespace Web
             }
             catch (Exception ex)
             {
-                
-                Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
+                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
             }
         }
 

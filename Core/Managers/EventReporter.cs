@@ -507,6 +507,32 @@ namespace Core.Managers
             }
         }
 
+        public void ActivityTemplatePluginRegistrationError(string message, string exceptionType)
+        {
+            var incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Error",
+                SecondaryCategory = exceptionType,
+                Activity = "ActivityTemplatePluginRegistration",
+                Data = message
+            };
+
+            Logger.GetLogger().Error(message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+
+                //The error may be connected to the fact that DB is unavailable, 
+                //we need to be prepared to that. 
+                try
+                {
+                    uow.SaveChanges();
+                }
+                catch { }
+            }
+        }
+
         //Do we need/use both this and the immediately preceding event? 
         //public void BookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
         //{
