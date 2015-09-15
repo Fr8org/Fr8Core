@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Http;
 using Core.Interfaces;
+using Core.Managers.APIManagers.Transmitters.Restful;
+using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
-using Utilities.Serializers.Json;
 
 namespace Web.Controllers
 {
@@ -73,6 +73,58 @@ namespace Web.Controllers
 
             return Ok();
             
+        }
+
+        /// <summary>
+        /// This HTTP Get allows acitons 
+        /// </summary>
+        [HttpGet]
+        [Route("events/endpoint")]
+        public string EventNotificationEndPoint()
+        {
+            //In development environment, Please uncomment this line.
+            return "http://localhost:30643/events";
+
+            //return "http://dockyard.company/events";
+        }
+
+        [HttpPost]
+        [Route("events")]
+        public string Events(string dockyardPluginName, string dockyardPluginVersion)
+        {
+            //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
+            if (string.IsNullOrEmpty(dockyardPluginName) || string.IsNullOrEmpty(dockyardPluginVersion))
+            {
+                _event.HandlePluginIncident(new LoggingData
+                {
+                    ObjectId = "EventController",
+                    CustomerId = "not_applicable",
+                    Data = "process_event_notificaiton_from_external_services",
+                    PrimaryCategory = "Operations",
+                    SecondaryCategory = "External Event Notifications",
+                    Activity = "processing external service event notifications"
+                });
+            }
+
+            //get required plugin URL by plugin name and its version
+            string curPluginUrl = _event.GetPluginUrl(dockyardPluginName, dockyardPluginVersion);
+            curPluginUrl += "/events";
+
+            //make POST with request content
+            ObjectFactory.GetInstance<IRestfulServiceClient>().PostAsync(new Uri(curPluginUrl), Request.Content);
+            
+            //
+            _event.HandlePluginEvent(new LoggingData
+            {
+                ObjectId = "EventController",
+                CustomerId = "not_applicable",
+                Data = "process_notificaiton_from_external_services",
+                PrimaryCategory = "EventNotificationReceived",
+                SecondaryCategory = "Event Notification Received",
+                Activity = string.Format("Processed event for {0}_v{1} on {2}.", dockyardPluginName, dockyardPluginVersion, curPluginUrl)
+            });
+
+            return string.Format("Processed event for {0}_v{1} on {2}.", dockyardPluginName, dockyardPluginVersion, curPluginUrl);
         }
     }
 }
