@@ -109,13 +109,13 @@ namespace Core.Services
 
                 {
                     var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-                    var curActionTemplateDTO =  Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-                    curActionDTO.ActivityTemplate = curActionTemplateDTO;
+                   // var curActivityTemplateDTO =  Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+                  //  curActionDTO.ActivityTemplate = curActivityTemplateDO;
 
                     // prepare the current plugin URL
                     // TODO: Add logic to use https:// for production
 
-                    string curPluginUrl = "http://" + curActivityTemplate.DefaultEndPoint + "/actions/configure/";
+                    string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
 
                 var restClient = new RestfulServiceClient();
@@ -125,12 +125,12 @@ namespace Core.Services
             }
             else
             {
-                throw new ArgumentNullException("ActionTemplateDO");
+                throw new ArgumentNullException("ActivityTemplateDO");
             }
         }
             else
             {
-                throw new ArgumentNullException("ActionTemplateDO");
+                throw new ArgumentNullException("ActivityTemplateDO");
             }
         }
 
@@ -199,7 +199,11 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.DefaultEndPoint);
+            
+            //TODO : Cut base Url from PluginDO.Endpoint
+
+            curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);
 

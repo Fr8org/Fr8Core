@@ -37,7 +37,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send an Email",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = new PluginDO { Name = "Send an Email", Endpoint = "", PluginStatus = PluginStatus.Active },
+                
                 Version = "1"
             };
         }
@@ -48,10 +49,10 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = new PluginDO { Name = "Send a Text (SMS) Message", Endpoint = "", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
-        }
+        }        
         public static ActionDO TestAction1()
         {
             var actionTemplate = ActionTemplate();

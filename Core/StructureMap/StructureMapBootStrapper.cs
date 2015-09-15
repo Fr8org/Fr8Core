@@ -93,7 +93,7 @@ namespace Core.StructureMap
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
-					 For<IActivity>().Use<Activity>();
+				For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();

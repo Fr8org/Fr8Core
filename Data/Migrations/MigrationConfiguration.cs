@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -99,7 +100,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-            
+
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -159,8 +160,8 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                let name = constant.Name
-                let value = constant.GetValue(null)
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
                                      select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
@@ -222,9 +223,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((string)value, name)).ToList();
+                              let name = constant.Name
+                              let value = constant.GetValue(null)
+                              select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -233,7 +234,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-            }
+                }
             }
             foreach (var row in rolesToAdd)
             {
@@ -253,7 +254,7 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
-            
+
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -355,8 +356,8 @@ namespace Data.Migrations
                 uow.PluginRepository.Add(azureSqlPlugin);
 
                 // Create subscription instance.
-                AddSubscription(uow,account,azureSqlPlugin,AccessLevel.User);
-               
+                AddSubscription(uow, account, azureSqlPlugin, AccessLevel.User);
+
             }
         }
 
@@ -368,20 +369,20 @@ namespace Data.Migrations
             uow.SaveChanges();
         }
 
-        private void AddActionTemplate(IUnitOfWork uow, string name, string defaultEndPoint, string version)
+        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
         {
             var existingActionTemplateDO = uow.ActivityTemplateRepository
-                .GetQuery()
-                .SingleOrDefault(x => x.Name == name && x.Plugin.Name == defaultEndPoint);
+                .GetQuery().Include("Plugin")
+                .SingleOrDefault(x => x.Name == name);
 
-            var curActivityTemplateDO = new ActivityTemplateDO(
-                name, defaultEndPoint, version);
+            if (existingActionTemplateDO != null)
+                return;
 
-            if (existingActionTemplateDO == null)
-            {
-                uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-            }
+            var curActionTemplateDO = new ActivityTemplateDO(
+                name, version, endPoint, endPoint);
+            uow.ActivityTemplateRepository.Add(curActionTemplateDO);
         }
+        
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
@@ -476,7 +477,6 @@ namespace Data.Migrations
 
             uow.SaveChanges();
         }
-        
 
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()

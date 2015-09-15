@@ -38,13 +38,13 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
-                .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
+              //  .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
-                .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
+              //  .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
                  .ForMember(x => x.ComponentActivities, opts => opts.ResolveUsing(x => x.ComponentActivities))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
 

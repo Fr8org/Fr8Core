@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
@@ -7,30 +7,32 @@ using Newtonsoft.Json;
 using System.Reflection;
 using PluginBase.BaseClasses;
 using System.Collections.Generic;
+using Data.States;
 
 namespace pluginDocuSign.Controllers
 {    
-    [RoutePrefix("action_templates")]
+    [RoutePrefix("actions")]
     public class ActionTemplateController : ApiController
     {
         [HttpGet]
+        [Route("action_templates")]
         public IHttpActionResult Get()
         {
-            var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
+            var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
             {
-                DefaultEndPoint = "localhost:53234",
+                Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
                 Name = "Wait For DocuSign Event"
             };
 
-            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
+            var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
-                DefaultEndPoint = "localhost:53234",
+                Plugin = new PluginDO { Name = "localhost:53234", Endpoint = "localhost:53234", PluginStatus = PluginStatus.Active },
                 Version = "1.0",
                 Name = "Extract Data From DocuSign Envelopes"
             };
 
-            var actionList = new List<ActivityTemplateDTO>()
+            var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate
