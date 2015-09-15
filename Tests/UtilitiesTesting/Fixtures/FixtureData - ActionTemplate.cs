@@ -16,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 1,
                 Name = "Write to Sql Server",
-                Plugin = new PluginDO { Name = "pluginAzureSqlServer", Endpoint = "pluginAzureSqlServer", PluginStatus = PluginStatus.Active  },
+                Plugin = new PluginDO { Name = "pluginAzureSqlServer", Version = "1", Endpoint = "pluginAzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "v3"
 			};
             return activityTemplateDo;
@@ -37,7 +37,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Type1",
-                Plugin = new PluginDO { Name = "AzureSqlServer", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "AzureSqlServer", Version = "1", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
             return curActivityDO;
@@ -49,7 +49,7 @@ namespace UtilitiesTesting.Fixtures
 	        {
 	            Id = 1,
                 Name = "plugin_azure_sql_server",
-                Plugin = new PluginDO { Name = "http://localhost:46281/", Endpoint = "http://localhost:46281/", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "http://localhost:46281/", Version = "1", Endpoint = "http://localhost:46281/", PluginStatus = PluginStatus.Active },
 	            Version = "1"
 	        };
 
@@ -96,7 +96,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to SQL",
-                Plugin = new PluginDO { Name = "AzureSqlServer", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "AzureSqlServer", Version = "1", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
             return curActivityDO;
