@@ -27,7 +27,7 @@ namespace Web.Controllers
             if (curStandardEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null.");
             //check if Standard Event Report inside CrateDTO
-            if (!curStandardEventReport.Label.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
+            if (String.IsNullOrEmpty(curStandardEventReport.Label) || !curStandardEventReport.Label.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
 
             //call DockyardEvent#ProcessInbound

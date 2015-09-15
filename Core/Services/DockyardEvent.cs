@@ -25,7 +25,7 @@ namespace Core.Services
             if (curStandardEventReport == null)
                 throw new ArgumentNullException("Paramter Standard Event Report is null.");
             //check if can parse to Standard Event Report
-            if (!curStandardEventReport.Label.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
+            if (String.IsNullOrEmpty(curStandardEventReport.Label) || !curStandardEventReport.Label.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
 
             //Matchup process

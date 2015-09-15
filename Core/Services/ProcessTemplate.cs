@@ -179,10 +179,16 @@ namespace Core.Services
 
         public IList<ProcessTemplateDO> GetStandardEventSubscribers(string userId, CrateDTO curStandardEventReport)
         {
+            List<ProcessTemplateDO> processTemplateLists = new List<ProcessTemplateDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curStandardEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
+
+            if(String.IsNullOrEmpty(curStandardEventReport.Contents))
+                throw new ArgumentNullException("Standard Event Report content is empty.");
+
+            ManifestSchemaDTO manifestSchemaDTO = JsonConvert.DeserializeObject<ManifestSchemaDTO>(curStandardEventReport.Contents);
 
             //1. Query all ProcessTemplateDO that are Active
             //2. are associated with the determined DockyardAccount
@@ -195,10 +201,36 @@ namespace Core.Services
                 queryableRepo
                     .Where(status => status.ProcessTemplateState == ProcessTemplateState.Active)//1.
                     .Where(id => id.DockyardAccount.Id == userId);//2
-
+                    
                 var resultProcessTemplate = queryableRepo.ToList();
-                return queryableRepo;
+                
+                //3. Get ActivityDO
+                foreach (var processTemplateDO in resultProcessTemplate)
+                {
+                    var activityDO = processTemplateDO.ProcessNodeTemplates.SelectMany(s => s.ActionLists).SelectMany(s => s.Activities).OrderBy(o => o.Ordering).FirstOrDefault();
+                    var actionDo = activityDO as ActionDO;
+                    //Get the CrateStorage
+                    if (actionDo != null && actionDo.CrateStorage != "")
+                    {
+                        //Loop each CrateDTO in CrateStorage
+                        List<string> actionContents = actionDo.CrateStorageDTO().CratesDTO.Select(s => s.Contents).ToList();
+                        foreach (var content in actionContents)
+                        {
+                            //Parse CrateDTO to ManifestSchemaDTO and compare Event name then add the ProcessTemplate to the results
+                            try
+                            {
+                                ManifestSchemaDTO actionManifestSchema = JsonConvert.DeserializeObject<ManifestSchemaDTO>(content);
+                                if (actionManifestSchema != null && actionManifestSchema.EventNames.Trim().
+                                    Equals(manifestSchemaDTO.EventNames.Trim(), StringComparison.OrdinalIgnoreCase))
+                                    processTemplateLists.Add(processTemplateDO);
+                            }catch{}
+                        }
+                    }
+                }
             }
+            
+
+            return processTemplateLists;
         }
     }
 }
