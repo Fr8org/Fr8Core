@@ -157,22 +157,10 @@
   <ItemGroup>
     <Compile Include="Actions\Publish_To_Slack_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\ConfigurationController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\DbProviderExtensions.cs" />
-    <Compile Include="StructureMapConfiguration.cs" />
-    <Compile Include="Services\DbService.cs" />
-    <Compile Include="Infrastructure\FieldValue.cs" />
-    <Compile Include="Services\IDbService.cs" />
-    <Compile Include="Infrastructure\IDbProvider.cs" />
-    <Compile Include="Infrastructure\DbServiceJsonParser.cs" />
-    <Compile Include="Infrastructure\Row.cs" />
-    <Compile Include="Infrastructure\SqlClientDbProvider.cs" />
-    <Compile Include="Infrastructure\Table.cs" />
-    <Compile Include="Infrastructure\WriteCommandArgs.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

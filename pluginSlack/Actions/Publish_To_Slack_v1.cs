@@ -6,8 +6,6 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using pluginSlack.Infrastructure;
-using pluginSlack.Services;
 using PluginBase.Infrastructure;
 using StructureMap;
 using PluginBase;
