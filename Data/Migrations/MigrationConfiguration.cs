@@ -64,7 +64,7 @@ namespace Data.Migrations
             AddDockyardAccounts(uow);
             AddProfiles(uow);
             AddPlugins(uow);
-            AddActionTemplates(uow);
+            //AddActionTemplates(uow); See Alex about this. there are problems with this implementation
 
             SeedMultiTenantTables(uow);
         }
@@ -334,7 +334,7 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-            const string azureSqlPluginName = "AzureSqlServerPluginRegistration_v1";
+            const string azureSqlPluginName = "AzureSqlServer";
 
             // Create test DockYard account for plugin subscription.
             var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
@@ -379,7 +379,7 @@ namespace Data.Migrations
                 return;
 
             var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint);
+                name, version, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }
 

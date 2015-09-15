@@ -92,21 +92,20 @@ namespace pluginAzureSqlServer.Controllers
         [Route("action_templates")]
         public IHttpActionResult ActionTemplates()
         {
-            var result = new List<ActivityTemplateDO>();
-            var template = new ActivityTemplateDO
+            var activities = new List<ActivityTemplateDTO>();
+            var template = new ActivityTemplateDTO
             {
                 Name = "WriteToAzureSqlServer",
                 Version = "1.0"
             };
-            var plugin = new PluginDO
-            {
-                Endpoint = "localhost:46281",
-                PluginStatus = PluginStatus.Active,
-                Name = template.Name
-            };
-            template.Plugin = plugin;
-            result.Add(template);
-            return Json(result);           
+            activities.Add(template);
+
+            var pluginDiscovery = new PluginDiscoveryDTO();
+            pluginDiscovery.Name = "AzureSqlServer";
+            pluginDiscovery.Version = "1.0";
+            pluginDiscovery.Activities = activities;
+            
+            return Json(pluginDiscovery);           
         }
     }
 }

@@ -148,12 +148,18 @@ namespace Web
                     using (HttpContent content = response.Content)
                     {
                         var data = await content.ReadAsStringAsync();
-                        var actionList = new JsonSerializer().DeserializeList<ActivityTemplateDO>(data);
+                        var pluginData = new JsonSerializer().Deserialize<PluginDiscoveryDTO>(data);
+                       
                         using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
-                            foreach (ActivityTemplateDO item in actionList)
+                            //sync plugin
+                            //TODO: add a PluginDO to the Plugin table unless there's already one with the same Name and Endpoint.
+
+                            //sync activities
+                            foreach (ActivityTemplateDTO curActivityTemplate in pluginData.Activities)
                             {
-                                uow.ActivityTemplateRepository.Add(item);
+                                //TODO: if there's already an ActivityTemplate in the table with the same Name, Version, and PluginId, don't add another one
+                                uow.ActivityTemplateRepository.Add(AutoMapper.Mapper.Map<ActivityTemplateDO>(curActivityTemplate));
                             }
                             uow.SaveChanges();
                         }

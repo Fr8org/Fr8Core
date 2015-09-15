@@ -19,28 +19,6 @@ namespace Data.Entities
             this.PluginID = pluginId;
         }
 
-        /// <summary>
-        /// Represents a ActionTemplate instance
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="version"></param>
-        /// <param name="pluginName">Name of the new PluginDO</param>
-        /*<param name="baseEndPoint">New PluginDO base end point</param>*/
-        /// <param name="Endpoint">New PluginDO end point</param>
-        public ActivityTemplateDO(string name, string version, /*string baseEndpoint,*/ string pluginName, string endPoint)
-        {
-            this.Name = name;
-            //this.DefaultEndPoint = defaultEndPoint;
-            this.Version = version;
-            this.Plugin = new PluginDO()
-            {
-                Name = name,
-                PluginStatus = PluginStatus.Active,
-                //BaseEndPoint = baseEndpoint,
-                Endpoint = endPoint
-            };
-        }
-
         [Key]
         public int Id { get; set; }
 

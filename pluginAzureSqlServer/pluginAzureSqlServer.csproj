@@ -158,7 +158,6 @@
   <ItemGroup>
     <Compile Include="Actions\Write_To_Sql_Server_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\ConfigurationController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
