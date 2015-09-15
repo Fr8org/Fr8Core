@@ -18,16 +18,16 @@ namespace DockyardTest.Entities
             {
                 var fixture = new FixtureData(uow);
                 
-                var actionTemplateDO = FixtureData.TestActivityTemplate1();
+                var activityTemplateDO = FixtureData.TestActivityTemplate1();
 
-                uow.ActivityTemplateRepository.Add(actionTemplateDO);
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == activityTemplateDO.Id);
                 Assert.NotNull(savedActivityTemplateDO);
 
-                Assert.AreEqual(actionTemplateDO.Name, savedActivityTemplateDO.Name);
-                Assert.AreEqual(actionTemplateDO.Plugin.Endpoint, savedActivityTemplateDO.Plugin.Endpoint);
+                Assert.AreEqual(activityTemplateDO.Name, savedActivityTemplateDO.Name);
+                Assert.AreEqual(activityTemplateDO.Plugin.Endpoint, savedActivityTemplateDO.Plugin.Endpoint);
 
             }
         }
@@ -40,17 +40,17 @@ namespace DockyardTest.Entities
             {
                 var fixture = new FixtureData(uow);
 
-                var actionTemplateDO = FixtureData.TestActivityTemplate1();
+                var activityTemplateDO = FixtureData.TestActivityTemplate1();
 
-                uow.ActivityTemplateRepository.Add(actionTemplateDO);
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == activityTemplateDO.Id);
 
 
                 Assert.NotNull(savedActivityTemplateDO);
-                Assert.AreEqual(actionTemplateDO.Name, savedActivityTemplateDO.Name);
-                Assert.AreEqual(actionTemplateDO.Version, savedActivityTemplateDO.Version);
+                Assert.AreEqual(activityTemplateDO.Name, savedActivityTemplateDO.Name);
+                Assert.AreEqual(activityTemplateDO.Version, savedActivityTemplateDO.Version);
 
                 // remove saved instance
                 uow.ActivityTemplateRepository.Remove(savedActivityTemplateDO);

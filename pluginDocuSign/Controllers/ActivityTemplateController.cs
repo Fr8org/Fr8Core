@@ -12,7 +12,7 @@ using Data.States;
 namespace pluginDocuSign.Controllers
 {    
     [RoutePrefix("actions")]
-    public class ActionTemplateController : ApiController
+    public class ActivityTemplateController : ApiController
     {
         [HttpGet]
         [Route("action_templates")]

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    public interface IActionTemplate
+    public interface IActivityTemplate
     {
         IEnumerable<ActivityTemplateDO> GetAll();
         ActivityTemplateDO GetByKey(int curActivityTemplateDOId);

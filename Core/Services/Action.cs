@@ -90,7 +90,7 @@ namespace Core.Services
             }
         }
 
-        public string GetConfigurationSettings(ActionDO curActionDO)
+        public string Configure(ActionDO curActionDO)
         {
 
             ActivityTemplateDO curActivityTemplate;

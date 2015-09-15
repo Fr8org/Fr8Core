@@ -12,7 +12,7 @@ namespace Core.Interfaces
 
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         
-        string GetConfigurationSettings(ActionDO curActionDO);
+        string Configure(ActionDO curActionDO);
 
         IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 

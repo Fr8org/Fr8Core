@@ -64,7 +64,7 @@ namespace DockyardTest.Actions
         [Test]
         public void ActionTemplateController_ShouldReturnActionTemplateList()
         {
-            var controller = new ActionTemplateController();
+            var controller = new ActivityTemplateController();
             var response = controller.Get();
             var actionTemplateList = (response as OkNegotiatedContentResult<List<ActivityTemplateDTO>>).Content;
             ActivityTemplateDTO activityTemplate = actionTemplateList[0];

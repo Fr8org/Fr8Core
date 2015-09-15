@@ -101,7 +101,7 @@ namespace Core.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
-                For<IActionTemplate>().Use<ActionTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
@@ -136,7 +136,7 @@ namespace Core.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActionTemplate>().Use<ActionTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>();
                 
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
@@ -158,7 +158,7 @@ namespace Core.StructureMap
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
                 pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
-                For<IActionTemplate>().Use<ActionTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();

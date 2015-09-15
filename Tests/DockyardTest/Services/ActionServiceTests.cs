@@ -63,7 +63,7 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            string curJsonResult = _action.GetConfigurationSettings(curActionDO);
+            string curJsonResult = _action.Configure(curActionDO);
             CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);
@@ -78,7 +78,7 @@ namespace DockyardTest.Services
         public void ActionService_NULL_ActionTemplate()
         {
             var _service = new Action();
-            Assert.IsNotNull(_service.GetConfigurationSettings(null));
+            Assert.IsNotNull(_service.Configure(null));
         }
 
         [Test]

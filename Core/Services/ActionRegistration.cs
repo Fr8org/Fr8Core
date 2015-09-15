@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Core.Services
 {
-    public class ActionTemplate :IActionTemplate
+    public class ActivityTemplate :IActivityTemplate
     {
         public IEnumerable<ActivityTemplateDO> GetAll()
         {
