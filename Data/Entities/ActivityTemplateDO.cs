@@ -29,16 +29,19 @@ namespace Data.Entities
         /// <param name="Endpoint">New PluginDO end point</param>
         public ActivityTemplateDO(string name, string version, /*string baseEndpoint,*/ string pluginName, string endPoint)
         {
+
+            //TODO: validate plugin
+
             this.Name = name;
-            //this.DefaultEndPoint = defaultEndPoint;
             this.Version = version;
             this.Plugin = new PluginDO()
             {
                 Name = name,
                 PluginStatus = PluginStatus.Active,
-                //BaseEndPoint = baseEndpoint,
                 Endpoint = endPoint
             };
+
+
         }
 
         [Key]
