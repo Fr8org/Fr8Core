@@ -39,7 +39,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        [Test]
+        [Test,Ignore]
         [Category("ActionController.Save")]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
@@ -63,7 +63,7 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test]
+        [Test,Ignore]
         [Category("ActionController.Save")]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
