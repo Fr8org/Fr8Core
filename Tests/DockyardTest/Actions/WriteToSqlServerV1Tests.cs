@@ -25,12 +25,5 @@ namespace DockyardTest.Actions
         }
 
 
-        private string CreateConfigurationStore()
-        {
-            const string configurationStore =
-                "{'configurationStore': [{'textField': {'value': 'connection_string'}}]";
-
-            return configurationStore.Replace("connection_string", _connectionString);
-        }
     }
 }

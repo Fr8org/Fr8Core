@@ -6,7 +6,7 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.ICrateStorageVM>;
+        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IControlsListVM>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }

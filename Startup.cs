@@ -37,28 +37,6 @@ namespace Web
 
             LoadLocalActionLists();
 
-            string test =
-                "\"{\\\"CrateStorageDTO\\\":[{\\\"Id\\\":\\\"30eae6dd-99c6-45b4-b26f-f48adaff53c4\\\",\\\"label\\\":\\\"AzureSqlServer Design-Time Fields\\\",\\\"contents\\\":\\\"{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }\\\",\\\"parentCrateId\\\":null,\\\"manifestType\\\":\\\"\\\",\\\"manifestId\\\":0,\\\"manufacturer\\\":null}]}\"";
-            var crate1 = new CrateDTO();
-            var foo = new CrateStorageDTO();
-            foo.CrateDTO.Add(crate1);
-
-            string s1 = JsonConvert.SerializeObject(foo, JsonSettings.CamelCase);
-
-            CrateStorageDTO bar = JsonConvert.DeserializeObject<CrateStorageDTO>(s1);
-
-            var quz = 3;
-
-
-
-
-
-
-
-
-
-
-
             app.Use(async (context, next) =>
             {
                 if (string.Equals(context.Request.Method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) &&

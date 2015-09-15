@@ -6,6 +6,7 @@
         actionListId: number;
         name: string;
         crateStorage: model.CrateStorage;
+        configurationControls: model.ControlsList;
         actionTemplateId: number;
         activityTemplate: model.ActivityTemplate;
 
@@ -19,6 +20,7 @@
             this.id = id;
             this.isTempId = isTempId;
             this.actionListId = actionListId;
+            this.configurationControls = new ControlsList();
         }
 
         toActionVM(): interfaces.IActionVM {
@@ -29,6 +31,7 @@
                 actionListId: this.actionListId,
                 name: this.name,
                 crateStorage: this.crateStorage,
+                configurationControls: this.configurationControls,
                 activityTemplate: this.activityTemplate
             };
         }
@@ -49,6 +52,7 @@
             result.actionListId = dataObject.actionListId;
             result.actionTemplateId = dataObject.actionTemplateId;
             result.crateStorage = dataObject.crateStorage;
+            result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;

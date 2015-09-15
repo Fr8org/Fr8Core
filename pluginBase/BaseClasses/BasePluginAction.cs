@@ -43,13 +43,13 @@ namespace PluginBase.BaseClasses
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
-        //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
+        //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             return curActionDTO.CrateStorage;
         }
 
-        //if the Action doesn't provide a specific method to override this, we just return the existing ConfigurationStore, unchanged
+        //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             return curActionDTO.CrateStorage;
