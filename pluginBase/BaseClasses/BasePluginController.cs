@@ -88,8 +88,9 @@ namespace PluginBase.BaseClasses
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
+            var response = (object) curMethodInfo.Invoke(curObject, new Object[] {dataObject});
 
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { dataObject }) ?? new { });
+            return JsonConvert.SerializeObject( response ?? new { });
         }
 
         /// <summary>

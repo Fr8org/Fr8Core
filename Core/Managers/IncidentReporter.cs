@@ -5,18 +5,25 @@ using Data.Interfaces;
 using Core.Services;
 using Data.Exceptions;
 using Data.Interfaces.DataTransferObjects;
+using Microsoft.SqlServer.Server;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 
 namespace Core.Managers
 {
     public class IncidentReporter
     {
+        private EventReporter _eventReporter;
+
+        public IncidentReporter()
+        {
+           _eventReporter = new EventReporter();
+        }
         public void SubscribeToAlerts()
         {
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
-            //AlertManager.AlertBookingRequestProcessingTimeout += ProcessBRTimeout;
-            //AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
+            EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
@@ -26,6 +33,38 @@ namespace Core.Managers
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             EventManager.PluginIncidentReported += LogPluginIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+        }
+
+        /// <summary>
+        /// Logs incident information using the standard log mechanisms.
+       
+      
+        private void SaveAndLogFact(IncidentDO curIncident)
+        {
+            SaveIncident(curIncident);
+            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity);
+        }
+
+        private void SaveIncident (IncidentDO curIncident)
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(curIncident);
+                uow.SaveChanges();
+            }
+        }
+        private void ProcessIncidentPluginConfigureFailed(string curPluginUrl, string curAction)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = curPluginUrl + "      " + curAction,
+                ObjectId = "unknown",
+                PrimaryCategory = "Plugin",
+                SecondaryCategory = "Configure",
+                Activity = "Configuration Failed"
+            };
+            SaveAndLogFact(incident);
         }
 
         private void LogPluginIncident(LoggingData incidentItem)

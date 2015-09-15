@@ -22,7 +22,7 @@ namespace pluginDockyardCore.Controllers
         private const string curPlugin = "pluginDockyardCore";
         private BasePluginController _basePluginController = new BasePluginController();
 
-        [HttpGet]
+        [HttpPost]
         [Route("configure")]
         public string Configure(ActionDTO curActionDTO)
         {

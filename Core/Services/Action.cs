@@ -120,8 +120,18 @@ namespace Core.Services
                         string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
                         var restClient = new RestfulServiceClient();
-                        string curConfigurationStoreJson =
-                            restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                        string curConfigurationStoreJson;
+                        try
+                        {
+                           curConfigurationStoreJson =
+                           restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                        }
+                        catch (Exception)
+                        {
+                            EventManager.PluginConfigureFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
+                            throw;
+                        }
+                       
 
                         return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
                     }
