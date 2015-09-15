@@ -1,0 +1,28 @@
+﻿@*RadioButtonGroup control main container*@
+<div style="margin-top: 30px;">
+    <span>Values for Demo -> {{field || json}}</span>
+    <br />
+    <br />
+    <h4>{{field.fieldLabel}}</h4>
+    <br />
+    <br />
+    <pre>With pure HTML</pre>
+    <div class="well well-lg">
+        <select name="pca__chk__{{field.name}}" ng-model="field.value">
+            <option ng-repeat="listItem in field.listItems track by $index" ng-selected="listItem.value == field.value" ng-value="listItem.value">{{listItem.text}}</option>
+        </select>
+    </div>
+    <br />
+    <br />
+    <pre>With UI-Bootstrap</pre>    
+    <div class="well well-lg">
+        <div class="btn-group" dropdown is-open="isopen">
+            <button id="single-button" type="button" class="btn btn-primary" dropdown-toggle ng-disabled="disabled">
+                {{field.value}} <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li role="menuitem" ng-repeat="listItem in field.listItems"><a href="#" ng-click="field.value=listItem.value">{{listItem.text}}</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
