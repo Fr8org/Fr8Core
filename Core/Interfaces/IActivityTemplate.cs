@@ -11,6 +11,7 @@ namespace Core.Interfaces
     {
         IEnumerable<ActivityTemplateDO> GetAll();
         ActivityTemplateDO GetByKey(int curActivityTemplateDOId);
+        void Register(ActivityTemplateDO activityTemplateDO);
        // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
     }
 }

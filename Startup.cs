@@ -19,6 +19,7 @@ using Utilities;
 using System.Threading.Tasks;
 using System.IO;
 using Utilities.Serializers.Json;
+using Core.Services;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -131,34 +132,26 @@ namespace Web
             }
         }
 
-        public async Task RegisterPluginActions()
+        public void RegisterPluginActions()
         {
-
-            var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
 
             try
             {
+                var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+
                 foreach (string url in actionTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/actions/action_templates";
 
-                    using (HttpClient client = new HttpClient())
-                    using (HttpResponseMessage response = await client.GetAsync(uri))
-                    using (HttpContent content = response.Content)
+                    IList<ActivityTemplateDO> activityTemplateList = new Plugin().GetAvailableActions(uri).Result;
+                    foreach (var template in activityTemplateList)
                     {
-                        var data = await content.ReadAsStringAsync();
-                        var actionList = new JsonSerializer().DeserializeList<ActivityTemplateDO>(data);
-                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                        {
-                            foreach (ActivityTemplateDO item in actionList)
-                            {
-                                uow.ActivityTemplateRepository.Add(item);
-                            }
-                            uow.SaveChanges();
-                        }
+                        new ActivityTemplate().Register(template);
                     }
                 }
+
+                //var alertReporter = uow.
             }
             catch (Exception ex)
             {
