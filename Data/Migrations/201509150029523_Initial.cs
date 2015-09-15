@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class inital_migration : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -288,6 +288,7 @@ namespace Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false),
                         PluginStatus = c.Int(nullable: false),
+                        Endpoint = c.String(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
@@ -320,17 +321,122 @@ namespace Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                         DockyardAccountId = c.String(),
-                        EnvelopeId = c.String(),
                         ProcessTemplateId = c.Int(nullable: false),
                         ProcessState = c.Int(nullable: false),
+                        CurrentActivityId = c.Int(),
+                        NextActivityId = c.Int(),
+                        CrateStorage = c.String(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ProcessTemplates", t => t.ProcessTemplateId, cascadeDelete: true)
+                .ForeignKey("dbo.ActivityDOes", t => t.CurrentActivityId)
+                .ForeignKey("dbo.ActivityDOes", t => t.NextActivityId)
                 .ForeignKey("dbo._ProcessStateTemplate", t => t.ProcessState, cascadeDelete: true)
                 .Index(t => t.ProcessTemplateId)
-                .Index(t => t.ProcessState);
+                .Index(t => t.ProcessState)
+                .Index(t => t.CurrentActivityId)
+                .Index(t => t.NextActivityId);
+            
+            CreateTable(
+                "dbo.ActivityDOes",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        ParentActivityId = c.Int(),
+                        Ordering = c.Int(nullable: false),
+                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.ActivityDOes", t => t.ParentActivityId)
+                .Index(t => t.ParentActivityId);
+            
+            CreateTable(
+                "dbo._ActionStateTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.ActivityTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        Version = c.String(),
+                        AuthenticationType = c.String(),
+                        ComponentActivities = c.String(),
+                        PluginID = c.Int(nullable: false),
+                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Plugins", t => t.PluginID)
+                .Index(t => t.PluginID);
+            
+            CreateTable(
+                "dbo._ActionListStateTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo._ActionListTypeTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.ProcessNodeTemplates",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        ParentTemplateId = c.Int(),
+                        NodeTransitions = c.String(),
+                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.ProcessTemplates", t => t.ParentTemplateId)
+                .Index(t => t.ParentTemplateId);
+            
+            CreateTable(
+                "dbo.Criteria",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        ProcessNodeTemplateId = c.Int(nullable: false),
+                        CriteriaExecutionType = c.Int(nullable: false),
+                        ConditionsJSON = c.String(),
+                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo._CriteriaExecutionTypeTemplate", t => t.CriteriaExecutionType, cascadeDelete: true)
+                .ForeignKey("dbo.ProcessNodeTemplates", t => t.ProcessNodeTemplateId, cascadeDelete: true)
+                .Index(t => t.ProcessNodeTemplateId)
+                .Index(t => t.CriteriaExecutionType);
+            
+            CreateTable(
+                "dbo._CriteriaExecutionTypeTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
             
             CreateTable(
                 "dbo.ProcessNodes",
@@ -362,107 +468,6 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.ProcessNodeTemplates",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
-                        ParentTemplateId = c.Int(),
-                        NodeTransitions = c.String(),
-                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.ProcessTemplates", t => t.ParentTemplateId)
-                .Index(t => t.ParentTemplateId);
-            
-            CreateTable(
-                "dbo.ActivityDOes",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Ordering = c.Int(nullable: false),
-                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo._ActionListStateTemplate",
-                c => new
-                    {
-                        Id = c.Int(nullable: false),
-                        Name = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo._ActionListTypeTemplate",
-                c => new
-                    {
-                        Id = c.Int(nullable: false),
-                        Name = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo._ActionStateTemplate",
-                c => new
-                    {
-                        Id = c.Int(nullable: false),
-                        Name = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.ActionTemplate",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        ActionType = c.String(),
-                        Version = c.String(),
-                        ParentPluginRegistration = c.String(),
-                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo._EventStatusTemplate",
-                c => new
-                    {
-                        Id = c.Int(nullable: false),
-                        Name = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
-                "dbo.Criteria",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        ProcessNodeTemplateId = c.Int(nullable: false),
-                        CriteriaExecutionType = c.Int(nullable: false),
-                        ConditionsJSON = c.String(),
-                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo._CriteriaExecutionTypeTemplate", t => t.CriteriaExecutionType, cascadeDelete: true)
-                .ForeignKey("dbo.ProcessNodeTemplates", t => t.ProcessNodeTemplateId, cascadeDelete: true)
-                .Index(t => t.ProcessNodeTemplateId)
-                .Index(t => t.CriteriaExecutionType);
-            
-            CreateTable(
-                "dbo._CriteriaExecutionTypeTemplate",
-                c => new
-                    {
-                        Id = c.Int(nullable: false),
-                        Name = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
                 "dbo.ProcessTemplates",
                 c => new
                     {
@@ -479,6 +484,8 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Users", t => t.DockyardAccount_Id)
                 .ForeignKey("dbo._ProcessTemplateStateTemplate", t => t.ProcessTemplateState, cascadeDelete: true)
+                .ForeignKey("dbo.ProcessNodeTemplates", t => t.StartingProcessNodeTemplateId)
+                .Index(t => t.StartingProcessNodeTemplateId)
                 .Index(t => t.ProcessTemplateState)
                 .Index(t => t.DockyardAccount_Id);
             
@@ -496,16 +503,25 @@ namespace Data.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        ExternalEvent = c.Int(nullable: false),
+                        ExternalEvent = c.Int(),
                         ExternalProcessTemplateId = c.Int(nullable: false),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo._EventStatusTemplate", t => t.ExternalEvent, cascadeDelete: true)
+                .ForeignKey("dbo._ExternalEventTypeTemplate", t => t.ExternalEvent)
                 .ForeignKey("dbo.ProcessTemplates", t => t.ExternalProcessTemplateId, cascadeDelete: true)
                 .Index(t => t.ExternalEvent)
                 .Index(t => t.ExternalProcessTemplateId);
+            
+            CreateTable(
+                "dbo._ExternalEventTypeTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
             
             CreateTable(
                 "dbo._ProcessStateTemplate",
@@ -712,12 +728,27 @@ namespace Data.Migrations
                         SegmentTrackingProperties = c.String(),
                         ExpiresAt = c.DateTime(nullable: false),
                         UserID = c.String(maxLength: 128),
+                        PluginID = c.Int(nullable: false),
+                        AuthorizationTokenState = c.Int(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo._AuthorizationTokenStateTemplate", t => t.AuthorizationTokenState)
+                .ForeignKey("dbo.Plugins", t => t.PluginID)
                 .ForeignKey("dbo.Users", t => t.UserID)
-                .Index(t => t.UserID);
+                .Index(t => t.UserID)
+                .Index(t => t.PluginID)
+                .Index(t => t.AuthorizationTokenState);
+            
+            CreateTable(
+                "dbo._AuthorizationTokenStateTemplate",
+                c => new
+                    {
+                        Id = c.Int(nullable: false),
+                        Name = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
             
             CreateTable(
                 "dbo.Logs",
@@ -782,16 +813,6 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
-                "dbo.Templates",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
-                .PrimaryKey(t => t.Id);
-            
-            CreateTable(
                 "dbo.DocuSignEvents",
                 c => new
                     {
@@ -803,6 +824,107 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
+                "dbo.MT_Fields",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(nullable: false, maxLength: 150),
+                        Type = c.Int(nullable: false),
+                        FieldColumnOffset = c.Int(nullable: false),
+                        MT_ObjectId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.MT_Objects", t => t.MT_ObjectId, cascadeDelete: true)
+                .Index(t => new { t.MT_ObjectId, t.Name, t.FieldColumnOffset }, name: "FieldColumnOffsetIndex");
+            
+            CreateTable(
+                "dbo.MT_Objects",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(nullable: false),
+                        MT_OrganizationId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.MT_Organizations", t => t.MT_OrganizationId, cascadeDelete: true)
+                .Index(t => t.MT_OrganizationId);
+            
+            CreateTable(
+                "dbo.MT_Organizations",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
+                "dbo.MT_Data",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        GUID = c.Guid(nullable: false, identity: true),
+                        Name = c.String(nullable: false),
+                        CreatedAt = c.DateTime(nullable: false),
+                        UpdatedAt = c.DateTime(nullable: false),
+                        MT_ObjectId = c.Int(nullable: false),
+                        IsDeleted = c.Boolean(nullable: false),
+                        Value1 = c.String(),
+                        Value2 = c.String(),
+                        Value3 = c.String(),
+                        Value4 = c.String(),
+                        Value5 = c.String(),
+                        Value6 = c.String(),
+                        Value7 = c.String(),
+                        Value8 = c.String(),
+                        Value9 = c.String(),
+                        Value10 = c.String(),
+                        Value11 = c.String(),
+                        Value12 = c.String(),
+                        Value13 = c.String(),
+                        Value14 = c.String(),
+                        Value15 = c.String(),
+                        Value16 = c.String(),
+                        Value17 = c.String(),
+                        Value18 = c.String(),
+                        Value19 = c.String(),
+                        Value20 = c.String(),
+                        Value21 = c.String(),
+                        Value22 = c.String(),
+                        Value23 = c.String(),
+                        Value24 = c.String(),
+                        Value25 = c.String(),
+                        Value26 = c.String(),
+                        Value27 = c.String(),
+                        Value28 = c.String(),
+                        Value29 = c.String(),
+                        Value30 = c.String(),
+                        Value31 = c.String(),
+                        Value32 = c.String(),
+                        Value33 = c.String(),
+                        Value34 = c.String(),
+                        Value35 = c.String(),
+                        Value36 = c.String(),
+                        Value37 = c.String(),
+                        Value38 = c.String(),
+                        Value39 = c.String(),
+                        Value40 = c.String(),
+                        Value41 = c.String(),
+                        Value42 = c.String(),
+                        Value43 = c.String(),
+                        Value44 = c.String(),
+                        Value45 = c.String(),
+                        Value46 = c.String(),
+                        Value47 = c.String(),
+                        Value48 = c.String(),
+                        Value49 = c.String(),
+                        Value50 = c.String(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.MT_Objects", t => t.MT_ObjectId, cascadeDelete: true)
+                .Index(t => t.MT_ObjectId);
+            
+            CreateTable(
                 "dbo.Files",
                 c => new
                     {
@@ -810,6 +932,7 @@ namespace Data.Migrations
                         DocuSignTemplateID = c.Int(),
                         DocuSignEnvelopeID = c.Int(),
                         CloudStorageUrl = c.String(),
+                        OriginalFileName = c.String(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
@@ -877,23 +1000,17 @@ namespace Data.Migrations
                     {
                         Id = c.Int(nullable: false),
                         Name = c.String(),
-                        ActionListId = c.Int(),
-                        ConfigurationSettings = c.String(),
-                        FieldMappingSettings = c.String(),
-                        ParentPluginRegistration = c.String(),
+                        CrateStorage = c.String(),
                         ActionState = c.Int(),
-                        PayloadMappings = c.String(),
-                        ActionTemplateId = c.Int(nullable: false),
+                        ActivityTemplateId = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ActivityDOes", t => t.Id)
-                .ForeignKey("dbo.ActionLists", t => t.ActionListId)
                 .ForeignKey("dbo._ActionStateTemplate", t => t.ActionState)
-                .ForeignKey("dbo.ActionTemplate", t => t.ActionTemplateId, cascadeDelete: true)
+                .ForeignKey("dbo.ActivityTemplate", t => t.ActivityTemplateId)
                 .Index(t => t.Id)
-                .Index(t => t.ActionListId)
                 .Index(t => t.ActionState)
-                .Index(t => t.ActionTemplateId);
+                .Index(t => t.ActivityTemplateId);
             
             CreateTable(
                 "dbo.ActionLists",
@@ -912,7 +1029,7 @@ namespace Data.Migrations
                 .ForeignKey("dbo.ActivityDOes", t => t.Id)
                 .ForeignKey("dbo.ProcessNodeTemplates", t => t.ProcessNodeTemplateDO_Id)
                 .ForeignKey("dbo.Processes", t => t.ProcessID)
-                .ForeignKey("dbo._EventStatusTemplate", t => t.TriggerEventID)
+                .ForeignKey("dbo._ExternalEventTypeTemplate", t => t.TriggerEventID)
                 .ForeignKey("dbo._ActionListTypeTemplate", t => t.ActionListType, cascadeDelete: true)
                 .ForeignKey("dbo.ActivityDOes", t => t.CurrentActivityID)
                 .ForeignKey("dbo._ActionListStateTemplate", t => t.ActionListState)
@@ -947,13 +1064,12 @@ namespace Data.Migrations
             DropForeignKey("dbo.ActionLists", "ActionListState", "dbo._ActionListStateTemplate");
             DropForeignKey("dbo.ActionLists", "CurrentActivityID", "dbo.ActivityDOes");
             DropForeignKey("dbo.ActionLists", "ActionListType", "dbo._ActionListTypeTemplate");
-            DropForeignKey("dbo.ActionLists", "TriggerEventID", "dbo._EventStatusTemplate");
+            DropForeignKey("dbo.ActionLists", "TriggerEventID", "dbo._ExternalEventTypeTemplate");
             DropForeignKey("dbo.ActionLists", "ProcessID", "dbo.Processes");
             DropForeignKey("dbo.ActionLists", "ProcessNodeTemplateDO_Id", "dbo.ProcessNodeTemplates");
             DropForeignKey("dbo.ActionLists", "Id", "dbo.ActivityDOes");
-            DropForeignKey("dbo.Actions", "ActionTemplateId", "dbo.ActionTemplate");
+            DropForeignKey("dbo.Actions", "ActivityTemplateId", "dbo.ActivityTemplate");
             DropForeignKey("dbo.Actions", "ActionState", "dbo._ActionStateTemplate");
-            DropForeignKey("dbo.Actions", "ActionListId", "dbo.ActionLists");
             DropForeignKey("dbo.Actions", "Id", "dbo.ActivityDOes");
             DropForeignKey("dbo.Users", "State", "dbo._UserStateTemplate");
             DropForeignKey("dbo.Users", "EmailAddressID", "dbo.EmailAddresses");
@@ -963,9 +1079,14 @@ namespace Data.Migrations
             DropForeignKey("dbo.Invitations", "Id", "dbo.Emails");
             DropForeignKey("dbo.Attachments", "EmailID", "dbo.Emails");
             DropForeignKey("dbo.Attachments", "Id", "dbo.StoredFiles");
+            DropForeignKey("dbo.MT_Data", "MT_ObjectId", "dbo.MT_Objects");
+            DropForeignKey("dbo.MT_Fields", "MT_ObjectId", "dbo.MT_Objects");
+            DropForeignKey("dbo.MT_Objects", "MT_OrganizationId", "dbo.MT_Organizations");
             DropForeignKey("dbo.ExpectedResponses", "UserID", "dbo.Users");
             DropForeignKey("dbo.ExpectedResponses", "Status", "dbo._ExpectedResponseStatusTemplate");
             DropForeignKey("dbo.AuthorizationTokens", "UserID", "dbo.Users");
+            DropForeignKey("dbo.AuthorizationTokens", "PluginID", "dbo.Plugins");
+            DropForeignKey("dbo.AuthorizationTokens", "AuthorizationTokenState", "dbo._AuthorizationTokenStateTemplate");
             DropForeignKey("dbo.RemoteCalendarAuthData", "UserID", "dbo.Users");
             DropForeignKey("dbo.RemoteCalendarAuthData", "ProviderID", "dbo.RemoteCalendarProviders");
             DropForeignKey("dbo.RemoteCalendarProviders", "AuthType", "dbo._ServiceAuthorizationTypeTemplate");
@@ -976,17 +1097,22 @@ namespace Data.Migrations
             DropForeignKey("dbo.TrackingStatuses", "TrackingStatus", "dbo._TrackingStatusTemplate");
             DropForeignKey("dbo.CommunicationConfigurations", "CommunicationType", "dbo._CommunicationTypeTemplate");
             DropForeignKey("dbo.Processes", "ProcessState", "dbo._ProcessStateTemplate");
-            DropForeignKey("dbo.ProcessNodes", "ProcessNodeTemplateId", "dbo.ProcessNodeTemplates");
-            DropForeignKey("dbo.ProcessNodeTemplates", "ParentTemplateId", "dbo.ProcessTemplates");
+            DropForeignKey("dbo.Processes", "NextActivityId", "dbo.ActivityDOes");
+            DropForeignKey("dbo.Processes", "CurrentActivityId", "dbo.ActivityDOes");
             DropForeignKey("dbo.ExternalEventSubscriptions", "ExternalProcessTemplateId", "dbo.ProcessTemplates");
-            DropForeignKey("dbo.ExternalEventSubscriptions", "ExternalEvent", "dbo._EventStatusTemplate");
+            DropForeignKey("dbo.ExternalEventSubscriptions", "ExternalEvent", "dbo._ExternalEventTypeTemplate");
+            DropForeignKey("dbo.ProcessTemplates", "StartingProcessNodeTemplateId", "dbo.ProcessNodeTemplates");
             DropForeignKey("dbo.ProcessTemplates", "ProcessTemplateState", "dbo._ProcessTemplateStateTemplate");
+            DropForeignKey("dbo.ProcessNodeTemplates", "ParentTemplateId", "dbo.ProcessTemplates");
             DropForeignKey("dbo.ProcessTemplates", "DockyardAccount_Id", "dbo.Users");
             DropForeignKey("dbo.Processes", "ProcessTemplateId", "dbo.ProcessTemplates");
-            DropForeignKey("dbo.Criteria", "ProcessNodeTemplateId", "dbo.ProcessNodeTemplates");
-            DropForeignKey("dbo.Criteria", "CriteriaExecutionType", "dbo._CriteriaExecutionTypeTemplate");
+            DropForeignKey("dbo.ProcessNodes", "ProcessNodeTemplateId", "dbo.ProcessNodeTemplates");
             DropForeignKey("dbo.ProcessNodes", "ProcessNodeState", "dbo._ProcessNodeStatusTemplate");
             DropForeignKey("dbo.ProcessNodes", "ParentProcessId", "dbo.Processes");
+            DropForeignKey("dbo.Criteria", "ProcessNodeTemplateId", "dbo.ProcessNodeTemplates");
+            DropForeignKey("dbo.Criteria", "CriteriaExecutionType", "dbo._CriteriaExecutionTypeTemplate");
+            DropForeignKey("dbo.ActivityTemplate", "PluginID", "dbo.Plugins");
+            DropForeignKey("dbo.ActivityDOes", "ParentActivityId", "dbo.ActivityDOes");
             DropForeignKey("dbo.Subscriptions", "DockyardAccountId", "dbo.Users");
             DropForeignKey("dbo.Subscriptions", "PluginId", "dbo.Plugins");
             DropForeignKey("dbo.Plugins", "PluginStatus", "dbo._PluginStatusTemplate");
@@ -1015,9 +1141,8 @@ namespace Data.Migrations
             DropIndex("dbo.ActionLists", new[] { "ProcessID" });
             DropIndex("dbo.ActionLists", new[] { "ProcessNodeTemplateDO_Id" });
             DropIndex("dbo.ActionLists", new[] { "Id" });
-            DropIndex("dbo.Actions", new[] { "ActionTemplateId" });
+            DropIndex("dbo.Actions", new[] { "ActivityTemplateId" });
             DropIndex("dbo.Actions", new[] { "ActionState" });
-            DropIndex("dbo.Actions", new[] { "ActionListId" });
             DropIndex("dbo.Actions", new[] { "Id" });
             DropIndex("dbo.Users", new[] { "State" });
             DropIndex("dbo.Users", "IX_User_EmailAddress");
@@ -1027,8 +1152,13 @@ namespace Data.Migrations
             DropIndex("dbo.Invitations", new[] { "Id" });
             DropIndex("dbo.Attachments", new[] { "EmailID" });
             DropIndex("dbo.Attachments", new[] { "Id" });
+            DropIndex("dbo.MT_Data", new[] { "MT_ObjectId" });
+            DropIndex("dbo.MT_Objects", new[] { "MT_OrganizationId" });
+            DropIndex("dbo.MT_Fields", "FieldColumnOffsetIndex");
             DropIndex("dbo.ExpectedResponses", new[] { "Status" });
             DropIndex("dbo.ExpectedResponses", new[] { "UserID" });
+            DropIndex("dbo.AuthorizationTokens", new[] { "AuthorizationTokenState" });
+            DropIndex("dbo.AuthorizationTokens", new[] { "PluginID" });
             DropIndex("dbo.AuthorizationTokens", new[] { "UserID" });
             DropIndex("dbo.RemoteCalendarAuthData", new[] { "UserID" });
             DropIndex("dbo.RemoteCalendarAuthData", new[] { "ProviderID" });
@@ -1044,12 +1174,17 @@ namespace Data.Migrations
             DropIndex("dbo.ExternalEventSubscriptions", new[] { "ExternalEvent" });
             DropIndex("dbo.ProcessTemplates", new[] { "DockyardAccount_Id" });
             DropIndex("dbo.ProcessTemplates", new[] { "ProcessTemplateState" });
-            DropIndex("dbo.Criteria", new[] { "CriteriaExecutionType" });
-            DropIndex("dbo.Criteria", new[] { "ProcessNodeTemplateId" });
-            DropIndex("dbo.ProcessNodeTemplates", new[] { "ParentTemplateId" });
+            DropIndex("dbo.ProcessTemplates", new[] { "StartingProcessNodeTemplateId" });
             DropIndex("dbo.ProcessNodes", new[] { "ProcessNodeTemplateId" });
             DropIndex("dbo.ProcessNodes", new[] { "ProcessNodeState" });
             DropIndex("dbo.ProcessNodes", new[] { "ParentProcessId" });
+            DropIndex("dbo.Criteria", new[] { "CriteriaExecutionType" });
+            DropIndex("dbo.Criteria", new[] { "ProcessNodeTemplateId" });
+            DropIndex("dbo.ProcessNodeTemplates", new[] { "ParentTemplateId" });
+            DropIndex("dbo.ActivityTemplate", new[] { "PluginID" });
+            DropIndex("dbo.ActivityDOes", new[] { "ParentActivityId" });
+            DropIndex("dbo.Processes", new[] { "NextActivityId" });
+            DropIndex("dbo.Processes", new[] { "CurrentActivityId" });
             DropIndex("dbo.Processes", new[] { "ProcessState" });
             DropIndex("dbo.Processes", new[] { "ProcessTemplateId" });
             DropIndex("dbo.Plugins", new[] { "PluginStatus" });
@@ -1081,13 +1216,17 @@ namespace Data.Migrations
             DropTable("dbo.Invitations");
             DropTable("dbo.Attachments");
             DropTable("dbo.Files");
+            DropTable("dbo.MT_Data");
+            DropTable("dbo.MT_Organizations");
+            DropTable("dbo.MT_Objects");
+            DropTable("dbo.MT_Fields");
             DropTable("dbo.DocuSignEvents");
-            DropTable("dbo.Templates");
             DropTable("dbo._ExpectedResponseStatusTemplate");
             DropTable("dbo.ExpectedResponses");
             DropTable("dbo.ProfileNodeDescendantsCTEView");
             DropTable("dbo.ProfileNodeAncestorsCTEView");
             DropTable("dbo.Logs");
+            DropTable("dbo._AuthorizationTokenStateTemplate");
             DropTable("dbo.AuthorizationTokens");
             DropTable("dbo.RemoteCalendarAuthData");
             DropTable("dbo._ServiceAuthorizationTypeTemplate");
@@ -1103,20 +1242,20 @@ namespace Data.Migrations
             DropTable("dbo._CommunicationTypeTemplate");
             DropTable("dbo.CommunicationConfigurations");
             DropTable("dbo._ProcessStateTemplate");
+            DropTable("dbo._ExternalEventTypeTemplate");
             DropTable("dbo.ExternalEventSubscriptions");
             DropTable("dbo._ProcessTemplateStateTemplate");
             DropTable("dbo.ProcessTemplates");
-            DropTable("dbo._CriteriaExecutionTypeTemplate");
-            DropTable("dbo.Criteria");
-            DropTable("dbo._EventStatusTemplate");
-            DropTable("dbo.ActionTemplate");
-            DropTable("dbo._ActionStateTemplate");
-            DropTable("dbo._ActionListTypeTemplate");
-            DropTable("dbo._ActionListStateTemplate");
-            DropTable("dbo.ActivityDOes");
-            DropTable("dbo.ProcessNodeTemplates");
             DropTable("dbo._ProcessNodeStatusTemplate");
             DropTable("dbo.ProcessNodes");
+            DropTable("dbo._CriteriaExecutionTypeTemplate");
+            DropTable("dbo.Criteria");
+            DropTable("dbo.ProcessNodeTemplates");
+            DropTable("dbo._ActionListTypeTemplate");
+            DropTable("dbo._ActionListStateTemplate");
+            DropTable("dbo.ActivityTemplate");
+            DropTable("dbo._ActionStateTemplate");
+            DropTable("dbo.ActivityDOes");
             DropTable("dbo.Processes");
             DropTable("dbo._UserStateTemplate");
             DropTable("dbo._PluginStatusTemplate");
