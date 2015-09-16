@@ -18,14 +18,10 @@ namespace pluginSlack.Controllers
         [Route("configure")]
         public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
         {
-<<<<<<< HEAD
             var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
             if (response == null)
                 response = new CrateStorageDTO();
             return response;
-=======
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
->>>>>>> parent of 4a77074... DO-1017
         }
 
         [HttpPost]
