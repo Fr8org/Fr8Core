@@ -38,5 +38,17 @@ namespace Core.Services
             return await restClient.GetAsync<IList<ActivityTemplateDO>>(new Uri(uri, UriKind.Absolute));
             //var actionTemplateList = restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
         }
+
+        public string GetPluginUrl(string curPluginName, string curPluginVersion)
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IPluginDO curPlugin =
+                    uow.PluginRepository.FindOne(
+                        plugin => plugin.Name.Equals(curPluginName) && plugin.Version.Equals(curPluginVersion));
+
+                return (curPlugin != null) ? curPlugin.Endpoint : string.Empty;
+            }
+        }
     }
 }

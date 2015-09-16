@@ -6,6 +6,7 @@ namespace pluginDockyardCore.Controllers
 {
     public class EventController : ApiController
     {
+        private const string curPlugin = "pluginDockyardCore";
         private IEvent _event;
 
         public EventController()
@@ -17,7 +18,7 @@ namespace pluginDockyardCore.Controllers
         [Route("events")]
         public async void ProcessIncomingNotification()
         {
-            _event.Process(await Request.Content.ReadAsStringAsync());
+            _event.Process(curPlugin, await Request.Content.ReadAsStringAsync());
         }
     }
 }

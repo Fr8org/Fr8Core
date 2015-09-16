@@ -2,11 +2,11 @@
 using Core.Interfaces;
 using StructureMap;
 
-namespace pluginAzureSqlServer.Controllers
+namespace pluginSlack.Controllers
 {
     public class EventController : ApiController
     {
-        private const string curPlugin = "pluginAzureSqlServer";
+        private const string curPlugin = "pluginSlack";
         private IEvent _event;
 
         public EventController()

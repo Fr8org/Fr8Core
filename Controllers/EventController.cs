@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Core.Services;
 using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
@@ -18,6 +19,7 @@ namespace Web.Controllers
     {
         private readonly IEvent _event;
         private readonly ICrate _crate;
+        private readonly IPlugin _plugin;
 
         private delegate void EventRouter(LoggingData loggingData);
 
@@ -25,6 +27,7 @@ namespace Web.Controllers
         {
             _event = ObjectFactory.GetInstance<IEvent>();
             _crate = ObjectFactory.GetInstance<ICrate>();
+            _plugin = ObjectFactory.GetInstance<IPlugin>();
         }
 
         private EventRouter GetEventRouter(EventDTO eventDTO)
@@ -109,7 +112,7 @@ namespace Web.Controllers
             }
 
             //get required plugin URL by plugin name and its version
-            string curPluginUrl = @"http://" + _event.GetPluginUrl(dockyardPluginName, dockyardPluginVersion);
+            string curPluginUrl = @"http://" + _plugin.GetPluginUrl(dockyardPluginName, dockyardPluginVersion);
             curPluginUrl += "/events";
 
             //make POST with request content

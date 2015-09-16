@@ -9,8 +9,6 @@ using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
 {
-    [Authorize]
-    [RoutePrefix("dockyard")]
     public class DockyardEventController : ApiController
     {
         private readonly IDockyardEvent _dockyardEvent;
@@ -21,6 +19,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
+        [Route("dockyard_events")]
         public IHttpActionResult dockyard_events(CrateDTO curCrateStandardEventReport)
         {
             //check if its not null
