@@ -80,7 +80,7 @@ namespace Core.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
@@ -129,7 +129,7 @@ namespace Core.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();

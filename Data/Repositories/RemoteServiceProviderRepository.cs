@@ -22,8 +22,8 @@ namespace Data.Repositories
 
         public void CreateRemoteCalendarProviders(IConfigRepository configRepository)
         {
-            var clientID = configRepository.Get("GoogleCalendarClientId");
-            var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
+            var clientID = configRepository.Get("GoogleClientId");
+            var clientSecret = configRepository.Get("GoogleClientSecret");
             var providers = new[]
                 {
                     new RemoteServiceProviderDO
@@ -35,9 +35,9 @@ namespace Data.Repositories
                                     {
                                         ClientId = clientID,
                                         ClientSecret = clientSecret,
-                                        Scopes = "https://www.googleapis.com/auth/calendar,email"
+                                        Scopes = "https://spreadsheets.google.com/feeds,https://docs.google.com/feeds"
                                     }),
-                            EndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                            EndPoint = ""
                         }
                 };
             foreach (var provider in providers)

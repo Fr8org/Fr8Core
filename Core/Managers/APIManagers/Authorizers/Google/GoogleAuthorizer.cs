@@ -8,7 +8,7 @@ using Google.Apis.Auth.OAuth2.Web;
 
 namespace Core.Managers.APIManagers.Authorizers.Google
 {
-    public class GoogleCalendarAuthorizer : IOAuthAuthorizer
+    public class GoogleAuthorizer : IOAuthAuthorizer
     {
         class AuthResultAdapter : IOAuthAuthorizationResult
         {
