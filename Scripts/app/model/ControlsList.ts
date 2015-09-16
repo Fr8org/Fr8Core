@@ -36,6 +36,7 @@
         text: string;
         value: string;
     }
+
     export class DropDownListBoxField extends ConfigurationField {
         listItems: Array<DropDownListItem>;
         value: string;
