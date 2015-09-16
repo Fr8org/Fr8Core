@@ -120,12 +120,29 @@ module dockyard.directives.paneConfigureAction {
                     var crate = self.crateHelper.findByManifestType(
                         crateStorage, 'Standard Configuration Controls'
                         );
-
+                    
+                    
                     var controlsList = new model.ControlsList();
                     controlsList.fields = angular.fromJson(crate.contents);
 
                     (<any>scope.currentAction).configurationControls = controlsList;
+                    //now we should look for crates with manifestType Standart Design Time Fields
+                    //to set or override our DropdownListBox items
+                    //TODO remove this logic to seperate function
+                    for (var i = 0; i < controlsList.fields.length; i++) {
+                        if (controlsList.fields[i].type == 'dropdownlistField') {
+                            var dropdownListField = <model.DropDownListBoxField> controlsList.fields[i];
+                            var stdfCrate = self.crateHelper.findByManifestTypeAndLabel(
+                                crateStorage, 'Standart Design Time Fields', dropdownListField.fieldLabel
+                                );
+                            if (stdfCrate == null) {
+                                continue;
+                            }
 
+                            var listItems = <Array<model.DropDownListItem>> angular.fromJson(stdfCrate.contents);
+                            dropdownListField.listItems = listItems;
+                        }
+                    }
                     debugger;
                 });
             }

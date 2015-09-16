@@ -113,19 +113,19 @@ module dockyard.controllers {
             var dropdownDemoField = new model.DropDownListBoxField();
             var demoSelectItem1 = new model.DropDownListItem();
             
-            demoSelectItem1.text = "Operation 1";
+            demoSelectItem1.key = "Operation 1";
             demoSelectItem1.value = "operation_1";
             var demoSelectItem2 = new model.DropDownListItem();
             
-            demoSelectItem2.text = "Operation 2";
+            demoSelectItem2.key = "Operation 2";
             demoSelectItem2.value = "operation_2";
             var demoSelectItem3 = new model.DropDownListItem();
             
-            demoSelectItem3.text = "Operation 3";
+            demoSelectItem3.key = "Operation 3";
             demoSelectItem3.value = "operation_3";
             var demoSelectItem4 = new model.DropDownListItem();
             
-            demoSelectItem4.text = "Operation 4";
+            demoSelectItem4.key = "Operation 4";
             demoSelectItem4.value = "operation_4";
             dropdownDemoField.fieldLabel = "Operation List";
             dropdownDemoField.listItems = new Array<model.DropDownListItem>();

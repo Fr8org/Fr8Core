@@ -4,6 +4,8 @@ module dockyard.directives.dropDownListBox {
 
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownListBoxField;
+        selectedItem: model.DropDownListItem;
+        SetSelectedItem: (item: model.DropDownListItem) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -34,7 +36,23 @@ module dockyard.directives.dropDownListBox {
                 $attrs: ng.IAttributes) => {
                 this._$element = $element;
                 this._$scope = $scope;
+                this._$scope.selectedItem = null;
+
+                $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
             };
+        }
+
+        private SetSelectedItem(item: model.DropDownListItem) {
+            this._$scope.field.value = item.value;
+            this._$scope.selectedItem = item;
+        }
+
+        private FindAndSetSelectedItem() {
+            for (var i = 0; i < this._$scope.field.listItems.length; i++) {
+                if (this._$scope.field.value == this._$scope.field.listItems[i].value) {
+                    this._$scope.selectedItem = this._$scope.field.listItems[i];
+                }
+            }
         }
 
         //The factory function returns Directive object as per Angular requirements
