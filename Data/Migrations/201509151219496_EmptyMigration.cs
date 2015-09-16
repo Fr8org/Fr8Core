@@ -8,9 +8,14 @@ namespace Data.Migrations
         public override void Up()
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
             // TODO: commented out by yakov.gnusin, this code broke EF migration.
             // DropColumn("dbo.Actions", "FieldMappingSettings");
             // DropColumn("dbo.Actions", "PayloadMappings");
+=======
+            DropColumn("dbo.Actions", "FieldMappingSettings");
+            DropColumn("dbo.Actions", "PayloadMappings");
+>>>>>>> parent of 4a77074... DO-1017
 =======
             DropColumn("dbo.Actions", "FieldMappingSettings");
             DropColumn("dbo.Actions", "PayloadMappings");
@@ -20,9 +25,14 @@ namespace Data.Migrations
         public override void Down()
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
             // TODO: commented out by yakov.gnusin, this code broke EF migration.
             // AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
             // AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
+=======
+            AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
+            AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
+>>>>>>> parent of 4a77074... DO-1017
 =======
             AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
             AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
