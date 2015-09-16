@@ -7,7 +7,8 @@ module dockyard.controllers {
         ptvm: interfaces.IProcessTemplateVM;
         submit: (isValid: boolean) => void;
         errorMessage: string;
-        processBuilder: any
+        processBuilder: any,
+        id: string
     }
 
     class ProcessTemplateDetailsController {
@@ -29,8 +30,8 @@ module dockyard.controllers {
             private $stateParams: any) {
             
             //Load detailed information
-            var id: string = $stateParams.id;
-            if (/^[0-9]+$/.test(id) && parseInt(id) > 0) {
+            $scope.id = $stateParams.id;
+            if (/^[0-9]+$/.test($scope.id) && parseInt($scope.id) > 0) {
                 $scope.ptvm = ProcessTemplateService.get({ id: $stateParams.id });
             }
         }
