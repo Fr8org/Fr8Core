@@ -6,8 +6,6 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
 
-    export interface IReportFactService extends ng.resource.IResourceClass<interfaces.IReportFactVM> { }
-
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         getCrateStorage: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.ICrateStorageVM>;
         getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
@@ -38,9 +36,6 @@ module dockyard.services {
         saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
     }
 
-   
-
-   
 
     /*
         ProcessTemplateDTO CRUD service.
@@ -48,22 +43,7 @@ module dockyard.services {
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
         <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' })
     ]);
-
-    app.factory('ReportFactService', ['$resource', ($resource: ng.resource.IResourceService): IReportFactService =>
-        <IReportFactService> $resource('/report/GetFacts', {}, {
-            query: { method: 'GET', isArray: true, transformResponse:transResponse }
-        })
-    ]);
-
-    function transResponse(response,headerGetter)
-    {
-        
-       
-        var fromJson = angular.fromJson(eval(response));
-        //fromJson.json = response;
-        console.log(fromJson);
-        return fromJson;
-    }
+  
     /*
         DocuSignTemplateDTO CRUD service.
     */

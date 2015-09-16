@@ -98,22 +98,22 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             data: { noTitle: true },
         })
 
-        .state('showUsageReport', {
-            url: "/showUsageReport",
-            templateUrl: "/Report/Index?type=usage",
-            data: { pageTitle: '', pageSubTitle: '' },
-        })
+        //.state('showUsageReport', {
+        //    url: "/showUsageReport",
+        //    templateUrl: "/Report/Index?type=usage",
+        //    data: { pageTitle: '', pageSubTitle: '' },
+        //})
 
         .state('showIncidents', {
             url: "/showIncidents",
-            templateUrl: "/Report/Index?type=usage",
-            data: { pageTitle: '', pageSubTitle: '' },
+            templateUrl: "/Report/ShowIncidents",
+            data: { pageTitle: 'Incidents', pageSubTitle: '' },
         })
 
         .state('showFacts', {
             url: "/showFacts",
             templateUrl: "/Report/ShowFacts",
-            data: { pageTitle: '', pageSubTitle: '' },
+            data: { pageTitle: 'Facts', pageSubTitle: '' },
         });
 
 }]);

@@ -8,6 +8,8 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
 using System.Collections.Generic;
+using System;
+using Utilities.Logging;
 
 
 
@@ -101,19 +103,50 @@ namespace Web.Controllers
         }
 
 
-        public ActionResult GetFacts()
+        public JsonResult GetFacts()
         {
-            using(var uow=ObjectFactory.GetInstance<IUnitOfWork>())
+            JsonResult jsonResult=new JsonResult();
+            try
             {
-                List<FactDO> factDOList = _report.GetFacts(uow);
-                //var a = factDOList.Select(Mapper.Map<HistoryDTO>);
-                var jsonResult = Json(_jsonPackager.Pack(factDOList), JsonRequestBehavior.AllowGet);
-                //jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    List<FactDO> factDOList = _report.GetFacts(uow);
+                    jsonResult = Json(factDOList,JsonRequestBehavior.AllowGet);                  
+                }
             }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error checking for activity template ", e);
+            }
+            return jsonResult;
         }
 
+
+        public JsonResult GetIncidents()
+        {
+            JsonResult jsonResult = new JsonResult();
+            try
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    List<IncidentDO> incidentList = _report.GetIncidents(uow);
+                    jsonResult = Json(incidentList, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error checking for activity template ", e);
+            }
+            return jsonResult;
+        }
+
+
         public ActionResult ShowFacts()
+        {
+            return View();
+        }
+
+        public ActionResult ShowIncidents()
         {
             return View();
         }
