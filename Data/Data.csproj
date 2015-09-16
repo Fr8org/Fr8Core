@@ -261,14 +261,6 @@
     <Compile Include="Migrations\201509150029523_Initial.Designer.cs">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509142342108_DO-951.cs" />
-    <Compile Include="Migrations\201509142342108_DO-951.Designer.cs">
-      <DependentUpon>201509142342108_DO-951.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509150013253_UpdateActivityDO.cs" />
-    <Compile Include="Migrations\201509150013253_UpdateActivityDO.Designer.cs">
-      <DependentUpon>201509150013253_UpdateActivityDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201509151219496_EmptyMigration.cs" />
     <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
@@ -499,12 +491,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509142342108_DO-951.resx">
-      <DependentUpon>201509142342108_DO-951.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509150013253_UpdateActivityDO.resx">
-      <DependentUpon>201509150013253_UpdateActivityDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
