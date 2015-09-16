@@ -32,6 +32,13 @@ namespace pluginAzureSqlServer.Controllers
         }
 
         [HttpPost]
+        [Route("deactivate")]
+        public string Deactivate(ActionDTO curActionDataPackage)
+        {
+            return string.Empty;
+        }
+
+        [HttpPost]
         [Route("execute")]
         public string Execute(ActionDTO curActionDataPackage)
         {

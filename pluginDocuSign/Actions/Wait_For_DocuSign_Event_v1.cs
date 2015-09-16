@@ -35,6 +35,11 @@ namespace pluginDocuSign.Actions
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
+        public object Deactivate(ActionDTO curDataPackage)
+        {
+            return "Deactivate Request"; // Will be changed when implementation is plumbed in.
+        }
+
         public object Execute(ActionDataPackageDTO curActionDataPackage)
         {
             // Extract envelope id from the payload Crate

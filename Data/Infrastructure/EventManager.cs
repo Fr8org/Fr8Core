@@ -24,7 +24,13 @@ namespace Data.Infrastructure
 
         public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO);
         public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
-        
+
+        public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public static event IncidentPluginActionActivationPOSTFailureHandler IncidentPluginActionActivationFailed;
+
+        public delegate void PluginActionActivatedHandler(ActionDO action);
+        public static event PluginActionActivatedHandler PluginActionActivated;
+         
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
@@ -135,6 +141,11 @@ namespace Data.Infrastructure
             if (handler != null) handler(pluginUrl, actionDTO);
         }
 
+        public static void PluginActionActivationFailed(string pluginUrl, string actionDTO)
+        {
+            IncidentPluginActionActivationPOSTFailureHandler handler = IncidentPluginActionActivationFailed;
+            if (handler != null) handler(pluginUrl, actionDTO);
+        }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
         {
@@ -385,6 +396,11 @@ namespace Data.Infrastructure
         {
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
+        }
+        public static void ActionActivated(ActionDO action)
+        {
+            var handler = PluginActionActivated;
+            if (handler != null) handler(action);
         }
         #endregion
     }

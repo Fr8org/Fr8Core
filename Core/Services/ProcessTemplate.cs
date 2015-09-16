@@ -18,12 +18,14 @@ namespace Core.Services
     public class ProcessTemplate : IProcessTemplate
     {
         private readonly IProcess _process;
+        private IAction _action;
 
         public object itemsToRemove { get; private set; }
 
         public ProcessTemplate()
         {
             _process = ObjectFactory.GetInstance<IProcess>();
+            _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
@@ -175,6 +177,19 @@ namespace Core.Services
                 return queryableRepo.SelectMany<ProcessTemplateDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
                     .ToList();
             }
+        }
+
+
+        public string Activate(ProcessTemplateDO curProcessTemplate)
+        {
+            ActionDO curActionDO = new ActionDO();
+            return _action.Activate(curActionDO);
+        }
+
+        public string Deactivate(ProcessTemplateDO curProcessTemplate)
+        {
+            ActionDO curActionDO = new ActionDO();
+            return _action.Deactivate(curActionDO);
         }
     }
 }

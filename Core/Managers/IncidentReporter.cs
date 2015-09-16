@@ -25,6 +25,8 @@ namespace Core.Managers
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
             EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
+            EventManager.IncidentPluginActionActivationFailed += ProcessIncidentPluginActionActivationFailed;
+            //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             //AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
@@ -33,6 +35,20 @@ namespace Core.Managers
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             EventManager.PluginIncidentReported += LogPluginIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+        }
+
+        private void ProcessIncidentPluginActionActivationFailed(string pluginUrl, string curActionDTO)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = pluginUrl + "      " + curActionDTO,
+                ObjectId = "unknown",
+                PrimaryCategory = "Plugin",
+                SecondaryCategory = "Action Activation",
+                Activity = "Activation Failed"
+            };
+            SaveAndLogFact(incident);
         }
 
         /// <summary>

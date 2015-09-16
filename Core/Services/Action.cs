@@ -65,7 +65,7 @@ namespace Core.Services
                     existingActionDo.ActivityTemplateId = currentActionDo.ActivityTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.CrateStorage = currentActionDo.CrateStorage;
-                    
+
                 }
                 else
                 {
@@ -214,7 +214,7 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            
+
             //TODO : Cut base Url from PluginDO.Endpoint
 
             curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
@@ -327,6 +327,68 @@ namespace Core.Services
             {
                 curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
             }
+        }
+
+
+        public string Activate(ActionDO curActionDO)
+        {
+
+            return CallPluginAction(curActionDO, "activate").ToString();
+
+        }
+
+        public string Deactivate(ActionDO curActionDO)
+        {
+            return CallPluginAction(curActionDO, "deactivate").ToString();
+        }
+
+        private object CallPluginAction(ActionDO curActionDO, string actionName)
+        {
+            ActivityTemplateDO curActivityTemplate;
+            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
+            {
+                //fetch this Action's ActivityTemplate
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
+                    if (curActivityTemplate != null)
+                    {
+                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
+                        //convert the ActivityTemplate to a DTO as well
+                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
+
+                        // prepare the current plugin URL
+                        // TODO: Add logic to use https:// for production
+                        string curPluginUrl = string.Format("http://{0}/actions/{1}/" + curActivityTemplate.Plugin.Endpoint, actionName);
+
+                        var restClient = new RestfulServiceClient();
+                        object result;
+                        try
+                        {
+                            result = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                            EventManager.ActionActivated(curActionDO);
+                        }
+                        catch (Exception)
+                        {
+                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
+                            throw;
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        throw new ArgumentNullException("ActivityTemplateDO");
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("curActionDO");
+            }
+
         }
     }
 }

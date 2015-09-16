@@ -33,6 +33,11 @@ namespace pluginDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
+        public void Deactivate(ActionDTO curActionDTO)
+        {
+            return; // Will be changed when implementation is plumbed in.
+        }
+
         public void Execute(ActionDataPackageDTO curActionDataPackageDTO)
         {
             //Get envlopeId
