@@ -1,15 +1,17 @@
 ﻿using System.Web.Http;
+using Core.Interfaces;
 using pluginDocuSign.Services;
+using StructureMap;
 
 namespace pluginDocuSign.Controllers
 {
     public class EventController : ApiController
     {
-        private IDocuSignEvent _event;
+        private IEvent _event;
 
         public EventController()
         {
-            _event = new DocuSignEvent();
+            _event = ObjectFactory.GetInstance<IEvent>();
         }
 
         [HttpPost]

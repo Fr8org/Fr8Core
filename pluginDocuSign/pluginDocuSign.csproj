@@ -187,9 +187,7 @@
     <Compile Include="Infrastructure\DocuSignPackager.cs" />
     <Compile Include="Infrastructure\Signer.cs" />
     <Compile Include="Infrastructure\Tab.cs" />
-    <Compile Include="Services\DocuSignEvent.cs" />
     <Compile Include="Services\DocuSignTemplate.cs" />
-    <Compile Include="Services\IDocuSignEvent.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

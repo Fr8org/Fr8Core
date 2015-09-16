@@ -152,8 +152,6 @@
     </Compile>
     <Compile Include="Actions\MapFields_v1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\DockyardCoreEvent.cs" />
-    <Compile Include="Services\IDockyardCoreEvent.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

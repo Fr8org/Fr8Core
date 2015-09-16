@@ -1,17 +1,15 @@
 ﻿using System.Web.Http;
 using Core.Interfaces;
-using pluginAzureSqlServer.Services;
 using StructureMap;
 
 namespace pluginAzureSqlServer.Controllers
 {
     public class EventController : ApiController
     {
-        private IAzureSqlServerEvent _event;
-
+        private IEvent _event;
         public EventController()
         {
-            _event = new AzureSqlServerEvent();
+            _event = ObjectFactory.GetInstance<IEvent>();
         }
 
         [HttpPost]

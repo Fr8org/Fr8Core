@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201509151906529_AddedVersionToPlugin"; }
+            get { return "201509161527206_AddedVersionToPlugin"; }
         }
         
         string IMigrationMetadata.Source

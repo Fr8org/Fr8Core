@@ -1,16 +1,16 @@
 ﻿using System.Web.Http;
 using Core.Interfaces;
-using pluginDockyardCore.Services;
 using StructureMap;
 
 namespace pluginDockyardCore.Controllers
 {
     public class EventController : ApiController
     {
-        private IDockyardCoreEvent _event;
+        private IEvent _event;
+
         public EventController()
         {
-            _event = new DockyardCoreEvent();
+            _event = ObjectFactory.GetInstance<IEvent>();
         }
 
         [HttpPost]

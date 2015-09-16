@@ -36,5 +36,10 @@ namespace Core.Services
                 return (curPlugin != null) ? curPlugin.Endpoint : string.Empty;
             }
         }
+
+        public void Process(string curExternalEventContent)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
