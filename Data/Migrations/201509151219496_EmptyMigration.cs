@@ -7,14 +7,14 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            DropColumn("dbo.Actions", "FieldMappingSettings");
-            DropColumn("dbo.Actions", "PayloadMappings");
+            //DropColumn("dbo.Actions", "FieldMappingSettings");
+            //DropColumn("dbo.Actions", "PayloadMappings");
         }
         
         public override void Down()
         {
-            AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
-            AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
+            //AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
+            //AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
         }
     }
 }

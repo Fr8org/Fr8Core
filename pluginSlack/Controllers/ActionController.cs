@@ -18,7 +18,7 @@ namespace pluginSlack.Controllers
         [Route("configure")]
         public string Configure(ActionDTO curActionDataPackage)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage).ToString();
         }
 
         [HttpPost]
