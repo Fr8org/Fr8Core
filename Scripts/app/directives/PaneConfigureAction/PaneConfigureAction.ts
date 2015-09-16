@@ -132,6 +132,9 @@ module dockyard.directives.paneConfigureAction {
                     for (var i = 0; i < controlsList.fields.length; i++) {
                         if (controlsList.fields[i].type == 'dropdownlistField') {
                             var dropdownListField = <model.DropDownListBoxField> controlsList.fields[i];
+                            if (!dropdownListField.source) {
+                                continue;
+                            }
                             var stdfCrate = self.crateHelper.findByManifestTypeAndLabel(
                                 crateStorage, dropdownListField.source.manifestType, dropdownListField.source.label
                                 );
