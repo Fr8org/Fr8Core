@@ -16,9 +16,12 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public string Configure(ActionDTO curActionDataPackage)
+        public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            if (response == null)
+                response = new CrateStorageDTO();
+            return response;
         }
        
         [HttpPost]
@@ -86,27 +89,6 @@ namespace pluginAzureSqlServer.Controllers
                 Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
-        }
-
-        [HttpGet]
-        [Route("action_templates")]
-        public IHttpActionResult ActionTemplates()
-        {
-            var result = new List<ActivityTemplateDO>();
-            var template = new ActivityTemplateDO
-            {
-                Name = "WriteToAzureSqlServer",
-                Version = "1.0"
-            };
-            var plugin = new PluginDO
-            {
-                Endpoint = "localhost:46281",
-                PluginStatus = PluginStatus.Active,
-                Name = template.Name
-            };
-            template.Plugin = plugin;
-            result.Add(template);
-            return Json(result);           
         }
     }
 }

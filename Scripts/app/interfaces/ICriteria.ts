@@ -18,7 +18,7 @@ module dockyard.interfaces {
         actionListId: number,
         name: string;
         crateStorage: model.CrateStorage;
-        fieldMappingSettings: model.FieldMappingSettings;
+        configurationControls: model.ControlsList;
         actionTemplateId: number;
         activityTemplate: model.ActivityTemplate;
     }

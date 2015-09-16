@@ -62,9 +62,7 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            AddProfiles(uow);
-            AddPlugins(uow);
-            AddActionTemplates(uow);
+            AddProfiles(uow);          
             AddTestFacts(uow);
             AddTestIncidents(uow);
             SeedMultiTenantTables(uow);
@@ -393,17 +391,23 @@ namespace Data.Migrations
 
         private void AddTestFact(IUnitOfWork uow,string userId,string emailId)
         {
-                FactDO testFactDO = new FactDO
-                {
-                    PrimaryCategory = "User",
-                    SecondaryCategory = "",
-                    Activity = "Registered",
-                    CustomerId = userId,
-                    ObjectId = null,
-                    Data = string.Format("User registrated with :{0},", emailId)                    
-                };
-                uow.FactRepository.Add(testFactDO);
-                uow.SaveChanges();
+            FactRepository repositarty = uow.FactRepository;
+            List<FactDO> repositartyItems = repositarty.GetAll().ToList();
+            if (repositartyItems.Find(item => item.CustomerId == userId) == null)
+             {
+
+                 FactDO testFactDO = new FactDO
+                 {
+                     PrimaryCategory = "User",
+                     SecondaryCategory = "",
+                     Activity = "Registered",
+                     CustomerId = userId,
+                     ObjectId = null,
+                     Data = string.Format("User registrated with :{0},", emailId)
+                 };
+                 uow.FactRepository.Add(testFactDO);
+                 uow.SaveChanges();
+             }
         }
 
         private void AddTestIncidents(IUnitOfWork uow)
@@ -415,14 +419,19 @@ namespace Data.Migrations
 
         private void AddTestIncident(IUnitOfWork uow,string emailId,string message)
         {
-            IncidentDO incidentDO = new IncidentDO();
-            incidentDO.PrimaryCategory = "Email";
-            incidentDO.SecondaryCategory = "Failure";
-            incidentDO.Activity = "Send";
-            incidentDO.ObjectId = emailId;
-            incidentDO.Data = message;
-            uow.IncidentRepository.Add(incidentDO);
-            uow.SaveChanges();
+            IncidentRepository repositarty = uow.IncidentRepository;
+            List<IncidentDO> repositartyItems = repositarty.GetAll().ToList();
+            if (repositartyItems.Find(item => item.ObjectId == emailId) == null)
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Failure";
+                incidentDO.Activity = "Send";
+                incidentDO.ObjectId = emailId;
+                incidentDO.Data = message;
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
         }
 
 

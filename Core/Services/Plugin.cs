@@ -31,11 +31,12 @@ namespace Core.Services
         }
 
         public async Task<IList<ActivityTemplateDO>> GetAvailableActions(string uri)
+        //    public IList<ActivityTemplateDO> GetAvailableActions(string uri)
         {
-            // IList<ActivityTemplateDO> actionTemplateList = null; ;
+            // IList<ActionTemplateDO> actionTemplateList = null; ;
             var restClient = new RestfulServiceClient();
-            var actionTemplateList = await restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
-            return actionTemplateList;
+            return await restClient.GetAsync<IList<ActivityTemplateDO>>(new Uri(uri, UriKind.Absolute));
+            //var actionTemplateList = restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
         }
     }
 }

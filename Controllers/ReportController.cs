@@ -102,8 +102,8 @@ namespace Web.Controllers
              }
         }
 
-
-        public JsonResult GetFacts()
+        
+        public JsonResult Facts()
         {
             JsonResult jsonResult=new JsonResult();
             try
@@ -121,8 +121,8 @@ namespace Web.Controllers
             return jsonResult;
         }
 
-
-        public JsonResult GetIncidents()
+       
+        public JsonResult Incidents()
         {
             JsonResult jsonResult = new JsonResult();
             try

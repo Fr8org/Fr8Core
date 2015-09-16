@@ -30,7 +30,7 @@ namespace pluginDockyardCore.Actions
         public ActionProcessResultDTO Execute(ActionDO actionDO)
         {
             var curFieldMappingSettings = actionDO.CrateStorageDTO()
-                .CratesDTO
+                .CrateDTO
                 .Where(x => x.Label == "Field Mappings")
                 .FirstOrDefault();
 
@@ -47,7 +47,7 @@ namespace pluginDockyardCore.Actions
                 {
                     Contents = curFieldMappingJson,
                     Label = "Payload",
-                    ManifestType = "Payload Data"
+                    ManifestType = "Standard Payload Data"
                 }
             };
 
@@ -70,7 +70,7 @@ namespace pluginDockyardCore.Actions
             foreach (var curAction in actions)
             {
                 var curCrateStorage = curAction.CrateStorageDTO();
-                foreach (var curCrate in curCrateStorage.CratesDTO)
+                foreach (var curCrate in curCrateStorage.CrateDTO)
                 {
                     crateConfigList.Add(new CrateConfigurationDTO()
                     {
@@ -109,7 +109,7 @@ namespace pluginDockyardCore.Actions
 
             var curResultDTO = new CrateStorageDTO()
             {
-                CratesDTO = new List<CrateDTO>()
+                CrateDTO = new List<CrateDTO>()
                 {
                     new CrateDTO()
                     {
@@ -127,7 +127,7 @@ namespace pluginDockyardCore.Actions
                 }
             };
 
-            curActionDO.UpdateCrateStorageDTO(curResultDTO.CratesDTO);
+            curActionDO.UpdateCrateStorageDTO(curResultDTO.CrateDTO);
 
             return curResultDTO;
         }

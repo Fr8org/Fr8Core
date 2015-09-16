@@ -107,13 +107,13 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
         .state('showIncidents', {
             url: "/showIncidents",
             templateUrl: "/Report/ShowIncidents",
-            data: { pageTitle: 'Incidents', pageSubTitle: '' },
+            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
         })
 
         .state('showFacts', {
             url: "/showFacts",
             templateUrl: "/Report/ShowFacts",
-            data: { pageTitle: 'Facts', pageSubTitle: '' },
+            data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         });
 
 }]);

@@ -1,6 +1,12 @@
-﻿using Data.States;
+﻿using Data.Entities;
+using Data.Interfaces;
+using Data.States;
+using StructureMap;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Data.Entities
 {
@@ -16,6 +22,8 @@ namespace Data.Entities
         {
             this.Name = name;
             this.Version = version;
+            /* We don't need to validate pluginId because of EF chack ForeignKey and if pluginId doesn't exist in table Plugins then 
+             * EF will throw 'System.Data.Entity.Infrastructure.DbUpdateException'  */
             this.PluginID = pluginId;
         }
 
@@ -27,16 +35,16 @@ namespace Data.Entities
         /// <param name="pluginName">Name of the new PluginDO</param>
         /*<param name="baseEndPoint">New PluginDO base end point</param>*/
         /// <param name="Endpoint">New PluginDO end point</param>
-        public ActivityTemplateDO(string name, string version, /*string baseEndpoint,*/ string pluginName, string endPoint)
+        public ActivityTemplateDO(string name, string version, string pluginName, string endPoint)
         {
+
             this.Name = name;
-            //this.DefaultEndPoint = defaultEndPoint;
             this.Version = version;
+
             this.Plugin = new PluginDO()
             {
-                Name = name,
+                Name = pluginName,
                 PluginStatus = PluginStatus.Active,
-                //BaseEndPoint = baseEndpoint,
                 Endpoint = endPoint
             };
         }

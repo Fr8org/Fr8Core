@@ -63,8 +63,8 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            string curJsonResult = _action.Configure(curActionDO);
-            CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
+            CrateStorageDTO result = _action.Configure(curActionDO);
+            
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);
             //Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -364,7 +364,7 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CratesDTO);
+            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }

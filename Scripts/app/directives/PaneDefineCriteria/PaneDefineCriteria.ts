@@ -86,17 +86,17 @@ module dockyard.directives.paneDefineCriteria {
                 });
         };
 
-        var loadDatasources = function (
-            eventArgs: RenderEventArgs,
-            scope: IPaneDefineCriteriaScope,
-            ActionService: services.IActionService) {
-            ActionService.getFieldDataSources({}, scope.currentAction).$promise.then((data) => {
-                scope.fields = [];
-                data.forEach((value) => {
-                    scope.fields.push(new model.Field(value, value));
-                });
-            });
-        }
+        //var loadDatasources = function (
+        //    eventArgs: RenderEventArgs,
+        //    scope: IPaneDefineCriteriaScope,
+        //    ActionService: services.IActionService) {
+        //    ActionService.getFieldDataSources({}, scope.currentAction).$promise.then((data) => {
+        //        scope.fields = [];
+        //        data.forEach((value) => {
+        //            scope.fields.push(new model.Field(value, value));
+        //        });
+        //    });
+        //}
 
         // Callback for handling PaneDefineCriteria_Render message.
         var onRender = function (
@@ -139,14 +139,14 @@ module dockyard.directives.paneDefineCriteria {
             //Check if we have currentAction with the same criteriaId (processNodeTemplateId)
             //If yes, init the module. If no, wait for it and then init the module.  
             if (model.ActionDesignDTO.isActionValid(scope.currentAction)) {
-                loadDatasources(eventArgs, scope, ActionService);
+                //loadDatasources(eventArgs, scope, ActionService); we no longer use this v1 approach
             }
             else {
                 disposeActionListener = scope.$watch("currentAction", (newAction: interfaces.IActionVM) => {
                     //When user selected the current criteria's action, initialize the pane. 
                     if (model.ActionDesignDTO.isActionValid(newAction)) {
                         disposeActionListener(); //deregister the watch
-                        loadDatasources(eventArgs, scope, ActionService);
+                        //loadDatasources(eventArgs, scope, ActionService); we no longer use this v1 approach
                     }
                 }, true);
             }

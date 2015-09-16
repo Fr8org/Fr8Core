@@ -22,6 +22,7 @@ module dockyard.controllers {
 
         //this is for demo only, should be deleted on production
         radioDemoField: model.RadioButtonGroupField;
+        dropdownDemoField: model.DropDownListBoxField;
     }
 
     //Setup aliases
@@ -108,6 +109,34 @@ module dockyard.controllers {
             radios.push(demoRadio3);
             radioDemoField.radios = radios;
             this._scope.radioDemoField = radioDemoField;
+
+            var dropdownDemoField = new model.DropDownListBoxField();
+            var demoSelectItem1 = new model.DropDownListItem();
+            
+            demoSelectItem1.text = "Operation 1";
+            demoSelectItem1.value = "operation_1";
+            var demoSelectItem2 = new model.DropDownListItem();
+            
+            demoSelectItem2.text = "Operation 2";
+            demoSelectItem2.value = "operation_2";
+            var demoSelectItem3 = new model.DropDownListItem();
+            
+            demoSelectItem3.text = "Operation 3";
+            demoSelectItem3.value = "operation_3";
+            var demoSelectItem4 = new model.DropDownListItem();
+            
+            demoSelectItem4.text = "Operation 4";
+            demoSelectItem4.value = "operation_4";
+            dropdownDemoField.fieldLabel = "Operation List";
+            dropdownDemoField.listItems = new Array<model.DropDownListItem>();
+            dropdownDemoField.listItems.push(demoSelectItem1);
+            dropdownDemoField.listItems.push(demoSelectItem2);
+            dropdownDemoField.listItems.push(demoSelectItem3);
+            dropdownDemoField.listItems.push(demoSelectItem4);
+
+            dropdownDemoField.value = "operation_4";
+            dropdownDemoField.name = "demoDropDown";
+            this._scope.dropdownDemoField = dropdownDemoField;
             //END OF DEMO CODE
         }
 
@@ -593,6 +622,7 @@ module dockyard.controllers {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
+                    configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,

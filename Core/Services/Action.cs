@@ -79,7 +79,7 @@ namespace Core.Services
 
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
-            return curActionDO.CrateStorageDTO().CratesDTO;
+            return curActionDO.CrateStorageDTO().CrateDTO;
         }
 
         public ActionDO GetById(int id)
@@ -90,7 +90,7 @@ namespace Core.Services
             }
         }
 
-        public string Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDO curActionDO)
         {
 
             ActivityTemplateDO curActivityTemplate;
@@ -102,31 +102,45 @@ namespace Core.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-                }
 
 
-                if (curActivityTemplate != null)
-                {
-                    //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                    var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
-                    //convert the ActivityTemplate to a DTO as well
-                    ActivityTemplateDTO curActivityTemplateDTO =  Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-                    curActionDTO.ActivityTemplate = curActivityTemplateDTO;
+                    if (curActivityTemplate != null)
+                    {
+                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
-                    // prepare the current plugin URL
-                    // TODO: Add logic to use https:// for production
-               
-                    string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
+                        //convert the ActivityTemplate to a DTO as well
+                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
 
-                    var restClient = new RestfulServiceClient();
-                    string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                        // prepare the current plugin URL
+                        // TODO: Add logic to use https:// for production
 
-                    return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
-                }
-                else
-                {
-                    throw new ArgumentNullException("ActivityTemplateDO");
+                        string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
+
+                        var restClient = new RestfulServiceClient();
+                        string pluginConfigurationCrateListJSON;
+                        try
+                        {
+                            pluginConfigurationCrateListJSON =
+                           restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                        }
+                        catch (Exception)
+                        {
+                            EventManager.PluginConfigureFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
+                            throw;
+                        }
+
+                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
+                        return configurationCrates;
+                        //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                    }
+
+                    else
+                    {
+                        throw new ArgumentNullException("ActivityTemplateDO");
+                    }
                 }
             }
             else

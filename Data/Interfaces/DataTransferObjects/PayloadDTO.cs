@@ -30,7 +30,7 @@ namespace Data.Interfaces.DataTransferObjects
             if (!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
                 crateStorageDTO = CrateStorageDTO();
 
-            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
 
             this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
         }
