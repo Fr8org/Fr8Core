@@ -17,6 +17,8 @@ namespace pluginDocuSign.Actions
 {
     public class Wait_For_DocuSign_Event_v1 : BasePluginAction
     {
+		 private static readonly int STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID = 3;
+
         IAction _action = ObjectFactory.GetInstance<IAction>();
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -76,7 +78,6 @@ namespace pluginDocuSign.Actions
 
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
@@ -198,7 +199,7 @@ namespace pluginDocuSign.Actions
 		  {
 			  var templates = _template.GetTemplates(null);
 			  var fields = templates.Select(x => new FieldDTO() { Key = x.Id, Value = x.Name }).ToList();
-			  var createDesignTimeFields = _crate.Create("Available Templates", JsonConvert.SerializeObject(fields), "Standard Design-Time Fields", 3);
+			  var createDesignTimeFields = _crate.Create("Available Templates", JsonConvert.SerializeObject(fields), "Standard Design-Time Fields", STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID);
 			  return createDesignTimeFields;
 		  }
     }
