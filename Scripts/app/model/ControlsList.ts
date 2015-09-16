@@ -33,16 +33,22 @@
     }
 
     export class FieldDTO {
-        public key: string;
-        public value: string;
+        public Key: string;
+        public Value: string;
     }
 
     export class DropDownListItem extends FieldDTO {
         
     }
 
+    export class FieldSource {
+        public manifestType: string;
+        public label: string;
+    }
+
     export class DropDownListBoxField extends ConfigurationField {
         listItems: Array<DropDownListItem>;
         value: string;
+        source: FieldSource;
     }
 }

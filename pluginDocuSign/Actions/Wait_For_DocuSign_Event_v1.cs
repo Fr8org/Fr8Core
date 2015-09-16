@@ -144,7 +144,7 @@ namespace pluginDocuSign.Actions
         }
 		  private CrateDTO CreateStandartConfigurationControls()
 		  {
-			  var fieldSelectDocusignTemplate = new FieldDefinitionDTO()
+              var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
 			  {
 				  FieldLabel = "Select DocuSign Template",
 				  Type = "dropdownlistField",
@@ -152,7 +152,12 @@ namespace pluginDocuSign.Actions
 				  Required = true,
 				  Events = new List<FieldEvent>() {
                      new FieldEvent("onSelect", "requestConfiguration")
-                }
+                },
+                  Source = new FieldSource
+                  {
+                      Label = "Available Templates",
+                      ManifestType = "Standard Design-Time Fields"
+                  }
 			  };
 
 			  var fieldEnvelopeSent = new FieldDefinitionDTO()
@@ -198,7 +203,7 @@ namespace pluginDocuSign.Actions
 		  private CrateDTO CreateStandardDesignTimeFields()
 		  {
 			  var templates = _template.GetTemplates(null);
-			  var fields = templates.Select(x => new FieldDTO() { Key = x.Id, Value = x.Name }).ToList();
+              var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
 			  var createDesignTimeFields = _crate.Create("Available Templates", JsonConvert.SerializeObject(fields), "Standard Design-Time Fields", STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID);
 			  return createDesignTimeFields;
 		  }

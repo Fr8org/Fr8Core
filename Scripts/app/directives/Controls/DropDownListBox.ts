@@ -39,18 +39,20 @@ module dockyard.directives.dropDownListBox {
                 this._$scope.selectedItem = null;
 
                 $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
+                this.FindAndSetSelectedItem();
             };
         }
 
         private SetSelectedItem(item: model.DropDownListItem) {
-            this._$scope.field.value = item.value;
+            this._$scope.field.value = item.Value;
             this._$scope.selectedItem = item;
         }
 
         private FindAndSetSelectedItem() {
             for (var i = 0; i < this._$scope.field.listItems.length; i++) {
-                if (this._$scope.field.value == this._$scope.field.listItems[i].value) {
+                if (this._$scope.field.value == this._$scope.field.listItems[i].Value) {
                     this._$scope.selectedItem = this._$scope.field.listItems[i];
+                    break;
                 }
             }
         }
