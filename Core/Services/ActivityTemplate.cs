@@ -10,7 +10,7 @@ using System.Text;
 
 namespace Core.Services
 {
-    public class ActivityTemplate :IActivityTemplate
+    public class ActivityTemplate : IActivityTemplate
     {
         public IEnumerable<ActivityTemplateDO> GetAll()
         {
@@ -33,6 +33,16 @@ namespace Core.Services
 
         }
 
-        
+        public void Register(ActivityTemplateDO activityTemplateDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (!uow.ActivityTemplateRepository.GetQuery().Any(t => t.Name == activityTemplateDO.Name))
+                {
+                    uow.ActivityTemplateRepository.Add(activityTemplateDO);
+                    uow.SaveChanges();
+                }
+            }
+        }
     }
 }

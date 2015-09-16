@@ -488,6 +488,51 @@ namespace Core.Managers
             }
         }
 
+        public void ActivityTemplatesSuccessfullyRegistered(int count)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO curFactDO = new FactDO
+                {
+                    PrimaryCategory = "StartUp",
+                    SecondaryCategory = "Activity Templates",
+                    Activity = "Registered",
+                    ObjectId = null,
+                    Data = string.Format("{0} activity templates were registrated",count)
+                    //Data = "User registrated with " + curUser.EmailAddress.Address
+                };
+                Logger.GetLogger().Info(curFactDO.Data);
+                uow.FactRepository.Add(curFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        public void ActivityTemplatePluginRegistrationError(string message, string exceptionType)
+        {
+            var incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Error",
+                SecondaryCategory = exceptionType,
+                Activity = "ActivityTemplatePluginRegistration",
+                Data = message
+            };
+
+            Logger.GetLogger().Error(message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+
+                //The error may be connected to the fact that DB is unavailable, 
+                //we need to be prepared to that. 
+                try
+                {
+                    uow.SaveChanges();
+                }
+                catch { }
+            }
+        }
+
 
         private void AddFactOnToken(string userId, string activity)
         {
