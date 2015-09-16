@@ -10,6 +10,8 @@ namespace pluginAzureSqlServer
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+
+
         }
     }
 }

@@ -184,7 +184,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
-    <Compile Include="Interfaces\IActionRegistration.cs" />
+    <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
@@ -265,7 +265,7 @@
     <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
-    <Compile Include="Services\ActionRegistration.cs" />
+    <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Crate.cs" />

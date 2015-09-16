@@ -66,7 +66,7 @@ namespace pluginDocuSign.Actions
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
         {
-            var crate = curActionDO.CrateStorage.CratesDTO.SingleOrDefault(c => c.ManifestId == DESIGNTIME_FIELDS_MANIFEST_ID);
+            var crate = curActionDO.CrateStorage.CrateDTO.SingleOrDefault(c => c.ManifestId == DESIGNTIME_FIELDS_MANIFEST_ID);
             if (crate == null) return null;
 
             var fieldsList = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
@@ -77,7 +77,7 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CratesDTO.SingleOrDefault(c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID);
+            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault(c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID);
             if (crate == null) return null; //TODO: log it
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0)

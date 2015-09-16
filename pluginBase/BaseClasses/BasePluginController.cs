@@ -2,7 +2,10 @@
 using System.Configuration;
 using System.Reflection;
 using Core.Managers.APIManagers.Transmitters.Restful;
+using Core.Services;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Crates.Helpers;
 using Newtonsoft.Json;
 using Data.Interfaces.DataTransferObjects;
 
@@ -13,6 +16,14 @@ namespace PluginBase.BaseClasses
     //we can generate instances of this.
     public class BasePluginController
     {
+        private readonly EventReportCrate _eventReportCrateHelper;
+        private readonly LoggingDataCrate _loggingDataCrateHelper;
+        public BasePluginController()
+        {
+            _eventReportCrateHelper = new EventReportCrate();
+            _loggingDataCrateHelper = new LoggingDataCrate();
+        }
+
         /// <summary>
         /// Reports start up incident
         /// </summary>
@@ -51,26 +62,24 @@ namespace PluginBase.BaseClasses
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            var loggingDataCrate = _loggingDataCrateHelper.Create(new LoggingData
+            {
+                ObjectId = pluginName,
+                CustomerId = "not_applicable",
+                Data = "service_start_up",
+                PrimaryCategory = "Operations",
+                SecondaryCategory = "System Startup",
+                Activity = "system startup"
+            });
+            //TODO inpect this
+            //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                new
-                {
-                    Source = pluginName,
-                    EventType = eventType,
-                    Data = new
-                    {
-                        ObjectId = pluginName,
-                        CustomerId = "not_applicable",
-                        Data = "service_start_up",
-                        PrimaryCategory = "Operations",
-                        SecondaryCategory = "System Startup",
-                        Activity = "system startup",
-                    }
-                }).Wait();
+                _eventReportCrateHelper.Create(eventType, pluginName, loggingDataCrate)).Wait();
 
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
+        public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
             if (dataObject == null) dataObject = curActionDTO;
 
@@ -79,8 +88,8 @@ namespace PluginBase.BaseClasses
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
-
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { dataObject }) ?? new { });
+            var response = (object) curMethodInfo.Invoke(curObject, new Object[] {dataObject});
+            return  response ;
         }
 
         /// <summary>

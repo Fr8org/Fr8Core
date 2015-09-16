@@ -174,7 +174,7 @@
     <Compile Include="Actions\Extract_From_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Wait_For_DocuSign_Event_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\ActivityTemplateController.cs" />
+    <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

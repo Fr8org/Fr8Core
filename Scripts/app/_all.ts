@@ -17,8 +17,8 @@
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
-/// <reference path="model/configurationstore.ts" />
 /// <reference path="model/processtemplate.ts" />
+/// <reference path="model/controlslist.ts" />
 /// <reference path="model/processbuilderstate.ts" />
 
 /*

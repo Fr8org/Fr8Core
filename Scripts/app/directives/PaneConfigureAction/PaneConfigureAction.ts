@@ -34,6 +34,7 @@ module dockyard.directives.paneConfigureAction {
         action: interfaces.IActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
+        configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         crateStorage: ng.resource.IResource<model.CrateStorage> | model.CrateStorage;
         mapFields: (scope: IPaneConfigureActionScope) => void;
     }
@@ -80,7 +81,7 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
-            model.CrateStorage
+            model.ControlsList
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -94,17 +95,17 @@ module dockyard.directives.paneConfigureAction {
 
             // Get configuration settings template from the server if the current action does not 
             // contain those or user has selected another action template.
-            if (scope.currentAction.crateStorage == null
-                || scope.currentAction.crateStorage.fields == null
-                || scope.currentAction.crateStorage.fields.length == 0
-                || (eventArgs.action.id == this._currentAction.id &&
-                    eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
+            //if (scope.currentAction.crateStorage == null
+            //    || scope.currentAction.configurationControls.fields == null
+            //    || scope.currentAction.configurationControls.fields.length == 0
+            //    || (eventArgs.action.id == this._currentAction.id &&
+            //        eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
+            //FOR NOW we're going to simplify things by always checking with this server for a new configuration
 
                 if (eventArgs.action.actionTemplateId > 0) {
-                    (<any>scope.currentAction).crateStorage =
-                    this.ActionService.getCrateStorage(scope.action);
+                    (<any>scope.currentAction).crateStorage = this.ActionService.configure(scope.action);
                 }
-            }
+            
 
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action

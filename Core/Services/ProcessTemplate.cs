@@ -213,7 +213,7 @@ namespace Core.Services
                     if (actionDo != null && actionDo.CrateStorage != "")
                     {
                         //Loop each CrateDTO in CrateStorage
-                        List<string> actionContents = actionDo.CrateStorageDTO().CratesDTO.Select(s => s.Contents).ToList();
+                        List<string> actionContents = actionDo.CrateStorageDTO().CrateDTO.Select(s => s.Contents).ToList();
                         foreach (var content in actionContents)
                         {
                             //Parse CrateDTO to ManifestSchemaDTO and compare Event name then add the ProcessTemplate to the results
