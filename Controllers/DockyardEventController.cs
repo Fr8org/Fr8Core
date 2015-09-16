@@ -15,10 +15,11 @@ namespace Web.Controllers
     public class DockyardEventController : ApiController
     {
         private readonly IDockyardEvent _dockyardEvent;
-
+        private readonly ICrate _crate;
         public DockyardEventController()
         {
             _dockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         [HttpPost]
@@ -33,7 +34,7 @@ namespace Web.Controllers
             if (String.IsNullOrEmpty(curCrateStandardEventReport.Contents))
                 throw new ArgumentNullException("CrateDTO Content is empty.");
 
-            EventReportMS eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(curCrateStandardEventReport.Contents);
+            EventReportMS eventReportMS = _crate.GetContents<EventReportMS>(curCrateStandardEventReport);
 
             //call DockyardEvent#ProcessInbound
             _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
