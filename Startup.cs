@@ -35,7 +35,7 @@ namespace Web
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            await RegisterPluginActions();
+            RegisterPluginActions();
 
             LoadLocalActionLists();
 
@@ -146,7 +146,8 @@ namespace Web
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
-                    IList<ActivityTemplateDO> activityTemplateList = new Plugin().GetAvailableActions(uri).Result;
+                    var pluginService = new Plugin();
+                    var activityTemplateList = await pluginService.GetAvailableActions(uri);
                     // For discover serialization see:
                     //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
                     //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
@@ -160,7 +161,7 @@ namespace Web
                     }
                 }
 
-                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                var alertReporter = ObjectFactory.GetInstance<EventReporter>();
                 alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
             }
             catch (Exception ex)

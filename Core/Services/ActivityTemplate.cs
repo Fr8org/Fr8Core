@@ -37,6 +37,14 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var existingPlugin = uow.PluginRepository
+                    .FindOne(x => x.Name == activityTemplateDO.Plugin.Name);
+
+                if (existingPlugin != null)
+                {
+                    activityTemplateDO.Plugin = existingPlugin;
+                }
+
                 if (!uow.ActivityTemplateRepository.GetQuery().Any(t => t.Name == activityTemplateDO.Name))
                 {
                     uow.ActivityTemplateRepository.Add(activityTemplateDO);

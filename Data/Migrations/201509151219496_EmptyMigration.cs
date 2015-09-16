@@ -7,14 +7,16 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            //DropColumn("dbo.Actions", "FieldMappingSettings");
-            //DropColumn("dbo.Actions", "PayloadMappings");
+            // TODO: commented out by yakov.gnusin, this code broke EF migration.
+            // DropColumn("dbo.Actions", "FieldMappingSettings");
+            // DropColumn("dbo.Actions", "PayloadMappings");
         }
         
         public override void Down()
         {
-            //AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
-            //AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
+            // TODO: commented out by yakov.gnusin, this code broke EF migration.
+            // AddColumn("dbo.Actions", "PayloadMappings", c => c.String());
+            // AddColumn("dbo.Actions", "FieldMappingSettings", c => c.String());
         }
     }
 }
