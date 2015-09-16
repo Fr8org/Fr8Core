@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ManifestSchemaDTO
+    public class EventReportMS
     {
         public string EventNames { get; set; }
         public string ProcessDOId { get; set; }
