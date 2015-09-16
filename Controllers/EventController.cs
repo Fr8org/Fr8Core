@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Restful;
@@ -90,7 +92,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("events")]
-        public string Events(string dockyardPluginName, string dockyardPluginVersion)
+        public async Task<string> Events(string dockyardPluginName, string dockyardPluginVersion)
         {
             //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
             if (string.IsNullOrEmpty(dockyardPluginName) || string.IsNullOrEmpty(dockyardPluginVersion))
@@ -107,13 +109,13 @@ namespace Web.Controllers
             }
 
             //get required plugin URL by plugin name and its version
-            string curPluginUrl = _event.GetPluginUrl(dockyardPluginName, dockyardPluginVersion);
+            string curPluginUrl = @"http://" + _event.GetPluginUrl(dockyardPluginName, dockyardPluginVersion);
             curPluginUrl += "/events";
 
             //make POST with request content
-            ObjectFactory.GetInstance<IRestfulServiceClient>().PostAsync(new Uri(curPluginUrl), Request.Content);
-            
-            //
+            string curResponseContent = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), Request.Content).Result.Content.ReadAsStringAsync(); 
+
+            //create a plugin event for event notification received
             _event.HandlePluginEvent(new LoggingData
             {
                 ObjectId = "EventController",
@@ -124,7 +126,7 @@ namespace Web.Controllers
                 Activity = string.Format("Processed event for {0}_v{1} on {2}.", dockyardPluginName, dockyardPluginVersion, curPluginUrl)
             });
 
-            return string.Format("Processed event for {0}_v{1} on {2}.", dockyardPluginName, dockyardPluginVersion, curPluginUrl);
+            return curResponseContent;
         }
     }
 }
