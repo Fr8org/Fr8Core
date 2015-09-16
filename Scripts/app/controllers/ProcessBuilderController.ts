@@ -573,6 +573,7 @@ module dockyard.controllers {
         }
 
         private onSave() {
+            debugger;
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
 

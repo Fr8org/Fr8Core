@@ -126,7 +126,7 @@ module dockyard.directives.paneConfigureAction {
 
                     (<any>scope.currentAction).configurationControls = controlsList;
 
-                    debugger;
+                    //debugger;
                 });
             }
             
@@ -134,7 +134,7 @@ module dockyard.directives.paneConfigureAction {
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action
             this._currentAction = angular.extend({}, eventArgs.action);
-            debugger;
+            //debugger;
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
