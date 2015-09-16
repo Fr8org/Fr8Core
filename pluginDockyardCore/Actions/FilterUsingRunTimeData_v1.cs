@@ -35,7 +35,7 @@ namespace pluginDockyardCore.Actions
 
             // Find crate with id "Criteria Filter Conditions".
             var curCrateStorage = actionDO.CrateStorageDTO();
-            var curFilterCrate = curCrateStorage.CratesDTO
+            var curFilterCrate = curCrateStorage.CrateDTO
                 .FirstOrDefault(x => x.Id == "Criteria Filter Conditions");
 
             if (curFilterCrate == null)
@@ -168,7 +168,7 @@ namespace pluginDockyardCore.Actions
             {
                 return new CrateStorageDTO()
                 {
-                    CratesDTO = new List<CrateDTO>()
+                    CrateDTO = new List<CrateDTO>()
                     {
                         curCrate
                     }

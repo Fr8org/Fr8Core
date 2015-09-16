@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.WindowsAzure;
-using Newtonsoft.Json;
 using Owin;
 using StructureMap;
 
@@ -18,9 +17,12 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using Utilities;
 using Utilities.Logging;
 using Utilities.Serializers.Json;
+using Core.Services;
+using Core.Managers;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -33,7 +35,7 @@ namespace Web
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            await RegisterPluginActions();
+            RegisterPluginActions();
 
             LoadLocalActionLists();
 
@@ -83,20 +85,20 @@ namespace Web
 
 
             if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
-                // it is not true that there is at least one commConfig that has the Main alert number
-                {
-                    CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
-                    curCommConfig.CommunicationType = CommunicationType.Sms;
-                    curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
-                        communicationConfigurationRepo.Add(curCommConfig);
-                        uow.SaveChanges();
-                }
-           
+            // it is not true that there is at least one commConfig that has the Main alert number
+            {
+                CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
+                curCommConfig.CommunicationType = CommunicationType.Sms;
+                curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
+                communicationConfigurationRepo.Add(curCommConfig);
+                uow.SaveChanges();
             }
+
+        }
 
         public void AddMainSMSAlertToDb(CommunicationConfigurationRepository communicationConfigurationRepo)
         {
-           
+
         }
 
 
@@ -135,61 +137,38 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            var actionTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-
             try
             {
-                foreach (var url in actionTemplateHosts)
+                var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+                int count = 0;
+                foreach (string url in activityTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
-                    using (var client = new HttpClient())
-                    using (var response = await client.GetAsync(uri))
-                    using (var content = response.Content)
+                    var pluginService = new Plugin();
+                    var activityTemplateList = await pluginService.GetAvailableActions(uri);
+                    // For discover serialization see:
+                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
+                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
+                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
+
+
+                    foreach (var curItem in activityTemplateList)
                     {
-                        // For discover serialization see:
-                        //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
-                        //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
-                        //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
-                        var data = await content.ReadAsStringAsync();
-                        var curActionList = JsonConvert.DeserializeObject<List<ActivityTemplateDO>>(data);
-
-                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                        {
-                            PluginDO curPlugin = null;
-
-                            foreach (var curItem in curActionList)
-                            {
-                                // Create only one plugin record.
-                                if (curPlugin == null)
-                                {
-                                    uow.PluginRepository.Add(curItem.Plugin);
-                                    curPlugin = curItem.Plugin;
-                                }
-
-                                // Check that ActivityTemplate with specified plugin does not exist yet.
-                                var curTemplateExists = uow.ActivityTemplateRepository
-                                    .GetQuery()
-                                    .Any(x => x.Name == curItem.Name && x.Plugin.Name == curItem.Plugin.Name);
-
-                                // If it doesn't exist, then create one.
-                                if (!curTemplateExists)
-                                {
-                                    // Reassign Plugin to single plugin instance.
-                                    curItem.Plugin = curPlugin;
-                                    uow.ActivityTemplateRepository.Add(curItem);
-                                }
-                            }
-
-                            uow.SaveChanges();
-                        }
+                        new ActivityTemplate().Register(curItem);
+                        count++;
                     }
                 }
+
+                var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
             }
             catch (Exception ex)
             {
-                Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
+                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
             }
         }
 
@@ -210,6 +189,7 @@ namespace Web
                         ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
                         componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
 
+                     
                         activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
 
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
@@ -230,7 +210,8 @@ namespace Web
                         componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
                             (item => item.Name == "Write_To_Sql_Server"));
 
-                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "localhost:46281", 1);
+                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "1"
+                             , "localhost:46281", "localhost:46281");
                         activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
                         activityTemplate.Plugin = uow.PluginRepository.FindOne(x => x.Name == "pluginAzureSqlServer");
 
@@ -250,7 +231,7 @@ namespace Web
         {
             bool found = true;
             try
-            {               
+            {
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
@@ -260,7 +241,7 @@ namespace Web
                     {
                         found = false;
                     }
-                    
+
                 }
             }
             catch (Exception e)

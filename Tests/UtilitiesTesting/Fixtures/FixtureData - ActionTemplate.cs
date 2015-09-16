@@ -16,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 1,
                 Name = "Write to Sql Server",
-                Plugin = new PluginDO { Name = "pluginAzureSqlServer", Version = "1", Endpoint = "pluginAzureSqlServer", PluginStatus = PluginStatus.Active },
+                Plugin = PluginOne(), 
                 Version = "v3"
 			};
             return activityTemplateDo;
@@ -37,7 +37,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Type1",
-                Plugin = new PluginDO { Name = "AzureSqlServer", Version = "1", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
+                Plugin = PluginTwo(), 
                 Version = "1"
             };
             return curActivityDO;
@@ -45,15 +45,15 @@ namespace UtilitiesTesting.Fixtures
 
 	    public static ActivityTemplateDO TestActivityTemplateV2()
 	    {
-	        var curActivityTemplate = new ActivityTemplateDO
+            var curActionTemplate = new ActivityTemplateDO
 	        {
 	            Id = 1,
                 Name = "plugin_azure_sql_server",
-                Plugin = new PluginDO { Name = "http://localhost:46281/", Version = "1", Endpoint = "http://localhost:46281/", PluginStatus = PluginStatus.Active },
+                Plugin = PluginThree(), 
 	            Version = "1"
 	        };
 
-	        return curActivityTemplate;
+            return curActionTemplate;
 	    }
 
         public static ActivityTemplateDTO TestActionTemplateDTOV2()
@@ -78,7 +78,7 @@ namespace UtilitiesTesting.Fixtures
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
 	        return new CrateStorageDTO
 	        {
-	            CratesDTO = new List<CrateDTO>
+                CrateDTO = new List<CrateDTO>
 	            {
                     _crate.Create("SQL Connection String", "{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}"),
                     _crate.Create("Custom SQL Query", "{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}"),
@@ -96,7 +96,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Write to SQL",
-                Plugin = new PluginDO { Name = "AzureSqlServer", Version = "1", Endpoint = "AzureSqlServer", PluginStatus = PluginStatus.Active },
+                Plugin = PluginFour(), 
                 Version = "1"
             };
             return curActivityDO;

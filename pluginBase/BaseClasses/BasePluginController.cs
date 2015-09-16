@@ -30,7 +30,7 @@ namespace PluginBase.BaseClasses
         /// <param name="pluginName">Name of the plugin which is starting up</param>
         public  void AfterStartup(string pluginName)
         {
-            ReportStartUp(pluginName);
+           // ReportStartUp(pluginName);
         }
 
         /// <summary>
@@ -79,7 +79,7 @@ namespace PluginBase.BaseClasses
         }
 
         // For /Configure and /Activate actions that accept ActionDTO
-        public string HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
+        public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
             if (dataObject == null) dataObject = curActionDTO;
 
@@ -88,8 +88,8 @@ namespace PluginBase.BaseClasses
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
-
-            return JsonConvert.SerializeObject((object)curMethodInfo.Invoke(curObject, new Object[] { dataObject }) ?? new { });
+            var response = (object) curMethodInfo.Invoke(curObject, new Object[] {dataObject});
+            return  response ;
         }
 
         /// <summary>

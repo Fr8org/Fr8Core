@@ -72,9 +72,10 @@ module dockyard.tests.controller {
             // First POST, create a dummy entry
 
             var actions: interfaces.IActionDesignDTO =
-                {
+            {
                     name: "test action type",
-                    crateStorage: fx.ActionDesignDTO.crateStorage,
+                    configurationControls: fx.ActionDesignDTO.configurationControls,
+                    crateStorage: null,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
@@ -100,7 +101,8 @@ module dockyard.tests.controller {
             var currentActionDesignDTO: interfaces.IActionDesignDTO =
                     {
                         name: "test action type",
-                        crateStorage: fx.ActionDesignDTO.crateStorage,
+                        configurationControls: fx.ActionDesignDTO.configurationControls,
+                        crateStorage: null,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,

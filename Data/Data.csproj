@@ -245,6 +245,7 @@
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IEnvelope.cs">
       <SubType>Code</SubType>
@@ -260,6 +261,10 @@
     <Compile Include="Migrations\201509150029523_Initial.cs" />
     <Compile Include="Migrations\201509150029523_Initial.Designer.cs">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509151219496_EmptyMigration.cs" />
+    <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
+      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201509151906529_AddedVersionToPlugin.cs" />
     <Compile Include="Migrations\201509151906529_AddedVersionToPlugin.Designer.cs">
@@ -491,6 +496,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
+      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509151906529_AddedVersionToPlugin.resx">
       <DependentUpon>201509151906529_AddedVersionToPlugin.cs</DependentUpon>

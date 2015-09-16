@@ -749,8 +749,9 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ControlsList.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />

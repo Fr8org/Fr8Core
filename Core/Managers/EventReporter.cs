@@ -488,37 +488,51 @@ namespace Core.Managers
             }
         }
 
-        //Do we need/use both this and the immediately preceding event? 
-        //public void BookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-        //        if (bookingRequestDO == null)
-        //            throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-        //        var bookerDO = uow.UserRepository.GetByKey(bookerId);
-        //        if (bookerDO == null)
-        //            throw new EntityNotFoundException<UserDO>(bookerId);
-        //        string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-        //        FactDO curAction = new FactDO
-        //        {
-        //            PrimaryCategory = "BookingRequest",
-        //            SecondaryCategory = "Ownership",
-        //            Activity = "Change",
-        //            CustomerId = bookingRequestDO.Customer.Id,
-        //            ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-        //            BookerId = bookerId,
-        //            Status = status,
-        //            Data = string.Format(
-        //                    "BookingRequest ID :{0}, Booker EmailAddress: {1}",
-        //                    bookingRequestDO.Id,
-        //                    bookerDO.EmailAddress.Address)
-        //        };
+        public void ActivityTemplatesSuccessfullyRegistered(int count)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO curFactDO = new FactDO
+                {
+                    PrimaryCategory = "StartUp",
+                    SecondaryCategory = "Activity Templates",
+                    Activity = "Registered",
+                    ObjectId = null,
+                    Data = string.Format("{0} activity templates were registrated",count)
+                    //Data = "User registrated with " + curUser.EmailAddress.Address
+                };
+                Logger.GetLogger().Info(curFactDO.Data);
+                uow.FactRepository.Add(curFactDO);
+                uow.SaveChanges();
+            }
+        }
 
-        //        //AddFact(uow, curAction);
-        //        uow.SaveChanges();
-        //    }
-        //}
+        public void ActivityTemplatePluginRegistrationError(string message, string exceptionType)
+        {
+            var incidentDO = new IncidentDO
+            {
+                PrimaryCategory = "Error",
+                SecondaryCategory = exceptionType,
+                Activity = "ActivityTemplatePluginRegistration",
+                Data = message
+            };
+
+            Logger.GetLogger().Error(message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+
+                //The error may be connected to the fact that DB is unavailable, 
+                //we need to be prepared to that. 
+                try
+                {
+                    uow.SaveChanges();
+                }
+                catch { }
+            }
+        }
+
 
         private void AddFactOnToken(string userId, string activity)
         {
@@ -543,7 +557,7 @@ namespace Core.Managers
         /// <param name="fact">An instance of FactDO class.</param>
         /// <param name="eventName">Name of the event.</param>
         /// <param name="eventType">Event type.</param>
-        private void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
+        public void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
         {
             string message = string.Format(
                 "Event {0} generated with CustomerId = {1}, ObjectId = {2} and Data = {3}.",
@@ -734,7 +748,7 @@ namespace Core.Managers
         }
 
 
-        private enum EventType
+        public enum EventType
         {
             Info,
             Error,

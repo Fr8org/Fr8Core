@@ -34,8 +34,8 @@ namespace DockyardTest.Actions
             var package = new ActionDataPackageDTO(AutoMapper.Mapper.Map<ActionDTO>(action), null);
             CrateStorageDTO result = (CrateStorageDTO) pluginAction.Configure(package.ActionDTO);
 
-            Assert.AreEqual(1, result.CratesDTO.Count);
-            var fieds = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CratesDTO[0].Contents);
+            Assert.AreEqual(1, result.CrateDTO.Count);
+            var fieds = Newtonsoft.Json.JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CrateDTO[0].Contents);
             Assert.IsTrue(fieds.Any(c => c.Name == "Selected_DocuSign_Template"));
             Assert.IsTrue(fieds.Any(c => c.Name == "Event_Envelope_Sent"));
             Assert.IsTrue(fieds.Any(c => c.Name == "Event_Envelope_Received"));

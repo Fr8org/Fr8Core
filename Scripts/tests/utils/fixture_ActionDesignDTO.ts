@@ -9,7 +9,7 @@ module dockyard.tests.utils.fixtures {
             processTemplateState: 1
         };
 
-        public static crateStorage = {
+        public static configurationControls = {
             "fields":
             [
                 {
@@ -69,6 +69,7 @@ module dockyard.tests.utils.fixtures {
         public static actionDesignDTO = <interfaces.IActionDesignDTO> {
             name: "test action type",
             crateStorage: null,
+            configurationControls: null,
             processNodeTemplateId: 1,
             actionTemplateId: 1,
             isTempId: false,

@@ -130,9 +130,8 @@ namespace DockyardTest.Controllers
                 var curActionDO = FixtureData.TestAction22();
 
                 var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _action.Configure(curActionDO);
-                CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
-                Assert.GreaterOrEqual(1, result.CratesDTO.Count);
+                CrateStorageDTO result = _action.Configure(curActionDO);
+                Assert.GreaterOrEqual(1, result.CrateDTO.Count);
             }
         }
 
@@ -175,7 +174,7 @@ namespace DockyardTest.Controllers
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
                 Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantCrateStorageDto.CratesDTO.Count == 1, "Configure is not assuming this is the first request from the client");
+                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 1, "Configure is not assuming this is the first request from the client");
                 //different V2 format
                 //Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
                 //Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
@@ -216,7 +215,7 @@ namespace DockyardTest.Controllers
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
                 Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantCrateStorageDto.CratesDTO.Count == 3, "Configure returned invalid data fields");
+                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 3, "Configure returned invalid data fields");
             }
         }
 
@@ -357,35 +356,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        [Test]
-        [Ignore("Vas, Ignored as part of V2 changes")]
-        // To run and pass this test 
-        // pluginAzureSqlServer should be running 
-        // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
-        // make sure that the endpoint is running 
-        // in azure db you need a db demodb_health
-        public async void Can_Get_FieldMappingTargets()
-        {
-
-            //Arrange 
-            string pluginName =
-                "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
-            string dataSource =
-                "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-            var cntroller = new ActionController();
-            //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
-
-            var task = cntroller.GetFieldMappingTargets(new ActionDTO()
-            {
-                CrateStorage = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(
-                    "{\"connection_string\":\"" + dataSource + "\"}")
-            });
-
-            //await task;
-            //Assert.NotNull(task.Result);
-            //Assert.Greater(task.Result.Count(), 0);
-            //task.Result.ToList().ForEach(Console.WriteLine);
-        }
+     
 
         [Test, Ignore]
         [Category("ActionController")]
