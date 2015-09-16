@@ -17,7 +17,7 @@ namespace Core.Interfaces
         /// </summary>
         void HandlePluginEvent(LoggingData eventData);
 
-        void Process(string curExternalEventContent);
+        void Process(string curExternalEventPayload);
 
         /// <summary>
         /// Gets the required plugin service URL by Plugin Name and its version

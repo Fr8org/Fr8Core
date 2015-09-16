@@ -37,7 +37,7 @@ namespace Core.Services
             }
         }
 
-        public void Process(string curExternalEventContent)
+        public void Process(string curExternalEventPayload)
         {
             throw new NotImplementedException();
         }
