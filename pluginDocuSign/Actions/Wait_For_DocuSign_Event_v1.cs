@@ -23,13 +23,11 @@ namespace pluginDocuSign.Actions
         IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
 
 
-        public object Configure(ActionDTO curActionDTO, bool forceFollowupConfiguration = false)
+        public object Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
             return ProcessConfigurationRequest(curActionDTO,
-                actionDo => (forceFollowupConfiguration) ?
-                    ConfigurationRequestType.Followup :
-                    ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+                actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
         public object Activate(ActionDTO curDataPackage)
@@ -64,7 +62,7 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CratesDTO.SingleOrDefault();
+            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
             if (crate == null) return null;
 
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
@@ -126,16 +124,20 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent
             };
 
-            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields));
+            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields),  "Standard Configuration Controls");
 
-            curActionDTO.CrateStorage.CratesDTO.Add(crateControls);
+            if (curActionDTO.CrateStorage == null)
+            {
+                curActionDTO.CrateStorage = new CrateStorageDTO();
+            }
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
             return curActionDTO.CrateStorage;
         }
 
         protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curCrates = curActionDTO.CrateStorage.CratesDTO;
+            var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
             if (curCrates == null || curCrates.Count == 0)
             {
@@ -179,7 +181,11 @@ namespace pluginDocuSign.Actions
             //    JsonConvert.SerializeObject(fieldCollection), 
             //    "DocuSignEnvelopeStandardFields"));
 
-            curActionDTO.CrateStorage.CratesDTO.AddRange(crateConfiguration);
+            if (curActionDTO.CrateStorage == null)
+            {
+                curActionDTO.CrateStorage = new CrateStorageDTO();
+            }
+            curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
             return curActionDTO.CrateStorage;
         }
     }

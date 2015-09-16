@@ -184,7 +184,7 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
-    <Compile Include="Interfaces\IActionRegistration.cs" />
+    <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
@@ -200,8 +200,10 @@
     <Compile Include="Interfaces\IProcess.cs" />
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
-    <Compile Include="Interfaces\ISubscription.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
+    <Compile Include="Interfaces\ISubscription.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -250,9 +252,6 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
-    <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
-    <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -265,7 +264,7 @@
     <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
-    <Compile Include="Services\ActionRegistration.cs" />
+    <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Crate.cs" />

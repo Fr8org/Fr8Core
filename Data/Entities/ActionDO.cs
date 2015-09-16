@@ -17,18 +17,14 @@ namespace Data.Entities
 
         public string CrateStorage { get; set; }
 
-        public string FieldMappingSettings { get; set; }
-
         [ForeignKey("ActionStateTemplate")]
         public int? ActionState { get; set; }
 
         public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
 
-        public string PayloadMappings { get; set; }
-
-        [ForeignKey("ActionTemplate")]
-        public int? ActionTemplateId { get; set; }
-        public virtual ActionTemplateDO ActionTemplate { get; set; }
+        [ForeignKey("ActivityTemplate")]
+        public int? ActivityTemplateId { get; set; }
+        public virtual ActivityTemplateDO ActivityTemplate { get; set; }
 
         [NotMapped]
         public bool IsTempId { get; set; }
@@ -45,7 +41,7 @@ namespace Data.Entities
             if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
                 crateStorageDTO = CrateStorageDTO();
 
-            crateStorageDTO.CratesDTO.AddRange(curCratesDTO);
+            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
 
             this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
         }

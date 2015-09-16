@@ -40,34 +40,13 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount)
-        {
-            List<ActionTemplateDO> curActionTemplates;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curActionTemplates = uow.ActionTemplateRepository.GetAll().ToList();
-            }
-
-            //we're currently bypassing the subscription logic until we need it
-            //we're bypassing the pluginregistration logic here because it's going away in V2
-
-            //var plugins = _subscription.GetAuthorizedPlugins(curAccount);
-            //var plugins = _plugin.GetAll();
-            // var curActionTemplates = plugins
-            //    .SelectMany(p => p.AvailableActions)
-            //    .OrderBy(s => s.ActionType);
-
-            return curActionTemplates;
-        }
-
         public bool SaveOrUpdateAction(ActionDO currentActionDo)
         {
             ActionDO existingActionDo = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (currentActionDo.ActionTemplateId == 0)
-                    currentActionDo.ActionTemplateId = null;
+                if (currentActionDo.ActivityTemplateId == 0)
+                    currentActionDo.ActivityTemplateId = null;
 
                 if (currentActionDo.Id > 0)
                 {
@@ -83,10 +62,10 @@ namespace Core.Services
                 {
                     existingActionDo.ParentActivity = currentActionDo.ParentActivity;
                     existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
-                    existingActionDo.ActionTemplateId = currentActionDo.ActionTemplateId;
+                    existingActionDo.ActivityTemplateId = currentActionDo.ActivityTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.CrateStorage = currentActionDo.CrateStorage;
-                    existingActionDo.FieldMappingSettings = currentActionDo.FieldMappingSettings;
+                    
                 }
                 else
                 {
@@ -100,50 +79,73 @@ namespace Core.Services
 
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
-            return curActionDO.CrateStorageDTO().CratesDTO;
+            return curActionDO.CrateStorageDTO().CrateDTO;
         }
 
         public ActionDO GetById(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetQuery().Include(i => i.ActionTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
+                return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
             }
         }
 
-        public string GetConfigurationSettings(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDO curActionDO)
         {
-            ActionTemplateDO curActionTemplate;
 
-            if (curActionDO != null && curActionDO.ActionTemplateId != 0)
+            ActivityTemplateDO curActivityTemplate;
+
+
+            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
             {
-
+                //fetch this Action's ActivityTemplate
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    curActionTemplate = uow.ActionTemplateRepository.GetByKey(curActionDO.ActionTemplateId);
-                }
+                    curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
 
-                if (curActionTemplate != null)
-                {
-                    var curActionDTO = Mapper.Map<ActionDTO>(curAction);
 
-                    // prepare the current plugin URL
-                    // TODO: Add logic to use https:// for production
-                    string curPluginUrl = "http://" + curActionTemplate.DefaultEndPoint + "/actions/configure/";
 
-                    var restClient = new RestfulServiceClient();
-                    string curConfigurationStoreJson = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                    if (curActivityTemplate != null)
+                    {
+                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
-                    return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
-                }
-                else
-                {
-                    throw new ArgumentNullException("ActionTemplateDO");
+                        //convert the ActivityTemplate to a DTO as well
+                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
+
+                        // prepare the current plugin URL
+                        // TODO: Add logic to use https:// for production
+
+                        string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
+
+                        var restClient = new RestfulServiceClient();
+                        string pluginConfigurationCrateListJSON;
+                        try
+                        {
+                            pluginConfigurationCrateListJSON =
+                           restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                        }
+                        catch (Exception)
+                        {
+                            EventManager.PluginConfigureFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
+                            throw;
+                        }
+
+                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
+                        return configurationCrates;
+                        //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                    }
+
+                    else
+                    {
+                        throw new ArgumentNullException("ActivityTemplateDO");
+                    }
                 }
             }
             else
             {
-                throw new ArgumentNullException("ActionTemplateDO");
+                throw new ArgumentNullException("ActivityTemplateDO");
             }
         }
 
@@ -212,7 +214,11 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            curPluginClient.BaseUri = new Uri(curActionDO.ActionTemplate.DefaultEndPoint);
+            
+            //TODO : Cut base Url from PluginDO.Endpoint
+
+            curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);
 
@@ -268,7 +274,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 DockyardAccountDO curDockyardAccountDO = GetAccount(curActionDO);
-                var curPlugin = curActionDO.ActionTemplate.Plugin;
+                var curPlugin = curActionDO.ActivityTemplate.Plugin;
                 string curToken = string.Empty;
 
                 if (curDockyardAccountDO != null)
@@ -296,7 +302,7 @@ namespace Core.Services
         public DockyardAccountDO GetAccount(ActionDO curActionDO)
         {
             if (curActionDO.ParentActivity != null
-                && curActionDO.ActionTemplate.AuthenticationType == "OAuth")
+                && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
                 ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
 

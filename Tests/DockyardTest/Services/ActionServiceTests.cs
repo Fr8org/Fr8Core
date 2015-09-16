@@ -29,8 +29,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "Write", Version = "1.0" }, new ActionTemplateDO() { Name = "Read", Version = "1.0" } };
-        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { Name = "SQL Read", Version = "1.0" } };
+        private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
+        private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
         [SetUp]
         public override void SetUp()
@@ -63,8 +63,8 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            string curJsonResult = _action.GetConfigurationSettings(curActionDO);
-            CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
+            CrateStorageDTO result = _action.Configure(curActionDO);
+            
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);
             //Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -78,7 +78,7 @@ namespace DockyardTest.Services
         public void ActionService_NULL_ActionTemplate()
         {
             var _service = new Action();
-            Assert.IsNotNull(_service.GetConfigurationSettings(null));
+            Assert.IsNotNull(_service.Configure(null));
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace DockyardTest.Services
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
-                Assert.AreEqual(origActionDO.FieldMappingSettings, actionDO.FieldMappingSettings);
+             
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete
@@ -313,11 +313,11 @@ namespace DockyardTest.Services
             //};
 
             //Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            //List<ActionTemplateDO> curActionTemplateDO = _action.GetAvailableActions(account).ToList();
+            //List<ActivityTemplateDO> curActivityTemplateDO = _action.GetAvailableActions(account).ToList();
 
             ////Assert
-            //Assert.AreEqual(4, curActionTemplateDO.Count);
-            //Assert.That(curActionTemplateDO, Is.Ordered.By("ActionType"));
+            //Assert.AreEqual(4, curActivityTemplateDO.Count);
+            //Assert.That(curActivityTemplateDO, Is.Ordered.By("ActionType"));
 
 
         }
@@ -330,7 +330,7 @@ namespace DockyardTest.Services
 
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActionTemplate.Plugin;
+            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
             curAuthorizationTokenDO.UserDO = curActionListDO.Process.ProcessTemplate.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -348,7 +348,7 @@ namespace DockyardTest.Services
             var curActionListDO = (ActionListDO)curActionDO.ParentActivity;
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
-            curAuthorizationTokenDO.Plugin = curActionDO.ActionTemplate.Plugin;
+            curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
             curAuthorizationTokenDO.UserDO = curActionListDO.Process.ProcessTemplate.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -364,7 +364,7 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.TestAction23();
 
-            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CratesDTO);
+            _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }

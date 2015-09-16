@@ -1,67 +1,67 @@
 ﻿using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using DocuSign.Integrations.Client;
 using StructureMap;
 using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
 {
-	public partial class FixtureData
-	{
-        public static ActionTemplateDO TestActionTemplate1()
-		{
-            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
-			{
-				Id = 1,
-                Name = "Write to Sql Server",
-                DefaultEndPoint = "pluginAzureSqlServer",
-                Version="v3"
-			};
-            return actionTemplateDo;
-		}
-
-        public static ActionTemplateDO TestActionTemplate2()
+    public partial class FixtureData
+    {
+        public static ActivityTemplateDO TestActivityTemplate1()
         {
-            ActionTemplateDO actionTemplateDo = new ActionTemplateDO
+            ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO
             {
                 Id = 1,
-                Version = "v4"                
+                Name = "Write to Sql Server",
+                Plugin = PluginOne(), 
+                Version = "v3"
             };
-            return actionTemplateDo;
+            return activityTemplateDo;
         }
-        public static ActionTemplateDO TestActionTemplateDO1()
+
+        public static ActivityTemplateDO TestActivityTemplate2()
         {
-            var curActionDO = new ActionTemplateDO
+            ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO
+            {
+                Id = 1,
+                Version = "v4"
+            };
+            return activityTemplateDo;
+        }
+        public static ActivityTemplateDO TestActivityTemplateDO1()
+        {
+            var curActivityDO = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Type1",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = PluginTwo(), 
                 Version = "1"
             };
-            return curActionDO;
+            return curActivityDO;
         }
 
-	    public static ActionTemplateDO TestActionTemplateV2()
-	    {
-	        var curActionTemplate = new ActionTemplateDO
-	        {
-	            Id = 1,
-                Name = "plugin_azure_sql_server",
-                DefaultEndPoint = "http://localhost:46281/",
-	            Version = "1"
-	        };
-
-	        return curActionTemplate;
-	    }
-
-        public static ActionTemplateDTO TestActionTemplateDTOV2()
+        public static ActivityTemplateDO TestActivityTemplateV2()
         {
-            var curActionTemplate = new ActionTemplateDTO
+            var curActionTemplate = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "plugin_azure_sql_server",
-                DefaultEndPoint = "http://localhost:46281/",
+                Plugin = PluginThree(), 
+                Version = "1"
+            };
+
+            return curActionTemplate;
+        }
+
+        public static ActivityTemplateDTO TestActionTemplateDTOV2()
+        {
+            var curActionTemplate = new ActivityTemplateDTO
+            {
+                Id = 1,
+                Name = "plugin_azure_sql_server",
                 Version = "1"
             };
 
@@ -73,12 +73,12 @@ namespace UtilitiesTesting.Fixtures
             return FixtureData.CrateStorageDTO();
         }
 
-	    public static CrateStorageDTO TestConfigurationStore()
-	    {
+        public static CrateStorageDTO TestConfigurationStore()
+        {
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-	        return new CrateStorageDTO
-	        {
-	            CratesDTO = new List<CrateDTO>
+            return new CrateStorageDTO
+            {
+                CrateDTO = new List<CrateDTO>
 	            {
                     _crate.Create("SQL Connection String", "{type: 'textField', name: 'connection_string', required: true, fieldLabel: 'SQL Connection String'}"),
                     _crate.Create("Custom SQL Query", "{type: 'textField', name: 'query', required: true, fieldLabel: 'Custom SQL Query'}"),
@@ -87,19 +87,19 @@ namespace UtilitiesTesting.Fixtures
 	                _crate.Create("Log No Transactions", "{type: 'checkboxField', name: 'log_transactions2', required: true, fieldLabel: 'Log No Transactions?'}"),
                     _crate.Create("Log Failed Transactions", "{type: 'checkboxField', name: 'log_transactions3', required: true, fieldLabel: 'Log Failed Transactions?'}")
 	            }
-	        };
+            };
         }
 
-        public static ActionTemplateDO TestActionTemplateDO2()
+        public static ActivityTemplateDO TestActivityTemplateDO2()
         {
-            var curActionDO = new ActionTemplateDO
+            var curActivityDO = new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Write to SQL",
-                DefaultEndPoint = "AzureSqlServer",
+                Plugin = PluginFour(), 
                 Version = "1"
             };
-            return curActionDO;
+            return curActivityDO;
 
         }
     }

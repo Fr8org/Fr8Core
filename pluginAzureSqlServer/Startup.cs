@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Core.StructureMap;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
@@ -16,6 +17,9 @@ namespace pluginAzureSqlServer
     {
         public void Configuration(IAppBuilder app)
         {
+            // StructureMap Dependencies configuration 
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+
             BasePluginController curController = new BasePluginController();
             curController.AfterStartup("plugin_azure_sql_server");
         }

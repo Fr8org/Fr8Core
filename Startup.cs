@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Microsoft.Owin;
+using Microsoft.WindowsAzure;
+using Owin;
+using StructureMap;
+
 using Configuration;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Microsoft.Owin;
-using Microsoft.WindowsAzure;
-using Owin;
-using StructureMap;
-using Utilities.Logging;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using Utilities;
+using Utilities.Logging;
+using Utilities.Serializers.Json;
+using Core.Services;
+using Core.Managers;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -22,12 +30,14 @@ namespace Web
 {
     public partial class Startup
     {
-        public void Configuration(IAppBuilder app)
+        public async void Configuration(IAppBuilder app)
         {
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            RegisterPluginActions();
+            await RegisterPluginActions();
+
+            LoadLocalActionLists();
 
             app.Use(async (context, next) =>
             {
@@ -75,20 +85,20 @@ namespace Web
 
 
             if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
-                // it is not true that there is at least one commConfig that has the Main alert number
-                {
-                    CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
-                    curCommConfig.CommunicationType = CommunicationType.Sms;
-                    curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
-                        communicationConfigurationRepo.Add(curCommConfig);
-                        uow.SaveChanges();
-                }
-           
+            // it is not true that there is at least one commConfig that has the Main alert number
+            {
+                CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
+                curCommConfig.CommunicationType = CommunicationType.Sms;
+                curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
+                communicationConfigurationRepo.Add(curCommConfig);
+                uow.SaveChanges();
             }
+
+        }
 
         public void AddMainSMSAlertToDb(CommunicationConfigurationRepository communicationConfigurationRepo)
         {
-           
+
         }
 
 
@@ -125,21 +135,120 @@ namespace Web
             }
         }
 
-        public void RegisterPluginActions()
+        public async Task RegisterPluginActions()
         {
-            /*
-             * TODO: This Plugin registration logic should be changed in V2
-             */
+            try
+            {
+                var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+                int count = 0;
+                foreach (string url in activityTemplateHosts)
+                {
+                    var uri = url.StartsWith("http") ? url : "http://" + url;
+                    uri += "/plugins/discover";
+
+                    IList<ActivityTemplateDO> activityTemplateList = new Plugin().GetAvailableActions(uri).Result;
+                    // For discover serialization see:
+                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
+                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
+                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
 
-            //IEnumerable<BasePluginRegistration> plugins = typeof(BasePluginRegistration)
-            //    .Assembly.GetTypes()
-            //    .Where(t => t.IsSubclassOf(typeof(BasePluginRegistration)) && !t.IsAbstract)
-            //    .Select(t => (BasePluginRegistration)Activator.CreateInstance(t));
-            //foreach (var plugin in plugins)
-            //{
-            //    plugin.RegisterActions();
-            //}
+                    foreach (var curItem in activityTemplateList)
+                    {
+                        new ActivityTemplate().Register(curItem);
+                        count++;
+                    }
+                }
+
+                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            }
+            catch (Exception ex)
+            {
+                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
+            }
         }
+
+        /// <summary>
+        /// Loads Local Action Lists
+        /// </summary>
+        public void LoadLocalActionLists()
+        {
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
+                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                    if (!CheckForActivityTemplate("Extract From DocuSign Envelopes Into Azure Sql Server"))
+                    {
+                        ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
+                        componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
+
+                     
+                        activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                            (item => item.Name == "Wait_For_DocuSign_Event"));
+
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                           (item => item.Name == "FilterUsingRunTimeData"));
+
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                            (item => item.Name == "Extract_From_DocuSign_Envelope"));
+
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                          (item => item.Name == "MapFields"));
+
+                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
+                            (item => item.Name == "Write_To_Sql_Server"));
+
+                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "1"
+                             , "localhost:46281", "localhost:46281");
+                        activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
+                        activityTemplate.Plugin = uow.PluginRepository.FindOne(x => x.Name == "pluginAzureSqlServer");
+
+                        activityTemplateRepositary.Add(activityTemplate);
+                        uow.SaveChanges();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error in LoadLocalActionLists Method ", e);
+            }
+        }
+
+
+        public bool CheckForActivityTemplate(string templateName)
+        {
+            bool found = true;
+            try
+            {
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
+                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
+
+                    if (activityTemplateRepositaryItems.Find(item => item.Name == templateName) == null)
+                    {
+                        found = false;
+                    }
+
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error checking for activity template ", e);
+            }
+            return found;
+        }
+
     }
 }

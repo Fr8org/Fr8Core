@@ -22,6 +22,7 @@ module dockyard.controllers {
 
         //this is for demo only, should be deleted on production
         radioDemoField: model.RadioButtonGroupField;
+        dropdownDemoField: model.DropDownListBoxField;
         routingControlGroup: model.RoutingControlGroup;
     }
 
@@ -204,6 +205,9 @@ module dockyard.controllers {
             //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionRemovedEventArgs) => this.PaneSelectAction_ActionRemoved(eventArgs));
+            //Handles Save Request From PaneSelectAction
+            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -392,6 +396,7 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
+            debugger;
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var processNodeTemplateId: number,
@@ -556,6 +561,13 @@ module dockyard.controllers {
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
         }
          
+        /*
+           Handles message 'SelectActionPane_InitiateSaveAction'
+       */
+        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {           
+            var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
+        }
+         
         // TODO: do we need this?
         // /*
         //     Handles message 'PaneSelectAction_ActionUpdated'
@@ -628,6 +640,7 @@ module dockyard.controllers {
             var actions: interfaces.IActionDesignDTO =
                 {
                     name: "test action type",
+                    configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
@@ -637,7 +650,7 @@ module dockyard.controllers {
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0,
-                    actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
                 };
 
             $httpBackend

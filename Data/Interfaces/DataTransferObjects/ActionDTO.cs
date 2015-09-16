@@ -5,17 +5,21 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActionDTO : ActionDTOBase
     {
+        public ActionDTO() : base()
+        {
+            CrateStorage = new CrateStorageDTO();
+        }
+
         public int? ActionListId { get; set; }
 
-        [JsonProperty("configurationStore")]
         public CrateStorageDTO CrateStorage { get; set; }
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
         public int? ActionTemplateId { get; set; }
 
-        [JsonProperty("actionTemplate")]
-        public ActionTemplateDTO ActionTemplate { get; set; }
+        [JsonProperty("activityTemplate")]
+        public ActivityTemplateDTO ActivityTemplate { get; set; }
 
         [JsonProperty("isTempId")]
         public bool IsTempId { get; set; }

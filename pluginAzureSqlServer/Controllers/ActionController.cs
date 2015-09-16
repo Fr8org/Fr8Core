@@ -2,6 +2,8 @@
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
+using System.Collections.Generic;
+using Data.States;
 using System;
 
 namespace pluginAzureSqlServer.Controllers
@@ -14,9 +16,12 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public string Configure(ActionDTO curActionDataPackage)
+        public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            if (response == null)
+                response = new CrateStorageDTO();
+            return response;
         }
        
         [HttpPost]

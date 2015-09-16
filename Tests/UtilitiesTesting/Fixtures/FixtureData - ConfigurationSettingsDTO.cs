@@ -17,7 +17,7 @@ namespace UtilitiesTesting.Fixtures
             string contents = "{ name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }";
             CrateStorageDTO curCrateStorage = new CrateStorageDTO();
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-            curCrateStorage.CratesDTO.Add(_crate.Create("Configuration Data for WriteToAzureSqlServer", contents));
+            curCrateStorage.CrateDTO.Add(_crate.Create("Configuration Data for WriteToAzureSqlServer", contents));
             return curCrateStorage;
         }
 

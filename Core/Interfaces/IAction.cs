@@ -8,13 +8,11 @@ namespace Core.Interfaces
 {
     public interface IAction
     {
-        IEnumerable<TViewModel> GetAllActions<TViewModel>();
-
-        IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
+        IEnumerable<TViewModel> GetAllActions<TViewModel>();        
 
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         
-        string GetConfigurationSettings(ActionDO curActionDO);
+        CrateStorageDTO Configure(ActionDO curActionDO);
 
         IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 
