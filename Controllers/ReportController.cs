@@ -5,8 +5,6 @@ using Core.Services;
 using StructureMap;
 using Utilities;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
 using System.Collections.Generic;
 using System;
 using Utilities.Logging;
