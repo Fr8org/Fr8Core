@@ -32,13 +32,23 @@
         radios: Array<RadioField>;
     }
 
-    export class DropDownListItem {
-        text: string;
-        value: string;
+    export class FieldDTO {
+        public Key: string;
+        public Value: string;
+    }
+
+    export class DropDownListItem extends FieldDTO {
+        
+    }
+
+    export class FieldSource {
+        public manifestType: string;
+        public label: string;
     }
 
     export class DropDownListBoxField extends ConfigurationField {
         listItems: Array<DropDownListItem>;
         value: string;
+        source: FieldSource;
     }
 }
