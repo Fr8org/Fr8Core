@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity;
 namespace Web.Controllers
 {
     [Authorize]
-    [RoutePrefix("dockyard_events")]
+    [RoutePrefix("dockyard")]
     public class DockyardEventController : ApiController
     {
         private readonly IDockyardEvent _dockyardEvent;
