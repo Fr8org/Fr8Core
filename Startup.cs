@@ -35,7 +35,7 @@ namespace Web
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            await RegisterPluginActions();
+            RegisterPluginActions();
 
             LoadLocalActionLists();
 
