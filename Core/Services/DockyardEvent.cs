@@ -19,17 +19,17 @@ namespace Core.Services
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
-        public void ProcessInbound(string userID, CrateDTO curStandardEventReport)
+        public void ProcessInbound(string userID, CrateDTO curCrateStandardEventReport)
         {
             //check if CrateDTO is not null
-            if (curStandardEventReport == null)
+            if (curCrateStandardEventReport == null)
                 throw new ArgumentNullException("Paramter Standard Event Report is null.");
             //check if can parse to Standard Event Report
-            if (String.IsNullOrEmpty(curStandardEventReport.Label) || !curStandardEventReport.Label.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
+            if (String.IsNullOrEmpty(curCrateStandardEventReport.ManifestType) || !curCrateStandardEventReport.ManifestType.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
 
             //Matchup process
-            var processNodeTemplates = _processTemplate.GetStandardEventSubscribers(userID, curStandardEventReport);
+            var processNodeTemplates = _processTemplate.GetStandardEventSubscribers(userID, curCrateStandardEventReport);
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 foreach (var processNodeTemplate in processNodeTemplates)

@@ -10,7 +10,7 @@ using Microsoft.AspNet.Identity;
 namespace Web.Controllers
 {
     [Authorize]
-    [RoutePrefix("api/dockyardEvent")]
+    [RoutePrefix("dockyard_events")]
     public class DockyardEventController : ApiController
     {
         private readonly IDockyardEvent _dockyardEvent;
@@ -21,17 +21,17 @@ namespace Web.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult dockyard_events(CrateDTO curStandardEventReport)
+        public IHttpActionResult dockyard_events(CrateDTO curCrateStandardEventReport)
         {
             //check if its not null
-            if (curStandardEventReport == null)
+            if (curCrateStandardEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null.");
             //check if Standard Event Report inside CrateDTO
-            if (String.IsNullOrEmpty(curStandardEventReport.Label) || !curStandardEventReport.Label.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
+            if (String.IsNullOrEmpty(curCrateStandardEventReport.ManifestType) || !curCrateStandardEventReport.ManifestType.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
 
             //call DockyardEvent#ProcessInbound
-            _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), curStandardEventReport);
+            _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), curCrateStandardEventReport);
 
             return Ok();
         }
