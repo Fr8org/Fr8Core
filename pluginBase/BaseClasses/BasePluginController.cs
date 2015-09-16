@@ -30,7 +30,7 @@ namespace PluginBase.BaseClasses
         /// <param name="pluginName">Name of the plugin which is starting up</param>
         public  void AfterStartup(string pluginName)
         {
-            ReportStartUp(pluginName);
+           // ReportStartUp(pluginName);
         }
 
         /// <summary>
