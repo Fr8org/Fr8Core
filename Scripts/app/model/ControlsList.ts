@@ -36,32 +36,8 @@
         text: string;
         value: string;
     }
-
     export class DropDownListBoxField extends ConfigurationField {
         listItems: Array<DropDownListItem>;
         value: string;
-    }
-
-    export class RoutingControlGroup extends ConfigurationField {
-        sourceField: string;
-        routes: Array<Route>
-    }
-
-    export class Route extends ConfigurationField {
-        measurementValue: string;
-        selection: string;
-        previousActionList: RouteActionList;
-        previousActionSelectedId: string;
-        availableProcessNode: string;
-    }
-
-    export class RouteActionList extends ConfigurationField {
-        choices: Array<Choice>;
-        selectionId: string;
-    }
-
-    export class Choice extends ConfigurationField {
-        Label: string;
-        Id: string;
     }
 }
