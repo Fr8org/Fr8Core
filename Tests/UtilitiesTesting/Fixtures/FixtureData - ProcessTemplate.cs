@@ -1,7 +1,11 @@
-﻿using Data.Entities;
+﻿using Core.Interfaces;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using StructureMap;
 using System.Collections.Generic;
-
+using System.Linq;
 namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
@@ -70,6 +74,81 @@ namespace UtilitiesTesting.Fixtures
             }
 
             return curProcessTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplateWithSubscribeEvent()
+        {
+            ProcessTemplateDO processTemplateDO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                DockyardAccountDO testUser = TestDockyardAccount1();
+                uow.UserRepository.Add(testUser);
+
+                processTemplateDO = new ProcessTemplateDO()
+                {
+                    Id = 23,
+                    Description = "HealthDemo Integration Test",
+                    Name = "StandardEventTesting",
+                    ProcessTemplateState = ProcessTemplateState.Active,
+                    DockyardAccount = testUser
+                };
+                uow.ProcessTemplateRepository.Add(processTemplateDO);
+
+                var actionTemplate = ActionTemplate();
+
+                var processDo = new ProcessDO()
+                {
+                    Id = 1,
+                    CrateStorage = EnvelopeIdCrateJson(),
+                    ProcessTemplateId = processTemplateDO.Id,
+                    ProcessState = 1
+                };
+                uow.ProcessRepository.Add(processDo);
+
+               
+
+                ProcessNodeTemplateDO processNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    ProcessTemplate = processTemplateDO
+                };
+                uow.ProcessNodeTemplateRepository.Add(processNodeTemplateDO);
+
+
+                var actionListDo = new ActionListDO()
+                {
+                    Process = processDo,
+                    ProcessID = processDo.Id,
+                    Id = 1,
+                    ActionListType = ActionListType.Immediate,
+                    ProcessNodeTemplate = processNodeTemplateDO,
+                    Ordering = 2
+                };
+                uow.ActionListRepository.Add(actionListDo);
+
+                var actionDo = new ActionDO()
+                {
+                    ParentActivity = actionListDo,
+                    ParentActivityId = actionListDo.Id,
+                    ActionState = ActionState.Unstarted,
+                    Name = "testaction",
+
+                    Id = 1,
+                    ActivityTemplateId = actionTemplate.Id,
+                    ActivityTemplate = actionTemplate,
+                    Ordering = 1
+                };
+                ICrate crate = ObjectFactory.GetInstance<ICrate>();
+                CrateDTO crateDTO = crate.Create("Standard Event Report", @"{ EventNames : ""DocuSign Envelope Sent"", ProcessDOId: """", EventPayload: [ ]}");
+                actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
+
+                uow.ActionRepository.Add(actionDo);
+                actionListDo.Activities.Add(actionDo);
+                uow.ActionListRepository.Attach(actionListDo);
+
+                uow.SaveChanges();
+            }
+
+            return processTemplateDO;
         }
     }
 }
