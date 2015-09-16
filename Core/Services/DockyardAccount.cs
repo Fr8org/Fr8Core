@@ -366,18 +366,18 @@ namespace Core.Services
 
         public IEnumerable<ProcessTemplateDO> GetActiveProcessTemplates(string userId)
         {
-            IEnumerable<ProcessTemplateDO> subscribingProcessTemplates;
+            IEnumerable<ProcessTemplateDO> activeProcessTemplates;
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateQuery = unitOfWork.ProcessTemplateRepository.GetQuery().Include(i => i.ProcessNodeTemplates).Include(i => i.DockyardAccount);
+                var processTemplateQuery = unitOfWork.ProcessTemplateRepository.GetQuery().Include(i => i.DockyardAccount);
 
                 processTemplateQuery
                     .Where(pt => pt.ProcessTemplateState == ProcessTemplateState.Active)//1.
                     .Where(id => id.DockyardAccount.Id == userId);//2
 
-                subscribingProcessTemplates = processTemplateQuery.ToList();
+                activeProcessTemplates = processTemplateQuery.ToList();
             }
-            return subscribingProcessTemplates;
+            return activeProcessTemplates;
         }
     }
 }

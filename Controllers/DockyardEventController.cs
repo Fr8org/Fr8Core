@@ -6,6 +6,7 @@ using Core.Managers;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 
 namespace Web.Controllers
 {
@@ -29,9 +30,13 @@ namespace Web.Controllers
             //check if Standard Event Report inside CrateDTO
             if (String.IsNullOrEmpty(curCrateStandardEventReport.ManifestType) || !curCrateStandardEventReport.ManifestType.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
+            if (String.IsNullOrEmpty(curCrateStandardEventReport.Contents))
+                throw new ArgumentNullException("CrateDTO Content is empty.");
+
+            EventReportMS eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(curCrateStandardEventReport.Contents);
 
             //call DockyardEvent#ProcessInbound
-            _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), curCrateStandardEventReport);
+            _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
 
             return Ok();
         }

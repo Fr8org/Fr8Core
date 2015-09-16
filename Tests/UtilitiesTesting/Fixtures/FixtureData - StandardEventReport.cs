@@ -12,7 +12,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static CrateDTO StandardEventReportFormat()
+        public static CrateDTO RawStandardEventReportFormat()
         {
             return new CrateDTO()
             {
@@ -20,6 +20,14 @@ namespace UtilitiesTesting.Fixtures
                 Label = "Standard Event Report",
                 ManifestType = "Standard Event Report",
                 Contents = @"{ EventNames : ""DocuSign Envelope Sent"", ProcessDOId: """", EventPayload: [ ]}"
+            };
+        }
+
+        public static EventReportMS StandardEventReportFormat()
+        {
+            return new EventReportMS()
+            {
+                EventNames = "DocuSign Envelope Sent"
             };
         }
     }

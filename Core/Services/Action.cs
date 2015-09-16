@@ -328,5 +328,19 @@ namespace Core.Services
                 curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
             }
         }
+
+        public IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO)
+        {
+            if (String.IsNullOrEmpty(curManifestType))
+                throw new ArgumentNullException("Parameter Manifest Type is empty");
+            if (curCrateStorageDTO == null)
+                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+
+            IEnumerable<CrateDTO> crateDTO = null;
+
+            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
+
+            return crateDTO;
+        }
     }
 }
