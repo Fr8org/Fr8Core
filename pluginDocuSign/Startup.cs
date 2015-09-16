@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
@@ -16,10 +17,11 @@ namespace pluginDocuSign
     {
         public void Configuration(IAppBuilder app)
         {
-
-            BasePluginController curController = new BasePluginController();
-            curController.AfterStartup("plugin_docusign");
-           
+            Task.Run(() =>
+            {
+                BasePluginController curController = new BasePluginController();
+                curController.AfterStartup("plugin_docusign");
+            });
         }
     }
 }

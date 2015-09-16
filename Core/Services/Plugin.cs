@@ -35,9 +35,8 @@ namespace Core.Services
         {
             // IList<ActionTemplateDO> actionTemplateList = null; ;
             var restClient = new RestfulServiceClient();
-            var actionTemplateList = await restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
+            return await restClient.GetAsync<IList<ActivityTemplateDO>>(new Uri(uri, UriKind.Absolute));
             //var actionTemplateList = restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
-            return actionTemplateList;
         }
     }
 }
