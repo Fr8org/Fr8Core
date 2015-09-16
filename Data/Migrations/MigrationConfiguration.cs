@@ -65,7 +65,8 @@ namespace Data.Migrations
             AddProfiles(uow);
             AddPlugins(uow);
             AddActionTemplates(uow);
-
+            AddTestFacts(uow);
+            AddTestIncidents(uow);
             SeedMultiTenantTables(uow);
         }
 
@@ -382,6 +383,47 @@ namespace Data.Migrations
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }
+
+        private void AddTestFacts(IUnitOfWork uow)
+        {
+            AddTestFact(uow, "UserTest001", "TestUser001@TestUserTest.com");
+            AddTestFact(uow, "UserTest002", "TestUser002@TestUserTest.com");
+            AddTestFact(uow, "UserTest003", "TestUser003@TestUserTest.com");
+        }
+
+        private void AddTestFact(IUnitOfWork uow,string userId,string emailId)
+        {
+                FactDO testFactDO = new FactDO
+                {
+                    PrimaryCategory = "User",
+                    SecondaryCategory = "",
+                    Activity = "Registered",
+                    CustomerId = userId,
+                    ObjectId = null,
+                    Data = string.Format("User registrated with :{0},", emailId)                    
+                };
+                uow.FactRepository.Add(testFactDO);
+                uow.SaveChanges();
+        }
+
+        private void AddTestIncidents(IUnitOfWork uow)
+        {
+            AddTestIncident(uow, "email001", "test incident created");
+            AddTestIncident(uow, "email002", "test incident created");
+            AddTestIncident(uow, "email003", "test incident created");
+        }
+
+        private void AddTestIncident(IUnitOfWork uow,string emailId,string message)
+        {
+            IncidentDO incidentDO = new IncidentDO();
+            incidentDO.PrimaryCategory = "Email";
+            incidentDO.SecondaryCategory = "Failure";
+            incidentDO.Activity = "Send";
+            incidentDO.ObjectId = emailId;
+            incidentDO.Data = message;
+            uow.IncidentRepository.Add(incidentDO);
+            uow.SaveChanges();
+        }
 
 
         private void SeedMultiTenantTables(UnitOfWork uow)

@@ -58,6 +58,8 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
 
+         
+
             Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
                 .ForMember(x => x.ParentTemplateId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
             Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
@@ -86,6 +88,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
             Mapper.CreateMap<string, FieldMappingSettingsDTO>()
                 .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
+
+            //Mapper.CreateMap<FactDO, HistoryDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            //    .ForMember(a => a.Activity, opts => opts.ResolveUsing(ad => ad.Activity))
+            //    .ForMember(a => a.BookerId, opts => opts.ResolveUsing(ad => ad.BookerId));
+
         }
     }
 

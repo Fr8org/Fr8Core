@@ -102,7 +102,20 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             url: "/showUsageReport",
             templateUrl: "/Report/Index?type=usage",
             data: { pageTitle: '', pageSubTitle: '' },
+        })
+
+        .state('showIncidents', {
+            url: "/showIncidents",
+            templateUrl: "/Report/Index?type=usage",
+            data: { pageTitle: '', pageSubTitle: '' },
+        })
+
+        .state('showFacts', {
+            url: "/showFacts",
+            templateUrl: "/Report/ShowFacts",
+            data: { pageTitle: '', pageSubTitle: '' },
         });
+
 }]);
 
 /* Init global settings and run the app */

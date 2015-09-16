@@ -745,9 +745,12 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <Content Include="Views\Report\ShowFacts.cshtml" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FactDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />

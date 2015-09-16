@@ -6,6 +6,7 @@ using System.Linq;
 using Data.Interfaces;
 using Data.Wrappers;
 using Utilities;
+using Data.Entities;
 
 namespace Core.Services
 {
@@ -275,6 +276,13 @@ namespace Core.Services
                         TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
                     })
                 .ToList();
+        }
+
+
+        public List<FactDO> GetFacts(IUnitOfWork uow)
+        {
+            var factDO = uow.FactRepository.GetAll().ToList();
+            return factDO;
         }
     }
 }

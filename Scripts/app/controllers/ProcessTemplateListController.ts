@@ -54,7 +54,7 @@ module dockyard.controllers {
                 // initialize core components
                 Metronic.initAjax();
             });
-
+            debugger;
             //Load Process Templates view model
             this._processTemplates = ProcessTemplateService.query();
             $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates();

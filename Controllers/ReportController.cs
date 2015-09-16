@@ -4,6 +4,12 @@ using Core.Managers;
 using Core.Services;
 using StructureMap;
 using Utilities;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
+using System.Collections.Generic;
+
+
 
 namespace Web.Controllers
 {
@@ -92,6 +98,24 @@ namespace Web.Controllers
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
              }
+        }
+
+
+        public ActionResult GetFacts()
+        {
+            using(var uow=ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<FactDO> factDOList = _report.GetFacts(uow);
+                //var a = factDOList.Select(Mapper.Map<HistoryDTO>);
+                var jsonResult = Json(_jsonPackager.Pack(factDOList), JsonRequestBehavior.AllowGet);
+                //jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        public ActionResult ShowFacts()
+        {
+            return View();
         }
        
 	}
