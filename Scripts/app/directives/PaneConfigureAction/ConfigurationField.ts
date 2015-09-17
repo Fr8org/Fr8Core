@@ -10,6 +10,16 @@ module dockyard.directives.paneConfigureAction {
         dropdownlistField
     }
 
+    export class ExitFocusEventArgs
+    {
+        constructor(fieldName: string)
+        {
+            this.fieldName = fieldName;
+        }
+
+        public fieldName: string;
+    }
+
     export interface IConfigurationFieldScope extends ng.IScope {
         field: model.ConfigurationField;
         OnExitFocus: (radio: model.ConfigurationField) => void;
@@ -50,15 +60,17 @@ module dockyard.directives.paneConfigureAction {
         public static Factory() {
             var directive = () => {
                 return new ConfigurationField();
-            };
+            }; 
 
             directive['$inject'] = [];
             return directive;
         }
 
-        private OnExitFocus(field: model.ConfigurationField, scope: IConfigurationFieldScope) {
-            console.log("on exit focus called");
-            this._$scope.$emit("OnExitFocus", this._$scope);
+        private OnExitFocus(event: JQueryMouseEventObject) {
+            //Get name of field that received the event
+            var fieldName = event.target.attributes.getNamedItem('data-field-name').value,
+                eventArgs = new ExitFocusEventArgs(fieldName)
+            this._$scope.$emit("OnExitFocus", eventArgs);
         }
     }
 

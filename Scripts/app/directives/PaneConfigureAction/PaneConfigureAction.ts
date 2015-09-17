@@ -54,12 +54,13 @@ module dockyard.directives.paneConfigureAction {
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _currentAction: interfaces.IActionDesignDTO =
-            new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
+        new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private ActionService: services.IActionService,
-            private crateHelper: services.CrateHelper
+            private crateHelper: services.CrateHelper,
+            private $filter: ng.IFilterService
             ) {
 
             PaneConfigureAction.prototype.link = (
@@ -89,36 +90,45 @@ module dockyard.directives.paneConfigureAction {
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
             model.ControlsList
-        }
+        } 
 
-        private onExitFocus(event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) {
-            console.log("on exit focus received and handled in Pane Configure Action...");
-            console.log("event args: " + eventArgs.field);
-            debugger;
-            if (eventArgs.field != null) {
-                console.log("eventArgs.Field is NOT null");
-                console.log("eventArgs.field.events -> " + eventArgs.field.events);
-                angular.forEach(eventArgs.field.events, function (value, key) {
-                    //this.push(key + ': ' + value);
-                //TODO: to be fixed
-                    //console.log("name : " + value.Name + " -> handler : " + value.Handler);
-                    //debugger;
-                    //if (value.Name == "onExitFocus") {
-                    //    //console.log("events.onExitFocus is NOT null");
-                    //    //console.log("found onExitFocus -> " + events.onExitFocus);
-                    //    if (value.Handler == "requestConfig") {
-                    //        console.log("onExitFocus == requestConfig");
-                    //        alert(value.Name + " -> " + value.Handler);
-                    //        // Render Pane Configure Action 
-                    //        var pcaEventArgs = new RenderEventArgs(this._currentAction);
-                    //        this.onRender(event, pcaEventArgs);
-                    //        alert("called onRender on PCA");
+        private onExitFocus(event: ng.IAngularEvent, eventArgs: ExitFocusEventArgs) {
+            var scope = <IPaneConfigureActionScope>event.currentScope;
 
-                    //        //$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-                    //    }
-                    //}
-                });
-            }
+            // Check if this event is defined for the current field
+            var fieldName = eventArgs.fieldName;
+            var fieldList = scope.currentAction.configurationControls.fields;
+
+            // Find the configuration field object for which the event has fired
+            fieldList = <Array<model.ConfigurationField>> this.$filter('filter')(fieldList, { name: fieldName }, true);
+            if (fieldList.length == 0 || fieldList[0].events.length == 0) return;
+            var field = fieldList[0];
+
+            // Find the onExitFocus event object
+            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { Name: 'onExitFocus' }, true);
+            if (eventHandlerList.length == 0) return;
+            var fieldEvent = eventHandlerList[0];
+
+            
+            //this.push(key + ': ' + value);
+            //TODO: to be fixed
+            //console.log("name : " + value.Name + " -> handler : " + value.Handler);
+            //debugger;
+            //if (value.Name == "onExitFocus") {
+            //    //console.log("events.onExitFocus is NOT null");
+            //    //console.log("found onExitFocus -> " + events.onExitFocus);
+            //    if (value.Handler == "requestConfig") {
+            //        console.log("onExitFocus == requestConfig");
+            //        alert(value.Name + " -> " + value.Handler);
+            //        // Render Pane Configure Action 
+            //        var pcaEventArgs = new RenderEventArgs(this._currentAction);
+            //        this.onRender(event, pcaEventArgs);
+            //        alert("called onRender on PCA");
+
+            //        //$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            //    }
+            //}
+            // });
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -149,7 +159,7 @@ module dockyard.directives.paneConfigureAction {
 
                 resource.$promise.then(function (res: any) {
                     (<any>scope.currentAction).configurationControls =
-                        self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                    self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
                 });
             }
             
@@ -168,7 +178,7 @@ module dockyard.directives.paneConfigureAction {
             scope.$emit(
                 MessageType[MessageType.PaneConfigureAction_MapFieldsClicked],
                 new MapFieldsClickedEventArgs(angular.extend({}, scope.currentAction)) //clone action to prevent msg recipient from modifying orig. object
-            );
+                );
         }
 
         //The factory function returns Directive object as per Angular requirements
@@ -176,13 +186,14 @@ module dockyard.directives.paneConfigureAction {
             var directive = (
                 $rootScope: interfaces.IAppRootScope,
                 ActionService,
-                crateHelper: services.CrateHelper
+                crateHelper: services.CrateHelper,
+                $filter: ng.IFilterService
                 ) => {
 
-                return new PaneConfigureAction($rootScope, ActionService, crateHelper);
+                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper'];
+            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter'];
             return directive;
         }
     }
