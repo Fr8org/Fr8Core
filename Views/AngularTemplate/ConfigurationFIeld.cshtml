@@ -44,5 +44,13 @@
         <label class='control-label'>{{field.fieldLabel}}</label>
         <drop-down-list-box field='field'></drop-down-list-box>
     </div>  
+    
+    @*
+        TextBlock template
+    *@
+    <div ng-if='field.type == "textBlockField"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <text-block field='field'></text-block>
+    </div> 
     @* Add more configuration field templates below *@
 </div>
