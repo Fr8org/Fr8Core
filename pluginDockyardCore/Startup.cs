@@ -1,5 +1,6 @@
 ﻿using Microsoft.Owin;
 using Owin;
+using Core.StructureMap;
 
 [assembly: OwinStartup(typeof(pluginDockyardCore.Startup))]
 
