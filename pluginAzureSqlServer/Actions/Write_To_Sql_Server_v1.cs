@@ -14,12 +14,14 @@ using PluginBase;
 using PluginBase.BaseClasses;
 using Core.Interfaces;
 
-namespace pluginAzureSqlServer.Actions {
-    
-    public class Write_To_Sql_Server_v1 : BasePluginAction {        
+namespace pluginAzureSqlServer.Actions
+{
 
-       //================================================================================
-       //General Methods (every Action class has these)
+    public class Write_To_Sql_Server_v1 : BasePluginAction
+    {
+
+        //================================================================================
+        //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
         public CrateStorageDTO Configure(ActionDTO curActionDTO)
@@ -99,9 +101,23 @@ namespace pluginAzureSqlServer.Actions {
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
         protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            //In all followup calls, update data fields of the configuration store
-            CrateStorageDTO curConfigurationStore = curActionDTO.CrateStorage;
+            //In all followup calls, update data fields of the configuration store          
+            object contentsList = GetFieldMappings(curActionDTO);
 
+            var _crate = ObjectFactory.GetInstance<ICrate>();
+            
+            var curConfigurationStore = new CrateStorageDTO
+            {
+                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                CrateDTO = new List<CrateDTO>
+                {
+                    _crate.Create(
+                        "Sql Table Columns",
+                        JsonConvert.SerializeObject(contentsList),
+                        "Standard Design-Time Fields"
+                        )
+                }
+            };
             return curConfigurationStore;
         }
 
@@ -122,52 +138,58 @@ namespace pluginAzureSqlServer.Actions {
             return true;
         }
 
-      //===============================================================================================
-      //Specialized Methods (Only found in this Action class)
+        //===============================================================================================
+        //Specialized Methods (Only found in this Action class)
 
         private const string ProviderName = "System.Data.SqlClient";
         private const string FieldMappingQuery = @"SELECT CONCAT('[', r.NAME, '].', r.COLUMN_NAME) as tblcols " +
                                                  @"FROM ( " +
-	                                                @"SELECT DISTINCT tbls.NAME, cols.COLUMN_NAME " +
-	                                                @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
+                                                    @"SELECT DISTINCT tbls.NAME, cols.COLUMN_NAME " +
+                                                    @"FROM sys.Tables tbls, INFORMATION_SCHEMA.COLUMNS cols " +
                                                  @") r " +
                                                  @"ORDER BY r.NAME, r.COLUMN_NAME";
 
 
         //CONFIGURATION-Related Methods
         //-----------------------------------------
-     
-        public object GetFieldMappings(ActionDO curActionDO) {
-            //Get configuration settings and check for connection string
-            if (string.IsNullOrEmpty(curActionDO.CrateStorage))
+
+        public object GetFieldMappings(ActionDTO curActionDTO)
+        {
+
+            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+            if (curActionDTO.CrateStorage.CrateDTO.Count == 0)
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CrateDTO.First().Contents);
-            if (configuration == null || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
-                {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-                }
+            var curConnectionStringFieldList =
+                JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
-            var connStringField = configuration;
+            if (curConnectionStringFieldList == null)
+            {
+                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+            }
+
+            var connStringField = curConnectionStringFieldList.First();
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }
-            string connString = connStringField.Value;
+            }          
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
-            return curProvider.ConnectToSql(connString, (command) => {
+            return curProvider.ConnectToSql(connStringField.Value, (command) =>
+            {
                 command.CommandText = FieldMappingQuery;
 
                 //The list to serialize
                 List<string> tableMetaData = new List<string>();
 
                 //Iterate through each entry from the const query
-                using (IDataReader reader = command.ExecuteReader()) {
-                    while (reader.Read()) {
+                using (IDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
                         tableMetaData.Add(reader["tblcols"].ToString());
                     }
                 }
@@ -176,7 +198,6 @@ namespace pluginAzureSqlServer.Actions {
                 return tableMetaData;
             });
         }
-
 
         //EXECUTION-Related Methods
         //-----------------------------------------
@@ -189,14 +210,12 @@ namespace pluginAzureSqlServer.Actions {
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);
         }
 
-
-
-        private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO,DbServiceJsonParser parser)
+        private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO, DbServiceJsonParser parser)
         {
             //replace this with a Crate-based solution
             JObject payload = new JObject();//JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
             var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
-            
+
             if (payloadArray.Count == 0)
             {
                 throw new Exception("\"payload\" data is empty");
@@ -204,10 +223,7 @@ namespace pluginAzureSqlServer.Actions {
 
             var table = parser.CreateTable(payloadArray);
 
-            return new List<Table> {table};
+            return new List<Table> { table };
         }
-
-
-
     }
 }

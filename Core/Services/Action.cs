@@ -133,6 +133,26 @@ namespace Core.Services
                         }
 
                         var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
+
+                        if (configurationCrates.CrateDTO.Count()>0)
+                        {
+                            if(configurationCrates.CrateDTO[0].Label=="Sql Table Columns")
+                            {
+                                int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
+                                if (foundSameCrateDTOAtIndex == -1)
+                                { 
+                                    AddCrate(curActionDO, configurationCrates.CrateDTO.ToList());
+                                }
+                                else
+                                {
+                                    CrateStorageDTO localList = curActionDO.CrateStorageDTO();
+                                    localList.CrateDTO.RemoveAt(foundSameCrateDTOAtIndex);
+                                    curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
+                                    AddCrate(curActionDO, configurationCrates.CrateDTO.ToList());
+                                }
+                                configurationCrates = curActionDO.CrateStorageDTO();
+                            }
+                        }
                         return configurationCrates;
                         //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
                     }
