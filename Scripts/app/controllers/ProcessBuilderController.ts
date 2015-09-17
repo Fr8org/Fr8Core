@@ -55,7 +55,8 @@ module dockyard.controllers {
             'CriteriaServiceWrapper',
             'ProcessBuilderService',
             'ActionListService',
-            'CrateHelper'
+            'CrateHelper',
+            'ActivityTemplateService'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -75,7 +76,8 @@ module dockyard.controllers {
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
             private ActionListService: services.IActionListService,
-            private crateHelper: services.CrateHelper
+            private CrateHelper: services.CrateHelper,
+            private ActivityTemplateService: services.IActivityTemplateService
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -235,8 +237,8 @@ module dockyard.controllers {
                     new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
                     );
 
-                if (this.crateHelper.hasControlListCrate(action.crateStorage)) {
-                    action.configurationControls = this.crateHelper
+                if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
+                    action.configurationControls = this.CrateHelper
                         .createControlListFromCrateStorage(action.crateStorage);
                 }
             }
@@ -545,9 +547,26 @@ module dockyard.controllers {
             Handles message 'SelectActionPane_ActionTypeSelected'
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            // Render Pane Configure Action 
-            var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            var self = this;
+
+            // Get full ActivityTemplateDTO from backend.
+            this.ActivityTemplateService.get(
+                { id: eventArgs.action.actionTemplateId },
+                function (activityTemplateDTO: interfaces.IActivityTemplateVM) {
+                    if (activityTemplateDTO.name == 'FilterUsingRunTimeData') {
+                        alert('FilterUsingRunTimeData!');
+                    }
+
+                    else if (activityTemplateDTO.name == 'MapFields') {
+                        alert('MapFields!');
+                    }
+
+                    else {
+                        // Render Pane Configure Action 
+                        var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
+                        self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                    }                    
+                });
         }
 
         /*
