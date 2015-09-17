@@ -11,6 +11,7 @@ using Web.ViewModels;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
+using Data.Interfaces.DataTransferObjects;
 
 namespace DockyardTest.Controllers
 {
@@ -302,6 +303,22 @@ namespace DockyardTest.Controllers
                 Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Suspended).Count());
             }
         }
+
+        [Test]
+        public void Get()
+        {
+            CreateUser("test.user@gmail.com");
+            CreateUser("test2.user@gmail.com");
+            var controller = new UserController();
+
+            var result = controller.Get();
+
+            Assert.IsNotNull(result);
+            var data = result.Data as List<UserDTO>;
+            Assert.AreEqual(data.Count, 2);
+            Assert.AreEqual(data[0].EmailAddress, "test.user@gmail.com");
+            Assert.AreEqual(data[1].EmailAddress, "test2.user@gmail.com");
+        }        
 
         private void AddAllRoles() 
         {

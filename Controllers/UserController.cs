@@ -19,6 +19,7 @@ using StructureMap;
 using Utilities;
 using Utilities.Logging;
 using Web.ViewModels;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
@@ -369,6 +370,24 @@ namespace Web.Controllers
         public ActionResult LearnHowToUseKwasant()
         {
             return View();
+        }
+        
+        [DockyardAuthorize(Roles = Roles.Admin)]
+        public JsonResult Get()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var users = uow.UserRepository.GetAll();
+
+                var userDTOList = users.Select(user =>
+                {
+                    var dto = _mappingEngine.Map<DockyardAccountDO, UserDTO>(user);
+                    dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
+                    return dto;
+                }).ToList();
+
+                return Json(userDTOList, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }
