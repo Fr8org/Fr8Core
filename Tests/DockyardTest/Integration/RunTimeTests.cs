@@ -94,7 +94,7 @@ namespace DockyardTest.Integration
 
             //add field mappings to write action
             var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
-            healthWriteAction.FieldMappingSettings = jsonSerializer.Serialize(health_FieldMappings);
+           //REPLACE healthWriteAction.FieldMappingSettings = jsonSerializer.Serialize(health_FieldMappings);
 
             //add configuration settings to write action
             var configuration_settings = FixtureData.TestConfigurationSettings_healthdemo();

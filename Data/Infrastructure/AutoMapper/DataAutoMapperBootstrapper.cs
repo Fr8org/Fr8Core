@@ -18,45 +18,33 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
-            Mapper.CreateMap<ActionDO, ActionDesignDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
                  .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
-                .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
-                .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
-                .ForMember(a => a.ActionTemplate, opts => opts.ResolveUsing(ad => ad.ActionTemplate));
+                .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
 
-            Mapper.CreateMap<ActionDesignDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
+            Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
-                .ForMember(a => a.ActionTemplate, opts => opts.ResolveUsing(ad => ad.ActionTemplate))
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
-                .ForMember(a => a.FieldMappingSettings, opts => opts.ResolveUsing(ad => ad.FieldMappingSettings))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
 
-            Mapper.CreateMap<ActionTemplateDO, ActionTemplateDTO>()
+            Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
-                .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
-                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
+                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
+                .ForMember(x => x.PluginID, opts => opts.ResolveUsing(x => x.PluginID)); ;
 
-            Mapper.CreateMap<ActionTemplateDTO, ActionTemplateDO>()
+            Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
-                .ForMember(x => x.DefaultEndPoint, opts => opts.ResolveUsing(x => x.DefaultEndPoint))
-                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version));
-
-            Mapper.CreateMap<ActionDO, ActionPayloadDTO>()
-                .ForMember(dest => dest.Id, opts => opts.ResolveUsing(src => src.Id))
-                .ForMember(dest => dest.Name, opts => opts.ResolveUsing(src => src.Name))
-                .ForMember(dest => dest.ActionListId, opts => opts.ResolveUsing(src => src.ParentActivityId))
-                .ForMember(dest => dest.CrateStorage,
-                    opts => opts.ResolveUsing(src => src.CrateStorage))
-                .ForMember(dest => dest.PayloadMappings, opts => opts.ResolveUsing<PayloadMappingResolver>());
-              
-            Mapper.CreateMap<ActionPayloadDTO, ActionDO>()
-                .ForMember(x => x.ParentActivityId, opts => opts.ResolveUsing(x => x.ActionListId));
+                .ForMember(x => x.ComponentActivities, opts => opts.ResolveUsing(x => x.ComponentActivities))
+                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
+                .ForMember(x => x.PluginID, opts => opts.ResolveUsing(x => x.PluginID));
 
             Mapper.CreateMap<ActionListDO, ActionListDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -85,7 +73,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<Signer, Wrappers.Signer>();
 
-            Mapper.CreateMap<Account, DocuSignAccount>();
+            //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
 
@@ -101,16 +89,5 @@ namespace Data.Infrastructure.AutoMapper
         }
     }
 
-    internal class PayloadMappingResolver : ValueResolver<ActionDO, PayloadMappingsDTO>
-    {
-        protected override PayloadMappingsDTO ResolveCore(ActionDO source)
-        {
-            if (string.IsNullOrEmpty(source.PayloadMappings))
-                return null;
-
-            var payloadMappingDto = new PayloadMappingsDTO();
-            payloadMappingDto.Deserialize(source.PayloadMappings);
-            return payloadMappingDto;
-        }
-    }
+   
 }

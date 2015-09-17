@@ -17,14 +17,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -64,8 +60,8 @@
       <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <HintPath>packages\DocuSign.Integration.Client.dll.1.6.1\lib\DocuSign.Integration.Client.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -323,9 +319,9 @@
     <Compile Include="Controllers\ActionListController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Controllers\CriteriaController.cs" />
+    <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\ActivitiesController.cs" />
-    <Compile Include="Controllers\FileController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
@@ -482,7 +478,10 @@
     <Content Include="Content\img\ProcessBuilder\actions-node-bottom.png" />
     <Content Include="Content\img\ProcessBuilder\actions-node-top.png" />
     <Content Include="Content\img\ProcessBuilder\add-criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\circle-selected.png" />
+    <Content Include="Content\img\ProcessBuilder\circle.png" />
     <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
     <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
@@ -568,6 +567,7 @@
     <Content Include="Content\img\temp\old\Workflow.vsdx" />
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="DockyardPlugins.txt" />
     <Content Include="Documentation\AccountCustomFields.html" />
     <Content Include="Documentation\AddaNewGroup.html" />
     <Content Include="Documentation\AddaUserSocialAccount.html" />
@@ -746,23 +746,25 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ConfigurationStore.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ControlsList.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\ProcessBuilder\core.js" />
     <Content Include="Scripts\ProcessBuilder\pb-fabricjs-img.js" />
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
-    <TypeScriptCompile Include="Scripts\app\model\ActionTemplate.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionList.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ActionType.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
@@ -3997,6 +3999,7 @@
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
+    <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
@@ -4050,6 +4053,7 @@
     <Folder Include="ViewModelServices\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
+    <Folder Include="Views\DockyardEvent\" />
     <Folder Include="Views\DocuSignTemplate\" />
     <Folder Include="Views\Envelope\" />
     <Folder Include="Views\Process\" />

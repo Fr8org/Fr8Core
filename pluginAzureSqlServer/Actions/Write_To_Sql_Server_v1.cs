@@ -22,22 +22,26 @@ namespace pluginAzureSqlServer.Actions {
        //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public CrateStorageDTO Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDTO curActionDTO)
         {
-            return ProcessConfigurationRequest(curActionDO, EvaluateReceivedRequest);
+            return ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActionDO curActionDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
         {
-            CrateStorageDTO curCrates = curActionDO.CrateStorageDTO();
+            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
-            var curConnectionStringField =
-                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CratesDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+            if (curCrates.CrateDTO.Count == 0)
+                return ConfigurationRequestType.Initial;
 
-            if (curConnectionStringField != null)
+            var curConnectionStringFieldList =
+                JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+
+            if (curConnectionStringFieldList != null && curConnectionStringFieldList.Count > 0)
             {
+                var curConnectionStringField = curConnectionStringFieldList.First();
                 if (string.IsNullOrEmpty(curConnectionStringField.Value))
                 {
                     //Scenario 1 - This is the first request being made by this Action
@@ -60,17 +64,32 @@ namespace pluginAzureSqlServer.Actions {
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-            //Return one field with empty connection string
-            CrateStorageDTO curConfigurationStore = new CrateStorageDTO
+            // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
+            var fieldDefinitions = new List<FieldDefinitionDTO>() 
             {
-
-                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                CratesDTO = new List<CrateDTO>
+                new FieldDefinitionDTO()
                 {
-                    _crate.Create("Write to SQL Server", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }")
+                    FieldLabel = "SQL Connection String",
+                    Type = "textField",
+                    Name = "connection_string",
+                    Required = true
+                }
+            };
+
+            var _crate = ObjectFactory.GetInstance<ICrate>();
+            //Return one field with empty connection string
+            var curConfigurationStore = new CrateStorageDTO
+            {
+                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                CrateDTO = new List<CrateDTO>
+                {
+                    _crate.Create(
+                        "AzureSqlServer Design-Time Fields",
+                        JsonConvert.SerializeObject(fieldDefinitions),
+                        "Standard Configuration Controls"
+                        )
                 }
             };
 
@@ -78,12 +97,10 @@ namespace pluginAzureSqlServer.Actions {
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDO curActionDO)
+        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             //In all followup calls, update data fields of the configuration store
-            CrateStorageDTO curConfigurationStore = curActionDO.CrateStorageDTO();
-
-            curConfigurationStore = curActionDO.CrateStorageDTO();
+            CrateStorageDTO curConfigurationStore = curActionDTO.CrateStorage;
 
             return curConfigurationStore;
         }
@@ -94,8 +111,9 @@ namespace pluginAzureSqlServer.Actions {
             return null;
         }
 
-        public object Execute(ActionDO curActionDO)
+        public object Execute(ActionDataPackageDTO curActionDataPackage)
         {
+            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDataPackage.ActionDTO);
             var curCommandArgs = PrepareSQLWrite(curActionDO);
             var dbService = new DbService();
 
@@ -126,8 +144,8 @@ namespace pluginAzureSqlServer.Actions {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CratesDTO.First().Contents);
-            if (configuration == null || curActionDO.CrateStorageDTO().CratesDTO.Count == 0)
+            var configuration = JsonConvert.DeserializeObject<FieldDefinitionDTO>(curActionDO.CrateStorageDTO().CrateDTO.First().Contents);
+            if (configuration == null || curActionDO.CrateStorageDTO().CrateDTO.Count == 0)
                 {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
                 }
@@ -175,7 +193,8 @@ namespace pluginAzureSqlServer.Actions {
 
         private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO,DbServiceJsonParser parser)
         {
-            var payload = JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
+            //replace this with a Crate-based solution
+            JObject payload = new JObject();//JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
             var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
             
             if (payloadArray.Count == 0)

@@ -6,8 +6,8 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        getCrateStorage: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.ICrateStorageVM>;
-        getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
+        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IControlsListVM>;
+        //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
@@ -60,7 +60,7 @@ module dockyard.services {
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService> $resource('/api/actions/:id',
+        <IActionService> $resource('/actions/:id',
             {
                 id: '@id'
             },
@@ -68,7 +68,7 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: true,
-                    url: '/api/actions/save'
+                    url: '/actions/save'
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -78,17 +78,12 @@ module dockyard.services {
                 //    }
                 //},
                 'delete': { method: 'DELETE' },
-                'getCrateStorage': {
+                'configure': {
                     method: 'POST',
-                    url: '/actions/configuration',
+                    url: '/actions/configure',
                     params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter
                 },
 
-                'getFieldDataSources': {
-                    method: 'POST',
-                    isArray: true,
-                    url: '/api/actions/field_data_sources'
-                },
                 'params': {
                     id: 'id'
                 }
@@ -153,7 +148,8 @@ module dockyard.services {
         constructor(
             private $q: ng.IQService,
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
-            private ActionService: IActionService
+            private ActionService: IActionService,
+            private crateHelper: CrateHelper
             ) { }
 
         /*
@@ -168,7 +164,6 @@ module dockyard.services {
                 newState = new model.ProcessBuilderState()
 
             // TODO: bypass save for unchanged entities
-            debugger;
               
             // Save processNodeTemplate if not null
             if (currentState.processNodeTemplate) {
@@ -198,9 +193,18 @@ module dockyard.services {
 
             //Save only Action 
             else if (currentState.action) {
-                this.ActionService.save(
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
+
+                var promise = this.ActionService.save(
                     { id: currentState.action.id },
-                    currentState.action, null, null).$promise
+                    currentState.action,
+                    null,
+                    null).$promise;
+
+                promise
                     .then((result: interfaces.IActionVM) => {
                         newState.action = result;
                         return deferred.resolve(newState);
@@ -222,12 +226,13 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
-        ActionService: IActionService) => {
-            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService);
-    }
+        ActionService: IActionService,
+        crateHelper: CrateHelper) => {
+            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
+        }
     ]);
 
     /*

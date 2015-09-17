@@ -18,9 +18,9 @@ module dockyard.interfaces {
         actionListId: number,
         name: string;
         crateStorage: model.CrateStorage;
-        fieldMappingSettings: model.FieldMappingSettings;
+        configurationControls: model.ControlsList;
         actionTemplateId: number;
-        actionTemplate: model.ActionTemplate;
+        activityTemplate: model.ActivityTemplate;
     }
 
     export interface ICondition {

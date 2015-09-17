@@ -2,7 +2,9 @@
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
-
+using System.Collections.Generic;
+using Data.States;
+using System;
 
 namespace pluginAzureSqlServer.Controllers
 {    
@@ -14,21 +16,24 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public string Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDO);
+            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            if (response == null)
+                response = new CrateStorageDTO();
+            return response;
         }
        
         [HttpPost]
         [Route("activate")]
-        public string Activate(ActionDO curActionDO)
+        public string Activate(ActionDTO curActionDataPackage)
         {
             return string.Empty;
         }
 
         [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDO curActionDO)
+        public string Execute(ActionDTO curActionDataPackage)
         {
             return string.Empty;
         }
@@ -40,7 +45,8 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server")]
-        public IHttpActionResult Process(ActionPayloadDTO curActionDTO)
+        [Obsolete]
+        public IHttpActionResult Process(ActionDTO curActionDTO)
         {
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
@@ -52,7 +58,7 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public IHttpActionResult Process(string path, ActionDesignDTO curActionDTO)
+        public IHttpActionResult Process(string path, ActionDTO curActionDTO)
 
         {
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);

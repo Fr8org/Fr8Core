@@ -8,9 +8,9 @@ namespace Data.Validations
     {
         public ActionValidator()
         {
-            RuleFor(curActionDO => curActionDO.ActionTemplate)
+            RuleFor(curActionDO => curActionDO.ActivityTemplate)
                 .Must(actionTemplate => string.IsNullOrEmpty(actionTemplate.AuthenticationType) || actionTemplate.AuthenticationType == "OAuth")
-                .When(curActionDO => curActionDO.ActionTemplate != null)
+                .When(curActionDO => curActionDO.ActivityTemplate != null)
                 .WithMessage("Must be a valid authentication type.");
 
         }

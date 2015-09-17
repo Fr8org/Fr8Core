@@ -6,7 +6,8 @@ module dockyard.directives.paneConfigureAction {
         textField,
         checkboxField,
         filePicker,
-        radioGroupButton
+        radioGroupButton,
+        dropdownlistField
     }
 
     interface IConfigurationFieldScope extends ng.IScope {

@@ -11,54 +11,54 @@ namespace DockyardTest.Entities
     public class ActionTemplateTests : BaseTest
     {
         [Test]
-        [Category("ActionTemplate")]
-        public void ActionTemplate_Add_CanCreateActionTemplate()
+        [Category("ActivityTemplate")]
+        public void ActivityTemplate_Add_CanCreateActivityTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
                 
-                var actionTemplateDO = FixtureData.TestActionTemplate1();
+                var activityTemplateDO = FixtureData.TestActivityTemplate1();
 
-                uow.ActionTemplateRepository.Add(actionTemplateDO);
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
-                Assert.NotNull(savedActionTemplateDO);
+                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == activityTemplateDO.Id);
+                Assert.NotNull(savedActivityTemplateDO);
 
-                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
-                Assert.AreEqual(actionTemplateDO.DefaultEndPoint, savedActionTemplateDO.DefaultEndPoint);
+                Assert.AreEqual(activityTemplateDO.Name, savedActivityTemplateDO.Name);
+                Assert.AreEqual(activityTemplateDO.Plugin.Endpoint, savedActivityTemplateDO.Plugin.Endpoint);
 
             }
         }
 
         [Test]
-        [Category("ActionTemplate")]
-        public void ActionTemplate_Remove_CanRemoveActionTemplate()
+        [Category("ActivityTemplate")]
+        public void ActivityTemplate_Remove_CanRemoveActivityTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
 
-                var actionTemplateDO = FixtureData.TestActionTemplate1();
+                var activityTemplateDO = FixtureData.TestActivityTemplate1();
 
-                uow.ActionTemplateRepository.Add(actionTemplateDO);
+                uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
 
-                var savedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == actionTemplateDO.Id);
+                var savedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == activityTemplateDO.Id);
 
 
-                Assert.NotNull(savedActionTemplateDO);
-                Assert.AreEqual(actionTemplateDO.Name, savedActionTemplateDO.Name);
-                Assert.AreEqual(actionTemplateDO.Version, savedActionTemplateDO.Version);
+                Assert.NotNull(savedActivityTemplateDO);
+                Assert.AreEqual(activityTemplateDO.Name, savedActivityTemplateDO.Name);
+                Assert.AreEqual(activityTemplateDO.Version, savedActivityTemplateDO.Version);
 
                 // remove saved instance
-                uow.ActionTemplateRepository.Remove(savedActionTemplateDO);
+                uow.ActivityTemplateRepository.Remove(savedActivityTemplateDO);
                 uow.SaveChanges();
 
-                var deletedActionTemplateDO = uow.ActionTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActionTemplateDO.Id);
+                var deletedActivityTemplateDO = uow.ActivityTemplateRepository.GetQuery().FirstOrDefault(u => u.Id == savedActivityTemplateDO.Id);
 
-                Assert.IsNull(deletedActionTemplateDO);
+                Assert.IsNull(deletedActivityTemplateDO);
 
             }
         }

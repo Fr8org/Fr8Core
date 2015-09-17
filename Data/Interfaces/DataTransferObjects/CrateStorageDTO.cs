@@ -11,10 +11,10 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public CrateStorageDTO()
         {
-            CratesDTO = new List<CrateDTO>();
+            CrateDTO = new List<CrateDTO>();
         }
 
-        [JsonProperty("CratesDTO")]
-        public List<CrateDTO> CratesDTO { get; set; }
+        [JsonProperty("crates")]
+        public List<CrateDTO> CrateDTO { get; set; }
     }
 }

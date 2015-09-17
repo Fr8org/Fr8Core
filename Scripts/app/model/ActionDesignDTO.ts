@@ -6,9 +6,9 @@
         actionListId: number;
         name: string;
         crateStorage: model.CrateStorage;
-        fieldMappingSettings: model.FieldMappingSettings;
+        configurationControls: model.ControlsList;
         actionTemplateId: number;
-        actionTemplate: model.ActionTemplate;
+        activityTemplate: model.ActivityTemplate;
 
         constructor(
             processNodeTemplateId: number,
@@ -20,6 +20,7 @@
             this.id = id;
             this.isTempId = isTempId;
             this.actionListId = actionListId;
+            this.configurationControls = new ControlsList();
         }
 
         toActionVM(): interfaces.IActionVM {
@@ -30,8 +31,8 @@
                 actionListId: this.actionListId,
                 name: this.name,
                 crateStorage: this.crateStorage,
-                fieldMappingSettings: this.fieldMappingSettings,
-                actionTemplate: this.actionTemplate
+                configurationControls: this.configurationControls,
+                activityTemplate: this.activityTemplate
             };
         }
 
@@ -51,12 +52,12 @@
             result.actionListId = dataObject.actionListId;
             result.actionTemplateId = dataObject.actionTemplateId;
             result.crateStorage = dataObject.crateStorage;
-            result.fieldMappingSettings = dataObject.fieldMappingSettings;
+            result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
             result.processNodeTemplateId = dataObject.processNodeTemplateId;
-            result.actionTemplate = dataObject.actionTemplate;
+            result.activityTemplate = dataObject.activityTemplate;
             return result;
         }
     }

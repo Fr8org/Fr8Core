@@ -20,12 +20,12 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
-        private readonly IActionTemplate _actionTemplate;
+        private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
-            _actionTemplate = ObjectFactory.GetInstance<IActionTemplate>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
         public ActionController(IAction service)
@@ -36,15 +36,15 @@ namespace Web.Controllers
         [Route("configure")]
         [Route("process")]
         [HttpGet]
-        public string HandleDockyardRequest(ActionDesignDTO actionDTO)
+        public string HandleDockyardRequest(ActionDTO actionDTO)
         {
             // Extract from current request URL.
             var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
             var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-                curActionDO.ActionTemplate.Name,
-                curActionDO.ActionTemplate.Version);
+                curActionDO.ActivityTemplate.Name,
+                curActionDO.ActivityTemplate.Version);
 
             var calledType = Type.GetType(curAssemblyName);
             var curMethodInfo = calledType
@@ -55,32 +55,14 @@ namespace Web.Controllers
                 (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
         }
 
-        [DockyardAuthorize]
-        [Route("available")]
-        [ResponseType(typeof(IEnumerable<ActionTemplateDTO>))]
-        public IHttpActionResult GetAvailableActions()
-        {
-            var userId = User.Identity.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curDockyardAccount = uow.UserRepository.GetByKey(userId);
-                var availableActions = _action
-                    .GetAvailableActions(curDockyardAccount)
-                    .Select(x => Mapper.Map<ActionTemplateDTO>(x))
-                    .ToList();
-
-                return Ok(availableActions);
-            }
-        }
-
         /// <summary>
         /// GET : Returns an action with the specified id
         /// </summary>
         [HttpGet]
         [Route("{id:int}")]
-        public ActionDesignDTO Get(int id)
+        public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDesignDTO>(_action.GetById(id));
+            return Mapper.Map<ActionDTO>(_action.GetById(id));
         }
 
         /// <summary>
@@ -98,24 +80,26 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("save")]
-        public IEnumerable<ActionDesignDTO> Save(ActionDesignDTO curActionDesignDTO)
+        public IEnumerable<ActionDTO> Save(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             if (_action.SaveOrUpdateAction(curActionDO))
             {
                 curActionDesignDTO.Id = curActionDO.Id;
-                return new List<ActionDesignDTO> { curActionDesignDTO };
+                return new List<ActionDTO> { curActionDesignDTO };
             }
-            return new List<ActionDesignDTO>();
+            return new List<ActionDTO>();
         }
 
         [HttpPost]
-        [Route("actions/configuration")]
-        [ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult GetConfigurationSettings(ActionDesignDTO curActionDesignDTO)
+        [Route("configuration")]
+        [Route("configure")]
+        //[ResponseType(typeof(CrateStorageDTO))]
+        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            return Ok(_action.GetConfigurationSettings(curActionDO));  
+            var configurationCrates = _action.Configure(curActionDO);
+            return Ok(configurationCrates);  
         }
 
 
@@ -124,7 +108,7 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("field_data_sources")]
-        public IEnumerable<string> GetFieldDataSources(ActionDesignDTO curActionDesignDTO)
+        public IEnumerable<string> GetFieldDataSources(ActionDTO curActionDesignDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -134,20 +118,6 @@ namespace Web.Controllers
             }
         }
 
-        /// <summary>
-        /// Retrieve the list of data sources for the text labels on the  right side of the field mapping pane in process builder.
-        /// </summary>
-        [HttpPost]
-        [Route("field_mapping_targets")]
-        public string GetFieldMappingTargets(ActionDesignDTO curActionDesignDTO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
-
-                //Field mapping targets are as part of Confgiuration Store of Action DO
-                return _action.GetConfigurationSettings(curAction);
-            }
-        }
+        
     }
 }

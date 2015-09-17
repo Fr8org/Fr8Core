@@ -5,10 +5,8 @@
             <span class="caption-subject font-green-haze bold uppercase">Configure Action</span>
         </div>
     </div>
-    <div ng-repeat="field in currentAction.crateStorage.fields">
+    <div ng-repeat="field in currentAction.configurationControls.fields">
         <configuration-field field="field" />
     </div>
-    <div>
-        <button class="btn btn-primary" ng-click="mapFields(this)">Map Fields</button>
-    </div>
+   
 </div>

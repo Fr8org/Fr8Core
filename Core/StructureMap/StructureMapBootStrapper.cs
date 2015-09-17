@@ -93,7 +93,7 @@ namespace Core.StructureMap
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
-					 For<IActivity>().Use<Activity>();
+				For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IDocuSignNotification>().Use<DocuSignNotification>();
@@ -101,13 +101,14 @@ namespace Core.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
-                For<IActionTemplate>().Use<ActionTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
+                For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }
 
@@ -136,7 +137,7 @@ namespace Core.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
-                For<IActionTemplate>().Use<ActionTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>();
                 
                 For<ITracker>().Use(mockSegment.Object);
                 For<IProcess>().Use<Process>();
@@ -156,9 +157,9 @@ namespace Core.StructureMap
                 For<IEnvelope>().Use<DocuSignEnvelope>();
 
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
-                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionPayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
+                pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
-                For<IActionTemplate>().Use<ActionTemplate>();
+                For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
@@ -168,6 +169,7 @@ namespace Core.StructureMap
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
+                For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }
 

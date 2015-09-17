@@ -18,8 +18,8 @@ namespace DockyardTest.Services
         private IAction _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private readonly IEnumerable<ActionTemplateDO> _pr1Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "Write", Version = "1.0" }, new ActionTemplateDO() { Name = "Read", Version = "1.0" } };
-        private readonly IEnumerable<ActionTemplateDO> _pr2Actions = new List<ActionTemplateDO>() { new ActionTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActionTemplateDO() { Name = "SQL Read", Version = "1.0" } };
+        private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
+        private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
         [SetUp]
         public override void SetUp()

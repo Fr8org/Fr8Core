@@ -73,7 +73,7 @@ namespace Core.Services
         //until curActionList is Completed  
         //    if currentActivity is an Action, process it
         //    else it's an ActionList, call recursively
-        public void Process(ActionListDO curActionList)
+        public void Process(ActionListDO curActionList, ProcessDO curProcessDO)
         {
 
             //We assume that any unstarted ActionList that makes it to here should be put into process
@@ -104,11 +104,11 @@ namespace Core.Services
                         //if the current activity is iself an ActionList, then recursively call ActionList#Process
                         if (currentActivity is ActionListDO)
                         {
-                            Process((ActionListDO)currentActivity);
+                            Process((ActionListDO)currentActivity, curProcessDO);
                         }
                         else
                         {
-                            ProcessAction(curActionList);
+                            ProcessAction(curActionList, curProcessDO);
                         }
 
         
@@ -137,9 +137,9 @@ namespace Core.Services
             }
         }
 
-        public void ProcessAction(ActionListDO curActionList)
+        public void ProcessAction(ActionListDO curActionList, ProcessDO curProcessDO)
         {  
-            _action.Process((ActionDO) curActionList.CurrentActivity);
+            _action.Process((ActionDO) curActionList.CurrentActivity, curProcessDO);
             UpdateActionListState(curActionList);
         }
         

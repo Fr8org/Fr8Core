@@ -8,13 +8,11 @@ namespace Core.Interfaces
 {
     public interface IAction
     {
-        IEnumerable<TViewModel> GetAllActions<TViewModel>();
-
-        IEnumerable<ActionTemplateDO> GetAvailableActions(IDockyardAccountDO curAccount);
+        IEnumerable<TViewModel> GetAllActions<TViewModel>();        
 
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         
-        string GetConfigurationSettings(ActionDO curActionDO);
+        CrateStorageDTO Configure(ActionDO curActionDO);
 
         IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 
@@ -22,7 +20,7 @@ namespace Core.Interfaces
 
         void Delete(int id);
 
-        Task<int> Process(ActionDO curAction);
+        Task<int> Process(ActionDO curAction, ProcessDO curProcessDO);
 
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);

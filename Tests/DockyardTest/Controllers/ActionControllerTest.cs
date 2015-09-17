@@ -39,7 +39,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        [Test]
+        [Test,Ignore]
         [Category("ActionController.Save")]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
@@ -63,7 +63,7 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test]
+        [Test,Ignore]
         [Category("ActionController.Save")]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
@@ -130,9 +130,8 @@ namespace DockyardTest.Controllers
                 var curActionDO = FixtureData.TestAction22();
 
                 var expectedResult = FixtureData.TestConfigurationSettings();
-                string curJsonResult = _action.GetConfigurationSettings(curActionDO);
-                CrateStorageDTO result = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(curJsonResult);
-                Assert.GreaterOrEqual(1, result.CratesDTO.Count);
+                CrateStorageDTO result = _action.Configure(curActionDO);
+                Assert.GreaterOrEqual(1, result.CrateDTO.Count);
             }
         }
 
@@ -142,7 +141,7 @@ namespace DockyardTest.Controllers
         public void ActionController_NULL_ActionTemplate()
         {
             var curAction = new ActionController();
-            var actionDO = curAction.GetConfigurationSettings(CreateActionWithId(2));
+            var actionDO = curAction.Configure(CreateActionWithId(2));
             Assert.IsNotNull(actionDO);
         }
 
@@ -155,7 +154,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //remvoe existing action templates
-                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
                 uow.SaveChanges();
 
                 //create action
@@ -163,10 +162,10 @@ namespace DockyardTest.Controllers
                 curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
                 uow.SaveChanges();
 
-                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
+                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
                 var result =
-                    new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
+                    new ActionController(_action).Configure(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
                 CrateStorageDTO resultantCrateStorageDto =
@@ -175,7 +174,7 @@ namespace DockyardTest.Controllers
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
                 Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantCrateStorageDto.CratesDTO.Count == 1, "Configure is not assuming this is the first request from the client");
+                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 1, "Configure is not assuming this is the first request from the client");
                 //different V2 format
                 //Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
                 //Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
@@ -194,7 +193,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //remvoe existing action templates
-                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
                 uow.SaveChanges();
 
                 //create action
@@ -204,10 +203,10 @@ namespace DockyardTest.Controllers
                 //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
                 curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
-                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
+                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
                 var result =
-                    new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
+                    new ActionController(_action).Configure(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
                 CrateStorageDTO resultantCrateStorageDto =
@@ -216,7 +215,7 @@ namespace DockyardTest.Controllers
                 //Assert
                 Assert.IsNotNull(result, "Configure POST reqeust is failed");
                 Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-                Assert.IsTrue(resultantCrateStorageDto.CratesDTO.Count == 3, "Configure returned invalid data fields");
+                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 3, "Configure returned invalid data fields");
             }
         }
 
@@ -229,7 +228,7 @@ namespace DockyardTest.Controllers
             {
                 //Arrange
                 //remvoe existing action templates
-                uow.ActionTemplateRepository.Remove(uow.ActionTemplateRepository.GetByKey(1));
+                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
                 uow.SaveChanges();
 
                 //create action
@@ -243,10 +242,10 @@ namespace DockyardTest.Controllers
                 //configurationStore.DataFields.Add("data fields");
                 curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
                 uow.SaveChanges();
-                var curActionDesignDO = Mapper.Map<ActionDesignDTO>(curAction);
+                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
                 var result =
-                    new ActionController(_action).GetConfigurationSettings(curActionDesignDO) as
+                    new ActionController(_action).Configure(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
                 CrateStorageDTO resultantCrateStorageDto =
@@ -319,7 +318,7 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionTemplateRepository.Add(FixtureData.TestActionTemplateDO1());
+                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO1());
                 uow.SaveChanges();
             }
         }
@@ -327,9 +326,9 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates a new Action with the given action ID
         /// </summary>
-        private ActionDesignDTO CreateActionWithId(int actionId)
+        private ActionDTO CreateActionWithId(int actionId)
         {
-            return new ActionDesignDTO
+            return new ActionDTO
             {
                 Id = actionId,
                 Name = "WriteToAzureSql",
@@ -337,64 +336,36 @@ namespace DockyardTest.Controllers
                 CrateStorage = new CrateStorageDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActionTemplateId = 1,
-                ActionTemplate = FixtureData.TestActionTemplateDTOV2()
-                //,ActionTemplate = FixtureData.TestActionTemplateDO2()
+                ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
+                //,ActionTemplate = FixtureData.TestActivityTemplateDO2()
             };
         }
 
         private ActionDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
         {
 
-            var curActionTemplate = FixtureData.TestActionTemplateV2();
-            uow.ActionTemplateRepository.Add(curActionTemplate);
+            var curActionTemplate = FixtureData.TestActivityTemplateV2();
+            uow.ActivityTemplateRepository.Add(curActionTemplate);
 
             var curAction = FixtureData.TestAction1();
-            curAction.ActionTemplateId = curActionTemplate.Id;
-            curAction.ActionTemplate = curActionTemplate;
+            curAction.ActivityTemplateId = curActionTemplate.Id;
+            curAction.ActivityTemplate = curActionTemplate;
             uow.ActionRepository.Add(curAction);
 
             return curAction;
         }
 
 
-        [Test]
-        [Ignore("Vas, Ignored as part of V2 changes")]
-        // To run and pass this test 
-        // pluginAzureSqlServer should be running 
-        // as of now the endpoint it connects to is hardcoded to be "http://localhost:46281/plugin_azure_sql_server"
-        // make sure that the endpoint is running 
-        // in azure db you need a db demodb_health
-        public async void Can_Get_FieldMappingTargets()
-        {
-
-            //Arrange 
-            string pluginName =
-                "Core.PluginRegistrations.AzureSqlServerPluginRegistration_v1, Core";
-            string dataSource =
-                "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-            var cntroller = new ActionController();
-            //cntroller.GetFieldMappingTargets(new ActionDTO() { ParentPluginRegistration = pluginName });
-
-            var task = cntroller.GetFieldMappingTargets(new ActionDesignDTO()
-            {
-                CrateStorage = Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(
-                    "{\"connection_string\":\"" + dataSource + "\"}")
-            });
-
-            //await task;
-            //Assert.NotNull(task.Result);
-            //Assert.Greater(task.Result.Count(), 0);
-            //task.Result.ToList().ForEach(Console.WriteLine);
-        }
+     
 
         [Test, Ignore]
         [Category("ActionController")]
         public void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionController();
-            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
-            actionDesignDTO.ActionTemplate = FixtureData.TestActionTemplateDTOV2();
-            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+            ActionDTO actionDesignDTO = CreateActionWithId(2);
+            actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
+            var actionResult = controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
@@ -408,9 +379,9 @@ namespace DockyardTest.Controllers
         public void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
-            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.Id = 0;
-            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+            var actionResult = controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
@@ -424,9 +395,9 @@ namespace DockyardTest.Controllers
         public void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();
-            ActionDesignDTO actionDesignDTO = CreateActionWithId(2);
+            ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.ActionTemplateId = 0;
-            var actionResult = controller.GetConfigurationSettings(actionDesignDTO);
+            var actionResult = controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 

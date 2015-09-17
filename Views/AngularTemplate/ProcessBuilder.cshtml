@@ -25,39 +25,44 @@
             </div>
             <!-- END PORTLET-->
         </div>
-
         <div class="col-md-6 col-sm-6">
-            <pane-define-criteria current-action="current.action"></pane-define-criteria>
-        </div>
-        <div class="col-md-6 col-sm-6">
-            <pane-select-template></pane-select-template>
-        </div>
-        <div class="col-md-6 col-sm-6">
-            <pane-select-action id="paneSelectAction" current-action="current.action"></pane-select-action>
-        </div>
-        <div class="col-md-6 col-sm-6">
-            <pane-configure-action id="paneConfigureAction" current-action="current.action"></pane-configure-action>
-        </div>
-        <div class="col-md-6 col-sm-6">
-            <pane-configure-mapping id="paneConfigureMapping" current-action="current.action" mode="field"></pane-configure-mapping>
+            <div class="col-sm-12">
+                <pane-define-criteria current-action="current.action"></pane-define-criteria>
+            </div>
+            <div class="col-sm-12">
+                <pane-select-template></pane-select-template>
+            </div>
+            <div class="col-sm-12">
+                <pane-select-action id="paneSelectAction" current-action="current.action"></pane-select-action>
+            </div>
+            <div class="col-sm-12">
+                <pane-configure-action id="paneConfigureAction" current-action="current.action"></pane-configure-action>
+            </div>
+            <div class="col-sm-12">
+                <pane-configure-mapping id="paneConfigureMapping" current-action="current.action" mode="field"></pane-configure-mapping>
+            </div>
+            <div class="col-sm-12" ng-show="current.action.id">
+                <div class="form-group">
+                    <button class="btn btn-primary btn-large btn-long" ng-click="save()">Save Action</button>
+                    <button class="btn btn-danger btn-large" ng-click="cancel()">Cancel</button>
+                </div>
+            </div>
         </div>
 
         @*Demo Only*@
+        <div class="col-md-12 col-sm-12"><pre><h2>FILE PICKER DEMO</h2></pre></div>
         <div class="col-md-12 col-sm-12">
             <file-picker field='field'></file-picker>
         </div>
-        
+        <div class="col-md-12 col-sm-12"><pre><h2>RADIO BUTTON GROUP DEMO</h2></pre></div>
         <div class="col-md-12 col-sm-12">
             <radio-button-group field='radioDemoField'></radio-button-group>
         </div>
-        @*END OF DEMO CODE*@
-
-        <div class="col-md-4 col-sm-4" ng-show="current.action.id">
-            <div class="form-group">
-                <button class="btn btn-primary btn-large btn-long" indi-click="Save()">Save Action</button>
-                <button class="btn btn-danger btn-large" ng-click="Cancel()">Cancel</button>
-            </div>
+        <div class="col-md-12 col-sm-12"><pre><h2>DROP DOWN LIST BOX DEMO</h2></pre></div>
+        <div class="col-md-12 col-sm-12">
+            <drop-down-list-box field='dropdownDemoField'></drop-down-list-box>
         </div>
+        @*END OF DEMO CODE*@
     </div>
     <!-- END MAIN CONTENT -->
     <!-- BEGIN SCRIPT REQUIREMENTS -->

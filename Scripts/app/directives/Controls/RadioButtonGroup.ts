@@ -5,7 +5,7 @@ module dockyard.directives.radioButtonGroup {
     export interface IRadioButtonGroupScope extends ng.IScope {
         field: model.RadioButtonGroupField;
         ChangeSelection: (radio: model.RadioField) => void;
-}
+    }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/

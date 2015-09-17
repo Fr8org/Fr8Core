@@ -1,4 +1,5 @@
 ﻿using Data.Infrastructure.AutoMapper;
+using System;
 using System.Web.Http;
 
 namespace pluginAzureSqlServer
@@ -9,6 +10,8 @@ namespace pluginAzureSqlServer
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+
+
         }
     }
 }

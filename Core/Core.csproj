@@ -41,8 +41,8 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <HintPath>..\packages\DocuSign.Integration.Client.dll.1.6.1\lib\DocuSign.Integration.Client.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -184,12 +184,13 @@
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
-    <Compile Include="Interfaces\IActionRegistration.cs" />
+    <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
     <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\IActionList.cs" />
     <Compile Include="Interfaces\ICrate.cs" />
     <Compile Include="Interfaces\ICriteria.cs" />
+    <Compile Include="Interfaces\IDockyardEvent.cs" />
     <Compile Include="Interfaces\IDocuSignNotification.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
@@ -200,8 +201,10 @@
     <Compile Include="Interfaces\IProcess.cs" />
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
-    <Compile Include="Interfaces\ISubscription.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
+    <Compile Include="Interfaces\ISubscription.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -250,9 +253,6 @@
     <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\DockyardAuthorizeAttribute.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
-    <Compile Include="PluginRegistrations\AzureSqlServerPluginRegistration_v1.cs" />
-    <Compile Include="PluginRegistrations\BasePluginRegistration.cs" />
-    <Compile Include="PluginRegistrations\IPluginRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -265,12 +265,13 @@
     <Compile Include="Services\Activity.cs" />
     <Compile Include="Services\Action.cs" />
     <Compile Include="Services\ActionList.cs" />
-    <Compile Include="Services\ActionRegistration.cs" />
+    <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Crate.cs" />
     <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\DockyardAccount.cs" />
+    <Compile Include="Services\DockyardEvent.cs" />
     <Compile Include="Services\DocuSignNotification.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />

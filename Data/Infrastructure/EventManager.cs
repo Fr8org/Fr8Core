@@ -10,14 +10,11 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class EventManager
     {
-        //public delegate void AttendeeUnresponsivenessThresholdReachedHandler(int expectedResponseId);
-        //public static event AttendeeUnresponsivenessThresholdReachedHandler AlertAttendeeUnresponsivenessThresholdReached;
+
 
         public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
         public static event ResponseRecievedHandler AlertResponseReceived;
 
-        //public delegate void BookingRequestNeedsProcessingHandler(int bookingRequestId);
-        //public static event BookingRequestNeedsProcessingHandler AlertBookingRequestNeedsProcessing;
 
         public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, object id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
@@ -25,11 +22,9 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        //public delegate void ConversationMemberAddedHandler(int bookingRequestID);
-        //public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
-
-        //public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
-        //public static event ConversationmatchedHandler AlertConversationMatched;
+        public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
+        
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
@@ -102,7 +97,7 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void PluginIncidentHandler(EventData incidentItem);
+        public delegate void PluginIncidentHandler(LoggingData incidentItem);
         public static event PluginIncidentHandler PluginIncidentReported;
 
         public delegate void EventDocuSignNotificationReceivedHandler();
@@ -123,15 +118,23 @@ namespace Data.Infrastructure
         public delegate void EventActionStartedHandler(ActionDO action);
         public static event EventActionStartedHandler EventActionStarted;
 
-        public delegate void EventActionDispatchedHandler(ActionPayloadDTO curAction);
+        public delegate void EventActionDispatchedHandler(ActionDTO curAction);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
-        public delegate void PluginEventHandler(EventData eventData);
+        public delegate void PluginEventHandler(LoggingData eventData);
         public static event PluginEventHandler PluginEventReported;
 
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
         #region Method
+
+
+        public static void PluginConfigureFailed(string pluginUrl, string actionDTO)
+        {
+            IncidentPluginConfigurePOSTFailureHandler handler = IncidentPluginConfigureFailed;
+            if (handler != null) handler(pluginUrl, actionDTO);
+        }
+
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
         {
@@ -139,7 +142,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportPluginIncident(EventData incidentItem)
+        public static void ReportPluginIncident(LoggingData incidentItem)
         {
             PluginIncidentHandler handler = PluginIncidentReported;
             if (handler != null) handler(incidentItem);
@@ -190,11 +193,7 @@ namespace Data.Infrastructure
                 AlertExplicitCustomerCreated(curUserId);
         }
 
-        //public static void PostResolutionNegotiationResponseReceived(int negotiationDO)
-        //{
-        //    if (AlertPostResolutionNegotiationResponseReceived != null)
-        //        AlertPostResolutionNegotiationResponseReceived(negotiationDO);
-        //}
+
 
         public static void CustomerCreated(DockyardAccountDO user)
         {
@@ -370,13 +369,13 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ActionDispatched(ActionPayloadDTO curAction)
+        public static void ActionDispatched(ActionDTO curAction)
         {
             var handler = EventActionDispatched;
             if (handler != null) handler(curAction);
         }
 
-        public static void ReportPluginEvent(EventData eventData)
+        public static void ReportPluginEvent(LoggingData eventData)
         {
             PluginEventHandler handler = PluginEventReported;
             if (handler != null) handler(eventData);

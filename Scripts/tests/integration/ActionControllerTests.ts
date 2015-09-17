@@ -72,9 +72,10 @@ module dockyard.tests.controller {
             // First POST, create a dummy entry
 
             var actions: interfaces.IActionDesignDTO =
-                {
+            {
                     name: "test action type",
-                    crateStorage: fx.ActionDesignDTO.crateStorage,
+                    configurationControls: fx.ActionDesignDTO.configurationControls,
+                    crateStorage: null,
                     processNodeTemplateId: 1,
                     actionTemplateId: 1,
                     isTempId: false,
@@ -82,7 +83,7 @@ module dockyard.tests.controller {
                     fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                     // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
-                        actionTemplate: new model.ActionTemplate(1, "Write to SQL", "1")
+                        activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
                 };
 
             postInvoker(done, actions);
@@ -100,7 +101,8 @@ module dockyard.tests.controller {
             var currentActionDesignDTO: interfaces.IActionDesignDTO =
                     {
                         name: "test action type",
-                        crateStorage: fx.ActionDesignDTO.crateStorage,
+                        configurationControls: fx.ActionDesignDTO.configurationControls,
+                        crateStorage: null,
                         processNodeTemplateId: 1,
                         actionTemplateId: 1,
                         isTempId: false,
@@ -108,7 +110,7 @@ module dockyard.tests.controller {
                         fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                         // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
-                        actionTemplate: fx.ActionTemplate.actionTemplateDO
+                        activityTemplate: fx.ActivityTemplate.activityTemplateDO
                     };
 
             beforeAll(function () {
