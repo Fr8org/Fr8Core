@@ -54,7 +54,8 @@ module dockyard.controllers {
             '$timeout',
             'CriteriaServiceWrapper',
             'ProcessBuilderService',
-            'ActionListService'
+            'ActionListService',
+            'CrateHelper'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -73,7 +74,8 @@ module dockyard.controllers {
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
-            private ActionListService: services.IActionListService
+            private ActionListService: services.IActionListService,
+            private crateHelper: services.CrateHelper
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -113,20 +115,20 @@ module dockyard.controllers {
             var dropdownDemoField = new model.DropDownListBoxField();
             var demoSelectItem1 = new model.DropDownListItem();
             
-            demoSelectItem1.text = "Operation 1";
-            demoSelectItem1.value = "operation_1";
+            demoSelectItem1.Key = "Operation 1";
+            demoSelectItem1.Value = "operation_1";
             var demoSelectItem2 = new model.DropDownListItem();
             
-            demoSelectItem2.text = "Operation 2";
-            demoSelectItem2.value = "operation_2";
+            demoSelectItem2.Key = "Operation 2";
+            demoSelectItem2.Value = "operation_2";
             var demoSelectItem3 = new model.DropDownListItem();
             
-            demoSelectItem3.text = "Operation 3";
-            demoSelectItem3.value = "operation_3";
+            demoSelectItem3.Key = "Operation 3";
+            demoSelectItem3.Value = "operation_3";
             var demoSelectItem4 = new model.DropDownListItem();
             
-            demoSelectItem4.text = "Operation 4";
-            demoSelectItem4.value = "operation_4";
+            demoSelectItem4.Key = "Operation 4";
+            demoSelectItem4.Value = "operation_4";
             dropdownDemoField.fieldLabel = "Operation List";
             dropdownDemoField.listItems = new Array<model.DropDownListItem>();
             dropdownDemoField.listItems.push(demoSelectItem1);
@@ -232,6 +234,11 @@ module dockyard.controllers {
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
                     new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
                     );
+
+                if (this.crateHelper.hasControlListCrate(action.crateStorage)) {
+                    action.configurationControls = this.crateHelper
+                        .createControlListFromCrateStorage(action.crateStorage);
+                }
             }
         }
 
@@ -573,6 +580,7 @@ module dockyard.controllers {
         }
 
         private onSave() {
+            debugger;
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
 

@@ -16,5 +16,7 @@ namespace Core.Interfaces
         void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class;
 
         IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO);
+
+        IList<ProcessTemplateDO> GetStandardEventSubscribers(string userId, CrateDTO curStandardEventReport);
 	}
 }

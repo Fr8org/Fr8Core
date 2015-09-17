@@ -91,6 +91,7 @@
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\FixtureData - Plugin.cs" />
+	<Compile Include="Fixtures\FixtureData - StandardEventReport.cs" />
     <Compile Include="Fixtures\FixtureData -Configuration.cs" />
     <Compile Include="Fixtures\FixtureData - FactDO.cs" />
     <Compile Include="Fixtures\FixtureData - Action.cs" />

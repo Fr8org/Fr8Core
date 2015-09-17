@@ -116,17 +116,8 @@ module dockyard.directives.paneConfigureAction {
                 var self = this;
 
                 resource.$promise.then(function (res: any) {
-                    var crateStorage = <model.CrateStorage>res;
-                    var crate = self.crateHelper.findByManifestType(
-                        crateStorage, 'Standard Configuration Controls'
-                        );
-
-                    var controlsList = new model.ControlsList();
-                    controlsList.fields = angular.fromJson(crate.contents);
-
-                    (<any>scope.currentAction).configurationControls = controlsList;
-
-                    debugger;
+                    (<any>scope.currentAction).configurationControls =
+                        self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
                 });
             }
             
@@ -134,7 +125,7 @@ module dockyard.directives.paneConfigureAction {
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action
             this._currentAction = angular.extend({}, eventArgs.action);
-            debugger;
+            //debugger;
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

@@ -222,6 +222,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ManifestSchemaDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IEnvelope.cs">
       <SubType>Code</SubType>
