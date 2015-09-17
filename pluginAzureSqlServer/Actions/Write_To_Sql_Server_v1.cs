@@ -13,13 +13,28 @@ using StructureMap;
 using PluginBase;
 using PluginBase.BaseClasses;
 using Core.Interfaces;
+using Core.Services;
+using Data.States.Templates;
 
 namespace pluginAzureSqlServer.Actions {
     
-    public class Write_To_Sql_Server_v1 : BasePluginAction {        
+    public class Write_To_Sql_Server_v1 : BasePluginAction
+    {
 
-       //================================================================================
-       //General Methods (every Action class has these)
+        private IAction _action;
+        private ICrate _crate;
+
+        public Write_To_Sql_Server_v1()
+        {
+            _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
+        }
+
+
+
+
+        //================================================================================
+        //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
         public CrateStorageDTO Configure(ActionDTO curActionDTO)
@@ -36,31 +51,26 @@ namespace pluginAzureSqlServer.Actions {
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
 
-            var curConnectionStringFieldList =
-                JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+            //load configuration crates of manifest type Standard Control Crates
+            //look for a text field name connection string with a value
+            var controlsCrates = _action.GetCratesByManifestType("Standard Configuration Controls",
+                curActionDTO.CrateStorage);
+            var connectionStringObjects = _crate.GetElementByKey(controlsCrates.ToList());
 
-            if (curConnectionStringFieldList != null && curConnectionStringFieldList.Count > 0)
-            {
-                var curConnectionStringField = curConnectionStringFieldList.First();
-                if (string.IsNullOrEmpty(curConnectionStringField.Value))
-                {
-                    //Scenario 1 - This is the first request being made by this Action
-                    //Return Initial configuration request type
-                    return ConfigurationRequestType.Initial;
-                }
-                else
-                {
-                    //This else block covers 2nd and 3rd scenarios as mentioned below
-                    //Scenario 2 - This is the seond request, being made after the user filled in the value of the connection string
-                    //Scenario 3 - A data_fields was previously constructed, but perhaps the connection string has changed.
-                    //in either scenario, we have to return Followup configuration request type
-                    return ConfigurationRequestType.Followup;
-                }
-            }
+
+            //if there are more than 2 return connection strings, something is wrong
+            //if there are none or if there's one but it's value is "" the return initial else return followup
+            var objCount = connectionStringObjects.Count();
+            if (objCount >1 )
+                throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action");
+            if (objCount == 0 || connectionStringObjects.First().Value<string>() != "")
+                return ConfigurationRequestType.Initial;
             else
             {
-                throw new ApplicationException("this value should never be null");
+                return ConfigurationRequestType.Followup;
             }
+
+            
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
