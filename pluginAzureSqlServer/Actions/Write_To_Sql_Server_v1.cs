@@ -106,7 +106,7 @@ namespace pluginAzureSqlServer.Actions
 
             var _crate = ObjectFactory.GetInstance<ICrate>();
             
-            var curConfigurationStore = new CrateStorageDTO
+            var  curCrateStorageDTO = new CrateStorageDTO
             {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
@@ -118,7 +118,7 @@ namespace pluginAzureSqlServer.Actions
                         )
                 }
             };
-            return curConfigurationStore;
+            return curCrateStorageDTO;
         }
 
         public object Activate(ActionDO curActionDO)
