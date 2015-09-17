@@ -123,6 +123,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
             data: { pageTitle: 'Manage Files', pageSubTitle: '' },
+
+        .state('accounts', {
+            url: '/accounts',
+            templateUrl: '/AngularTemplate/ManageAccounts',
+            data: { pageTitle: 'Manage Dockyard Accounts', pageSubTitle: '' }
         });
 
 }]);
