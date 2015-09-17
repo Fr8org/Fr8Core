@@ -54,7 +54,8 @@ module dockyard.controllers {
             '$timeout',
             'CriteriaServiceWrapper',
             'ProcessBuilderService',
-            'ActionListService'
+            'ActionListService',
+            'CrateHelper'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -73,7 +74,8 @@ module dockyard.controllers {
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
-            private ActionListService: services.IActionListService
+            private ActionListService: services.IActionListService,
+            private crateHelper: services.CrateHelper
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -232,6 +234,11 @@ module dockyard.controllers {
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
                     new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
                     );
+
+                if (this.crateHelper.hasControlListCrate(action.crateStorage)) {
+                    action.configurationControls = this.crateHelper
+                        .createControlListFromCrateStorage(action.crateStorage);
+                }
             }
         }
 

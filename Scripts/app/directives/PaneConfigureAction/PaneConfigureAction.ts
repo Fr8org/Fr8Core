@@ -116,36 +116,8 @@ module dockyard.directives.paneConfigureAction {
                 var self = this;
 
                 resource.$promise.then(function (res: any) {
-                    var crateStorage = <model.CrateStorage>res;
-                    var crate = self.crateHelper.findByManifestType(
-                        crateStorage, 'Standard Configuration Controls'
-                        );
-
-                    
-                    var controlsList = new model.ControlsList();
-                    controlsList.fields = angular.fromJson(crate.contents);
-
-                    (<any>scope.currentAction).configurationControls = controlsList;
-                    //now we should look for crates with manifestType Standart Design Time Fields
-                    //to set or override our DropdownListBox items
-                    //TODO remove this logic to seperate function
-                    for (var i = 0; i < controlsList.fields.length; i++) {
-                        if (controlsList.fields[i].type == 'dropdownlistField') {
-                            var dropdownListField = <model.DropDownListBoxField> controlsList.fields[i];
-                            if (!dropdownListField.source) {
-                                continue;
-                            }
-                            var stdfCrate = self.crateHelper.findByManifestTypeAndLabel(
-                                crateStorage, dropdownListField.source.manifestType, dropdownListField.source.label
-                                );
-                            if (stdfCrate == null) {
-                                continue;
-                            }
-
-                            var listItems = <Array<model.DropDownListItem>> angular.fromJson(stdfCrate.contents);
-                            dropdownListField.listItems = listItems;
-                        }
-                    }
+                    (<any>scope.currentAction).configurationControls =
+                        self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
                 });
             }
             
