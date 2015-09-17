@@ -7,6 +7,12 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    public class DropdownListFieldDefinitionDTO : FieldDefinitionDTO
+    {
+        [JsonProperty("source")]
+        public FieldSource Source { get; set; }
+    }
+
     public class FieldDefinitionDTO
     {
         public FieldDefinitionDTO() { }
@@ -52,6 +58,15 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("events")]
         public List<FieldEvent> Events { get; set; }
+    }
+
+    public class FieldSource
+    {
+        [JsonProperty("manifestType")]
+        public string ManifestType { get; set; }
+
+        [JsonProperty("label")]
+        public string Label { get; set; }
     }
 
     public class FieldEvent

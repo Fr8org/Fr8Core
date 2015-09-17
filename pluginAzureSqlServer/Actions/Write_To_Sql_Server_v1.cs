@@ -36,11 +36,12 @@ namespace pluginAzureSqlServer.Actions {
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
 
-            var curConnectionStringField =
-                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+            var curConnectionStringFieldList =
+                JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
-            if (curConnectionStringField != null)
+            if (curConnectionStringFieldList != null && curConnectionStringFieldList.Count > 0)
             {
+                var curConnectionStringField = curConnectionStringFieldList.First();
                 if (string.IsNullOrEmpty(curConnectionStringField.Value))
                 {
                     //Scenario 1 - This is the first request being made by this Action

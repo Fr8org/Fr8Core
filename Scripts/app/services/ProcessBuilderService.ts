@@ -148,7 +148,8 @@ module dockyard.services {
         constructor(
             private $q: ng.IQService,
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
-            private ActionService: IActionService
+            private ActionService: IActionService,
+            private crateHelper: CrateHelper
             ) { }
 
         /*
@@ -192,9 +193,18 @@ module dockyard.services {
 
             //Save only Action 
             else if (currentState.action) {
-                this.ActionService.save(
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
+
+                var promise = this.ActionService.save(
                     { id: currentState.action.id },
-                    currentState.action, null, null).$promise
+                    currentState.action,
+                    null,
+                    null).$promise;
+
+                promise
                     .then((result: interfaces.IActionVM) => {
                         newState.action = result;
                         return deferred.resolve(newState);
@@ -216,12 +226,13 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
-        ActionService: IActionService) => {
-            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService);
-    }
+        ActionService: IActionService,
+        crateHelper: CrateHelper) => {
+            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
+        }
     ]);
 
     /*
