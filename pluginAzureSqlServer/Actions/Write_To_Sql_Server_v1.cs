@@ -36,11 +36,12 @@ namespace pluginAzureSqlServer.Actions {
             if (curCrates.CrateDTO.Count == 0)
                 return ConfigurationRequestType.Initial;
 
-            var curConnectionStringField =
-                JsonConvert.DeserializeObject<FieldDefinitionDTO>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+            var curConnectionStringFieldList =
+                JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
-            if (curConnectionStringField != null)
+            if (curConnectionStringFieldList != null && curConnectionStringFieldList.Count > 0)
             {
+                var curConnectionStringField = curConnectionStringFieldList.First();
                 if (string.IsNullOrEmpty(curConnectionStringField.Value))
                 {
                     //Scenario 1 - This is the first request being made by this Action
@@ -65,15 +66,30 @@ namespace pluginAzureSqlServer.Actions {
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-            //Return one field with empty connection string
-            CrateStorageDTO curConfigurationStore = new CrateStorageDTO
+            // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
+            var fieldDefinitions = new List<FieldDefinitionDTO>() 
             {
+                new FieldDefinitionDTO()
+                {
+                    FieldLabel = "SQL Connection String",
+                    Type = "textField",
+                    Name = "connection_string",
+                    Required = true
+                }
+            };
 
+            var _crate = ObjectFactory.GetInstance<ICrate>();
+            //Return one field with empty connection string
+            var curConfigurationStore = new CrateStorageDTO
+            {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
                 {
-                    _crate.Create("AzureSqlServer Design-Time Fields", "{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }", "Standard Configuration Controls")
+                    _crate.Create(
+                        "AzureSqlServer Design-Time Fields",
+                        JsonConvert.SerializeObject(fieldDefinitions),
+                        "Standard Configuration Controls"
+                        )
                 }
             };
 

@@ -36,6 +36,10 @@
         <label class='control-label'>{{field.fieldLabel}}</label>
         <radio-button-group field='field'></radio-button-group>
     </div>  
-
+    
+    <div ng-if='field.type == "dropdownlistField"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <drop-down-list-box field='field'></drop-down-list-box>
+    </div>  
     @* Add more configuration field templates below *@
 </div>

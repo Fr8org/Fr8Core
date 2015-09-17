@@ -35,7 +35,7 @@ namespace Web
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            RegisterPluginActions();
+            await RegisterPluginActions();
 
             LoadLocalActionLists();
 
@@ -153,7 +153,7 @@ namespace Web
                     //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
                     //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
-
+                     
                     foreach (var curItem in activityTemplateList)
                     {
                         new ActivityTemplate().Register(curItem);

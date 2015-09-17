@@ -17,6 +17,8 @@ namespace pluginDocuSign.Actions
 {
     public class Wait_For_DocuSign_Event_v1 : BasePluginAction
     {
+		 private static readonly int STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID = 3;
+
         IAction _action = ObjectFactory.GetInstance<IAction>();
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -81,65 +83,17 @@ namespace pluginDocuSign.Actions
 
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            var fieldSelectDocusignTemplate = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Select DocuSign Template",
-                Type = "dropdownlistField",
-                Name = "Selected_DocuSign_Template",
-                Required = true,
-                Events = new List<FieldEvent>() {
-                     new FieldEvent("onSelect", "requestConfiguration")
-                }
-            };
-
-            var fieldEnvelopeSent = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Envelope Sent",
-                Type = "checkboxField",
-                Name = "Event_Envelope_Sent"
-            };
-
-            var fieldEnvelopeReceived = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Envelope Received",
-                Type = "checkboxField",
-                Name = "Event_Envelope_Received"
-            };
-
-            var fieldRecipientSigned = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Recipient Signed",
-                Type = "checkboxField",
-                Name = "Event_Recipient_Signed"
-            };
-
-            var fieldEventRecipientSent = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Recipient Sent",
-                Type = "checkboxField",
-                Name = "Event_Recipient_Sent"
-            };
-
-            var fields = new List<FieldDefinitionDTO>()
-            {
-                fieldSelectDocusignTemplate,
-                fieldEnvelopeSent,
-                fieldEnvelopeReceived,
-                fieldRecipientSigned,
-                fieldEventRecipientSent
-            };
-
-            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields),  "Standard Configuration Controls");
-
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+				var crateControls = CreateStandartConfigurationControls();
+				var crateDesignTimeFields = CreateStandardDesignTimeFields();
+				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             return curActionDTO.CrateStorage;
         }
-
         protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             var curCrates = curActionDTO.CrateStorage.CrateDTO;
@@ -193,5 +147,70 @@ namespace pluginDocuSign.Actions
             curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
             return curActionDTO.CrateStorage;
         }
+		  private CrateDTO CreateStandartConfigurationControls()
+		  {
+              var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
+			  {
+				  FieldLabel = "Select DocuSign Template",
+				  Type = "dropdownlistField",
+				  Name = "Selected_DocuSign_Template",
+				  Required = true,
+				  Events = new List<FieldEvent>() {
+                     new FieldEvent("onSelect", "requestConfiguration")
+                },
+                  Source = new FieldSource
+                  {
+                      Label = "Available Templates",
+                      ManifestType = "Standard Design-Time Fields"
+                  }
+			  };
+
+			  var fieldEnvelopeSent = new FieldDefinitionDTO()
+			  {
+				  FieldLabel = "Envelope Sent",
+				  Type = "checkboxField",
+				  Name = "Event_Envelope_Sent"
+			  };
+
+			  var fieldEnvelopeReceived = new FieldDefinitionDTO()
+			  {
+				  FieldLabel = "Envelope Received",
+				  Type = "checkboxField",
+				  Name = "Event_Envelope_Received"
+			  };
+
+			  var fieldRecipientSigned = new FieldDefinitionDTO()
+			  {
+				  FieldLabel = "Recipient Signed",
+				  Type = "checkboxField",
+				  Name = "Event_Recipient_Signed"
+			  };
+
+			  var fieldEventRecipientSent = new FieldDefinitionDTO()
+			  {
+				  FieldLabel = "Recipient Sent",
+				  Type = "checkboxField",
+				  Name = "Event_Recipient_Sent"
+			  };
+
+			  var fields = new List<FieldDefinitionDTO>()
+            {
+                fieldSelectDocusignTemplate,
+                fieldEnvelopeSent,
+                fieldEnvelopeReceived,
+                fieldRecipientSigned,
+                fieldEventRecipientSent
+            };
+
+			  var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields), "Standard Configuration Controls");
+			  return crateControls;
+		  }
+		  private CrateDTO CreateStandardDesignTimeFields()
+		  {
+			  var templates = _template.GetTemplates(null);
+              var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
+			  var createDesignTimeFields = _crate.Create("Available Templates", JsonConvert.SerializeObject(fields), "Standard Design-Time Fields", STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID);
+			  return createDesignTimeFields;
+		  }
     }
 }

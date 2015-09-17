@@ -20,5 +20,7 @@ namespace Core.Interfaces
         string Activate(ProcessTemplateDO curProcessTemplate);
 
         string Deactivate(ProcessTemplateDO curProcessTemplate);
-    }
+
+        IList<ProcessTemplateDO> GetStandardEventSubscribers(string userId, CrateDTO curStandardEventReport);
+	}
 }

@@ -56,7 +56,12 @@ module dockyard.directives.paneConfigureAction {
         private _currentAction: interfaces.IActionDesignDTO =
             new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
 
-        constructor(private $rootScope: interfaces.IAppRootScope, private ActionService: services.IActionService) {
+        constructor(
+            private $rootScope: interfaces.IAppRootScope,
+            private ActionService: services.IActionService,
+            private crateHelper: services.CrateHelper
+            ) {
+
             PaneConfigureAction.prototype.link = (
                 scope: IPaneConfigureActionScope,
                 element: ng.IAugmentedJQuery,
@@ -102,15 +107,53 @@ module dockyard.directives.paneConfigureAction {
             //        eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
             //FOR NOW we're going to simplify things by always checking with this server for a new configuration
 
-                if (eventArgs.action.actionTemplateId > 0) {
-                    (<any>scope.currentAction).crateStorage = this.ActionService.configure(scope.action);
-                }
+            if (eventArgs.action.actionTemplateId > 0) {
+                var resource = this.ActionService.configure(scope.action);
+                (<any>scope.currentAction).crateStorage = resource;
+
+                // Here we parse look for Crate with ManifestType == 'Standard Configuration Controls'.
+                // We parse its contents and put it into currentAction.configurationControls structure.
+                var self = this;
+
+                resource.$promise.then(function (res: any) {
+                    var crateStorage = <model.CrateStorage>res;
+                    var crate = self.crateHelper.findByManifestType(
+                        crateStorage, 'Standard Configuration Controls'
+                        );
+
+                    
+                    var controlsList = new model.ControlsList();
+                    controlsList.fields = angular.fromJson(crate.contents);
+
+                    (<any>scope.currentAction).configurationControls = controlsList;
+                    //now we should look for crates with manifestType Standart Design Time Fields
+                    //to set or override our DropdownListBox items
+                    //TODO remove this logic to seperate function
+                    for (var i = 0; i < controlsList.fields.length; i++) {
+                        if (controlsList.fields[i].type == 'dropdownlistField') {
+                            var dropdownListField = <model.DropDownListBoxField> controlsList.fields[i];
+                            if (!dropdownListField.source) {
+                                continue;
+                            }
+                            var stdfCrate = self.crateHelper.findByManifestTypeAndLabel(
+                                crateStorage, dropdownListField.source.manifestType, dropdownListField.source.label
+                                );
+                            if (stdfCrate == null) {
+                                continue;
+                            }
+
+                            var listItems = <Array<model.DropDownListItem>> angular.fromJson(stdfCrate.contents);
+                            dropdownListField.listItems = listItems;
+                        }
+                    }
+                });
+            }
             
 
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action
             this._currentAction = angular.extend({}, eventArgs.action);
-
+            //debugger;
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -126,11 +169,16 @@ module dockyard.directives.paneConfigureAction {
 
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
-            var directive = ($rootScope: interfaces.IAppRootScope, ActionService) => {
-                return new PaneConfigureAction($rootScope, ActionService);
+            var directive = (
+                $rootScope: interfaces.IAppRootScope,
+                ActionService,
+                crateHelper: services.CrateHelper
+                ) => {
+
+                return new PaneConfigureAction($rootScope, ActionService, crateHelper);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService'];
+            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper'];
             return directive;
         }
     }
