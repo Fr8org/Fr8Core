@@ -71,5 +71,32 @@ namespace UtilitiesTesting.Fixtures
 
             return curProcessTemplateDO;
         }
+
+        public static ProcessTemplateDO TestProcessTemplate3()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-982 Process Node Template Test",
+                Name = "ProcessTemplateWithProcessNodeTemplates",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            for (int i = 1; i <= 4; ++i)
+            {
+                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    Id = i,
+                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    ProcessTemplate = curProcessTemplateDO,
+                };
+                curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+                curProcessTemplateDO.ProcessNodeTemplates[0].ActionLists.Add(FixtureData.TestActionList7());
+
+            }
+
+            return curProcessTemplateDO;
+        }
     }
 }

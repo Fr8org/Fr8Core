@@ -112,7 +112,7 @@ namespace Core.Services
                 }
             }
             itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
-            
+
             foreach (T entity in sourceCollection)
             {
                 found = false;
@@ -182,14 +182,44 @@ namespace Core.Services
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
         {
-            ActionDO curActionDO = new ActionDO();
-            return _action.Activate(curActionDO);
+            //List<ActionDO> curActions = (List<ActionDO>)curProcessTemplate.ProcessNodeTemplates[0].ActionLists[0].Activities.Where(p => p.ParentActivityId == p.Id);
+            // var curActionLists = curProcessTemplate.ProcessNodeTemplates.Select(pt => pt.ActionLists);
+            //var cuuActivity = curActionLists.Select(al => al.Select(a => a.Activities));
+            try
+            {
+                foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
+                {
+                    foreach (ActionListDO actions in processNodeTemplates.ActionLists)
+                    {
+                        foreach (var item in actions.Activities)
+                        {
+                           
+                            _action.Activate((ActionDO)item);
+                        }
+                    }
+                }
+                return "success";
+            }
+            catch (Exception) { return "fail"; }
         }
 
         public string Deactivate(ProcessTemplateDO curProcessTemplate)
         {
-            ActionDO curActionDO = new ActionDO();
-            return _action.Deactivate(curActionDO);
+            try
+            {
+                foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
+                {
+                    foreach (ActionListDO actions in processNodeTemplates.ActionLists)
+                    {
+                        foreach (var item in actions.Activities)
+                        {
+                            _action.Deactivate((ActionDO)item);
+                        }
+                    }
+                }
+                return "success";
+            }
+            catch (Exception) { return "fail"; }
         }
     }
 }

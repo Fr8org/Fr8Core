@@ -51,6 +51,14 @@ namespace DockyardTest.Services
             }
         }
 
+        [Test,Ignore]
+        public void CanActivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            _processTemplateService.Activate(curProcessTemplateDO);
+
+        }
+
 		//[Test]
   //      public void TemplateRegistrationCollections_ShouldMakeIdentical()
   //      {

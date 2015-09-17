@@ -101,9 +101,9 @@ namespace UtilitiesTesting.Fixtures
                 ActionListState = ActionListState.Unstarted,
                 Activities = new System.Collections.Generic.List<ActivityDO>() 
                 { 
-                    FixtureData.TestAction10(),
-                    FixtureData.TestAction7(),
-                    FixtureData.TestAction8()             
+                    FixtureData.TestAction22(),
+                   // FixtureData.TestAction7(),
+                   // FixtureData.TestAction8()             
                 }
             };
         }
@@ -122,6 +122,22 @@ namespace UtilitiesTesting.Fixtures
         }
 
         public static ActionListDO TestActionList7()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                CurrentActivity = FixtureData.TestAction6(),
+                ActionListState = ActionListState.Unstarted,
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                { 
+                    FixtureData.TestAction10(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
+            };
+        }
+
+        public static ActionListDO TestActionList8()
         {
             return new ActionListDO
             {
