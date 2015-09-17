@@ -27,7 +27,6 @@ module dockyard.controllers {
 
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import pdc = dockyard.directives.paneDefineCriteria;
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
     import pst = dockyard.directives.paneSelectTemplate;
@@ -162,12 +161,13 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelecting(eventArgs));
 
             //Define Criteria Pane events
-            this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_ProcessNodeTemplateRemoving],
-                (event: ng.IAngularEvent, eventArgs: pdc.ProcessNodeTemplateRemovingEventArgs) => this.PaneDefineCriteria_ProcessNodeTemplateRemoving(eventArgs));
-            this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Cancelling],
-                (event: ng.IAngularEvent) => this.PaneDefineCriteria_Cancelled());
-            this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
-                (event: ng.IAngularEvent, eventArgs: pdc.ProcessNodeTemplateUpdatedEventArgs) => this.PaneDefineCriteria_ProcessNodeTemplateUpdated(eventArgs));
+            // Commented out by yakov.gnusin to avoid breaking other V2 components.
+            // this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_ProcessNodeTemplateRemoving],
+            //     (event: ng.IAngularEvent, eventArgs: pdc.ProcessNodeTemplateRemovingEventArgs) => this.PaneDefineCriteria_ProcessNodeTemplateRemoving(eventArgs));
+            // this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Cancelling],
+            //     (event: ng.IAngularEvent) => this.PaneDefineCriteria_Cancelled());
+            // this._scope.$on(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_ProcessNodeTemplateUpdated],
+            //     (event: ng.IAngularEvent, eventArgs: pdc.ProcessNodeTemplateUpdatedEventArgs) => this.PaneDefineCriteria_ProcessNodeTemplateUpdated(eventArgs));
 
             //Process Configure Action Pane events
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
@@ -250,65 +250,6 @@ module dockyard.controllers {
             this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Render]);
         }
 
-        /*
-            Handles message 'PaneDefineCriteria_ProcessNodeTemplateUpdating'
-        */
-        private PaneDefineCriteria_ProcessNodeTemplateUpdated(eventArgs: pdc.ProcessNodeTemplateUpdatedEventArgs) {
-            console.log('ProcessBuilderController::PaneDefineCriteria_ProcessNodeTemplateUpdating', eventArgs);
-
-            if (eventArgs.processNodeTemplateTempId) {
-                this._scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ReplaceTempIdForProcessNodeTemplate],
-                    new pwd.ReplaceTempIdForProcessNodeTemplateEventArgs(eventArgs.processNodeTemplateTempId, eventArgs.processNodeTemplateId)
-                    );
-            }
-
-            this._scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateProcessNodeTemplateName],
-                new pwd.UpdateProcessNodeTemplateNameEventArgs(eventArgs.processNodeTemplateId, eventArgs.name)
-                );
-        }
-
-        /*
-            Handles message 'PaneDefineCriteria_CriteriaRemoving'
-        */
-        private PaneDefineCriteria_ProcessNodeTemplateRemoving(eventArgs: pdc.ProcessNodeTemplateRemovingEventArgs) {
-            console.log('ProcessBuilderController::PaneDefineCriteria_ProcessNodeTemplateRemoving', eventArgs);
-
-            // Tell Workflow Designer to remove criteria.
-            this._scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_RemoveCriteria],
-                new pwd.RemoveCriteriaEventArgs(eventArgs.processNodeTemplateId, eventArgs.isTempId)
-                );
-
-            // Hide Define Criteria pane.
-            this._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
-        }
-
-        /*
-            Handles message 'PaneDefineCriteria_Cancelled'
-        */
-        private PaneDefineCriteria_Cancelled() {
-            console.log('ProcessBuilderController::PaneDefineCriteria_Cancelled');
-
-            // If user worked with temporary (not saved criteria), remove criteria from Workflow Designer.
-            if (this._scope.current.processNodeTemplate)
-                this._scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_RemoveCriteria],
-                    new pwd.RemoveCriteriaEventArgs(
-                        this._scope.current.processNodeTemplate.id,
-                        this._scope.current.processNodeTemplate.isTempId)
-                    );        
-
-            // Hide DefineCriteria pane.
-            this._scope.$broadcast(
-                pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]
-                );
-
-            // Set currentCriteria to null, marking that no criteria is currently selected.
-            this._scope.current.processNodeTemplate = null;
-        }
-
         //private saveCriteria(): ng.IPromise<model.ProcessBuilderState> {
         //    var self = this;
 
@@ -362,24 +303,11 @@ module dockyard.controllers {
                 // Hide Select Template Pane
                 this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
 
-                // Hide Define Criteria Pane (another Criteria might have been opened there)
-                // Note: Hide triggers Save
-                this._scope.$broadcast(
-                    pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide],
-                    new pdc.HideEventArgs(this._scope.processTemplateId, eventArgs.id, eventArgs.isTempId)
-                    );
-
                 // Hide Select Action Pane
                 this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
                 
                 // Hide Configure Action Pane
                 this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
-                    
-                // Show Define Criteria Pane
-                this._scope.$broadcast(
-                    pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Render],
-                    new pdc.RenderEventArgs(this._scope.fields, this._scope.processTemplateId, eventArgs.id, eventArgs.isTempId)
-                    );
             });
         }
 
@@ -471,7 +399,6 @@ module dockyard.controllers {
                     eventArgs.actionListId);
 
                 this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
-                this._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
                 this._scope.$broadcast(
                     psa.MessageType[psa.MessageType.PaneSelectAction_Render],
                     eArgs);
@@ -492,9 +419,6 @@ module dockyard.controllers {
 
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
-
-                //Hide Define Criteria Pane
-                scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
 
                 //Hide Select Action Pane
                 scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
@@ -553,12 +477,8 @@ module dockyard.controllers {
             this.ActivityTemplateService.get(
                 { id: eventArgs.action.actionTemplateId },
                 function (activityTemplateDTO: interfaces.IActivityTemplateVM) {
-                    if (activityTemplateDTO.name == 'FilterUsingRunTimeData') {
-                        alert('FilterUsingRunTimeData!');
-                    }
-
-                    else if (activityTemplateDTO.name == 'MapFields') {
-                        alert('MapFields!');
+                    if (activityTemplateDTO.name == 'MapFields') {
+                        alert('TODO: Should display MapFieldsPane!');
                     }
 
                     else {

@@ -795,7 +795,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
@@ -3929,7 +3929,7 @@
     <Compile Include="ViewModels\EventWindowVM.cs" />
     <Content Include="Views\AngularTemplate\ProcessTemplateForm.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneDefineCriteria.cshtml" />
+    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />

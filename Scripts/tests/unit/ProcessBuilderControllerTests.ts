@@ -4,7 +4,6 @@
 module dockyard.tests.controller {
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import pdc = dockyard.directives.paneDefineCriteria;
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
     import pst = dockyard.directives.paneSelectTemplate;
