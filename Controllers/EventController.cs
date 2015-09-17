@@ -95,7 +95,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async Task<string> Events(string dockyardPluginName, string dockyardPluginVersion)
+        public async Task<IHttpActionResult> Events(string dockyardPluginName, string dockyardPluginVersion)
         {
             //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
             if (string.IsNullOrEmpty(dockyardPluginName) || string.IsNullOrEmpty(dockyardPluginVersion))
@@ -116,7 +116,7 @@ namespace Web.Controllers
             curPluginUrl += "/events";
 
             //make POST with request content
-            string curResponseContent = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), Request.Content).Result.Content.ReadAsStringAsync(); 
+            await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), Request.Content);
 
             //create a plugin event for event notification received
             _event.HandlePluginEvent(new LoggingData
@@ -129,7 +129,7 @@ namespace Web.Controllers
                 Activity = string.Format("Processed event for {0}_v{1} on {2}.", dockyardPluginName, dockyardPluginVersion, curPluginUrl)
             });
 
-            return curResponseContent;
+            return Ok("Event Processed Successfully");
         }
     }
 }

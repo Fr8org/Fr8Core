@@ -165,6 +165,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DbProviderExtensions.cs" />
+    <Compile Include="Services\Event.cs" />
+    <Compile Include="Services\IEvent.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="Services\DbService.cs" />
     <Compile Include="Infrastructure\FieldValue.cs" />

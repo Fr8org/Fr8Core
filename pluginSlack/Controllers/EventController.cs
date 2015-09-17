@@ -6,19 +6,11 @@ namespace pluginSlack.Controllers
 {
     public class EventController : ApiController
     {
-        private const string curPlugin = "pluginSlack";
-        private IEvent _event;
-
-        public EventController()
-        {
-            _event = ObjectFactory.GetInstance<IEvent>();
-        }
-
         [HttpPost]
         [Route("events")]
         public async void ProcessIncomingNotification()
         {
-            _event.Process(curPlugin, await Request.Content.ReadAsStringAsync());
+            //implement the processing logic for slack plugin external events
         }
     }
 }

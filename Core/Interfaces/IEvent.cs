@@ -16,10 +16,5 @@ namespace Core.Interfaces
         /// Handles Plugin Event 
         /// </summary>
         void HandlePluginEvent(LoggingData eventData);
-
-        /// <summary>
-        /// Processes external event payload from the plugin
-        /// </summary>
-        void Process(string curPluginName, string curExternalEventPayload);
     }
 }
