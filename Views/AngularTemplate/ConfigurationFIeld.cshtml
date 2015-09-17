@@ -18,7 +18,7 @@
     *@
     <div ng-if='field.type == "textField"'>
         <label class='control-label'>{{field.fieldLabel}}</label>
-        <input type='text' ng-model='field.value' ng-required='field.required' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
+        <input type='text' ng-model='field.value' ng-blur="OnExitFocus(field)" ng-required='field.required' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
     </div>
 
     @*

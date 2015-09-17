@@ -80,6 +80,8 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
+                //$scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) => this.onExitFocus(eventArgs));
+                $scope.$on("OnExitFocus", <any>angular.bind(this, this.onExitFocus));
 
                 $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
             };
@@ -87,6 +89,36 @@ module dockyard.directives.paneConfigureAction {
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
             model.ControlsList
+        }
+
+        private onExitFocus(event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) {
+            console.log("on exit focus received and handled in Pane Configure Action...");
+            console.log("event args: " + eventArgs.field);
+            debugger;
+            if (eventArgs.field != null) {
+                console.log("eventArgs.Field is NOT null");
+                console.log("eventArgs.field.events -> " + eventArgs.field.events);
+                angular.forEach(eventArgs.field.events, function (value, key) {
+                    //this.push(key + ': ' + value);
+                //TODO: to be fixed
+                    //console.log("name : " + value.Name + " -> handler : " + value.Handler);
+                    //debugger;
+                    //if (value.Name == "onExitFocus") {
+                    //    //console.log("events.onExitFocus is NOT null");
+                    //    //console.log("found onExitFocus -> " + events.onExitFocus);
+                    //    if (value.Handler == "requestConfig") {
+                    //        console.log("onExitFocus == requestConfig");
+                    //        alert(value.Name + " -> " + value.Handler);
+                    //        // Render Pane Configure Action 
+                    //        var pcaEventArgs = new RenderEventArgs(this._currentAction);
+                    //        this.onRender(event, pcaEventArgs);
+                    //        alert("called onRender on PCA");
+
+                    //        //$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                    //    }
+                    //}
+                });
+            }
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

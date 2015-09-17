@@ -10,8 +10,9 @@ module dockyard.directives.paneConfigureAction {
         dropdownlistField
     }
 
-    interface IConfigurationFieldScope extends ng.IScope {
+    export interface IConfigurationFieldScope extends ng.IScope {
         field: model.ConfigurationField;
+        OnExitFocus: (radio: model.ConfigurationField) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -25,6 +26,8 @@ module dockyard.directives.paneConfigureAction {
         public templateUrl = '/AngularTemplate/ConfigurationField';
         public restrict = 'E';
 
+        private _$scope: IConfigurationFieldScope;
+
         constructor() {
             ConfigurationField.prototype.link = (
                 $scope: IConfigurationFieldScope,
@@ -36,8 +39,9 @@ module dockyard.directives.paneConfigureAction {
                 $scope: IConfigurationFieldScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
-                debugger;
-                $scope.$on('onblur', <any>angular.bind(this, this.onBlur));
+
+                this._$scope = $scope;
+                $scope.OnExitFocus = <(radio: model.ConfigurationField) => void> angular.bind(this, this.OnExitFocus);
                 
             };
         }
@@ -52,11 +56,9 @@ module dockyard.directives.paneConfigureAction {
             return directive;
         }
 
-        public onBlur(scope: IConfigurationFieldScope) {
-            debugger;
-            scope.$emit('onExitFocus', scope.field);
-                //new MapFieldsClickedEventArgs(angular.extend({}, scope.field)) //clone action to prevent msg recipient from modifying orig. object
-                //);
+        private OnExitFocus(field: model.ConfigurationField, scope: IConfigurationFieldScope) {
+            console.log("on exit focus called");
+            this._$scope.$emit("OnExitFocus", this._$scope);
         }
     }
 

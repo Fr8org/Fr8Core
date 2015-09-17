@@ -192,6 +192,8 @@ module dockyard.controllers {
             //Handles Save Request From PaneSelectAction
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
+
+            this._scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: pca.IConfigurationFieldScope) => this.OnExitFocus(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -622,6 +624,22 @@ module dockyard.controllers {
 
             //Hide Configure Action Pane
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+        }
+
+        private OnExitFocus(eventArgs: pca.IConfigurationFieldScope) {
+            console.log("on exit focus received and handled in ProcessBuilder; but can't do much as we don't have a handle of the action no which this was initiated.");
+            console.log("event args: " + eventArgs.field);
+            //if (eventArgs.field != null) {
+            //    var events = JSON.parse(eventArgs.field.events);
+            //    if (events.onExitFocus != null) {
+            //        console.log(events.onExitFocus);
+            //        //if (events.onExitFocus == "requestConfig") {
+            //        //    // Render Pane Configure Action 
+            //        //    var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
+            //        //    this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            //        //}
+            //    }
+            //}
         }
     }
 

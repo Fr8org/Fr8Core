@@ -18,7 +18,7 @@ module dockyard.tests.utils.fixtures {
                     "required": true,
                     "value": "",
                     "fieldLabel": "SQL Connection String",
-                    "events": ""
+                    "events": []
                 },
                 {
                     "type": "textField",
@@ -26,31 +26,35 @@ module dockyard.tests.utils.fixtures {
                     "required": true,
                     "value": "",
                     "fieldLabel": "Custom SQL Query",
-                    "events": ""
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions",
                     "selected": false,
-                    "fieldLabel": "Log All Transactions?"
+                    "fieldLabel": "Log All Transactions?",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions1",
                     "selected": false,
-                    "fieldLabel": "Log Some Transactions?"
+                    "fieldLabel": "Log Some Transactions?",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions2",
                     "selected": false,
-                    "fieldLabel": "Log No Transactions?"
+                    "fieldLabel": "Log No Transactions?",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions3",
                     "selected": false,
-                    "fieldLabel": "Log Failed Transactions?"
+                    "fieldLabel": "Log Failed Transactions?",
+                    "events": []
                 }
             ]
         };
