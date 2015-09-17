@@ -98,16 +98,18 @@ module dockyard.directives.paneConfigureAction {
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
             var fieldList = scope.currentAction.configurationControls.fields;
-
+            debugger;
             // Find the configuration field object for which the event has fired
             fieldList = <Array<model.ConfigurationField>> this.$filter('filter')(fieldList, { name: fieldName }, true);
-            if (fieldList.length == 0 || fieldList[0].events.length == 0) return;
+            if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
             var field = fieldList[0];
 
             // Find the onExitFocus event object
             var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { Name: 'onExitFocus' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
+
+
 
             
             //this.push(key + ': ' + value);
