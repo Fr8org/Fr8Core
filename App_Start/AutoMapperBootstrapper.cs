@@ -17,9 +17,10 @@ namespace Web.App_Start
         public static void ConfigureAutoMapper()
         {
 
-            Mapper.CreateMap<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>()
-                .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
-                .ForMember(mu => mu.HasToken, opts => opts.ResolveUsing(tuple => tuple.Item2.Any()));
+            Mapper.CreateMap<DockyardAccountDO, ManageUserVM>()
+                .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(account => !string.IsNullOrEmpty(account.PasswordHash)))
+                .ForMember(mu => mu.HasDocusignToken, opts => opts.Ignore())
+                .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore());
 
             Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))

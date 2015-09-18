@@ -427,7 +427,7 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
+    <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
     <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />

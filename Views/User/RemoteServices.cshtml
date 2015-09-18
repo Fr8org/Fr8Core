@@ -21,7 +21,7 @@
 
 <style>
     .granttext a {
-        color: #fff;
+
     }
 
 </style>
@@ -33,13 +33,29 @@
             </td>
             <td>
                 <b class="custom-btn granttext" style="cursor: pointer">
-                    @if (!Model.HasToken)
+                    @if (!Model.HasDocusignToken)
                     {
-                        @Html.ActionLink("Grant DocuSign Access", "GrantRemoteCalendarAccess", new { providerName = "Docusign" })
+                        @Html.ActionLink("Grant DocuSign Access", "GrantAccess", new { providerName = "Docusign" })
                     }
                     else
                     {
-                        @Html.ActionLink("Revoke DocuSign Access", "RevokeRemoteCalendarAccess", new { providerName = "Docusign" })
+                        @Html.ActionLink("Revoke DocuSign Access", "RevokeAccess", new { providerName = "Docusign" })
+                    }
+                </b>
+            </td>
+        </tr>
+
+        <tr>
+            <td height="80" width="186"></td>
+            <td>
+                <b class="custom-btn granttext" style="cursor: pointer">
+                    @if (!Model.HasGoogleToken)
+                    {
+                        @Html.ActionLink("Grant Google Spreadsheets Access", "GrantAccess", new { providerName = "Google" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Revoke Google Spreadsheets Access", "RevokeAccess", new { providerName = "Google" })
                     }
                 </b>
             </td>

@@ -39,7 +39,7 @@ namespace Web.Controllers.External.DocuSign
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                         return Redirect(ViewBag.ReturnUrl);
                     else
-                        return RedirectToAction("ShareCalendar", "User");
+                        return RedirectToAction("RemoteServices", "User");
                 }
                 catch (OAuthException ex)
                 {

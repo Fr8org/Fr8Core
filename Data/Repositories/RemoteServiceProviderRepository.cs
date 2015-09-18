@@ -20,7 +20,7 @@ namespace Data.Repositories
             return GetQuery().FirstOrDefault(rcp => rcp.Name == name);
         }
 
-        public void CreateRemoteCalendarProviders(IConfigRepository configRepository)
+        public void CreateRemoteServiceProviders(IConfigRepository configRepository)
         {
             var clientID = configRepository.Get("GoogleClientId");
             var clientSecret = configRepository.Get("GoogleClientSecret");
