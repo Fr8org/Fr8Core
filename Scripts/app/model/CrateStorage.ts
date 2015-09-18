@@ -1,6 +1,7 @@
 ﻿module dockyard.model {
     export class CrateStorage {
-        crates: Array<Crate>
+        crates: Array<Crate>;
+        crateDTO: Array<Crate>; // purely for easier deserialization on backend
     }
 
     export class Crate {

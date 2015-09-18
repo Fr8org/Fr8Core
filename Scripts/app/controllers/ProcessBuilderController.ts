@@ -198,6 +198,8 @@ module dockyard.controllers {
             //Handles Save Request From PaneSelectAction
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
+
+            this._scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: pca.IConfigurationFieldScope) => this.OnExitFocus(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -356,7 +358,6 @@ module dockyard.controllers {
             // TODO: Do not react on clicking on the currently visible Criteria
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-                debugger;
 
                 // Notity interested parties of action update event and update $scope
                 this.handleActionUpdate(result.action);
@@ -391,7 +392,7 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
-            debugger;
+
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var processNodeTemplateId: number,
@@ -629,7 +630,23 @@ module dockyard.controllers {
             //Hide Configure Action Pane
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
         }
-    }
+
+        private OnExitFocus(eventArgs: pca.IConfigurationFieldScope) {
+            console.log("on exit focus received and handled in ProcessBuilder; but can't do much as we don't have a handle of the action no which this was initiated.");
+            console.log("event args: " + eventArgs.field);
+            //if (eventArgs.field != null) {
+            //    var events = JSON.parse(eventArgs.field.events);
+            //    if (events.onExitFocus != null) {
+            //        console.log(events.onExitFocus);
+            //        //if (events.onExitFocus == "requestConfig") {
+            //        //    // Render Pane Configure Action 
+            //        //    var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
+            //        //    this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            //        //}
+            //    }
+            //}
+        }
+    } 
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
@@ -647,7 +664,7 @@ module dockyard.controllers {
                     tempId: 0,
                     actionListId: 0,
                     activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
-                };
+                };  
 
             $httpBackend
                 .whenGET(urlPrefix + "/Action/1")

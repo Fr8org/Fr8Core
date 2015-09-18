@@ -7,6 +7,12 @@
         type: string;
         fieldLabel: string;
         name: string;
+        events: Array<FieldEvent>;
+    }
+
+    export class FieldEvent {
+        name: string;
+        handler: string;
     }
 
     export class CheckboxField extends ConfigurationField {
@@ -15,7 +21,7 @@
 
     export class TextField extends ConfigurationField {
         value: string;
-        required: boolean;
+        required: boolean;        
     }
 
     export class FileField extends ConfigurationField {
