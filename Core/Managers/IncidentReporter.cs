@@ -32,7 +32,9 @@ namespace Core.Managers
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             EventManager.PluginIncidentReported += LogPluginIncident;
+            EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+            EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
         }
 
         /// <summary>
@@ -77,6 +79,48 @@ namespace Core.Managers
                 PrimaryCategory = incidentItem.PrimaryCategory,
                 SecondaryCategory = incidentItem.SecondaryCategory,
                 Activity = incidentItem.Activity
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(currentIncident);
+                uow.SaveChanges();
+
+                GenerateLogData(currentIncident);
+            }
+        }
+
+        private void LogUnparseableNotificationIncident(string curNotificationUrl, string curNotificationPayload)
+        {
+            var currentIncident = new IncidentDO
+            {
+                ObjectId = curNotificationPayload,
+                CustomerId = "",
+                Data = curNotificationUrl,
+                PrimaryCategory = "External Event",
+                SecondaryCategory = "Unparseble Notification",
+                Activity = "Received"
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(currentIncident);
+                uow.SaveChanges();
+
+                GenerateLogData(currentIncident);
+            }
+        }
+
+        private void LogExternalEventReceivedIncident(string curEventPayload)
+        {
+            var currentIncident = new IncidentDO
+            {
+                ObjectId = "EventController",
+                CustomerId = "",
+                Data = curEventPayload,
+                PrimaryCategory = "Event",
+                SecondaryCategory = "External",
+                Activity = "Received"
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

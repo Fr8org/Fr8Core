@@ -7,6 +7,7 @@ using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Services;
 using Data.Crates.Helpers;
+using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
 
@@ -81,7 +82,8 @@ namespace Web.Controllers
         }
 
         /// <summary>
-        /// This HTTP Get allows acitons 
+        /// At activation time, actions should know the end point details to register with external services.
+        /// This method returns the end point URL that handles the Event Notifications at Dockyard.
         /// </summary>
         [HttpGet]
         [Route("events/endpoint")]
@@ -95,41 +97,24 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async Task<IHttpActionResult> Events(string dockyardPluginName, string dockyardPluginVersion)
+        public async Task<IHttpActionResult> ProcessIncomingEvents(string pluginName, string pluginVersion)
         {
             //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
-            if (string.IsNullOrEmpty(dockyardPluginName) || string.IsNullOrEmpty(dockyardPluginVersion))
+            if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
             {
-                _event.HandlePluginIncident(new LoggingData
-                {
-                    ObjectId = "EventController",
-                    CustomerId = "not_applicable",
-                    Data = "process_event_notificaiton_from_external_services",
-                    PrimaryCategory = "Operations",
-                    SecondaryCategory = "External Event Notifications",
-                    Activity = "processing external service event notifications"
-                });
+                EventManager.ReportUnparseableNotification(Request.RequestUri.AbsoluteUri, Request.Content.ReadAsStringAsync().Result);
             }
 
             //get required plugin URL by plugin name and its version
-            string curPluginUrl = @"http://" + _plugin.GetPluginUrl(dockyardPluginName, dockyardPluginVersion);
-            curPluginUrl += "/events";
+            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
+
+            //create a plugin event for event notification received
+            EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
 
             //make POST with request content
             await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), Request.Content);
 
-            //create a plugin event for event notification received
-            _event.HandlePluginEvent(new LoggingData
-            {
-                ObjectId = "EventController",
-                CustomerId = "not_applicable",
-                Data = "process_notificaiton_from_external_services",
-                PrimaryCategory = "EventNotificationReceived",
-                SecondaryCategory = "Event Notification Received",
-                Activity = string.Format("Processed event for {0}_v{1} on {2}.", dockyardPluginName, dockyardPluginVersion, curPluginUrl)
-            });
-
-            return Ok("Event Processed Successfully");
+            return Ok();
         }
     }
 }

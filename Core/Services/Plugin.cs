@@ -39,15 +39,33 @@ namespace Core.Services
             //var actionTemplateList = restClient.GetAsync<Task<IList<ActivityTemplateDO>>>(new Uri(uri, UriKind.Absolute)).Result;
         }
 
-        public string GetPluginUrl(string curPluginName, string curPluginVersion)
+        /// <summary>
+        /// Parses the required plugin service URL for the given action by Plugin Name and its version
+        /// </summary>
+        /// <param name="curPluginName">Name of the required plugin</param>
+        /// <param name="curPluginVersion">Version of the required plugin</param>
+        /// <param name="curActionName">Required action</param>
+        /// <returns>Parsed URl to the plugin for its action</returns>
+        public string ParsePluginUrlFor(string curPluginName, string curPluginVersion, string curActionName)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //get the plugin by name and version
                 IPluginDO curPlugin =
                     uow.PluginRepository.FindOne(
                         plugin => plugin.Name.Equals(curPluginName) && plugin.Version.Equals(curPluginVersion));
 
-                return (curPlugin != null) ? curPlugin.Endpoint : string.Empty;
+                
+                string curPluginUrl = string.Empty;
+
+                //if there is a valid plugin, prepare the URL with its endpoint and add the given action name
+                if (curPlugin != null)
+                {
+                    curPluginUrl += @"http://" + curPlugin.Endpoint + "/" + curActionName;
+                }
+
+                //return the pugin URL
+                return curPluginUrl;
             }
         }
     }
