@@ -19,6 +19,8 @@ namespace Core.Services
     {
         private readonly IProcess _process;
         private readonly DockyardAccount _dockyardAccount;
+        private readonly IAction _action;
+        private readonly ICrate _crate;
 
         public object itemsToRemove { get; private set; }
 
@@ -26,6 +28,8 @@ namespace Core.Services
         {
             _process = ObjectFactory.GetInstance<IProcess>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
+            _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
@@ -179,18 +183,13 @@ namespace Core.Services
             }
         }
 
-        public IList<ProcessTemplateDO> GetStandardEventSubscribers(string userId, CrateDTO curEventReport)
+        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
         {
             List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
-
-            if(String.IsNullOrEmpty(curEventReport.Contents))
-                throw new ArgumentNullException("Standard Event Report content is empty.");
-
-            EventReportMS EventReportMS = JsonConvert.DeserializeObject<EventReportMS>(curEventReport.Contents);
 
             //1. Query all ProcessTemplateDO that are Active
             //2. are associated with the determined DockyardAccount
@@ -208,24 +207,23 @@ namespace Core.Services
                 if (actionDO != null && actionDO.CrateStorage != "")
                 {
                     //Loop each CrateDTO in CrateStorage
-                    List<string> actionContents = actionDO.CrateStorageDTO().CrateDTO.Select(s => s.Contents).ToList();
-                    foreach (var content in actionContents)
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
+                    foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
-                        try
-                        {
-                            EventReportMS actionManifestSchema = JsonConvert.DeserializeObject<EventReportMS>(content);
-                            if (actionManifestSchema != null && actionManifestSchema.EventNames.Trim().
-                                Equals(EventReportMS.EventNames.Trim(), StringComparison.OrdinalIgnoreCase))//check event names if its subscribing
-                                processTemplateSubscribers.Add(processTemplateDO);
-                        }catch{}
+                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
+
+                        if (subscriptionsList != null && subscriptionsList.Subscriptions
+                            .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
+                            .Any())//check event names if its subscribing
+                            processTemplateSubscribers.Add(processTemplateDO);
                     }
                 }
             }
             return processTemplateSubscribers;
         }
 
-        private ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO)
+        public ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO)
         {
             ActivityDO activityDO = null;
             List<ActionListDO> actionLists = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.ActionLists).ToList();
