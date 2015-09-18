@@ -126,10 +126,15 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
 
         .state('accounts', {
             url: '/accounts',
-            templateUrl: '/AngularTemplate/ManageAccounts',
+            templateUrl: '/AngularTemplate/AccountList',
             data: { pageTitle: 'Manage Dockyard Accounts', pageSubTitle: '' }
-        });
+        })
 
+        .state('accountDetails', {
+            url: '/accounts/{id}',
+            templateUrl: '/AngularTemplate/AccountDetails',
+            data: { pageTitle: 'Account Details', pageSubTitle: '' }
+        });
 }]);
 
 /* Init global settings and run the app */

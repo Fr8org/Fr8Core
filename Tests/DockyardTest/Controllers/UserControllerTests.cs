@@ -18,6 +18,7 @@ using System.Web.Http.Results;
 
 namespace DockyardTest.Controllers
 {
+    [TestFixture]
     public class UserControllerTests : ApiControllerTestBase
     {
         private DockyardAccountDO _testAccount1;
@@ -27,6 +28,7 @@ namespace DockyardTest.Controllers
         public override void SetUp()
         {
             base.SetUp();
+            InitializeRoles();
             InitializeUsers();
         }
 
@@ -43,7 +45,21 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(result.Content.Count, 3);
             Assert.AreEqual(result.Content[0].Id, _testAccount1.Id);
             Assert.AreEqual(result.Content[1].Id, _testAccount2.Id);
+            Assert.AreEqual(result.Content[1].Role, Roles.Booker);
             Assert.AreEqual(result.Content[2].Id, _testAccount3.Id);
+        }
+
+        [Test]
+        public void GetById()
+        {
+            var controller = CreateController<UserController>();
+
+            var result = controller.Get(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Content);
+            Assert.AreEqual(result.Content.EmailAddress, _testAccount2.EmailAddress.Address);
+            Assert.AreEqual(result.Content.Role, Roles.Booker);
         }
 
         private void InitializeUsers()
@@ -55,11 +71,32 @@ namespace DockyardTest.Controllers
 
                 _testAccount2 = FixtureData.TestUser2();
                 uow.UserRepository.Add(_testAccount2);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, _testAccount2.Id);
 
                 _testAccount3 = FixtureData.TestUser3();
                 uow.UserRepository.Add(_testAccount3);
 
                 uow.SaveChanges();
+            }
+        }
+
+        private void InitializeRoles()
+        {
+            CreateRole(Roles.Admin);
+            CreateRole(Roles.Booker);
+            CreateRole(Roles.Customer);
+        }
+
+        private static void CreateRole(string roleName)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (!uow.AspNetRolesRepository.GetQuery().Any(r => r.Name == roleName))
+                {
+                    //Create a role
+                    uow.AspNetRolesRepository.Add(new AspNetRolesDO { Name = roleName });
+                    uow.SaveChanges();
+                }
             }
         }
     }

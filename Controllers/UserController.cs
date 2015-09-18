@@ -56,7 +56,7 @@ namespace Web.Controllers
         {
             return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
         }
-
+        
         public static string GetCallbackUrl(string providerName, string serverUrl)
         {
             if (String.IsNullOrEmpty(serverUrl))
@@ -386,6 +386,18 @@ namespace Web.Controllers
                 }).ToList();
 
                 return Ok(userDTOList);
+            }
+        }
+
+        [DockyardAuthorize(Roles = Roles.Admin)]
+        public IHttpActionResult Get(string id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.Id == id);
+                var userDTO = _mappingEngine.Map<DockyardAccountDO, UserDTO>(user);
+                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                return Ok(userDTO);
             }
         }
     }
