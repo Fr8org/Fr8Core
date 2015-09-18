@@ -55,7 +55,7 @@ namespace pluginAzureSqlServer.Actions {
             //look for a text field name connection string with a value
             var controlsCrates = _action.GetCratesByManifestType("Standard Configuration Controls",
                 curActionDTO.CrateStorage);
-            var connectionStringObjects = _crate.GetElementByKey(controlsCrates, key: "Connection String").ToArray();
+            var connectionStringObjects = _crate.GetElementByKey(controlsCrates, key: "Connection String", keyFieldName: "key").ToArray();
 
 
             //if there are more than 2 return connection strings, something is wrong
@@ -63,7 +63,7 @@ namespace pluginAzureSqlServer.Actions {
             var objCount = connectionStringObjects.Length;
             if (objCount > 1)
                 throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActionDTO");
-            if (objCount == 0 || string.IsNullOrEmpty(connectionStringObjects.First().Value<string>()))
+            if (objCount == 0 || string.IsNullOrEmpty((string)connectionStringObjects.First()["value"]))
                 return ConfigurationRequestType.Initial;
             else
             {

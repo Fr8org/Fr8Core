@@ -12,6 +12,6 @@ namespace Core.Interfaces
     {
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
-        IEnumerable<JObject> GetElementByKey(IEnumerable<CrateDTO> searchCrates, string key);
+        IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName = "key");
     }
 }

@@ -38,17 +38,19 @@ namespace Core.Services
             return _serializer.Deserialize<T>(crate.Contents);
         }
 
-        public IEnumerable<JObject> GetElementByKey(IEnumerable<CrateDTO> searchCrates, string key)
+        public IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName = "key")
         {
 
             List<JObject> resultsObjects = new List<JObject>();
-            foreach (var curCrate in searchCrates)
+            foreach (var curCrate in searchCrates.Where(c => !string.IsNullOrEmpty(c.Contents)))
             {
-                JObject curCrateJSON = JsonConvert.DeserializeObject<JObject>( curCrate.Contents);
-                JContainer contents = (JContainer)curCrateJSON["contents"];
+                JObject curCrateJSON = JsonConvert.DeserializeObject<JObject>(curCrate.Contents);
+                JContainer contents = (JContainer)curCrateJSON.First;
+                if (contents == null)
+                    continue;
                 var results = contents.Descendants()
                     .OfType<JObject>()
-                    .Where(x => x[key] != null);
+                    .Where(x => x[keyFieldName].Value<TKey>().Equals(key));
                 resultsObjects.AddRange(results); ;
             }
             return resultsObjects;
