@@ -146,6 +146,9 @@ module dockyard.directives.paneSelectAction {
                             $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                         }
                     }
+                    else {
+                        $scope.componentActivities = null;                     
+                    }
                 }
 
                 $scope.RemoveAction = () => {
