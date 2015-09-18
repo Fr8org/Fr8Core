@@ -37,8 +37,6 @@ namespace Web
 
             await RegisterPluginActions();
 
-            LoadLocalActionLists();
-
             app.Use(async (context, next) =>
             {
                 if (string.Equals(context.Request.Method, HttpMethod.Post.Method, StringComparison.OrdinalIgnoreCase) &&
@@ -153,7 +151,7 @@ namespace Web
                     //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
                     //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
-
+                     
                     foreach (var curItem in activityTemplateList)
                     {
                         new ActivityTemplate().Register(curItem);
@@ -169,60 +167,6 @@ namespace Web
                 EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
                 alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
                 //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// Loads Local Action Lists
-        /// </summary>
-        public void LoadLocalActionLists()
-        {
-            try
-            {
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ActivityTemplateRepository activityTemplateRepositary = uow.ActivityTemplateRepository;
-                    List<ActivityTemplateDO> activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
-
-                    if (!CheckForActivityTemplate("Extract From DocuSign Envelopes Into Azure Sql Server"))
-                    {
-                        ComponentActivitiesDTO componentActivitiesDTO = new ComponentActivitiesDTO();
-                        componentActivitiesDTO.ComponentActivities = new List<ActivityTemplateDO>();
-
-                     
-                        activityTemplateRepositaryItems = activityTemplateRepositary.GetAll().ToList();
-
-                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Wait_For_DocuSign_Event"));
-
-
-                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                           (item => item.Name == "FilterUsingRunTimeData"));
-
-
-                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Extract_From_DocuSign_Envelope"));
-
-
-                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                          (item => item.Name == "MapFields"));
-
-                        componentActivitiesDTO.ComponentActivities.Add(activityTemplateRepositaryItems.Find
-                            (item => item.Name == "Write_To_Sql_Server"));
-
-                        ActivityTemplateDO activityTemplate = new ActivityTemplateDO("Extract From DocuSign Envelopes Into Azure Sql Server", "1"
-                             , "localhost:46281", "localhost:46281");
-                        activityTemplate.ComponentActivities = (new JsonPackager().Pack(componentActivitiesDTO.ComponentActivities));
-                        activityTemplate.Plugin = uow.PluginRepository.FindOne(x => x.Name == "pluginAzureSqlServer");
-
-                        activityTemplateRepositary.Add(activityTemplate);
-                        uow.SaveChanges();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error in LoadLocalActionLists Method ", e);
             }
         }
 

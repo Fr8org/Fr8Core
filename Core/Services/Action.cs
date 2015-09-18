@@ -92,9 +92,7 @@ namespace Core.Services
 
         public CrateStorageDTO Configure(ActionDO curActionDO)
         {
-
             ActivityTemplateDO curActivityTemplate;
-
 
             if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
             {
@@ -102,8 +100,6 @@ namespace Core.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-
-
 
                     if (curActivityTemplate != null)
                     {
@@ -124,7 +120,7 @@ namespace Core.Services
                         try
                         {
                             pluginConfigurationCrateListJSON =
-                           restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                                restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
                         }
                         catch (Exception)
                         {

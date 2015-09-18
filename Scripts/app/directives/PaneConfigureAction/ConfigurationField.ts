@@ -12,10 +12,8 @@ module dockyard.directives.paneConfigureAction {
         routing,
     }
 
-    export class ExitFocusEventArgs
-    {
-        constructor(fieldName: string)
-        {
+    export class ChangeEventArgs {
+        constructor(fieldName: string) {
             this.fieldName = fieldName;
         }
 
@@ -24,7 +22,7 @@ module dockyard.directives.paneConfigureAction {
 
     export interface IConfigurationFieldScope extends ng.IScope {
         field: model.ConfigurationField;
-        OnExitFocus: (radio: model.ConfigurationField) => void;
+        onFieldChange: (radio: model.ConfigurationField) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -54,8 +52,8 @@ module dockyard.directives.paneConfigureAction {
                 $attrs: ng.IAttributes) => {
 
                 this._$scope = $scope;
-                $scope.OnExitFocus = <(radio: model.ConfigurationField) => void> angular.bind(this, this.OnExitFocus);
-                
+                $scope.onFieldChange = <(radio: model.ConfigurationField) => void> angular.bind(this, this.onFieldChange);
+
             };
         }
 
@@ -69,11 +67,20 @@ module dockyard.directives.paneConfigureAction {
             return directive;
         }
 
-        private OnExitFocus(event: JQueryMouseEventObject) {
-            //Get name of field that received the event
-            var fieldName = event.target.attributes.getNamedItem('data-field-name').value,
-                eventArgs = new ExitFocusEventArgs(fieldName)
-            this._$scope.$emit("OnExitFocus", eventArgs);
+        private onFieldChange(event: any) {
+            var fieldName: string;
+
+            if (!!event.target === true) {
+                // If called by DOM event (for standard fields), get field name
+                // Get name of field that received the event
+                fieldName = event.target.attributes.getNamedItem('data-field-name').value;
+            }
+            else {
+                // If called by custom field, it is assumed that field name is suppied as the argument
+                fieldName = event;
+            }
+
+            this._$scope.$emit("onFieldChange", new ChangeEventArgs(fieldName));
         }
     }
 

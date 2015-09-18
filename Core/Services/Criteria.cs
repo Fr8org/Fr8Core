@@ -86,7 +86,10 @@ namespace Core.Services
 					case "Equals":
 						criterionExpression = Expression.Equal(left, right);
 						break;
-					case "GreaterThan":
+                    case "NotEqual":
+                        criterionExpression = Expression.NotEqual(left, right);
+                        break;
+                    case "GreaterThan":
 						criterionExpression = Expression.GreaterThan(left, right);
 						break;
 					case "GreaterThanOrEquals":
