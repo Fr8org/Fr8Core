@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
 using System;
+using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -14,12 +15,18 @@ namespace UtilitiesTesting.Fixtures
     {
         public static CrateDTO RawStandardEventReportFormat()
         {
+            var serializer = new Utilities.Serializers.Json.JsonSerializer();
+            EventReportMS eventReportMS = new EventReportMS()
+            {
+                EventNames = "DocuSign Envelope Sent"
+            };
+            var eventReportJSON = serializer.Serialize(eventReportMS);
             return new CrateDTO()
             {
                 Id = Guid.NewGuid().ToString(),
                 Label = "Standard Event Report",
                 ManifestType = "Standard Event Report",
-                Contents = @"{ EventNames : ""DocuSign Envelope Sent"", ProcessDOId: """", EventPayload: [ ]}"
+                Contents = eventReportJSON
             };
         }
 

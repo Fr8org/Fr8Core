@@ -207,14 +207,15 @@ namespace Core.Services
                 if (actionDO != null && actionDO.CrateStorage != "")
                 {
                     //Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptions = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
-                    foreach (var crateDTO in eventSubscriptions)
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
+                    foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
-                        EventReportMS actionManifestSchema = _crate.GetContents<EventReportMS>(crateDTO);
+                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
 
-                        if (actionManifestSchema != null && actionManifestSchema.EventNames.Trim().
-                            Equals(curEventReport.EventNames.Trim(), StringComparison.OrdinalIgnoreCase))//check event names if its subscribing
+                        if (subscriptionsList != null && subscriptionsList.Subscriptions
+                            .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
+                            .Any())//check event names if its subscribing
                             processTemplateSubscribers.Add(processTemplateDO);
                     }
                 }

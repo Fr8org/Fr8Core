@@ -141,11 +141,12 @@ namespace UtilitiesTesting.Fixtures
                 ICrate crate = ObjectFactory.GetInstance<ICrate>();
 
                 var serializer = new JsonSerializer();
-                EventReportMS eventReportMS = new EventReportMS() 
-                {
-                   EventNames= "DocuSign Envelope Sent"
-                };
-                var eventReportJSON = serializer.Serialize(eventReportMS);
+                EventSubscriptionMS eventSubscriptionMS = new EventSubscriptionMS();
+                eventSubscriptionMS.Subscriptions = new List<string>();
+                eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
+                eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
+
+                var eventReportJSON = serializer.Serialize(eventSubscriptionMS);
 
                 CrateDTO crateDTO = crate.Create("Standard Event Subscriptions", eventReportJSON, "Standard Event Subscriptions");
                 actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });

@@ -222,7 +222,8 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ManifestSchemaDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventReportMS.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\EventSubscriptionMS.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
