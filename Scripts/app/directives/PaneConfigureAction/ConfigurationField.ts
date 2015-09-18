@@ -32,6 +32,7 @@ module dockyard.directives.paneConfigureAction {
         public link: (scope: IConfigurationFieldScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: ($scope: IConfigurationFieldScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
+            currentAction: '=',
             field: '='
         };
         public templateUrl = '/AngularTemplate/ConfigurationField';

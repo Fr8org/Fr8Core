@@ -38,8 +38,6 @@
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 /// <reference path="directives/paneconfigureaction/configurationfield.ts" />
 
-/// <reference path="directives/panedefinecriteria/panedefinecriteria.ts" />
-
 /// <reference path="directives/paneselectaction/paneselectaction.ts" />
 
 

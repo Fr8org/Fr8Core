@@ -18,6 +18,13 @@ namespace pluginDockyardCore.Actions
 {
     public class FilterUsingRunTimeData_v1 : BasePluginAction
     {
+        private readonly ICrate _crateService;
+
+        public FilterUsingRunTimeData_v1()
+        {
+            _crateService = ObjectFactory.GetInstance<ICrate>();
+        }
+
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
@@ -158,11 +165,50 @@ namespace pluginDockyardCore.Actions
         }
 
         /// <summary>
+        /// Create configuration controls crate.
+        /// </summary>
+        private CrateDTO CreateStandartConfigurationControls(CrateDTO crateKeys)
+        {
+            var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
+            {
+                FieldLabel = "Criteria for Executing Actions",
+                Type = "filterPane",
+                Name = "Selected_Filter",
+                Required = true
+            };
+
+            // TODO: This is for test purposes only!!
+            if (crateKeys == null)
+            {
+                fieldFilterPane.Fields = new List<FilterPaneField>()
+                {
+                    new FilterPaneField() { Key = "Test_DocuSign_EnvelopeId", Name = "[Test].[DocuSign].[EnvelopeId]" },
+                    new FilterPaneField() { Key = "Test_DocuSign_DocNumber", Name = "[Test].[DocuSign].[DocNumber]" }
+                };
+            }
+
+            var fields = new List<FieldDefinitionDTO>()
+            {
+                fieldFilterPane
+            };
+
+            var crateControls = _crateService.Create(
+                "Configuration_Controls",
+                JsonConvert.SerializeObject(fields),
+                "Standard Configuration Controls"
+                );
+
+            return crateControls;
+        }
+
+        /// <summary>
         /// Looks for first Create with Id == "PayloadKeys" among all upcoming Actions.
         /// </summary>
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             var curCrate = GetCrate(curActionDTO, "PayloadKeys", GetCrateDirection.Upstream);
+
+            var curConfigurationControlsCrage = CreateStandartConfigurationControls(curCrate);
 
             if (curCrate != null)
             {
@@ -170,13 +216,20 @@ namespace pluginDockyardCore.Actions
                 {
                     CrateDTO = new List<CrateDTO>()
                     {
-                        curCrate
+                        curCrate,
+                        curConfigurationControlsCrage
                     }
                 };
             }
             else
             {
-                return null;
+                return new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                    {
+                        curConfigurationControlsCrage
+                    }
+                };
             }
         }
 

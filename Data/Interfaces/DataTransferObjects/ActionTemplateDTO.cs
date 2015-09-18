@@ -15,7 +15,6 @@ namespace Data.Interfaces.DataTransferObjects
         public string Version { get; set; }
 
         public int PluginID { get; set; }
-  
 
         [JsonProperty("componentActivities")]
         public string ComponentActivities { get; set; }

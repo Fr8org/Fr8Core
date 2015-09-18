@@ -1,0 +1,22 @@
+﻿<div class="portlet light">
+    <div class="row" ng-if="showHeading()">
+        <div class="col-md-6 text-center">
+            <h4 class="bold">Source Data</h4>
+        </div>
+        <div class="col-md-6 text-center ">
+            <h4 class="bold">Target Data</h4>
+        </div>
+    </div>
+    <div class="row margin-top-15" ng-repeat="sourceDataItem in sourceData ">
+        <div class="col-md-6">
+            <select ng-model="sourceDataItem.targetDataItem" class="form-control"
+                    ng-options="targetDataItem.id as targetDataItem.label for targetDataItem in targetData"
+                    ng-change="uiDropDownChanged()">
+                <option value="">Select Document Field</option>
+            </select>
+        </div>
+        <div class="col-md-6 text-center">
+            {{sourceDataItem.label}}
+        </div>
+    </div>
+</div>
