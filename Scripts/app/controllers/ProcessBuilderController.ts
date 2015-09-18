@@ -146,6 +146,7 @@ module dockyard.controllers {
             textBlockDemoField.class = 'well well-lg';
             textBlockDemoField.value = 'Some description about action which is styled with class attribute using "well well-lg"';
             this._scope.textBlockDemoField = textBlockDemoField;
+
             var routingControlGroup = new model.RoutingControlGroup();
             routingControlGroup.fieldLabel = "routing";
             routingControlGroup.name = "routing";
