@@ -10,19 +10,25 @@ module dockyard.services {
         configure: (action: interfaces.IActionDesignDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
+
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
+
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
+
     interface __IProcessNodeTemplateService extends ng.resource.IResourceClass<interfaces.IProcessNodeTemplateVM> {
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
         update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
     }
+
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
+
     export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
         byProcessNodeTemplate: (id: { id: number }) => interfaces.IActionListVM;
     }
+
     export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -32,10 +38,12 @@ module dockyard.services {
             promise: ng.IPromise<model.ProcessNodeTemplateDTO>
         }
     }
+
     export interface IProcessBuilderService {
         saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
     }
 
+    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> { }
 
     /*
         ProcessTemplateDTO CRUD service.
@@ -43,7 +51,7 @@ module dockyard.services {
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
         <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' })
     ]);
-  
+
     /*
         DocuSignTemplateDTO CRUD service.
     */
@@ -140,6 +148,10 @@ module dockyard.services {
                     method: 'PUT'
                 }
             })
+    ]);
+
+    app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
+        <IActivityTemplateService> $resource('/api/activityTemplates/:id', { id: '@id' })
     ]);
 
     /*

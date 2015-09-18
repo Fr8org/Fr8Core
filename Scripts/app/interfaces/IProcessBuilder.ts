@@ -50,4 +50,7 @@ module dockyard.interfaces {
     export interface IActionListVM extends ng.resource.IResource<model.ActionList>, model.ActionList {
     }
 
+    export interface IActivityTemplateVM extends ng.resource.IResource<model.ActivityTemplate>, model.ActivityTemplate {
+    }
+
 }
