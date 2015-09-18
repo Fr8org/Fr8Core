@@ -61,7 +61,8 @@ namespace pluginDocuSign.Services
                 {
                     ExternalEventType =
                         ExternalEventType.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
-                    EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId
+                    EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
+                    RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id
                 });
             }
             catch (ArgumentException)

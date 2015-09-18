@@ -81,19 +81,25 @@ namespace Web.Controllers
             
         }
 
-        /// <summary>
-        /// At activation time, actions should know the end point details to register with external services.
-        /// This method returns the end point URL that handles the Event Notifications at Dockyard.
-        /// </summary>
-        [HttpGet]
-        [Route("events/endpoint")]
-        public string EventNotificationEndPoint()
-        {
-            //In development environment, Please uncomment this line.
-            return "http://localhost:30643/events";
+        /*
+         * Commented out as it is not clear in the spec.
+         * It is mentioned in the spec that at the time of Activation, 
+         * the action should query for the endpoint and add plugin name and its version with it.
+         * But in code review got a comment about the purpose of this method. Need to discuss and clarify.
+         */
+        ///// <summary>
+        ///// At activation time, actions should know the end point details to register with external services.
+        ///// This method returns the end point URL that handles the Event Notifications at Dockyard.
+        ///// </summary>
+        //[HttpGet]
+        //[Route("events/endpoint")]
+        //public string EventNotificationEndPoint()
+        //{
+        //    //In development environment, Please uncomment this line.
+        //    return "http://localhost:30643/events";
 
-            //return "http://dockyard.company/events";
-        }
+        //    //return "http://dockyard.company/events";
+        //}
 
         [HttpPost]
         [Route("events")]
