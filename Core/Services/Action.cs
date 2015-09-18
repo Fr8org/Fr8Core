@@ -132,7 +132,7 @@ namespace Core.Services
                             throw;
                         }
 
-                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
+                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
                         return configurationCrates;
                         //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
                     }

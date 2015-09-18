@@ -1,9 +1,15 @@
 ﻿<div>
+    <!--
     <div ng-if="!isActionValid(currentAction)" class="criteria-warning bg-purple">
         Please add or select an action in order to configure criteria
     </div>
+    -->
+    <!--
     <div ng-class="{'noclick-background': !isActionValid(currentAction) }">
-        <table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}">
+    -->
+    <div>
+        <!--<table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}"> -->
+        <table class="table">
             <thead>
                 <tr>
                     <th class="col-md-1"></th>
@@ -21,7 +27,7 @@
                         </div>
                     </td>
                     <td>
-                        <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field">
+                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field">
                             <option value="">Select a Field</option>
 
                         </select>

@@ -17,6 +17,7 @@ module dockyard.directives.dropDownListBox {
         public scope = {
             field: '='
         };
+
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IDropDownListBoxScope;

@@ -7,11 +7,23 @@ module dockyard.directives.paneConfigureAction {
         checkboxField,
         filePicker,
         radioGroupButton,
-        dropdownlistField
+        dropdownlistField,
+        textBlockField
     }
 
-    interface IConfigurationFieldScope extends ng.IScope {
+    export class ExitFocusEventArgs
+    {
+        constructor(fieldName: string)
+        {
+            this.fieldName = fieldName;
+        }
+
+        public fieldName: string;
+    }
+
+    export interface IConfigurationFieldScope extends ng.IScope {
         field: model.ConfigurationField;
+        OnExitFocus: (radio: model.ConfigurationField) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -20,10 +32,13 @@ module dockyard.directives.paneConfigureAction {
         public link: (scope: IConfigurationFieldScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: ($scope: IConfigurationFieldScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
+            currentAction: '=',
             field: '='
         };
         public templateUrl = '/AngularTemplate/ConfigurationField';
         public restrict = 'E';
+
+        private _$scope: IConfigurationFieldScope;
 
         constructor() {
             ConfigurationField.prototype.link = (
@@ -37,6 +52,9 @@ module dockyard.directives.paneConfigureAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
+                this._$scope = $scope;
+                $scope.OnExitFocus = <(radio: model.ConfigurationField) => void> angular.bind(this, this.OnExitFocus);
+                
             };
         }
 
@@ -44,10 +62,17 @@ module dockyard.directives.paneConfigureAction {
         public static Factory() {
             var directive = () => {
                 return new ConfigurationField();
-            };
+            }; 
 
             directive['$inject'] = [];
             return directive;
+        }
+
+        private OnExitFocus(event: JQueryMouseEventObject) {
+            //Get name of field that received the event
+            var fieldName = event.target.attributes.getNamedItem('data-field-name').value,
+                eventArgs = new ExitFocusEventArgs(fieldName)
+            this._$scope.$emit("OnExitFocus", eventArgs);
         }
     }
 
