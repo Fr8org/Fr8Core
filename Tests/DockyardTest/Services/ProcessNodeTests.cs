@@ -18,8 +18,7 @@ namespace DockyardTest.Services
 	public class ProcessNodeTests : BaseTest
 	{
 		private IProcessNode _processNode;
-		private IDocuSignNotification _docuSignNotificationService;
-		private DockyardAccount _userService;
+        private DockyardAccount _userService;
 		private string _testUserId = "testuser";
 		private string _xmlPayloadFullPath;
 
