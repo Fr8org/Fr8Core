@@ -8,14 +8,32 @@ module dockyard.controllers {
     'use strict';
 
     export interface ISandboxScope extends ng.IScope {
-        
+        processTemplateId: number;
+        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>,
+        fields: Array<model.Field>;
+
+        // Identity of currently edited processNodeTemplate.
+        //curNodeId: number;
+        //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
+        //curNodeIsTempId: boolean;
+        current: model.ProcessBuilderState,
+        save: Function;
+        cancel: Function;
+
         //this is for demo only, should be deleted on production
         radioDemoField: model.RadioButtonGroupField;
         dropdownDemoField: model.DropDownListBoxField;
+        textBlockDemoField: model.TextBlockField;
         routingControlGroup: model.RoutingControlGroup;
     }
 
-    class SandboxController {
+    //Setup aliases
+    import pwd = dockyard.directives.paneWorkflowDesigner;
+    import psa = dockyard.directives.paneSelectAction;
+    import pca = dockyard.directives.paneConfigureAction;
+    import pst = dockyard.directives.paneSelectTemplate;
+
+    class ProcessBuilderController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
@@ -35,13 +53,40 @@ module dockyard.controllers {
             'ProcessTemplateService',
             '$timeout',
             'CriteriaServiceWrapper',
-            'SandboxService',
-            'ActionListService'
+            'ProcessBuilderService',
+            'ActionListService',
+            'CrateHelper',
+            'ActivityTemplateService'
         ];
 
         private _scope: ISandboxScope;
 
-        constructor() {
+        constructor(
+            private $rootScope: interfaces.IAppRootScope,
+            private $scope: ISandboxScope,
+            private StringService: services.IStringService,
+            private LocalIdentityGenerator: services.ILocalIdentityGenerator,
+            private $state: ng.ui.IState,
+            private ActionService: services.IActionService,
+            private $q: ng.IQService,
+            private $http: ng.IHttpService,
+            private urlPrefix: string,
+            private ProcessTemplateService: services.IProcessTemplateService,
+            private $timeout: ng.ITimeoutService,
+            private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
+            private ProcessBuilderService: services.IProcessBuilderService,
+            private ActionListService: services.IActionListService,
+            private CrateHelper: services.CrateHelper,
+            private ActivityTemplateService: services.IActivityTemplateService
+            ) {
+            this._scope = $scope;
+            this._scope.processTemplateId = $state.params.id;
+
+
+            this._scope.processNodeTemplates = [];
+            this._scope.fields = [];
+            this._scope.current = new model.ProcessBuilderState();
+
             //THIS IS FOR DEMO ONLY
             var radioDemoField = new model.RadioButtonGroupField();
             radioDemoField.fieldLabel = 'Demo Label';
@@ -63,6 +108,39 @@ module dockyard.controllers {
             radioDemoField.radios = radios;
             this._scope.radioDemoField = radioDemoField;
 
+            var dropdownDemoField = new model.DropDownListBoxField();
+            var demoSelectItem1 = new model.DropDownListItem();
+
+            demoSelectItem1.Key = "Operation 1";
+            demoSelectItem1.Value = "operation_1";
+            var demoSelectItem2 = new model.DropDownListItem();
+
+            demoSelectItem2.Key = "Operation 2";
+            demoSelectItem2.Value = "operation_2";
+            var demoSelectItem3 = new model.DropDownListItem();
+
+            demoSelectItem3.Key = "Operation 3";
+            demoSelectItem3.Value = "operation_3";
+            var demoSelectItem4 = new model.DropDownListItem();
+
+            demoSelectItem4.Key = "Operation 4";
+            demoSelectItem4.Value = "operation_4";
+            dropdownDemoField.fieldLabel = "Operation List";
+            dropdownDemoField.listItems = new Array<model.DropDownListItem>();
+            dropdownDemoField.listItems.push(demoSelectItem1);
+            dropdownDemoField.listItems.push(demoSelectItem2);
+            dropdownDemoField.listItems.push(demoSelectItem3);
+            dropdownDemoField.listItems.push(demoSelectItem4);
+
+            dropdownDemoField.value = "operation_4";
+            dropdownDemoField.name = "demoDropDown";
+            this._scope.dropdownDemoField = dropdownDemoField;
+
+            var textBlockDemoField = new model.TextBlockField();
+            textBlockDemoField.class = 'well well-lg';
+            textBlockDemoField.value = 'Some description about action which is styled with class attribute using "well well-lg"';
+            this._scope.textBlockDemoField = textBlockDemoField;
+
             var routingControlGroup = new model.RoutingControlGroup();
             routingControlGroup.fieldLabel = "routing";
             routingControlGroup.name = "routing";
@@ -83,7 +161,7 @@ module dockyard.controllers {
             choice.Label = "Extract Foo From Bar";
             choices.push(choice);
             routeActionList.choices = choices;
-            routeTruthy.previousActionList = routeActionList; 
+            routeTruthy.previousActionList = routeActionList;
             routeTruthy.previousActionSelectedId = "";
             routeTruthy.availableProcessNode = "";
             var routeFalsy = new model.Route();
@@ -100,7 +178,7 @@ module dockyard.controllers {
             choice2.Label = "Extract Foo From Bar (Falsy)";
             choices2.push(choice2);
             routeActionList2.choices = choices2;
-            routeFalsy.previousActionList = routeActionList2; 
+            routeFalsy.previousActionList = routeActionList2;
             routeFalsy.previousActionSelectedId = "";
             routeFalsy.availableProcessNode = "";
             routes.push(routeTruthy);
@@ -109,7 +187,6 @@ module dockyard.controllers {
             this._scope.routingControlGroup = routingControlGroup;
             //END OF DEMO CODE
         }
-
     }
 
     app.run([
@@ -127,7 +204,7 @@ module dockyard.controllers {
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "")
                 };
 
             $httpBackend
@@ -142,5 +219,5 @@ module dockyard.controllers {
         }
     ]);
 
-    app.controller('SandboxController', SandboxController);
+    app.controller('ProcessBuilderController', ProcessBuilderController);
 } 

@@ -747,6 +747,8 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <Content Include="Views\Sandbox\Index.cshtml" />
+    <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />

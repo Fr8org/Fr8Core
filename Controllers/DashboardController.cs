@@ -24,5 +24,15 @@ namespace Web.Controllers
                 return View("../Admin/Index");
             
         }
+
+        //
+        // GET: /Dashboard/Sandbox
+        public ActionResult Sandbox(int id = 0)
+        {
+
+
+            return View("../Sandbox/Index");
+
+        }
     }
 }
