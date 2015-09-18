@@ -82,7 +82,7 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
                 //$scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) => this.onExitFocus(eventArgs));
-                $scope.$on("OnExitFocus", <any>angular.bind(this, this.onExitFocus));
+                $scope.$on("onFieldChange", <any>angular.bind(this, this.onFieldChange));
 
                 $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
             };
@@ -90,11 +90,11 @@ module dockyard.directives.paneConfigureAction {
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
             model.ControlsList
-        } 
+        }
 
-        private onExitFocus(event: ng.IAngularEvent, eventArgs: ExitFocusEventArgs) {
+        private onFieldChange(event: ng.IAngularEvent, eventArgs: ExitFocusEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
-
+            debugger;
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
             var fieldList = scope.currentAction.configurationControls.fields;
@@ -105,7 +105,7 @@ module dockyard.directives.paneConfigureAction {
             var field = fieldList[0];
 
             // Find the onExitFocus event object
-            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onExitFocus' }, true);
+            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onChange' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
 
@@ -117,26 +117,6 @@ module dockyard.directives.paneConfigureAction {
                 scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                 this.loadConfiguration(scope, scope.currentAction);
             }
-                        
-            //this.push(key + ': ' + value);
-            //TODO: to be fixed
-            //console.log("name : " + value.Name + " -> handler : " + value.Handler);
-            //debugger;
-            //if (value.Name == "onExitFocus") {
-            //    //console.log("events.onExitFocus is NOT null");
-            //    //console.log("found onExitFocus -> " + events.onExitFocus);
-            //    if (value.Handler == "requestConfig") {
-            //        console.log("onExitFocus == requestConfig");
-            //        alert(value.Name + " -> " + value.Handler);
-            //        // Render Pane Configure Action 
-            //        var pcaEventArgs = new RenderEventArgs(this._currentAction);
-            //        this.onRender(event, pcaEventArgs);
-            //        alert("called onRender on PCA");
-
-            //        //$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-            //    }
-            //}
-            // });
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

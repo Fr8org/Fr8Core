@@ -22,7 +22,7 @@ module dockyard.directives.paneConfigureAction {
 
     export interface IConfigurationFieldScope extends ng.IScope {
         field: model.ConfigurationField;
-        OnExitFocus: (radio: model.ConfigurationField) => void;
+        onFieldChange: (radio: model.ConfigurationField) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -51,7 +51,7 @@ module dockyard.directives.paneConfigureAction {
                 $attrs: ng.IAttributes) => {
 
                 this._$scope = $scope;
-                $scope.OnExitFocus = <(radio: model.ConfigurationField) => void> angular.bind(this, this.OnExitFocus);
+                $scope.onFieldChange = <(radio: model.ConfigurationField) => void> angular.bind(this, this.onFieldChange);
                 
             };
         }
@@ -66,11 +66,12 @@ module dockyard.directives.paneConfigureAction {
             return directive;
         }
 
-        private OnExitFocus(event: JQueryMouseEventObject) {
+        private onFieldChange(event: JQueryMouseEventObject) {
             //Get name of field that received the event
+            debugger;
             var fieldName = event.target.attributes.getNamedItem('data-field-name').value,
                 eventArgs = new ExitFocusEventArgs(fieldName)
-            this._$scope.$emit("OnExitFocus", eventArgs);
+            this._$scope.$emit("onFieldChange", eventArgs);
         }
     }
 
