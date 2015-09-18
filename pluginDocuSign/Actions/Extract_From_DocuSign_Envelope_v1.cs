@@ -96,5 +96,38 @@ namespace pluginDocuSign.Actions
             }
             return envelopeIdField.Value;
         }
+
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        {
+            // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
+            var fieldDefinitions = new List<FieldDefinitionDTO>() 
+            {
+                new TextBlockFieldDTO()
+                {
+                    FieldLabel = "Docu Sign Envelope",
+                    Value = "This Action doesn't require any configuration.",
+                    Type = "textBlockField",
+                    cssClass = "well well-lg"
+                    
+                }
+            };
+
+            var _crate = ObjectFactory.GetInstance<ICrate>();
+            //Return one field with empty connection string
+            var curConfigurationStore = new CrateStorageDTO
+            {
+                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                CrateDTO = new List<CrateDTO>
+                {
+                    _crate.Create(
+                        "ExtractFromDocuSignEnvelope Design-Time Fields",
+                        JsonConvert.SerializeObject(fieldDefinitions),
+                        "Standard Configuration Controls"
+                        )
+                }
+            };
+
+            return curConfigurationStore;
+        }
     }
 }

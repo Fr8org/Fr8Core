@@ -13,6 +13,21 @@ namespace Data.Interfaces.DataTransferObjects
         public FieldSource Source { get; set; }
     }
 
+    public class RadioButtonGroupFieldDefinitionDTO : FieldDefinitionDTO
+    {
+        [JsonProperty("groupName")]
+        public string GroupName { get; set; }
+
+        [JsonProperty("radios")]
+        public List<RadioButton> Radios { get; set; }
+    }
+
+    public class FilterPaneFieldDefinitionDTO : FieldDefinitionDTO
+    {
+        [JsonProperty("fields")]
+        public List<FilterPaneField> Fields { get; set;}
+    }
+
     public class FieldDefinitionDTO
     {
         public FieldDefinitionDTO() { }
@@ -71,7 +86,9 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class FieldEvent
     {
+        [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("handler")]
         public string Handler { get; set; }
 
         public FieldEvent(string name, string handler)
@@ -79,5 +96,23 @@ namespace Data.Interfaces.DataTransferObjects
             Name = name;
             Handler = handler;
         }
+    }
+
+    public class RadioButton
+    {
+        [JsonProperty("selected")]
+        public bool Selected { get; set; }
+
+        [JsonProperty("value")]
+        public string Value { get; set; }
+    }
+
+    public class FilterPaneField
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 }

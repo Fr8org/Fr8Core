@@ -5,23 +5,30 @@
 */
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
+
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDesignDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
+
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
+
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
+
     interface __IProcessNodeTemplateService extends ng.resource.IResourceClass<interfaces.IProcessNodeTemplateVM> {
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
         update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
     }
+
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
+
     export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
         byProcessNodeTemplate: (id: { id: number }) => interfaces.IActionListVM;
     }
+
     export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -31,9 +38,12 @@ module dockyard.services {
             promise: ng.IPromise<model.ProcessNodeTemplateDTO>
         }
     }
+
     export interface IProcessBuilderService {
         saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
     }
+
+    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> { }
 
     /*
         ProcessTemplateDTO CRUD service.
@@ -80,8 +90,7 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure',
-                    params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter
+                    url: '/actions/configure'
                 },
 
                 'params': {
@@ -141,6 +150,10 @@ module dockyard.services {
             })
     ]);
 
+    app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
+        <IActivityTemplateService> $resource('/api/activityTemplates/:id', { id: '@id' })
+    ]);
+
     /*
         General data persistance methods for ProcessBuilder.
     */
@@ -152,7 +165,7 @@ module dockyard.services {
             private crateHelper: CrateHelper
             ) { }
 
-        /*
+        /* 
             The function saves current entities if they are new or changed (dirty).
             At this time not all entities whose state we maintain on ProcessBuilder are saved here. 
             I (@alexavrutin) will add them one-by-one during the course of refactoring. 

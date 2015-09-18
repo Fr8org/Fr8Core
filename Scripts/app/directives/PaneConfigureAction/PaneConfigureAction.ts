@@ -54,12 +54,13 @@ module dockyard.directives.paneConfigureAction {
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _currentAction: interfaces.IActionDesignDTO =
-            new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
+        new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private ActionService: services.IActionService,
-            private crateHelper: services.CrateHelper
+            private crateHelper: services.CrateHelper,
+            private $filter: ng.IFilterService
             ) {
 
             PaneConfigureAction.prototype.link = (
@@ -80,6 +81,8 @@ module dockyard.directives.paneConfigureAction {
                 $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
+                //$scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) => this.onExitFocus(eventArgs));
+                $scope.$on("OnExitFocus", <any>angular.bind(this, this.onExitFocus));
 
                 $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
             };
@@ -87,6 +90,53 @@ module dockyard.directives.paneConfigureAction {
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
             model.ControlsList
+        } 
+
+        private onExitFocus(event: ng.IAngularEvent, eventArgs: ExitFocusEventArgs) {
+            var scope = <IPaneConfigureActionScope>event.currentScope;
+
+            // Check if this event is defined for the current field
+            var fieldName = eventArgs.fieldName;
+            var fieldList = scope.currentAction.configurationControls.fields;
+
+            // Find the configuration field object for which the event has fired
+            fieldList = <Array<model.ConfigurationField>> this.$filter('filter')(fieldList, { name: fieldName }, true);
+            if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
+            var field = fieldList[0];
+
+            // Find the onExitFocus event object
+            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onExitFocus' }, true);
+            if (eventHandlerList.length == 0) return;
+            var fieldEvent = eventHandlerList[0];
+
+            if (fieldEvent.handler == 'requestConfig') {
+                this.crateHelper.mergeControlListCrate(
+                    scope.currentAction.configurationControls,
+                    scope.currentAction.crateStorage
+                    );
+                scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                this.loadConfiguration(scope, scope.currentAction);
+            }
+                        
+            //this.push(key + ': ' + value);
+            //TODO: to be fixed
+            //console.log("name : " + value.Name + " -> handler : " + value.Handler);
+            //debugger;
+            //if (value.Name == "onExitFocus") {
+            //    //console.log("events.onExitFocus is NOT null");
+            //    //console.log("found onExitFocus -> " + events.onExitFocus);
+            //    if (value.Handler == "requestConfig") {
+            //        console.log("onExitFocus == requestConfig");
+            //        alert(value.Name + " -> " + value.Handler);
+            //        // Render Pane Configure Action 
+            //        var pcaEventArgs = new RenderEventArgs(this._currentAction);
+            //        this.onRender(event, pcaEventArgs);
+            //        alert("called onRender on PCA");
+
+            //        //$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            //    }
+            //}
+            // });
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -108,24 +158,25 @@ module dockyard.directives.paneConfigureAction {
             //FOR NOW we're going to simplify things by always checking with this server for a new configuration
 
             if (eventArgs.action.actionTemplateId > 0) {
-                var resource = this.ActionService.configure(scope.action);
-                (<any>scope.currentAction).crateStorage = resource;
-
-                // Here we parse look for Crate with ManifestType == 'Standard Configuration Controls'.
-                // We parse its contents and put it into currentAction.configurationControls structure.
-                var self = this;
-
-                resource.$promise.then(function (res: any) {
-                    (<any>scope.currentAction).configurationControls =
-                        self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
-                });
-            }
-            
+                this.loadConfiguration(scope, scope.action);
+            }            
 
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action
             this._currentAction = angular.extend({}, eventArgs.action);
             //debugger;
+        }
+
+        private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
+            // Here we parse look for Crate with ManifestType == 'Standard Configuration Controls'.
+            // We parse its contents and put it into currentAction.configurationControls structure.
+            var self = this;
+
+            this.ActionService.configure(action).$promise.then(function (res: any) {
+                (<any>scope.currentAction).crateStorage = res;
+                (<any>scope.currentAction).configurationControls =
+                self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+            });
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
@@ -136,7 +187,7 @@ module dockyard.directives.paneConfigureAction {
             scope.$emit(
                 MessageType[MessageType.PaneConfigureAction_MapFieldsClicked],
                 new MapFieldsClickedEventArgs(angular.extend({}, scope.currentAction)) //clone action to prevent msg recipient from modifying orig. object
-            );
+                );
         }
 
         //The factory function returns Directive object as per Angular requirements
@@ -144,13 +195,14 @@ module dockyard.directives.paneConfigureAction {
             var directive = (
                 $rootScope: interfaces.IAppRootScope,
                 ActionService,
-                crateHelper: services.CrateHelper
+                crateHelper: services.CrateHelper,
+                $filter: ng.IFilterService
                 ) => {
 
-                return new PaneConfigureAction($rootScope, ActionService, crateHelper);
+                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper'];
+            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter'];
             return directive;
         }
     }

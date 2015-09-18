@@ -790,9 +790,9 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneDefineCriteria\PaneDefineCriteria.ts" />
+    
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
+    
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />

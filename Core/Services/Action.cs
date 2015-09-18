@@ -65,7 +65,7 @@ namespace Core.Services
                     existingActionDo.ActivityTemplateId = currentActionDo.ActivityTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.CrateStorage = currentActionDo.CrateStorage;
-
+                    
                 }
                 else
                 {
@@ -214,7 +214,7 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-
+            
             //TODO : Cut base Url from PluginDO.Endpoint
 
             curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
@@ -327,6 +327,20 @@ namespace Core.Services
             {
                 curActionDO.UpdateCrateStorageDTO(curCrateDTOLists);
             }
+        }
+
+        public IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO)
+        {
+            if (String.IsNullOrEmpty(curManifestType))
+                throw new ArgumentNullException("Parameter Manifest Type is empty");
+            if (curCrateStorageDTO == null)
+                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+
+            IEnumerable<CrateDTO> crateDTO = null;
+
+            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
+
+            return crateDTO;
         }
 
 

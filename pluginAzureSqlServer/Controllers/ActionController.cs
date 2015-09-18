@@ -16,9 +16,9 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
+        public CrateStorageDTO Configure(ActionDTO curActionDTO)
         {
-            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
             if (response == null)
                 response = new CrateStorageDTO();
             return response;
