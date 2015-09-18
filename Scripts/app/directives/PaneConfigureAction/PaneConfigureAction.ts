@@ -92,7 +92,7 @@ module dockyard.directives.paneConfigureAction {
             model.ControlsList
         }
 
-        private onFieldChange(event: ng.IAngularEvent, eventArgs: ExitFocusEventArgs) {
+        private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
             debugger;
             // Check if this event is defined for the current field

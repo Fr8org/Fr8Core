@@ -10,7 +10,7 @@ module dockyard.directives.paneConfigureAction {
         dropdownlistField
     }
 
-    export class ExitFocusEventArgs
+    export class ChangeEventArgs
     {
         constructor(fieldName: string)
         {
@@ -68,9 +68,14 @@ module dockyard.directives.paneConfigureAction {
 
         private onFieldChange(event: JQueryMouseEventObject) {
             //Get name of field that received the event
-            debugger;
             var fieldName = event.target.attributes.getNamedItem('data-field-name').value,
-                eventArgs = new ExitFocusEventArgs(fieldName)
+                eventArgs = new ChangeEventArgs(fieldName)
+            this._$scope.$emit("onFieldChange", eventArgs);
+        }
+
+        // A version of the above event handler for non-HTML (custom) fields
+        private dispatchChangeEvent(fieldName: string) {
+            var eventArgs = new ChangeEventArgs(fieldName);
             this._$scope.$emit("onFieldChange", eventArgs);
         }
     }
