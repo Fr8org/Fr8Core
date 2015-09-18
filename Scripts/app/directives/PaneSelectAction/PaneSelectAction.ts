@@ -122,7 +122,7 @@ module dockyard.directives.paneSelectAction {
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
-                    debugger;
+                    //debugger;
                     var currentSelectedActivity: model.ActivityTemplate;
                     var activities = $scope.actionTypes;
                     //find the selected activity
@@ -145,6 +145,9 @@ module dockyard.directives.paneSelectAction {
                             var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
                             $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                         }
+                    }
+                    else {
+                        $scope.componentActivities = null;                     
                     }
                 }
 

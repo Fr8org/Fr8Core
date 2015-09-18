@@ -29,13 +29,11 @@
 <script src="~/Content/templates/metronic/assets/admin/layout3/scripts/demo.js" type="text/javascript"></script>
 <!-- END APP LEVEL JQUERY SCRIPTS -->
 <!-- ENUMS -->
-<script src="~/Scripts/app/interfaces/IProcessTemplateVM.js"></script>
 
 <!-- MODELS -->
 <script src="~/Scripts/app/model/ActionDesignDTO.js"></script>
 <script src="~/Scripts/app/model/ActionList.js"></script>
-<script src="~/Scripts/app/model/ActionTemplate.js"></script>
-<script src="~/Scripts/app/model/ActionType.js"></script>
+<script src="~/Scripts/app/model/ActivityTemplate.js"></script>
 <script src="~/Scripts/app/model/Condition.js"></script>
 <script src="~/Scripts/app/model/Criteria.js"></script>
 <script src="~/Scripts/app/model/Field.js"></script>
@@ -47,6 +45,7 @@
 <script src="~/Scripts/app/model/ProcessBuilderState.js"></script>
 
 <!-- SERVICES -->
+<script src="~/Scripts/app/services/CrateHelper.js"></script>
 <script src="~/Scripts/app/services/ProcessBuilderService.js"></script>
 <script src="~/Scripts/app/services/StringService.js"></script>
 <script src="~/Scripts/app/services/LocalIdentityGenerator.js"></script>
@@ -66,12 +65,10 @@
 <!-- pane-workflow-designer -->
 <script src="~/Scripts/app/directives/PaneWorkflowDesigner/Messages.js"></script>
 <script src="~/Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js"></script>
-<script src="~/Scripts/app/directives/PaneWorkflowDesigner/IPaneWorkflowDesignerScope.js"></script>
 
 <!-- pane-define-criteria -->
 <script src="~/Scripts/app/directives/PaneDefineCriteria/PaneDefineCriteria.js"></script>
 <script src="~/Scripts/app/directives/QueryBuilderWidget.js"></script>
-<script src="~/Scripts/app/directives/PaneDefineCriteria/IPaneDefineCriteriaScope.js"></script>
 
 <!-- pane-select-action -->
 <script src="~/Scripts/app/directives/PaneSelectAction/PaneSelectAction.js"></script>
@@ -94,6 +91,9 @@
 
 <!-- drop-down-list-box -->
 <script src="~/Scripts/app/directives/Controls/DropDownListBox.js"></script>
+
+<!-- drop-down-list-box -->
+<script src="~/Scripts/app/directives/Controls/TextBlock.js"></script>
 
 <!-- CONTROLLERS -->
 <script src="~/Scripts/app/controllers/ProcessBuilderController.js"></script>

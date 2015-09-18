@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace Core.Interfaces
 {
-    public interface ICrate 
+    public interface IDockyardEvent
     {
-        CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
-        T GetContents<T>(CrateDTO crate);
+        void ProcessInbound(string userID, CrateDTO curStandardEventReport);
     }
 }

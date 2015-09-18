@@ -82,7 +82,7 @@
                     .renderWith(function (data, type, full, meta) {
                     if (data != null || data != undefined) {                        
                         var dateValue = new Date(eval(data.split('/').join("")));
-                        var date = dateValue.getMonth() + '/' + dateValue.getDate() + '/' + dateValue.getFullYear();
+                        var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                         return date;
                     }
                     })                ,
@@ -94,7 +94,7 @@
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
                             var dateValue = new Date(eval(data.split('/').join("")));
-                            var date = dateValue.getMonth() + '/' + dateValue.getDate() + '/' + dateValue.getFullYear();
+                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                             return date;
                         }
                     }),
@@ -173,7 +173,7 @@
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
                             var dateValue = new Date(eval(data.split('/').join("")));
-                            var date = dateValue.getMonth() + '/' + dateValue.getDate() + '/' + dateValue.getFullYear();
+                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                             return date;
                         }
                     }),                
@@ -183,7 +183,7 @@
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
                             var dateValue = new Date(eval(data.split('/').join("")));
-                            var date = dateValue.getMonth() + '/' + dateValue.getDate() + '/' + dateValue.getFullYear();
+                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                             return date;
                         }
                     }),
