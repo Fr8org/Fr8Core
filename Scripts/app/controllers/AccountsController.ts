@@ -3,7 +3,9 @@
 module dockyard.controllers {
     'use strict';
 
-    export interface IProcessTemplateScope extends ng.IScope {
+    export interface IAccountsScope extends ng.IScope {
+        users: Array<interfaces.IUserDTO>;
+        showDetails(user: interfaces.IUserDTO);
     }
 
     class AccountsController {
@@ -19,12 +21,16 @@ module dockyard.controllers {
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
-            private $scope: IProcessTemplateScope,
+            private $scope: IAccountsScope,
             private UserService: services.IUserService) {
-
+            
             UserService.getAll().$promise.then(function (data) {
-                console.log(data);
+                $scope.users = data;
             });
+
+            $scope.showDetails = function (user) {
+                
+            }
         }
     }
 

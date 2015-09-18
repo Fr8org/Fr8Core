@@ -15,7 +15,7 @@ module dockyard.services {
             getAll: {
                 method: 'GET',
                 isArray: true,
-                url: 'User/Get'
+                url: 'api/user'
             }
         })
     ]);

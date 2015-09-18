@@ -8,5 +8,6 @@ module dockyard.interfaces {
         userName: string;
         email: string;
         status: string;
+        role: string;
     }    
 }

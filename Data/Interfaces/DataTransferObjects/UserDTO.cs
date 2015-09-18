@@ -8,16 +8,16 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class UserDTO
     {
-        public String Id { get; set; }
-        public String FirstName { get; set; }
-        public String LastName { get; set; }
-        public String UserName { get; set; }
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string UserName { get; set; }
 
         public int EmailAddressID { get; set; }
-        public String EmailAddress { get; set; }
+        public string EmailAddress { get; set; }
 
         public int Status { get; set; }
 
-        public String Role { get; set; }
+        public string Role { get; set; }
     }
 }

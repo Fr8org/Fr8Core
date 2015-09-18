@@ -116,7 +116,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             templateUrl: "/AngularTemplate/ProcessTemplateDetails",
             data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
         })
-    
+
     // Manage files
 
         .state('managefiles', {
