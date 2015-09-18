@@ -6,7 +6,7 @@
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDesignDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
@@ -80,8 +80,7 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure',
-                    params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter
+                    url: '/actions/configure'
                 },
 
                 'params': {
@@ -148,10 +147,11 @@ module dockyard.services {
         constructor(
             private $q: ng.IQService,
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
-            private ActionService: IActionService
+            private ActionService: IActionService,
+            private crateHelper: CrateHelper
             ) { }
 
-        /*
+        /* 
             The function saves current entities if they are new or changed (dirty).
             At this time not all entities whose state we maintain on ProcessBuilder are saved here. 
             I (@alexavrutin) will add them one-by-one during the course of refactoring. 
@@ -192,9 +192,18 @@ module dockyard.services {
 
             //Save only Action 
             else if (currentState.action) {
-                this.ActionService.save(
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
+
+                var promise = this.ActionService.save(
                     { id: currentState.action.id },
-                    currentState.action, null, null).$promise
+                    currentState.action,
+                    null,
+                    null).$promise;
+
+                promise
                     .then((result: interfaces.IActionVM) => {
                         newState.action = result;
                         return deferred.resolve(newState);
@@ -216,12 +225,13 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
-        ActionService: IActionService) => {
-            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService);
-    }
+        ActionService: IActionService,
+        crateHelper: CrateHelper) => {
+            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
+        }
     ]);
 
     /*

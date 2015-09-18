@@ -76,7 +76,8 @@ namespace pluginAzureSqlServer.Actions
                     FieldLabel = "SQL Connection String",
                     Type = "textField",
                     Name = "connection_string",
-                    Required = true
+                    Required = true,
+                    Events = new List<FieldEvent>() {new FieldEvent("onExitFocus", "requestConfig")}
                 }
             };
 
