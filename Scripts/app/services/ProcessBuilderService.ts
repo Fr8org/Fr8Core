@@ -7,7 +7,7 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDesignDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -90,8 +90,7 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure',
-                    params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter
+                    url: '/actions/configure'
                 },
 
                 'params': {
@@ -166,7 +165,7 @@ module dockyard.services {
             private crateHelper: CrateHelper
             ) { }
 
-        /*
+        /* 
             The function saves current entities if they are new or changed (dirty).
             At this time not all entities whose state we maintain on ProcessBuilder are saved here. 
             I (@alexavrutin) will add them one-by-one during the course of refactoring. 

@@ -86,7 +86,9 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class FieldEvent
     {
+        [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("handler")]
         public string Handler { get; set; }
 
         public FieldEvent(string name, string handler)
