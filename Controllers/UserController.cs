@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -16,6 +17,7 @@ using Data.Wrappers;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 using Web.ViewModels;
 
 namespace Web.Controllers
@@ -330,8 +332,37 @@ namespace Web.Controllers
                 var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
                 curManageUserVM.HasDocusignToken = tokens.Any();
                 var googleAuthDatas = uow.RemoteServiceAuthDataRepository.FindList(ad => ad.Provider.Name == "Google" && ad.UserID == curUserId).ToArray();
-                curManageUserVM.HasGoogleToken = googleAuthDatas.Any(ad => ad.HasAccessToken());
+                var googleAuthData = googleAuthDatas.FirstOrDefault(ad => ad.HasAccessToken());
+                curManageUserVM.HasGoogleToken = googleAuthData != null;
+                if (googleAuthData != null)
+                {
+                    var spreadsheet = ObjectFactory.GetInstance<GoogleSheet>();
+                    curManageUserVM.GoogleSpreadsheets = spreadsheet.EnumerateSpreadsheetsUris(curUserId);
+                }
                 return View(curManageUserVM);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ExportGoogleSpreadsheet(string spreadsheetUri)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserId = this.GetUserId();
+                var curUserDO = uow.UserRepository.GetByKey(curUserId);
+                if (curUserDO == null)
+                {
+                    // if we found no user then assume that this user doesn't exists any more and force log off action.
+                    return RedirectToAction("LogOff", "DockyardAccount");
+                }
+                var googleAuthDatas = uow.RemoteServiceAuthDataRepository.FindList(ad => ad.Provider.Name == "Google" && ad.UserID == curUserId).ToArray();
+                var googleAuthData = googleAuthDatas.FirstOrDefault(ad => ad.HasAccessToken());
+                if (googleAuthData == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "No Google authorization info");
+                var spreadsheet = ObjectFactory.GetInstance<GoogleSheet>();
+                var fileUrl = spreadsheet.ExtractData(spreadsheetUri, curUserId);
+                Logger.GetLogger().InfoFormat("Google Spreadsheet '{0}' exported to '{1}'", spreadsheetUri, fileUrl);
+                return RedirectToAction("RemoteServices");
             }
         }
 

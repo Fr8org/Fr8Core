@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Web.ViewModels
@@ -23,5 +25,6 @@ namespace Web.ViewModels
         public bool HasDocusignToken { get; set; }
         public bool HasGoogleToken { get; set; }
         public bool HasLocalPassword { get; set; }
+        public Dictionary<string, string> GoogleSpreadsheets { get; set; }
     }
 }

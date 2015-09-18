@@ -20,7 +20,8 @@ namespace Web.App_Start
             Mapper.CreateMap<DockyardAccountDO, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(account => !string.IsNullOrEmpty(account.PasswordHash)))
                 .ForMember(mu => mu.HasDocusignToken, opts => opts.Ignore())
-                .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore());
+                .ForMember(mu => mu.HasGoogleToken, opts => opts.Ignore())
+                .ForMember(mu => mu.GoogleSpreadsheets, opts => opts.Ignore());
 
             Mapper.CreateMap<ActionNameDTO, ActivityTemplateDO>()
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))

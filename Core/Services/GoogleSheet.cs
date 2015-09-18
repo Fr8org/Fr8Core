@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
+using Core.Managers.APIManagers.Authorizers;
 using Data.Entities;
 using Data.Interfaces;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
-using Newtonsoft.Json;
 using StructureMap;
 using Utilities;
 
@@ -16,21 +15,21 @@ namespace Core.Services
 {
     public class GoogleSheet
     {
-        private GOAuth2RequestFactory CreateRequestFactory(IRemoteOAuthDataDO authData)
+        private GOAuth2RequestFactory CreateRequestFactoryAsync(string userId)
         {
             var parameters = new OAuth2Parameters();
-            var creds = JsonConvert.DeserializeObject<Dictionary<string, string>>(authData.Provider.AppCreds);
-            parameters.ClientId = creds["ClientId"];
-            parameters.ClientSecret = creds["ClientSecret"];
-            var tokenObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(authData.Token);
-            parameters.AccessToken = tokenObject["access_token"];
+            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            parameters.ClientId = configRepository.Get("GoogleClientId");
+            parameters.ClientSecret = configRepository.Get("GoogleClientSecret");
+            var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>("Google");
+            parameters.AccessToken = authorizer.GetAccessTokenAsync(userId, CancellationToken.None).Result;
             // Initialize the variables needed to make the request
             return new GOAuth2RequestFactory(null, "kwasantcalendar", parameters);
         }
 
-        private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(IRemoteOAuthDataDO authData)
+        private IEnumerable<SpreadsheetEntry> EnumerateSpreadsheets(string userId)
         {
-            GOAuth2RequestFactory requestFactory = CreateRequestFactory(authData);
+            GOAuth2RequestFactory requestFactory = CreateRequestFactoryAsync(userId);
             SpreadsheetsService service = new SpreadsheetsService("kwasantcalendar");
             service.RequestFactory = requestFactory;
             // Instantiate a SpreadsheetQuery object to retrieve spreadsheets.
@@ -41,22 +40,28 @@ namespace Core.Services
             return feed.Entries.Cast<SpreadsheetEntry>();
         }
 
-        public IEnumerable<Uri> EnumerateSpreadsheetsUris(IRemoteOAuthDataDO authData)
+        public Dictionary<string, string> EnumerateSpreadsheetsUris(string userId)
         {
-            if (authData == null)
-                throw new ArgumentNullException("authData");
-            return EnumerateSpreadsheets(authData).Select(entry => new Uri(entry.FeedUri));
+            if (userId == null)
+                throw new ArgumentNullException("userId");
+            return EnumerateSpreadsheets(userId).ToDictionary(entry => entry.Id.AbsoluteUri, entry => entry.Title.Text);
         }
 
-        public void ExtractData(Uri spreadsheetUri, IRemoteOAuthDataDO authData)
+        /// <summary>
+        /// Exports Google Spreadsheet data to CSV file and save it on storage
+        /// </summary>
+        /// <param name="spreadsheetUri">Spreadsheet URI</param>
+        /// <param name="userId">User ID</param>
+        /// <returns>Returns a link to CSV file on storage</returns>
+        public string ExtractData(string spreadsheetUri, string userId)
         {
             if (spreadsheetUri == null)
                 throw new ArgumentNullException("spreadsheetUri");
-            if (authData == null)
-                throw new ArgumentNullException("authData");
-            var spreadsheets = EnumerateSpreadsheets(authData);
+            if (userId == null)
+                throw new ArgumentNullException("userId");
+            var spreadsheets = EnumerateSpreadsheets(userId);
 
-            SpreadsheetEntry spreadsheet = spreadsheets.SingleOrDefault(ae => ((SpreadsheetEntry)ae).FeedUri == spreadsheetUri.ToString());
+            SpreadsheetEntry spreadsheet = spreadsheets.SingleOrDefault(ae => string.Equals(ae.Id.AbsoluteUri, spreadsheetUri));
             if (spreadsheet == null)
                 throw new ArgumentException("Cannot find a spreadsheet", "spreadsheetUri");
             SpreadsheetsService service = (SpreadsheetsService) spreadsheet.Service;
@@ -92,14 +97,15 @@ namespace Core.Services
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var url = uow.FileRepository.SaveRemoteFile(ms, spreadsheetUri.PathAndQuery);
+                    var url = uow.FileRepository.SaveRemoteFile(ms, string.Format("GoogleSpreadsheets/{0}.csv", spreadsheetUri));
                     try
                     {
                         FileDO fileDo = new FileDO();
                         fileDo.CloudStorageUrl = url;
-                        fileDo.OriginalFileName = spreadsheetUri.ToString();
+                        fileDo.OriginalFileName = spreadsheetUri;
                         uow.FileRepository.Add(fileDo);
                         uow.SaveChanges();
+                        return url;
                     }
                     catch (Exception)
                     {
