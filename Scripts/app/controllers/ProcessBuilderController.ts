@@ -352,7 +352,6 @@ module dockyard.controllers {
             // TODO: Do not react on clicking on the currently visible Criteria
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-                debugger;
 
                 // Notity interested parties of action update event and update $scope
                 this.handleActionUpdate(result.action);
@@ -387,7 +386,7 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
-            debugger;
+
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var processNodeTemplateId: number,
@@ -641,7 +640,7 @@ module dockyard.controllers {
             //    }
             //}
         }
-    }
+    } 
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
@@ -659,7 +658,7 @@ module dockyard.controllers {
                     tempId: 0,
                     actionListId: 0,
                     activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
-                };
+                };  
 
             $httpBackend
                 .whenGET(urlPrefix + "/Action/1")

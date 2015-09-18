@@ -98,20 +98,26 @@ module dockyard.directives.paneConfigureAction {
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
             var fieldList = scope.currentAction.configurationControls.fields;
-            debugger;
+
             // Find the configuration field object for which the event has fired
             fieldList = <Array<model.ConfigurationField>> this.$filter('filter')(fieldList, { name: fieldName }, true);
             if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
             var field = fieldList[0];
 
             // Find the onExitFocus event object
-            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { Name: 'onExitFocus' }, true);
+            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onExitFocus' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
 
-
-
-            
+            if (fieldEvent.handler == 'requestConfig') {
+                this.crateHelper.mergeControlListCrate(
+                    scope.currentAction.configurationControls,
+                    scope.currentAction.crateStorage
+                    );
+                scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+                this.loadConfiguration(scope, scope.currentAction);
+            }
+                        
             //this.push(key + ': ' + value);
             //TODO: to be fixed
             //console.log("name : " + value.Name + " -> handler : " + value.Handler);
@@ -152,24 +158,25 @@ module dockyard.directives.paneConfigureAction {
             //FOR NOW we're going to simplify things by always checking with this server for a new configuration
 
             if (eventArgs.action.actionTemplateId > 0) {
-                var resource = this.ActionService.configure(scope.action);
-                (<any>scope.currentAction).crateStorage = resource;
-
-                // Here we parse look for Crate with ManifestType == 'Standard Configuration Controls'.
-                // We parse its contents and put it into currentAction.configurationControls structure.
-                var self = this;
-
-                resource.$promise.then(function (res: any) {
-                    (<any>scope.currentAction).configurationControls =
-                    self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
-                });
-            }
-            
+                this.loadConfiguration(scope, scope.action);
+            }            
 
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action
             this._currentAction = angular.extend({}, eventArgs.action);
             //debugger;
+        }
+
+        private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
+            // Here we parse look for Crate with ManifestType == 'Standard Configuration Controls'.
+            // We parse its contents and put it into currentAction.configurationControls structure.
+            var self = this;
+
+            this.ActionService.configure(action).$promise.then(function (res: any) {
+                (<any>scope.currentAction).crateStorage = res;
+                (<any>scope.currentAction).configurationControls =
+                self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+            });
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
