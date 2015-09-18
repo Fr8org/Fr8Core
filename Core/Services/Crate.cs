@@ -38,7 +38,7 @@ namespace Core.Services
             return _serializer.Deserialize<T>(crate.Contents);
         }
 
-        public IEnumerable<JObject> GetElementByKey(List<CrateDTO> searchCrates)
+        public IEnumerable<JObject> GetElementByKey(IEnumerable<CrateDTO> searchCrates, string key)
         {
 
             List<JObject> resultsObjects = new List<JObject>();
@@ -48,8 +48,8 @@ namespace Core.Services
                 JContainer contents = (JContainer)curCrateJSON["contents"];
                 var results = contents.Descendants()
                     .OfType<JObject>()
-                    .Where(x => x["Connection String"] != null);
-                resultsObjects.Concat(results); ;
+                    .Where(x => x[key] != null);
+                resultsObjects.AddRange(results); ;
             }
             return resultsObjects;
 
