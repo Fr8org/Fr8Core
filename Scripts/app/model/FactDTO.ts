@@ -1,8 +1,7 @@
 ﻿module dockyard.model {
     export class FactDTO{
         id: number;
-        objectId: string;
-        bookerId: string;
+        objectId: string;       
         customerId: string;
         primaryCategory: string;
         secondaryCategory: string;

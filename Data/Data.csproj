@@ -269,6 +269,10 @@
     <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509180845185_RemovedBookerIdFieldFromHistoryItemDO.cs" />
+    <Compile Include="Migrations\201509180845185_RemovedBookerIdFieldFromHistoryItemDO.Designer.cs">
+      <DependentUpon>201509180845185_RemovedBookerIdFieldFromHistoryItemDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -498,6 +502,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509180845185_RemovedBookerIdFieldFromHistoryItemDO.resx">
+      <DependentUpon>201509180845185_RemovedBookerIdFieldFromHistoryItemDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

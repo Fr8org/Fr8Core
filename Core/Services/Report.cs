@@ -191,8 +191,7 @@ namespace Core.Services
                             Status = e.Status,
                             Data = e.Data,
                             CreateDate = e.CreateDate.ToString(DateStandardFormat),
-                            SecondaryCategory = e.SecondaryCategory,
-                            BookerId = e.BookerId
+                            SecondaryCategory = e.SecondaryCategory                            
                         })
                 .ToList();
         }
@@ -239,9 +238,9 @@ namespace Core.Services
             //Booker _booker = new Booker();
             var incidentDO = uow.IncidentRepository.GetQuery()
                 .Where(e => e.PrimaryCategory == "BookingRequest" && e.Activity == "MarkedAsProcessed")
-                .WhereInDateRange(e => e.CreateDate, dateRange)
-                .GroupBy(e => e.BookerId)
-                .OrderByDescending(e => e.Key);
+                .WhereInDateRange(e => e.CreateDate, dateRange);
+                //.GroupBy(e => e.BookerId)
+                //.OrderByDescending(e => e.Key);
 
 
             count = incidentDO.Count();
@@ -295,7 +294,7 @@ namespace Core.Services
         /// <param name="uow">unit of work</param>
         /// <returns>List of Incident</returns>
         public List<IncidentDO> GetIncidents(IUnitOfWork uow)
-        {
+        {            
             var incidentDO = uow.IncidentRepository.GetAll().ToList();
             return incidentDO;
         }

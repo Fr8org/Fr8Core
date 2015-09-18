@@ -1,8 +1,7 @@
 ﻿module dockyard.model {
     export class IncidentDTO {
         id: number;
-        activity: string;
-        bookerId: string;
+        activity: string;       
         createDate: Date;
         customerId: string;
         data: string;       

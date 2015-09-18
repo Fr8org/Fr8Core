@@ -64,7 +64,9 @@
             return this.DTOptionsBuilder
                 .fromFnPromise(resolveData)
                 .withPaginationType('full_numbers')
-                .withOption('createdRow', onRowCreate);
+                .withOption('createdRow', onRowCreate)
+                .withOption('order', [[2, 'desc'], [9, 'desc']]);  
+               
         }
 
         private OnRowCreate(row: any) {
@@ -76,24 +78,23 @@
         private GetDataTableColumns() {
             return [
                 this.DTColumnBuilder.newColumn('Id').withTitle('Id').notVisible(),
-                this.DTColumnBuilder.newColumn('Activity').withTitle('Activity'),
-                this.DTColumnBuilder.newColumn('BookerId').withTitle('Booker Id'),
+                this.DTColumnBuilder.newColumn('Activity').withTitle('Activity'),               
                 this.DTColumnBuilder.newColumn('CreateDate').withTitle('Created Date')
                     .renderWith(function (data, type, full, meta) {
                     if (data != null || data != undefined) {                        
-                        var dateValue = new Date(eval(data.split('/').join("")));
+                        var dateValue = new Date(parseInt(full.CreateDate.replace(/\/Date\((.*?)\)\//gi, "$1")))
                         var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                         return date;
                     }
                     })                ,
-                this.DTColumnBuilder.newColumn('CreatedBy').withTitle('Created By'),
-                this.DTColumnBuilder.newColumn('CreatedByID').withTitle('Created By Id'),
+                this.DTColumnBuilder.newColumn('CreatedBy').withTitle('Created By').notVisible(),
+                this.DTColumnBuilder.newColumn('CreatedByID').withTitle('Created By Id').notVisible(),
                 this.DTColumnBuilder.newColumn('CustomerId').withTitle('Customer Id'),
                 this.DTColumnBuilder.newColumn('Data').withTitle('Data'),
                 this.DTColumnBuilder.newColumn('LastUpdated').withTitle('Last Updated')
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
-                            var dateValue = new Date(eval(data.split('/').join("")));
+                            var dateValue = new Date(parseInt(full.LastUpdated.replace(/\/Date\((.*?)\)\//gi, "$1")))
                             var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                             return date;
                         }
@@ -155,7 +156,8 @@
             return this.DTOptionsBuilder
                 .fromFnPromise(resolveData)
                 .withPaginationType('full_numbers')
-                .withOption('createdRow', onRowCreate);
+                .withOption('createdRow', onRowCreate)
+                .withOption('order', [[2, 'desc'],[7,'desc']]);          
         }
 
         private OnRowCreate(row: any) {
@@ -167,12 +169,11 @@
         private GetDataTableColumns() {
             return [
                 this.DTColumnBuilder.newColumn('Id').withTitle('Id').notVisible(),
-                this.DTColumnBuilder.newColumn('Activity').withTitle('Activity'),
-                this.DTColumnBuilder.newColumn('BookerId').withTitle('Booker Id'),
+                this.DTColumnBuilder.newColumn('Activity').withTitle('Activity'),               
                 this.DTColumnBuilder.newColumn('CreateDate').withTitle('Created Date')
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
-                            var dateValue = new Date(eval(data.split('/').join("")));
+                            var dateValue = new Date(parseInt(full.CreateDate.replace(/\/Date\((.*?)\)\//gi, "$1")));
                             var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                             return date;
                         }
@@ -182,7 +183,7 @@
                 this.DTColumnBuilder.newColumn('LastUpdated').withTitle('Last Updated')
                     .renderWith(function (data, type, full, meta) {
                         if (data != null || data != undefined) {
-                            var dateValue = new Date(eval(data.split('/').join("")));
+                            var dateValue = new Date(parseInt(full.LastUpdated.replace(/\/Date\((.*?)\)\//gi, "$1")))
                             var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
                             return date;
                         }
