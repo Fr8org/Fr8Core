@@ -103,12 +103,12 @@ module dockyard.directives.paneConfigureAction {
             if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
             var field = fieldList[0];
 
-            // Find the onExitFocus event object
+            // Find the onChange event object
             var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onChange' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
 
-            if (fieldEvent.handler == 'requestConfig') {
+            if (fieldEvent.handler === 'requestConfig') {
                 this.crateHelper.mergeControlListCrate(
                     scope.currentAction.configurationControls,
                     scope.currentAction.crateStorage

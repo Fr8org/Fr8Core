@@ -42,8 +42,18 @@ namespace pluginDocuSign.Actions
             //look for a text field name connection string with a value
             var controlsCrates = _action.GetCratesByManifestType(STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
-            var connectionStringObjects = _crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "value").ToArray();
-            return ConfigurationRequestType.Followup;
+            var curDocuSignTemplateId = _crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "name")
+                .Select(e => (string)e["value"])
+                .FirstOrDefault(s => !string.IsNullOrEmpty(s));
+
+            if (curDocuSignTemplateId != null)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+            else
+            {
+                return ConfigurationRequestType.Initial;
+            }
         }
 
         public object Activate(ActionDTO curDataPackage)

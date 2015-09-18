@@ -91,14 +91,6 @@ namespace pluginAzureSqlServer.Actions
                     Name = "connection_string",
                     Required = true,
                     Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
-                },
-                new FieldDefinitionDTO()
-                {
-                    FieldLabel = "SQL Connection String2",
-                    Type = "textField",
-                    Name = "connection_string2",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
                 }
             };
 
