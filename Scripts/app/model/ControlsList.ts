@@ -7,6 +7,12 @@
         type: string;
         fieldLabel: string;
         name: string;
+        events: Array<FieldEvent>;
+    }
+
+    export class FieldEvent {
+        name: string;
+        handler: string;
     }
 
     export class CheckboxField extends ConfigurationField {
@@ -15,7 +21,7 @@
 
     export class TextField extends ConfigurationField {
         value: string;
-        required: boolean;
+        required: boolean;        
     }
 
     export class FileField extends ConfigurationField {
@@ -32,14 +38,29 @@
         radios: Array<RadioField>;
     }
 
-    export class DropDownListItem {
-        text: string;
-        value: string;
+    export class FieldDTO {
+        public Key: string;
+        public Value: string;
+    }
+
+    export class DropDownListItem extends FieldDTO {
+        
+    }
+
+    export class FieldSource {
+        public manifestType: string;
+        public label: string;
     }
 
     export class DropDownListBoxField extends ConfigurationField {
         listItems: Array<DropDownListItem>;
         value: string;
+        source: FieldSource;
+    }
+
+    export class TextBlockField extends ConfigurationField {
+        public value: string;
+        public class: string;
     }
 
     export class RoutingControlGroup extends ConfigurationField {

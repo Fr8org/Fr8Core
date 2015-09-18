@@ -14,7 +14,7 @@ namespace Data.Interfaces.DataTransferObjects
             CrateDTO = new List<CrateDTO>();
         }
 
-        [JsonProperty("CrateStorageDTO")]
+        [JsonProperty("crates")]
         public List<CrateDTO> CrateDTO { get; set; }
     }
 }

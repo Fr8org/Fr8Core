@@ -18,12 +18,18 @@ namespace Core.Services
     public class ProcessTemplate : IProcessTemplate
     {
         private readonly IProcess _process;
+        private readonly DockyardAccount _dockyardAccount;
+        private readonly IAction _action;
+        private readonly ICrate _crate;
 
         public object itemsToRemove { get; private set; }
 
         public ProcessTemplate()
         {
             _process = ObjectFactory.GetInstance<IProcess>();
+            _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
+            _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
@@ -175,6 +181,63 @@ namespace Core.Services
                 return queryableRepo.SelectMany<ProcessTemplateDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
                     .ToList();
             }
+        }
+
+        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
+        {
+            List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();
+            if (String.IsNullOrEmpty(userId))
+                throw new ArgumentNullException("Parameter UserId is null");
+            if (curEventReport == null)
+                throw new ArgumentNullException("Parameter Standard Event Report is null");
+
+            //1. Query all ProcessTemplateDO that are Active
+            //2. are associated with the determined DockyardAccount
+            //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
+            //in the Crate of Class "Standard Event Reports" which was passed in.
+            var subscribingProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
+                
+            //3. Get ActivityDO
+            foreach (var processTemplateDO in subscribingProcessTemplates)
+            {
+                //get the 1st activity
+                var actionDO = GetFirstActivity(processTemplateDO) as ActionDO;
+
+                //Get the CrateStorage
+                if (actionDO != null && actionDO.CrateStorage != "")
+                {
+                    //Loop each CrateDTO in CrateStorage
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
+                    foreach (var curEventSubscription in eventSubscriptionCrates)
+                    {
+                        //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
+                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
+
+                        if (subscriptionsList != null && subscriptionsList.Subscriptions
+                            .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
+                            .Any())//check event names if its subscribing
+                            processTemplateSubscribers.Add(processTemplateDO);
+                    }
+                }
+            }
+            return processTemplateSubscribers;
+        }
+
+        public ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO)
+        {
+            ActivityDO activityDO = null;
+            List<ActionListDO> actionLists = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.ActionLists).ToList();
+            if (actionLists.Count > 1)
+            {
+                throw new Exception("Multiple ActionList found in ProcessTemplateDO");
+            }
+            else if (actionLists.Count > 0)
+            {
+                ActionListDO actionListDO = actionLists[0];
+                activityDO = actionListDO.Activities.OrderBy(o => o.Ordering).FirstOrDefault();
+            }
+
+            return activityDO;
         }
     }
 }
