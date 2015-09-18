@@ -39,10 +39,10 @@ namespace DockyardTest.Services
         {
             var crates = new[]
             {
-                _crate.Create("Label 1", "{ fields: [ { key: \"Connection String\", value: \"TestConnectionStringA\" }, { key: \"Another Key\", value: \"Another Value\" } ]"),
-                _crate.Create("Label 2", "{ fields: [ { key: \"Connection String\", value: \"TestConnectionStringC\" }, { key: \"Another Key\", value: \"Another Value\" } ]"),
+                _crate.Create("Label 1", "[ { name: \"connection_string\", value: \"TestConnectionStringA\" }, { name: \"Another Key\", value: \"Another Value\" } ]"),
+                _crate.Create("Label 2", "[ { name: \"connection_string\", value: \"TestConnectionStringC\" }, { name: \"Another Key\", value: \"Another Value\" } ]"),
             };
-            var elements = _crate.GetElementByKey(crates, "Connection String").ToArray();
+            var elements = _crate.GetElementByKey(crates, "connection_string", "name").ToArray();
             var values = elements.Select(e => (string)e["value"]).ToArray();
             Assert.NotNull(elements);
             Assert.AreEqual(2, elements.Length);
