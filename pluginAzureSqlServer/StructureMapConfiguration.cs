@@ -35,8 +35,10 @@ namespace pluginAzureSqlServer
          {
              public LiveMode()
              {
+                 For<IAction>().Use<Core.Services.Action>();
+                 For<IPlugin>().Use<Plugin>();
                  For<ICrate>().Use<Crate>();
-                 For<IDbProvider>().Use<SqlClientDbProvider>();
+                 For<IDbProvider>().Use<SqlClientDbProvider>();                
              }
          }
     }

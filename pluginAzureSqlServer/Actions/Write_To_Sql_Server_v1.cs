@@ -106,8 +106,8 @@ namespace pluginAzureSqlServer.Actions
             object contentsList = GetFieldMappings(curActionDTO);
 
             var _crate = ObjectFactory.GetInstance<ICrate>();
-            
-            var  curCrateStorageDTO = new CrateStorageDTO
+
+            var curCrateStorageDTO = new CrateStorageDTO
             {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
@@ -119,6 +119,24 @@ namespace pluginAzureSqlServer.Actions
                         )
                 }
             };
+
+            var _action = ObjectFactory.GetInstance<IAction>();
+            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+
+            int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
+            if (foundSameCrateDTOAtIndex == -1)
+            {
+                _action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+            }
+            else
+            {
+                CrateStorageDTO localList = curActionDO.CrateStorageDTO();
+                localList.CrateDTO.RemoveAt(foundSameCrateDTOAtIndex);
+                curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
+                _action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+            }
+            curCrateStorageDTO = curActionDO.CrateStorageDTO();
+
             return curCrateStorageDTO;
         }
 
@@ -175,7 +193,7 @@ namespace pluginAzureSqlServer.Actions
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
-            }          
+            }
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
