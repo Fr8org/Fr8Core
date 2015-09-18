@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
@@ -19,20 +20,17 @@ namespace Core.Services
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
-        public void ProcessInbound(string userID, CrateDTO curCrateStandardEventReport)
+        public void ProcessInbound(string userID, EventReportMS curEventReport)
         {
             //check if CrateDTO is not null
-            if (curCrateStandardEventReport == null)
+            if (curEventReport == null)
                 throw new ArgumentNullException("Paramter Standard Event Report is null.");
-            //check if can parse to Standard Event Report
-            if (String.IsNullOrEmpty(curCrateStandardEventReport.ManifestType) || !curCrateStandardEventReport.ManifestType.Equals("Standard Event Report", StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
-
+          
             //Matchup process
-            var processNodeTemplates = _processTemplate.GetStandardEventSubscribers(userID, curCrateStandardEventReport);
+            IList<ProcessTemplateDO> matchingProcessTemplates = _processTemplate.GetMatchingProcessTemplates(userID, curEventReport);
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var processNodeTemplate in processNodeTemplates)
+                foreach (var processNodeTemplate in matchingProcessTemplates)
                 {
                     //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
                     //so make the existing call to ProcessTemplate#LaunchProcess.

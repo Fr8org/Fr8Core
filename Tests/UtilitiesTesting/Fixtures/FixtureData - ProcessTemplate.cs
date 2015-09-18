@@ -6,6 +6,7 @@ using Data.States;
 using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
+using Utilities.Serializers.Json;
 namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
@@ -138,7 +139,16 @@ namespace UtilitiesTesting.Fixtures
                     Ordering = 1
                 };
                 ICrate crate = ObjectFactory.GetInstance<ICrate>();
-                CrateDTO crateDTO = crate.Create("Standard Event Report", @"{ EventNames : ""DocuSign Envelope Sent"", ProcessDOId: """", EventPayload: [ ]}");
+
+                var serializer = new JsonSerializer();
+                EventSubscriptionMS eventSubscriptionMS = new EventSubscriptionMS();
+                eventSubscriptionMS.Subscriptions = new List<string>();
+                eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
+                eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
+
+                var eventReportJSON = serializer.Serialize(eventSubscriptionMS);
+
+                CrateDTO crateDTO = crate.Create("Standard Event Subscriptions", eventReportJSON, "Standard Event Subscriptions");
                 actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
 
                 uow.ActionRepository.Add(actionDo);

@@ -47,11 +47,11 @@ namespace DockyardTest.Controllers
         public void dockyard_events_CorrectStandardEventReport_ReturnsOK()
         {
             Mock<IDockyardEvent> dockyardEventMock = new Mock<IDockyardEvent>();
-            dockyardEventMock.Setup(a => a.ProcessInbound("1", It.IsAny<CrateDTO>()));
+            dockyardEventMock.Setup(a => a.ProcessInbound("1", It.IsAny<EventReportMS>()));
             ObjectFactory.Configure(cfg => cfg.For<IDockyardEvent>().Use(dockyardEventMock.Object));
             var dockyardEventController = new DockyardEventController();
 
-            var actionResult = dockyardEventController.dockyard_events(FixtureData.StandardEventReportFormat());
+            var actionResult = dockyardEventController.dockyard_events(FixtureData.RawStandardEventReportFormat());
 
             Assert.IsNotNull(actionResult);
         }

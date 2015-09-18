@@ -9,6 +9,6 @@ namespace Core.Interfaces
 {
     public interface IDockyardEvent
     {
-        void ProcessInbound(string userID, CrateDTO curStandardEventReport);
+        void ProcessInbound(string userID, EventReportMS curEventReport);
     }
 }
