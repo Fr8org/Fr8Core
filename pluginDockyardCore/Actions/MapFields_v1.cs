@@ -18,10 +18,11 @@ namespace pluginDockyardCore.Actions
 {
     public class MapFields_v1 : BasePluginAction
     {
-        private class CrateConfigurationDTO
+        private readonly ICrate _crateService;
+
+        public MapFields_v1()
         {
-            public string Id { get; set; }
-            public string Label { get; set; }
+            _crateService = ObjectFactory.GetInstance<ICrate>();
         }
 
         /// <summary>
@@ -65,20 +66,47 @@ namespace pluginDockyardCore.Actions
         }
 
         private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
-            List<CrateConfigurationDTO> crateConfigList)
+            List<MappingFieldConfigurationDTO> crateConfigList)
         {
             foreach (var curAction in actions)
             {
                 var curCrateStorage = curAction.CrateStorageDTO();
                 foreach (var curCrate in curCrateStorage.CrateDTO)
                 {
-                    crateConfigList.Add(new CrateConfigurationDTO()
+                    crateConfigList.Add(new MappingFieldConfigurationDTO()
                     {
                         Id = curCrate.Id,
                         Label = curCrate.Label
                     });
                 }
             }
+        }
+
+        /// <summary>
+        /// Create configuration controls crate.
+        /// </summary>
+        private CrateDTO CreateStandartConfigurationControls()
+        {
+            var fieldFilterPane = new FieldDefinitionDTO()
+            {
+                FieldLabel = "Configure Mapping",
+                Type = "mappingPane",
+                Name = "Selected_Mapping",
+                Required = true
+            };
+
+            var fields = new List<FieldDefinitionDTO>()
+            {
+                fieldFilterPane
+            };
+
+            var crateControls = _crateService.Create(
+                "Configuration_Controls",
+                JsonConvert.SerializeObject(fields),
+                "Standard Configuration Controls"
+                );
+
+            return crateControls;
         }
 
         /// <summary>
@@ -92,11 +120,43 @@ namespace pluginDockyardCore.Actions
             var curUpstreamActivities = curActivityService.GetUpstreamActivities(curActionDO);
             var curDownstreamActivities = curActivityService.GetDownstreamActivities(curActionDO);
 
-            var curUpstreamFields = new List<CrateConfigurationDTO>();
+            var curUpstreamFields = new List<MappingFieldConfigurationDTO>();
             FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curUpstreamFields);
 
-            var curDownstreamFields = new List<CrateConfigurationDTO>();
+            // TODO: test purposes only! to be removed when entire PB gets integrated.
+            if (curUpstreamFields.Count == 0)
+            {
+                curUpstreamFields.Add(new MappingFieldConfigurationDTO()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Label = "[Test].[UpStreamField_01]"
+                });
+
+                curUpstreamFields.Add(new MappingFieldConfigurationDTO()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Label = "[Test].[UpStreamField_02]"
+                });
+            }
+
+            var curDownstreamFields = new List<MappingFieldConfigurationDTO>();
             FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curDownstreamFields);
+
+            // TODO: test purposes only! to be removed when entire PB gets integrated.
+            if (curDownstreamFields.Count == 0)
+            {
+                curDownstreamFields.Add(new MappingFieldConfigurationDTO()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Label = "[Test].[DownStreamField_01]"
+                });
+
+                curDownstreamFields.Add(new MappingFieldConfigurationDTO()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Label = "[Test].[DownStreamField_02]"
+                });
+            }
 
             if (curUpstreamFields.Count == 0 || curDownstreamFields.Count == 0)
             {
@@ -107,10 +167,14 @@ namespace pluginDockyardCore.Actions
             var curUpstreamJson = JsonConvert.SerializeObject(curUpstreamFields, JsonSettings.CamelCase);
             var curDownstreamJson = JsonConvert.SerializeObject(curDownstreamFields, JsonSettings.CamelCase);
 
+            var curConfigurationControlsCrage = CreateStandartConfigurationControls();
+
             var curResultDTO = new CrateStorageDTO()
             {
                 CrateDTO = new List<CrateDTO>()
                 {
+                    curConfigurationControlsCrage,
+
                     new CrateDTO()
                     {
                         Id = "Upstream Plugin-Provided Fields",
@@ -126,8 +190,6 @@ namespace pluginDockyardCore.Actions
                     }
                 }
             };
-
-            curActionDO.UpdateCrateStorageDTO(curResultDTO.CrateDTO);
 
             return curResultDTO;
         }

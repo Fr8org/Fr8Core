@@ -57,4 +57,9 @@
         value: string;
         source: FieldSource;
     }
+
+    export class TextBlockField extends ConfigurationField {
+        public value: string;
+        public class: string;
+    }
 }
