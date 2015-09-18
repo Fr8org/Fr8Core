@@ -54,9 +54,33 @@ namespace DockyardTest.Services
         [Test,Ignore]
         public void CanActivateProcessTemplate()
         {
-           // var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
-           // _processTemplateService.Activate(curProcessTemplateDO);
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+           string result = _processTemplateService.Activate(curProcessTemplateDO);
+           Assert.AreEqual(result, "success");
+        }
 
+        [Test, Ignore]
+        public void FailsActivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            Assert.AreEqual(result, "failed");
+        }
+
+        [Test, Ignore]
+        public void CanDeactivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            Assert.AreEqual(result, "success");
+        }
+
+        [Test, Ignore]
+        public void FailsDeactivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            Assert.AreEqual(result, "failed");
         }
 
 		//[Test]

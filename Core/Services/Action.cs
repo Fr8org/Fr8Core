@@ -15,6 +15,8 @@ using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
 using Newtonsoft.Json;
+using System.Net;
+using System.Net.Http;
 
 namespace Core.Services
 {
@@ -358,26 +360,16 @@ namespace Core.Services
 
         private object CallPluginAction(ActionDO curActionDO, string actionName)
         {
-            ActivityTemplateDO curActivityTemplate;
             if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
             {
-                //fetch this Action's ActivityTemplate
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
+                    ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
                     if (curActivityTemplate != null)
                     {
                         //convert the Action to a DTO in preparation for serialization and POST to the plugin
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-
-                        //convert the ActivityTemplate to a DTO as well
-                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
-
-                        // prepare the current plugin URL
-                        // TODO: Add logic to use https:// for production
-                        string curPluginUrl = string.Format("http://{0}/actions/{1}/" + curActivityTemplate.Plugin.Endpoint, actionName);
-
+                        string curPluginUrl = string.Format("http://{0}/actions/{1}/",curActivityTemplate.Plugin.Endpoint, actionName);
                         var restClient = new RestfulServiceClient();
                         object result;
                         try
@@ -387,7 +379,7 @@ namespace Core.Services
                         }
                         catch (Exception)
                         {
-                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
+                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDO));
                             throw;
                         }
                         return result;

@@ -12,12 +12,13 @@ using Newtonsoft.Json;
 using Data.Wrappers;
 using Data.Interfaces;
 using PluginBase;
+using DocuSign.Integrations.Client;
 
 namespace pluginDocuSign.Actions
 {
     public class Wait_For_DocuSign_Event_v1 : BasePluginAction
     {
-		 private static readonly int STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID = 3;
+        private static readonly int STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID = 3;
 
         IAction _action = ObjectFactory.GetInstance<IAction>();
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
@@ -34,12 +35,30 @@ namespace pluginDocuSign.Actions
 
         public object Activate(ActionDTO curDataPackage)
         {
-            return "Activate Request"; // Will be changed when implementation is plumbed in.
+            DocuSignAccount docuSignAccount = new DocuSignAccount();
+            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
+            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            {
+                return "Activated"; // Will be changed when implementation is plumbed in.
+            }
+            else
+            {
+                return "Fail";
+            }
         }
 
         public object Deactivate(ActionDTO curDataPackage)
         {
-            return "Deactivate Request"; // Will be changed when implementation is plumbed in.
+            DocuSignAccount docuSignAccount = new DocuSignAccount();
+            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
+            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            {
+                return "Deactivated"; // Will be changed when implementation is plumbed in.
+            }
+            else
+            {
+                return "Fail";
+            }
         }
 
         public object Execute(ActionDataPackageDTO curActionDataPackage)
@@ -87,10 +106,10 @@ namespace pluginDocuSign.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-				var crateControls = CreateStandartConfigurationControls();
-				var crateDesignTimeFields = CreateStandardDesignTimeFields();
-				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+            var crateControls = CreateStandartConfigurationControls();
+            var crateDesignTimeFields = CreateStandardDesignTimeFields();
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             return curActionDTO.CrateStorage;
         }
@@ -153,11 +172,11 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
-	            FieldLabel = "Select DocuSign Template",
-	            Type = "dropdownlistField",
-	            Name = "Selected_DocuSign_Template",
-	            Required = true,
-	            Events = new List<FieldEvent>()
+                FieldLabel = "Select DocuSign Template",
+                Type = "dropdownlistField",
+                Name = "Selected_DocuSign_Template",
+                Required = true,
+                Events = new List<FieldEvent>()
                 {
                     new FieldEvent("onSelect", "requestConfiguration")
                 },

@@ -50,5 +50,15 @@ namespace UtilitiesTesting.Fixtures
                 PluginStatus = PluginStatus.Active
             };
         }
+
+        public static PluginDO PluginFive()
+        {
+            return new PluginDO
+            {
+                Name = "DocuSign",
+                Endpoint = "localhost",
+                PluginStatus = PluginStatus.Active
+            };
+        }
     }
 }

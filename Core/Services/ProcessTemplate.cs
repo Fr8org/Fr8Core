@@ -189,20 +189,24 @@ namespace Core.Services
             //var cuuActivity = curActionLists.Select(al => al.Select(a => a.Activities));
             try
             {
+                string result = "no action";
                 foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
                 {
-                    foreach (ActionListDO actions in processNodeTemplates.ActionLists)
+                    foreach (ActionListDO actions in processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
                     {
                         foreach (var item in actions.Activities)
                         {
-                           
-                            _action.Activate((ActionDO)item);
+
+                            if (_action.Activate((ActionDO)item).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
+                                return "fail";
+                            else
+                                result = "success";
                         }
                     }
                 }
-                return "success";
+                return result;
             }
-            catch (Exception) { return "fail"; }
+            catch (Exception) { return "failed"; }
         }
 
         public string Deactivate(ProcessTemplateDO curProcessTemplate)
