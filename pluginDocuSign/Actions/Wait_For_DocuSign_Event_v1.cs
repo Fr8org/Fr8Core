@@ -28,8 +28,22 @@ namespace pluginDocuSign.Actions
         public object Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDTO,
-                actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo)); // will be changed to complete the config feature for docu sign
+        }
+
+        public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        {
+            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+
+            if (curCrates.CrateDTO.Count == 0)
+                return ConfigurationRequestType.Initial;
+
+            //load configuration crates of manifest type Standard Control Crates
+            //look for a text field name connection string with a value
+            var controlsCrates = _action.GetCratesByManifestType(STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                curActionDTO.CrateStorage);
+            var connectionStringObjects = _crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "value").ToArray();
+            return ConfigurationRequestType.Followup;
         }
 
         public object Activate(ActionDTO curDataPackage)
@@ -154,7 +168,7 @@ namespace pluginDocuSign.Actions
 	            Required = true,
 	            Events = new List<FieldEvent>()
                 {
-                    new FieldEvent("onSelect", "requestConfiguration")
+                    new FieldEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSource
                 {

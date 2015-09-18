@@ -55,7 +55,7 @@ namespace pluginAzureSqlServer.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType("Standard Configuration Controls",
+            var controlsCrates = _action.GetCratesByManifestType(STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var connectionStringObjects = _crate.GetElementByKey(controlsCrates, key: "Connection String", keyFieldName: "key").ToArray();
 
@@ -87,7 +87,15 @@ namespace pluginAzureSqlServer.Actions
                     Type = "textField",
                     Name = "connection_string",
                     Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onExitFocus", "requestConfig")}
+                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+                },
+                new FieldDefinitionDTO()
+                {
+                    FieldLabel = "SQL Connection String2",
+                    Type = "textField",
+                    Name = "connection_string2",
+                    Required = true,
+                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
                 }
             };
 
