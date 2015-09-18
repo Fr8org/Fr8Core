@@ -10,10 +10,8 @@ module dockyard.directives.paneConfigureAction {
         dropdownlistField
     }
 
-    export class ChangeEventArgs
-    {
-        constructor(fieldName: string)
-        {
+    export class ChangeEventArgs {
+        constructor(fieldName: string) {
             this.fieldName = fieldName;
         }
 
@@ -52,7 +50,7 @@ module dockyard.directives.paneConfigureAction {
 
                 this._$scope = $scope;
                 $scope.onFieldChange = <(radio: model.ConfigurationField) => void> angular.bind(this, this.onFieldChange);
-                
+
             };
         }
 
@@ -60,23 +58,26 @@ module dockyard.directives.paneConfigureAction {
         public static Factory() {
             var directive = () => {
                 return new ConfigurationField();
-            }; 
+            };
 
             directive['$inject'] = [];
             return directive;
         }
 
-        private onFieldChange(event: JQueryMouseEventObject) {
-            //Get name of field that received the event
-            var fieldName = event.target.attributes.getNamedItem('data-field-name').value,
-                eventArgs = new ChangeEventArgs(fieldName)
-            this._$scope.$emit("onFieldChange", eventArgs);
-        }
+        private onFieldChange(event: any) {
+            var fieldName: string;
 
-        // A version of the above event handler for non-HTML (custom) fields
-        private dispatchChangeEvent(fieldName: string) {
-            var eventArgs = new ChangeEventArgs(fieldName);
-            this._$scope.$emit("onFieldChange", eventArgs);
+            if (!!event.target === true) {
+                // If called by DOM event (for standard fields), get field name
+                // Get name of field that received the event
+                fieldName = event.target.attributes.getNamedItem('data-field-name').value;
+            }
+            else {
+                // If called by custom field, it is assumed that field name is suppied as the argument
+                fieldName = event;
+            }
+
+            this._$scope.$emit("onFieldChange", new ChangeEventArgs(fieldName));
         }
     }
 

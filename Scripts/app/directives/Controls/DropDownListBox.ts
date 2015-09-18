@@ -4,6 +4,7 @@ module dockyard.directives.dropDownListBox {
 
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownListBoxField;
+        change: (fieldName: string) => void;
         selectedItem: model.DropDownListItem;
         SetSelectedItem: (item: model.DropDownListItem) => void;
     }
@@ -15,7 +16,8 @@ module dockyard.directives.dropDownListBox {
         public templateUrl = '/AngularTemplate/DropDownListBox';
         public controller: ($scope: IDropDownListBoxScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            field: '='
+            field: '=',
+            change: '&'
         };
 
         public restrict = 'E';
@@ -47,6 +49,13 @@ module dockyard.directives.dropDownListBox {
         private SetSelectedItem(item: model.DropDownListItem) {
             this._$scope.field.value = item.Value;
             this._$scope.selectedItem = item;
+
+            // Invoike onChange event handler
+            if (this._$scope.change != null && ng.isFunction(this._$scope.change))
+            {
+                this._$scope.change(this._$scope.field.name); 
+            } 
+
         }
 
         private FindAndSetSelectedItem() {

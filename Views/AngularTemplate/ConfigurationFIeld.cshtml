@@ -42,7 +42,7 @@
     *@
     <div ng-if='field.type == "dropdownlistField"'>
         <label class='control-label'>{{field.fieldLabel}}</label>
-        <drop-down-list-box field='field'></drop-down-list-box>
+        <drop-down-list-box field='field' change='onFieldChange'></drop-down-list-box>
     </div>  
     @* Add more configuration field templates below *@
 </div>

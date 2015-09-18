@@ -94,7 +94,7 @@ module dockyard.directives.paneConfigureAction {
 
         private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
-            debugger;
+
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
             var fieldList = scope.currentAction.configurationControls.fields;
