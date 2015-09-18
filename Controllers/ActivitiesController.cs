@@ -17,12 +17,13 @@ namespace Web.Controllers
     [RoutePrefix("activities")]
 	public class ActivitiesController : ApiController
 	{
-      		private readonly IActivity _activity;
+      	private readonly IActivity _activity;
 
 		public ActivitiesController()
 		{
 			_activity = ObjectFactory.GetInstance<IActivity>();
 		}
+
 		[Route("upstream")]
 		[ResponseType(typeof(List<ActivityDO>))]
 		public IHttpActionResult GetUpstreamActivities(int id)
