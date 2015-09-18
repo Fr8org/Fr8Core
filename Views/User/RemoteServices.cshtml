@@ -86,7 +86,7 @@
     </table>
     @if (Model.HasGoogleToken)
     {
-        <form action="@Url.Action("ExportGoogleSpreadsheet")">
+        <form action="@Url.Action("ExportGoogleSpreadsheet")" method="POST">
             <div>
                 @Html.LabelFor(m => m.GoogleSpreadsheets, "Select Google Spreadsheet")
                 @Html.DropDownList("spreadsheetUri", Model.GoogleSpreadsheets.Select(id => new SelectListItem() {Text = id.Value, Value = id.Key}))

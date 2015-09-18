@@ -75,7 +75,7 @@ namespace Core.Managers.APIManagers.Authorizers.Google
             var flow = CreateFlow(userId);
             var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
             if (tokenResponse == null)
-                throw new UnauthorizedAccessException(string.Format("No refresh token found for user '{0}'.", userId));
+                throw new UnauthorizedAccessException(string.Format("No token found for user '{0}'.", userId));
             await flow.RefreshTokenAsync(userId, tokenResponse.RefreshToken, cancellationToken);
         }
 
@@ -84,8 +84,17 @@ namespace Core.Managers.APIManagers.Authorizers.Google
             var flow = CreateFlow(userId);
             var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
             if (tokenResponse == null)
-                throw new UnauthorizedAccessException(string.Format("No access token found for user '{0}'.", userId));
+                throw new UnauthorizedAccessException(string.Format("No token found for user '{0}'.", userId));
             return tokenResponse.AccessToken;
+        }
+
+        public async Task<string> GetRefreshTokenAsync(string userId, CancellationToken cancellationToken)
+        {
+            var flow = CreateFlow(userId);
+            var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
+            if (tokenResponse == null)
+                throw new UnauthorizedAccessException(string.Format("No token found for user '{0}'.", userId));
+            return tokenResponse.RefreshToken;
         }
     }
 }

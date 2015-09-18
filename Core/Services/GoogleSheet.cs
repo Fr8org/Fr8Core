@@ -23,6 +23,7 @@ namespace Core.Services
             parameters.ClientSecret = configRepository.Get("GoogleClientSecret");
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>("Google");
             parameters.AccessToken = authorizer.GetAccessTokenAsync(userId, CancellationToken.None).Result;
+            parameters.RefreshToken = authorizer.GetRefreshTokenAsync(userId, CancellationToken.None).Result;
             // Initialize the variables needed to make the request
             return new GOAuth2RequestFactory(null, "kwasantcalendar", parameters);
         }
@@ -80,24 +81,21 @@ namespace Core.Services
             using (var ms = new MemoryStream())
             using (var sw = new StreamWriter(ms))
             {
-                // Iterate through each row, printing its cell values.
+                // Iterate through each row
                 foreach (ListEntry row in listFeed.Entries)
                 {
-                    // Print the first column's cell value
-                    sw.Write(row.Title.Text);
-                    //Console.WriteLine(row.Title.Text);
-                    // Iterate over the remaining columns, and print each cell value
-                    foreach (ListEntry.Custom element in row.Elements)
-                    {
-                        sw.Write(",{0}", element.Value);
-                        //Console.WriteLine(element.Value);
-                    }
-                    sw.WriteLine();
+                    // Iterate over the columns
+                    var line = string.Join(",", row.Elements.Cast<ListEntry.Custom>().Select(e => e.Value));
+                    sw.WriteLine(line);
                 }
+                sw.Flush();
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var url = uow.FileRepository.SaveRemoteFile(ms, string.Format("GoogleSpreadsheets/{0}.csv", spreadsheetUri));
+                    ms.Position = 0;
+                    var url = uow.FileRepository.SaveRemoteFile(ms,
+                        string.Format("GoogleSpreadsheets/{0}.csv",
+                            spreadsheetUri.Substring(spreadsheetUri.LastIndexOf("/") + 1)));
                     try
                     {
                         FileDO fileDo = new FileDO();
