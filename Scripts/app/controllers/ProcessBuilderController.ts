@@ -31,7 +31,6 @@ module dockyard.controllers {
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
     import pst = dockyard.directives.paneSelectTemplate;
-    import pcm = dockyard.directives.paneConfigureMapping;
 
     class ProcessBuilderController {
         // $inject annotation.
@@ -178,8 +177,6 @@ module dockyard.controllers {
             //Process Configure Action Pane events
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
-            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_MapFieldsClicked],
-                (event: ng.IAngularEvent, eventArgs: pca.MapFieldsClickedEventArgs) => this.PaneConfigureAction_MapFieldsClicked(eventArgs));
 
             //Select Template Pane events
             this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
@@ -439,27 +436,6 @@ module dockyard.controllers {
         }
 
         /*
-            Handles message 'PaneConfigureAction_MapFieldsClicked'
-        */
-        private PaneConfigureAction_MapFieldsClicked(eventArgs: pca.MapFieldsClickedEventArgs) {
-            var scope = this._scope;
-
-            var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
-            promise.then((result: model.ProcessBuilderState) => {
-
-                // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
-
-                //Render Pane Configure Mapping 
-                var pcmEventArgs = new pcm.RenderEventArgs(
-                    eventArgs.action.processNodeTemplateId,
-                    eventArgs.action.id,
-                    eventArgs.action.isTempId);
-                scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Render], pcmEventArgs);
-            });
-        }
-
-        /*
             Handles message 'ConfigureActionPane_ActionUpdated'
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
@@ -478,22 +454,8 @@ module dockyard.controllers {
             Handles message 'SelectActionPane_ActionTypeSelected'
         */
         private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            var self = this;
-
-            // Get full ActivityTemplateDTO from backend.
-            this.ActivityTemplateService.get(
-                { id: eventArgs.action.actionTemplateId },
-                function (activityTemplateDTO: interfaces.IActivityTemplateVM) {
-                    if (activityTemplateDTO.name == 'MapFields') {
-                        alert('TODO: Should display MapFieldsPane!');
-                    }
-
-                    else {
-                        // Render Pane Configure Action 
-                        var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-                        self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-                    }                    
-                });
+            var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
         }
 
         /*
@@ -502,18 +464,6 @@ module dockyard.controllers {
         private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {           
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
         }
-         
-        // TODO: do we need this?
-        // /*
-        //     Handles message 'PaneSelectAction_ActionUpdated'
-        // */
-        // private PaneSelectAction_ActionUpdated(eventArgs: psa.ActionUpdatedEventArgs) {
-        //     //Update Pane Workflow Designer
-        //     var eArgs = new pwd.ActionNameUpdatedEventArgs(
-        //         eventArgs.actionId,
-        //         eventArgs.actionName);
-        //     this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated], eArgs);
-        // }
 
         /*
             Handles message 'PaneSelectAction_ActionRemoved'
@@ -562,9 +512,6 @@ module dockyard.controllers {
         private HideActionPanes() {
             //Hide Select Action Pane
             this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
-
-            //Hide Configure Mapping Pane
-            this._scope.$broadcast(pcm.MessageType[pcm.MessageType.PaneConfigureMapping_Hide]);
 
             //Hide Configure Action Pane
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);

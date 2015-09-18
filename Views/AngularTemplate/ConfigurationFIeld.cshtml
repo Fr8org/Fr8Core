@@ -60,5 +60,14 @@
         <label class='control-label'>{{field.fieldLabel}}</label>
         <filter-pane field='field'></filter-pane>
     </div>
+
+    @*
+        MappingPane template
+    *@
+    <div ng-if='field.type == "mappingPane"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <mapping-pane current-action='currentAction' field='field'></mapping-pane>
+    </div>
+
     @* Add more configuration field templates below *@
 </div>

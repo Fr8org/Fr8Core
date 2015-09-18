@@ -7,7 +7,6 @@ module dockyard.tests.controller {
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
     import pst = dockyard.directives.paneSelectTemplate;
-    import pcm = dockyard.directives.paneConfigureMapping;
 
     describe("ProcessBuilder Framework message processing", () => {
         beforeEach(module("app"));
@@ -97,20 +96,10 @@ module dockyard.tests.controller {
         it("When PaneSelectAction_ActionTypeSelected is sent, " +
             "PaneConfigureAction_Render should be received with correct args", () => {
                 var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(new model.ActionDesignDTO(1, 2, false, 3)),
-                    outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false),
                     outgoingEvent2Args = new pca.RenderEventArgs(new model.ActionDesignDTO(1, 2, false, 3));
                  
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
-            });
-
-        it("When PaneConfigureAction_MapFieldsClicked is sent, " +
-            "PaneConfigureMapping_Render should be received with correct args", () => {
-                var incomingEventArgs = new pca.MapFieldsClickedEventArgs(new model.ActionDesignDTO(1, 1, false, 1)),
-                    outgoingEvent1Args = new pcm.RenderEventArgs(1, 1, false);
-
-                _$scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_MapFieldsClicked], incomingEventArgs);
-                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
             });
 
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +

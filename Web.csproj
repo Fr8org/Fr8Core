@@ -751,6 +751,7 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
@@ -781,6 +782,7 @@
     <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
+    <None Include="Views\AngularTemplate\MappingPane.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
@@ -798,7 +800,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureMapping\PaneConfigureMapping.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
