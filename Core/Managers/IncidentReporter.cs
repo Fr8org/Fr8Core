@@ -97,9 +97,9 @@ namespace Core.Managers
                 ObjectId = curNotificationPayload,
                 CustomerId = "",
                 Data = curNotificationUrl,
-                PrimaryCategory = "External Event",
-                SecondaryCategory = "Unparseble Notification",
-                Activity = "Received"
+                PrimaryCategory = "Event",
+                SecondaryCategory = "External",
+                Activity = "Unparseble Notification"
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
