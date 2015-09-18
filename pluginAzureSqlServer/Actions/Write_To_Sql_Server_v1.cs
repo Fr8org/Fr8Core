@@ -13,12 +13,21 @@ using StructureMap;
 using PluginBase;
 using PluginBase.BaseClasses;
 using Core.Interfaces;
+using Core.StructureMap;
 
 namespace pluginAzureSqlServer.Actions
 {
 
     public class Write_To_Sql_Server_v1 : BasePluginAction
     {
+        private ICrate _crate;
+        private IAction _action;
+
+        public Write_To_Sql_Server_v1()
+        {
+            _crate = ObjectFactory.GetInstance<ICrate>();
+            _action = ObjectFactory.GetInstance<IAction>();
+        }
 
         //================================================================================
         //General Methods (every Action class has these)
@@ -81,7 +90,7 @@ namespace pluginAzureSqlServer.Actions
                 }
             };
 
-            var _crate = ObjectFactory.GetInstance<ICrate>();
+           
             //Return one field with empty connection string
             var curConfigurationStore = new CrateStorageDTO
             {
@@ -103,9 +112,7 @@ namespace pluginAzureSqlServer.Actions
         protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             //In all followup calls, update data fields of the configuration store          
-            object contentsList = GetFieldMappings(curActionDTO);
-
-            var _crate = ObjectFactory.GetInstance<ICrate>();
+            List<String> contentsList = GetFieldMappings(curActionDTO);
 
             var curCrateStorageDTO = new CrateStorageDTO
             {
@@ -119,8 +126,7 @@ namespace pluginAzureSqlServer.Actions
                         )
                 }
             };
-
-            var _action = ObjectFactory.GetInstance<IAction>();
+           
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
@@ -172,9 +178,9 @@ namespace pluginAzureSqlServer.Actions
         //CONFIGURATION-Related Methods
         //-----------------------------------------
 
-        public object GetFieldMappings(ActionDTO curActionDTO)
+        public List<string> GetFieldMappings(ActionDTO curActionDTO)
         {
-
+            //Get configuration settings and check for connection string
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
             if (curActionDTO.CrateStorage.CrateDTO.Count == 0)
             {
@@ -197,7 +203,7 @@ namespace pluginAzureSqlServer.Actions
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
-            return curProvider.ConnectToSql(connStringField.Value, (command) =>
+            return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>
             {
                 command.CommandText = FieldMappingQuery;
 
