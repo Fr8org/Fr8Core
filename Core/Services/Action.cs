@@ -31,7 +31,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -139,7 +139,7 @@ namespace Core.Services
                         curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
                         //save the received action as quickly as possible
-                        _action.SaveOrUpdateAction(curActionDO);
+                        SaveOrUpdateAction(curActionDO);
                         return curActionDO;  
                     }
 
