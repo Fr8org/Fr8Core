@@ -86,9 +86,7 @@ namespace Core.Services
             }
 
 
-            _processNodeTemplate.Create(uow,null);
-
-
+            _processNodeTemplate.Create(uow,ptdo.StartingProcessNodeTemplate);
 
             //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
             return ptdo.Id;
