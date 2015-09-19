@@ -96,6 +96,7 @@ namespace Web.Controllers
                     .Single(x => x.Id == curUserId);
 
                 processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
+                uow.SaveChanges();
 
                 return Ok(processTemplateDto);
             }
