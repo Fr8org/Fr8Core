@@ -32,7 +32,11 @@ namespace Core.Services
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				var curActivity = curActivityDO.ParentActivity;
-				while (curActivity != null)
+			    if (curActivity == null && curActivityDO.ParentActivityId != null)
+			    {
+                    curActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
+			    }
+			    while (curActivity != null)
 				{
 					// Get action with lower Ordering
 					var lowerAction = curActivity.Activities.OrderBy(x => x.Ordering).FirstOrDefault();

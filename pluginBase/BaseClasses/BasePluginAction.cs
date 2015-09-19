@@ -61,13 +61,13 @@ namespace PluginBase.BaseClasses
         protected virtual CrateDTO GetCrate(ActivityDO activityDO,
             string searchId, GetCrateDirection direction)
         {
-            return GetCrate(activityDO, x => x.Id == searchId, direction);
+            return GetCrate(activityDO, x => x.ManifestType == searchId, direction);
         }
 
         protected virtual CrateDTO GetCrate(ActionDTO actionDTO,
             string searchId, GetCrateDirection direction)
         {
-            return GetCrate(actionDTO, x => x.Id == searchId, direction);
+            return GetCrate(actionDTO, x => x.ManifestType == searchId, direction);
         }
 
         protected virtual CrateDTO GetCrate(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
