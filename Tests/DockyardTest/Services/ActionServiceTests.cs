@@ -63,7 +63,7 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            CrateStorageDTO result = _action.Configure(curActionDO);
+            //CrateStorageDTO result = _action.Configure(curActionDO);
             
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);

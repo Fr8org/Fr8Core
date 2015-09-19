@@ -12,7 +12,7 @@ namespace Core.Interfaces
 
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         
-        CrateStorageDTO Configure(ActionDO curActionDO);
+        ActionDO Configure(ActionDO curActionDO);
 
         IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 
@@ -30,6 +30,5 @@ namespace Core.Interfaces
 
         string Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
-
     }
 }

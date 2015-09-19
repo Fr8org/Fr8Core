@@ -33,6 +33,22 @@ namespace Web.Controllers
             _action = service;
         }
 
+
+        //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
+
+        [HttpPost]
+        [Route("configuration")]
+        [Route("configure")]
+        //[ResponseType(typeof(CrateStorageDTO))]
+        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
+        {
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            curActionDO = _action.Configure(curActionDO);
+
+            return Ok(curActionDO);
+        }
+
+
         [Route("configure")]
         [Route("process")]
         [HttpGet]
@@ -42,17 +58,26 @@ namespace Web.Controllers
             var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
+            //Figure out which request is being made
             var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
                 curActionDO.ActivityTemplate.Name,
                 curActionDO.ActivityTemplate.Version);
-
             var calledType = Type.GetType(curAssemblyName);
             var curMethodInfo = calledType
                 .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
             var curObject = Activator.CreateInstance(calledType);
+            ActionDTO curActionDTO;
+            try
+            {
+                curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+            }
+            catch 
+            {
+                throw new ApplicationException("PluginRequestError");
+            }
 
-            return JsonConvert.SerializeObject(
-                (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+            curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            return JsonConvert.SerializeObject(curActionDO);
         }
 
         /// <summary>
@@ -91,16 +116,8 @@ namespace Web.Controllers
             return new List<ActionDTO>();
         }
 
-        [HttpPost]
-        [Route("configuration")]
-        [Route("configure")]
-        //[ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
-        {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            var configurationCrates = _action.Configure(curActionDO);
-            return Ok(configurationCrates);  
-        }
+
+
 
 
         /// <summary>

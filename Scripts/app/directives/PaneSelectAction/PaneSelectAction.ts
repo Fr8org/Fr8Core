@@ -129,6 +129,9 @@ module dockyard.directives.paneSelectAction {
                     currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.actionTemplateId })[0];
 
                     if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
+                        // Ensure that we do not send CrateStorage of previously selected storage to server.
+                        $scope.currentAction.crateStorage = new model.CrateStorage();
+
                         //Check for component activity
                         if (currentSelectedActivity.componentActivities != null) {
                             var componentActivities = angular.fromJson(currentSelectedActivity.componentActivities);

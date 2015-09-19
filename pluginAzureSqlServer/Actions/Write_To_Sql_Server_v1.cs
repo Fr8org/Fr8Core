@@ -55,17 +55,20 @@ namespace pluginAzureSqlServer.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType("Standard Configuration Controls",
+            var controlsCrates = _action.GetCratesByManifestType(STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
-            var connectionStringObjects = _crate.GetElementByKey(controlsCrates, key: "Connection String", keyFieldName: "key").ToArray();
+            var connectionStrings = _crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
 
 
             //if there are more than 2 return connection strings, something is wrong
             //if there are none or if there's one but it's value is "" the return initial else return followup
-            var objCount = connectionStringObjects.Length;
+            var objCount = connectionStrings.Length;
             if (objCount > 1)
                 throw new ArgumentException("didn't expect to see more than one connectionStringObject with the name Connection String on this Action", "curActionDTO");
-            if (objCount == 0 || string.IsNullOrEmpty((string)connectionStringObjects.First()["value"]))
+            if (objCount == 0)
                 return ConfigurationRequestType.Initial;
             else
             {
@@ -87,7 +90,7 @@ namespace pluginAzureSqlServer.Actions
                     Type = "textField",
                     Name = "connection_string",
                     Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onExitFocus", "requestConfig")}
+                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
                 }
             };
 

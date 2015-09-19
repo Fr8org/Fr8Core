@@ -17,10 +17,13 @@ namespace Core.Interfaces
 
         IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO);
 
+        IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport);
+
+        ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO);
+
+
         string Activate(ProcessTemplateDO curProcessTemplate);
 
         string Deactivate(ProcessTemplateDO curProcessTemplate);
-
-        IList<ProcessTemplateDO> GetStandardEventSubscribers(string userId, CrateDTO curStandardEventReport);
-	}
+    }
 }

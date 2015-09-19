@@ -28,6 +28,9 @@ namespace PluginBase.BaseClasses
         protected const int DESIGNTIME_FIELDS_MANIFEST_ID = 3;
         protected const string DESIGNTIME_FIELDS_MANIFEST_NAME = "Standard Design-Time Fields";
 
+        //protected const int STANDARD_CONF_CONTROLS_MANIFEST_ID = ;
+        protected const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
+
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)

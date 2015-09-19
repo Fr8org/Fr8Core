@@ -23,6 +23,7 @@ namespace Core.Services
     public class Action : IAction
     {
         private IEnvelope _envelope;
+        private IAction _action;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPlugin _plugin;
@@ -32,6 +33,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
+            
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -92,11 +94,9 @@ namespace Core.Services
             }
         }
 
-        public CrateStorageDTO Configure(ActionDO curActionDO)
+        public ActionDO Configure(ActionDO curActionDO)
         {
-
             ActivityTemplateDO curActivityTemplate;
-
 
             if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
             {
@@ -104,8 +104,6 @@ namespace Core.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-
-
 
                     if (curActivityTemplate != null)
                     {
@@ -126,7 +124,7 @@ namespace Core.Services
                         try
                         {
                             pluginConfigurationCrateListJSON =
-                           restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                                restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
                         }
                         catch (Exception)
                         {
@@ -135,8 +133,19 @@ namespace Core.Services
                         }
 
                         var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
-                        return configurationCrates;
+                        //return configurationCrates;
                         //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                        //var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
+                        
+                        //replace the old CrateStorage with the new CrateStorage
+                        //this feels a little clumsy and dangerous (what if something changes in the action's crate storage while this plugin is sitting on its data?)
+                        //we probably will need a complex mechanism that looks at each crate by GUID
+                        curActionDTO.CrateStorage = configurationCrates;
+                        curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+                        //save the received action as quickly as possible
+                        SaveOrUpdateAction(curActionDO);
+                        return curActionDO;  
                     }
 
                     else
@@ -348,17 +357,15 @@ namespace Core.Services
 
         public string Activate(ActionDO curActionDO)
         {
-
-            return CallPluginAction(curActionDO, "activate").ToString();
-
+            return CallPluginAction(curActionDO, "activate");
         }
 
         public string Deactivate(ActionDO curActionDO)
         {
-            return CallPluginAction(curActionDO, "deactivate").ToString();
+            return CallPluginAction(curActionDO, "deactivate");
         }
 
-        private object CallPluginAction(ActionDO curActionDO, string actionName)
+        private string CallPluginAction(ActionDO curActionDO, string actionName)
         {
             if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
             {
@@ -371,7 +378,7 @@ namespace Core.Services
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
                         string curPluginUrl = string.Format("http://{0}/actions/{1}/",curActivityTemplate.Plugin.Endpoint, actionName);
                         var restClient = new RestfulServiceClient();
-                        object result;
+                        string result;
                         try
                         {
                             result = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
