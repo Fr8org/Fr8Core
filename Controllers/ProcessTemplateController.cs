@@ -98,6 +98,9 @@ namespace Web.Controllers
                 //this will return 0 on create operation because of not saving changes yet
                 processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
                 uow.SaveChanges();
+                //what a mess lets try this
+                curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                uow.SaveChanges();
                 processTemplateDto.Id = curProcessTemplateDO.Id;
                 return Ok(processTemplateDto);
             }

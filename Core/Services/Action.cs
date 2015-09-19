@@ -67,14 +67,13 @@ namespace Core.Services
                     existingActionDo.ActivityTemplateId = currentActionDo.ActivityTemplateId;
                     existingActionDo.Name = currentActionDo.Name;
                     existingActionDo.CrateStorage = currentActionDo.CrateStorage;
-                    
                 }
                 else
                 {
                     uow.ActionRepository.Add(currentActionDo);
                 }
-                uow.SaveChanges();
 
+                uow.SaveChanges();
                 return true;
             }
         }

@@ -50,7 +50,11 @@ namespace Web.Controllers
 
         public ActionListDO Get(int id)
         {
-            return _actionList.GetByKey(id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return _actionList.GetByKey(uow, id);
+            }
+            
         }
 	}
 }

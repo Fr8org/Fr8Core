@@ -9,14 +9,14 @@ module dockyard.controllers {
 
     export interface IProcessBuilderScope extends ng.IScope {
         processTemplateId: number;
-        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>,
+        processNodeTemplates: Array<model.ProcessNodeTemplateDTO>;
         fields: Array<model.Field>;
-
+        immediateActionListVM: interfaces.IActionListVM;
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
-        current: model.ProcessBuilderState,
+        current: model.ProcessBuilderState;
         save: Function;
         cancel: Function;
 
@@ -90,7 +90,11 @@ module dockyard.controllers {
             this._scope.save = angular.bind(this, this.onSave);
 
             this.setupMessageProcessing();
-            this.loadProcessTemplate();
+            var self = this;
+            this.loadProcessTemplate().$promise.then(function() {
+                self.loadImmediateActionList();
+            });
+            
 
             //THIS IS FOR DEMO ONLY
             var radioDemoField = new model.RadioButtonGroupField();
@@ -205,8 +209,14 @@ module dockyard.controllers {
             var processTemplatePromise = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
      //       processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
             this._scope.current.processTemplate = processTemplatePromise;
+            return processTemplatePromise;
         }
-         
+
+        private loadImmediateActionList() {
+            var actionListPromise = this.ActionListService.byProcessNodeTemplate({ id: this._scope.current.processTemplate.startingProcessNodeTemplateId, actionListType: 1});
+            this._scope.immediateActionListVM = actionListPromise;
+        }
+
         // Find criteria by Id.
         private findCriteria(id: number): model.ProcessNodeTemplateDTO {
             var i;
@@ -343,7 +353,7 @@ module dockyard.controllers {
                 var id = self.LocalIdentityGenerator.getNextId();
                 
                     // Create new action object.
-                var action = new model.ActionDesignDTO(null, id, true, null);
+                var action = new model.ActionDesignDTO(null, id, true, this._scope.immediateActionListVM.id);
 
                     action.name = 'New Action #' + Math.abs(id).toString();
 

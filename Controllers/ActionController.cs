@@ -20,11 +20,13 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
+        private readonly IActionList _actionList;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
+            _actionList = ObjectFactory.GetInstance<IActionList>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
@@ -111,6 +113,7 @@ namespace Web.Controllers
             if (_action.SaveOrUpdateAction(curActionDO))
             {
                 curActionDesignDTO.Id = curActionDO.Id;
+                _actionList.AddAction(curActionDO, "last");
                 return new List<ActionDTO> { curActionDesignDTO };
             }
             return new List<ActionDTO>();
