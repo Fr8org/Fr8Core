@@ -92,7 +92,7 @@ namespace Core.Services
             }
         }
 
-        public ActionDO Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDO curActionDO)
         {
             ActivityTemplateDO curActivityTemplate;
 
@@ -140,7 +140,7 @@ namespace Core.Services
 
                         //save the received action as quickly as possible
                         SaveOrUpdateAction(curActionDO);
-                        return curActionDO;  
+                        return curActionDO.CrateStorageDTO();  
                     }
 
                     else

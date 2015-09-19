@@ -12,7 +12,7 @@ namespace Core.Interfaces
 
         bool SaveOrUpdateAction(ActionDO currentActionDo);
         
-        ActionDO Configure(ActionDO curActionDO);
+        CrateStorageDTO Configure(ActionDO curActionDO);
 
         IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
 

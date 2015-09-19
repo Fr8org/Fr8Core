@@ -43,9 +43,9 @@ namespace Web.Controllers
         public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            curActionDO = _action.Configure(curActionDO);
+            var crateStorage = _action.Configure(curActionDO);
 
-            return Ok(curActionDO);
+            return Ok(crateStorage);
         }
 
 
