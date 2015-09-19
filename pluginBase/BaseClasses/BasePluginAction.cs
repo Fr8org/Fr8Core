@@ -87,7 +87,8 @@ namespace PluginBase.BaseClasses
             foreach (var curUpstreamAction in curUpstreamActivities.OfType<ActionDO>())
             {
                 var curCrateStorage = curUpstreamAction.CrateStorageDTO();
-                var curCrate = curCrateStorage.CrateDTO.FirstOrDefault(predicate);
+                var curCrate = curCrateStorage.CrateDTO.Last(predicate);
+                //var curCrate = curCrateStorage.CrateDTO.FirstOrDefault(predicate);
 
                 if (curCrate != null)
                 {
