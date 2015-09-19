@@ -62,7 +62,33 @@ namespace DockyardTest.Services
             }
         }
 
-      
+        [Test]
+        public void Activity_CanGetDownstreamActivities()
+        {
+            //load tree
+            //set cur activity to id 57
+            //verify that the count of upstream activities is 10
+            //print out the list of activity ids
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityRepository.Add(FixtureData.TestActivityTree());
+                uow.SaveChanges();
+
+
+                ActivityDO curActivity = FixtureData.TestActivity57();
+
+                List<ActivityDO> downstreamActivities = _activity.GetDownstreamActivities(curActivity);
+                foreach (var activity in downstreamActivities)
+                {
+                    Debug.WriteLine(activity.Id);
+                }
+
+                Assert.AreEqual(9, downstreamActivities.Count());
+
+            }
+        }
+
+
         private void InitializeActionList()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
