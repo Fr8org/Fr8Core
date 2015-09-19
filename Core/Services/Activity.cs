@@ -44,7 +44,7 @@ namespace Core.Services
 			if (curActivityDO == null)
 				throw new ArgumentNullException("curActivityDO");
             if (curActivityDO.ParentActivityId == null)
-                throw new ArgumentException("Activity must have a parent Activity ID. Something's wrong here");
+                return new List<ActivityDO>();
 
 			List<ActivityDO> upstreamActivities = new List<ActivityDO>();
 
@@ -53,24 +53,29 @@ namespace Core.Services
                 //start by getting the parent of the current action
                 var parentActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
 
-					// find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
-				    var upstreamSiblings =
-				        parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
-                        
-                    //for each such sibling action, we want to add it to the list
-                    //but some of those activities may be actionlists with childactivities of their own
-                    //in that case we need to recurse
-				    foreach (var upstreamSibling in upstreamSiblings)
-				    {
-				        upstreamActivities.AddRange(GetActivityTree(upstreamSibling));
-				    }
 
-                    //now we need to recurse up to the parent of the current parent, and repeat until we reach the root of the tree
-				    if (parentActivity.ParentActivity != null)
-				    {
-				        upstreamActivities.AddRange(GetUpstreamActivities(parentActivity.ParentActivity));
-				    }
-				    else return upstreamActivities;
+				// find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+				var upstreamSiblings =
+				    parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
+                        
+                //for each such sibling action, we want to add it to the list
+                //but some of those activities may be actionlists with childactivities of their own
+                //in that case we need to recurse
+				foreach (var upstreamSibling in upstreamSiblings)
+				{
+                    //1) first add the upstream siblings
+				    upstreamActivities.AddRange(GetActivityTree(upstreamSibling));
+				}
+
+                //now we need to recurse up to the parent of the current parent, and repeat until we reach the root of the tree
+				if (parentActivity != null)
+				{
+                    //2) then add the parent activity...
+                    upstreamActivities.Add(parentActivity); 
+                    //3) then add the parent's upstream activities
+				    upstreamActivities.AddRange(GetUpstreamActivities(parentActivity));
+				}
+				else return upstreamActivities;
 					    
 			}
             return upstreamActivities; //should never actually get here, but the compiler insists
@@ -149,7 +154,7 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityLists = this.GetChildren(uow, curActivityDO);
+                activityLists = this.GetChildren(curActivityDO);
             }
 
             return activityLists;

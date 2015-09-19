@@ -13,65 +13,166 @@ namespace UtilitiesTesting.Fixtures
     partial class FixtureData
     {
 
-
-
-
-        public static ActionDO TestActionWriteSqlServer1()
+        public static ActivityDO TestActivity57()
         {
-            var actionTemplate = ActionTemplate();
-
-            var curActionDO = new ActionDO
+            return new ActivityDO
             {
-                Id = 54,
-                Name = "Write to Sql Server",
-                CrateStorage = "",
+                Id = 57,
+                Ordering = 2,
+                ParentActivityId = 54
+            };
+
+        }
+
+        public static ActivityDO TestActivityTree()
+        {
+            return new ActivityDO
+            {
+                Id = 1,
                 Ordering = 1,
-                ActionState = ActionState.Unstarted,
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate
+                Activities = new List<ActivityDO>
+                {
+                    new ActivityDO
+                    {
+                        Id = 23,
+                        Ordering = 1,
+                        ParentActivityId = 1
+                    },
+                    new ActivityDO
+                    {
+                        Id = 43,
+                        ParentActivityId = 1,
+                        Ordering = 2,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActivityDO
+                            {
+                                Id = 44,
+                                Ordering = 1,
+                                ParentActivityId = 43
+                            },
+                            new ActivityDO
+                            {
+                                Id = 46,
+                                Ordering = 2,
+                                ParentActivityId = 43
+                            },
+                            new ActivityDO
+                            {
+                                Id = 48,
+                                Ordering = 3,
+                                ParentActivityId = 43
+                            },
+
+                        }
+                    },
+                    new ActivityDO
+                    {
+                        Id = 52,
+                        Ordering = 3,
+                        ParentActivityId = 1,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActivityDO
+                            {
+                                Id = 53,
+                                Ordering = 1,
+                                ParentActivityId = 52
+                            },
+                            new ActivityDO
+                            {
+                                Id = 54,
+                                ParentActivityId = 52,
+                                Ordering = 2,
+
+                                Activities = new List<ActivityDO>
+                                {
+                                    new ActivityDO
+                                    {
+                                        Id = 56,
+                                        ParentActivityId = 54,
+                                        Ordering = 1
+                                    },
+                                    new ActivityDO
+                                    {
+                                        Id = 57,
+                                        ParentActivityId = 54,
+                                        Ordering = 2
+                                    },
+                                    new ActivityDO
+                                    {
+                                        Id = 58,
+                                        ParentActivityId = 54,
+                                        Ordering = 3
+                                    },
+
+                                }
+                            },
+                            new ActivityDO
+                            {
+                                Id = 55,
+                                ParentActivityId = 52,
+                                Ordering = 3
+                            },
+
+                        }
+                    },
+                    new ActivityDO
+                    {
+                        Id = 59,
+                        Ordering = 4,
+                        ParentActivityId = 1,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActivityDO
+                            {
+                                Id = 60,
+                                ParentActivityId = 59,
+                                Ordering = 1
+                            },
+                            new ActivityDO
+                            {
+                                Id = 61,
+                                ParentActivityId = 59,
+                                Ordering = 2,
+
+                                Activities = new List<ActivityDO>
+                                {
+                                    new ActivityDO
+                                    {
+                                        Id = 63,
+                                        ParentActivityId = 61,
+                                        Ordering = 1
+                                    },
+                                    new ActivityDO
+                                    {
+                                        Id = 64,
+                                        ParentActivityId = 61,
+                                        Ordering = 2
+                                    },
+                                    new ActivityDO
+                                    {
+                                        Id = 65,
+                                        ParentActivityId = 61,
+                                        Ordering = 3
+                                    },
+                                }
+                            },
+
+                            new ActivityDO
+                            {
+                                Id = 62,
+                                ParentActivityId = 59,
+                                Ordering = 3
+                            },
+                        },
+
+                    }
+                }
             };
-            return curActionDO;
         }
 
 
-
-        public static ActionDO TestAction1()
-        {
-            var actionTemplate = ActionTemplate();
-            var curActionDO = new ActionDO
-            {
-                Name = "Action 1",
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-            };
-            return curActionDO;
-        }
-
-        public static ActionDO TestAction2()
-        {
-            var actionTemplate = ActionTemplate();
-            var curActionDO = new ActionDO
-            {
-                Id = 2,
-                Name = "Action 2",
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate
-            };
-            return curActionDO;
-        }
-
-        
-        
-
-        public static AuthorizationTokenDO TestActionAuthenticate3()
-        {
-            AuthorizationTokenDO curAuthorizationTokenDO = new AuthorizationTokenDO()
-            {
-                Token = "TestToken",
-                AuthorizationTokenState = AuthorizationTokenState.Revoked
-            };
-            return curAuthorizationTokenDO;
-        }
 
     }
 }

@@ -52,7 +52,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return _actionList.GetByKey(uow, id);
+                return _actionList.GetByKey(uow,id);
             }
             
         }
