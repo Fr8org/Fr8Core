@@ -58,25 +58,25 @@ namespace PluginBase.BaseClasses
             return curActionDTO.CrateStorage;
         }
 
-        protected virtual CrateDTO GetCrate(ActivityDO activityDO,
+        protected virtual CrateDTO GetCratesByDirection(ActivityDO activityDO,
             string searchId, GetCrateDirection direction)
         {
-            return GetCrate(activityDO, x => x.ManifestType == searchId, direction);
+            return GetCratesByDirection(activityDO, x => x.ManifestType == searchId, direction);
         }
 
-        protected virtual CrateDTO GetCrate(ActionDTO actionDTO,
-            string searchId, GetCrateDirection direction)
+        protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
+            string manifestType, GetCrateDirection direction)
         {
-            return GetCrate(actionDTO, x => x.ManifestType == searchId, direction);
+            return GetCratesByDirection(actionDTO, x => x.ManifestType == manifestType, direction);
         }
 
-        protected virtual CrateDTO GetCrate(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
+        protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
         {
             var actionDO = Mapper.Map<ActionDO>(actionDTO);
-            return GetCrate(actionDO, predicate, direction);
+            return GetCratesByDirection(actionDO, predicate, direction);
         }
 
-        protected virtual CrateDTO GetCrate(ActivityDO activityDO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
+        protected virtual CrateDTO GetCratesByDirection(ActivityDO activityDO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
         {
             var curActivityService = ObjectFactory.GetInstance<IActivity>();
 

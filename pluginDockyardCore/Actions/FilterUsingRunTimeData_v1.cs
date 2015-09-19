@@ -206,7 +206,7 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curCrate = GetCrate(curActionDTO, "Standard Design-Time Fields", GetCrateDirection.Upstream);
+            var curCrate = GetCratesByDirection(curActionDTO, "Standard Design-Time Fields", GetCrateDirection.Upstream);
 
             var curConfigurationControlsCrage = CreateStandartConfigurationControls(curCrate);
 
