@@ -21,6 +21,7 @@ namespace Core.Services
     public class Action : IAction
     {
         private IEnvelope _envelope;
+        private IAction _action;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPlugin _plugin;
@@ -30,6 +31,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
+            _action = ObjectFactory.GetInstance<IAction>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -90,7 +92,7 @@ namespace Core.Services
             }
         }
 
-        public CrateStorageDTO Configure(ActionDO curActionDO)
+        public ActionDO Configure(ActionDO curActionDO)
         {
             ActivityTemplateDO curActivityTemplate;
 
@@ -129,8 +131,16 @@ namespace Core.Services
                         }
 
                         var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
-                        return configurationCrates;
-                        //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                        
+                        //replace the old CrateStorage with the new CrateStorage
+                        //this feels a little clumsy and dangerous (what if something changes in the action's crate storage while this plugin is sitting on its data?)
+                        //we probably will need a complex mechanism that looks at each crate by GUID
+                        curActionDTO.CrateStorage = configurationCrates;
+                        curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+                        //save the received action as quickly as possible
+                        _action.SaveOrUpdateAction(curActionDO);
+                        return curActionDO;  
                     }
 
                     else
