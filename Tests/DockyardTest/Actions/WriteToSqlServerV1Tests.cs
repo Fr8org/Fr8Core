@@ -33,6 +33,7 @@ namespace DockyardTest.Actions
         }
 
         [Test]
+        [Category("Write_To_Sql_Server_v1.Configure")]
         public void WriteToSqlServer_Configure_WithEmptyCrates_ReturnsInitialConfiguration()
         {
             //Arrange 
@@ -53,6 +54,7 @@ namespace DockyardTest.Actions
         }
 
         [Test]
+        [Category("Write_To_Sql_Server_v1.Configure")]
         public void WriteToSqlServer_Configure_WithEmptyConnectionStringValue_ReturnsInitialConfiguration()
         {
             //Arrange 
@@ -70,6 +72,7 @@ namespace DockyardTest.Actions
         }
 
         [Test]
+        [Category("Write_To_Sql_Server_v1.Configure")]
         [ExpectedException(typeof(ArgumentException))]
         public void WriteToSqlServer_Configure_WithTwoConnectionStrings_ShouldThrowArgumentException()
         {
@@ -85,6 +88,7 @@ namespace DockyardTest.Actions
         }
 
         [Test]
+        [Category("Write_To_Sql_Server_v1.Configure")]
         public void WriteToSqlServer_Configure_WithOneConnectionStringValue_ReturnsFollowupConfiguration()
         {
             //Arrange
