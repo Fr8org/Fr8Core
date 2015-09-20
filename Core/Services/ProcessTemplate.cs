@@ -116,7 +116,7 @@ namespace Core.Services
                 }
             }
             itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
-            
+
             foreach (T entity in sourceCollection)
             {
                 found = false;
@@ -186,48 +186,46 @@ namespace Core.Services
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
         {
-            //List<ActionDO> curActions = (List<ActionDO>)curProcessTemplate.ProcessNodeTemplates[0].ActionLists[0].Activities.Where(p => p.ParentActivityId == p.Id);
-            // var curActionLists = curProcessTemplate.ProcessNodeTemplates.Select(pt => pt.ActionLists);
-            //var cuuActivity = curActionLists.Select(al => al.Select(a => a.Activities));
-            try
+            string result = "no action";
+            foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
             {
-                string result = "no action";
-                foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
+                foreach (ActionListDO curActionList in processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
                 {
-                    foreach (ActionListDO actions in processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
+                    foreach (ActionDO curActionDO in curActionList.Activities)
                     {
-                        foreach (var item in actions.Activities)
+                        if (_action.Activate(curActionDO).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
+                            throw new Exception("Process template activation Fail.");
+                        else
                         {
-
-                            if (_action.Activate((ActionDO)item).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
-                                return "fail";
-                            else
-                                result = "success";
+                            curActionDO.ActionState = ActionState.Active;
+                            result = "success";
                         }
-        }
+                    }
                 }
-                return result;
             }
-            catch (Exception) { return "failed"; }
+            return result;
         }
 
         public string Deactivate(ProcessTemplateDO curProcessTemplate)
         {
-            try
+            string result = "no action";
+            foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
             {
-                foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
+                foreach (ActionListDO curActionList in processNodeTemplates.ActionLists)
                 {
-                    foreach (ActionListDO actions in processNodeTemplates.ActionLists)
+                    foreach (ActionDO curActionDO in curActionList.Activities)
                     {
-                        foreach (var item in actions.Activities)
+                        if (_action.Deactivate(curActionDO).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
+                            throw new Exception("Process template Deactivation Fail.");
+                        else
                         {
-                            _action.Deactivate((ActionDO)item);
+                            curActionDO.ActionState = ActionState.Deactive;
+                            result = "success";
                         }
                     }
                 }
-                return "success";
             }
-            catch (Exception) { return "fail"; }
+            return result;
         }
 
         public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
@@ -243,7 +241,7 @@ namespace Core.Services
             //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
             //in the Crate of Class "Standard Event Reports" which was passed in.
             var subscribingProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
-                
+
             //3. Get ActivityDO
             foreach (var processTemplateDO in subscribingProcessTemplates)
             {
@@ -263,7 +261,7 @@ namespace Core.Services
                         if (subscriptionsList != null && subscriptionsList.Subscriptions
                             .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
                             .Any())//check event names if its subscribing
-                                processTemplateSubscribers.Add(processTemplateDO);
+                            processTemplateSubscribers.Add(processTemplateDO);
                     }
                 }
             }

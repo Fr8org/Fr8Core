@@ -198,7 +198,7 @@ namespace Core.Services
                     //  }
                     //   else
                     //   {
-                    curAction.ActionState = ActionState.Completed;
+                    curAction.ActionState = ActionState.Active;
                     //   }
 
                     uow.ActionRepository.Attach(curAction);

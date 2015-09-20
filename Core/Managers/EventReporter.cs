@@ -763,9 +763,9 @@ namespace Core.Managers
                 CustomerId = processInExecution.DockyardAccountId,
                 Data = processInExecution.Id.ToStr(),
                 ObjectId = curAction.Id.ToStr(),
-                PrimaryCategory = "Plugin",
-                SecondaryCategory = "Action",
-                Activity = "Activated"
+                PrimaryCategory = "Action",
+                SecondaryCategory = "Activation",
+                Activity = "Completed"
             };
 
             SaveAndLogFact(fact);

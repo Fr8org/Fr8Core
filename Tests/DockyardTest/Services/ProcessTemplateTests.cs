@@ -51,7 +51,7 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test,Ignore]
+        [Test]
         public void CanActivateProcessTemplate()
         {
             var curProcessTemplateDO = FixtureData.TestProcessTemplate3();

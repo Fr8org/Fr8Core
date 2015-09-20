@@ -63,7 +63,7 @@ namespace pluginDocuSign.Actions
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
             if (Int32.Parse(connectProfile.totalRecords) > 0)
             {
-                return "Activated"; // Will be changed when implementation is plumbed in.
+                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
             }
             else
             {
@@ -77,7 +77,7 @@ namespace pluginDocuSign.Actions
             ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
             if (Int32.Parse(connectProfile.totalRecords) > 0)
             {
-                return "Deactivated"; // Will be changed when implementation is plumbed in.
+                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
             }
             else
             {

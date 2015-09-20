@@ -152,7 +152,7 @@ namespace Core.Services
                 //update CurrentActivity pointer
                 if (curActionListDO.CurrentActivity is ActionDO)
                 {
-                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed ||
+                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Active ||
                         ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
                     {
                         ActionDO actionDO = curActionListDO.Activities

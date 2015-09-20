@@ -44,9 +44,9 @@ namespace Core.Managers
                 CustomerId = "unknown",
                 Data = pluginUrl + "      " + curActionDTO,
                 ObjectId = "unknown",
-                PrimaryCategory = "Plugin",
-                SecondaryCategory = "Action Activation",
-                Activity = "Activation Failed"
+                PrimaryCategory = "Action",
+                SecondaryCategory = "Activation",
+                Activity = "Completed"
             };
             SaveAndLogFact(incident);
         }
