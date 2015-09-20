@@ -4,9 +4,9 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class RemoteCalendarAuthDataRepository : GenericRepository<RemoteOAuthDataDo>, IRemoteCalendarAuthDataRepository
+    public class RemoteServiceAuthDataRepository : GenericRepository<RemoteOAuthDataDo>, IRemoteCalendarAuthDataRepository
     {
-        internal RemoteCalendarAuthDataRepository(IUnitOfWork uow)
+        internal RemoteServiceAuthDataRepository(IUnitOfWork uow)
             : base(uow)
         {
 

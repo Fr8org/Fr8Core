@@ -27,37 +27,37 @@ namespace Core.Services
             }
         }
 
-        public ActionListDO GetByKey(int curActionListId)
+        public ActionListDO GetByKey(IUnitOfWork uow, int curActionListId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionListDO = uow.ActionListRepository.GetByKey(curActionListId);
-                if (curActionListDO == null)
-                    throw new ArgumentNullException("actionListId");
+            var curActionListDO = uow.ActionListRepository.GetByKey(curActionListId);
+            if (curActionListDO == null)
+                throw new ArgumentNullException("actionListId");
 
-                return curActionListDO;
-            }
+            return curActionListDO;
         }
 
         public void AddAction(ActionDO curActionDO, string position)
         {
-            if (!curActionDO.ParentActivityId.HasValue)
-                throw new NullReferenceException("ActionListId");
-
-            var curActionList = GetByKey(curActionDO.ParentActivityId.Value);
-            if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
-                Reorder(curActionList, curActionDO, position);
-            else
-                throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
-            curActionList.Activities.Add(curActionDO);
-            if (curActionList.CurrentActivity == null)
-            {
-                curActionList.CurrentActivity =
-                    curActionList.Activities.OrderBy(action => action.Ordering).FirstOrDefault();
-            }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionListRepository.Add(curActionList);
+                uow.ActionRepository.Attach(curActionDO);
+                if (!curActionDO.ParentActivityId.HasValue)
+                    throw new NullReferenceException("ActionListId");
+
+                var curActionList = GetByKey(uow, curActionDO.ParentActivityId.Value);
+                if (string.IsNullOrEmpty(position) || position.Equals("last", StringComparison.OrdinalIgnoreCase))
+                    Reorder(curActionList, curActionDO, position);
+                else
+                    throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
+                
+                if (curActionList.CurrentActivity == null)
+                {
+                    curActionList.CurrentActivity =
+                        curActionList.Activities.OrderBy(action => action.Ordering).FirstOrDefault();
+                }
+            
+                //uow.ActionListRepository.Add(curActionList);
+                
                 uow.SaveChanges();
             }
         }
@@ -152,7 +152,7 @@ namespace Core.Services
                 //update CurrentActivity pointer
                 if (curActionListDO.CurrentActivity is ActionDO)
                 {
-                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed ||
+                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Active ||
                         ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
                     {
                         ActionDO actionDO = curActionListDO.Activities

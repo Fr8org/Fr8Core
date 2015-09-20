@@ -80,7 +80,7 @@ namespace Core.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
@@ -96,7 +96,6 @@ namespace Core.StructureMap
 				For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
@@ -130,7 +129,7 @@ namespace Core.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
@@ -147,7 +146,6 @@ namespace Core.StructureMap
 					 For<IActivity>().Use<Activity>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //var mockProcess = new Mock<IProcessService>();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -16,6 +17,7 @@ using Data.Wrappers;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 using Web.ViewModels;
 
 namespace Web.Controllers
@@ -49,15 +51,20 @@ namespace Web.Controllers
             }
         }
 
-        public static string GetCallbackUrl(string providerName, string serverUrl = null)
+        public static string GetCallbackUrl(string providerName)
+        {
+            return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
+        }
+
+        public static string GetCallbackUrl(string providerName, string serverUrl)
         {
             if (String.IsNullOrEmpty(serverUrl))
-                serverUrl = Utilities.Server.ServerUrl;
+                throw new ArgumentException("Server Url is empty", "serverUrl");
             
             return String.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
         }
 
-        public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
+        public async Task<ActionResult> GrantAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
             var result = await authorizer.AuthorizeAsync(
@@ -70,30 +77,16 @@ namespace Web.Controllers
             if (result.IsAuthorized)
             {
                 // don't wait for this, run it async and return response to the user.
-                return RedirectToAction("ShareCalendar", new { remoteCalendarAccessGranted = providerName });
+                return RedirectToAction("RemoteServices", new { remoteServiceAccessGranted = providerName });
             }
             return new RedirectResult(result.RedirectUri);
         }
 
-        public async Task<ActionResult> RevokeRemoteCalendarAccess(string providerName)
+        public async Task<ActionResult> RevokeAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
             await authorizer.RevokeAccessTokenAsync(this.GetUserId(), CancellationToken.None);
-            return RedirectToAction("ShareCalendar", new { remoteCalendarAccessForbidden = providerName });
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> SyncCalendarsNow()
-        {
-            try
-            {
-               // await ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, error = ex.Message });
-            }
+            return RedirectToAction("RemoteServices", new { remoteServiceAccessForbidden = providerName });
         }
 
         [HttpPost]
@@ -323,8 +316,8 @@ namespace Web.Controllers
             return View();
         }
 
-        public ActionResult ShareCalendar(string remoteCalendarAccessGranted = null,
-            string remoteCalendarAccessForbidden = null)
+        public ActionResult RemoteServices(string remoteServiceAccessGranted = null,
+            string remoteServiceAccessForbidden = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -335,12 +328,41 @@ namespace Web.Controllers
                     // if we found no user then assume that this user doesn't exists any more and force log off action.
                     return RedirectToAction("LogOff", "DockyardAccount");
                 }
+                var curManageUserVM = Mapper.Map<DockyardAccountDO, ManageUserVM>(curUserDO);
                 var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
-                var tuple = new Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>(curUserDO, tokens);
-
-                var curManageUserVM =
-                    Mapper.Map<Tuple<DockyardAccountDO, IEnumerable<AuthorizationTokenDO>>, ManageUserVM>(tuple);
+                curManageUserVM.HasDocusignToken = tokens.Any();
+                var googleAuthDatas = uow.RemoteServiceAuthDataRepository.FindList(ad => ad.Provider.Name == "Google" && ad.UserID == curUserId).ToArray();
+                var googleAuthData = googleAuthDatas.FirstOrDefault(ad => ad.HasAccessToken());
+                curManageUserVM.HasGoogleToken = googleAuthData != null;
+                if (googleAuthData != null)
+                {
+                    var spreadsheet = ObjectFactory.GetInstance<GoogleSheet>();
+                    curManageUserVM.GoogleSpreadsheets = spreadsheet.EnumerateSpreadsheetsUris(curUserId);
+                }
                 return View(curManageUserVM);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ExportGoogleSpreadsheet(string spreadsheetUri)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserId = this.GetUserId();
+                var curUserDO = uow.UserRepository.GetByKey(curUserId);
+                if (curUserDO == null)
+                {
+                    // if we found no user then assume that this user doesn't exists any more and force log off action.
+                    return RedirectToAction("LogOff", "DockyardAccount");
+                }
+                var googleAuthDatas = uow.RemoteServiceAuthDataRepository.FindList(ad => ad.Provider.Name == "Google" && ad.UserID == curUserId).ToArray();
+                var googleAuthData = googleAuthDatas.FirstOrDefault(ad => ad.HasAccessToken());
+                if (googleAuthData == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "No Google authorization info");
+                var spreadsheet = ObjectFactory.GetInstance<GoogleSheet>();
+                var fileUrl = spreadsheet.ExtractData(spreadsheetUri, curUserId);
+                Logger.GetLogger().InfoFormat("Google Spreadsheet '{0}' exported to '{1}'", spreadsheetUri, fileUrl);
+                return RedirectToAction("RemoteServices");
             }
         }
 

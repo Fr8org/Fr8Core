@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Data.Entities;
+using Data.Interfaces;
 
 namespace Core.Interfaces
 {
     public interface IActionList
     {
         IEnumerable<ActionListDO> GetAll();
-        ActionListDO GetByKey(int curActionListId);
+        ActionListDO GetByKey(IUnitOfWork uow, int curActionListId);
         void AddAction(ActionDO curActionDO, string position);
         void Process(ActionListDO curActionList, ProcessDO curProcessDO);
         void UpdateActionListState(ActionListDO curActionListDO);

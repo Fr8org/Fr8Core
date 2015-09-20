@@ -33,6 +33,11 @@ namespace Core.Services
             return crateDTO;
         }
 
+        public CrateDTO CreateDesignTimeFieldsCrate(string label, object contents)
+        {    
+            return Create( label, JsonConvert.SerializeObject(contents), "Standard Design-Time Fields");
+        }
+
         public T GetContents<T>(CrateDTO crate)
         {
             return _serializer.Deserialize<T>(crate.Contents);

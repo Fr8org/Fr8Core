@@ -4,14 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
-using Core.Interfaces;
 using StructureMap;
 using Newtonsoft.Json;
+using Core.Interfaces;
 using Data.Wrappers;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using PluginBase;
+using PluginBase.BaseClasses;
+using DocuSign.Integrations.Client;
 
 namespace pluginDocuSign.Actions
 {
@@ -58,7 +60,30 @@ namespace pluginDocuSign.Actions
 
         public object Activate(ActionDTO curDataPackage)
         {
-            return "Activate Request"; // Will be changed when implementation is plumbed in.
+            DocuSignAccount docuSignAccount = new DocuSignAccount();
+            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
+            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            {
+                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+            }
+            else
+            {
+                return "Fail";
+            }
+        }
+
+        public object Deactivate(ActionDTO curDataPackage)
+        {
+            DocuSignAccount docuSignAccount = new DocuSignAccount();
+            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
+            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            {
+                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+            }
+            else
+            {
+                return "Fail";
+            }
         }
 
         public object Execute(ActionDataPackageDTO curActionDataPackage)
@@ -106,7 +131,7 @@ namespace pluginDocuSign.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-				var crateControls = CreateStandartConfigurationControls();
+				var crateControls = CreateStandardConfigurationControls();
 				var crateDesignTimeFields = CreateStandardDesignTimeFields();
 				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
@@ -130,29 +155,46 @@ namespace pluginDocuSign.Actions
                 return curActionDTO.CrateStorage;
             }
 
-            var configurationFields = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(configurationFieldsCrate.Contents);
+            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
 
-            if (configurationFields == null || !configurationFields.Any(c => c.Name == "Selected_DocuSign_Template"))
+            if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
                 return curActionDTO.CrateStorage;
             }
 
-            var docusignTemplateId = configurationFields.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
+            var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
             var userDefinedFields = _docusignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId);
             var crateConfiguration = new List<CrateDTO>();
-            var fieldCollection = userDefinedFields.Select(f => new FieldDefinitionDTO()
+
+            var fieldCollection = userDefinedFields.Select(f => new FieldDTO()
             {
-                FieldLabel = f.Name,
-                Type = f.Type,
-                Name = f.Name,
+                Key = f.Name,
                 Value = f.Value
             });
 
+            var crateContentsObject = new StandardDesignTimeFieldsMS()
+            {
+                Fields = new List<FieldDTO>(fieldCollection)
+            };
+
             crateConfiguration.Add(_crate.Create(
                 "DocuSignTemplateUserDefinedFields",
-                JsonConvert.SerializeObject(fieldCollection),
+                JsonConvert.SerializeObject(crateContentsObject),
                 DESIGNTIME_FIELDS_MANIFEST_NAME,
                 DESIGNTIME_FIELDS_MANIFEST_ID));
+
+            // var fieldCollection = userDefinedFields.Select(f => new FieldDefinitionDTO()
+            // {
+            //     FieldLabel = f.Name,
+            //     Type = f.Type,
+            //     Name = f.Name,
+            //     Value = f.Value
+            // });
+            // crateConfiguration.Add(_crate.Create(
+            //     "DocuSignTemplateUserDefinedFields",
+            //     JsonConvert.SerializeObject(fieldCollection),
+            //     DESIGNTIME_FIELDS_MANIFEST_NAME,
+            //     DESIGNTIME_FIELDS_MANIFEST_ID));
 
             //crateConfiguration.Add(_crate.Create(
             //    "DocuSignEnvelopeStandardFields", 
@@ -168,7 +210,7 @@ namespace pluginDocuSign.Actions
             return curActionDTO.CrateStorage;
         }
 
-        private CrateDTO CreateStandartConfigurationControls()
+        private CrateDTO CreateStandardConfigurationControls()
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
@@ -180,7 +222,7 @@ namespace pluginDocuSign.Actions
                 {
                     new FieldEvent("onChange", "requestConfig")
                 },
-                Source = new FieldSource
+                Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
                     ManifestType = "Standard Design-Time Fields"
@@ -224,7 +266,16 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent
             };
 
-            var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(fields), "Standard Configuration Controls");
+            var controls = new StandardConfigurationControlsMS()
+            {
+                Controls = fields
+            };
+
+            var crateControls = _crate.Create(
+                "Configuration_Controls",
+                JsonConvert.SerializeObject(controls),
+                "Standard Configuration Controls"
+            );
             return crateControls;
         }
 
@@ -232,7 +283,13 @@ namespace pluginDocuSign.Actions
         {
             var templates = _template.GetTemplates(null);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
-            var createDesignTimeFields = _crate.Create("Available Templates", JsonConvert.SerializeObject(fields), "Standard Design-Time Fields", STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID);
+            var manifestSchema = new StandardDesignTimeFieldsMS() { Fields = fields };
+            var createDesignTimeFields = _crate.Create(
+                "Available Templates",
+                JsonConvert.SerializeObject(manifestSchema),
+                "Standard Design-Time Fields",
+                STANDARD_DESIGN_TIME_FIELDS_MANIFEST_ID
+            );
             return createDesignTimeFields;
         }
     }

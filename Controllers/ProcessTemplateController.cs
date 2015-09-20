@@ -95,9 +95,13 @@ namespace Web.Controllers
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
+                //this will return 0 on create operation because of not saved changes
                 processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
                 uow.SaveChanges();
-
+                //what a mess lets try this
+                curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curProcessTemplateDO.Id;
                 return Ok(processTemplateDto);
             }
         }
@@ -134,6 +138,16 @@ namespace Web.Controllers
             };
 
             return Ok(triggerSettings);
+        }
+
+        public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
+        {
+            return Ok(_processTemplate.Activate(curProcessTemplate));
+        }
+
+        public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
+        {
+            return Ok(_processTemplate.Deactivate(curProcessTemplate));
         }
     }
 }
