@@ -141,19 +141,36 @@ namespace pluginDocuSign.Actions
             var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
             var userDefinedFields = _docusignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId);
             var crateConfiguration = new List<CrateDTO>();
-            var fieldCollection = userDefinedFields.Select(f => new FieldDefinitionDTO()
+
+            var fieldCollection = userDefinedFields.Select(f => new FieldDTO()
             {
-                FieldLabel = f.Name,
-                Type = f.Type,
-                Name = f.Name,
+                Key = f.Name,
                 Value = f.Value
             });
 
+            var crateContentsObject = new StandardDesignTimeFieldsMS()
+            {
+                Fields = new List<FieldDTO>(fieldCollection)
+            };
+
             crateConfiguration.Add(_crate.Create(
                 "DocuSignTemplateUserDefinedFields",
-                JsonConvert.SerializeObject(fieldCollection),
+                JsonConvert.SerializeObject(crateContentsObject),
                 DESIGNTIME_FIELDS_MANIFEST_NAME,
                 DESIGNTIME_FIELDS_MANIFEST_ID));
+
+            // var fieldCollection = userDefinedFields.Select(f => new FieldDefinitionDTO()
+            // {
+            //     FieldLabel = f.Name,
+            //     Type = f.Type,
+            //     Name = f.Name,
+            //     Value = f.Value
+            // });
+            // crateConfiguration.Add(_crate.Create(
+            //     "DocuSignTemplateUserDefinedFields",
+            //     JsonConvert.SerializeObject(fieldCollection),
+            //     DESIGNTIME_FIELDS_MANIFEST_NAME,
+            //     DESIGNTIME_FIELDS_MANIFEST_ID));
 
             //crateConfiguration.Add(_crate.Create(
             //    "DocuSignEnvelopeStandardFields", 

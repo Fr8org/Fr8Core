@@ -123,15 +123,14 @@ namespace PluginBase.BaseClasses
             StandardDesignTimeFieldsMS tempMS = new StandardDesignTimeFieldsMS();
             foreach (var curCrate in curCrates)
             {
-
                 //extract the fields
-                StandardDesignTimeFieldsMS curCrateFields =
+                StandardDesignTimeFieldsMS curStandardDesignTimeFieldsCrate =
                     JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(curCrate.Contents);
 
                 //add them to the pile
-                tempMS.Fields.AddRange(curCrateFields.Fields);
-
+                tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
             }
+
             return tempMS;
         }
 

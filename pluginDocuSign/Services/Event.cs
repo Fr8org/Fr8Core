@@ -9,6 +9,7 @@ using Core.Managers;
 using Core.Utilities;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
