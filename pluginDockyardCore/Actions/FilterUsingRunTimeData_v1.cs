@@ -188,15 +188,6 @@ namespace pluginDockyardCore.Actions
                 }
             };
 
-            //// TODO: This is for test purposes only!!
-            //if (crateKeys == null)
-            //{
-            //    fieldFilterPane.Fields = new List<FilterPaneField>()
-            //    {
-            //        new FilterPaneField() {Key = "Test_DocuSign_EnvelopeId", Name = "[Test].[DocuSign].[EnvelopeId]"},
-            //        new FilterPaneField() {Key = "Test_DocuSign_DocNumber", Name = "[Test].[DocuSign].[DocNumber]"}
-            //    };
-            //}
 
             var controls = new StandardConfigurationControlsMS()
             {
@@ -252,7 +243,6 @@ namespace pluginDockyardCore.Actions
                     
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = CreateStandardConfigurationControls();
-
 
                     return new CrateStorageDTO()
                     {
