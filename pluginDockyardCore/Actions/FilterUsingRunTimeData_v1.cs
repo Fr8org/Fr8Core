@@ -188,7 +188,7 @@ namespace pluginDockyardCore.Actions
 
             var controls = new StandardConfigurationControlsMS()
             {
-                Controls = { fieldFilterPane}
+                Controls = new List<FieldDefinitionDTO>() { fieldFilterPane }
             };
 
             var controlsCrate = _crate.Create(
