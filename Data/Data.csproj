@@ -222,7 +222,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
-	<Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
@@ -258,6 +258,8 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventReportMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionMS.cs" />
