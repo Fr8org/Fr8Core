@@ -129,7 +129,7 @@ namespace pluginDockyardCore.Actions
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
             var curCrates = new List<CrateDTO> { downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate };
-            return PackCrates(curCrates);
+            return AssembleCrateStorage(curCrates);
         }
 
         /// <summary>

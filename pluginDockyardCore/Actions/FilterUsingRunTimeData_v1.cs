@@ -167,10 +167,7 @@ namespace pluginDockyardCore.Actions
             return ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
 
-        /// <summary>
-        /// Create configuration controls crate.
-        /// </summary>
-        private CrateDTO CreateStandardConfigurationControls()
+        private CrateDTO CreateControlsCrate()
         {
             var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
             {
@@ -185,21 +182,12 @@ namespace pluginDockyardCore.Actions
                 }
             };
 
-
-            var controls = new StandardConfigurationControlsMS()
-            {
-                Controls = new List<FieldDefinitionDTO>() { fieldFilterPane }
-            };
-
-            var controlsCrate = _crate.Create(
-                "Configuration_Controls",
-                JsonConvert.SerializeObject(controls),
-                "Standard Configuration Controls"
-                );
-
-            return controlsCrate;
+            var controlsList = new List<FieldDefinitionDTO>() {fieldFilterPane};
+            return PackControlsCrate(controlsList);
         }
 
+
+      
 
 
 
@@ -224,10 +212,10 @@ namespace pluginDockyardCore.Actions
                     CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
                     
                     //build a controls crate to render the pane
-                    CrateDTO configurationControlsCrate = CreateStandardConfigurationControls();
+                    CrateDTO configurationControlsCrate = CreateControlsCrate();
 
                     var curCrates = new List<CrateDTO> {queryFieldsCrate, configurationControlsCrate};
-                    return PackCrates(curCrates);
+                    return AssembleCrateStorage(curCrates);
                    
 
                 }
