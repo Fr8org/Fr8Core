@@ -161,11 +161,14 @@
     <Compile Include="Actions\Write_To_Sql_Server_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DbProviderExtensions.cs" />
+    <Compile Include="Services\Event.cs" />
+    <Compile Include="Services\IEvent.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="Services\DbService.cs" />
     <Compile Include="Infrastructure\FieldValue.cs" />

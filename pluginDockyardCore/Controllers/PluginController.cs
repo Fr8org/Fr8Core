@@ -24,7 +24,8 @@ namespace pluginDockyardCore.Controllers
             {
                 Endpoint = "localhost:50705",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginDockyardCore"
+                Name = "pluginDockyardCore",
+                Version = "1"
             };
 
             result.Add(new ActivityTemplateDO
