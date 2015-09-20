@@ -8,7 +8,9 @@ using StructureMap;
 using System;
 using System.Collections.Generic;
 using AutoMapper;
+using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
+using Newtonsoft.Json;
 
 namespace PluginBase.BaseClasses
 {
@@ -33,11 +35,15 @@ namespace PluginBase.BaseClasses
         //protected const int STANDARD_CONF_CONTROLS_MANIFEST_ID = ;
         protected const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
 
-        private IAction _action;
+        protected IAction _action;
+        protected ICrate _crate;
+        protected IActivity _activity;
 
         public BasePluginAction()
         {
+            _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
@@ -95,6 +101,47 @@ namespace PluginBase.BaseClasses
             }
 
             return upstreamCrates;
+        }
+
+        public StandardDesignTimeFieldsMS GetDesignTimeFields(ActionDO curActionDO, GetCrateDirection direction)
+        {
+
+            //1) Build a merged list of the upstream design fields to go into our drop down list boxes
+            StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
+
+            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, "Standard Design-Time Fields",
+                direction);
+
+            mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
+
+            return mergedFields;
+        }
+
+
+        public StandardDesignTimeFieldsMS MergeContentFields(List<CrateDTO> curCrates)
+        {
+            StandardDesignTimeFieldsMS tempMS = new StandardDesignTimeFieldsMS();
+            foreach (var curCrate in curCrates)
+            {
+
+                //extract the fields
+
+                List<FieldDTO> curCrateFields =
+                    JsonConvert.DeserializeObject<List<FieldDTO>>(curCrate.Contents);
+
+                //add them to the pile
+                tempMS.Fields.AddRange(curCrateFields);
+
+            }
+            return tempMS;
+        }
+
+        protected CrateStorageDTO PackCrates(List<CrateDTO> curCrates)
+        {
+            return new CrateStorageDTO()
+            {
+                CrateDTO = curCrates
+            };
         }
 
 

@@ -157,6 +157,12 @@ namespace Core.Services
             }
         }
 
+        public ActionDO MapFromDTO(ActionDTO curActionDTO)
+        {
+            ActionDO submittedAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            return SaveOrUpdateAction(submittedAction);
+        }
+
         public void Delete(int id)
         {
             var entity = new ActionDO { Id = id };
