@@ -91,7 +91,7 @@ module dockyard.controllers {
 
             this.setupMessageProcessing();
             var self = this;
-            this.loadProcessTemplate().$promise.then(function() {
+            this.loadProcessTemplate().$promise.then(function () {
                 self.loadImmediateActionList();
             });
             
@@ -119,19 +119,19 @@ module dockyard.controllers {
 
             var dropdownDemoField = new model.DropDownListBoxField();
             var demoSelectItem1 = new model.DropDownListItem();
-            
+
             demoSelectItem1.Key = "Operation 1";
             demoSelectItem1.Value = "operation_1";
             var demoSelectItem2 = new model.DropDownListItem();
-            
+
             demoSelectItem2.Key = "Operation 2";
             demoSelectItem2.Value = "operation_2";
             var demoSelectItem3 = new model.DropDownListItem();
-            
+
             demoSelectItem3.Key = "Operation 3";
             demoSelectItem3.Value = "operation_3";
             var demoSelectItem4 = new model.DropDownListItem();
-            
+
             demoSelectItem4.Key = "Operation 4";
             demoSelectItem4.Value = "operation_4";
             dropdownDemoField.fieldLabel = "Operation List";
@@ -207,13 +207,13 @@ module dockyard.controllers {
 
         private loadProcessTemplate() {
             var processTemplatePromise = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
-     //       processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
+            //       processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
             this._scope.current.processTemplate = processTemplatePromise;
             return processTemplatePromise;
         }
 
         private loadImmediateActionList() {
-            var actionListPromise = this.ActionListService.byProcessNodeTemplate({ id: this._scope.current.processTemplate.startingProcessNodeTemplateId, actionListType: 1});
+            var actionListPromise = this.ActionListService.byProcessNodeTemplate({ id: this._scope.current.processTemplate.startingProcessNodeTemplateId, actionListType: 1 });
             this._scope.immediateActionListVM = actionListPromise;
         }
 
@@ -240,7 +240,7 @@ module dockyard.controllers {
                     new pwd.ActionTempIdReplacedEventArgs(this._scope.current.action.id, action.id)
                     );
             }
-            
+
             if (action) {
                 this._scope.current.action = action;
                 //self._scope.current.action.id = result.action.id;
@@ -294,7 +294,7 @@ module dockyard.controllers {
                 this._scope.$broadcast(
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddCriteria],
                     new pwd.AddProcessNodeTemplateEventArgs(this.LocalIdentityGenerator.getNextId(), true, 'New criteria')
-                );
+                    );
             });
         }
 
@@ -329,7 +329,6 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
-
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
 
             var processNodeTemplateId: number,
@@ -352,18 +351,18 @@ module dockyard.controllers {
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();
                 
-                    // Create new action object.
+                // Create new action object.
                 var action = new model.ActionDesignDTO(null, id, true, this._scope.immediateActionListVM.id);
 
-                    action.name = 'New Action #' + Math.abs(id).toString();
+                action.name = 'New Action #' + Math.abs(id).toString();
 
-                    // Add action to Workflow Designer.
-                    self._scope.current.action = action.toActionVM();
-                    self._scope.$broadcast(
-                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                        new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
-                        );
-                });
+                // Add action to Workflow Designer.
+                self._scope.current.action = action.toActionVM();
+                self._scope.$broadcast(
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
+                    new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
+                    );
+            });
         }
 
         /*
@@ -371,13 +370,14 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("ProcessBuilderController: action selected", eventArgs);
-
             var originalId;
             if (this._scope.current.action) {
                 originalId = this._scope.current.action.id;
             }
+
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
+                var eArgs;
 
                 //Assume that Criteria is persisted so we always have a permanent id)
                 this._scope.current.criteria = new model.CriteriaDTO(
@@ -388,7 +388,7 @@ module dockyard.controllers {
                     );
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action && result.action[0]);
+                this.handleActionUpdate(result.action);
 
                 //if (this._scope.current.action != null) {
                 //    this._scope.$broadcast(
@@ -397,25 +397,38 @@ module dockyard.controllers {
                 //        );
                 //}
 
-                var wasTemporaryAction = (originalId == eventArgs.actionId);
+                // Whether id has changed after calling save
+                var wasTemporaryAction = (originalId != result.action.id);
 
-                var actionId = wasTemporaryAction && result.action[0]
-                    ? result.action[0].id
+                var actionId = wasTemporaryAction && result.action
+                    ? result.action.id
                     : eventArgs.actionId;
 
                 this._scope.current.action = this.ActionService.get({ id: actionId });
 
-                //Render Select Action Pane
-                var eArgs = new psa.RenderEventArgs(
-                    eventArgs.processNodeTemplateId,
-                    actionId,
-                    false,
-                    eventArgs.actionListId);
-
+                if (result.action.activityTemplateId == null) {
+                    //Render Select Action Pane
+                    eArgs = new psa.RenderEventArgs(
+                        eventArgs.processNodeTemplateId,
+                        actionId,
+                        false,
+                        eventArgs.actionListId);
+                    this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Render], eArgs);
+                    this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+                }
+                else
+                {
+                    //Render Configure Action Pane
+                    eArgs = new pca.RenderEventArgs(angular.extend({},
+                        new model.ActionDesignDTO(
+                            eventArgs.processNodeTemplateId, eventArgs.actionId,
+                            (eventArgs.actionId > 0) ? false : true,
+                            eventArgs.actionListId)));
+                    this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
+                    this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                }
                 this._scope.$broadcast(pst.MessageType[pst.MessageType.PaneSelectTemplate_Hide]);
-                this._scope.$broadcast(
-                    psa.MessageType[psa.MessageType.PaneSelectAction_Render],
-                    eArgs);
+
             });
         }
 
@@ -471,7 +484,7 @@ module dockyard.controllers {
         /*
            Handles message 'SelectActionPane_InitiateSaveAction'
        */
-        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {           
+        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
         }
 
@@ -491,7 +504,7 @@ module dockyard.controllers {
             promise.then((result: model.ProcessBuilderState) => {
 
                 // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action && result.action[0]);
+                this.handleActionUpdate(result.action && result.action);
 
             });
         }
@@ -542,7 +555,7 @@ module dockyard.controllers {
             //    }
             //}
         }
-    } 
+    }
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
@@ -552,15 +565,15 @@ module dockyard.controllers {
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
                     processNodeTemplateId: 1,
-                    actionTemplateId: 1,
+                    activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
                     fieldMappingSettings: new model.FieldMappingSettings(),
                     userLabel: "test",
                     tempId: 0,
                     actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
-                };  
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "")
+                };
 
             $httpBackend
                 .whenGET(urlPrefix + "/Action/1")

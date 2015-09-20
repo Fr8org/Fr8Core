@@ -107,21 +107,18 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("save")]
-        public IEnumerable<ActionDTO> Save(ActionDTO curActionDesignDTO)
+        public IHttpActionResult Save(ActionDTO curActionDTO)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            if (_action.SaveOrUpdateAction(curActionDO))
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var resultActionDO = _action.SaveOrUpdateAction(submittedActionDO);
+            if (curActionDTO.IsTempId)
             {
-                curActionDesignDTO.Id = curActionDO.Id;
-                _actionList.AddAction(curActionDO, "last");
-                return new List<ActionDTO> { curActionDesignDTO };
+                _actionList.AddAction(resultActionDO, "last");
             }
-            return new List<ActionDTO>();
+
+            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+            return Ok(resultActionDTO);
         }
-
-
-
-
 
         /// <summary>
         /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder.

@@ -122,7 +122,7 @@ module dockyard.directives.paneConfigureAction {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
 
             scope.action = eventArgs.action;
-
+            debugger;
             //for now ignore actions which were not saved in the database
             if (eventArgs.action.isTempId || scope.currentAction == null) return;
             scope.isVisible = true;
@@ -136,13 +136,13 @@ module dockyard.directives.paneConfigureAction {
             //        eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
             //FOR NOW we're going to simplify things by always checking with this server for a new configuration
 
-            if (eventArgs.action.actionTemplateId > 0) {
+            if (scope.currentAction.activityTemplateId > 0) {
                 this.loadConfiguration(scope, scope.action);
             }            
 
             // Create a directive-local immutable copy of action so we can detect 
             // a change of actionTemplateId in the currently selected action
-            this._currentAction = angular.extend({}, eventArgs.action);
+            this._currentAction = angular.extend({}, scope.currentAction);
             //debugger;
         }
 

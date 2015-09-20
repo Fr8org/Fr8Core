@@ -126,7 +126,7 @@ module dockyard.directives.paneSelectAction {
                     var currentSelectedActivity: model.ActivityTemplate;
                     var activities = $scope.actionTypes;
                     //find the selected activity
-                    currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.actionTemplateId })[0];
+                    currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.activityTemplateId })[0];
 
                     if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
                         // Ensure that we do not send CrateStorage of previously selected storage to server.
@@ -139,7 +139,7 @@ module dockyard.directives.paneSelectAction {
                             //Default configuration for the first child component activity will be shown
                             $scope.childActivityStepId = componentActivities[0].id;
                             $scope.childActivity = angular.extend({}, $scope.currentAction);
-                            $scope.childActivity.actionTemplateId = $scope.childActivityStepId;
+                            $scope.childActivity.activityTemplateId = $scope.childActivityStepId;
                             var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
                             $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                         }
@@ -173,7 +173,7 @@ module dockyard.directives.paneSelectAction {
                 $scope.ChildActivityTypeSelected = (childActionTemplateId) => {
                     if (childActionTemplateId != null) {
                         $scope.$emit(MessageType[MessageType.PaneSelectAction_InitiateSaveAction], eventArgs);
-                        $scope.childActivity.actionTemplateId = childActionTemplateId;
+                        $scope.childActivity.activityTemplateId = childActionTemplateId;
                         var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
                         $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 

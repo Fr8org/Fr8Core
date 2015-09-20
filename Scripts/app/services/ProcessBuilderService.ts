@@ -77,7 +77,7 @@ module dockyard.services {
             {
                 'save': {
                     method: 'POST',
-                    isArray: true,
+                    isArray: false,
                     url: '/actions/save'
                 },
                 //'get': {
@@ -182,10 +182,14 @@ module dockyard.services {
             if (currentState.processNodeTemplate) {
                 this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
                     .then((result: interfaces.IProcessNodeTemplateVM) => {
-                        debugger;
                         //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
                         newState.processNodeTemplate = result;
-                    
+
+                        this.crateHelper.mergeControlListCrate(
+                            currentState.action.configurationControls,
+                            currentState.action.crateStorage
+                        );
+
                         // If an Action is selected, save it
                         if (currentState.action) {
                             return this.ActionService.save({ id: currentState.action.id },
