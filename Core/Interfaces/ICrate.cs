@@ -14,5 +14,6 @@ namespace Core.Interfaces
         T GetContents<T>(CrateDTO crate);
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateDesignTimeFieldsCrate(string label, object contents);
+        CrateDTO CreateStandardConfigurationControlsCrate(string label, object contents);
     }
 }

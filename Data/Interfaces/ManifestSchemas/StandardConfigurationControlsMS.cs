@@ -3,7 +3,14 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardConfigurationControlsMS
+
+
+    public class ManifestSchema
+    {
+        
+    }
+
+    public class StandardConfigurationControlsMS : ManifestSchema
     {
         public List<FieldDefinitionDTO> Controls { get; set; }
 

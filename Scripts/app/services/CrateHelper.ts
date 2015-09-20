@@ -146,7 +146,7 @@
             var controlsList = new model.ControlsList();
             controlsList.fields = angular.fromJson(crate.contents).Controls;
 
-            //now we should look for crates with manifestType Standart Design Time Fields
+            //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             //TODO remove this logic to seperate function
             for (var i = 0; i < controlsList.fields.length; i++) {
