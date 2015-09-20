@@ -233,12 +233,12 @@ namespace pluginDockyardCore.Actions
                         
                         //add them to the pile
                         mergedFields.Fields.AddRange(curCrateFields);
-                        
                     }
 
-
                     //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO queryFieldsCrate = _crate.Create("Queryable Criteria", JsonConvert.SerializeObject(mergedFields),
+                    CrateDTO queryFieldsCrate = _crate.Create(
+                        "Queryable Criteria",
+                        JsonConvert.SerializeObject(mergedFields),
                         "Standard Design-Time Fields" );
                     
                     //build a controls crate to render the pane
