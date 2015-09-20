@@ -23,7 +23,8 @@ module dockyard.controllers {
             '$q',
             'DTOptionsBuilder',
             'DTColumnBuilder',
-            '$state'
+            '$state',
+            '$timeout'
         ];
 
         private _manageFiles: Array<interfaces.IFileVM>;
@@ -37,7 +38,8 @@ module dockyard.controllers {
             private $q: ng.IQService,
             private DTOptionsBuilder,
             private DTColumnBuilder,
-            private $state) {
+            private $state,
+            private $timeout: ng.ITimeoutService) {
 
             this._manageFiles = ManageFileService.query();
 
@@ -98,8 +100,16 @@ module dockyard.controllers {
         /* file picker hook*/
 
         private uploadFile($event) {
-            $("#filePicker").find('div').find('div').click();
-            console.log($("#filePicker").find('div').find('div').length);
+            $event.stopPropagation(); 
+
+            var t = angular.element("#filePicker").find('div').find('div').get();
+            $(t).attr('accept','pdf');
+            console.log(t);
+            this.$timeout(function () {
+                angular.element("#filePicker").find('div').find('div').trigger('click');
+            }, 0);
+
+
         };
     }
     app.controller('ManageFileListController', ManageFileListController);
