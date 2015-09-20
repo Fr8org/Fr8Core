@@ -21,13 +21,10 @@ namespace pluginDockyardCore.Actions
 {
     public class FilterUsingRunTimeData_v1 : BasePluginAction
     {
-        private readonly ICrate _crate;
-        private readonly IAction _action;
 
         public FilterUsingRunTimeData_v1()
         {
-            _crate = ObjectFactory.GetInstance<ICrate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+           
         }
 
         /// <summary>
@@ -203,6 +200,9 @@ namespace pluginDockyardCore.Actions
             return controlsCrate;
         }
 
+
+
+
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
@@ -214,44 +214,21 @@ namespace pluginDockyardCore.Actions
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    ActionDO submittedAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-                    ActionDO curActionDO = _action.SaveOrUpdateAction(submittedAction);
 
-                    //1) Build a merged list of the upstream design fields to go into our drop down list boxes
                     
+                    ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-                    StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
-
-                    List<CrateDTO> upstreamCrates = GetCratesByDirection(curActionDO, "Standard Design-Time Fields",
-                        GetCrateDirection.Upstream);
-
-                    foreach (var curCrate in upstreamCrates)
-                    {
-                        //extract the fields
-                        List<FieldDTO> curCrateFields =
-                            JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(curCrate.Contents).Fields;
-                        
-                        //add them to the pile
-                        mergedFields.Fields.AddRange(curCrateFields);
-                    }
+                    StandardDesignTimeFieldsMS curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream);
 
                     //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO queryFieldsCrate = _crate.Create(
-                        "Queryable Criteria",
-                        JsonConvert.SerializeObject(mergedFields),
-                        "Standard Design-Time Fields" );
+                    CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
                     
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = CreateStandardConfigurationControls();
 
-                    return new CrateStorageDTO()
-                    {
-                        CrateDTO = new List<CrateDTO>()
-                        {
-                            queryFieldsCrate,
-                            configurationControlsCrate
-                        }
-                    };
+                    var curCrates = new List<CrateDTO> {queryFieldsCrate, configurationControlsCrate};
+                    return PackCrates(curCrates);
+                   
 
                 }
             }

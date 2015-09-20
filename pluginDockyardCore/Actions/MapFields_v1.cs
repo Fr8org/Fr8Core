@@ -10,6 +10,7 @@ using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using Utilities;
@@ -18,12 +19,6 @@ namespace pluginDockyardCore.Actions
 {
     public class MapFields_v1 : BasePluginAction
     {
-        private readonly ICrate _crateService;
-
-        public MapFields_v1()
-        {
-            _crateService = ObjectFactory.GetInstance<ICrate>();
-        }
 
         /// <summary>
         /// Action processing infrastructure.
@@ -100,7 +95,7 @@ namespace pluginDockyardCore.Actions
                 fieldFilterPane
             };
 
-            var crateControls = _crateService.Create(
+            var crateControls = _crate.Create(
                 "Configuration_Controls",
                 JsonConvert.SerializeObject(fields),
                 "Standard Configuration Controls"
@@ -112,51 +107,14 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO actionDTO)
+        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
-            var curActivityService = ObjectFactory.GetInstance<IActivity>();
 
-            var curUpstreamActivities = curActivityService.GetUpstreamActivities(curActionDO);
-            var curDownstreamActivities = curActivityService.GetDownstreamActivities(curActionDO);
+            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-            var curUpstreamFields = new List<MappingFieldConfigurationDTO>();
-            FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curUpstreamFields);
+            List<FieldDTO> curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields;
 
-            // TODO: test purposes only! to be removed when entire PB gets integrated.
-            if (curUpstreamFields.Count == 0)
-            {
-                curUpstreamFields.Add(new MappingFieldConfigurationDTO()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Label = "[Test].[UpStreamField_01]"
-                });
-
-                curUpstreamFields.Add(new MappingFieldConfigurationDTO()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Label = "[Test].[UpStreamField_02]"
-                });
-            }
-
-            var curDownstreamFields = new List<MappingFieldConfigurationDTO>();
-            FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curDownstreamFields);
-
-            // TODO: test purposes only! to be removed when entire PB gets integrated.
-            if (curDownstreamFields.Count == 0)
-            {
-                curDownstreamFields.Add(new MappingFieldConfigurationDTO()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Label = "[Test].[DownStreamField_01]"
-                });
-
-                curDownstreamFields.Add(new MappingFieldConfigurationDTO()
-                {
-                    Id = Guid.NewGuid().ToString(),
-                    Label = "[Test].[DownStreamField_02]"
-                });
-            }
+            List<FieldDTO> curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields;
 
             if (curUpstreamFields.Count == 0 || curDownstreamFields.Count == 0)
             {
@@ -164,34 +122,14 @@ namespace pluginDockyardCore.Actions
                     + "Try configuring some Actions first, then try this page again.");
             }
 
-            var curUpstreamJson = JsonConvert.SerializeObject(curUpstreamFields, JsonSettings.CamelCase);
-            var curDownstreamJson = JsonConvert.SerializeObject(curDownstreamFields, JsonSettings.CamelCase);
+            //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
+            CrateDTO downstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
 
-            var curConfigurationControlsCrage = CreateStandardConfigurationControls();
+            var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            var curResultDTO = new CrateStorageDTO()
-            {
-                CrateDTO = new List<CrateDTO>()
-                {
-                    curConfigurationControlsCrage,
-
-                    new CrateDTO()
-                    {
-                        Id = "Upstream Plugin-Provided Fields",
-                        Label = "Upstream Plugin-Provided Fields",
-                        Contents = curUpstreamJson
-                    },
-
-                    new CrateDTO()
-                    {
-                        Id = "Downstream Plugin-Provided Fields",
-                        Label = "Downstream Plugin-Provided Fields",
-                        Contents = curDownstreamJson
-                    }
-                }
-            };
-
-            return curResultDTO;
+            var curCrates = new List<CrateDTO> { downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate };
+            return PackCrates(curCrates);
         }
 
         /// <summary>
