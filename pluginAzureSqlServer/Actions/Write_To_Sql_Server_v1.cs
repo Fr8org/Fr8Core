@@ -156,6 +156,11 @@ namespace pluginAzureSqlServer.Actions
             return null;
         }
 
+        public object Deactivate(ActionDO curActionDO)
+        {
+            return "Deactivated";
+        }
+
         public object Execute(ActionDataPackageDTO curActionDataPackage)
         {
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDataPackage.ActionDTO);

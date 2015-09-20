@@ -139,5 +139,15 @@ namespace Web.Controllers
 
             return Ok(triggerSettings);
         }
+
+        public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
+        {
+            return Ok(_processTemplate.Activate(curProcessTemplate));
+        }
+
+        public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
+        {
+            return Ok(_processTemplate.Deactivate(curProcessTemplate));
+        }
     }
 }

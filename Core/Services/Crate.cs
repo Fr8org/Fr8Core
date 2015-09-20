@@ -59,6 +59,5 @@ namespace Core.Services
 
 
         }
-        
     }
 }
