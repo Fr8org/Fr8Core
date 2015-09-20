@@ -85,7 +85,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private CrateDTO CreateStandartConfigurationControls()
+        private CrateDTO CreateStandardConfigurationControls()
         {
             var fieldFilterPane = new FieldDefinitionDTO()
             {
@@ -167,7 +167,7 @@ namespace pluginDockyardCore.Actions
             var curUpstreamJson = JsonConvert.SerializeObject(curUpstreamFields, JsonSettings.CamelCase);
             var curDownstreamJson = JsonConvert.SerializeObject(curDownstreamFields, JsonSettings.CamelCase);
 
-            var curConfigurationControlsCrage = CreateStandartConfigurationControls();
+            var curConfigurationControlsCrage = CreateStandardConfigurationControls();
 
             var curResultDTO = new CrateStorageDTO()
             {

@@ -5,6 +5,7 @@ using Core.Interfaces;
 using Core.Managers;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 

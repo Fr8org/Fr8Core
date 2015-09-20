@@ -8,8 +8,11 @@ using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Data.States.Templates;
 using Data.Wrappers;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
@@ -18,11 +21,13 @@ namespace pluginDockyardCore.Actions
 {
     public class FilterUsingRunTimeData_v1 : BasePluginAction
     {
-        private readonly ICrate _crateService;
+        private readonly ICrate _crate;
+        private readonly IAction _action;
 
         public FilterUsingRunTimeData_v1()
         {
-            _crateService = ObjectFactory.GetInstance<ICrate>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
+            _action = ObjectFactory.GetInstance<IAction>();
         }
 
         /// <summary>
@@ -33,7 +38,7 @@ namespace pluginDockyardCore.Actions
             var actionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 
             // Get parent action-list.
-            var curActionList = ((ActionListDO)actionDO.ParentActivity);
+            var curActionList = ((ActionListDO) actionDO.ParentActivity);
 
             if (!curActionList.ProcessID.HasValue)
             {
@@ -51,7 +56,8 @@ namespace pluginDockyardCore.Actions
             }
 
             // Prepare envelope data.
-            var curDocuSignEnvelope = new DocuSignEnvelope(); // Should just change GetEnvelopeData to pass an EnvelopeDO.
+            var curDocuSignEnvelope = new DocuSignEnvelope();
+                // Should just change GetEnvelopeData to pass an EnvelopeDO.
             var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(curDocuSignEnvelope);
 
             // Evaluate criteria using Contents json body of found Crate.
@@ -68,7 +74,7 @@ namespace pluginDockyardCore.Actions
                 curActionList.Process.ProcessState = ProcessState.Completed;
             }
 
-            return new ActionProcessResultDTO() { Success = true };
+            return new ActionProcessResultDTO() {Success = true};
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
@@ -84,7 +90,7 @@ namespace pluginDockyardCore.Actions
         }
 
         private IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId,
-             IQueryable<EnvelopeDataDTO> envelopeData)
+            IQueryable<EnvelopeDataDTO> envelopeData)
         {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
@@ -96,23 +102,23 @@ namespace pluginDockyardCore.Actions
             EventManager.CriteriaEvaluationStarted(processId);
             var filterExpression = ParseCriteriaExpression(criteria, envelopeData);
             IQueryable<EnvelopeDataDTO> results =
-                 envelopeData.Provider.CreateQuery<EnvelopeDataDTO>(filterExpression);
+                envelopeData.Provider.CreateQuery<EnvelopeDataDTO>(filterExpression);
             return results;
         }
 
         private Expression ParseCriteriaExpression<T>(string criteria, IQueryable<T> queryableData)
         {
             Expression criteriaExpression = null;
-            ParameterExpression pe = Expression.Parameter(typeof(T), "p");
+            ParameterExpression pe = Expression.Parameter(typeof (T), "p");
             JObject jCriteria = JObject.Parse(criteria);
-            JArray jCriterions = (JArray)jCriteria.Property("criteria").Value;
+            JArray jCriterions = (JArray) jCriteria.Property("criteria").Value;
             foreach (var jCriterion in jCriterions.OfType<JObject>())
             {
 
-                var propName = (string)jCriterion.Property("field").Value;
-                var propInfo = typeof(T).GetProperty(propName);
-                var op = (string)jCriterion.Property("operator").Value;
-                var value = ((JValue)jCriterion.Value<object>("value")).ToObject(propInfo.PropertyType);
+                var propName = (string) jCriterion.Property("field").Value;
+                var propInfo = typeof (T).GetProperty(propName);
+                var op = (string) jCriterion.Property("operator").Value;
+                var value = ((JValue) jCriterion.Value<object>("value")).ToObject(propInfo.PropertyType);
                 Expression left = Expression.Property(pe, propInfo);
                 Expression right = Expression.Constant(value);
                 Expression criterionExpression;
@@ -147,11 +153,11 @@ namespace pluginDockyardCore.Actions
                 criteriaExpression = Expression.Constant(true);
 
             var whereCallExpression = Expression.Call(
-                 typeof(Queryable),
-                 "Where",
-                 new[] { typeof(T) },
-                 queryableData.Expression,
-                 Expression.Lambda<Func<T, bool>>(criteriaExpression, new[] { pe }));
+                typeof (Queryable),
+                "Where",
+                new[] {typeof (T)},
+                queryableData.Expression,
+                Expression.Lambda<Func<T, bool>>(criteriaExpression, new[] {pe}));
             return whereCallExpression;
         }
 
@@ -167,73 +173,108 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private CrateDTO CreateStandartConfigurationControls(CrateDTO crateKeys)
+        private CrateDTO CreateStandardConfigurationControls()
         {
             var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
             {
                 FieldLabel = "Criteria for Executing Actions",
                 Type = "filterPane",
                 Name = "Selected_Filter",
-                Required = true
-            };
-
-            // TODO: This is for test purposes only!!
-            if (crateKeys == null)
-            {
-                fieldFilterPane.Fields = new List<FilterPaneField>()
+                Required = true,
+                Source = new FieldSourceDTO
                 {
-                    new FilterPaneField() { Key = "Test_DocuSign_EnvelopeId", Name = "[Test].[DocuSign].[EnvelopeId]" },
-                    new FilterPaneField() { Key = "Test_DocuSign_DocNumber", Name = "[Test].[DocuSign].[DocNumber]" }
-                };
-            }
-
-            var fields = new List<FieldDefinitionDTO>()
-            {
-                fieldFilterPane
+                    Label = "Queryable Criteria",
+                    ManifestType = "Standard Design-Time Fields"
+                }
             };
 
-            var crateControls = _crateService.Create(
+            //// TODO: This is for test purposes only!!
+            //if (crateKeys == null)
+            //{
+            //    fieldFilterPane.Fields = new List<FilterPaneField>()
+            //    {
+            //        new FilterPaneField() {Key = "Test_DocuSign_EnvelopeId", Name = "[Test].[DocuSign].[EnvelopeId]"},
+            //        new FilterPaneField() {Key = "Test_DocuSign_DocNumber", Name = "[Test].[DocuSign].[DocNumber]"}
+            //    };
+            //}
+
+            var controls = new StandardConfigurationControlsMS()
+            {
+                Controls = { fieldFilterPane}
+            };
+
+            var controlsCrate = _crate.Create(
                 "Configuration_Controls",
-                JsonConvert.SerializeObject(fields),
+                JsonConvert.SerializeObject(controls),
                 "Standard Configuration Controls"
                 );
 
-            return crateControls;
+            return controlsCrate;
         }
 
         /// <summary>
-        /// Looks for first Create with Id == "PayloadKeys" among all upcoming Actions.
+        /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curCrate = GetCratesByDirection(curActionDTO, "Standard Design-Time Fields", GetCrateDirection.Upstream);
 
-            var curConfigurationControlsCrage = CreateStandartConfigurationControls(curCrate);
-
-            if (curCrate != null)
+            if (curActionDTO.Id > 0)
             {
-                return new CrateStorageDTO()
+                //this conversion from actiondto to Action should be moved back to the controller edge
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    CrateDTO = new List<CrateDTO>()
+                    ActionDO submittedAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+                    ActionDO curActionDO = _action.SaveOrUpdateAction(submittedAction);
+
+                    //1) Build a merged list of the upstream design fields to go into our drop down list boxes
+                    
+
+                    StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
+
+                    List<CrateDTO> upstreamCrates = GetCratesByDirection(curActionDO, "Standard Design-Time Fields",
+                        GetCrateDirection.Upstream);
+
+                    foreach (var curCrate in upstreamCrates)
                     {
-                        curCrate,
-                        curConfigurationControlsCrage
+                        //extract the fields
+                        List<FieldDTO> curCrateFields =
+                            JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(curCrate.Contents).Fields;
+                        
+                        //add them to the pile
+                        mergedFields.Fields.AddRange(curCrateFields);
+                        
                     }
-                };
+
+
+                    //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+                    CrateDTO queryFieldsCrate = _crate.Create("Queryable Criteria", JsonConvert.SerializeObject(mergedFields),
+                        "Standard Design-Time Fields" );
+                    
+                    //build a controls crate to render the pane
+                    CrateDTO configurationControlsCrate = CreateStandardConfigurationControls();
+
+
+                    return new CrateStorageDTO()
+                    {
+                        CrateDTO = new List<CrateDTO>()
+                        {
+                            queryFieldsCrate,
+                            configurationControlsCrate
+                        }
+                    };
+
+                }
             }
             else
             {
-                return new CrateStorageDTO()
-                {
-                    CrateDTO = new List<CrateDTO>()
-                    {
-                        curConfigurationControlsCrage
-                    }
-                };
+                throw new ArgumentException(
+                    "Configuration requires the submission of an Action that has a real ActionId");
             }
-        }
+      }
 
-        /// <summary>
+    
+
+    /// <summary>
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>

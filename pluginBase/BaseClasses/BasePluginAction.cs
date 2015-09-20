@@ -6,7 +6,9 @@ using Data.Interfaces.DataTransferObjects;
 using PluginBase.Infrastructure;
 using StructureMap;
 using System;
+using System.Collections.Generic;
 using AutoMapper;
+using Data.States.Templates;
 
 namespace PluginBase.BaseClasses
 {
@@ -31,6 +33,12 @@ namespace PluginBase.BaseClasses
         //protected const int STANDARD_CONF_CONTROLS_MANIFEST_ID = ;
         protected const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
 
+        private IAction _action;
+
+        public BasePluginAction()
+        {
+            _action = ObjectFactory.GetInstance<IAction>();
+        }
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
@@ -58,25 +66,19 @@ namespace PluginBase.BaseClasses
             return curActionDTO.CrateStorage;
         }
 
-        protected virtual CrateDTO GetCratesByDirection(ActivityDO activityDO,
-            string searchId, GetCrateDirection direction)
-        {
-            return GetCratesByDirection(activityDO, x => x.ManifestType == searchId, direction);
-        }
+        //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
+        //    string manifestType, GetCrateDirection direction)
+        //{
+        //    return GetCratesByDirection(actionDTO, x => x.ManifestType == manifestType, direction);
+        //}
 
-        protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
-            string manifestType, GetCrateDirection direction)
-        {
-            return GetCratesByDirection(actionDTO, x => x.ManifestType == manifestType, direction);
-        }
+        //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
+        //{
+        //    var actionDO = Mapper.Map<ActionDO>(actionDTO);
+        //    return GetCratesByDirection(actionDO, predicate, direction);
+        //}
 
-        protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
-        {
-            var actionDO = Mapper.Map<ActionDO>(actionDTO);
-            return GetCratesByDirection(actionDO, predicate, direction);
-        }
-
-        protected virtual CrateDTO GetCratesByDirection(ActivityDO activityDO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
+        protected virtual List<CrateDTO> GetCratesByDirection(ActivityDO activityDO, string manifestType, GetCrateDirection direction)
         {
             var curActivityService = ObjectFactory.GetInstance<IActivity>();
 
@@ -84,19 +86,15 @@ namespace PluginBase.BaseClasses
                 ? curActivityService.GetUpstreamActivities(activityDO)
                 : curActivityService.GetDownstreamActivities(activityDO);
 
-            foreach (var curUpstreamAction in curUpstreamActivities.OfType<ActionDO>())
-            {
-                var curCrateStorage = curUpstreamAction.CrateStorageDTO();
-                var curCrate = curCrateStorage.CrateDTO.Last(predicate);
-                //var curCrate = curCrateStorage.CrateDTO.FirstOrDefault(predicate);
+            List<CrateDTO> upstreamCrates = new List<CrateDTO>();
 
-                if (curCrate != null)
-                {
-                    return curCrate;
-                }
+            //assemble all of the crates belonging to upstream activities
+            foreach (var curAction in curUpstreamActivities.OfType<ActionDO>())
+            {
+                upstreamCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorageDTO()).ToList());            
             }
 
-            return null;
+            return upstreamCrates;
         }
 
 

@@ -6,6 +6,7 @@ using Data.States;
 using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Interfaces.ManifestSchemas;
 using Utilities.Serializers.Json;
 namespace UtilitiesTesting.Fixtures
 {

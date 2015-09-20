@@ -11,6 +11,7 @@ using Data.States;
 using System.Data.Entity;
 using StructureMap;
 using System.Data;
+using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 
 namespace Core.Services

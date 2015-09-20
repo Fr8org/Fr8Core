@@ -10,7 +10,7 @@ namespace Core.Interfaces
     {
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
 
-        bool SaveOrUpdateAction(ActionDO currentActionDo);
+        ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         
         CrateStorageDTO Configure(ActionDO curActionDO);
 

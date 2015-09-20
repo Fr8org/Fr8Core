@@ -110,7 +110,7 @@ namespace Web.Controllers
         public IEnumerable<ActionDTO> Save(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            if (_action.SaveOrUpdateAction(curActionDO))
+            if (_action.SaveOrUpdateAction(curActionDO) != null) //this line is wrong and should be removed and replaced by a refactoring Alexei is doing
             {
                 curActionDesignDTO.Id = curActionDO.Id;
                 _actionList.AddAction(curActionDO, "last");

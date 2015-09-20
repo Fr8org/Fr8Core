@@ -106,7 +106,7 @@ namespace pluginDocuSign.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-				var crateControls = CreateStandartConfigurationControls();
+				var crateControls = CreateStandardConfigurationControls();
 				var crateDesignTimeFields = CreateStandardDesignTimeFields();
 				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
@@ -168,7 +168,7 @@ namespace pluginDocuSign.Actions
             return curActionDTO.CrateStorage;
         }
 
-        private CrateDTO CreateStandartConfigurationControls()
+        private CrateDTO CreateStandardConfigurationControls()
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
@@ -180,7 +180,7 @@ namespace pluginDocuSign.Actions
                 {
                     new FieldEvent("onChange", "requestConfig")
                 },
-                Source = new FieldSource
+                Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
                     ManifestType = "Standard Design-Time Fields"
