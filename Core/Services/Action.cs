@@ -44,40 +44,42 @@ namespace Core.Services
             }
         }
 
-        public bool SaveOrUpdateAction(ActionDO currentActionDo)
+        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
-            ActionDO existingActionDo = null;
+            ActionDO existingActionDO = null;
+            ActionDO curAction;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (currentActionDo.ActivityTemplateId == 0)
-                    currentActionDo.ActivityTemplateId = null;
+                if (submittedActionData.ActivityTemplateId == 0)
+                    submittedActionData.ActivityTemplateId = null;
 
-                if (currentActionDo.Id > 0)
+                if (submittedActionData.Id > 0)
                 {
-                    existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                    existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
                 }
 
-                if (currentActionDo.IsTempId)
+                if (submittedActionData.IsTempId)
                 {
-                    currentActionDo.Id = 0;
+                    submittedActionData.Id = 0;
                 }
 
-                if (existingActionDo != null)
+                if (existingActionDO != null)
                 {
-                    existingActionDo.ParentActivity = currentActionDo.ParentActivity;
-                    existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
-                    existingActionDo.ActivityTemplateId = currentActionDo.ActivityTemplateId;
-                    existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.CrateStorage = currentActionDo.CrateStorage;
-                    
+                    existingActionDO.ParentActivity = submittedActionData.ParentActivity;
+                    existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                    existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
+                    existingActionDO.Name = submittedActionData.Name;
+                    existingActionDO.CrateStorage = submittedActionData.CrateStorage;
+                    curAction = existingActionDO;
                 }
                 else
                 {
-                    uow.ActionRepository.Add(currentActionDo);
+                    uow.ActionRepository.Add(submittedActionData);
+                    curAction = submittedActionData;
                 }
-                uow.SaveChanges();
 
-                return true;
+                uow.SaveChanges();
+                return curAction;
             }
         }
 
@@ -94,7 +96,7 @@ namespace Core.Services
             }
         }
 
-        public ActionDO Configure(ActionDO curActionDO)
+        public CrateStorageDTO Configure(ActionDO curActionDO)
         {
             ActivityTemplateDO curActivityTemplate;
 
@@ -145,7 +147,7 @@ namespace Core.Services
 
                         //save the received action as quickly as possible
                         SaveOrUpdateAction(curActionDO);
-                        return curActionDO;  
+                        return curActionDO.CrateStorageDTO();  
                     }
 
                     else
@@ -158,6 +160,12 @@ namespace Core.Services
             {
                 throw new ArgumentNullException("ActivityTemplateDO");
             }
+        }
+
+        public ActionDO MapFromDTO(ActionDTO curActionDTO)
+        {
+            ActionDO submittedAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            return SaveOrUpdateAction(submittedAction);
         }
 
         public void Delete(int id)

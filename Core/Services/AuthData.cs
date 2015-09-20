@@ -14,7 +14,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId, providerName);
+                var curUserAuthData = uow.RemoteServiceAuthDataRepository.GetOrCreate(userId, providerName);
                 curUserAuthData.Token = authData;
                 uow.SaveChanges();
             }
@@ -24,7 +24,7 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserAuthData = uow.RemoteCalendarAuthDataRepository.GetOrCreate(userId, providerName);
+                var curUserAuthData = uow.RemoteServiceAuthDataRepository.GetOrCreate(userId, providerName);
                 return curUserAuthData.Token;
             }
         }

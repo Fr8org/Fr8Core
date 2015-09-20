@@ -20,11 +20,13 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
+        private readonly IActionList _actionList;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
+            _actionList = ObjectFactory.GetInstance<IActionList>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
@@ -43,9 +45,9 @@ namespace Web.Controllers
         public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            curActionDO = _action.Configure(curActionDO);
+            var crateStorage = _action.Configure(curActionDO);
 
-            return Ok(curActionDO);
+            return Ok(crateStorage);
         }
 
 
@@ -108,9 +110,10 @@ namespace Web.Controllers
         public IEnumerable<ActionDTO> Save(ActionDTO curActionDesignDTO)
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            if (_action.SaveOrUpdateAction(curActionDO))
+            if (_action.SaveOrUpdateAction(curActionDO)  != null) //this line is wrong and should be removed and replaced by a refactoring Alexei is doing
             {
                 curActionDesignDTO.Id = curActionDO.Id;
+                _actionList.AddAction(curActionDO, "last");
                 return new List<ActionDTO> { curActionDesignDTO };
             }
             return new List<ActionDTO>();

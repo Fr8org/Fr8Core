@@ -129,7 +129,7 @@ module dockyard.controllers {
             $event.stopPropagation();
             
             this.$state.go('processBuilder', { id: processTemplateId });
-            }
+        }
 
         private DeleteProcessTemplate(processTemplateId, $event) {
             $event.preventDefault();

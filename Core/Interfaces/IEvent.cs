@@ -15,7 +15,6 @@ namespace Core.Interfaces
         /// <summary>
         /// Handles Plugin Event 
         /// </summary>
-        /// <param name="eventData"></param>
         void HandlePluginEvent(LoggingData eventData);
     }
 }

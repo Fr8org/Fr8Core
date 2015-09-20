@@ -18,7 +18,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "pluginAzureSqlServer",
                 Endpoint = "pluginAzureSqlServer",
-                PluginStatus = PluginStatus.Active
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
             };
         }
 
@@ -28,7 +29,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "AzureSqlServer",
                 Endpoint = "AzureSqlServer",
-                PluginStatus = PluginStatus.Active
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
             };
         }
 
@@ -38,7 +40,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "http://localhost:46281/",
                 Endpoint = "http://localhost:46281/",
-                PluginStatus = PluginStatus.Active
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
             };
         }
         public static PluginDO PluginFour()
@@ -47,7 +50,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "AzureSqlServer",
                 Endpoint = "AzureSqlServer",
-                PluginStatus = PluginStatus.Active
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
             };
         }
 

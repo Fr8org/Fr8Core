@@ -130,8 +130,14 @@ namespace Data.Infrastructure
         public delegate void PluginEventHandler(LoggingData eventData);
         public static event PluginEventHandler PluginEventReported;
 
+        public delegate void ExternalEventReceivedHandler(string curEventPayload);
+        public static event ExternalEventReceivedHandler ExternalEventReceived;
+
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
+
+        public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
+        public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
         #region Method
 
 
@@ -390,6 +396,18 @@ namespace Data.Infrastructure
         {
             PluginEventHandler handler = PluginEventReported;
             if (handler != null) handler(eventData);
+        }
+
+        public static void ReportExternalEventReceived(string curEventPayload)
+        {
+            ExternalEventReceivedHandler handler = ExternalEventReceived;
+            if (handler != null) handler(curEventPayload);
+        }
+
+        public static void ReportUnparseableNotification(string curNotificationUrl, string curNotificationPayload)
+        {
+            UnparseableNotificationReceivedHandler handler = UnparseableNotificationReceived;
+            if (handler != null) handler(curNotificationUrl, curNotificationPayload);
         }
 
         public static void DocuSignFieldMissing(string envelopeId, string fieldName)

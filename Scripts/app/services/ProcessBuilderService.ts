@@ -26,7 +26,7 @@ module dockyard.services {
     }
 
     export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
-        byProcessNodeTemplate: (id: { id: number }) => interfaces.IActionListVM;
+        byProcessNodeTemplate: (id: { id: number; actionListType: number; }) => interfaces.IActionListVM;
     }
 
     export interface ICriteriaServiceWrapper {

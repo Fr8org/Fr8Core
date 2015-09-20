@@ -11,6 +11,7 @@ using Data.States;
 using System.Data.Entity;
 using StructureMap;
 using System.Data;
+using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 
 namespace Core.Services
@@ -18,6 +19,7 @@ namespace Core.Services
     public class ProcessTemplate : IProcessTemplate
     {
         private readonly IProcess _process;
+        private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
         private readonly ICrate _crate;
@@ -27,6 +29,7 @@ namespace Core.Services
         public ProcessTemplate()
         {
             _process = ObjectFactory.GetInstance<IProcess>();
+            _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrate>();
@@ -82,7 +85,11 @@ namespace Core.Services
                         ptdo.SubscribedExternalEvents);
                 }
             }
-            uow.SaveChanges();
+
+
+            _processNodeTemplate.Create(uow,ptdo.StartingProcessNodeTemplate);
+
+            //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
             return ptdo.Id;
         }
 
