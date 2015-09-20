@@ -1,6 +1,7 @@
 ﻿
 using System.IO;
 using Data.Entities;
+using System.Collections.Generic;
 
 namespace Core.Interfaces
 {
@@ -24,5 +25,16 @@ namespace Core.Interfaces
         /// Deletes file from repository
         /// </summary>
         bool Delete(FileDO curFile);
+
+        /// <summary>
+        /// Retreive list of files for specified DockyardAccount
+        /// </summary>
+        IList<FileDO> FilesList(int? dockyardAccountId);
+
+        /// <summary>
+        /// Retreive list of all files 
+        /// </summary>
+        /// <returns></returns>
+        IList<FileDO> AllFilesList();
     }
 }
