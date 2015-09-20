@@ -125,12 +125,11 @@ namespace PluginBase.BaseClasses
             {
 
                 //extract the fields
-
-                List<FieldDTO> curCrateFields =
-                    JsonConvert.DeserializeObject<List<FieldDTO>>(curCrate.Contents);
+                StandardDesignTimeFieldsMS curCrateFields =
+                    JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(curCrate.Contents);
 
                 //add them to the pile
-                tempMS.Fields.AddRange(curCrateFields);
+                tempMS.Fields.AddRange(curCrateFields.Fields);
 
             }
             return tempMS;
