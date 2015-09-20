@@ -272,6 +272,10 @@
     <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.cs" />
+    <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.Designer.cs">
+      <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -501,6 +505,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509161527206_AddedVersionToPlugin.resx">
+      <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

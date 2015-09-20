@@ -35,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send an Email",
-                Plugin = new PluginDO { Name = "Send an Email", Endpoint = "", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "Send an Email", Version = "1", Endpoint = "", PluginStatus = PluginStatus.Active },
                 
                 Version = "1"
             };
@@ -47,7 +47,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "Send a Text (SMS) Message",
-                Plugin = new PluginDO { Name = "Send a Text (SMS) Message", Endpoint = "", PluginStatus = PluginStatus.Active },
+                Plugin = new PluginDO { Name = "Send a Text (SMS) Message", Version = "1", Endpoint = "", PluginStatus = PluginStatus.Active },
                 Version = "1"
             };
         }        
@@ -367,8 +367,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "AzureSqlServer",
-                PluginStatus = 1
-
+                PluginStatus = 1,
+                Version = "1" 
             };
 
             ActivityTemplateDO curActivityTemplateDO = new ActivityTemplateDO
