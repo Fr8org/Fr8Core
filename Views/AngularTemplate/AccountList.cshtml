@@ -3,8 +3,6 @@
         <thead>
             <tr>
                 <th>ID</th>
-                <th>FirstName</th>
-                <th>LastName</th>
                 <th>Email Address</th>
                 <th>Roles</th>
             </tr>
@@ -12,8 +10,6 @@
         <tbody>
             <tr ng-repeat="user in ::users" ng-click="openDetails(user)">
                 <td>{{:: user.id }}</td>
-                <td>{{:: user.firstName }}</td>
-                <td>{{:: user.lastName }}</td>
                 <td>{{:: user.emailAddress }}</td>
                 <td>{{:: user.role }}</td>
             </tr>
