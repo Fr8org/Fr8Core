@@ -4,6 +4,7 @@ module dockyard.controllers {
     'use strict';
     
     export interface ManageFileListScope extends ng.IScope {
+        UploadFile: (file: interfaces.IFileVM) => void;
      /*   GoToProcessTemplatePage: (processTemplate: interfaces.IProcessTemplateVM) => void;
         DeleteProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;*/
         dtOptionsBuilder: any;
@@ -46,6 +47,7 @@ module dockyard.controllers {
             $scope.dtOptionsBuilder = this.GetDataTableOptionsFromFiles();
 
             $scope.dtInstance = {};
+            $scope.UploadFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.uploadFile);
         }
 
         private GetDataTableColumns() {
@@ -92,6 +94,13 @@ module dockyard.controllers {
                 ctrl.$state.go('processTemplateDetails', { id: data.id });
             });*/
         }
+
+        /* file picker hook*/
+
+        private uploadFile($event) {
+            $("#filePicker").find('div').find('div').click();
+            console.log($("#filePicker").find('div').find('div').length);
+        };
     }
     app.controller('ManageFileListController', ManageFileListController);
 }
