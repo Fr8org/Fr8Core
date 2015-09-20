@@ -154,7 +154,7 @@ module dockyard.directives.paneConfigureAction {
             this.ActionService.configure(action).$promise.then(function (res: any) {
                 (<any>scope.currentAction).crateStorage = res;
                 (<any>scope.currentAction).configurationControls =
-                self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                    self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
             });
         }
 
