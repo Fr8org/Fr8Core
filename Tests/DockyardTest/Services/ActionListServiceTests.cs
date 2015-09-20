@@ -181,10 +181,21 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 
+               // Assert.IsNotNull(expectedAction);
+               // Assert.AreEqual(actualAction.Name, expectedAction.Name);
+
+                
+
                 ActionDO actionDO = FixtureData.TestAction22();
+                //Add one test action
+                //var action = FixtureData.TestAction1();
+                uow.ActionRepository.Add(actionDO);
+                uow.SaveChanges();
+                
                 _actionList.AddAction(actionDO, "last");
-                Assert.IsNotNull(uow.ActionRepository.GetByKey(10));
-                Assert.AreEqual(uow.ActionRepository.GetByKey(10).Ordering, 3);
+                var expectedAction = uow.ActionRepository.GetByKey(actionDO.Id);
+                Assert.IsNotNull(expectedAction);
+                Assert.AreEqual(expectedAction.Ordering, 3);
             }
         }
 

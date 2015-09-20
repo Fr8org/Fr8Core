@@ -336,7 +336,7 @@ namespace DockyardTest.Controllers
                 CrateStorage = new CrateStorageDTO(),
                 FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActionTemplateId = 1,
-                ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
+                ActivityTemplate = FixtureData.TestActionTemplateDTOV2(),
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()
             };
         }
