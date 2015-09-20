@@ -10,5 +10,6 @@ namespace Core.Managers.APIManagers.Authorizers
         Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken);
         Task RefreshTokenAsync(string userId, CancellationToken cancellationToken);
         Task<string> GetAccessTokenAsync(string userId, CancellationToken cancellationToken);
+        Task<string> GetRefreshTokenAsync(string userId, CancellationToken cancellationToken);
     }
 }
