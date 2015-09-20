@@ -64,7 +64,7 @@ namespace pluginDockyardCore.Actions
             // Process result.
             if (result)
             {
-                actionDO.ActionState = ActionState.Completed;
+                actionDO.ActionState = ActionState.Active;
             }
             else
             {

@@ -13,6 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase;
 using PluginBase.BaseClasses;
+using DocuSign.Integrations.Client;
 
 namespace pluginDocuSign.Actions
 {
@@ -59,7 +60,30 @@ namespace pluginDocuSign.Actions
 
         public object Activate(ActionDTO curDataPackage)
         {
-            return "Activate Request"; // Will be changed when implementation is plumbed in.
+            DocuSignAccount docuSignAccount = new DocuSignAccount();
+            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
+            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            {
+                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+            }
+            else
+            {
+                return "Fail";
+            }
+        }
+
+        public object Deactivate(ActionDTO curDataPackage)
+        {
+            DocuSignAccount docuSignAccount = new DocuSignAccount();
+            ConnectProfile connectProfile = docuSignAccount.GetDocuSignConnectProfiles();
+            if (Int32.Parse(connectProfile.totalRecords) > 0)
+            {
+                return "Not Yet Implemented"; // Will be changed when implementation is plumbed in.
+            }
+            else
+            {
+                return "Fail";
+            }
         }
 
         public object Execute(ActionDataPackageDTO curActionDataPackage)
