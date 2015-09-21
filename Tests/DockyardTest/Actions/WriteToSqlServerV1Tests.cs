@@ -5,6 +5,7 @@ using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -49,9 +50,9 @@ namespace DockyardTest.Actions
             var result = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
 
             //Assert the connection string value is null or empty
-            var connectionStringFieldDefinition = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CrateDTO[0].Contents);
-            Assert.IsTrue(connectionStringFieldDefinition.Count == 1);
-            Assert.IsTrue(string.IsNullOrEmpty(connectionStringFieldDefinition[0].Value));
+            var connectionStringConfigControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(result.CrateDTO[0].Contents);
+            Assert.IsTrue(connectionStringConfigControls.Controls.Count == 1);
+            Assert.IsTrue(string.IsNullOrEmpty(connectionStringConfigControls.Controls[0].Value));
         }
 
         [Test]
