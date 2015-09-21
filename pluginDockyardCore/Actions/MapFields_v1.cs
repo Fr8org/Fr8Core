@@ -95,7 +95,13 @@ namespace pluginDockyardCore.Actions
                 fieldFilterPane
             };
 
-            return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fields);
+            var crateControls = _crate.Create(
+                "Configuration_Controls",
+                JsonConvert.SerializeObject(fields),
+                "Standard Configuration Controls"
+                );
+
+            return crateControls;
         }
 
         /// <summary>

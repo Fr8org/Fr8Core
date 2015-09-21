@@ -347,8 +347,7 @@ namespace Data.Migrations
                 var azureSqlPlugin = new PluginDO()
                 {
                     Name = azureSqlPluginName,
-                    PluginStatus = PluginStatus.Active,
-                    Version = "1"
+                    PluginStatus = PluginStatus.Active
                 };
 
                 uow.PluginRepository.Add(azureSqlPlugin);
