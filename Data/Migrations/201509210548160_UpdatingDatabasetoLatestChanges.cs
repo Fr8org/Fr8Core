@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedVersionToPlugin : DbMigration
+    public partial class UpdatingDatabasetoLatestChanges : DbMigration
     {
         public override void Up()
         {
