@@ -19,11 +19,6 @@ module dockyard.controllers {
         current: model.ProcessBuilderState;
         save: Function;
         cancel: Function;
-
-        //this is for demo only, should be deleted on production
-        radioDemoField: model.RadioButtonGroupField;
-        dropdownDemoField: model.DropDownListBoxField;
-        textBlockDemoField: model.TextBlockField;
     }
 
     //Setup aliases
@@ -94,62 +89,6 @@ module dockyard.controllers {
             this.loadProcessTemplate().$promise.then(() => {
                 self.loadImmediateActionList();
             });
-            
-
-            //THIS IS FOR DEMO ONLY
-            var radioDemoField = new model.RadioButtonGroupField();
-            radioDemoField.fieldLabel = 'Demo Label';
-            radioDemoField.groupName = 'Demo Group Name';
-            radioDemoField.type = 'radioButtonGroup';
-            var demoRadio1 = new model.RadioField();
-            demoRadio1.value = "Selection 1";
-            demoRadio1.selected = false;
-            var demoRadio2 = new model.RadioField();
-            demoRadio2.value = "Selection 2";
-            demoRadio2.selected = false;
-            var demoRadio3 = new model.RadioField();
-            demoRadio3.value = "Selection 3";
-            demoRadio3.selected = true;
-            var radios = new Array<model.RadioField>();
-            radios.push(demoRadio1);
-            radios.push(demoRadio2);
-            radios.push(demoRadio3);
-            radioDemoField.radios = radios;
-            this._scope.radioDemoField = radioDemoField;
-
-            var dropdownDemoField = new model.DropDownListBoxField();
-            var demoSelectItem1 = new model.DropDownListItem();
-
-            demoSelectItem1.Key = "Operation 1";
-            demoSelectItem1.Value = "operation_1";
-            var demoSelectItem2 = new model.DropDownListItem();
-
-            demoSelectItem2.Key = "Operation 2";
-            demoSelectItem2.Value = "operation_2";
-            var demoSelectItem3 = new model.DropDownListItem();
-
-            demoSelectItem3.Key = "Operation 3";
-            demoSelectItem3.Value = "operation_3";
-            var demoSelectItem4 = new model.DropDownListItem();
-
-            demoSelectItem4.Key = "Operation 4";
-            demoSelectItem4.Value = "operation_4";
-            dropdownDemoField.fieldLabel = "Operation List";
-            dropdownDemoField.listItems = new Array<model.DropDownListItem>();
-            dropdownDemoField.listItems.push(demoSelectItem1);
-            dropdownDemoField.listItems.push(demoSelectItem2);
-            dropdownDemoField.listItems.push(demoSelectItem3);
-            dropdownDemoField.listItems.push(demoSelectItem4);
-
-            dropdownDemoField.value = "operation_4";
-            dropdownDemoField.name = "demoDropDown";
-            this._scope.dropdownDemoField = dropdownDemoField;
-
-            var textBlockDemoField = new model.TextBlockField();
-            textBlockDemoField.class = 'well well-lg';
-            textBlockDemoField.value = 'Some description about action which is styled with class attribute using "well well-lg"';
-            this._scope.textBlockDemoField = textBlockDemoField;
-            //END OF DEMO CODE
         }
 
         /*

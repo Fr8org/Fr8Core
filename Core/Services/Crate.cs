@@ -35,7 +35,7 @@ namespace Core.Services
         }
 
         public CrateDTO CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
-        {
+        {    
             return Create(label, 
                 JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields}),
                 manifestType: "Standard Design-Time Fields", 
