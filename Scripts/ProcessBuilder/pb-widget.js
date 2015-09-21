@@ -65,7 +65,8 @@
                 isTempId: action.isTempId || false,
                 actionType: actionType,
                 data: action,
-                actionNode: null
+                actionNode: null,
+                activityTemplateId: 0
             };
 
             actionDescr.actionNode = this._factory.createActionNode(
@@ -75,7 +76,7 @@
             actionDescr.actionNode.on(
                 'click',
                 Core.delegate(function (e) {
-                    this.fire('actionNode:click', e, null, actionDescr.id, actionDescr.actionType);
+                    this.fire('actionNode:click', e, null, actionDescr.id, actionDescr.actionType, actionDescr.activityTemplateId);
                 }, this)
             );
 
@@ -123,6 +124,15 @@
                     this._actions[i].actionNode.setText(text);
 
                     this.relayout();
+                    return;
+                }
+            }
+        },
+
+        updateActivityTemplateId: function (id, activityTemplateId) {
+            for (var i = 0; i < this._actions.length; ++i) {
+                if (this._actions[i].id == id) {
+                    this._actions[i].activityTemplateId = activityTemplateId;
                     return;
                 }
             }
