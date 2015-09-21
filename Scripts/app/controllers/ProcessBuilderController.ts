@@ -91,7 +91,7 @@ module dockyard.controllers {
 
             this.setupMessageProcessing();
             var self = this;
-            this.loadProcessTemplate().$promise.then(function () {
+            this.loadProcessTemplate().$promise.then(() => {
                 self.loadImmediateActionList();
             });
             
@@ -463,10 +463,9 @@ module dockyard.controllers {
 
             var scope = this._scope,
                 that = this;
-
+            
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
 
@@ -605,9 +604,9 @@ module dockyard.controllers {
 
             $httpBackend
                 .whenPOST(urlPrefix + "/Action/1")
-                .respond(function (method, url, data) {
+                .respond(function(method, url, data) {
                     return data;
-                })
+                });
         }
     ]);
 
