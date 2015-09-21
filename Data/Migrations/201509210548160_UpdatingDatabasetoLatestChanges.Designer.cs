@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class RemovedBookerIdFieldFromHistoryItemDO : IMigrationMetadata
+    public sealed partial class UpdatingDatabasetoLatestChanges : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(RemovedBookerIdFieldFromHistoryItemDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatingDatabasetoLatestChanges));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509180845185_RemovedBookerIdFieldFromHistoryItemDO"; }
+            get { return "201509210548160_UpdatingDatabasetoLatestChanges"; }
         }
         
         string IMigrationMetadata.Source

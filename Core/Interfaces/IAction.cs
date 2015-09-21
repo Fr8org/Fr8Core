@@ -8,9 +8,9 @@ namespace Core.Interfaces
 {
     public interface IAction
     {
-        IEnumerable<TViewModel> GetAllActions<TViewModel>();        
+        IEnumerable<TViewModel> GetAllActions<TViewModel>();
 
-        bool SaveOrUpdateAction(ActionDO currentActionDo);
+        ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         
         CrateStorageDTO Configure(ActionDO curActionDO);
 
@@ -19,13 +19,17 @@ namespace Core.Interfaces
         ActionDO GetById(int id);
 
         void Delete(int id);
+        ActionDO MapFromDTO(ActionDTO curActionDTO);
 
         Task<int> Process(ActionDO curAction, ProcessDO curProcessDO);
 
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
-        IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
 
+        string Activate(ActionDO curActionDO);
+
+        string Deactivate(ActionDO curActionDO);
+        IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
     }
 }

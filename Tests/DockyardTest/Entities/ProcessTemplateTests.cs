@@ -6,6 +6,7 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 
 namespace DockyardTest.Entities
 {
@@ -41,9 +42,9 @@ namespace DockyardTest.Entities
         {
             FixtureData.TestProcessTemplateWithSubscribeEvent();
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            CrateDTO curCrateDTOStandardEventReport = FixtureData.StandardEventReportFormat();
+            EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
 
-            var result = curProcessTemplate.GetStandardEventSubscribers("testuser1", curCrateDTOStandardEventReport);
+            var result = curProcessTemplate.GetMatchingProcessTemplates("testuser1", curEventReport);
 
             Assert.IsNotNull(result);
             Assert.Greater(result.Count, 0);
@@ -57,27 +58,17 @@ namespace DockyardTest.Entities
         {
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
 
-            curProcessTemplate.GetStandardEventSubscribers("", new CrateDTO());
+            curProcessTemplate.GetMatchingProcessTemplates("", new EventReportMS());
         }
 
         [Test]
         [Category("ProcessTemplate")]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
-        public void GetStandardEventSubscribers_CrateDTONULL_ThrowsException()
+        public void GetStandardEventSubscribers_EventReportMSNULL_ThrowsException()
         {
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
 
-            curProcessTemplate.GetStandardEventSubscribers("UserTest", null);
-        }
-
-        [Test]
-        [Category("ProcessTemplate")]
-        [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
-        public void GetStandardEventSubscribers_CrateDTOContentIsEmpty_ThrowsException()
-        {
-            IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-
-            curProcessTemplate.GetStandardEventSubscribers("UserTest", new CrateDTO());
+            curProcessTemplate.GetMatchingProcessTemplates("UserTest", null);
         }
     }
 }

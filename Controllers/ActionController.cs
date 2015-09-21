@@ -20,11 +20,13 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
+        private readonly IActionList _actionList;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
+            _actionList = ObjectFactory.GetInstance<IActionList>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
@@ -32,6 +34,22 @@ namespace Web.Controllers
         {
             _action = service;
         }
+
+
+        //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
+
+        [HttpPost]
+        [Route("configuration")]
+        [Route("configure")]
+        //[ResponseType(typeof(CrateStorageDTO))]
+        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
+        {
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+            var crateStorage = _action.Configure(curActionDO);
+
+            return Ok(crateStorage);
+        }
+
 
         [Route("configure")]
         [Route("process")]
@@ -42,17 +60,26 @@ namespace Web.Controllers
             var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
             var curActionDO = Mapper.Map<ActionDO>(actionDTO);
 
+            //Figure out which request is being made
             var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
                 curActionDO.ActivityTemplate.Name,
                 curActionDO.ActivityTemplate.Version);
-
             var calledType = Type.GetType(curAssemblyName);
             var curMethodInfo = calledType
                 .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
             var curObject = Activator.CreateInstance(calledType);
+            ActionDTO curActionDTO;
+            try
+            {
+                curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+            }
+            catch 
+            {
+                throw new ApplicationException("PluginRequestError");
+            }
 
-            return JsonConvert.SerializeObject(
-                (object)curMethodInfo.Invoke(curObject, new Object[] { curActionDO }) ?? new { });
+            curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            return JsonConvert.SerializeObject(curActionDO);
         }
 
         /// <summary>
@@ -80,28 +107,18 @@ namespace Web.Controllers
         /// </summary>
         [HttpPost]
         [Route("save")]
-        public IEnumerable<ActionDTO> Save(ActionDTO curActionDesignDTO)
+        public IHttpActionResult Save(ActionDTO curActionDTO)
         {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            if (_action.SaveOrUpdateAction(curActionDO))
+            ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
+            var resultActionDO = _action.SaveOrUpdateAction(submittedActionDO);
+            if (curActionDTO.IsTempId)
             {
-                curActionDesignDTO.Id = curActionDO.Id;
-                return new List<ActionDTO> { curActionDesignDTO };
-            }
-            return new List<ActionDTO>();
+                _actionList.AddAction(resultActionDO, "last");
         }
 
-        [HttpPost]
-        [Route("configuration")]
-        [Route("configure")]
-        //[ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
-        {
-            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            var configurationCrates = _action.Configure(curActionDO);
-            return Ok(configurationCrates);  
+            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+            return Ok(resultActionDTO);
         }
-
 
         /// <summary>
         /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder.

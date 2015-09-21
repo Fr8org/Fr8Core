@@ -134,18 +134,18 @@
                 crateStorage, 'Standard Configuration Controls');
 
             // Overwrite contents of that crate with actual data in controlList.fields.
-            controlListCrate.contents = angular.toJson(controlList.fields);
+            controlListCrate.contents = angular.toJson({ Controls: controlList.fields });
         }
 
         public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
-
+            debugger;
             var controlsList = new model.ControlsList();
-            controlsList.fields = angular.fromJson(crate.contents);
+            controlsList.fields = angular.fromJson(crate.contents).Controls;
 
-            //now we should look for crates with manifestType Standart Design Time Fields
+            //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             //TODO remove this logic to seperate function
             for (var i = 0; i < controlsList.fields.length; i++) {
@@ -161,8 +161,8 @@
                         continue;
                     }
 
-                    var listItems = <Array<model.DropDownListItem>> angular.fromJson(stdfCrate.contents);
-                    dropdownListField.listItems = listItems;
+                    var listItems = <any> angular.fromJson(stdfCrate.contents);
+                    dropdownListField.listItems = listItems.Fields;
                 }
             }
 

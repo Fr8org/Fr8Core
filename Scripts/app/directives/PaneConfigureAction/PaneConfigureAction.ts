@@ -60,7 +60,8 @@ module dockyard.directives.paneConfigureAction {
             private $rootScope: interfaces.IAppRootScope,
             private ActionService: services.IActionService,
             private crateHelper: services.CrateHelper,
-            private $filter: ng.IFilterService
+            private $filter: ng.IFilterService,
+            private $timeout: ng.ITimeoutService
             ) {
 
             PaneConfigureAction.prototype.link = (
@@ -78,11 +79,11 @@ module dockyard.directives.paneConfigureAction {
                 this._$element = $element;
 
                 //Controller goes here
-                $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.action, this.onActionChanged, true);
+                $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.currentAction, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
                 //$scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) => this.onExitFocus(eventArgs));
-                $scope.$on("OnExitFocus", <any>angular.bind(this, this.onExitFocus));
+                $scope.$on("onFieldChange", <any>angular.bind(this, this.onFieldChange));
 
                 $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
             };
@@ -90,11 +91,10 @@ module dockyard.directives.paneConfigureAction {
 
         private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
             model.ControlsList
-        } 
+        }
 
-        private onExitFocus(event: ng.IAngularEvent, eventArgs: ExitFocusEventArgs) {
+        private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
-
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
             var fieldList = scope.currentAction.configurationControls.fields;
@@ -104,12 +104,12 @@ module dockyard.directives.paneConfigureAction {
             if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
             var field = fieldList[0];
 
-            // Find the onExitFocus event object
-            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onExitFocus' }, true);
+            // Find the onChange event object
+            var eventHandlerList = <Array<model.FieldEvent>> this.$filter('filter')(field.events, { name: 'onChange' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
 
-            if (fieldEvent.handler == 'requestConfig') {
+            if (fieldEvent.handler === 'requestConfig') {
                 this.crateHelper.mergeControlListCrate(
                     scope.currentAction.configurationControls,
                     scope.currentAction.crateStorage
@@ -117,36 +117,17 @@ module dockyard.directives.paneConfigureAction {
                 scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
                 this.loadConfiguration(scope, scope.currentAction);
             }
-                        
-            //this.push(key + ': ' + value);
-            //TODO: to be fixed
-            //console.log("name : " + value.Name + " -> handler : " + value.Handler);
-            //debugger;
-            //if (value.Name == "onExitFocus") {
-            //    //console.log("events.onExitFocus is NOT null");
-            //    //console.log("found onExitFocus -> " + events.onExitFocus);
-            //    if (value.Handler == "requestConfig") {
-            //        console.log("onExitFocus == requestConfig");
-            //        alert(value.Name + " -> " + value.Handler);
-            //        // Render Pane Configure Action 
-            //        var pcaEventArgs = new RenderEventArgs(this._currentAction);
-            //        this.onRender(event, pcaEventArgs);
-            //        alert("called onRender on PCA");
-
-            //        //$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-            //    }
-            //}
-            // });
         }
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
 
-            scope.action = eventArgs.action;
+            console.log("Configue action id " + eventArgs.action.id);
 
             //for now ignore actions which were not saved in the database
-            if (eventArgs.action.isTempId || scope.currentAction == null) return;
+            if (eventArgs.action.isTempId) return;
             scope.isVisible = true;
+
 
             // Get configuration settings template from the server if the current action does not 
             // contain those or user has selected another action template.
@@ -157,14 +138,21 @@ module dockyard.directives.paneConfigureAction {
             //        eventArgs.action.actionTemplateId != this._currentAction.actionTemplateId)) {
             //FOR NOW we're going to simplify things by always checking with this server for a new configuration
 
-            if (eventArgs.action.actionTemplateId > 0) {
-                this.loadConfiguration(scope, scope.action);
-            }            
+            // Without $timeout the directive's copy of currentAction does not have enough time 
+            // to refresh after being assigned newly selected Action on ProcessBuilderController
+            // and as a result it contained old action. 
+            this.$timeout(() => {
+                console.log('After timeout id is: ' + scope.currentAction.id);
+                if (scope.currentAction.activityTemplateId > 0) {
+                    this.loadConfiguration(scope, scope.currentAction);
+                }            
 
-            // Create a directive-local immutable copy of action so we can detect 
-            // a change of actionTemplateId in the currently selected action
-            this._currentAction = angular.extend({}, eventArgs.action);
-            //debugger;
+                // Create a directive-local immutable copy of action so we can detect 
+                // a change of actionTemplateId in the currently selected action
+                this._currentAction = angular.extend({}, scope.currentAction);
+                //debugger;
+            }, 100);
+
         }
 
         private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
@@ -175,7 +163,7 @@ module dockyard.directives.paneConfigureAction {
             this.ActionService.configure(action).$promise.then(function (res: any) {
                 (<any>scope.currentAction).crateStorage = res;
                 (<any>scope.currentAction).configurationControls =
-                self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                    self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
             });
         }
 
@@ -196,13 +184,14 @@ module dockyard.directives.paneConfigureAction {
                 $rootScope: interfaces.IAppRootScope,
                 ActionService,
                 crateHelper: services.CrateHelper,
-                $filter: ng.IFilterService
+                $filter: ng.IFilterService,
+                $timeout: ng.ITimeoutService
                 ) => {
 
-                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter);
+                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter'];
+            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout'];
             return directive;
         }
     }

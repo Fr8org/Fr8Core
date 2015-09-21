@@ -3,16 +3,16 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class RemovedBookerIdFieldFromHistoryItemDO : DbMigration
+    public partial class UpdatingDatabasetoLatestChanges : DbMigration
     {
         public override void Up()
         {
-            DropColumn("dbo.History", "BookerId");
+            AddColumn("dbo.Plugins", "Version", c => c.String(nullable: false));
         }
         
         public override void Down()
         {
-            AddColumn("dbo.History", "BookerId", c => c.String());
+            DropColumn("dbo.Plugins", "Version");
         }
     }
 }

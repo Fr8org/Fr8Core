@@ -1,5 +1,4 @@
-﻿using System.Web.Mvc;
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Core.Managers;
 using Core.Services;
 using StructureMap;
@@ -8,146 +7,55 @@ using Data.Entities;
 using System.Collections.Generic;
 using System;
 using Utilities.Logging;
-
-
+using System.Web.Http;
+using Core.Interfaces;
 
 namespace Web.Controllers
-{
-    [DockyardAuthorize(Roles = "Booker")]
-    public class ReportController : Controller
+{    
+    public class ReportController : ApiController
     {
-        //private DataTablesPackager _datatables;
-        private Report _report;
-        private JsonPackager _jsonPackager;
+        private IReport _report;        
 
         public ReportController()
         {
-            _report = new Report();
-            _jsonPackager = new JsonPackager();
+            _report = ObjectFactory.GetInstance<IReport>();
+            
         }
 
-        //
-        // GET: /Report/
-        public ActionResult Index(string type)
+        [Route("api/report/getallfacts")]
+        public IHttpActionResult GetAllFacts()
         {
-            ViewBag.type = type;
-            switch (type)
-            {
-                case "usage" :
-                    ViewBag.Title = "Usage Report";
-                    break;
-                case "incident":
-                    ViewBag.Title = "Incident Report";
-                    break;
-            }
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult ShowReport(string queryPeriod, string type, int? draw, int start, int length)
-        {
-            DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                int recordcount;
-                var report = _report.Generate(uow, dateRange, type, start, length, out recordcount);
-                var jsonResult = Json(new
-                {
-                    draw = draw,
-                    recordsTotal = recordcount,
-                    recordsFiltered = recordcount,
-                    data = _jsonPackager.Pack(report)
-                });
-
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-            }
-        }
-        //Display View "History"
-        public ActionResult History()
-        {
-            return View("History");
-        }
-
-        [HttpPost]
-        public ActionResult ShowHistoryReport(string primaryCategory, string bookingRequestId, string queryPeriod)
-        {
-            DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var historyReport = _report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyReport));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-            }
-        }
-
-        //Display partial view "_History" on new window.
-        public ActionResult HistoryByBookingRequestId(int bookingRequestID)
-        {
-            ViewBag.bookingRequestID = bookingRequestID;
-            return View("_History");
-        }
-
-        public ActionResult ShowHistoryByBookingRequestId(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var historyByBRId = _report.GenerateHistoryByBookingRequestId(uow, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyByBRId), JsonRequestBehavior.AllowGet);
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-             }
-        }
-
-        
-        public JsonResult Facts()
-        {
-            JsonResult jsonResult=new JsonResult();
+            List<FactDO> factDOList = null;
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    List<FactDO> factDOList = _report.GetFacts(uow);
-                    jsonResult = Json(factDOList,JsonRequestBehavior.AllowGet);                  
+                    factDOList = _report.GetAllFacts(uow);                                    
                 }
             }
             catch (Exception e)
             {
                 Logger.GetLogger().Error("Error checking for activity template ", e);
             }
-            return jsonResult;
+            return Ok(factDOList);
         }
 
-       
-        public JsonResult Incidents()
+         [Route("api/report/getallincidents")]
+        public IHttpActionResult GetALLIncidents()
         {
-            JsonResult jsonResult = new JsonResult();
+            List<IncidentDO> incidentList = null;
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    List<IncidentDO> incidentList = _report.GetIncidents(uow);
-                    jsonResult = Json(incidentList, JsonRequestBehavior.AllowGet);
+                    incidentList = _report.GetAllIncidents(uow);                   
                 }
             }
             catch (Exception e)
             {
                 Logger.GetLogger().Error("Error checking for activity template ", e);
             }
-            return jsonResult;
+            return Ok(incidentList);
         }
-
-
-        public ActionResult ShowFacts()
-        {
-            return View();
-        }
-
-        public ActionResult ShowIncidents()
-        {
-            return View();
-        }
-       
 	}
 }

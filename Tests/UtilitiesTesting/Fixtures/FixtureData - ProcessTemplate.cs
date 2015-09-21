@@ -6,6 +6,8 @@ using Data.States;
 using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Interfaces.ManifestSchemas;
+using Utilities.Serializers.Json;
 namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
@@ -138,7 +140,16 @@ namespace UtilitiesTesting.Fixtures
                     Ordering = 1
                 };
                 ICrate crate = ObjectFactory.GetInstance<ICrate>();
-                CrateDTO crateDTO = crate.Create("Standard Event Report", @"{ EventNames : ""DocuSign Envelope Sent"", ProcessDOId: """", EventPayload: [ ]}");
+
+                var serializer = new JsonSerializer();
+                EventSubscriptionMS eventSubscriptionMS = new EventSubscriptionMS();
+                eventSubscriptionMS.Subscriptions = new List<string>();
+                eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
+                eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");
+
+                var eventReportJSON = serializer.Serialize(eventSubscriptionMS);
+
+                CrateDTO crateDTO = crate.Create("Standard Event Subscriptions", eventReportJSON, "Standard Event Subscriptions");
                 actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
 
                 uow.ActionRepository.Add(actionDo);
@@ -149,6 +160,32 @@ namespace UtilitiesTesting.Fixtures
             }
 
             return processTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplate3()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1040 Process Template Test",
+                Name = "Poress template",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            for (int i = 1; i <= 2; ++i)
+            {
+                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    Id = i,
+                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    ProcessTemplate = curProcessTemplateDO,
+                    ActionLists = FixtureData.TestActionList1(),
+                };
+                curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+            }
+
+            return curProcessTemplateDO;
         }
     }
 }

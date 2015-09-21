@@ -106,14 +106,20 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
 
         .state('showIncidents', {
             url: "/showIncidents",
-            templateUrl: "/Report/ShowIncidents",
+            templateUrl: "/AngularTemplate/ShowIncidents",
             data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
         })
 
         .state('showFacts', {
             url: "/showFacts",
-            templateUrl: "/Report/ShowFacts",
+            templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
+        })
+       
+        .state('processTemplateDetails', {
+            url: "/processes/{id}/details",
+            templateUrl: "/AngularTemplate/ProcessTemplateDetails",
+            data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
         });
 
 }]);

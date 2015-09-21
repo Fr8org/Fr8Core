@@ -17,8 +17,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
     <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
@@ -330,7 +329,6 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
-    <Compile Include="Controllers\DocuSignNotificationController .cs" />
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
@@ -373,7 +371,7 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
-    <Compile Include="Controllers\External\GoogleCalendar\GoogleAuthCallbackController.cs" />
+    <Compile Include="Controllers\External\Google\GoogleAuthCallbackController.cs" />
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -748,9 +746,9 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
-    <Content Include="Views\Report\ShowFacts.cshtml" />
-    <Content Include="Views\Report\ShowIncidents.cshtml" />
-    <TypeScriptCompile Include="Scripts\app\controllers\ReportController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
@@ -3949,6 +3947,7 @@
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonGroup.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
+    <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -4011,6 +4010,8 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
     <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
@@ -4033,7 +4034,7 @@
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
     <Content Include="Views\Email\ShowReport.cshtml" />
     <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
-    <Content Include="Views\User\ShareCalendar.cshtml" />
+    <Content Include="Views\User\RemoteServices.cshtml" />
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />

@@ -9,6 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Moq;
 using Data.Entities;
 using System.Collections.Generic;
+using Data.Interfaces.ManifestSchemas;
 
 namespace DockyardTest.Services
 {
@@ -21,16 +22,7 @@ namespace DockyardTest.Services
         {
             IDockyardEvent curDockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
 
-            curDockyardEvent.ProcessInbound("", new CrateDTO());
-        }
-
-        [Test]
-        [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
-        public void ProcessInbound_NotStandardEventReportLabel_ThrowsException()
-        {
-            IDockyardEvent curDockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
-
-            curDockyardEvent.ProcessInbound("testuser1", new CrateDTO());
+            curDockyardEvent.ProcessInbound("", new EventReportMS());
         }
 
         [Test]
@@ -39,17 +31,17 @@ namespace DockyardTest.Services
             var processTemplateDO = FixtureData.TestProcessTemplateWithSubscribeEvent();
             var resultProcessTemplates = new List<ProcessTemplateDO>() { processTemplateDO };
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            CrateDTO curCrateDTOStandardEventReport = FixtureData.StandardEventReportFormat();
+            EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
            
             Mock<IProcessTemplate> processTemplateMock = new Mock<IProcessTemplate>();
             processTemplateMock.Setup(a => a.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<ProcessTemplateDO>(), null));
-            processTemplateMock.Setup(a => a.GetStandardEventSubscribers(It.IsAny<string>(), It.IsAny<CrateDTO>()))
+            processTemplateMock.Setup(a => a.GetMatchingProcessTemplates(It.IsAny<string>(), It.IsAny<EventReportMS>()))
                 .Returns(resultProcessTemplates);
             ObjectFactory.Configure(cfg => cfg.For<IProcessTemplate>().Use(processTemplateMock.Object));
             
             IDockyardEvent curDockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
 
-            curDockyardEvent.ProcessInbound("testuser1", curCrateDTOStandardEventReport);
+            curDockyardEvent.ProcessInbound("testuser1", curEventReport);
 
             processTemplateMock.Verify(l => l.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<ProcessTemplateDO>(), null));
         }

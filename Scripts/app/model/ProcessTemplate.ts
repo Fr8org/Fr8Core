@@ -7,6 +7,7 @@
         processTemplateState: ProcessState;
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>; 
+        startingProcessNodeTemplateId: number;
     }
 
     export enum ProcessState {

@@ -15,12 +15,15 @@ using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
 using Newtonsoft.Json;
+using System.Net;
+using System.Net.Http;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
         private IEnvelope _envelope;
+        private IAction _action;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPlugin _plugin;
@@ -30,6 +33,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
+            
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -40,43 +44,45 @@ namespace Core.Services
             }
         }
 
-        public bool SaveOrUpdateAction(ActionDO currentActionDo)
+        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
-            ActionDO existingActionDo = null;
+            ActionDO existingActionDO = null;
+            ActionDO curAction;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (currentActionDo.ActivityTemplateId == 0)
-                    currentActionDo.ActivityTemplateId = null;
+                if (submittedActionData.ActivityTemplateId == 0)
+                    submittedActionData.ActivityTemplateId = null;
 
-                if (currentActionDo.Id > 0)
+                if (submittedActionData.Id > 0)
                 {
-                    existingActionDo = uow.ActionRepository.GetByKey(currentActionDo.Id);
+                    existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
                 }
 
-                if (currentActionDo.IsTempId)
+                if (submittedActionData.IsTempId)
                 {
-                    currentActionDo.Id = 0;
+                    submittedActionData.Id = 0;
                 }
 
-                if (existingActionDo != null)
+                if (existingActionDO != null)
                 {
-                    existingActionDo.ParentActivity = currentActionDo.ParentActivity;
-                    existingActionDo.ParentActivityId = currentActionDo.ParentActivityId;
-                    existingActionDo.ActivityTemplateId = currentActionDo.ActivityTemplateId;
-                    existingActionDo.Name = currentActionDo.Name;
-                    existingActionDo.CrateStorage = currentActionDo.CrateStorage;
-                    
+                    existingActionDO.ParentActivity = submittedActionData.ParentActivity;
+                    existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                    existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
+                    existingActionDO.Name = submittedActionData.Name;
+                    existingActionDO.CrateStorage = submittedActionData.CrateStorage;
+                    curAction = existingActionDO;
                 }
                 else
                 {
-                    uow.ActionRepository.Add(currentActionDo);
+                    uow.ActionRepository.Add(submittedActionData);
+                    curAction = submittedActionData;
                 }
-                uow.SaveChanges();
 
-                return true;
+                uow.SaveChanges();
+                curAction.IsTempId = false; 
+                return curAction;
             }
         }
-
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -92,9 +98,7 @@ namespace Core.Services
 
         public CrateStorageDTO Configure(ActionDO curActionDO)
         {
-
             ActivityTemplateDO curActivityTemplate;
-
 
             if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
             {
@@ -102,8 +106,6 @@ namespace Core.Services
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-
-
 
                     if (curActivityTemplate != null)
                     {
@@ -124,7 +126,7 @@ namespace Core.Services
                         try
                         {
                             pluginConfigurationCrateListJSON =
-                           restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                                restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
                         }
                         catch (Exception)
                         {
@@ -133,8 +135,19 @@ namespace Core.Services
                         }
 
                         var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
-                        return configurationCrates;
+                        //return configurationCrates;
                         //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                        //var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
+                        
+                        //replace the old CrateStorage with the new CrateStorage
+                        //this feels a little clumsy and dangerous (what if something changes in the action's crate storage while this plugin is sitting on its data?)
+                        //we probably will need a complex mechanism that looks at each crate by GUID
+                        curActionDTO.CrateStorage = configurationCrates;
+                        curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+                        //save the received action as quickly as possible
+                        SaveOrUpdateAction(curActionDO);
+                        return curActionDO.CrateStorageDTO();  
                     }
 
                     else
@@ -147,6 +160,12 @@ namespace Core.Services
             {
                 throw new ArgumentNullException("ActivityTemplateDO");
             }
+        }
+
+        public ActionDO MapFromDTO(ActionDTO curActionDTO)
+        {
+            ActionDO submittedAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            return SaveOrUpdateAction(submittedAction);
         }
 
         public void Delete(int id)
@@ -187,7 +206,7 @@ namespace Core.Services
                     //  }
                     //   else
                     //   {
-                    curAction.ActionState = ActionState.Completed;
+                    curAction.ActionState = ActionState.Active;
                     //   }
 
                     uow.ActionRepository.Attach(curAction);
@@ -341,6 +360,56 @@ namespace Core.Services
             crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
 
             return crateDTO;
+        }
+
+
+        public string Activate(ActionDO curActionDO)
+        {
+            return CallPluginAction(curActionDO, "activate");
+        }
+
+        public string Deactivate(ActionDO curActionDO)
+        {
+            return CallPluginAction(curActionDO, "deactivate");
+        }
+
+        private string CallPluginAction(ActionDO curActionDO, string actionName)
+        {
+            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
+                    if (curActivityTemplate != null)
+                    {
+                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+                        string curPluginUrl = string.Format("http://{0}/actions/{1}/",curActivityTemplate.Plugin.Endpoint, actionName);
+                        var restClient = new RestfulServiceClient();
+                        string result;
+                        try
+                        {
+                            result = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                            EventManager.ActionActivated(curActionDO);
+                        }
+                        catch (Exception)
+                        {
+                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDO));
+                            throw;
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        throw new ArgumentNullException("ActivityTemplateDO");
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("curActionDO");
+            }
+
         }
     }
 }
