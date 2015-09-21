@@ -33,33 +33,12 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static CrateStorageDTO CrateStorageWithConnectionString(bool isValueRequired = false, bool isSameConnectionStringRequired = false)
+        public static CrateStorageDTO TestCrateStorage()
         {
             var fieldDefinitions = new List<FieldDefinitionDTO>() 
             {
-                new FieldDefinitionDTO()
-                {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")},
-                    Value = isValueRequired ? "somevalue" : null
-                }
+                TestConnectionStringFieldDefinition()
             };
-
-            if (isSameConnectionStringRequired)
-            {
-                fieldDefinitions.Add(new FieldDefinitionDTO()
-                {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") },
-                    Value = isValueRequired ? "somevalue" : null
-                });
-            }
 
             var curConfigurationStore = new CrateStorageDTO
             {
@@ -78,6 +57,17 @@ namespace UtilitiesTesting.Fixtures
             return curConfigurationStore;
         }
 
-
+        public static FieldDefinitionDTO TestConnectionStringFieldDefinition()
+        {
+            return new FieldDefinitionDTO()
+            {
+                FieldLabel = "SQL Connection String",
+                Type = "textField",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")},
+                //Value = isValueRequired ? "somevalue" : null
+            };
+        }
     }
 }

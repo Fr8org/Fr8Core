@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -40,7 +41,7 @@ namespace DockyardTest.Actions
             ActionDO curAction = FixtureData.TestAction1();
 
             //create empty crates
-            var emptyCrate = FixtureData.CrateStorageWithConnectionString();
+            var emptyCrate = FixtureData.TestCrateStorage();
             emptyCrate.CrateDTO = new List<CrateDTO>();
             curAction.CrateStorage = JsonConvert.SerializeObject(emptyCrate);
 
@@ -59,7 +60,7 @@ namespace DockyardTest.Actions
         {
             //Arrange 
             ActionDO curAction = FixtureData.TestAction1();
-            var connectionStringCrate = FixtureData.CrateStorageWithConnectionString();
+            var connectionStringCrate = FixtureData.TestCrateStorage();
             curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
 
             //Act
@@ -79,8 +80,15 @@ namespace DockyardTest.Actions
             //Arrange empty crates
             ActionDO curAction = FixtureData.TestAction1();
 
-            //create connection with multiple values
-            var connectionStringCrate = FixtureData.CrateStorageWithConnectionString(true, true);
+            //Create two connection string crates
+            var connectionStringCrate = FixtureData.TestCrateStorage();
+            IList<FieldDefinitionDTO> connectionStringFields = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(connectionStringCrate.CrateDTO[0].Contents);
+            connectionStringFields.Add(FixtureData.TestConnectionStringFieldDefinition());
+
+            //set the values for the connection strings
+            connectionStringFields.ToList().ForEach(field => field.Value = "somevalue");
+
+            connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);
             curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
 
             //Act
@@ -95,7 +103,7 @@ namespace DockyardTest.Actions
             ActionDO curAction = FixtureData.TestAction1();
 
             //create connection string value crates with a vald connection string
-            var connectionStringCrate = FixtureData.CrateStorageWithConnectionString();
+            var connectionStringCrate = FixtureData.TestCrateStorage();
             IList<FieldDefinitionDTO> connectionStringFields =JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(connectionStringCrate.CrateDTO[0].Contents);
             connectionStringFields[0].Value =
                 @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
