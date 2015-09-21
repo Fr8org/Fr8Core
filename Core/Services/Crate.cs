@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Utilities;
@@ -34,20 +33,14 @@ namespace Core.Services
             return crateDTO;
         }
 
-        public CrateDTO CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
+        public CrateDTO CreateDesignTimeFieldsCrate(string label, object contents)
         {    
-            return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields}),
-                manifestType: "Standard Design-Time Fields", 
-                manifestId: 3);
+            return Create( label, JsonConvert.SerializeObject(contents), "Standard Design-Time Fields");
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, List<FieldDefinitionDTO> controls)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, object contents)
         {
-            return Create(label, 
-                JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls }),
-                manifestType: "Standard Configuration Controls",
-                manifestId: 6);
+            return Create(label, JsonConvert.SerializeObject(contents), "Standard Configuration Controls");
         }
 
         public T GetContents<T>(CrateDTO crate)
