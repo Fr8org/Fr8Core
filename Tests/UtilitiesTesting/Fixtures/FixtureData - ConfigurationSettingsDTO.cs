@@ -65,8 +65,7 @@ namespace UtilitiesTesting.Fixtures
                 Type = "textField",
                 Name = "connection_string",
                 Required = true,
-                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")},
-                //Value = isValueRequired ? "somevalue" : null
+                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
             };
         }
     }
