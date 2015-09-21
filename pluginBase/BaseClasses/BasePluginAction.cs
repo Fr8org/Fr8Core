@@ -43,7 +43,7 @@ namespace PluginBase.BaseClasses
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            //_activity = ObjectFactory.GetInstance<IActivity>();
         }
         protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
