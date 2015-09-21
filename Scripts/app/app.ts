@@ -98,11 +98,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             data: { noTitle: true },
         })
 
-        //.state('showUsageReport', {
-        //    url: "/showUsageReport",
-        //    templateUrl: "/Report/Index?type=usage",
-        //    data: { pageTitle: '', pageSubTitle: '' },
-        //})
 
         .state('showIncidents', {
             url: "/showIncidents",
