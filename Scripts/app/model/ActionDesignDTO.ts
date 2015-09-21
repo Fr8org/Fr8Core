@@ -8,6 +8,7 @@
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
+        activityTemplateName: string;
         activityTemplate: model.ActivityTemplate;
 
         constructor(
