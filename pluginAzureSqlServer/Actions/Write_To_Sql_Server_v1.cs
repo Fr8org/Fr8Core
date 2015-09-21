@@ -119,7 +119,7 @@ namespace pluginAzureSqlServer.Actions
                 {
                     _crate.CreateDesignTimeFieldsCrate(
                         "Sql Table Columns",
-                        contentsList.Select(col => new FieldDTO() { Key = col + "Key", Value = col + "Value"}).ToList()
+                        contentsList.Select(col => new FieldDTO() { Key = null, Value = col }).ToList()
                         )
                 }
             };
