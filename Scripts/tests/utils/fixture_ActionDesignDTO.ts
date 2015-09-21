@@ -70,7 +70,7 @@ module dockyard.tests.utils.fixtures {
                     "value": "Checkbox"
                 }
             ]
-        };
+        };/*
 
         public static actionDesignDTO = <interfaces.IActionDesignDTO> {
             name: "test action type",
@@ -100,6 +100,6 @@ module dockyard.tests.utils.fixtures {
             name: "",
             preventDefault: null,
             stopPropagation: null
-        };
+        };*/
     }
 } 
