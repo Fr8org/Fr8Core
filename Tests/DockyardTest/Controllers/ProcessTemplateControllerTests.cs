@@ -224,7 +224,7 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(postEditGetResult.Content.Id, getResult.Content.Id);            
         }
 
-        [Test]
+        [Test,Ignore]
         public void ProcessController_CanUpdateDocuSignTemplate()
         {
             //Arrange

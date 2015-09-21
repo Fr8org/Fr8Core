@@ -15,6 +15,8 @@ using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
 using Newtonsoft.Json;
+using System.Net;
+using System.Net.Http;
 
 namespace Core.Services
 {
@@ -77,10 +79,10 @@ namespace Core.Services
                 }
 
                 uow.SaveChanges();
+                curAction.IsTempId = false; 
                 return curAction;
             }
         }
-
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -133,6 +135,9 @@ namespace Core.Services
                         }
 
                         var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
+                        //return configurationCrates;
+                        //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
+                        //var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
                         
                         //replace the old CrateStorage with the new CrateStorage
                         //this feels a little clumsy and dangerous (what if something changes in the action's crate storage while this plugin is sitting on its data?)
@@ -201,7 +206,7 @@ namespace Core.Services
                     //  }
                     //   else
                     //   {
-                    curAction.ActionState = ActionState.Completed;
+                    curAction.ActionState = ActionState.Active;
                     //   }
 
                     uow.ActionRepository.Attach(curAction);
@@ -355,6 +360,56 @@ namespace Core.Services
             crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
 
             return crateDTO;
+        }
+
+
+        public string Activate(ActionDO curActionDO)
+        {
+            return CallPluginAction(curActionDO, "activate");
+        }
+
+        public string Deactivate(ActionDO curActionDO)
+        {
+            return CallPluginAction(curActionDO, "deactivate");
+        }
+
+        private string CallPluginAction(ActionDO curActionDO, string actionName)
+        {
+            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
+                    if (curActivityTemplate != null)
+                    {
+                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+                        string curPluginUrl = string.Format("http://{0}/actions/{1}/",curActivityTemplate.Plugin.Endpoint, actionName);
+                        var restClient = new RestfulServiceClient();
+                        string result;
+                        try
+                        {
+                            result = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                            EventManager.ActionActivated(curActionDO);
+                        }
+                        catch (Exception)
+                        {
+                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDO));
+                            throw;
+                        }
+                        return result;
+                    }
+                    else
+                    {
+                        throw new ArgumentNullException("ActivityTemplateDO");
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentNullException("curActionDO");
+            }
+
         }
     }
 }

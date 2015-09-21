@@ -71,12 +71,12 @@ module dockyard.tests.controller {
             // First POST, create a dummy entry
 
             var actions: interfaces.IActionDesignDTO =
-                {
+                { 
                     name: "test action type",
                     configurationControls: utils.fixtures.ActionDesignDTO.configurationControls,
                     crateStorage: null,
                     processNodeTemplateId: 1,
-                    actionTemplateId: 1,
+                    activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
                     fieldMappingSettings: utils.fixtures.ActionDesignDTO.fieldMappingSettings,

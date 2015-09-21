@@ -258,6 +258,9 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventReportMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionMS.cs" />
@@ -434,7 +437,7 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
+    <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
     <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />

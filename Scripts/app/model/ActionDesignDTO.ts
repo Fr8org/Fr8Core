@@ -7,7 +7,7 @@
         name: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
-        actionTemplateId: number;
+        activityTemplateId: number;
         activityTemplate: model.ActivityTemplate;
 
         constructor(
@@ -50,7 +50,7 @@
         static create(dataObject: interfaces.IActionDesignDTO): ActionDesignDTO {
             var result = new ActionDesignDTO(0, 0, false, 0);
             result.actionListId = dataObject.actionListId;
-            result.actionTemplateId = dataObject.actionTemplateId;
+            result.activityTemplateId = dataObject.activityTemplateId;
             result.crateStorage = dataObject.crateStorage;
             result.configurationControls = dataObject.configurationControls;
             result.id = dataObject.id;

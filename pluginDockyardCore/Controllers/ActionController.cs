@@ -37,6 +37,13 @@ namespace pluginDockyardCore.Controllers
         }
 
         [HttpPost]
+        [Route("deactivate")]
+        public ActionDTO Deactivate(ActionDTO curActionDTO)
+        {
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDTO);
+        }
+
+        [HttpPost]
         [Route("execute")]
         public ActionDTO Execute(ActionDTO curActionDTO)
         {

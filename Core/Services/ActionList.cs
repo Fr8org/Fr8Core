@@ -55,16 +55,19 @@ namespace Core.Services
                     curActionList.CurrentActivity =
                         curActionList.Activities.OrderBy(action => action.Ordering).FirstOrDefault();
                 }
-            
+                //uow.ActionRepository.Add(curActionDO);
                 //uow.ActionListRepository.Add(curActionList);
-                
                 uow.SaveChanges();
             }
         }
 
         private void Reorder(ActionListDO curActionListDO, ActionDO curActionDO, string position)
         {
-            int ordering = curActionListDO.Activities.Select(action => action.Ordering).Max();
+            int ordering = 0;
+            if (curActionListDO.Activities.Count > 0)
+            {
+                ordering = curActionListDO.Activities.Select(action => action.Ordering).Max();
+            }
             curActionDO.Ordering = ordering + 1;
         }
 
@@ -152,7 +155,7 @@ namespace Core.Services
                 //update CurrentActivity pointer
                 if (curActionListDO.CurrentActivity is ActionDO)
                 {
-                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Completed ||
+                    if (((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.Active ||
                         ((ActionDO)curActionListDO.CurrentActivity).ActionState == ActionState.InProcess)
                     {
                         ActionDO actionDO = curActionListDO.Activities

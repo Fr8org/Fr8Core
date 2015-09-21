@@ -26,6 +26,10 @@ namespace Core.Interfaces
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
+
+        string Activate(ActionDO curActionDO);
+
+        string Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
     }
 }

@@ -86,7 +86,7 @@ var dockyard;
                 });
                 it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
                     "Save method should be called on ProcessTemplateService", function () {
-                    var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1);
+                    var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1, 1);
                     var currentAction = new dockyard.model.ActionDesignDTO(1, 1, false, 1);
                     _$scope.current.action = currentAction;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected], incomingEventArgs);

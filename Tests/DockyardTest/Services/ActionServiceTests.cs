@@ -249,7 +249,7 @@ namespace DockyardTest.Services
 
             _action.Process(actionDO, procesDO);
 
-            Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
+            Assert.AreEqual(ActionState.Active, actionDO.ActionState);
         }
 
         [Test, Ignore("Vas, Ignored as part of V2 changes")]

@@ -42,8 +42,7 @@ module dockyard.directives.paneWorkflowDesigner {
 
             scope.$emit(
                 MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                new ActionSelectedEventArgs(eventArgs.criteriaId,
-                    eventArgs.action.id, eventArgs.actionListType)
+                new ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, eventArgs.actionListType, 0)
                 );
         };
 
@@ -67,6 +66,10 @@ module dockyard.directives.paneWorkflowDesigner {
 
         var onActionRenamed = function (eventArgs: ActionNameUpdatedEventArgs, scope: IPaneWorkflowDesignerScope) {
             scope.widget.renameAction(eventArgs.id, eventArgs.name);
+        };
+
+        var onUpdateActivityTemplateIdForAction = function (eventArgs: UpdateActivityTemplateIdEventArgs, scope: IPaneWorkflowDesignerScope) {
+            scope.widget.updateActivityTemplateId(eventArgs.id, eventArgs.activityTemplateId);
         };
 
         return {
@@ -114,11 +117,11 @@ module dockyard.directives.paneWorkflowDesigner {
                     });
                 });
 
-                widget.on('actionNode:click', function (e, criteriaId, actionId, actionType) {
+                widget.on('actionNode:click', function (e, criteriaId, actionId, actionType, activityTemplateId) {
                     scope.$apply(function () {
                         scope.$emit(
                             MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                            new ActionSelectedEventArgs(criteriaId, actionId, <model.ActionListType>actionType)
+                            new ActionSelectedEventArgs(criteriaId, actionId, <model.ActionListType>actionType, activityTemplateId)
                         );
                     });
                 });
@@ -152,6 +155,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_ActionNameUpdated],
                     (event: ng.IAngularEvent, eventArgs: ActionNameUpdatedEventArgs) => onActionRenamed(eventArgs, scope));
+
+                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId],
+                    (event: ng.IAngularEvent, eventArgs: UpdateActivityTemplateIdEventArgs) => onUpdateActivityTemplateIdForAction(eventArgs, scope));
+
+
             }
         };
     }

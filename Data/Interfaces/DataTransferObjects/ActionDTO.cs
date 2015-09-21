@@ -16,7 +16,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
 
-        public int? ActionTemplateId { get; set; }
+        public int? ActivityTemplateId { get; set; }
 
         [JsonProperty("activityTemplate")]
         public ActivityTemplateDTO ActivityTemplate { get; set; }

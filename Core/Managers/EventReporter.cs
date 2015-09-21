@@ -55,6 +55,7 @@ namespace Core.Managers
             EventManager.EventActionStarted += LogEventActionStarted;
             EventManager.EventActionDispatched += LogEventActionDispatched;
             EventManager.PluginEventReported += LogPluginEvent;
+            EventManager.PluginActionActivated  += PluginActionActivated;
         }
 
         public void UnsubscribeFromAlerts()
@@ -89,6 +90,7 @@ namespace Core.Managers
             EventManager.EventActionStarted -= LogEventActionStarted;
             EventManager.EventActionDispatched -= LogEventActionDispatched;
             EventManager.PluginEventReported -= LogPluginEvent;
+            EventManager.PluginActionActivated -= PluginActionActivated;
         }
 
         //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
@@ -747,6 +749,27 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
+        private void PluginActionActivated(ActionDO curAction)
+        {
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
+                processInExecution = uow.ProcessRepository.GetByKey(processId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = curAction.Id.ToStr(),
+                PrimaryCategory = "Action",
+                SecondaryCategory = "Activation",
+                Activity = "Completed"
+            };
+
+            SaveAndLogFact(fact);
+        }
 
         public enum EventType
         {
