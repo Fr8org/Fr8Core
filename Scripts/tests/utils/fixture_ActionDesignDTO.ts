@@ -77,7 +77,7 @@ module dockyard.tests.utils.fixtures {
             crateStorage: null,
             configurationControls: null,
             processNodeTemplateId: 1,
-            actionTemplateId: 1,
+            activityTemplateId: 1,
             isTempId: false,
             id: 1,
             fieldMappingSettings: ActionDesignDTO.fieldMappingSettings,

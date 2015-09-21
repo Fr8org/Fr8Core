@@ -104,7 +104,7 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
-                var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1);
+                var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1, 1);
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
                 _$scope.current.action = <any>currentAction;
 

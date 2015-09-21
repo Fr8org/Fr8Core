@@ -475,6 +475,12 @@
             });
 
             group.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
+            group.on('mouseover', Core.delegate(function () {
+                this.getCanvas().defaultCursor = 'pointer';
+            }, this));
+            group.on('mouseout', Core.delegate(function () {
+                this.getCanvas().defaultCursor = 'default';
+            }, this));
 
             this._object = group;
         },
@@ -503,6 +509,13 @@
             });
 
             label.on('mousedown', Core.delegate(function (e) { this.fire('click', e); }, this));
+
+            label.on('mouseover', Core.delegate(function () {
+                this.getCanvas().defaultCursor = 'pointer';
+            }, this));
+            label.on('mouseout', Core.delegate(function () {
+                this.getCanvas().defaultCursor = 'default';
+            }, this));
 
             this._object = label;
         },

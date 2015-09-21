@@ -118,8 +118,9 @@ namespace pluginDockyardCore.Actions
 
             if (curUpstreamFields.Count == 0 || curDownstreamFields.Count == 0)
             {
-                throw new ApplicationException("This action couldn't find either source fields or target fields (or both). "
-                    + "Try configuring some Actions first, then try this page again.");
+                //temporarily disabling this exception because it's disrupting debugging. it will get fixed properly in 1085
+                //throw new ApplicationException("This action couldn't find either source fields or target fields (or both). "
+                   // + "Try configuring some Actions first, then try this page again.");
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
@@ -129,7 +130,7 @@ namespace pluginDockyardCore.Actions
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
             var curCrates = new List<CrateDTO> { downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate };
-            return PackCrates(curCrates);
+            return AssembleCrateStorage(curCrates);
         }
 
         /// <summary>

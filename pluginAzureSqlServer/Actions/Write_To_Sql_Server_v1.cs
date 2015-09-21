@@ -16,6 +16,7 @@ using Core.Interfaces;
 using Core.Services;
 using Core.StructureMap;
 using Data.States.Templates;
+using Data.Interfaces.ManifestSchemas;
 
 namespace pluginAzureSqlServer.Actions
 {
@@ -73,16 +74,25 @@ namespace pluginAzureSqlServer.Actions
             else
             {
                 return ConfigurationRequestType.Followup;
-            }
-
-            
+            }            
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
+            if (curActionDTO.CrateStorage == null)
+            {
+                curActionDTO.CrateStorage = new CrateStorageDTO();
+            }
+            var crateControls = CreateStandardConfigurationControls();
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            return curActionDTO.CrateStorage;
+        }
+
+        private CrateDTO CreateStandardConfigurationControls() { 
+
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var fieldDefinitions = new List<FieldDefinitionDTO>() 
+            var fields = new List<FieldDefinitionDTO>() 
             {
                 new FieldDefinitionDTO()
                 {
@@ -94,22 +104,19 @@ namespace pluginAzureSqlServer.Actions
                 }
             };
 
-           
-            //Return one field with empty connection string
-            var curConfigurationStore = new CrateStorageDTO
+            var controls = new StandardConfigurationControlsMS()
             {
-                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                CrateDTO = new List<CrateDTO>
-                {
-                    _crate.Create(
-                        "AzureSqlServer Design-Time Fields",
-                        JsonConvert.SerializeObject(fieldDefinitions),
-                        "Standard Configuration Controls"
-                        )
-                }
+                Controls = fields
             };
 
-            return curConfigurationStore;
+            var crateControls = _crate.Create(
+                        "Configuration_Controls",
+                        JsonConvert.SerializeObject(controls),
+                        "Standard Configuration Controls"
+                    );
+
+
+            return crateControls;
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables

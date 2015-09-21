@@ -38,6 +38,11 @@ namespace Core.Services
             return Create( label, JsonConvert.SerializeObject(contents), "Standard Design-Time Fields");
         }
 
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, object contents)
+        {
+            return Create(label, JsonConvert.SerializeObject(contents), "Standard Configuration Controls");
+        }
+
         public T GetContents<T>(CrateDTO crate)
         {
             return _serializer.Deserialize<T>(crate.Contents);

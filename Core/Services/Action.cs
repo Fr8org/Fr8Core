@@ -79,10 +79,10 @@ namespace Core.Services
                 }
 
                 uow.SaveChanges();
+                curAction.IsTempId = false; 
                 return curAction;
             }
         }
-
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -134,7 +134,7 @@ namespace Core.Services
                             throw;
                         }
 
-                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);
+                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
                         //return configurationCrates;
                         //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
                         //var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
