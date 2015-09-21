@@ -7,7 +7,7 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Files", "DockyardAccountID", c => c.Int(nullable: false));
+            AddColumn("dbo.Files", "DockyardAccountID", c => c.String(nullable: false, maxLength: 128));
         }
         
         public override void Down()

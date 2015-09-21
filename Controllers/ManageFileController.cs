@@ -39,8 +39,8 @@ namespace Web.Controllers
             }
             else
             {
-                // TODO: Will be implemented later
-                fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(12));
+                var userID = User.Identity.GetUserId();
+                fileList = Mapper.Map<IList<FileDTO>>(_fileService.FilesList(userID));
             }
             return Ok(fileList);
         }

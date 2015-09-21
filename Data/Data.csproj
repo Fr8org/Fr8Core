@@ -271,9 +271,13 @@
     <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509182154282_FileEmpty.cs" />
-    <Compile Include="Migrations\201509182154282_FileEmpty.Designer.cs">
-      <DependentUpon>201509182154282_FileEmpty.cs</DependentUpon>
+    <Compile Include="Migrations\201509182154282_UpdateFileDO.cs" />
+    <Compile Include="Migrations\201509182154282_UpdateFileDO.Designer.cs">
+      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509211249387_EmptyMigration1.cs" />
+    <Compile Include="Migrations\201509211249387_EmptyMigration1.Designer.cs">
+      <DependentUpon>201509211249387_EmptyMigration1.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -505,8 +509,11 @@
     <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
       <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509182154282_FileEmpty.resx">
-      <DependentUpon>201509182154282_FileEmpty.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201509182154282_UpdateFileDO.resx">
+      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509211249387_EmptyMigration1.resx">
+      <DependentUpon>201509211249387_EmptyMigration1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -29,7 +29,7 @@ namespace Core.Interfaces
         /// <summary>
         /// Retreive list of files for specified DockyardAccount
         /// </summary>
-        IList<FileDO> FilesList(int? dockyardAccountId);
+        IList<FileDO> FilesList(string dockyardAccountId);
 
         /// <summary>
         /// Retreive list of all files 

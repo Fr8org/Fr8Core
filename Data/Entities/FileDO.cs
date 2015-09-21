@@ -14,6 +14,6 @@ namespace Data.Entities
 
         public string OriginalFileName { get; set; }
 
-        public int DockyardAccountID { get; set; }
+        public string DockyardAccountID { get; set; }
     }
 }

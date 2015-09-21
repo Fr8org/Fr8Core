@@ -6,6 +6,7 @@ using Data.Interfaces;
 using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Core.Services
 {
@@ -61,15 +62,15 @@ namespace Core.Services
             return FilesList(null);
         }
 
-        public IList<FileDO> FilesList(int? dockyardAccountId)
+        public IList<FileDO> FilesList(string dockyardAccountId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<FileDO> files;
-                if (dockyardAccountId.HasValue)
-                    files = uow.FileRepository.FindList(f => f.DockyardAccountID == dockyardAccountId.Value).ToList();
-                else
+                if (String.IsNullOrEmpty(dockyardAccountId))
                     files = uow.FileRepository.GetAll().ToList();
+                else
+                    files = uow.FileRepository.FindList(f => f.DockyardAccountID == dockyardAccountId).ToList();
                 return files;
             }
         }

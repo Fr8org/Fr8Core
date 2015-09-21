@@ -5,8 +5,7 @@ module dockyard.controllers {
     
     export interface ManageFileListScope extends ng.IScope {
         UploadFile: (file: interfaces.IFileVM) => void;
-     /*   GoToProcessTemplatePage: (processTemplate: interfaces.IProcessTemplateVM) => void;
-        DeleteProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;*/
+        DeleteFile: (file: interfaces.IFileVM) => void;
         dtOptionsBuilder: any;
         dtColumnBuilder: any;
         dtInstance: any;
@@ -101,10 +100,6 @@ module dockyard.controllers {
 
         private uploadFile($event) {
             $event.stopPropagation(); 
-
-            var t = angular.element("#filePicker").find('div').find('div').get();
-            $(t).attr('accept','pdf');
-            console.log(t);
             this.$timeout(function () {
                 angular.element("#filePicker").find('div').find('div').trigger('click');
             }, 0);
@@ -113,4 +108,13 @@ module dockyard.controllers {
         };
     }
     app.controller('ManageFileListController', ManageFileListController);
+
+    app.controller('ManageFileListController__DeleteConfirmation', ($scope: any, $modalInstance: any): void => {
+        $scope.ok = () => {
+            $modalInstance.close();
+        };
+        $scope.cancel = () => {
+            $modalInstance.dismiss('cancel');
+        };
+    });
 }
