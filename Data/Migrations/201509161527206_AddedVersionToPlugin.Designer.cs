@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class UpdatingDatabasetoLatestChanges : IMigrationMetadata
+    public sealed partial class AddedVersionToPlugin : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatingDatabasetoLatestChanges));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedVersionToPlugin));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509210548160_UpdatingDatabasetoLatestChanges"; }
+            get { return "201509161527206_AddedVersionToPlugin"; }
         }
         
         string IMigrationMetadata.Source

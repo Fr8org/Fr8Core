@@ -15,7 +15,8 @@ namespace Data.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string ObjectId { get; set; }      
+        public string ObjectId { get; set; }
+        public string BookerId { get; set; }
         public string CustomerId { get; set; }
         public string PrimaryCategory { get; set; }
         public string SecondaryCategory { get; set; }

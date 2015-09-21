@@ -185,7 +185,8 @@ namespace Core.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "BookingRequest";
                 incidentDO.SecondaryCategory = "Response Received";
-                incidentDO.CustomerId = customerID;               
+                incidentDO.CustomerId = customerID;
+                incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.Activity = "Response Recieved";
                 _uow.IncidentRepository.Add(incidentDO);

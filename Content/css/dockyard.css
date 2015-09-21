@@ -49,7 +49,6 @@
     opacity: 0.5;
 }
 
-/* Added for Showing Steps in Activity Pane*/
 .processActionStep
 {
     background-image: URL("/Content/img/ProcessBuilder/circle.png");

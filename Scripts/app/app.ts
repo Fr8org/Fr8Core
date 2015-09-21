@@ -98,25 +98,17 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             data: { noTitle: true },
         })
 
-
-        .state('showIncidents', {
-            url: "/showIncidents",
-            templateUrl: "/AngularTemplate/ShowIncidents",
-            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
+        .state('showUsageReport', {
+            url: "/showUsageReport",
+            templateUrl: "/Report/Index?type=usage",
+            data: { pageTitle: '', pageSubTitle: '' },
         })
 
-        .state('showFacts', {
-            url: "/showFacts",
-            templateUrl: "/AngularTemplate/ShowFacts",
-            data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
-        })
-       
         .state('processTemplateDetails', {
             url: "/processes/{id}/details",
             templateUrl: "/AngularTemplate/ProcessTemplateDetails",
             data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
         });
-
 }]);
 
 /* Init global settings and run the app */
