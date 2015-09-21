@@ -258,6 +258,7 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsMS.cs" />
