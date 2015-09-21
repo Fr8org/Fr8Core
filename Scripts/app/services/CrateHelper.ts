@@ -135,14 +135,13 @@
 
             // Overwrite contents of that crate with actual data in controlList.fields.
             controlListCrate.contents = angular.toJson({ Controls: controlList.fields });
-            debugger;
         }
 
         public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
-
+            debugger;
             var controlsList = new model.ControlsList();
             controlsList.fields = angular.fromJson(crate.contents).Controls;
 

@@ -13,6 +13,7 @@ using System.Web.Http;
 using System.Web.Http.Results;
 using PluginBase;
 using Data.Interfaces;
+using Data.Interfaces.ManifestSchemas;
 
 namespace pluginDocuSign.Actions
 {
@@ -100,7 +101,7 @@ namespace pluginDocuSign.Actions
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var fieldDefinitions = new List<FieldDefinitionDTO>() 
+            var fields = new List<FieldDefinitionDTO>() 
             {
                 new TextBlockFieldDTO()
                 {
@@ -112,22 +113,19 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var _crate = ObjectFactory.GetInstance<ICrate>();
-            //Return one field with empty connection string
-            var curConfigurationStore = new CrateStorageDTO
+            var controls = new StandardConfigurationControlsMS()
             {
-                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                CrateDTO = new List<CrateDTO>
-                {
-                    _crate.Create(
-                        "ExtractFromDocuSignEnvelope Design-Time Fields",
-                        JsonConvert.SerializeObject(fieldDefinitions),
-                        "Standard Configuration Controls"
-                        )
-                }
+                Controls = fields
             };
 
-            return curConfigurationStore;
+            var crateControls = _crate.Create(
+                        "Configuration_Controls",
+                        JsonConvert.SerializeObject(controls),
+                        "Standard Configuration Controls"
+                    );
+
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            return curActionDTO.CrateStorage;
         }
     }
 }
