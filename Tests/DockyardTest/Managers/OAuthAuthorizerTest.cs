@@ -32,7 +32,7 @@ namespace DockyardTest.Managers
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.RemoteServiceProviderRepository.CreateRemoteCalendarProviders(configRepository);
+                uow.RemoteServiceProviderRepository.CreateRemoteServiceProviders(configRepository);
                 uow.SaveChanges();
             }
         }

@@ -55,13 +55,18 @@ namespace Core.Managers.APIManagers.Authorizers.Docusign
 
         public Task RefreshTokenAsync(string userId, CancellationToken cancellationToken)
         {
-            throw new NotSupportedException("DocuSign doesn't support refreshing tokens");
+            throw new NotSupportedException("DocuSign doesn't support refresh tokens");
         }
 
         public async Task<string> GetAccessTokenAsync(string userId, CancellationToken cancellationToken)
         {
             var flow = CreateFlow(userId);
             return await flow.GetTokenAsync();
+        }
+
+        public Task<string> GetRefreshTokenAsync(string userId, CancellationToken cancellationToken)
+        {
+            throw new NotSupportedException("DocuSign doesn't support refresh tokens");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
@@ -80,13 +80,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private RemoteCalendarAuthDataRepository _remoteCalendarAuthDataRepository;
+        private RemoteServiceAuthDataRepository _remoteServiceAuthDataRepository;
 
-        public RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository
+        public RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository
         {
             get
             {
-                return _remoteCalendarAuthDataRepository ?? (_remoteCalendarAuthDataRepository = new RemoteCalendarAuthDataRepository(this));
+                return _remoteServiceAuthDataRepository ?? (_remoteServiceAuthDataRepository = new RemoteServiceAuthDataRepository(this));
             }
         }
 

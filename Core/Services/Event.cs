@@ -1,5 +1,4 @@
-﻿
-using Core.Interfaces;
+﻿using Core.Interfaces;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 
@@ -15,7 +14,6 @@ namespace Core.Services
         {
             EventManager.ReportPluginIncident(incident);
         }
-
 
         public void HandlePluginEvent(LoggingData eventData)
         {

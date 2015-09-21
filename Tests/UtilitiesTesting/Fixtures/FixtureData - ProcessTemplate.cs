@@ -6,6 +6,7 @@ using Data.States;
 using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Interfaces.ManifestSchemas;
 using Utilities.Serializers.Json;
 namespace UtilitiesTesting.Fixtures
 {
@@ -159,6 +160,32 @@ namespace UtilitiesTesting.Fixtures
             }
 
             return processTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplate3()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1040 Process Template Test",
+                Name = "Poress template",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            for (int i = 1; i <= 2; ++i)
+            {
+                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    Id = i,
+                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    ProcessTemplate = curProcessTemplateDO,
+                    ActionLists = FixtureData.TestActionList1(),
+                };
+                curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+            }
+
+            return curProcessTemplateDO;
         }
     }
 }
