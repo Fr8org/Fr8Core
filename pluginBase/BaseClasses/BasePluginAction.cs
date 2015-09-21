@@ -149,8 +149,8 @@ namespace PluginBase.BaseClasses
                 Controls = controlsList
             };
 
-
-            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controlsMS);
+            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
+                "Configuration_Controls", controlsMS);
 
 
             return controlsCrate;
