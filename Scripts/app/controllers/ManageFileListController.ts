@@ -50,6 +50,14 @@ module dockyard.controllers {
             $scope.dtInstance = {};
             $scope.UploadFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.UploadFile);
             $scope.DeleteFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.DeleteFile);
+
+            $scope.$on("uploadfail", function (event, status) {
+                console.log("fail catch");
+            });
+
+            $scope.$on("uploadsuccess", function () {
+                console.log("success catch");
+            });
         }
 
         private GetDataTableColumns() {
