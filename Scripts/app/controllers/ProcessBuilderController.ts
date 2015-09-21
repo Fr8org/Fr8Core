@@ -333,19 +333,14 @@ module dockyard.controllers {
             var processNodeTemplateId: number,
                 id: number;
 
-            ////Need this check to happen on top since saveProcessNodeTemplate() changes currentCriteria value
-            //if (this._scope.currentCriteria && (this._scope.currentCriteria.id != eventArgs.processNodeTemplateId)  ) {
-            //    this._scope.$broadcast(pdc.MessageType[pdc.MessageType.PaneDefineCriteria_Hide]);
-            //}
             var self = this;
 
-            // Make sure that current Action is null to prevent an action save 
-            // request from being unnecessarily sent to web api 
-            this._scope.current.action = null;
-
-            // TODO: Do not react on clicking on currently visible Criteria
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
+                // Make sure that current Action is null to prevent an action save 
+                // request from being unnecessarily sent to web api 
+                this._scope.current.action = null;
+
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();                
                 // Create new action object.
