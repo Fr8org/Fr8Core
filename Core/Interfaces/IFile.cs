@@ -27,6 +27,11 @@ namespace Core.Interfaces
         bool Delete(FileDO curFile);
 
         /// <summary>
+        /// Deletes file from repository by Id
+        /// </summary>
+        bool Delete(int fileId);
+
+        /// <summary>
         /// Retreive list of files for specified DockyardAccount
         /// </summary>
         IList<FileDO> FilesList(string dockyardAccountId);

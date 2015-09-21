@@ -45,9 +45,10 @@ namespace Web.Controllers
             return Ok(fileList);
         }
 
-        // DELETE api/<controller>/5
+
         public void Delete(int id)
         {
+            _fileService.Delete(id);
         }
     }
 }

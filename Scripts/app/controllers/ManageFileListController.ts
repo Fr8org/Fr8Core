@@ -2,7 +2,7 @@
 
 module dockyard.controllers {
     'use strict';
-    
+
     export interface ManageFileListScope extends ng.IScope {
         UploadFile: (file: interfaces.IFileVM) => void;
         DeleteFile: (file: interfaces.IFileVM) => void;
@@ -48,7 +48,8 @@ module dockyard.controllers {
             $scope.dtOptionsBuilder = this.GetDataTableOptionsFromFiles();
 
             $scope.dtInstance = {};
-            $scope.UploadFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.uploadFile);
+            $scope.UploadFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.UploadFile);
+            $scope.DeleteFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.DeleteFile);
         }
 
         private GetDataTableColumns() {
@@ -58,8 +59,8 @@ module dockyard.controllers {
                 this.DTColumnBuilder.newColumn(null)
                     .withTitle('Actions')
                     .notSortable()
-                    .renderWith(function (data: interfaces.IProcessTemplateVM, type, full, meta) {
-                        var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id + ', $event);">Delete</button>';
+                    .renderWith(function (data: interfaces.IFileVM, type, full, meta) {
+                    var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteFile(' + data.id + ', $event)">Delete</button>';
                         return deleteButton;
                     })
             ];
@@ -87,25 +88,47 @@ module dockyard.controllers {
         private OnRowCreate(row: any, data: any) {
             /*var ctrl = this;
             //datatables doesn't compile inserted rows. to access to scope we need to compile them
-            //i think source of datatables should be changed to compile rows with it's parent scope (which is ours)
+            //i think source of datatables should be changed to compile rows with it's parent scope (which is ours)*/
             this.$compile(angular.element(row).contents())(this.$scope);
-            */
 
             /*angular.element(row).bind('click', function () {
                 ctrl.$state.go('processTemplateDetails', { id: data.id });
             });*/
         }
 
-        /* file picker hook*/
-
-        private uploadFile($event) {
-            $event.stopPropagation(); 
+        private UploadFile($event) {
+            $event.preventDefault();
+            $event.stopPropagation();
             this.$timeout(function () {
                 angular.element("#filePicker").find('div').find('div').trigger('click');
             }, 0);
-
-
         };
+
+        private DeleteFile(fileId, $event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+
+            var me = this;
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'modalDeleteConfirmation',
+                controller: 'ManageFileListController__DeleteConfirmation',
+
+            }).result.then(function () {
+                //Deletion confirmed
+                me.ManageFileService.delete({ id: fileId}).$promise.then(function () {
+                    me.$rootScope.lastResult = "success";
+                    //now loop through our existing templates and remove from local memory
+                    for (var i = 0; i < me._manageFiles.length; i++) {
+                        if (me._manageFiles[i].id === fileId) {
+                            me._manageFiles.splice(i, 1);
+                            me.$scope.dtInstance.reloadData();
+                            break;
+                        }
+                    }
+                });
+            });
+        }
     }
     app.controller('ManageFileListController', ManageFileListController);
 
