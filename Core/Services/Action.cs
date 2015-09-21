@@ -77,6 +77,7 @@ namespace Core.Services
                 }
 
                 uow.SaveChanges();
+                curAction.IsTempId = false; 
                 return curAction;
             }
         }
