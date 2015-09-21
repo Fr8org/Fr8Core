@@ -6,7 +6,7 @@ module dockyard.tests.controller {
     import pca = dockyard.directives.paneConfigureAction;
     import fx = dockyard.tests.utils.fixtures;
 
-    describe("PaneConfiguration onRender getCongiruationStore", () => {
+    describe("PaneConfiguration onRender getConfigurationStore", () => {
         beforeEach(module("app"));
 
         app.run(['$httpBackend',
