@@ -186,38 +186,35 @@ namespace pluginDockyardCore.Actions
             return PackControlsCrate(controlsList);
         }
 
-
-      
-
-
-
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
         protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-
             if (curActionDTO.Id > 0)
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-
-                    
                     ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-                    StandardDesignTimeFieldsMS curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream);
+                    StandardDesignTimeFieldsMS curUpstreamFields =
+                        GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream);
 
                     //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+                    CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate(
+                        "Queryable Criteria", curUpstreamFields);
                     
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = CreateControlsCrate();
 
-                    var curCrates = new List<CrateDTO> {queryFieldsCrate, configurationControlsCrate};
-                    return AssembleCrateStorage(curCrates);
-                   
+                    var curCrates = new List<CrateDTO>
+                    {
+                        queryFieldsCrate,
+                        configurationControlsCrate
+                    };
 
+                    return AssembleCrateStorage(curCrates);
                 }
             }
             else
@@ -225,17 +222,37 @@ namespace pluginDockyardCore.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
-      }
+        }
 
-    
-
-    /// <summary>
+        /// <summary>
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
-            return ConfigurationRequestType.Initial;
+            if (curActionDataPackageDTO.CrateStorage == null
+                && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
+            {
+                return ConfigurationRequestType.Initial;
+            }
+
+
+            var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
+                .Any(x => x.ManifestType == "Standard Configuration Controls"
+                    && x.Label == "Configuration_Controls");
+
+            var hasQueryFieldsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
+                .Any(x => x.ManifestType == "Standard Design-Time Fields"
+                    && x.Label == "Queryable Criteria");
+
+            if (hasControlsCrate && hasQueryFieldsCrate)
+            {
+                return ConfigurationRequestType.Followup;
+            }
+            else
+            {
+                return ConfigurationRequestType.Initial;
+            }
         }
     }
 }
