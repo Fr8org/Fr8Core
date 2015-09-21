@@ -226,8 +226,7 @@ namespace pluginDockyardCore.Actions
                 {
                     ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-                    StandardDesignTimeFieldsMS curUpstreamFields =
-                        GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream);
+                    var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields;
 
                     //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                     CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate(

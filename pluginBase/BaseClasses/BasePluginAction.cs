@@ -134,26 +134,17 @@ namespace PluginBase.BaseClasses
             return tempMS;
         }
 
-        protected CrateStorageDTO AssembleCrateStorage(List<CrateDTO> curCrates)
+        protected CrateStorageDTO AssembleCrateStorage(IEnumerable<CrateDTO> curCrates)
         {
             return new CrateStorageDTO()
             {
-                CrateDTO = curCrates
+                CrateDTO = curCrates.ToList()
             };
         }
 
         protected CrateDTO PackControlsCrate(List<FieldDefinitionDTO> controlsList)
         {
-            var controlsMS = new StandardConfigurationControlsMS()
-            {
-                Controls = controlsList
-            };
-
-            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
-                "Configuration_Controls", controlsMS);
-
-
-            return controlsCrate;
+            return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controlsList);
         }
 
 
