@@ -81,3 +81,26 @@
         padding-left: 15px;    
     margin-top: -15px;
 }
+
+/* Filter Pane */
+.filter-pane .radio:first-of-type {
+    margin-top: 0;
+}
+
+/* Query Builder */
+.query-builder-table {
+    margin-left: 5px;
+}
+
+.query-builder-table td:first-of-type,
+.query-builder-table th:first-of-type {
+    padding-left: 0;
+}
+
+.query-builder-add-button {
+    margin-left: 5px;
+}
+
+.query-builder-table select.form-control {
+    padding-left: 4px;
+}
