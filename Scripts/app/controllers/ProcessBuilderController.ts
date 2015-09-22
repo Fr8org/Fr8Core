@@ -302,7 +302,11 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("Action selected: " + eventArgs.actionId);
-            var originalId;
+
+            var originalId,
+                actionId = eventArgs.actionId,
+                canBypassActionLoading = false;
+
             if (this._scope.current.action) {
                 originalId = this._scope.current.action.id;
             }
@@ -320,29 +324,31 @@ module dockyard.controllers {
                     model.CriteriaExecutionType.NoSet
                     );
 
-                // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                if (result.action != null) {
+                    // Notity interested parties of action update and update $scope
+                    this.handleActionUpdate(result.action);
 
-                // Whether id of the previusly selected action has changed after calling save
-                var wasTemporaryAction = (originalId != result.action.id);
+                    // Whether id of the previusly selected action has changed after calling save
+                    var wasTemporaryAction = (originalId != result.action.id);
 
-                // Since actions are saved immediately after addition, assume that 
-                // any selected action with a temporary id has just been added by user. 
-                // NOTE: this assumption may lead to subtle bugs if user is adding
-                // actions faster than his/her bandwidth allows to save them. 
+                    // Since actions are saved immediately after addition, assume that 
+                    // any selected action with a temporary id has just been added by user. 
+                    // NOTE: this assumption may lead to subtle bugs if user is adding
+                    // actions faster than his/her bandwidth allows to save them. 
 
-                // If earlier we saved a newly added action, set current action id to
-                // the permanent id we received after saving operation. 
-                var actionId = wasTemporaryAction && result.action
-                    ? result.action.id
-                    : eventArgs.actionId;
+                    // If earlier we saved a newly added action, set current action id to
+                    // the permanent id we received after saving operation. 
+                    actionId = wasTemporaryAction && result.action
+                        ? result.action.id
+                        : eventArgs.actionId;
 
-                //Whether user selected a new action or just clicked on the current one
-                var actionChanged = eventArgs.actionId != originalId
-
-                // Determine if we need to load action from the db or we can just use 
-                // the one returned from the above saveCurrent operation.
-                var canBypassActionLoading = result.action && (wasTemporaryAction || !actionChanged)
+                    //Whether user selected a new action or just clicked on the current one
+                    var actionChanged = eventArgs.actionId != originalId
+                
+                    // Determine if we need to load action from the db or we can just use 
+                    // the one returned from the above saveCurrent operation.
+                    var canBypassActionLoading = wasTemporaryAction || !actionChanged
+                }
                 
                 //if (this._scope.current.action != null) {
                 //    this._scope.$broadcast(
@@ -402,7 +408,7 @@ module dockyard.controllers {
 
             var scope = this._scope,
                 that = this;
-            
+
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
                 // Notity interested parties of action update and update $scope
@@ -543,7 +549,7 @@ module dockyard.controllers {
 
             $httpBackend
                 .whenPOST(urlPrefix + "/Action/1")
-                .respond(function(method, url, data) {
+                .respond(function (method, url, data) {
                     return data;
                 });
         }
