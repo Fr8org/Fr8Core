@@ -61,8 +61,18 @@ namespace Core.Services
                 resultsObjects.AddRange(results); ;
             }
             return resultsObjects;
+        }
 
-
+        public void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId)
+        {
+            var curCrates = crates.Where(c => c.ManifestId == manifestId).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
         }
     }
 }
