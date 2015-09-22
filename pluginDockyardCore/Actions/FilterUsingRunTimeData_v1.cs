@@ -190,7 +190,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDTO curActionDataPackageDTO)
+        public ActionDTO Configure(ActionDTO curActionDataPackageDTO)
         {
             return ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
@@ -217,7 +217,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.Id > 0)
             {
@@ -242,7 +242,8 @@ namespace pluginDockyardCore.Actions
                         configurationControlsCrate
                     };
 
-                    return AssembleCrateStorage(curCrates);
+                    var crateStrorageDTO= AssembleCrateStorage(curCrates);
+                    curActionDTO.CrateStorage = crateStrorageDTO;
                 }
             }
             else
@@ -250,6 +251,7 @@ namespace pluginDockyardCore.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
+            return curActionDTO;
         }
 
         /// <summary>

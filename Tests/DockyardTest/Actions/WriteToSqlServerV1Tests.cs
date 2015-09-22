@@ -47,10 +47,10 @@ namespace DockyardTest.Actions
             curAction.CrateStorage = JsonConvert.SerializeObject(emptyCrate);
 
             //Act
-            var result = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
+            ActionDTO currentActionDTO = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
 
             //Assert the connection string value is null or empty
-            var connectionStringConfigControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(result.CrateDTO[0].Contents);
+            var connectionStringConfigControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(currentActionDTO.CrateStorage.CrateDTO[0].Contents);
             Assert.IsTrue(connectionStringConfigControls.Controls.Count == 1);
             Assert.IsTrue(string.IsNullOrEmpty(connectionStringConfigControls.Controls[0].Value));
         }
@@ -65,10 +65,10 @@ namespace DockyardTest.Actions
             curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
 
             //Act
-            var result = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
+            ActionDTO actionDTO = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
 
             //Assert the connection string value is null or empty
-            var connectionStringFieldDefinition = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CrateDTO[0].Contents);
+            var connectionStringFieldDefinition = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(actionDTO.CrateStorage.CrateDTO[0].Contents);
             Assert.IsTrue(connectionStringFieldDefinition.Count == 1);
             Assert.IsTrue(string.IsNullOrEmpty(connectionStringFieldDefinition[0].Value));
         }
@@ -112,16 +112,16 @@ namespace DockyardTest.Actions
             curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
 
             //Act
-            var result = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
+            ActionDTO actionDTO = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
 
             //Assert the connection string value is null or empty
 
-            Assert.IsTrue(result.CrateDTO.Count == 2);
-            Assert.AreEqual(result.CrateDTO[0].ManifestType, "Standard Configuration Controls");
-            Assert.AreEqual(result.CrateDTO[1].ManifestType, "Standard Design-Time Fields");
+            Assert.IsTrue(actionDTO.CrateStorage.CrateDTO.Count == 2);
+            Assert.AreEqual(actionDTO.CrateStorage.CrateDTO[0].ManifestType, "Standard Configuration Controls");
+            Assert.AreEqual(actionDTO.CrateStorage.CrateDTO[1].ManifestType, "Standard Design-Time Fields");
 
             IList<string> dataTableFields =
-                JsonConvert.DeserializeObject<List<string>>(result.CrateDTO[1].Contents);
+                JsonConvert.DeserializeObject<List<string>>(actionDTO.CrateStorage.CrateDTO[1].Contents);
             Assert.AreEqual(dataTableFields.Count, 3);
             Assert.AreEqual(dataTableFields[0], "[Customer].CurrentMedicalCondition");
             Assert.AreEqual(dataTableFields[1], "[Customer].ID");

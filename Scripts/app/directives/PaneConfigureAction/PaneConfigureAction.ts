@@ -160,10 +160,10 @@ module dockyard.directives.paneConfigureAction {
             // We parse its contents and put it into currentAction.configurationControls structure.
             var self = this;
 
-            this.ActionService.configure(action).$promise.then(function (res: any) {
-                (<any>scope.currentAction).crateStorage = res;
+            this.ActionService.configure(action).$promise.then(function (res: any) {               
+                scope.currentAction = res;
                 (<any>scope.currentAction).configurationControls =
-                    self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
             });
         }
 
