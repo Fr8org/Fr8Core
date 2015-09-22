@@ -46,9 +46,11 @@ namespace Core.Services
             {
                 bool isRemoteFileDeleted = uow.FileRepository.DeleteRemoteFile(curFile.CloudStorageUrl);
 
+
                 if (isRemoteFileDeleted)
                 {
-                    if(uow.Db.Entry<FileDO>(curFile).State == System.Data.Entity.EntityState.Detached)
+                    if(uow.Db.Entry(curFile).State  == System.Data.Entity.EntityState.Detached)
+                    //if(uow.Db.Entry<FileDO>(curFile).State == System.Data.Entity.EntityState.Detached)
                         uow.Db.Set<FileDO>().Attach(curFile);
                     uow.FileRepository.Remove(curFile);
                     uow.SaveChanges();
