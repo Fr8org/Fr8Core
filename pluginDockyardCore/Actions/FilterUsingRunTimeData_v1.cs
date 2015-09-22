@@ -258,6 +258,8 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
+                return ConfigurationRequestType.Initial;
+
             if (curActionDataPackageDTO.CrateStorage == null
                 && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
             {

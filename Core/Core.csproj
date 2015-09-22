@@ -211,6 +211,7 @@
     <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcess.cs" />
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
+    <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ISubscription.cs">

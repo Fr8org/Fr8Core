@@ -9,7 +9,7 @@ using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
 {
-    public class EventReportCrate
+    public class EventReportCrateFactory
     {
         public CrateDTO Create(String eventName, String palletId, params CrateDTO[] crates)
         {
