@@ -198,7 +198,7 @@ namespace pluginDocuSign.Actions
             }
 
             // Remove previously added crate of the same schema
-            _crate.RemoveCrateByManifestId(curActionDTO.CrateStorage.CrateDTO, DESIGNTIME_FIELDS_MANIFEST_ID);
+            _crate.RemoveCrateByManifestId(curActionDTO.CrateStorage.CrateDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
 
             curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
 
