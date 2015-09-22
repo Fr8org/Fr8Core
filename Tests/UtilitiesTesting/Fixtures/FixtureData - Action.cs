@@ -497,6 +497,5 @@ namespace UtilitiesTesting.Fixtures
             };
             return curAuthorizationTokenDO;
         }
-
     }
 }
