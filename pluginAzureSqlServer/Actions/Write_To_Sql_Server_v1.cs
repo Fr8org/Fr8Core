@@ -85,7 +85,7 @@ namespace pluginAzureSqlServer.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
             var crateControls = CreateControlsCrate();
-            return AssembleCrateStorage(new [] { crateControls });
+            return AssembleCrateStorage(crateControls);
         }
 
         private CrateDTO CreateControlsCrate() { 

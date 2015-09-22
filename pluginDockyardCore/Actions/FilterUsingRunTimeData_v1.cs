@@ -234,13 +234,7 @@ namespace pluginDockyardCore.Actions
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = CreateControlsCrate();
 
-                    var curCrates = new List<CrateDTO>
-                    {
-                        queryFieldsCrate,
-                        configurationControlsCrate
-                    };
-
-                    return AssembleCrateStorage(curCrates);
+                    return AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
                 }
             }
             else
