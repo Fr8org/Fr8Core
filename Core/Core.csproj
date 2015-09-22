@@ -195,6 +195,7 @@
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Interfaces\CrateManifests.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />

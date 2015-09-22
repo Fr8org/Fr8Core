@@ -16,10 +16,11 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorageDTO CrateStorageDTO()
         {
-            string contents = "{ name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }";
+            var fieldDTO = new FieldDefinitionDTO(
+                name: "connection_string", required: true, value: "", fieldLabel: "SQL Connection String");
             CrateStorageDTO curCrateStorage = new CrateStorageDTO();
-            ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-            curCrateStorage.CrateDTO.Add(_crate.Create("Configuration Data for WriteToAzureSqlServer", contents));
+            ICrate crate = ObjectFactory.GetInstance<ICrate>();
+            curCrateStorage.CrateDTO.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
             return curCrateStorage;
         }
 
@@ -35,22 +36,13 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorageDTO TestCrateStorage()
         {
-            var fieldDefinitions = new List<FieldDefinitionDTO>() 
-            {
-                TestConnectionStringFieldDefinition()
-            };
-
+            ICrate crate = ObjectFactory.GetInstance<ICrate>();
             var curConfigurationStore = new CrateStorageDTO
             {
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
                 {
-                    new CrateDTO
-                    {
-                        Label = "AzureSqlServer Design-Time Fields",
-                        Contents = JsonConvert.SerializeObject(fieldDefinitions),
-                        ManifestType = "Standard Configuration Controls"
-                    }
+                    crate.CreateStandardConfigurationControlsCrate("AzureSqlServer Design-Time Fields", TestConnectionStringFieldDefinition())
                 }
             };
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using AutoMapper;
+using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -68,9 +69,9 @@ namespace DockyardTest.Actions
             var result = new Write_To_Sql_Server_v1().Configure(Mapper.Map<ActionDTO>(curAction));
 
             //Assert the connection string value is null or empty
-            var connectionStringFieldDefinition = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(result.CrateDTO[0].Contents);
-            Assert.IsTrue(connectionStringFieldDefinition.Count == 1);
-            Assert.IsTrue(string.IsNullOrEmpty(connectionStringFieldDefinition[0].Value));
+            var connectionStringFieldDefinition = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(result.CrateDTO[0].Contents);
+            Assert.IsTrue(connectionStringFieldDefinition.Controls.Count == 1);
+            Assert.IsTrue(string.IsNullOrEmpty(connectionStringFieldDefinition.Controls[0].Value));
         }
 
         [Test]
@@ -83,11 +84,11 @@ namespace DockyardTest.Actions
 
             //Create two connection string crates
             var connectionStringCrate = FixtureData.TestCrateStorage();
-            IList<FieldDefinitionDTO> connectionStringFields = JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(connectionStringCrate.CrateDTO[0].Contents);
-            connectionStringFields.Add(FixtureData.TestConnectionStringFieldDefinition());
+            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(connectionStringCrate.CrateDTO[0].Contents);
+            connectionStringFields.Controls.Add(FixtureData.TestConnectionStringFieldDefinition());
 
             //set the values for the connection strings
-            connectionStringFields.ToList().ForEach(field => field.Value = "somevalue");
+            connectionStringFields.Controls.ForEach(field => field.Value = "somevalue");
 
             connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);
             curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
@@ -105,8 +106,8 @@ namespace DockyardTest.Actions
 
             //create connection string value crates with a vald connection string
             var connectionStringCrate = FixtureData.TestCrateStorage();
-            IList<FieldDefinitionDTO> connectionStringFields =JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(connectionStringCrate.CrateDTO[0].Contents);
-            connectionStringFields[0].Value =
+            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(connectionStringCrate.CrateDTO[0].Contents);
+            connectionStringFields.Controls[0].Value =
                 @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
             connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);
             curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
@@ -117,15 +118,15 @@ namespace DockyardTest.Actions
             //Assert the connection string value is null or empty
 
             Assert.IsTrue(result.CrateDTO.Count == 2);
-            Assert.AreEqual(result.CrateDTO[0].ManifestType, "Standard Configuration Controls");
-            Assert.AreEqual(result.CrateDTO[1].ManifestType, "Standard Design-Time Fields");
+            Assert.AreEqual(result.CrateDTO[0].ManifestType, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            Assert.AreEqual(result.CrateDTO[1].ManifestType, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
 
-            IList<string> dataTableFields =
-                JsonConvert.DeserializeObject<List<string>>(result.CrateDTO[1].Contents);
-            Assert.AreEqual(dataTableFields.Count, 3);
-            Assert.AreEqual(dataTableFields[0], "[Customer].CurrentMedicalCondition");
-            Assert.AreEqual(dataTableFields[1], "[Customer].ID");
-            Assert.AreEqual(dataTableFields[2], "[Customer].Physician");
+            StandardDesignTimeFieldsMS dataTableFields =
+                JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(result.CrateDTO[1].Contents);
+            Assert.AreEqual(dataTableFields.Fields.Count, 3);
+            Assert.AreEqual(dataTableFields.Fields[0].Value, "[Customer].CurrentMedicalCondition");
+            Assert.AreEqual(dataTableFields.Fields[1].Value, "[Customer].ID");
+            Assert.AreEqual(dataTableFields.Fields[2].Value, "[Customer].Physician");
         }
     }
 }
