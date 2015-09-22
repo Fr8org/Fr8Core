@@ -34,20 +34,20 @@ namespace Core.Services
             return crateDTO;
         }
 
-        public CrateDTO CreateDesignTimeFieldsCrate(string label, List<FieldDTO> fields)
+        public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
             return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields}),
-                manifestType: "Standard Design-Time Fields", 
-                manifestId: 3);
+                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields.ToList()}),
+                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
+                manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, List<FieldDefinitionDTO> controls)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls)
         {
             return Create(label, 
-                JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls }),
-                manifestType: "Standard Configuration Controls",
-                manifestId: 6);
+                JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
+                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 
         public T GetContents<T>(CrateDTO crate)
@@ -68,8 +68,18 @@ namespace Core.Services
                 resultsObjects.AddRange(results); ;
             }
             return resultsObjects;
+        }
 
-
+        public void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId)
+        {
+            var curCrates = crates.Where(c => c.ManifestId == manifestId).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
         }
     }
 }

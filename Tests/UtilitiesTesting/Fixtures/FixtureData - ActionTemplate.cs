@@ -100,8 +100,8 @@ namespace UtilitiesTesting.Fixtures
                 Plugin = PluginFour(),
                 Version = "1"
             };
-            return curActivityDO;
 
+            return curActivityDO;
         }
     }
 }

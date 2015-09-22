@@ -114,7 +114,7 @@ namespace Web.Controllers
             if (curActionDTO.IsTempId)
             {
                 _actionList.AddAction(resultActionDO, "last");
-        }
+            }
 
             var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
             return Ok(resultActionDTO);

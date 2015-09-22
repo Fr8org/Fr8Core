@@ -55,6 +55,7 @@ module dockyard.directives.paneConfigureAction {
         private _$element: ng.IAugmentedJQuery;
         private _currentAction: interfaces.IActionDesignDTO =
         new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
+        private configurationWatchUnregisterer: Function;
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
@@ -79,18 +80,23 @@ module dockyard.directives.paneConfigureAction {
                 this._$element = $element;
 
                 //Controller goes here
-                $scope.$watch<interfaces.IActionDesignDTO>((scope: IPaneConfigureActionScope) => scope.currentAction, this.onActionChanged, true);
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], this.onHide);
-                //$scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: IConfigurationFieldScope) => this.onExitFocus(eventArgs));
+                $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], <any>angular.bind(this, this.onHide));
                 $scope.$on("onFieldChange", <any>angular.bind(this, this.onFieldChange));
-
-                $scope.mapFields = <(IPaneConfigureActionScope) => void>angular.bind(this, this.mapFields);
             };
         }
 
-        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) {
-            model.ControlsList
+        private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
+            debugger;
+            if (!newValue || !newValue.fields || newValue.fields.length == 0) return;
+
+            this.crateHelper.mergeControlListCrate(
+                scope.currentAction.configurationControls,
+                scope.currentAction.crateStorage
+                );
+            scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+            this.ActionService.save({ id: scope.currentAction.id },
+                scope.currentAction, null, null);
         }
 
         private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
@@ -121,13 +127,11 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope> event.currentScope);
-
-            console.log("Configue action id " + eventArgs.action.id);
+            if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
 
             //for now ignore actions which were not saved in the database
             if (eventArgs.action.isTempId) return;
             scope.isVisible = true;
-
 
             // Get configuration settings template from the server if the current action does not 
             // contain those or user has selected another action template.
@@ -155,27 +159,26 @@ module dockyard.directives.paneConfigureAction {
 
         }
 
+        // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
+        // We parse its contents and put it into currentAction.configurationControls structure.
         private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
-            // Here we parse look for Crate with ManifestType == 'Standard Configuration Controls'.
-            // We parse its contents and put it into currentAction.configurationControls structure.
-            var self = this;
 
-            this.ActionService.configure(action).$promise.then(function (res: any) {
+            this.ActionService.configure(action).$promise.then((res: any) => {
                 (<any>scope.currentAction).crateStorage = res;
                 (<any>scope.currentAction).configurationControls =
-                    self.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                this.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
             });
+
+            if (this.configurationWatchUnregisterer == null) {
+                this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
+                    this.configurationWatchUnregisterer = scope.$watch<model.ControlsList>((scope: IPaneConfigureActionScope) => scope.currentAction.configurationControls, <any>angular.bind(this, this.onConfigurationChanged), true);
+                }, 500);
+            }
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             (<IPaneConfigureActionScope> event.currentScope).isVisible = false;
-        }
-
-        private mapFields(scope: IPaneConfigureActionScope) {
-            scope.$emit(
-                MessageType[MessageType.PaneConfigureAction_MapFieldsClicked],
-                new MapFieldsClickedEventArgs(angular.extend({}, scope.currentAction)) //clone action to prevent msg recipient from modifying orig. object
-                );
+            if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
         }
 
         //The factory function returns Directive object as per Angular requirements

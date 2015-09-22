@@ -45,12 +45,12 @@ namespace pluginDockyardCore.Actions
             // Find crate with id "Criteria Filter Conditions".
             var curCrateStorage = actionDO.CrateStorageDTO();
             var curControlsCrate = curCrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == "Standard Configuration Controls"
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                     && x.Label == "Configuration_Controls");
 
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
             {
-                throw new ApplicationException("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"Standard Configuration Controls\"");
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
             }
 
             var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
@@ -206,12 +206,11 @@ namespace pluginDockyardCore.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = "Standard Design-Time Fields"
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                 }
             };
 
-            var controlsList = new List<FieldDefinitionDTO>() {fieldFilterPane};
-            return PackControlsCrate(controlsList);
+            return PackControlsCrate(fieldFilterPane);
         }
 
         /// <summary>
@@ -226,7 +225,7 @@ namespace pluginDockyardCore.Actions
                 {
                     ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-                    var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields;
+                    var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
 
                     //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                     CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate(
@@ -235,13 +234,7 @@ namespace pluginDockyardCore.Actions
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = CreateControlsCrate();
 
-                    var curCrates = new List<CrateDTO>
-                    {
-                        queryFieldsCrate,
-                        configurationControlsCrate
-                    };
-
-                    return AssembleCrateStorage(curCrates);
+                    return AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
                 }
             }
             else
@@ -257,6 +250,8 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
+                return ConfigurationRequestType.Initial;
+
             if (curActionDataPackageDTO.CrateStorage == null
                 && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
             {
@@ -265,11 +260,11 @@ namespace pluginDockyardCore.Actions
 
 
             var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .Any(x => x.ManifestType == "Standard Configuration Controls"
+                .Any(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                     && x.Label == "Configuration_Controls");
 
             var hasQueryFieldsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
-                .Any(x => x.ManifestType == "Standard Design-Time Fields"
+                .Any(x => x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                     && x.Label == "Queryable Criteria");
 
             if (hasControlsCrate && hasQueryFieldsCrate)

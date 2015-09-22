@@ -26,15 +26,6 @@ namespace PluginBase.BaseClasses
             Downstream
         }
 
-        protected const int STANDARD_PAYLOAD_MANIFEST_ID = 5;
-        protected const string STANDARD_PAYLOAD_MANIFEST_NAME = "Standard Payload Data";
-
-        protected const int DESIGNTIME_FIELDS_MANIFEST_ID = 3;
-        protected const string DESIGNTIME_FIELDS_MANIFEST_NAME = "Standard Design-Time Fields";
-
-        //protected const int STANDARD_CONF_CONTROLS_MANIFEST_ID = ;
-        protected const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
-
         protected IAction _action;
         protected ICrate _crate;
         protected IActivity _activity;
@@ -109,7 +100,7 @@ namespace PluginBase.BaseClasses
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
 
-            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, "Standard Design-Time Fields",
+            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
@@ -134,7 +125,7 @@ namespace PluginBase.BaseClasses
             return tempMS;
         }
 
-        protected CrateStorageDTO AssembleCrateStorage(IEnumerable<CrateDTO> curCrates)
+        protected CrateStorageDTO AssembleCrateStorage(params CrateDTO[] curCrates)
         {
             return new CrateStorageDTO()
             {
@@ -142,9 +133,12 @@ namespace PluginBase.BaseClasses
             };
         }
 
-        protected CrateDTO PackControlsCrate(List<FieldDefinitionDTO> controlsList)
+        protected CrateDTO PackControlsCrate(params FieldDefinitionDTO[] controlsList)
         {
-            return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controlsList);
+            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
+                "Configuration_Controls", controlsList);
+
+            return controlsCrate;
         }
 
 
