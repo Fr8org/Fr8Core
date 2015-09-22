@@ -1,9 +1,12 @@
 {
-   "version": "1.0.0",
-   "name": "Dockyard",
-   "dependencies": {
-        "bower": "^1.3.12",
-        "gulp": "^3.8.10",
-        "gulp-bower": "^0.0.7"
-   }
+  "version": "1.0.0",
+  "name": "Dockyard",
+  "dependencies": {
+    "bower": "^1.3.12",
+    "gulp": "^3.8.10",
+    "gulp-bower": "^0.0.7"
+  },
+  "devDependencies": {
+    "gulp-bower": "0.0.7"
+  }
 }

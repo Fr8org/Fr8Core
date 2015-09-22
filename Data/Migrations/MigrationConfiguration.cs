@@ -251,6 +251,7 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
@@ -266,6 +267,7 @@ namespace Data.Migrations
         {
             CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
             CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
+            CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
         }
 
         /// <summary>
