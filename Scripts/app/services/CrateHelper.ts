@@ -141,7 +141,6 @@
             var crate = this.findByManifestType(
                 crateStorage, 'Standard Configuration Controls'
                 );
-            debugger;
             var controlsList = new model.ControlsList();
             controlsList.fields = angular.fromJson(crate.contents).Controls;
 
@@ -165,7 +164,6 @@
                     dropdownListField.listItems = listItems.Fields;
                 }
             }
-
             return controlsList;
         }
     }

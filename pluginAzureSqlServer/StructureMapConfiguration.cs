@@ -38,7 +38,8 @@ namespace pluginAzureSqlServer
                  For<IAction>().Use<Core.Services.Action>();
                  For<IPlugin>().Use<Plugin>();
                  For<ICrate>().Use<Crate>();
-                 For<IDbProvider>().Use<SqlClientDbProvider>();                
+                 For<IDbProvider>().Use<SqlClientDbProvider>();
+                 For<IActivity>().Use<Activity>();
              }
          }
     }

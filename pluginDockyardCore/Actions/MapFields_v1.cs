@@ -90,18 +90,7 @@ namespace pluginDockyardCore.Actions
                 Required = true
             };
 
-            var fields = new List<FieldDefinitionDTO>()
-            {
-                fieldFilterPane
-            };
-
-            var crateControls = _crate.Create(
-                "Configuration_Controls",
-                JsonConvert.SerializeObject(fields),
-                "Standard Configuration Controls"
-                );
-
-            return crateControls;
+            return PackControlsCrate(fieldFilterPane);
         }
 
         /// <summary>
@@ -112,11 +101,11 @@ namespace pluginDockyardCore.Actions
 
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-            List<FieldDTO> curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields;
+            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
 
-            List<FieldDTO> curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields;
+            var curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields.ToArray();
 
-            if (curUpstreamFields.Count == 0 || curDownstreamFields.Count == 0)
+            if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
                 //temporarily disabling this exception because it's disrupting debugging. it will get fixed properly in 1085
                 //throw new ApplicationException("This action couldn't find either source fields or target fields (or both). "
@@ -129,8 +118,7 @@ namespace pluginDockyardCore.Actions
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            var curCrates = new List<CrateDTO> { downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate };
-            return AssembleCrateStorage(curCrates);
+            return AssembleCrateStorage(downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate);
         }
 
         /// <summary>

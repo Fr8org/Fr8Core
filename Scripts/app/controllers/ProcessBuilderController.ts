@@ -19,11 +19,6 @@ module dockyard.controllers {
         current: model.ProcessBuilderState;
         save: Function;
         cancel: Function;
-
-        //this is for demo only, should be deleted on production
-        radioDemoField: model.RadioButtonGroupField;
-        dropdownDemoField: model.DropDownListBoxField;
-        textBlockDemoField: model.TextBlockField;
     }
 
     //Setup aliases
@@ -91,65 +86,9 @@ module dockyard.controllers {
 
             this.setupMessageProcessing();
             var self = this;
-            this.loadProcessTemplate().$promise.then(function () {
+            this.loadProcessTemplate().$promise.then(() => {
                 self.loadImmediateActionList();
             });
-            
-
-            //THIS IS FOR DEMO ONLY
-            var radioDemoField = new model.RadioButtonGroupField();
-            radioDemoField.fieldLabel = 'Demo Label';
-            radioDemoField.groupName = 'Demo Group Name';
-            radioDemoField.type = 'radioButtonGroup';
-            var demoRadio1 = new model.RadioField();
-            demoRadio1.value = "Selection 1";
-            demoRadio1.selected = false;
-            var demoRadio2 = new model.RadioField();
-            demoRadio2.value = "Selection 2";
-            demoRadio2.selected = false;
-            var demoRadio3 = new model.RadioField();
-            demoRadio3.value = "Selection 3";
-            demoRadio3.selected = true;
-            var radios = new Array<model.RadioField>();
-            radios.push(demoRadio1);
-            radios.push(demoRadio2);
-            radios.push(demoRadio3);
-            radioDemoField.radios = radios;
-            this._scope.radioDemoField = radioDemoField;
-
-            var dropdownDemoField = new model.DropDownListBoxField();
-            var demoSelectItem1 = new model.DropDownListItem();
-
-            demoSelectItem1.Key = "Operation 1";
-            demoSelectItem1.Value = "operation_1";
-            var demoSelectItem2 = new model.DropDownListItem();
-
-            demoSelectItem2.Key = "Operation 2";
-            demoSelectItem2.Value = "operation_2";
-            var demoSelectItem3 = new model.DropDownListItem();
-
-            demoSelectItem3.Key = "Operation 3";
-            demoSelectItem3.Value = "operation_3";
-            var demoSelectItem4 = new model.DropDownListItem();
-
-            demoSelectItem4.Key = "Operation 4";
-            demoSelectItem4.Value = "operation_4";
-            dropdownDemoField.fieldLabel = "Operation List";
-            dropdownDemoField.listItems = new Array<model.DropDownListItem>();
-            dropdownDemoField.listItems.push(demoSelectItem1);
-            dropdownDemoField.listItems.push(demoSelectItem2);
-            dropdownDemoField.listItems.push(demoSelectItem3);
-            dropdownDemoField.listItems.push(demoSelectItem4);
-
-            dropdownDemoField.value = "operation_4";
-            dropdownDemoField.name = "demoDropDown";
-            this._scope.dropdownDemoField = dropdownDemoField;
-
-            var textBlockDemoField = new model.TextBlockField();
-            textBlockDemoField.class = 'well well-lg';
-            textBlockDemoField.value = 'Some description about action which is styled with class attribute using "well well-lg"';
-            this._scope.textBlockDemoField = textBlockDemoField;
-            //END OF DEMO CODE
         }
 
         /*
@@ -363,7 +302,11 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("Action selected: " + eventArgs.actionId);
-            var originalId;
+
+            var originalId,
+                actionId = eventArgs.actionId,
+                canBypassActionLoading = false;
+
             if (this._scope.current.action) {
                 originalId = this._scope.current.action.id;
             }
@@ -381,29 +324,31 @@ module dockyard.controllers {
                     model.CriteriaExecutionType.NoSet
                     );
 
-                // Notity interested parties of action update and update $scope
-                this.handleActionUpdate(result.action);
+                if (result.action != null) {
+                    // Notity interested parties of action update and update $scope
+                    this.handleActionUpdate(result.action);
 
-                // Whether id of the previusly selected action has changed after calling save
-                var wasTemporaryAction = (originalId != result.action.id);
+                    // Whether id of the previusly selected action has changed after calling save
+                    var wasTemporaryAction = (originalId != result.action.id);
 
-                // Since actions are saved immediately after addition, assume that 
-                // any selected action with a temporary id has just been added by user. 
-                // NOTE: this assumption may lead to subtle bugs if user is adding
-                // actions faster than his/her bandwidth allows to save them. 
+                    // Since actions are saved immediately after addition, assume that 
+                    // any selected action with a temporary id has just been added by user. 
+                    // NOTE: this assumption may lead to subtle bugs if user is adding
+                    // actions faster than his/her bandwidth allows to save them. 
 
-                // If earlier we saved a newly added action, set current action id to
-                // the permanent id we received after saving operation. 
-                var actionId = wasTemporaryAction && result.action
-                    ? result.action.id
-                    : eventArgs.actionId;
+                    // If earlier we saved a newly added action, set current action id to
+                    // the permanent id we received after saving operation. 
+                    actionId = wasTemporaryAction && result.action
+                        ? result.action.id
+                        : eventArgs.actionId;
 
-                //Whether user selected a new action or just clicked on the current one
-                var actionChanged = eventArgs.actionId != originalId
-
-                // Determine if we need to load action from the db or we can just use 
-                // the one returned from the above saveCurrent operation.
-                var canBypassActionLoading = result.action && (wasTemporaryAction || !actionChanged)
+                    //Whether user selected a new action or just clicked on the current one
+                    var actionChanged = eventArgs.actionId != originalId
+                
+                    // Determine if we need to load action from the db or we can just use 
+                    // the one returned from the above saveCurrent operation.
+                    var canBypassActionLoading = wasTemporaryAction || !actionChanged
+                }
                 
                 //if (this._scope.current.action != null) {
                 //    this._scope.$broadcast(
@@ -466,7 +411,6 @@ module dockyard.controllers {
 
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
 
@@ -607,7 +551,7 @@ module dockyard.controllers {
                 .whenPOST(urlPrefix + "/Action/1")
                 .respond(function (method, url, data) {
                     return data;
-                })
+                });
         }
     ]);
 
