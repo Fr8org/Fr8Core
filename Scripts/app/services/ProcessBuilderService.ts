@@ -173,7 +173,6 @@ module dockyard.services {
             if they were or were not changed. 
         */
         public saveCurrent(currentState: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState> {
-            debugger;
 
             var deferred = this.$q.defer<model.ProcessBuilderState>(),
                 newState = new model.ProcessBuilderState()
@@ -321,7 +320,6 @@ module dockyard.services {
 
         public load(id: number): ng.IPromise<model.ProcessNodeTemplateDTO> {
             var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
-            debugger;
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.
