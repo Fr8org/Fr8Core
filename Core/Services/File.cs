@@ -4,6 +4,9 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace Core.Services
 {
@@ -45,12 +48,45 @@ namespace Core.Services
 
                 if (isRemoteFileDeleted)
                 {
+                    if(uow.Db.Entry<FileDO>(curFile).State == System.Data.Entity.EntityState.Detached)
+                        uow.Db.Set<FileDO>().Attach(curFile);
                     uow.FileRepository.Remove(curFile);
                     uow.SaveChanges();
                     return true;
                 }
-
                 return false;
+            }
+        }
+
+        public bool Delete(int fileId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var file = uow.FileRepository.GetByKey(fileId);
+                if (null != file)
+                {
+
+                    return Delete(file);;
+                }
+                return false;
+            }
+        }
+
+        public IList<FileDO> AllFilesList()
+        {
+            return FilesList(null);
+        }
+
+        public IList<FileDO> FilesList(string dockyardAccountId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<FileDO> files;
+                if (String.IsNullOrEmpty(dockyardAccountId))
+                    files = uow.FileRepository.GetAll().ToList();
+                else
+                    files = uow.FileRepository.FindList(f => f.DockyardAccountID == dockyardAccountId).ToList();
+                return files;
             }
         }
     }

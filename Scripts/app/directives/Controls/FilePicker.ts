@@ -52,7 +52,7 @@ module dockyard.directives.filePicker {
 
         private OnFileUploadFail(status: any) {
             alert('sorry file upload failed with status: ' + status);
-        }
+       }
 
         private OnFileSelect($file) {
             var onFileUploadSuccess = <(fileDTO: interfaces.IFileDTO) => void> angular.bind(this, this.OnFileUploadSuccess);
