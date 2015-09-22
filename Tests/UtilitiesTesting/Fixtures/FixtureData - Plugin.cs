@@ -44,6 +44,7 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
+
         public static PluginDO PluginFour()
         {
             return new PluginDO
