@@ -1,6 +1,8 @@
-﻿using Core.Interfaces;
+﻿using System.Collections.Generic;
+using Core.Interfaces;
 using Core.Services;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace UtilitiesTesting.Fixtures
@@ -31,6 +33,40 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static CrateStorageDTO TestCrateStorage()
+        {
+            var fieldDefinitions = new List<FieldDefinitionDTO>() 
+            {
+                TestConnectionStringFieldDefinition()
+            };
 
+            var curConfigurationStore = new CrateStorageDTO
+            {
+                //this needs to be updated to hold Crates instead of FieldDefinitionDTO
+                CrateDTO = new List<CrateDTO>
+                {
+                    new CrateDTO
+                    {
+                        Label = "AzureSqlServer Design-Time Fields",
+                        Contents = JsonConvert.SerializeObject(fieldDefinitions),
+                        ManifestType = "Standard Configuration Controls"
+                    }
+                }
+            };
+
+            return curConfigurationStore;
+        }
+
+        public static FieldDefinitionDTO TestConnectionStringFieldDefinition()
+        {
+            return new FieldDefinitionDTO()
+            {
+                FieldLabel = "SQL Connection String",
+                Type = "textField",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+            };
+        }
     }
 }

@@ -146,11 +146,14 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Actions\FilterUsingRunTimeData_v1.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Actions\MapFields_v1.cs" />
+    <Compile Include="Interfaces\FilterConditionDTO.cs" />
+    <Compile Include="Interfaces\FilterDataDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

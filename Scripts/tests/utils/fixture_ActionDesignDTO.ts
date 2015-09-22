@@ -70,14 +70,14 @@ module dockyard.tests.utils.fixtures {
                     "value": "Checkbox"
                 }
             ]
-        };
+        };/*
 
         public static actionDesignDTO = <interfaces.IActionDesignDTO> {
             name: "test action type",
             crateStorage: null,
             configurationControls: null,
             processNodeTemplateId: 1,
-            actionTemplateId: 1,
+            activityTemplateId: 1,
             isTempId: false,
             id: 1,
             fieldMappingSettings: ActionDesignDTO.fieldMappingSettings,
@@ -100,6 +100,6 @@ module dockyard.tests.utils.fixtures {
             name: "",
             preventDefault: null,
             stopPropagation: null
-        };
+        };*/
     }
 } 

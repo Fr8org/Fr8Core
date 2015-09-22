@@ -8,56 +8,78 @@ module dockyard.directives {
             restrict: 'E',
             templateUrl: '/AngularTemplate/FilterPane',
             scope: {
+                currentAction: '=',
                 field: '='
             },
-            controller: (
-                $scope: IPaneDefineCriteriaScope,
-                $timeout: ng.ITimeoutService
-                ): void => {
+            controller: ['$scope', '$timeout', 'CrateHelper',
+                function (
+                    $scope: IPaneDefineCriteriaScope,
+                    $timeout: ng.ITimeoutService,
+                    crateHelper: services.CrateHelper
+                    ) {
 
-                $scope.operators = [
-                    { text: 'Greater than', value: 'gt' },
-                    { text: 'Greater than or equal', value: 'gte' },
-                    { text: 'Less than', value: 'lt' },
-                    { text: 'Less than or equal', value: 'lte' },
-                    { text: 'Equal', value: 'eq' },
-                    { text: 'Not equal', value: 'neq' }
-                ];
+                    $scope.operators = [
+                        { text: 'Greater than', value: 'gt' },
+                        { text: 'Greater than or equal', value: 'gte' },
+                        { text: 'Less than', value: 'lt' },
+                        { text: 'Less than or equal', value: 'lte' },
+                        { text: 'Equal', value: 'eq' },
+                        { text: 'Not equal', value: 'neq' }
+                    ];
 
-                $scope.defaultOperator = 'gt';
+                    $scope.defaultOperator = 'gt';
 
-                $scope.$watch('field', function (newValue: any) {
-                    if (newValue && newValue.value) {
-                        var jsonValue = angular.fromJson(newValue.value);
-                        $scope.conditions = <Array<interfaces.ICondition>>jsonValue.conditions;
-                        $scope.executionType = jsonValue.executionType;
-                    }
-                    else {
-                        $scope.conditions = [];
-                        $scope.executionType = 1;
-                    }
-                });
+                    $scope.$watch('currentAction', function (newValue: model.ActionDesignDTO) {
+                        if (newValue && newValue.crateStorage) {
+                            var crate = crateHelper.findByManifestTypeAndLabel(
+                                newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
 
-                var updateFieldValue = function () {
-                    $scope.field.value = angular.toJson({
-                        executionType: $scope.executionType,
-                        conditions: $scope.conditions
+                            $scope.fields = [];
+                            if (crate != null) {
+                                var crateJson = angular.fromJson(crate.contents);
+                                angular.forEach(crateJson.Fields, function (it) {
+                                    $scope.fields.push({ name: it.Key, key: it.Key });
+                                });
+                            }
+                        }
                     });
-                };
 
-                $scope.$watch('conditions', function () {
-                    updateFieldValue();
-                }, true);
+                    $scope.$watch('field', function (newValue: any) {
+                        debugger;
 
-                $scope.$watch('executionType', function () {
-                    updateFieldValue();
-                });
-            }
-        };
+                        if (newValue && newValue.value) {
+                            var jsonValue = angular.fromJson(newValue.value);
+                            $scope.conditions = <Array<interfaces.ICondition>>jsonValue.conditions;
+                            $scope.executionType = jsonValue.executionType;
+                        }
+                        else {
+                            $scope.conditions = [];
+                            $scope.executionType = 1;
+                        }
+                    });
+
+                    var updateFieldValue = function () {
+                        $scope.field.value = angular.toJson({
+                            executionType: $scope.executionType,
+                            conditions: $scope.conditions
+                        });
+                    };
+
+                    $scope.$watch('conditions', function () {
+                        updateFieldValue();
+                    }, true);
+
+                    $scope.$watch('executionType', function () {
+                        updateFieldValue();
+                    });
+                }
+            ]
+        }
     }
 
     export interface IPaneDefineCriteriaScope extends ng.IScope {
         field: any;
+        fields: Array<interfaces.IField>;
         operators: Array<interfaces.IOperator>;
         defaultOperator: string;
         conditions: Array<interfaces.ICondition>;

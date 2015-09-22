@@ -25,6 +25,8 @@ namespace Core.Managers
             EventManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
             EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
+            EventManager.IncidentPluginActionActivationFailed += ProcessIncidentPluginActionActivationFailed;
+            //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
             //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             //AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
@@ -32,7 +34,23 @@ namespace Core.Managers
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             EventManager.PluginIncidentReported += LogPluginIncident;
+            EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
+            EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
+        }
+
+        private void ProcessIncidentPluginActionActivationFailed(string pluginUrl, string curActionDTO)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = "unknown",
+                Data = pluginUrl + "      " + curActionDTO,
+                ObjectId = "unknown",
+                PrimaryCategory = "Action",
+                SecondaryCategory = "Activation",
+                Activity = "Completed"
+            };
+            SaveAndLogFact(incident);
         }
 
         /// <summary>
@@ -88,6 +106,48 @@ namespace Core.Managers
             }
         }
 
+        private void LogUnparseableNotificationIncident(string curNotificationUrl, string curNotificationPayload)
+        {
+            var currentIncident = new IncidentDO
+            {
+                ObjectId = curNotificationPayload,
+                CustomerId = "",
+                Data = curNotificationUrl,
+                PrimaryCategory = "Event",
+                SecondaryCategory = "External",
+                Activity = "Unparseble Notification"
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(currentIncident);
+                uow.SaveChanges();
+
+                GenerateLogData(currentIncident);
+            }
+        }
+
+        private void LogExternalEventReceivedIncident(string curEventPayload)
+        {
+            var currentIncident = new IncidentDO
+            {
+                ObjectId = "EventController",
+                CustomerId = "",
+                Data = curEventPayload,
+                PrimaryCategory = "Event",
+                SecondaryCategory = "External",
+                Activity = "Received"
+            };
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(currentIncident);
+                uow.SaveChanges();
+
+                GenerateLogData(currentIncident);
+            }
+        }
+
         private void GenerateLogData(HistoryItemDO currentIncident)
         {
             string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
@@ -125,8 +185,7 @@ namespace Core.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "BookingRequest";
                 incidentDO.SecondaryCategory = "Response Received";
-                incidentDO.CustomerId = customerID;
-                incidentDO.BookerId = userID;
+                incidentDO.CustomerId = customerID;               
                 incidentDO.ObjectId = bookingRequestId.ToString();
                 incidentDO.Activity = "Response Recieved";
                 _uow.IncidentRepository.Add(incidentDO);

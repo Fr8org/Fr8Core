@@ -16,12 +16,12 @@ namespace PluginBase.BaseClasses
     //we can generate instances of this.
     public class BasePluginController
     {
-        private readonly EventReportCrate _eventReportCrateHelper;
-        private readonly LoggingDataCrate _loggingDataCrateHelper;
+        private readonly EventReportCrateFactory _eventReportCrateFactoryHelper;
+        private readonly LoggingDataCrateFactory _loggingDataCrateFactoryHelper;
         public BasePluginController()
         {
-            _eventReportCrateHelper = new EventReportCrate();
-            _loggingDataCrateHelper = new LoggingDataCrate();
+            _eventReportCrateFactoryHelper = new EventReportCrateFactory();
+            _loggingDataCrateFactoryHelper = new LoggingDataCrateFactory();
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace PluginBase.BaseClasses
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
-            var loggingDataCrate = _loggingDataCrateHelper.Create(new LoggingData
+            var loggingDataCrate = _loggingDataCrateFactoryHelper.Create(new LoggingData
             {
                 ObjectId = pluginName,
                 CustomerId = "not_applicable",
@@ -74,7 +74,7 @@ namespace PluginBase.BaseClasses
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _eventReportCrateHelper.Create(eventType, pluginName, loggingDataCrate)).Wait();
+                _eventReportCrateFactoryHelper.Create(eventType, pluginName, loggingDataCrate)).Wait();
 
         }
 

@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -15,11 +16,11 @@ namespace Core.Services
         /// <summary>
         /// Create ProcessNodeTemplate entity with required children criteria entity.
         /// </summary>
-        public void Create(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate)
+        public void Create(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate )
         {
             if (processNodeTemplate == null)
             {
-                throw new Exception("Creating logic was passed a null ProcessNodeTemplateDO");
+                processNodeTemplate = ObjectFactory.GetInstance<ProcessNodeTemplateDO>();
             }
 
             uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
@@ -49,8 +50,7 @@ namespace Core.Services
                 ProcessNodeTemplate = processNodeTemplate
             };
             uow.ActionListRepository.Add(scheduledActionList);
-
-            uow.SaveChanges();
+            //we don't want to save changes here, to enable upstream transactions
         }
 
         /// <summary>

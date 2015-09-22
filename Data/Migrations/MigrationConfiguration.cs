@@ -62,8 +62,7 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            AddProfiles(uow);
-
+            AddProfiles(uow);                      
             SeedMultiTenantTables(uow);
         }
 
@@ -98,7 +97,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-
+            
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -158,8 +157,8 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
+                let name = constant.Name
+                let value = constant.GetValue(null)
                                      select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
@@ -221,9 +220,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                              let name = constant.Name
-                              let value = constant.GetValue(null)
-                              select creatorFunc((string)value, name)).ToList();
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
+                                     select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -232,7 +231,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-                }
+            }
             }
             foreach (var row in rolesToAdd)
             {
@@ -253,7 +252,7 @@ namespace Data.Migrations
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
-
+            
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -357,7 +356,7 @@ namespace Data.Migrations
 
                 // Create subscription instance.
                 AddSubscription(uow, account, azureSqlPlugin, AccessLevel.User);
-
+               
             }
         }
 
@@ -381,8 +380,8 @@ namespace Data.Migrations
             var curActivityTemplateDO = new ActivityTemplateDO(
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-        }
-        
+            }       
+
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
@@ -477,7 +476,7 @@ namespace Data.Migrations
 
             uow.SaveChanges();
         }
-
+        
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
