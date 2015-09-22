@@ -42,10 +42,13 @@ namespace Core.Services
 
         public bool Delete(FileDO curFile)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                bool isRemoteFileDeleted = uow.FileRepository.DeleteRemoteFile(curFile.CloudStorageUrl);
+            return Delete(curFile.Id);
 
+            /*using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var file = uow.FileRepository.GetByKey(curFile.Id);
+                
+               bool isRemoteFileDeleted = uow.FileRepository.DeleteRemoteFile(curFile.CloudStorageUrl);
 
                 if (isRemoteFileDeleted)
                 {
@@ -57,7 +60,7 @@ namespace Core.Services
                     return true;
                 }
                 return false;
-            }
+            }*/
         }
 
         public bool Delete(int fileId)
@@ -65,9 +68,21 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var file = uow.FileRepository.GetByKey(fileId);
+
                 if (null != file)
                 {
-                    return Delete(file);;
+                    bool isRemoteFileDeleted = uow.FileRepository.DeleteRemoteFile(file.CloudStorageUrl);
+
+                    if (isRemoteFileDeleted)
+                    {
+                        /*if (uow.Db.Entry(curFile).State == System.Data.Entity.EntityState.Detached)
+                            //if(uow.Db.Entry<FileDO>(curFile).State == System.Data.Entity.EntityState.Detached)
+                            uow.Db.Set<FileDO>().Attach(curFile);*/
+                        uow.FileRepository.Remove(file);
+                        uow.SaveChanges();
+                        return true;
+                    }
+                    return false;
                 }
                 return true;
             }
