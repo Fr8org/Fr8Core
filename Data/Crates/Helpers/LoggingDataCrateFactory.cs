@@ -9,7 +9,7 @@ using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
 {
-    public class LoggingDataCrate
+    public class LoggingDataCrateFactory
     {
         public CrateDTO Create(LoggingData loggingData)
         {
