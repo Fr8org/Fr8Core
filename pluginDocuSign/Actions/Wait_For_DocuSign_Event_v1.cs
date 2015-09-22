@@ -162,6 +162,9 @@ namespace pluginDocuSign.Actions
                 return curActionDTO.CrateStorage;
             }
 
+            // Remove previously added crate of the same schema
+            _crate.RemoveCrateByManifestId(curActionDTO.CrateStorage.CrateDTO, DESIGNTIME_FIELDS_MANIFEST_ID);
+
             var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
             var userDefinedFields = _docusignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId);
             var crateConfiguration = new List<CrateDTO>();
@@ -205,9 +208,6 @@ namespace pluginDocuSign.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-
-            // Remove previously added crate of the same schema
-            _crate.RemoveCrateByManifestId(curActionDTO.CrateStorage.CrateDTO, DESIGNTIME_FIELDS_MANIFEST_ID);
 
             curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
 

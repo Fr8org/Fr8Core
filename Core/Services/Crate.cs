@@ -74,5 +74,29 @@ namespace Core.Services
                 }
             }
         }
+
+        public void RemoveCrateByLabel(IList<CrateDTO> crates, string label)
+        {
+            var curCrates = crates.Where(c => c.Label == label).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
+        }
+
+        public void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType)
+        {
+            var curCrates = crates.Where(c => c.ManifestType == manifestType).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
+        }
     }
 }

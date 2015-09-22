@@ -87,7 +87,6 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
-            debugger;
             if (!newValue || !newValue.fields || newValue.fields.length == 0) return;
 
             this.crateHelper.mergeControlListCrate(
@@ -146,7 +145,6 @@ module dockyard.directives.paneConfigureAction {
             // to refresh after being assigned newly selected Action on ProcessBuilderController
             // and as a result it contained old action. 
             this.$timeout(() => {
-                console.log('After timeout id is: ' + scope.currentAction.id);
                 if (scope.currentAction.activityTemplateId > 0) {
                     this.loadConfiguration(scope, scope.currentAction);
                 }            
@@ -154,7 +152,6 @@ module dockyard.directives.paneConfigureAction {
                 // Create a directive-local immutable copy of action so we can detect 
                 // a change of actionTemplateId in the currently selected action
                 this._currentAction = angular.extend({}, scope.currentAction);
-                //debugger;
             }, 100);
 
         }
