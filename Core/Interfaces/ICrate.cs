@@ -1,5 +1,5 @@
 ﻿
-﻿using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,9 @@ namespace Core.Interfaces
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
-        CrateDTO CreateDesignTimeFieldsCrate(string label, object contents);
-        CrateDTO CreateStandardConfigurationControlsCrate(string label, object contents);
+        CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
+        CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls);
+
+        void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
     }
 }

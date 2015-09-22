@@ -1,0 +1,313 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http.Results;
+using AutoMapper;
+using NUnit.Framework;
+using Newtonsoft.Json;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using UtilitiesTesting.Fixtures;
+using Web.Controllers;
+using UtilitiesTesting;
+
+namespace pluginIntegrationTests
+{
+    [TestFixture]
+    public class PluginIntegrationTests : BaseTest
+    {
+        private IDisposable _docuSignServer;
+        private IDisposable _dockyardCoreServer;
+
+        private DockyardAccountDO _testUserAccount;
+        private ActionListDO _actionList;
+        private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
+        private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
+
+        /// <summary>
+        /// Create _testUserAccount instance and store it in mock DB.
+        /// Create _waitForDocuSignEventActivityTemplate instance and store it in mock DB.
+        /// </summary>
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+
+            _testUserAccount = FixtureData.TestUser1();
+
+            _actionList = FixtureData.TestActionList_ImmediateActions();
+
+            _waitForDocuSignEventActivityTemplate =
+                FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
+            
+            _filterUsingRunTimeDataActivityTemplate =
+                FixtureData.TestActivityTemplateDO_FilterUsingRunTimeData();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityRepository.Add(_actionList);
+                uow.ActivityTemplateRepository.Add(_waitForDocuSignEventActivityTemplate);
+                uow.ActivityTemplateRepository.Add(_filterUsingRunTimeDataActivityTemplate);
+                uow.UserRepository.Add(_testUserAccount);
+
+                uow.SaveChanges();
+            }
+
+            var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
+            _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
+
+            var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
+            _dockyardCoreServer = pluginDockyardCore.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
+        }
+
+        /// <summary>
+        /// Remove _waitForDocuSignEventActivityTemplate instance from mock DB.
+        /// Remove _testUserAccount instance from mock DB.
+        /// </summary>
+        [TearDown]
+        public void TearDown()
+        {
+            _dockyardCoreServer.Dispose();
+            _docuSignServer.Dispose();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetQuery()
+                    .SingleOrDefault(x => x.Id == _testUserAccount.Id);
+                if (curUser != null)
+                {
+                    uow.UserRepository.Remove(curUser);
+                }
+
+                var filterUsingRunTimeDataActivityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(_filterUsingRunTimeDataActivityTemplate.Id);
+                if (filterUsingRunTimeDataActivityTemplate != null)
+                {
+                    uow.ActivityTemplateRepository.Remove(filterUsingRunTimeDataActivityTemplate);
+                }
+
+                var waitForDocSignActivityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(_waitForDocuSignEventActivityTemplate.Id);
+                if (waitForDocSignActivityTemplate != null)
+                {
+                    uow.ActivityTemplateRepository.Remove(waitForDocSignActivityTemplate);
+                }
+
+                var actionList = uow.ActivityRepository
+                    .GetByKey(_actionList.Id);
+                if (actionList != null)
+                {
+                    uow.ActivityRepository.Remove(actionList);
+                }
+
+                uow.SaveChanges();
+            }
+        }
+
+        private ActionDTO CreateEmptyAction()
+        {
+            var curActionController = CreateActionController();
+            var curActionDO = FixtureData.TestAction_Blank();
+
+            if (_actionList.Activities == null)
+            {
+                _actionList.Activities = new List<ActivityDO>();
+                _actionList.Activities.Add(curActionDO);
+            }
+
+            curActionDO.ParentActivity = _actionList;
+            curActionDO.ParentActivityId = _actionList.Id;
+
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+
+            var result = curActionController.Save(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
+
+            // Assert action was property saved.
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+            Assert.AreEqual(result.Content.CrateStorage, curActionDTO.CrateStorage);
+
+            return result.Content;
+        }
+
+        private ActionDTO SaveAction(ActionDTO curActionDTO)
+        {
+            var curActionController = CreateActionController();
+
+            var result = curActionController.Save(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
+
+            // Assert action was property saved.
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
+
+            return result.Content;
+        }
+
+        private CrateStorageDTO WaitForDocuSignEvent_ConfigureInitial(ActionDTO curActionDTO)
+        {
+            // Fill values as it would be on front-end.
+            curActionDTO.ActivityTemplateId = _waitForDocuSignEventActivityTemplate.Id;
+            curActionDTO.CrateStorage = new CrateStorageDTO();
+
+            // Send initial configure request.
+            var curActionController = CreateActionController();
+            var result = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<CrateStorageDTO>;
+
+            // Assert initial configuration returned in CrateStorage.
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.NotNull(result.Content.CrateDTO);
+            Assert.AreEqual(result.Content.CrateDTO.Count, 2);
+            Assert.True(result.Content.CrateDTO
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
+            Assert.True(result.Content.CrateDTO
+                .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
+
+            return result.Content;
+        }
+
+        private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
+        {
+            // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
+            var availableTemplatesCrate = curCrateStorage.CrateDTO
+                .Single(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields");
+
+            var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(
+                availableTemplatesCrate.Contents);
+
+            // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
+            var configurationControlsCrate = curCrateStorage.CrateDTO
+                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls");
+
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
+                configurationControlsCrate.Contents);
+
+            // Modify value of Selected_DocuSign_Template field and push it back to crate,
+            // exact same way we do on front-end.
+            var docuSignTemplateControl = controlsMS.Controls.Single(x => x.Name == "Selected_DocuSign_Template");
+            docuSignTemplateControl.Value = fieldsMS.Fields.First().Value;
+
+            configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
+        }
+
+        private CrateStorageDTO WaitForDocuSignEvent_ConfigureFollowUp(ActionDTO curActionDTO)
+        {
+            var curActionController = CreateActionController();
+
+            var result = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<CrateStorageDTO>;
+
+            // Assert FollowUp Configure result.
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.NotNull(result.Content.CrateDTO);
+            Assert.AreEqual(2,result.Content.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.True(result.Content.CrateDTO
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
+            //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed
+              //  .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
+            Assert.True(result.Content.CrateDTO
+                .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == "Standard Design-Time Fields"));
+
+            return result.Content;
+        }
+
+        private CrateStorageDTO FilterUsingRunTimeData_ConfigureInitial(ActionDTO curActionDTO)
+        {
+            // Fill values as it would be on front-end.
+            curActionDTO.ActivityTemplateId = _filterUsingRunTimeDataActivityTemplate.Id;
+            curActionDTO.CrateStorage = new CrateStorageDTO();
+
+            // Send initial configure request.
+            var curActionController = CreateActionController();
+            var result = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<CrateStorageDTO>;
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.NotNull(result.Content.CrateDTO);
+            Assert.AreEqual(result.Content.CrateDTO.Count, 2);
+            Assert.True(result.Content.CrateDTO
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
+            Assert.True(result.Content.CrateDTO
+                .Any(x => x.Label == "Queryable Criteria" && x.ManifestType == "Standard Design-Time Fields"));
+
+            return result.Content;
+        }
+
+        /// <summary>
+        /// Test WaitForDocuSignEvent initial configuration.
+        /// </summary>
+        [Test]
+        public void PluginIntegration_WaitForDocuSign_ConfigureInitial()
+        {
+            var savedActionDTO = CreateEmptyAction();
+            WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
+        }
+
+        /// <summary>
+        /// Test WaitForDocuSignEvent follow-up configuration.
+        /// </summary>
+        [Test]
+        public void PluginIntegration_WaitForDocuSign_ConfigureFollowUp()
+        {
+            // Create blank WaitForDocuSignEventAction.
+            var savedActionDTO = CreateEmptyAction();
+            
+            // Call Configure Initial for WaitForDocuSignEvent action.
+            var initCrateStorageDTO = WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
+            
+            // Select first available DocuSign template.
+            WaitForDocuSignEvent_SelectFirstTemplate(initCrateStorageDTO);
+            savedActionDTO.CrateStorage = initCrateStorageDTO;
+
+            // Call Configure FollowUp for WaitForDocuSignEvent action.
+            WaitForDocuSignEvent_ConfigureFollowUp(savedActionDTO);
+        }
+
+        /// <summary>
+        /// Test FilterUsingRunTimeData initial configuration.
+        /// </summary>
+        [Test]
+        public void PluginIntegration_FilterUsingRunTimeData_ConfigureInitial()
+        {
+            // Create blank WaitForDocuSignEvent action.
+            var waitForDocuSignEventAction = CreateEmptyAction();
+
+            // Call Configure Initial for WaitForDocuSignEvent action.
+            var initWaitForDocuSignEventCS = WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
+
+            // Select first available DocuSign template.
+            WaitForDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
+            waitForDocuSignEventAction.CrateStorage = initWaitForDocuSignEventCS;
+
+            // Call Configure FollowUp for WaitForDocuSignEvent action.
+            WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
+
+            // Save WaitForDocuSignEvent action.
+            SaveAction(waitForDocuSignEventAction);
+
+            // Create blank FilterUsingRunTimeData action.
+            var filterAction = CreateEmptyAction();
+
+            // Call Configure Initial for FilterUsingRunTimeData action.
+            FilterUsingRunTimeData_ConfigureInitial(filterAction);
+        }
+
+        /// <summary>
+        /// Create ActionController instance.
+        /// </summary>
+        public ActionController CreateActionController()
+        {
+            return CreateController<ActionController>(_testUserAccount.Id);
+        }
+    }
+}

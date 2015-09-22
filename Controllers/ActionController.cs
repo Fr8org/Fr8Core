@@ -44,6 +44,7 @@ namespace Web.Controllers
         //[ResponseType(typeof(CrateStorageDTO))]
         public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
+            curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
             ActionDTO actionDTO = _action.Configure(curActionDO);
 
@@ -114,7 +115,7 @@ namespace Web.Controllers
             if (curActionDTO.IsTempId)
             {
                 _actionList.AddAction(resultActionDO, "last");
-        }
+            }
 
             var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
             return Ok(resultActionDTO);

@@ -252,7 +252,7 @@
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>http://test.dockyard.com:81</CustomServerUrl>
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-          <servers defaultServer="">
+          <servers defaultServer="SelfHostServer">
             <server name="SelfHostServer" exePath="" cmdArgs="" url="http://localhost:48024/" workingDir="" />
           </servers>
         </WebProjectProperties>
