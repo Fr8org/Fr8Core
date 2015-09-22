@@ -163,7 +163,7 @@ namespace pluginDocuSign.Actions
             }
 
             // Remove previously added crate of the same schema
-            _crate.RemoveCrateByManifestId(curActionDTO.CrateStorage.CrateDTO, DESIGNTIME_FIELDS_MANIFEST_ID);
+            _crate.RemoveCrateByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSignTemplateUserDefinedFields");
 
             var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
             var userDefinedFields = _docusignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId);
