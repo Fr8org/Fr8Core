@@ -13,8 +13,7 @@ namespace Data.Interfaces
         String Activity { get; set; }
         String Data { get; set; }
         String Status { get; set; }
-        string ObjectId { get; set; }
-        string BookerId { get; set; }
+        string ObjectId { get; set; }       
         string CustomerId { get; set; }
     }
 }

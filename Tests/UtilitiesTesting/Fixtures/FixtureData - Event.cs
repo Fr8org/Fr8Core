@@ -14,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
         public static EventDTO TestPluginIncidentDto()
         {
 
-            var loggingDataCrate = new LoggingDataCrate().Create(new LoggingData
+            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingData
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
@@ -29,7 +29,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static EventDTO TestPluginEventDto()
         {
-            var loggingDataCrate = new LoggingDataCrate().Create(new LoggingData
+            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingData
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"

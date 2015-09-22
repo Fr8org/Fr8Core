@@ -3,16 +3,16 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedCurrentViewToActionDO : DbMigration
+    public partial class UpdatingLatestChangesAfterTheMergeWithDEV : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.Actions", "currentView", c => c.String());
+            DropColumn("dbo.History", "BookerId");
         }
         
         public override void Down()
         {
-            DropColumn("dbo.Actions", "currentView");
+            AddColumn("dbo.History", "BookerId", c => c.String());
         }
     }
 }

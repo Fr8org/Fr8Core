@@ -1,0 +1,46 @@
+﻿<div class="row" ng-controller="ReportIncidentController">
+    <div class="col-md-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-green-haze hide"></i>
+                    <span class="caption-subject font-green-haze bold uppercase">All INCIDENTS</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Created Date</th>
+                            <th>Customer Id	</th>
+                            <th>Data</th>
+                            <th>Last Updated</th>
+                            <th>Object Id	</th>
+                            <th>Primary Category</th>
+                            <th>Secondary Category</th>
+                            <th>Is High Priority</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="incident in incidentRecords">
+                            <td>{{ incident.activity}}</td>
+                            <td>{{ incident.createDate}}</td>
+                            <td>{{ incident.customerId}}</td>
+                            <td>{{ incident.data}}</td>
+                            <td>{{ incident.lastUpdated}}</td>
+                            <td>{{ incident.objectId}}</td>
+                            <td>{{ incident.primaryCategory}}</td>
+                            <td>{{ incident.secondaryCategory}}</td>
+                            <td>{{ incident.isHighPriority}}</td>
+                            <td>{{ incident.priority}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

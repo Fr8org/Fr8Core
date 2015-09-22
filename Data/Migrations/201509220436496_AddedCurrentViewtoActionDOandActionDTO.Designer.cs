@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddedCurrentViewToActionDO : IMigrationMetadata
+    public sealed partial class AddedCurrentViewtoActionDOandActionDTO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedCurrentViewToActionDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddedCurrentViewtoActionDOandActionDTO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201509211621258_AddedCurrentViewToActionDO"; }
+            get { return "201509220436496_AddedCurrentViewtoActionDOandActionDTO"; }
         }
         
         string IMigrationMetadata.Source
