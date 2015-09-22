@@ -19,7 +19,7 @@ namespace pluginAzureSqlServer
         public void Configuration(IAppBuilder app)
         {
             // StructureMap Dependencies configuration 
-            //PluginAzureSqlServerStructureMapBootstrapper.ConfigureDependencies(PluginAzureSqlServerStructureMapBootstrapper.DependencyType.LIVE);
+            PluginAzureSqlServerStructureMapBootstrapper.ConfigureDependencies(PluginAzureSqlServerStructureMapBootstrapper.DependencyType.LIVE);
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
 
             Task.Run(() =>
