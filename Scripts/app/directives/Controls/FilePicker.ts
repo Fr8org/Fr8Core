@@ -28,7 +28,6 @@ module dockyard.directives.filePicker {
                 scope: IFilePickerScope,
                 element: ng.IAugmentedJQuery,
                 attrs: ng.IAttributes) => {
-
                 //Link function goes here
             };
 
@@ -48,6 +47,7 @@ module dockyard.directives.filePicker {
 
         private OnFileUploadSuccess(fileDTO: interfaces.IFileDescriptionDTO) {
             this._$scope.selectedFile = fileDTO;
+            this._$scope.$root.$broadcast("fp-success", fileDTO );
         }
 
         private OnFileUploadFail(status: any) {

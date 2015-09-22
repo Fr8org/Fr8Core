@@ -31,6 +31,7 @@ namespace Web.Controllers
         [Route("files")]
         public async Task<IHttpActionResult> Post()
         {
+            FileDO fileDO = null;
             await Request.Content.ReadAsMultipartAsync<MultipartMemoryStreamProvider>(new MultipartMemoryStreamProvider()).ContinueWith((tsk) =>
             {
                 MultipartMemoryStreamProvider prvdr = tsk.Result;
@@ -39,15 +40,17 @@ namespace Web.Controllers
                 {
                     Stream stream = ctnt.ReadAsStreamAsync().Result;
                     var fileName = ctnt.Headers.ContentDisposition.FileName.Replace("\"", string.Empty);
-                    var fileDO = new FileDO
+                    fileDO = new FileDO
                     {
                         DockyardAccountID = User.Identity.GetUserId()
                     };
                     _fileService.Store(fileDO, stream, fileName);
+                    
                 }
             });
-
-            return Ok();
+            
+            return Ok(fileDO);
+            
         }
     }
 }

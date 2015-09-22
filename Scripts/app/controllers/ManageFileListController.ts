@@ -6,6 +6,7 @@ module dockyard.controllers {
     export interface ManageFileListScope extends ng.IScope {
         UploadFile: (file: interfaces.IFileVM) => void;
         DeleteFile: (file: interfaces.IFileVM) => void;
+        AddFile: (file: interfaces.IFileVM) => void;
         dtOptionsBuilder: any;
         dtColumnBuilder: any;
         dtInstance: any;
@@ -42,22 +43,23 @@ module dockyard.controllers {
 
             this._manageFiles = ManageFileService.query();
 
-            console.log(this._manageFiles);
-
             $scope.dtColumnBuilder = this.GetDataTableColumns();
             $scope.dtOptionsBuilder = this.GetDataTableOptionsFromFiles();
 
             $scope.dtInstance = {};
             $scope.UploadFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.UploadFile);
             $scope.DeleteFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.DeleteFile);
+            $scope.AddFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.AddFile);
 
-            $scope.$on("uploadfail", function (event, status) {
-                console.log("fail catch");
+            $scope.$on("fp-success", function (event, fileDTO) {
+                $scope.AddFile(fileDTO);
             });
 
-            $scope.$on("uploadsuccess", function () {
-                console.log("success catch");
-            });
+        }
+
+        private AddFile(file) {
+            this._manageFiles.push(file);
+            this.$scope.dtInstance.reloadData();
         }
 
         private GetDataTableColumns() {

@@ -65,10 +65,9 @@ namespace Core.Services
                 var file = uow.FileRepository.GetByKey(fileId);
                 if (null != file)
                 {
-
                     return Delete(file);;
                 }
-                return false;
+                return true;
             }
         }
 
