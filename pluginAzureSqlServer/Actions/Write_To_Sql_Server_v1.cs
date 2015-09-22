@@ -56,7 +56,7 @@ namespace pluginAzureSqlServer.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType(STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var connectionStrings = _crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
                 .Select(e => (string)e["value"])
@@ -91,19 +91,15 @@ namespace pluginAzureSqlServer.Actions
         private CrateDTO CreateControlsCrate() { 
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var controls = new List<FieldDefinitionDTO>() 
+            var control = new FieldDefinitionDTO()
             {
-                new FieldDefinitionDTO()
-                {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
-                }
+                FieldLabel = "SQL Connection String",
+                Type = "textField",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
             };
-
-            return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controls);
+            return PackControlsCrate(control);
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
@@ -119,7 +115,7 @@ namespace pluginAzureSqlServer.Actions
                 {
                     _crate.CreateDesignTimeFieldsCrate(
                         "Sql Table Columns",
-                        contentsList.Select(col => new FieldDTO() { Key = null, Value = col }).ToList()
+                        contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         )
                 }
             };
