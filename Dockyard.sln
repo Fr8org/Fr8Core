@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBase", "pluginBase\Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginDockyardCore", "pluginDockyardCore\pluginDockyardCore.csproj", "{AD226A7F-0641-4589-93EB-06E5EE7E767B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginAzureSqlServerTests", "pluginAzureSqlServerTests\pluginAzureSqlServerTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginTests", "pluginAzureSqlServerTests\pluginTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSlack", "pluginSlack\pluginSlack.csproj", "{990DB8CB-AAD6-42FE-940D-3A731DF56ABE}"
 EndProject
