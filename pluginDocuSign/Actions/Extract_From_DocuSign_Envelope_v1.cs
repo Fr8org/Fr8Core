@@ -101,7 +101,7 @@ namespace pluginDocuSign.Actions
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
             var textBlock = new TextBlockFieldDTO()
             {
-                FieldLabel = "Docu Sign Envelope",
+                Label = "Docu Sign Envelope",
                 Value = "This Action doesn't require any configuration.",
                 cssClass = "well well-lg"
 

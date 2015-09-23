@@ -86,12 +86,18 @@ namespace DockyardTest.DocuSign
 		  {
 			  var recipients = _docusignTemplate.GetRecipients(TEMPLATE_WITH_ROLES_ID);
 
-			  Assert.AreEqual(1, recipients.signers.Length);
+			  Assert.AreEqual(3, recipients.signers.Length);
 			  Assert.AreEqual(1, recipients.carbonCopies.Length);
-			  var singer = recipients.signers.First();
+			  var singers = recipients.signers;
 			  var carbonCopy = recipients.carbonCopies.First();
-			  Assert.AreEqual("President", singer.roleName);
+			  Assert.AreEqual("Director", singers[0].roleName);
+			  Assert.AreEqual("reasyu@gmail.com", singers[0].email);
+			  Assert.AreEqual("President", singers[1].roleName);
+			  Assert.AreEqual("docusign_developer@dockyard.company", singers[1].email);
+			  Assert.AreEqual("Project Manager", singers[2].roleName);
+			  Assert.AreEqual("joanna@fogcitymail.com", singers[2].email);
 			  Assert.AreEqual("Vise President", carbonCopy.roleName);
+			  Assert.AreEqual("reasyu@yandex.ru", carbonCopy.email);
 		  }
 		  [Test]
 		  public void GetRecipients_NonExistsTemplate_ExpectedException()

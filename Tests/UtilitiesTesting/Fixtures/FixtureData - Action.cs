@@ -441,7 +441,7 @@ namespace UtilitiesTesting.Fixtures
 
             var fieldSelectDockusignTemplate = new DropdownListFieldDefinitionDTO()
             {
-                FieldLabel = "Select DocuSign Template",
+                Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
                 Value = templateId,

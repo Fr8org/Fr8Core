@@ -94,7 +94,7 @@ namespace pluginAzureSqlServer.Actions
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
             var control = new TextBlockFieldDTO()
             {
-                    FieldLabel = "SQL Connection String",
+                    Label = "SQL Connection String",
                     Name = "connection_string",
                     Required = true,
                     Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}

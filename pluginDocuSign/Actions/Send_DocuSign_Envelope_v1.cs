@@ -115,7 +115,7 @@ namespace pluginDocuSign.Actions
 		{
 			var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
 			{
-				FieldLabel = "target_docusign_template",
+				Label = "target_docusign_template",
 				Name = "target_docusign_template",
 				Required = true,
 				Events = new List<FieldEvent>() {

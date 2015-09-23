@@ -209,7 +209,7 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
-	            FieldLabel = "Select DocuSign Template",
+	            Label = "Select DocuSign Template",
 	            Name = "Selected_DocuSign_Template",
 	            Required = true,
 	            Events = new List<FieldEvent>()
@@ -225,25 +225,25 @@ namespace pluginDocuSign.Actions
 
             var fieldEnvelopeSent = new CheckBoxFieldDefinitionDTO()
             {
-                FieldLabel = "Envelope Sent",
+                Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
 				var fieldEnvelopeReceived = new CheckBoxFieldDefinitionDTO()
             {
-                FieldLabel = "Envelope Received",
+                Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
 				var fieldRecipientSigned = new CheckBoxFieldDefinitionDTO()
             {
-                FieldLabel = "Recipient Signed",
+                Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
 				var fieldEventRecipientSent = new CheckBoxFieldDefinitionDTO()
             {
-                FieldLabel = "Recipient Sent",
+                Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"
             };
 

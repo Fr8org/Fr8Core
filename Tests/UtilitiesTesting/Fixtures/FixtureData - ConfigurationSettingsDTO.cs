@@ -53,7 +53,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new TextBlockFieldDTO()
             {
-                FieldLabel = "SQL Connection String",
+                Label = "SQL Connection String",
                 Name = "connection_string",
                 Required = true,
                 Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}

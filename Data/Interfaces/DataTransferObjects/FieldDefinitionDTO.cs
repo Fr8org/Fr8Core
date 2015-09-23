@@ -68,7 +68,7 @@ namespace Data.Interfaces.DataTransferObjects
             Name = name;
             Required = required;
             Value = value;
-            FieldLabel = fieldLabel;
+            Label = fieldLabel;
         }
 
         public FieldDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
@@ -77,7 +77,7 @@ namespace Data.Interfaces.DataTransferObjects
             Name = name;
             Required = required;
             Value = value;
-            FieldLabel = fieldLabel;
+            Label = fieldLabel;
         }
 
         public const string CHECKBOX_FIELD = "checkboxField";
@@ -92,8 +92,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("value")]
         public string Value { get; set; }
 
-        [JsonProperty("fieldLabel")]
-        public string FieldLabel { get; set; }
+        [JsonProperty("label")]
+        public string Label { get; set; }
 
         [JsonProperty("type")]
         public string Type { get; protected set; }

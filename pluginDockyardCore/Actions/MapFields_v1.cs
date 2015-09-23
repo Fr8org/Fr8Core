@@ -84,7 +84,7 @@ namespace pluginDockyardCore.Actions
         {
             var fieldFilterPane = new FieldDefinitionDTO("mappingPane")
             {
-                FieldLabel = "Configure Mapping",
+                Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
@@ -195,7 +195,7 @@ namespace pluginDockyardCore.Actions
             {
                 new TextBlockFieldDTO()
                 {
-                    FieldLabel = fieldLabel,
+                    Label = fieldLabel,
                     Value = errorMessage,
                     cssClass = "well well-lg"
                     
