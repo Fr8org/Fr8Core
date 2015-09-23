@@ -168,7 +168,7 @@ namespace pluginDockyardCore.Actions
                 || downStreamFields.Fields.Count == 0)
             {
                 return true;
-            }
+        }
 
             // If all rules are passed, then it is not an initial configuration request.
             return false;
@@ -181,8 +181,8 @@ namespace pluginDockyardCore.Actions
         {
             if (CheckIsInitialConfiguration(curActionDO))
             {
-                return ConfigurationRequestType.Initial;
-            }
+            return ConfigurationRequestType.Initial;
+        }
             else
             {
                 return ConfigurationRequestType.Followup;

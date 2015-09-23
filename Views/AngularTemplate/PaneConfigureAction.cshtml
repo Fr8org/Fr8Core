@@ -2,7 +2,7 @@
     <div class="portlet-title">
         <div class="caption caption-md">
             <i class="icon-bar-chart font-green-haze hide"></i>
-            <span class="caption-subject font-green-haze bold uppercase">Configure Action</span>
+            <span class="caption-subject font-green-haze bold uppercase">{{currentAction.activityTemplateName}}</span>
         </div>
     </div>
     <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
