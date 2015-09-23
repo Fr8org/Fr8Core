@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Dispatcher;
 using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
 using Microsoft.Owin;
@@ -22,11 +23,13 @@ namespace pluginAzureSqlServer
     {
         public void Configuration(IAppBuilder app)
         {
-            Configuration(app, GlobalConfiguration.Configuration);
+            Configuration(app, false);
         }
 
-        public void Configuration(IAppBuilder app, HttpConfiguration configuration, bool selfHost = false)
+        public void Configuration(IAppBuilder app, bool selfHost)
         {
+            HttpConfiguration configuration = new HttpConfiguration();
+
             if (!selfHost)
             {
                 ObjectFactory.Initialize();
@@ -35,6 +38,15 @@ namespace pluginAzureSqlServer
             ObjectFactory.Configure(PluginAzureSqlServerStructureMapRegistries.LiveConfiguration);
 
             RoutesConfig.Register(configuration);
+            if (selfHost)
+            {
+                // Web API routes
+                configuration.Services.Replace(
+                    typeof(IHttpControllerTypeResolver),
+                    new PluginControllerTypeResolver()
+                );
+            }
+
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             // Configure formatters
@@ -45,11 +57,29 @@ namespace pluginAzureSqlServer
             settings.Formatting = Formatting.Indented;
             settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            Task.Run(() =>
+            app.UseWebApi(configuration);
+
+            if (!selfHost)
             {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_azure_sql_server");
-            });
+                Task.Run(() =>
+                {
+                    BasePluginController curController = new BasePluginController();
+                    curController.AfterStartup("plugin_azure_sql_server");
+                });
+            }
         }
-}
+
+        public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        {
+            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+            {
+                return new Type[] {
+                    typeof(Controllers.ActionController),
+                    typeof(Controllers.EventController),
+                    typeof(Controllers.PluginController)
+                };
+            }
+        }
+
+    }
 }
