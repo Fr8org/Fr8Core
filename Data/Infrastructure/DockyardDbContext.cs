@@ -341,6 +341,8 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.PluginID)
                 .WillCascadeOnDelete(false);
 
+                
+
             base.OnModelCreating(modelBuilder);
         }
 
