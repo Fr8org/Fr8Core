@@ -69,5 +69,14 @@
         <mapping-pane current-action='currentAction' field='field'></mapping-pane>
     </div>
 
+    @*
+        Routing control group template
+    *@
+    <div ng-if='field.type == "routing"'>
+        <div class="container_box" ng-repeat="route in field.routes">
+            <routing-control route="route" />
+        </div>
+    </div>
+
     @* Add more configuration field templates below *@
 </div>

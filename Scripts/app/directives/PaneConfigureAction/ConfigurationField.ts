@@ -8,7 +8,8 @@ module dockyard.directives.paneConfigureAction {
         filePicker,
         radioGroupButton,
         dropdownlistField,
-        textBlockField
+        textBlockField,
+        routing,
     }
 
     export class ChangeEventArgs {
