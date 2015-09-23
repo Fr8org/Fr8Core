@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddedCurrentViewtoActionDOandActionDTO : DbMigration
+    public partial class NewAddedCurrentViewtoActionDOandActionDTO : DbMigration
     {
         public override void Up()
         {

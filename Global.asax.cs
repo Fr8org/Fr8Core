@@ -92,8 +92,7 @@ namespace Web
             var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //THIS IS CURRENTLY CAUSING AN EXCEPTION
-                //uow.RemoteServiceProviderRepository.CreateRemoteServiceProviders(configRepository);
+                uow.RemoteServiceProviderRepository.CreateRemoteServiceProviders(configRepository);
                 uow.SaveChanges();
             }
 

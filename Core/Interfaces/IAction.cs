@@ -14,8 +14,6 @@ namespace Core.Interfaces
         
         ActionDTO Configure(ActionDO curActionDO);
 
-        IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO);
-
         ActionDO GetById(int id);
 
         void Delete(int id);

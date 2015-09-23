@@ -158,20 +158,22 @@ namespace pluginIntegrationTests
 
             // Send initial configure request.
             var curActionController = CreateActionController();
-            var result = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<CrateStorageDTO>;
+            var  actionDTO = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
+
+            
 
             // Assert initial configuration returned in CrateStorage.
-            Assert.NotNull(result);
-            Assert.NotNull(result.Content);
-            Assert.NotNull(result.Content.CrateDTO);
-            Assert.AreEqual(result.Content.CrateDTO.Count, 2);
-            Assert.True(result.Content.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
-            Assert.True(result.Content.CrateDTO
+            Assert.NotNull(actionDTO);
+            Assert.NotNull(actionDTO.Content);
+            Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
+            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
+            Assert.True((actionDTO.Content.CrateStorage.CrateDTO
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls")));
+            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
 
-            return result.Content;
+            return actionDTO.Content.CrateStorage;
         }
 
         private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
@@ -202,22 +204,22 @@ namespace pluginIntegrationTests
         {
             var curActionController = CreateActionController();
 
-            var result = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<CrateStorageDTO>;
+            var actionDTO = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
 
             // Assert FollowUp Configure result.
-            Assert.NotNull(result);
-            Assert.NotNull(result.Content);
-            Assert.NotNull(result.Content.CrateDTO);
-            Assert.AreEqual(2,result.Content.CrateDTO.Count);//replace this with 3 when 1123 is fixed
-            Assert.True(result.Content.CrateDTO
+            Assert.NotNull(actionDTO);
+            Assert.NotNull(actionDTO.Content);
+            Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
+            Assert.AreEqual(3, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
             //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed
               //  .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
-            Assert.True(result.Content.CrateDTO
+            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == "Standard Design-Time Fields"));
 
-            return result.Content;
+            return actionDTO.Content.CrateStorage;
         }
 
         private CrateStorageDTO FilterUsingRunTimeData_ConfigureInitial(ActionDTO curActionDTO)
@@ -229,18 +231,18 @@ namespace pluginIntegrationTests
             // Send initial configure request.
             var curActionController = CreateActionController();
             var result = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<CrateStorageDTO>;
+                as OkNegotiatedContentResult<ActionDTO>;
 
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
-            Assert.NotNull(result.Content.CrateDTO);
-            Assert.AreEqual(result.Content.CrateDTO.Count, 2);
-            Assert.True(result.Content.CrateDTO
+            Assert.NotNull(result.Content.CrateStorage.CrateDTO);
+            Assert.AreEqual(result.Content.CrateStorage.CrateDTO.Count, 2);
+            Assert.True(result.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
-            Assert.True(result.Content.CrateDTO
+            Assert.True(result.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Queryable Criteria" && x.ManifestType == "Standard Design-Time Fields"));
 
-            return result.Content;
+            return result.Content.CrateStorage;
         }
 
         /// <summary>

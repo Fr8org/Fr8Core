@@ -241,44 +241,7 @@ namespace Core.Services
             return jsonResult;
         }
 
-        /// <summary>
-        /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
-        /// </summary>
-        public IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO)
-        {
-            DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
-
-            if (curActionDO.ParentActivity != null)
-            {
-                // Try to get ProcessTemplate.Id from relation chain
-                // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
-                var curProcessTemplateId = ((ActionListDO)curActionDO.ParentActivity)
-                    .ProcessNodeTemplate
-                    .ProcessTemplate
-                    .Id;
-
-                // Try to get DocuSignSubscription related to current ProcessTemplate.Id.
-                curDocuSignSubscription = uow.ExternalEventSubscriptionRepository
-                    .GetQuery()
-                    .OfType<DocuSignTemplateSubscriptionDO>()
-                    .FirstOrDefault(x => x.DocuSignProcessTemplateId == curProcessTemplateId);
-            }
-
-            // Return list of mappable source fields, in case we fetched DocuSignSubscription object.
-            if (curDocuSignSubscription != null)
-            {
-                _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
-                var curMappableSourceFields = _docusignTemplate
-                    .GetMappableSourceFields(curDocuSignSubscription.DocuSignTemplateId);
-
-                return curMappableSourceFields;
-            }
-            // Return empty list in other case.
-            else
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
+       
 
         /// <summary>
         /// Retrieve authorization token
