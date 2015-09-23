@@ -5,6 +5,8 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Newtonsoft.Json;
+using Utilities;
 
 namespace Data.Wrappers
 {
@@ -13,7 +15,8 @@ namespace Data.Wrappers
         List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
         IEnumerable<string> GetMappableSourceFields(string templateId);
         IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
-    }
+		  Recipients GetRecipients(string templateId);
+	 }
 
     public class DocuSignTemplate : Template, IDocuSignTemplate
     {
@@ -71,5 +74,22 @@ namespace Data.Wrappers
             }
             return curLstMappableSourceFields;
         }
+		  public Recipients GetRecipients(string templateId)
+		  {
+			  if (templateId == null)
+				  throw new ArgumentNullException("templateId");
+			  if (templateId == string.Empty)
+				  throw new ArgumentException("templateId is empty", "templateId");
+			  // Get template
+			  var jObjTemplate = GetTemplate(templateId);
+			  // Checking is it ok?
+			  Error error = Error.FromJson(jObjTemplate.ToString());
+			  if (!string.IsNullOrEmpty(error.errorCode))
+				  throw new InvalidOperationException("Couldn't get Template with Id '{0}'. ErrorCode: {1}. Message: {2}".format(templateId, error.errorCode, error.message));
+			  // Get recipients
+			  var recipientsToken = jObjTemplate.SelectToken("recipients");
+			  var recipients = JsonConvert.DeserializeObject<Recipients>(recipientsToken.ToString());
+			  return recipients;
+		  }
     }
 }

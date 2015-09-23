@@ -23,7 +23,8 @@ namespace DockyardTest.DocuSign
     [TestFixture]
     public class DocuSignTemplateTests : BaseTest
     {
-        private readonly IDocusignApiHelper docusignApiHelper;
+		 private readonly string TEMPLATE_WITH_ROLES_ID = "9a318240-3bee-475c-9721-370d1c22cec4";
+		 private readonly IDocusignApiHelper docusignApiHelper;
         private  IDocuSignTemplate _docusignTemplate;
 
         public DocuSignTemplateTests()
@@ -79,6 +80,22 @@ namespace DockyardTest.DocuSign
             Assert.IsNotNull(fields);
             Console.Write(JsonConvert.SerializeObject(fields));
         }
+		  [Test]
+		  public void GetRecipients_ExistTemplate_ShouldBeOk()
+		  {
+			  var recipients = _docusignTemplate.GetRecipients(TEMPLATE_WITH_ROLES_ID);
 
+			  Assert.AreEqual(1, recipients.signers.Length);
+			  Assert.AreEqual(1, recipients.carbonCopies.Length);
+			  var singer = recipients.signers.First();
+			  var carbonCopy = recipients.carbonCopies.First();
+			  Assert.AreEqual("President", singer.roleName);
+			  Assert.AreEqual("Vise President", carbonCopy.roleName);
+		  }
+		  [Test]
+		  public void GetRecipients_NonExistTemplate_ExpectedException()
+		  {
+			  var ex = Assert.Throws<InvalidOperationException>(() => _docusignTemplate.GetRecipients(Guid.NewGuid().ToString()));
+		  }
     }
 }

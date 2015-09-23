@@ -196,6 +196,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
@@ -516,7 +517,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Authentication\" />
-    <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
     <Folder Include="Infrastructure\JsonNet\" />
   </ItemGroup>
