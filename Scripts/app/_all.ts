@@ -8,6 +8,7 @@
 /// <reference path="interfaces/icriteria.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
 /// <reference path="interfaces/iprocessbuilder.ts" />
+/// <reference path="interfaces/iuser.ts" />
 
 
 /*
@@ -20,6 +21,7 @@
 /// <reference path="model/processtemplate.ts" />
 /// <reference path="model/controlslist.ts" />
 /// <reference path="model/processbuilderstate.ts" />
+/// <reference path="model/user.ts" />
 
 /*
     SERVICES
