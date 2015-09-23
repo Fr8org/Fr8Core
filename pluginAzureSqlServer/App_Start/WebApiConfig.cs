@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using pluginAzureSqlServer.Infrastructure;
+using PluginBase;
 using StructureMap;
 
 namespace pluginAzureSqlServer
@@ -23,6 +24,9 @@ namespace pluginAzureSqlServer
             new  Container().Inject<IDbProvider>(new SqlClientDbProvider());
             // Web API routes
             config.MapHttpAttributeRoutes();
+
+            //Web API Exception Filter
+            config.Filters.Add(new WebApiExceptionFilterAttribute());
 
             config.Routes.MapHttpRoute(
                 name: "PluginAzureSqlServer",

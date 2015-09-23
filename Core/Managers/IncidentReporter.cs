@@ -97,13 +97,7 @@ namespace Core.Managers
                 Activity = incidentItem.Activity
             };
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(currentIncident);
-                uow.SaveChanges();
-
-                GenerateLogData(currentIncident);
-            }
+            SaveAndLogFact(currentIncident);
         }
 
         private void LogUnparseableNotificationIncident(string curNotificationUrl, string curNotificationPayload)

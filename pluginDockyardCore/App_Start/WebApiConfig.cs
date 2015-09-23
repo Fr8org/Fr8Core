@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using PluginBase;
 
 namespace pluginDockyardCore
 {
@@ -17,6 +18,9 @@ namespace pluginDockyardCore
                 name: "PluginDockyardCoreServer",
                 routeTemplate: "pluginDockyardCore/{controller}/{id}"
             );
+
+            //Web API Exception Filter
+            config.Filters.Add(new WebApiExceptionFilterAttribute());
         }
     }
 }

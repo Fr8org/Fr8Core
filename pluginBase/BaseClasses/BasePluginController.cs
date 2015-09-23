@@ -18,11 +18,16 @@ namespace PluginBase.BaseClasses
             _basePluginEvent = new BasePluginEvent();
         }
 
+        [HttpGet]
+        public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
+        {
+            return Json(ReportPluginError(pluginName, pluginError.Message, pluginError.GetType().Name));
+        }
+
         /// <summary>
         /// Reports start up incident
         /// </summary>
         /// <param name="pluginName">Name of the plugin which is starting up</param>
-        
         [HttpGet]
         public IHttpActionResult AfterStartup(string pluginName)
         {
@@ -51,7 +56,13 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
         }﻿
 
-      
+        /// <summary>
+        /// Reports Plugin Error incident
+        /// </summary>
+        private Task<string> ReportPluginError(string pluginName, string pluginErrorMessage, string pluginExceptionName)
+        {
+            return _basePluginEvent.SendPluginErrorIncident(pluginName, pluginErrorMessage, pluginExceptionName);
+        }
 
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
