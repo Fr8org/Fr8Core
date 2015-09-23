@@ -41,7 +41,7 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
         }
 
-
+        
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -51,7 +51,7 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
         }﻿
 
-      
+
 
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
