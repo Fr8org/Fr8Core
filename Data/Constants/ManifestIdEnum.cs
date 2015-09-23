@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-	public enum ManifestIdEnum : int
+	public enum ManifestTypeEnum : int
 	{
 		[Display(Name = "Standard Design-Time Fields")]
 		StandardDesignTimeFields = 3,
@@ -26,5 +26,11 @@ namespace Data.Constants
 
 		[Display(Name = "Standard Event Subscription")]
 		StandardEventSubscription = 8,
+
+		[Display(Name = "Standard Table Data")]
+		StandardTableData = 9,
+
+		[Display(Name = "Standard File Handle")]
+		StandardFileHandle = 10,
 	}
 }

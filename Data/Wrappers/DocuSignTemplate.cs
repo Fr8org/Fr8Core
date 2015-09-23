@@ -16,6 +16,7 @@ namespace Data.Wrappers
         IEnumerable<string> GetMappableSourceFields(string templateId);
         IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
 		  Recipients GetRecipients(string templateId);
+		  List<TextTab> GetUserFields(string templateId);
 	 }
 
     public class DocuSignTemplate : Template, IDocuSignTemplate
@@ -87,6 +88,64 @@ namespace Data.Wrappers
 			  if (!string.IsNullOrEmpty(error.errorCode))
 				  throw new InvalidOperationException("Couldn't get Template with Id '{0}'. ErrorCode: {1}. Message: {2}".format(templateId, error.errorCode, error.message));
 			  // Get recipients
+			  var recipients = InternalGetRecipients(jObjTemplate);
+			  return recipients;
+		  }		  
+		  public List<TextTab> GetUserFields(string templateId)
+		  {
+			  if (templateId == null)
+				  throw new ArgumentNullException("templateId");
+			  if (templateId == string.Empty)
+				  throw new ArgumentException("templateId is empty", "templateId");
+			  // Get template
+			  var jObjTemplate = GetTemplate(templateId);
+			  // Checking is it ok?
+			  Error error = Error.FromJson(jObjTemplate.ToString());
+			  if (!string.IsNullOrEmpty(error.errorCode))
+				  throw new InvalidOperationException("Couldn't get Template with Id '{0}'. ErrorCode: {1}. Message: {2}".format(templateId, error.errorCode, error.message));
+
+			  var recipient = InternalGetRecipients(jObjTemplate);
+			  List<TextTab> textTabs = new List<TextTab>();
+			  Array.ForEach(recipient.signers, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  // TODO Do we need to get textTabs for other types of recipients?
+			  Array.ForEach(recipient.agents, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  Array.ForEach(recipient.carbonCopies, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  Array.ForEach(recipient.certifiedDeliveries, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  Array.ForEach(recipient.editors, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  Array.ForEach(recipient.inPersonSigners, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  Array.ForEach(recipient.intermediaries, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+			  return textTabs;
+		  }
+		  private static DocuSign.Integrations.Client.Recipients InternalGetRecipients(Newtonsoft.Json.Linq.JObject jObjTemplate)
+		  {
 			  var recipientsToken = jObjTemplate.SelectToken("recipients");
 			  var recipients = JsonConvert.DeserializeObject<Recipients>(recipientsToken.ToString());
 			  return recipients;

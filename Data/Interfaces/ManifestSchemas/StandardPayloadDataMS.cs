@@ -6,6 +6,7 @@ namespace Data.Interfaces.ManifestSchemas
     public class StandardPayloadDataMS : ManifestSchema
     {
         public StandardPayloadDataMS()
+			  :base(Constants.ManifestTypeEnum.StandardPayloadData)
         {
             Payload = new List<PayloadObjectDTO>();
         }

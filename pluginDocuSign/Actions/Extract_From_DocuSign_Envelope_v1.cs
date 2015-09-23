@@ -103,7 +103,6 @@ namespace pluginDocuSign.Actions
             {
                 FieldLabel = "Docu Sign Envelope",
                 Value = "This Action doesn't require any configuration.",
-                Type = "textBlockField",
                 cssClass = "well well-lg"
 
             };

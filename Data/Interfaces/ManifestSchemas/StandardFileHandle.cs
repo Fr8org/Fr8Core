@@ -8,6 +8,11 @@ namespace Data.Interfaces.ManifestSchemas
         public string DockyardStorageUrl { get; set; }
         public string Filename { get; set; }
         public string Filetype { get; set; }
+
+		  public StandardFileHandleMS()
+			  : base(Constants.ManifestTypeEnum.StandardFileHandle)
+		  { 
+		  }
     }
 
  

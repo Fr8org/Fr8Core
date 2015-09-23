@@ -20,12 +20,8 @@ namespace pluginDocuSign.Actions
 {
 	public class Send_DocuSign_Envelope_v1 : BasePluginAction
 	{
-
-		IAction _action = ObjectFactory.GetInstance<IAction>();
-		ICrate _crate = ObjectFactory.GetInstance<ICrate>();
 		IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
 		IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
-
 
 		public object Configure(ActionDTO curActionDTO)
 		{
@@ -38,39 +34,16 @@ namespace pluginDocuSign.Actions
 		}
 
 		public object Execute(ActionDataPackageDTO curActionDataPackage)
-		{
-			// Extract envelope id from the payload Crate
-			string envelopeId = GetEnvelopeId(curActionDataPackage.PayloadDTO);
-
-			// Make sure that it exists
-			if (String.IsNullOrEmpty(envelopeId))
-				throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
-
-			////Create a field
-			//var fields = new List<FieldDTO>()
-			//{
-			//    new FieldDTO()
-			//    {
-			//        Key = "EnvelopeId",
-			//        Value = envelopeId
-			//    }
-			//};
-
-			//var cratePayload = _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID);
-			//curActionDataPackage.ActionDTO.CrateStorage.CratesDTO.Add(cratePayload);
-
+		{			
 			return null;
 		}
 		private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
 		{
 			CrateStorageDTO curCrates = curActionDTO.CrateStorage;
-
 			if (curCrates.CrateDTO.Count == 0)
 				return ConfigurationRequestType.Initial;
 
-			//load configuration crates of manifest type Standard Control Crates
-			//look for a text field name connection string with a value
-			var controlsCrates = _action.GetCratesByManifestType(ManifestIdEnum.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+			var controlsCrates = _action.GetCratesByManifestType(ManifestTypeEnum.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
 			var curDocuSignTemplateId = _crate.GetElementByKey(controlsCrates, key: "target_docusign_template", keyFieldName: "name")
 				 .Select(e => (string)e["value"])
 				 .FirstOrDefault(s => !string.IsNullOrEmpty(s));
@@ -84,20 +57,6 @@ namespace pluginDocuSign.Actions
 				return ConfigurationRequestType.Initial;
 			}
 		}
-		private string GetEnvelopeId(PayloadDTO curPayloadDTO)
-		{
-			var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
-			if (crate == null) return null;
-
-			var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-			if (fields == null || fields.Count == 0) return null;
-
-			var envelopeIdField = fields.SingleOrDefault(f => f.Key == "EnvelopeId");
-			if (envelopeIdField == null) return null;
-
-			return envelopeIdField.Value;
-		}
-
 		protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
 		{
 			if (curActionDTO.CrateStorage == null)
@@ -119,91 +78,38 @@ namespace pluginDocuSign.Actions
 			var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
 			if (curCrates == null || curCrates.Count == 0)
-			{
 				return curActionDTO;
-			}
-
-			// Extract DocuSign Template Id
+			// Try to find Configuration_Controls create which conains Controls with name 'target_docusign_template'
 			var configurationFieldsCrate = curCrates.SingleOrDefault(c => c.Label == "Configuration_Controls");
 			if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
-			{
 				return curActionDTO;
-			}
-
+			
 			var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
 			if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "target_docusign_template"))
-			{
 				return curActionDTO;
-			}
-
+			
 			_crate.RemoveCrateByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSignTemplateUserDefinedFields");
 
+			// Extract DocuSign Template Id
 			var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "target_docusign_template").Value;
-			DocuSignTemplate docusignTemplate = new DocuSignTemplate();
-			var jObjTemplate = docusignTemplate.GetTemplate(docusignTemplateId);
-			var recipientsToken = jObjTemplate.SelectToken("recipients");
-			if (recipientsToken == null)
-				return curActionDTO;
-			var singersToken = recipientsToken.SelectToken("signers");
-			var agentsToken = recipientsToken.SelectToken("agents");
-			var editorsToken = recipientsToken.SelectToken("editors");
-			var intermediariesToken = recipientsToken.SelectToken("intermediaries");
-			var carbonCopiesToken = recipientsToken.SelectToken("carbonCopies");
-			var certifiedDeliveriesToken = recipientsToken.SelectToken("certifiedDeliveries");
-			var inPersonSignersToken = recipientsToken.SelectToken("inPersonSigners");
+			var userFields = _template.GetUserFields(docusignTemplateId);
 
-			// TODO How to send all these data to client?
-			List<PayloadMappingsDTO> singers = GetDocusingRoleValues(singersToken);
-			List<PayloadMappingsDTO> agents = GetDocusingRoleValues(agentsToken);
-			List<PayloadMappingsDTO> editors = GetDocusingRoleValues(editorsToken);
-			List<PayloadMappingsDTO> intermediaries = GetDocusingRoleValues(intermediariesToken);
-			List<PayloadMappingsDTO> carbonCopies = GetDocusingRoleValues(carbonCopiesToken);
-			List<PayloadMappingsDTO> certifiedDeliveries = GetDocusingRoleValues(certifiedDeliveriesToken);
-			List<PayloadMappingsDTO> inPersonSigners = GetDocusingRoleValues(inPersonSignersToken);
-
-			CrateDTO singersCrate = null;
-			
-			//if (singers.Count != 0)
-			//	singersCrate = _crate.CreateDesignTimeFieldsCrate("Singer Fields", singers);
-
-
-
-
-			var userDefinedFields = _template.GetTemplates(null).Where(x => x.Id == docusignTemplateId).FirstOrDefault();
-			var crateConfiguration = new List<CrateDTO>();
-			var fieldCollection = new List<FieldDTO>();
-			//var crateContentsObject = new StandardPayloadDataMS()
-			//{
-			//	Fields = new List<FieldDTO>(fieldCollection)
-			//};
-
-			//crateConfiguration.Add(_crate.Create(
-			//	 "DocuSignTemplateUserDefinedFields",
-			//	 JsonConvert.SerializeObject(crateContentsObject),
-			//	 DESIGNTIME_FIELDS_MANIFEST_NAME,
-			//	 DESIGNTIME_FIELDS_MANIFEST_ID));
-
-			//if (curActionDTO.CrateStorage == null)
-			//{
-			//	curActionDTO.CrateStorage = new CrateStorageDTO();
-			//}
-			//curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
+			//	when we're in design mode, there are no values
+			// we just want the names of the fields
+			List<FieldDTO> userDefinedFields = new List<FieldDTO>();
+			userFields.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = null, Value = x.name }));
+			List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" }};
+			//  we're in design mode, there are no values 
+			var crateUserDefined = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray());
+			var crateStandart = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateStandardFields", standartFields.ToArray());
+			if (curActionDTO.CrateStorage == null)
+			{
+				curActionDTO.CrateStorage = new CrateStorageDTO();
+			}
+			curActionDTO.CrateStorage.CrateDTO.Add(crateUserDefined);
+			curActionDTO.CrateStorage.CrateDTO.Add(crateStandart);
 
 			return curActionDTO;
-		}
-
-		private static List<PayloadMappingsDTO> GetDocusingRoleValues(Newtonsoft.Json.Linq.JToken roleToken)
-		{
-			List<PayloadMappingsDTO> roleValue = new List<PayloadMappingsDTO>();
-			foreach (var role in roleToken)
-			{
-				var dict = role.ToObject<Dictionary<string, string>>();
-				var singerFields = dict.Select(x => new FieldMappingDTO() { Name = x.Key, Value = x.Value });
-				PayloadMappingsDTO payload = new PayloadMappingsDTO();
-				payload.AddRange(singerFields);
-				roleValue.Add(payload);
-			}
-			return roleValue;
 		}
 		private CrateDTO CreateStandartConfigurationControls()
 		{
@@ -217,8 +123,8 @@ namespace pluginDocuSign.Actions
                 },
 				Source = new FieldSourceDTO
 				{
-					Label = "Available_Templates",
-					ManifestType = ManifestIdEnum.StandardDesignTimeFields.GetEnumDisplayName()
+					Label = "Available Templates",
+					ManifestType = ManifestTypeEnum.StandardDesignTimeFields.GetEnumDisplayName()
 				}
 			};
 
@@ -230,10 +136,7 @@ namespace pluginDocuSign.Actions
 			{
 				Controls = fields
 			};
-
-			var crateControls = _crate.Create("Configuration_Controls", JsonConvert.SerializeObject(controls),
-				ManifestIdEnum.StandardConfigurationControls.GetEnumDisplayName(), (int)ManifestIdEnum.StandardConfigurationControls);
-			return crateControls;
+			return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fields.ToArray());
 		}
 		private CrateDTO CreateStandardDesignTimeFields()
 		{
@@ -243,10 +146,7 @@ namespace pluginDocuSign.Actions
 			{
 				Fields = fields,
 			};
-
-			var createDesignTimeFields = _crate.Create("Available_Templates", JsonConvert.SerializeObject(controls),
-				ManifestIdEnum.StandardDesignTimeFields.GetEnumDisplayName(), (int)ManifestIdEnum.StandardDesignTimeFields);
-			return createDesignTimeFields;
+			return _crate.CreateDesignTimeFieldsCrate("Available Templates", fields.ToArray());
 		}
 	}
 }

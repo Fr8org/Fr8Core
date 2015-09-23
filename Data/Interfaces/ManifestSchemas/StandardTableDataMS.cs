@@ -6,6 +6,7 @@ namespace Data.Interfaces.ManifestSchemas
     public class StandardTableDataMS : ManifestSchema
     {
         public StandardTableDataMS()
+			  :base(Constants.ManifestTypeEnum.StandardTableData)
         {
             Table = new List<TableRowDTO>();
         }

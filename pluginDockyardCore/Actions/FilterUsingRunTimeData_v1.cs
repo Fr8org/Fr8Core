@@ -200,7 +200,6 @@ namespace pluginDockyardCore.Actions
             var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
             {
                 FieldLabel = "Execute Actions If:",
-                Type = "filterPane",
                 Name = "Selected_Filter",
                 Required = true,
                 Source = new FieldSourceDTO
