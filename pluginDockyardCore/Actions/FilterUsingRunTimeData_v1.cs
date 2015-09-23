@@ -261,7 +261,6 @@ namespace pluginDockyardCore.Actions
                 return ConfigurationRequestType.Initial;
             }
 
-
             var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
                 .Any(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                     && x.Label == "Configuration_Controls");
