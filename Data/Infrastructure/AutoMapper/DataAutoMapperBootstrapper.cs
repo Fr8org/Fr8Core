@@ -88,6 +88,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
             Mapper.CreateMap<string, FieldMappingSettingsDTO>()
                 .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
+
+            Mapper.CreateMap<FileDO, FileDTO>();
         }
     }   
 }

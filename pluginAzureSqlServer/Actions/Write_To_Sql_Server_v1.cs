@@ -56,7 +56,7 @@ namespace pluginAzureSqlServer.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType(STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
             var connectionStrings = _crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
                 .Select(e => (string)e["value"])
@@ -84,39 +84,22 @@ namespace pluginAzureSqlServer.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-            var crateControls = CreateStandardConfigurationControls();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            return curActionDTO.CrateStorage;
+            var crateControls = CreateControlsCrate();
+            return AssembleCrateStorage(crateControls);
         }
 
-        private CrateDTO CreateStandardConfigurationControls() { 
+        private CrateDTO CreateControlsCrate() { 
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var fields = new List<FieldDefinitionDTO>() 
+            var control = new FieldDefinitionDTO()
             {
-                new FieldDefinitionDTO()
-                {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
-                }
+                FieldLabel = "SQL Connection String",
+                Type = "textField",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
             };
-
-            var controls = new StandardConfigurationControlsMS()
-            {
-                Controls = fields
-            };
-
-            var crateControls = _crate.Create(
-                        "Configuration_Controls",
-                        JsonConvert.SerializeObject(controls),
-                        "Standard Configuration Controls"
-                    );
-
-
-            return crateControls;
+            return PackControlsCrate(control);
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
@@ -130,14 +113,13 @@ namespace pluginAzureSqlServer.Actions
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
                 {
-                    _crate.Create(
+                    _crate.CreateDesignTimeFieldsCrate(
                         "Sql Table Columns",
-                        JsonConvert.SerializeObject(contentsList),
-                        "Standard Design-Time Fields"
+                        contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         )
                 }
             };
-           
+
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
@@ -155,6 +137,17 @@ namespace pluginAzureSqlServer.Actions
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
 
             return curCrateStorageDTO;
+/*
+            // In all followup calls, update data fields of the configuration store          
+            List<String> contentsList = GetFieldMappings(curActionDTO);
+
+            // build a controls crate to render the pane
+            CrateDTO configurationControlsCrate = CreateControlsCrate();
+            // columns
+            CrateDTO tableColumnsCrate = _crate.CreateDesignTimeFieldsCrate(
+                        "Sql Table Columns", contentsList.Select(col => new FieldDTO() { Key = col }).ToList());
+            return AssembleCrateStorage(new[] { configurationControlsCrate, tableColumnsCrate });
+*/
         }
 
         public object Activate(ActionDO curActionDO)
@@ -204,14 +197,14 @@ namespace pluginAzureSqlServer.Actions
             }
 
             var curConnectionStringFieldList =
-                JsonConvert.DeserializeObject<List<FieldDefinitionDTO>>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+                JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
             if (curConnectionStringFieldList == null)
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var connStringField = curConnectionStringFieldList.First();
+            var connStringField = curConnectionStringFieldList.Controls.First();
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
                 throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);

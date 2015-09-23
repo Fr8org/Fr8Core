@@ -120,20 +120,7 @@ namespace Web.Controllers
             return Ok(resultActionDTO);
         }
 
-        /// <summary>
-        /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder.
-        /// </summary>
-        [HttpPost]
-        [Route("field_data_sources")]
-        public IEnumerable<string> GetFieldDataSources(ActionDTO curActionDesignDTO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
-
-                return _action.GetFieldDataSources(uow, curAction);
-            }
-        }
+  
 
         
     }

@@ -1,4 +1,5 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
 namespace Data.Entities
 {
     public class FileDO : BaseDO
@@ -12,5 +13,7 @@ namespace Data.Entities
         public string CloudStorageUrl { get; set; }
 
         public string OriginalFileName { get; set; }
+
+        public string DockyardAccountID { get; set; }
     }
 }
