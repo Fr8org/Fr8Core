@@ -18,6 +18,10 @@
     text-align: left;
 }
 
+.portlet.light > .portlet-title {
+    min-height: 38px;
+}
+
 .criteria-warning {
     opacity: 0.7;
     font-size: 16px;
@@ -81,4 +85,29 @@
 .processActionStepsRightArrow{
         padding-left: 15px;    
     margin-top: -15px;
+}
+
+/* Filter Pane */
+.filter-pane .radio:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Query Builder */
+.query-builder-table {
+    margin-left: 27px;
+    margin-bottom: 10px;
+    width: calc(100% - 25px);
+}
+
+.query-builder-table td:first-of-type,
+.query-builder-table th:first-of-type {
+    padding-left: 0;
+}
+
+.query-builder-add-button {
+    margin-left: 27px;
+}
+
+.query-builder-table select.form-control {
+    padding-left: 4px;
 }
