@@ -87,7 +87,6 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
-            debugger;
             if (!newValue || !newValue.fields || newValue.fields.length == 0) return;
 
             this.crateHelper.mergeControlListCrate(
@@ -146,7 +145,6 @@ module dockyard.directives.paneConfigureAction {
             // to refresh after being assigned newly selected Action on ProcessBuilderController
             // and as a result it contained old action. 
             this.$timeout(() => {
-                console.log('After timeout id is: ' + scope.currentAction.id);
                 if (scope.currentAction.activityTemplateId > 0) {
                     this.loadConfiguration(scope, scope.currentAction);
                 }            
@@ -154,19 +152,18 @@ module dockyard.directives.paneConfigureAction {
                 // Create a directive-local immutable copy of action so we can detect 
                 // a change of actionTemplateId in the currently selected action
                 this._currentAction = angular.extend({}, scope.currentAction);
-                //debugger;
             }, 100);
 
         }
 
         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
-        // We parse its contents and put it into currentAction.configurationControls structure.
+            // We parse its contents and put it into currentAction.configurationControls structure.
         private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
-
-            this.ActionService.configure(action).$promise.then((res: any) => {
-                (<any>scope.currentAction).crateStorage = res;
+            var self = this;
+            this.ActionService.configure(action).$promise.then(function (res: any) {               
+                scope.currentAction = res;
                 (<any>scope.currentAction).configurationControls =
-                this.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
             });
 
             if (this.configurationWatchUnregisterer == null) {

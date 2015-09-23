@@ -9,25 +9,25 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class CrateDTO
     {
-        [JsonProperty("Id")]
+        public CrateDTO()
+        {
+            this.CreateTime = DateTime.Now;
+        }
+
         public string Id { get; set; }
 
-        [JsonProperty("label")]
         public string Label { get; set; }
 
-        [JsonProperty("contents")]
         public string Contents { get; set; }
 
-        [JsonProperty("parentCrateId")]
         public string ParentCrateId { get; set; }
 
-        [JsonProperty("manifestType")]
         public string ManifestType { get; set; }
 
-        [JsonProperty("manifestId")]
         public int ManifestId { get; set; }
 
-        [JsonProperty("manufacturer")]
         public ManufacturerDTO Manufacturer { get; set; }
+
+        public DateTime CreateTime { get; set; }
     }
 }

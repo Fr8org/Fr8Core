@@ -25,7 +25,7 @@ namespace pluginDocuSign.Actions
         IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
 
 
-        public object Configure(ActionDTO curActionDTO)
+        public ActionDTO Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
             return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo)); // will be changed to complete the config feature for docu sign
@@ -123,7 +123,7 @@ namespace pluginDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null)
             {
@@ -134,15 +134,15 @@ namespace pluginDocuSign.Actions
 				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
-        protected override CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
             if (curCrates == null || curCrates.Count == 0)
             {
-                return curActionDTO.CrateStorage;
+                return curActionDTO;
             }
 
             // Extract DocuSign Template Id
@@ -150,15 +150,18 @@ namespace pluginDocuSign.Actions
 
             if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
             {
-                return curActionDTO.CrateStorage;
+                return curActionDTO;
             }
 
             var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
 
             if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
-                return curActionDTO.CrateStorage;
+                return curActionDTO;
             }
+
+            // Remove previously added crate of the same schema
+            _crate.RemoveCrateByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSignTemplateUserDefinedFields");
 
             var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "Selected_DocuSign_Template").Value;
             var userDefinedFields = _docusignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId);
@@ -197,12 +200,9 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-            // Remove previously added crate of the same schema
-            _crate.RemoveCrateByManifestId(curActionDTO.CrateStorage.CrateDTO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
-
             curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
 
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
 
         private CrateDTO CreateStandardConfigurationControls()

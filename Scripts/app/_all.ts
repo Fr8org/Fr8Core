@@ -54,6 +54,7 @@
 /// <reference path="controllers/processbuildercontroller.ts" />
 /// <reference path="controllers/processtemplateformcontroller.ts" />
 /// <reference path="controllers/processtemplatelistcontroller.ts" />
+/// <reference path="controllers/managefilelistcontroller.ts" />
 
 
 /*

@@ -190,7 +190,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDTO curActionDataPackageDTO)
+        public ActionDTO Configure(ActionDTO curActionDataPackageDTO)
         {
             return ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
@@ -216,7 +216,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.Id > 0)
             {
@@ -234,7 +234,11 @@ namespace pluginDockyardCore.Actions
                     //build a controls crate to render the pane
                     CrateDTO configurationControlsCrate = CreateControlsCrate();
 
-                    return AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
+
+
+                    var crateStrorageDTO = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
+                    curActionDTO.CrateStorage = crateStrorageDTO;
+
                 }
             }
             else
@@ -242,6 +246,7 @@ namespace pluginDockyardCore.Actions
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
+            return curActionDTO;
         }
 
         /// <summary>
@@ -250,14 +255,11 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
-                return ConfigurationRequestType.Initial;
-
             if (curActionDataPackageDTO.CrateStorage == null
                 && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
             {
                 return ConfigurationRequestType.Initial;
             }
-
 
             var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
                 .Any(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME

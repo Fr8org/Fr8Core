@@ -29,6 +29,8 @@ namespace Data.Entities
         [NotMapped]
         public bool IsTempId { get; set; }
 
+        public string currentView { get; set; }
+
         public CrateStorageDTO CrateStorageDTO()
         {
             return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);

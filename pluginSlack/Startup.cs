@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Owin;
 using PluginBase;
 using PluginBase.BaseClasses;
+using System.Threading.Tasks;
 
 [assembly: OwinStartup(typeof(pluginSlack.Startup))]
 
@@ -16,9 +17,11 @@ namespace pluginSlack
     {
         public void Configuration(IAppBuilder app)
         {
-            BasePluginController curController = new BasePluginController();
-            curController.AfterStartup("plugin_slack");
-          
+            Task.Run(() =>
+            {
+                BasePluginController curController = new BasePluginController();
+                curController.AfterStartup("plugin_slack");
+            });
         }
     }
 }

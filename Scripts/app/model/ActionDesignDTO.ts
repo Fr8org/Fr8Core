@@ -10,6 +10,7 @@
         activityTemplateId: number;
         activityTemplateName: string;
         activityTemplate: model.ActivityTemplate;
+        currentView: string;
 
         constructor(
             processNodeTemplateId: number,

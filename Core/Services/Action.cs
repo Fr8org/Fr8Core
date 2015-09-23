@@ -96,7 +96,7 @@ namespace Core.Services
             }
         }
 
-        public CrateStorageDTO Configure(ActionDO curActionDO)
+        public ActionDTO Configure(ActionDO curActionDO)
         {
             ActivityTemplateDO curActivityTemplate;
 
@@ -122,10 +122,10 @@ namespace Core.Services
                         string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
                         var restClient = new RestfulServiceClient();
-                        string pluginConfigurationCrateListJSON;
+                        string actionDTOJSON;
                         try
                         {
-                            pluginConfigurationCrateListJSON =
+                            actionDTOJSON =
                                 restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
                         }
                         catch (Exception)
@@ -134,20 +134,17 @@ namespace Core.Services
                             throw;
                         }
 
-                        var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
-                        //return configurationCrates;
-                        //return curConfigurationStoreJson.Replace("\\\"", "'").Replace("\"", "");
-                        //var configurationCrates = JsonConvert.DeserializeObject<CrateStorageDTO>(pluginConfigurationCrateListJSON);                        
-                        
-                        //replace the old CrateStorage with the new CrateStorage
-                        //this feels a little clumsy and dangerous (what if something changes in the action's crate storage while this plugin is sitting on its data?)
-                        //we probably will need a complex mechanism that looks at each crate by GUID
-                        curActionDTO.CrateStorage = configurationCrates;
-                        curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+                        //Converting Received ActionDTO in JSON Format to ActionDTO Object
+                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);                        
+                      
+                        //Plugin Configure Action Return ActionDTO
+                        curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
                         //save the received action as quickly as possible
                         SaveOrUpdateAction(curActionDO);
-                        return curActionDO.CrateStorageDTO();  
+
+                        //Returning ActionDTO
+                        return tempActionDTO;                       
                     }
 
                     else
@@ -244,44 +241,7 @@ namespace Core.Services
             return jsonResult;
         }
 
-        /// <summary>
-        /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder
-        /// </summary>
-        public IEnumerable<string> GetFieldDataSources(IUnitOfWork uow, ActionDO curActionDO)
-        {
-            DocuSignTemplateSubscriptionDO curDocuSignSubscription = null;
-
-            if (curActionDO.ParentActivity != null)
-            {
-                // Try to get ProcessTemplate.Id from relation chain
-                // Action -> ActionList -> ProcessNodeTemplate -> ProcessTemplate.
-                var curProcessTemplateId = ((ActionListDO)curActionDO.ParentActivity)
-                    .ProcessNodeTemplate
-                    .ProcessTemplate
-                    .Id;
-
-                // Try to get DocuSignSubscription related to current ProcessTemplate.Id.
-                curDocuSignSubscription = uow.ExternalEventSubscriptionRepository
-                    .GetQuery()
-                    .OfType<DocuSignTemplateSubscriptionDO>()
-                    .FirstOrDefault(x => x.DocuSignProcessTemplateId == curProcessTemplateId);
-            }
-
-            // Return list of mappable source fields, in case we fetched DocuSignSubscription object.
-            if (curDocuSignSubscription != null)
-            {
-                _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
-                var curMappableSourceFields = _docusignTemplate
-                    .GetMappableSourceFields(curDocuSignSubscription.DocuSignTemplateId);
-
-                return curMappableSourceFields;
-            }
-            // Return empty list in other case.
-            else
-            {
-                return Enumerable.Empty<string>();
-            }
-        }
+       
 
         /// <summary>
         /// Retrieve authorization token

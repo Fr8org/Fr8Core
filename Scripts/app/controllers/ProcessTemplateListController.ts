@@ -65,7 +65,6 @@ module dockyard.controllers {
             $scope.dtInstance = {};
             $scope.GoToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.GoToProcessTemplatePage);
             $scope.DeleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.DeleteProcessTemplate);
-
         }
 
         //this function will be called on every reloadData call to data-table
@@ -129,7 +128,7 @@ module dockyard.controllers {
             $event.stopPropagation();
             
             this.$state.go('processBuilder', { id: processTemplateId });
-        }
+            }
 
         private DeleteProcessTemplate(processTemplateId, $event) {
             $event.preventDefault();

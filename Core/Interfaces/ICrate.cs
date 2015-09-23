@@ -18,5 +18,7 @@ namespace Core.Interfaces
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls);
 
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
+        void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);
+        void RemoveCrateByLabel(IList<CrateDTO> crates, string label);
     }
 }

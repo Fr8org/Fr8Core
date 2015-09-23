@@ -44,10 +44,11 @@ namespace Web.Controllers
         //[ResponseType(typeof(CrateStorageDTO))]
         public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
+            curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            var crateStorage = _action.Configure(curActionDO);
+            ActionDTO actionDTO = _action.Configure(curActionDO);
 
-            return Ok(crateStorage);
+            return Ok(actionDTO);
         }
 
 
@@ -120,20 +121,7 @@ namespace Web.Controllers
             return Ok(resultActionDTO);
         }
 
-        /// <summary>
-        /// Retrieve the list of data sources for the drop down list boxes on the left side of the field mapping pane in process builder.
-        /// </summary>
-        [HttpPost]
-        [Route("field_data_sources")]
-        public IEnumerable<string> GetFieldDataSources(ActionDTO curActionDesignDTO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curAction = uow.ActionRepository.GetByKey(curActionDesignDTO.Id);
-
-                return _action.GetFieldDataSources(uow, curAction);
-            }
-        }
+  
 
         
     }
