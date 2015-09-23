@@ -2,7 +2,7 @@
     export class ActionList {
         id: number;
         name: string;
-        ActionListType: ActionListType;
+        actionListType: ActionListType;
     }
 
     export enum ActionListType {

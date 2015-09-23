@@ -23,7 +23,7 @@ namespace DockyardTest.Controllers
         private EventController _eventController;
         private EventReporter _eventReporter;
         private IncidentReporter _incidentReporter;
-        private EventReportCrate _eventReportCrateHelper;
+        private EventReportCrateFactory _eventReportCrateFactoryHelper;
         private ICrate _crate;
 
 
@@ -34,7 +34,7 @@ namespace DockyardTest.Controllers
             _eventController = new EventController();
             _eventReporter = new EventReporter();
             _incidentReporter = new IncidentReporter();
-            _eventReportCrateHelper = new EventReportCrate();
+            _eventReportCrateFactoryHelper = new EventReportCrateFactory();
             _crate = ObjectFactory.GetInstance<ICrate>();
 
         }
@@ -49,7 +49,7 @@ namespace DockyardTest.Controllers
 
             //Act
 
-            var result = _eventController.Post(_eventReportCrateHelper.Create(eventDto));
+            var result = _eventController.Post(_eventReportCrateFactoryHelper.Create(eventDto));
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -72,7 +72,7 @@ namespace DockyardTest.Controllers
                 var curEventDTO = FixtureData.TestPluginEventDto();
 
                 //Act
-                var result = _eventController.Post(_eventReportCrateHelper.Create(curEventDTO));
+                var result = _eventController.Post(_eventReportCrateFactoryHelper.Create(curEventDTO));
 
                 //Assert
                 Assert.IsTrue(result is OkResult);

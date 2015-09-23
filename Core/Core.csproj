@@ -195,6 +195,7 @@
   <ItemGroup>
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
+    <Compile Include="Interfaces\CrateManifests.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IAction.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcess.cs" />
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
+    <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
     <Compile Include="Interfaces\IProcessTemplate.cs" />
     <Compile Include="Interfaces\ISubscription.cs">

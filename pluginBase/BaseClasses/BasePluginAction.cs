@@ -26,15 +26,6 @@ namespace PluginBase.BaseClasses
             Downstream
         }
 
-        protected const int STANDARD_PAYLOAD_MANIFEST_ID = 5;
-        protected const string STANDARD_PAYLOAD_MANIFEST_NAME = "Standard Payload Data";
-
-        protected const int DESIGNTIME_FIELDS_MANIFEST_ID = 3;
-        protected const string DESIGNTIME_FIELDS_MANIFEST_NAME = "Standard Design-Time Fields";
-
-        //protected const int STANDARD_CONF_CONTROLS_MANIFEST_ID = ;
-        protected const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
-
         protected IAction _action;
         protected ICrate _crate;
         protected IActivity _activity;
@@ -43,9 +34,9 @@ namespace PluginBase.BaseClasses
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
-            _activity = ObjectFactory.GetInstance<IActivity>();
+            //_activity = ObjectFactory.GetInstance<IActivity>();
         }
-        protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
+        protected ActionDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
@@ -61,15 +52,15 @@ namespace PluginBase.BaseClasses
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
 
         //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
@@ -109,7 +100,7 @@ namespace PluginBase.BaseClasses
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
 
-            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, "Standard Design-Time Fields",
+            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
@@ -134,24 +125,18 @@ namespace PluginBase.BaseClasses
             return tempMS;
         }
 
-        protected CrateStorageDTO AssembleCrateStorage(List<CrateDTO> curCrates)
+        protected CrateStorageDTO AssembleCrateStorage(params CrateDTO[] curCrates)
         {
             return new CrateStorageDTO()
             {
-                CrateDTO = curCrates
+                CrateDTO = curCrates.ToList()
             };
         }
 
-        protected CrateDTO PackControlsCrate(List<FieldDefinitionDTO> controlsList)
+        protected CrateDTO PackControlsCrate(params FieldDefinitionDTO[] controlsList)
         {
-            var controlsMS = new StandardConfigurationControlsMS()
-            {
-                Controls = controlsList
-            };
-
-
-            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controlsMS);
-
+            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
+                "Configuration_Controls", controlsList);
 
             return controlsCrate;
         }

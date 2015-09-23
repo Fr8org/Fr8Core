@@ -1,0 +1,44 @@
+﻿<div class="row" ng-controller="ReportFactController">
+    <div class="col-md-12 col-sm-12">
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-green-haze hide"></i>
+                    <span class="caption-subject font-green-haze bold uppercase">All Facts</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                    <thead>
+                        <tr>
+                            <th>Activity</th>
+                            <th>Created Date</th>
+                            <th>Customer Id	</th>
+                            <th>Data</th>
+                            <th>Last Updated</th>
+                            <th>Object Id	</th>                         
+                            <th>Primary Category</th>
+                            <th>Secondary Category</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="fact in factRecords">
+                            <td>{{ fact.activity}}</td>  
+                            <td>{{ fact.createDate}}</td>   
+                            <td>{{ fact.customerId}}</td>   
+                            <td>{{ fact.data}}</td>   
+                            <td>{{ fact.lastUpdated}}</td>   
+                            <td>{{ fact.objectId}}</td>   
+                            <td>{{ fact.primaryCategory}}</td>   
+                            <td>{{ fact.secondaryCategory}}</td>   
+                            <td>{{ fact.status}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+

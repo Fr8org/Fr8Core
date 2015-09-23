@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Utilities;
@@ -33,14 +34,20 @@ namespace Core.Services
             return crateDTO;
         }
 
-        public CrateDTO CreateDesignTimeFieldsCrate(string label, object contents)
+        public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
-            return Create( label, JsonConvert.SerializeObject(contents), "Standard Design-Time Fields");
+            return Create(label, 
+                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields.ToList()}),
+                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
+                manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, object contents)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls)
         {
-            return Create(label, JsonConvert.SerializeObject(contents), "Standard Configuration Controls");
+            return Create(label, 
+                JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
+                manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 
         public T GetContents<T>(CrateDTO crate)
@@ -61,8 +68,42 @@ namespace Core.Services
                 resultsObjects.AddRange(results); ;
             }
             return resultsObjects;
+        }
 
+        public void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId)
+        {
+            var curCrates = crates.Where(c => c.ManifestId == manifestId).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
+        }
 
+        public void RemoveCrateByLabel(IList<CrateDTO> crates, string label)
+        {
+            var curCrates = crates.Where(c => c.Label == label).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
+        }
+
+        public void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType)
+        {
+            var curCrates = crates.Where(c => c.ManifestType == manifestType).ToList();
+            if (curCrates.Count() > 0)
+            {
+                foreach (CrateDTO crate in curCrates)
+                {
+                    crates.Remove(crate);
+                }
+            }
         }
     }
 }

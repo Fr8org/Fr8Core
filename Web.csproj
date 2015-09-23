@@ -323,6 +323,7 @@
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\ActivitiesController.cs" />
+    <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\ProcessTemplateController.cs" />
@@ -332,6 +333,7 @@
     <Compile Include="Controllers\ProcessController.cs" />
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
+    <Compile Include="Controllers\ManageFileController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
@@ -746,7 +748,10 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
@@ -756,7 +761,10 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FactDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\FileDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ControlsList.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
@@ -767,11 +775,13 @@
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ActionList.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
-    <TypeScriptCompile Include="Scripts\app\services\FileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
@@ -781,6 +791,7 @@
     <TypeScriptCompile Include="Scripts\tests\integration\PluginDocuSignTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ProcessTemplateControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
+    <Content Include="Views\AngularTemplate\ManageFileList.cshtml" />
     <None Include="Views\AngularTemplate\MappingPane.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
@@ -4008,6 +4019,8 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
     <Content Include="Views\AngularTemplate\DropDownListBox.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
+    <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
@@ -4125,7 +4138,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' == ''" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">

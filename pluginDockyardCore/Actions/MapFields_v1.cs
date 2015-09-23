@@ -55,7 +55,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDTO actionDTO)
+        public ActionDTO Configure(ActionDTO actionDTO)
         {
             return ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
@@ -90,36 +90,28 @@ namespace pluginDockyardCore.Actions
                 Required = true
             };
 
-            var fields = new List<FieldDefinitionDTO>()
-            {
-                fieldFilterPane
-            };
-
-            var crateControls = _crate.Create(
-                "Configuration_Controls",
-                JsonConvert.SerializeObject(fields),
-                "Standard Configuration Controls"
-                );
-
-            return crateControls;
+            return PackControlsCrate(fieldFilterPane);
         }
 
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
+            CrateDTO getErrorMessageCrate = null; 
 
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-            List<FieldDTO> curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields;
+            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
 
-            List<FieldDTO> curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields;
+            var curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields.ToArray();
 
-            if (curUpstreamFields.Count == 0 || curDownstreamFields.Count == 0)
+            if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
-                throw new ApplicationException("This action couldn't find either source fields or target fields (or both). "
-                    + "Try configuring some Actions first, then try this page again.");
+                getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
+                         "This action couldn't find either source fields or target fields (or both). " +
+                        "Try configuring some Actions first, then try this page again.");
+                curActionDTO.CurrentView = "MapFieldsErrorMessage";
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
@@ -128,8 +120,9 @@ namespace pluginDockyardCore.Actions
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            var curCrates = new List<CrateDTO> { downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate };
-            return AssembleCrateStorage(curCrates);
+            curActionDTO.CrateStorage = AssembleCrateStorage(downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate, getErrorMessageCrate);
+            return curActionDTO;
+
         }
 
         /// <summary>
@@ -139,6 +132,35 @@ namespace pluginDockyardCore.Actions
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDO)
         {
             return ConfigurationRequestType.Initial;
+        }
+
+        //Returning the crate with text field control 
+        private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
+        {
+            var fields = new List<FieldDefinitionDTO>() 
+            {
+                new TextBlockFieldDTO()
+                {
+                    FieldLabel = fieldLabel,
+                    Value = errorMessage,
+                    Type = "textBlockField",
+                    cssClass = "well well-lg"
+                    
+                }
+            };
+
+            var controls = new StandardConfigurationControlsMS()
+            {
+                Controls = fields
+            };
+
+            var crateControls = _crate.Create(
+                        "Configuration_Controls",
+                        JsonConvert.SerializeObject(controls),
+                        "Standard Configuration Controls"
+                    );
+
+            return crateControls;
         }
     }
 }

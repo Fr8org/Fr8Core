@@ -23,7 +23,7 @@ namespace pluginDocuSign.Actions
         IAction _action = ObjectFactory.GetInstance<IAction>();
         IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
 
-        public object Configure(ActionDTO curActionDTO)
+        public ActionDTO Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
             return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
@@ -51,9 +51,7 @@ namespace pluginDocuSign.Actions
             var cratesList = new List<CrateDTO>()
             {
                 _crate.Create("DocuSign Envelope Data",
-                JsonConvert.SerializeObject(payload),
-                STANDARD_PAYLOAD_MANIFEST_NAME,
-                STANDARD_PAYLOAD_MANIFEST_ID)
+                JsonConvert.SerializeObject(payload), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
             };
             curActionDataPackageDTO.PayloadDTO.UpdateCrateStorageDTO(cratesList);     
         }
@@ -72,7 +70,7 @@ namespace pluginDocuSign.Actions
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
         {
-            var crate = curActionDO.CrateStorage.CrateDTO.SingleOrDefault(c => c.ManifestId == DESIGNTIME_FIELDS_MANIFEST_ID);
+            var crate = curActionDO.CrateStorage.CrateDTO.SingleOrDefault(c => c.ManifestId == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
             if (crate == null) return null;
 
             var fieldsList = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
@@ -83,7 +81,7 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault(c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID);
+            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault(c => c.ManifestId == CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
             if (crate == null) return null; //TODO: log it
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0)
@@ -98,34 +96,22 @@ namespace pluginDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var fields = new List<FieldDefinitionDTO>() 
+            var textBlock = new TextBlockFieldDTO()
             {
-                new TextBlockFieldDTO()
-                {
-                    FieldLabel = "Docu Sign Envelope",
-                    Value = "This Action doesn't require any configuration.",
-                    Type = "textBlockField",
-                    cssClass = "well well-lg"
-                    
-                }
+                FieldLabel = "Docu Sign Envelope",
+                Value = "This Action doesn't require any configuration.",
+                Type = "textBlockField",
+                cssClass = "well well-lg"
+
             };
 
-            var controls = new StandardConfigurationControlsMS()
-            {
-                Controls = fields
-            };
-
-            var crateControls = _crate.Create(
-                        "Configuration_Controls",
-                        JsonConvert.SerializeObject(controls),
-                        "Standard Configuration Controls"
-                    );
+            var crateControls = PackControlsCrate(textBlock);
 
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
     }
 }

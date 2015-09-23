@@ -39,5 +39,5 @@ foreach ($testsuite in $testsuites.testsuites.testsuite) {
 
 if ($anyFailures -eq $TRUE){
     write-host "Failing build as there are broken tests"
-    #$host.SetShouldExit(1)
+    $host.SetShouldExit(1)
 }

@@ -222,6 +222,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
@@ -278,6 +279,22 @@
     <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.cs" />
     <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.Designer.cs">
       <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509182154282_UpdateFileDO.cs" />
+    <Compile Include="Migrations\201509182154282_UpdateFileDO.Designer.cs">
+      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs" />
+    <Compile Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.Designer.cs">
+      <DependentUpon>201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509221705426_EmptyMigration1.cs" />
+    <Compile Include="Migrations\201509221705426_EmptyMigration1.Designer.cs">
+      <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs" />
+    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
+      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -466,8 +483,8 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Crates\Helpers\EventReportCrate.cs" />
-    <Compile Include="Crates\Helpers\LoggingDataCrate.cs" />
+    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
+    <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ProcessValidator.cs" />
     <Compile Include="Validations\ProcessNodeTemplateValidator.cs" />
@@ -511,6 +528,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509161527206_AddedVersionToPlugin.resx">
       <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509182154282_UpdateFileDO.resx">
+      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.resx">
+      <DependentUpon>201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509221705426_EmptyMigration1.resx">
+      <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
+      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,7 +5,7 @@ using NUnit.Framework;
 using pluginAzureSqlServer.Controllers;
 using UtilitiesTesting;
 
-namespace pluginAzureSqlServerTests.Controllers
+namespace pluginTests.PluginAzureSqlServerTests.Controllers
 {
     [TestFixture]
     public class ActionControllerTest : BaseTest

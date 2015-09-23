@@ -1,98 +1,61 @@
-﻿using System.Web.Mvc;
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Core.Managers;
 using Core.Services;
 using StructureMap;
 using Utilities;
+using Data.Entities;
+using System.Collections.Generic;
+using System;
+using Utilities.Logging;
+using System.Web.Http;
+using Core.Interfaces;
 
 namespace Web.Controllers
-{
-    [DockyardAuthorize(Roles = "Booker")]
-    public class ReportController : Controller
+{    
+    public class ReportController : ApiController
     {
-        //private DataTablesPackager _datatables;
-        private Report _report;
-        private JsonPackager _jsonPackager;
+        private IReport _report;        
 
         public ReportController()
         {
-            _report = new Report();
-            _jsonPackager = new JsonPackager();
+            _report = ObjectFactory.GetInstance<IReport>();
+            
         }
 
-        //
-        // GET: /Report/
-        public ActionResult Index(string type)
+        [Route("api/report/getallfacts")]
+        public IHttpActionResult GetAllFacts()
         {
-            ViewBag.type = type;
-            switch (type)
+            List<FactDO> factDOList = null;
+            try
             {
-                case "usage" :
-                    ViewBag.Title = "Usage Report";
-                    break;
-                case "incident":
-                    ViewBag.Title = "Incident Report";
-                    break;
-            }
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult ShowReport(string queryPeriod, string type, int? draw, int start, int length)
-        {
-            DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                int recordcount;
-                var report = _report.Generate(uow, dateRange, type, start, length, out recordcount);
-                var jsonResult = Json(new
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    draw = draw,
-                    recordsTotal = recordcount,
-                    recordsFiltered = recordcount,
-                    data = _jsonPackager.Pack(report)
-                });
-
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                    factDOList = _report.GetAllFacts(uow);                                    
+                }
             }
-        }
-        //Display View "History"
-        public ActionResult History()
-        {
-            return View("History");
-        }
-
-        [HttpPost]
-        public ActionResult ShowHistoryReport(string primaryCategory, string bookingRequestId, string queryPeriod)
-        {
-            DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            catch (Exception e)
             {
-                var historyReport = _report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyReport));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                Logger.GetLogger().Error("Error checking for activity template ", e);
             }
+            return Ok(factDOList);
         }
 
-        //Display partial view "_History" on new window.
-        public ActionResult HistoryByBookingRequestId(int bookingRequestID)
+         [Route("api/report/getallincidents")]
+        public IHttpActionResult GetALLIncidents()
         {
-            ViewBag.bookingRequestID = bookingRequestID;
-            return View("_History");
-        }
-
-        public ActionResult ShowHistoryByBookingRequestId(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            List<IncidentDO> incidentList = null;
+            try
             {
-                var historyByBRId = _report.GenerateHistoryByBookingRequestId(uow, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyByBRId), JsonRequestBehavior.AllowGet);
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-             }
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    incidentList = _report.GetAllIncidents(uow);                   
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error checking for activity template ", e);
+            }
+            return Ok(incidentList);
         }
-       
 	}
 }
