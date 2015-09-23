@@ -9,8 +9,7 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class DropdownListFieldDefinitionDTO : FieldDefinitionDTO
     {
-        [JsonProperty("source")]
-        public FieldSource Source { get; set; }
+       
     }
 
     public class RadioButtonGroupFieldDefinitionDTO : FieldDefinitionDTO
@@ -73,9 +72,12 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("events")]
         public List<FieldEvent> Events { get; set; }
+
+        [JsonProperty("source")]
+        public FieldSourceDTO Source { get; set; }
     }
 
-    public class FieldSource
+    public class FieldSourceDTO
     {
         [JsonProperty("manifestType")]
         public string ManifestType { get; set; }

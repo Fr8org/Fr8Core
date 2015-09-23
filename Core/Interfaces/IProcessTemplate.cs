@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 
 namespace Core.Interfaces
 {
@@ -20,5 +21,10 @@ namespace Core.Interfaces
         IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport);
 
         ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO);
-	}
+
+
+        string Activate(ProcessTemplateDO curProcessTemplate);
+
+        string Deactivate(ProcessTemplateDO curProcessTemplate);
+    }
 }

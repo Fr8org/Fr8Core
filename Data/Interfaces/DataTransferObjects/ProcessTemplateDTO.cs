@@ -26,6 +26,7 @@ namespace Data.Interfaces.DataTransferObjects
         public IList<string> SubscribedDocuSignTemplates { get; set; }
 
         public IList<int?> SubscribedExternalEvents { get; set; }
+        public int StartingProcessNodeTemplateId { get; set; }
 
 
         // Commented out by yakov.gnusin:

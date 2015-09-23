@@ -24,7 +24,13 @@ namespace Data.Infrastructure
 
         public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO);
         public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
-        
+
+        public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public static event IncidentPluginActionActivationPOSTFailureHandler IncidentPluginActionActivationFailed;
+
+        public delegate void PluginActionActivatedHandler(ActionDO action);
+        public static event PluginActionActivatedHandler PluginActionActivated;
+         
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
@@ -124,8 +130,14 @@ namespace Data.Infrastructure
         public delegate void PluginEventHandler(LoggingData eventData);
         public static event PluginEventHandler PluginEventReported;
 
+        public delegate void ExternalEventReceivedHandler(string curEventPayload);
+        public static event ExternalEventReceivedHandler ExternalEventReceived;
+
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
+
+        public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
+        public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
         #region Method
 
 
@@ -135,6 +147,11 @@ namespace Data.Infrastructure
             if (handler != null) handler(pluginUrl, actionDTO);
         }
 
+        public static void PluginActionActivationFailed(string pluginUrl, string actionDTO)
+        {
+            IncidentPluginActionActivationPOSTFailureHandler handler = IncidentPluginActionActivationFailed;
+            if (handler != null) handler(pluginUrl, actionDTO);
+        }
 
         public static void UserNotification(string userid, string message, TimeSpan expiresIn = default(TimeSpan))
         {
@@ -381,10 +398,27 @@ namespace Data.Infrastructure
             if (handler != null) handler(eventData);
         }
 
+        public static void ReportExternalEventReceived(string curEventPayload)
+        {
+            ExternalEventReceivedHandler handler = ExternalEventReceived;
+            if (handler != null) handler(curEventPayload);
+        }
+
+        public static void ReportUnparseableNotification(string curNotificationUrl, string curNotificationPayload)
+        {
+            UnparseableNotificationReceivedHandler handler = UnparseableNotificationReceived;
+            if (handler != null) handler(curNotificationUrl, curNotificationPayload);
+        }
+
         public static void DocuSignFieldMissing(string envelopeId, string fieldName)
         {
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
+        }
+        public static void ActionActivated(ActionDO action)
+        {
+            var handler = PluginActionActivated;
+            if (handler != null) handler(action);
         }
         #endregion
     }

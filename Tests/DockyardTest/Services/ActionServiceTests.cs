@@ -63,7 +63,7 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            CrateStorageDTO result = _action.Configure(curActionDO);
+            //CrateStorageDTO result = _action.Configure(curActionDO);
             
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);
@@ -249,7 +249,7 @@ namespace DockyardTest.Services
 
             _action.Process(actionDO, procesDO);
 
-            Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
+            Assert.AreEqual(ActionState.Active, actionDO.ActionState);
         }
 
         [Test, Ignore("Vas, Ignored as part of V2 changes")]

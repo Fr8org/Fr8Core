@@ -33,24 +33,31 @@ namespace Core.Services
             return crateDTO;
         }
 
+        public CrateDTO CreateDesignTimeFieldsCrate(string label, object contents)
+        {    
+            return Create( label, JsonConvert.SerializeObject(contents), "Standard Design-Time Fields");
+        }
+
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, object contents)
+        {
+            return Create(label, JsonConvert.SerializeObject(contents), "Standard Configuration Controls");
+        }
+
         public T GetContents<T>(CrateDTO crate)
         {
             return _serializer.Deserialize<T>(crate.Contents);
         }
 
-        public IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName = "key")
+        public IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName)
         {
 
             List<JObject> resultsObjects = new List<JObject>();
             foreach (var curCrate in searchCrates.Where(c => !string.IsNullOrEmpty(c.Contents)))
             {
-                JObject curCrateJSON = JsonConvert.DeserializeObject<JObject>(curCrate.Contents);
-                JContainer contents = (JContainer)curCrateJSON.First;
-                if (contents == null)
-                    continue;
-                var results = contents.Descendants()
+                JContainer curCrateJSON = JsonConvert.DeserializeObject<JContainer>(curCrate.Contents);
+                var results = curCrateJSON.Descendants()
                     .OfType<JObject>()
-                    .Where(x => x[keyFieldName].Value<TKey>().Equals(key));
+                    .Where(x => x[keyFieldName] != null && x[keyFieldName].Value<TKey>().Equals(key));
                 resultsObjects.AddRange(results); ;
             }
             return resultsObjects;

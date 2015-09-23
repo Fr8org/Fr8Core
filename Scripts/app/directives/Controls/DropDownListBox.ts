@@ -6,7 +6,7 @@ module dockyard.directives.dropDownListBox {
 
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownListBoxField;
-        change: (fieldName: string) => void;
+        change: () => (fieldName: string) => void;
         selectedItem: model.DropDownListItem;
         SetSelectedItem: (item: model.DropDownListItem) => void;
     }
@@ -55,7 +55,7 @@ module dockyard.directives.dropDownListBox {
             // Invoike onChange event handler
             if (this._$scope.change != null && angular.isFunction(this._$scope.change))
             {
-                this._$scope.$emit("onFieldChange", new pca.ChangeEventArgs(this._$scope.field.name));
+                this._$scope.change()(this._$scope.field.name);             
             } 
 
         }
