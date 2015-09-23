@@ -76,28 +76,26 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
     $urlRouterProvider.otherwise("/processes");
 
     $stateProvider
-
-    // Process Template list
+        // Process Template list
         .state('processTemplates', {
             url: "/processes",
             templateUrl: "/AngularTemplate/ProcessTemplateList",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
         })
 
-    // Process Template form
+        // Process Template form
         .state('processTemplate', {
             url: "/processes/{id}",
             templateUrl: "/AngularTemplate/ProcessTemplateForm",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
 
-    // Process Builder framework
+        // Process Builder framework
         .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
             data: { noTitle: true },
         })
-
 
         .state('showIncidents', {
             url: "/showIncidents",
@@ -117,12 +115,12 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
         })
 
-    // Manage files
-
+        // Manage files
         .state('managefiles', {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
-            data: { pageTitle: 'Manage Files', pageSubTitle: '' },
+            data: { pageTitle: 'Manage Files', pageSubTitle: '' }
+        })
 
         .state('accounts', {
             url: '/accounts',
