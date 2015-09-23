@@ -9,6 +9,7 @@
         configurationControls: model.ControlsList;
         activityTemplateId: number;
         activityTemplate: model.ActivityTemplate;
+        currentView: string;
 
         constructor(
             processNodeTemplateId: number,

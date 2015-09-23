@@ -55,7 +55,7 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDTO actionDTO)
+        public ActionDTO Configure(ActionDTO actionDTO)
         {
             return ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
@@ -96,8 +96,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
+            CrateDTO getErrorMessageCrate = null; 
 
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
@@ -107,9 +108,10 @@ namespace pluginDockyardCore.Actions
 
             if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
-                //temporarily disabling this exception because it's disrupting debugging. it will get fixed properly in 1085
-                //throw new ApplicationException("This action couldn't find either source fields or target fields (or both). "
-                   // + "Try configuring some Actions first, then try this page again.");
+                getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
+                         "This action couldn't find either source fields or target fields (or both). " +
+                        "Try configuring some Actions first, then try this page again.");
+                curActionDTO.CurrentView = "MapFieldsErrorMessage";
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
@@ -118,7 +120,9 @@ namespace pluginDockyardCore.Actions
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            return AssembleCrateStorage(downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate);
+            curActionDTO.CrateStorage = AssembleCrateStorage(downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate, getErrorMessageCrate);
+            return curActionDTO;
+
         }
 
         /// <summary>
@@ -128,6 +132,35 @@ namespace pluginDockyardCore.Actions
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDO)
         {
             return ConfigurationRequestType.Initial;
+        }
+
+        //Returning the crate with text field control 
+        private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
+        {
+            var fields = new List<FieldDefinitionDTO>() 
+            {
+                new TextBlockFieldDTO()
+                {
+                    FieldLabel = fieldLabel,
+                    Value = errorMessage,
+                    Type = "textBlockField",
+                    cssClass = "well well-lg"
+                    
+                }
+            };
+
+            var controls = new StandardConfigurationControlsMS()
+            {
+                Controls = fields
+            };
+
+            var crateControls = _crate.Create(
+                        "Configuration_Controls",
+                        JsonConvert.SerializeObject(controls),
+                        "Standard Configuration Controls"
+                    );
+
+            return crateControls;
         }
     }
 }

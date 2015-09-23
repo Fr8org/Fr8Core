@@ -157,13 +157,13 @@ module dockyard.directives.paneConfigureAction {
         }
 
         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
-        // We parse its contents and put it into currentAction.configurationControls structure.
+            // We parse its contents and put it into currentAction.configurationControls structure.
         private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
-
-            this.ActionService.configure(action).$promise.then((res: any) => {
-                (<any>scope.currentAction).crateStorage = res;
+            var self = this;
+            this.ActionService.configure(action).$promise.then(function (res: any) {               
+                scope.currentAction = res;
                 (<any>scope.currentAction).configurationControls =
-                this.crateHelper.createControlListFromCrateStorage(<model.CrateStorage>res);
+                self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
             });
 
             if (this.configurationWatchUnregisterer == null) {
