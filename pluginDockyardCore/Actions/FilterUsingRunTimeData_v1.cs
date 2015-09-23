@@ -255,14 +255,11 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
-                return ConfigurationRequestType.Initial;
-
             if (curActionDataPackageDTO.CrateStorage == null
                 && curActionDataPackageDTO.CrateStorage.CrateDTO == null)
             {
                 return ConfigurationRequestType.Initial;
             }
-
 
             var hasControlsCrate = curActionDataPackageDTO.CrateStorage.CrateDTO
                 .Any(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
