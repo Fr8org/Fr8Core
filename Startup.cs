@@ -35,7 +35,7 @@ namespace Web
             ConfigureDaemons();
             ConfigureAuth(app);
 
-            await RegisterPluginActions();          
+            await RegisterPluginActions();
 
             app.Use(async (context, next) =>
             {
@@ -168,7 +168,7 @@ namespace Web
                 alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
                 //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
             }
-        }      
+        }
 
 
         public bool CheckForActivityTemplate(string templateName)

@@ -126,12 +126,67 @@ namespace pluginDockyardCore.Actions
         }
 
         /// <summary>
+        /// Check if initial configuration was requested.
+        /// </summary>
+        private bool CheckIsInitialConfiguration(ActionDTO curAction)
+        {
+            // Check nullability for CrateStorage and Crates array length.
+            if (curAction.CrateStorage == null
+                || curAction.CrateStorage.CrateDTO == null
+                || curAction.CrateStorage.CrateDTO.Count == 0)
+            {
+                return true;
+            }
+
+            // Check nullability of Upstream and Downstream crates.
+            var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.Label == "Upstream Plugin-Provided Fields"
+                    && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
+
+            var downStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.Label == "Downstream Plugin-Provided Fields"
+                    && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
+
+            if (upStreamFieldsCrate == null
+                || string.IsNullOrEmpty(upStreamFieldsCrate.Contents)
+                || downStreamFieldsCrate == null
+                || string.IsNullOrEmpty(downStreamFieldsCrate.Contents))
+            {
+                return true;
+            }
+
+            // Check if Upstream and Downstream ManifestSchemas contain empty set of fields.
+            var upStreamFields = JsonConvert
+                .DeserializeObject<StandardDesignTimeFieldsMS>(upStreamFieldsCrate.Contents);
+
+            var downStreamFields = JsonConvert
+                .DeserializeObject<StandardDesignTimeFieldsMS>(downStreamFieldsCrate.Contents);
+
+            if (upStreamFields.Fields == null
+                || upStreamFields.Fields.Count == 0
+                || downStreamFields.Fields == null
+                || downStreamFields.Fields.Count == 0)
+            {
+                return true;
+        }
+
+            // If all rules are passed, then it is not an initial configuration request.
+            return false;
+        }
+        /// <summary>
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDO)
         {
+            if (CheckIsInitialConfiguration(curActionDO))
+            {
             return ConfigurationRequestType.Initial;
+        }
+            else
+            {
+                return ConfigurationRequestType.Followup;
+            }
         }
 
         //Returning the crate with text field control 
