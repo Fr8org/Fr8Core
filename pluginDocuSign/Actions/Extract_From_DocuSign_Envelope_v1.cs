@@ -23,7 +23,7 @@ namespace pluginDocuSign.Actions
         IAction _action = ObjectFactory.GetInstance<IAction>();
         IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
 
-        public object Configure(ActionDTO curActionDTO)
+        public ActionDTO Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
             return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
@@ -96,7 +96,7 @@ namespace pluginDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
             var textBlock = new TextBlockFieldDTO()
@@ -111,7 +111,7 @@ namespace pluginDocuSign.Actions
             var crateControls = PackControlsCrate(textBlock);
 
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
     }
 }

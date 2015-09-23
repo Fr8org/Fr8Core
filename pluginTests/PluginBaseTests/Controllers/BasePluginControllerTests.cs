@@ -29,9 +29,9 @@ namespace pluginTests.PluginBaseTests.Controllers
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
-            CrateStorageDTO result = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
+            ActionDTO actionDTO = (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
 
-            Assert.AreEqual("Standard Configuration Controls", result.CrateDTO[0].ManifestType);
+            Assert.AreEqual("Standard Configuration Controls", actionDTO.CrateStorage.CrateDTO[0].ManifestType);
         }
 
        

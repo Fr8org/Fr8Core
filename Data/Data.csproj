@@ -292,6 +292,10 @@
     <Compile Include="Migrations\201509221705426_EmptyMigration1.Designer.cs">
       <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs" />
+    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
+      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -533,6 +537,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509221705426_EmptyMigration1.resx">
       <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
+      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

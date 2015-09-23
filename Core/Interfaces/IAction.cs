@@ -12,7 +12,7 @@ namespace Core.Interfaces
 
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
         
-        CrateStorageDTO Configure(ActionDO curActionDO);
+        ActionDTO Configure(ActionDO curActionDO);
 
         ActionDO GetById(int id);
 

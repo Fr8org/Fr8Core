@@ -36,7 +36,7 @@ namespace PluginBase.BaseClasses
             _action = ObjectFactory.GetInstance<IAction>();
             //_activity = ObjectFactory.GetInstance<IActivity>();
         }
-        protected CrateStorageDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
+        protected ActionDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
@@ -52,15 +52,15 @@ namespace PluginBase.BaseClasses
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual CrateStorageDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual CrateStorageDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO.CrateStorage;
+            return curActionDTO;
         }
 
         //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
