@@ -104,7 +104,7 @@ module dockyard.controllers {
             this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected],
                 (event: ng.IAngularEvent, eventArgs: pwd.ActionSelectedEventArgs) => this.PaneWorkflowDesigner_ActionSelected(eventArgs));
             this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected],
-                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelecting(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelected(eventArgs));
 
             //Define Criteria Pane events
             // Commented out by yakov.gnusin to avoid breaking other V2 components.
@@ -144,7 +144,7 @@ module dockyard.controllers {
 
         private loadData() {
             var self = this;
-            var processTemplatePromise = self.ProcessTemplateService.getFull({ id: this._scope.processTemplateId });
+            var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this._scope.processTemplateId });
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 self._scope.current.processTemplate = curProcessTemplate;
@@ -156,6 +156,7 @@ module dockyard.controllers {
         }
 
         private renderProcessTemplate(curProcessTemplate: interfaces.IProcessTemplateVM) {
+
             if (curProcessTemplate.processNodeTemplates.length == 0) return;
 
             for (var curProcessNodeTemplate of curProcessTemplate.processNodeTemplates);
@@ -419,7 +420,7 @@ module dockyard.controllers {
         /*
             Handles message 'WorkflowDesignerPane_TemplateSelected'
         */
-        private PaneWorkflowDesigner_TemplateSelecting(eventArgs: pwd.TemplateSelectedEventArgs) {
+        private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("ProcessBuilderController: template selected");
 
             var scope = this._scope,
