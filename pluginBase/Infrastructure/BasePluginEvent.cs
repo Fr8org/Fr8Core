@@ -2,10 +2,7 @@
 using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace PluginUtilities.Infrastructure
@@ -72,7 +69,7 @@ namespace PluginUtilities.Infrastructure
                 SecondaryCategory = exceptionName,
                 Activity = "Occured"
             });
-            
+
             //return the response from the fr8's Event Controller
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
                 _eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate));
@@ -81,7 +78,9 @@ namespace PluginUtilities.Infrastructure
         /// <summary>
         /// Initializes a new rest call
         /// </summary>
-        private IRestfulServiceClient PrepareRestClient()
+        /// <returns>The protected access specifier is only for Unit Test purpose. 
+        /// In all other scenarios it should be teated as private</returns>
+        protected virtual IRestfulServiceClient PrepareRestClient()
         {
             var restCall = new RestfulServiceClient();
             return restCall;
