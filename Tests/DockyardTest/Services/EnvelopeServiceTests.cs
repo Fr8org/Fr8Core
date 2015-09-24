@@ -41,7 +41,7 @@ namespace DockyardTest.Services
             Assert.IsTrue(envelope.RestError == null,
                 "The CreateAndFillEnvelope request contained at least one invalid parameter.");
 
-            IEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
+            IDocuSignEnvelope envelopeService = new Data.Wrappers.DocuSignEnvelope();
             var env = new DocuSignEnvelope();
             IList<EnvelopeDataDTO> envelopeDatas = envelopeService.GetEnvelopeData(envelope);
 

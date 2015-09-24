@@ -24,7 +24,6 @@ namespace DockyardTest.DocuSign
     public class DocuSignTemplateTests : BaseTest
     {
 		 private readonly string TEMPLATE_WITH_ROLES_ID = "9a318240-3bee-475c-9721-370d1c22cec4";
-		 private readonly string TEMPLATE_WITH_USER_FIELDS_ID = "9a318240-3bee-475c-9721-370d1c22cec4";
 		 private readonly IDocusignApiHelper docusignApiHelper;
         private  IDocuSignTemplate _docusignTemplate;
 
@@ -81,39 +80,5 @@ namespace DockyardTest.DocuSign
             Assert.IsNotNull(fields);
             Console.Write(JsonConvert.SerializeObject(fields));
         }
-		  [Test]
-		  public void GetRecipients_ExistsTemplate_ShouldBeOk()
-		  {
-			  var recipients = _docusignTemplate.GetRecipients(TEMPLATE_WITH_ROLES_ID);
-
-			  Assert.AreEqual(3, recipients.signers.Length);
-			  Assert.AreEqual(1, recipients.carbonCopies.Length);
-			  var singers = recipients.signers;
-			  var carbonCopy = recipients.carbonCopies.First();
-			  Assert.AreEqual("Director", singers[0].roleName);
-			  Assert.AreEqual("reasyu@gmail.com", singers[0].email);
-			  Assert.AreEqual("President", singers[1].roleName);
-			  Assert.AreEqual("docusign_developer@dockyard.company", singers[1].email);
-			  Assert.AreEqual("Project Manager", singers[2].roleName);
-			  Assert.AreEqual("joanna@fogcitymail.com", singers[2].email);
-			  Assert.AreEqual("Vise President", carbonCopy.roleName);
-			  Assert.AreEqual("reasyu@yandex.ru", carbonCopy.email);
-		  }
-		  [Test]
-		  public void GetRecipients_NonExistsTemplate_ExpectedException()
-		  {
-			  var ex = Assert.Throws<InvalidOperationException>(() => _docusignTemplate.GetRecipients(Guid.NewGuid().ToString()));
-		  }
-
-		 [Test]
-		  public void GetUserFields_ExistsTempate_ShouldBeOk()
-		  {
-			  var userFields = _docusignTemplate.GetUserFields(TEMPLATE_WITH_USER_FIELDS_ID);
-			  var t1 = userFields.Where(x => x.tabLabel == "CustomField1").FirstOrDefault();
-			  var t2 = userFields.Where(x => x.tabLabel == "CustomField2").FirstOrDefault();
-			  Assert.AreEqual(2, userFields.Count);
-			  Assert.NotNull(t1);
-			  Assert.NotNull(t2);
-		  }
     }
 }

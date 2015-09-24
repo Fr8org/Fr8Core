@@ -22,7 +22,7 @@ namespace Core.Services
 {
     public class Action : IAction
     {
-        private IEnvelope _envelope;
+        private IDocuSignEnvelope _envelope;
         private IAction _action;
         private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;

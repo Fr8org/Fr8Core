@@ -10,7 +10,7 @@ namespace Data.Interfaces.ManifestSchemas
         public string Filetype { get; set; }
 
 		  public StandardFileHandleMS()
-			  : base(Constants.ManifestTypeEnum.StandardFileHandle)
+			  : base(Constants.MT.StandardFileHandle)
 		  { 
 		  }
     }

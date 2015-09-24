@@ -1,4 +1,5 @@
-﻿using Data.Wrappers;
+﻿using Data.Interfaces;
+using Data.Wrappers;
 using StructureMap;
 using System;
 using System.Collections.Generic;

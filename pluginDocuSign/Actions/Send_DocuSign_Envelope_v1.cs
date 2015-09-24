@@ -21,7 +21,7 @@ namespace pluginDocuSign.Actions
 	public class Send_DocuSign_Envelope_v1 : BasePluginAction
 	{
 		IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-		IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
+		IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
 		public object Configure(ActionDTO curActionDTO)
 		{
@@ -43,7 +43,7 @@ namespace pluginDocuSign.Actions
 			if (curCrates.CrateDTO.Count == 0)
 				return ConfigurationRequestType.Initial;
 
-			var controlsCrates = _action.GetCratesByManifestType(ManifestTypeEnum.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+			var controlsCrates = _action.GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
 			var curDocuSignTemplateId = _crate.GetElementByKey(controlsCrates, key: "target_docusign_template", keyFieldName: "name")
 				 .Select(e => (string)e["value"])
 				 .FirstOrDefault(s => !string.IsNullOrEmpty(s));
@@ -92,7 +92,7 @@ namespace pluginDocuSign.Actions
 
 			// Extract DocuSign Template Id
 			var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "target_docusign_template").Value;
-			var userFields = _template.GetUserFields(docusignTemplateId);
+			var userFields = new DocuSignTextTab().GetUserFields(docusignTemplateId);
 
 			//	when we're in design mode, there are no values
 			// we just want the names of the fields
@@ -124,7 +124,7 @@ namespace pluginDocuSign.Actions
 				Source = new FieldSourceDTO
 				{
 					Label = "Available Templates",
-					ManifestType = ManifestTypeEnum.StandardDesignTimeFields.GetEnumDisplayName()
+					ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
 				}
 			};
 

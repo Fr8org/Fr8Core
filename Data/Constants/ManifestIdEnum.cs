@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-	public enum ManifestTypeEnum : int
+	public enum MT : int
 	{
 		[Display(Name = "Standard Design-Time Fields")]
 		StandardDesignTimeFields = 3,

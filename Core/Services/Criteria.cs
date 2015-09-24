@@ -15,10 +15,10 @@ namespace Core.Services
 {
 	public class Criteria : ICriteria
 	{
-		private IEnvelope _envelope;
+		private IDocuSignEnvelope _envelope;
 		public Criteria()
 		{
-			_envelope = ObjectFactory.GetInstance<IEnvelope>();
+			_envelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 		}
 		public bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
 		{

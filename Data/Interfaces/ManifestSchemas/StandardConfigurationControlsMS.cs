@@ -9,7 +9,7 @@ namespace Data.Interfaces.ManifestSchemas
 
     public class ManifestSchema
     {
-		 public ManifestTypeEnum ManifestType { get; private set; }
+		 public MT ManifestType { get; private set; }
 		 public int ManifestId 
 		 { 
 			 get { return (int)ManifestType; } 
@@ -19,7 +19,7 @@ namespace Data.Interfaces.ManifestSchemas
 			 get { return ManifestType.GetEnumDisplayName(); }
 		 }
 
-		 public ManifestSchema(ManifestTypeEnum manifestType)
+		 public ManifestSchema(MT manifestType)
 		 {
 			 ManifestType = manifestType;
 		 }
@@ -30,7 +30,7 @@ namespace Data.Interfaces.ManifestSchemas
         public List<FieldDefinitionDTO> Controls { get; set; }
 
         public StandardConfigurationControlsMS()
-			  :base(ManifestTypeEnum.StandardConfigurationControls)
+			  :base(MT.StandardConfigurationControls)
         {
             Controls = new List<FieldDefinitionDTO>();
         }

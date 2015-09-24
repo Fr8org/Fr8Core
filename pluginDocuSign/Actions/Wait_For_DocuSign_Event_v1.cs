@@ -22,7 +22,7 @@ namespace pluginDocuSign.Actions
         IAction _action = ObjectFactory.GetInstance<IAction>();
         ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
+        IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
 
         public ActionDTO Configure(ActionDTO curActionDTO)

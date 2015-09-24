@@ -9,7 +9,7 @@ namespace Core.Services
 {
     public class DocuSignxTemplate 
     {
-        private readonly IEnvelope _envelope;
+        private readonly IDocuSignEnvelope _envelope;
 
         public DocuSignxTemplate()
         {

@@ -92,6 +92,14 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
 
             Mapper.CreateMap<FileDO, FileDTO>();
+
+				Mapper.CreateMap<Recipients, RecipientsDTO>().ConvertUsing<RecipientsToRecipientsDTOConverter>();
+				Mapper.CreateMap<Signer, RecipientDTO>()
+					.ForMember(x => x.Email, opts => opts.ResolveUsing(y => y.email))
+					.ForMember(x => x.Name, opts => opts.ResolveUsing(y => y.name))
+					.ForMember(x => x.RecipientId, opts => opts.ResolveUsing(y => y.recipientId))
+					.ForMember(x => x.Role, opts => opts.ResolveUsing(y => y.roleName));
+
         }
     }   
 }

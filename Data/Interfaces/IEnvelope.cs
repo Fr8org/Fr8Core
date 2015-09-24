@@ -7,7 +7,7 @@ using Data.Wrappers;
 
 namespace Data.Interfaces
 {
-    public interface IEnvelope
+    public interface IDocuSignEnvelope
     {
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 

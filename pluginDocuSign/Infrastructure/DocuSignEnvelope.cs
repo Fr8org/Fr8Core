@@ -11,7 +11,7 @@ using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Infrastructure
 {
-    public class DocuSignEnvelope : Envelope, IEnvelope
+    public class DocuSignEnvelope : Envelope, IDocuSignEnvelope
     {
         private string _baseUrl;
         private readonly ITab _tab;

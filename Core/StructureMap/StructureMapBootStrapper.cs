@@ -110,9 +110,10 @@ namespace Core.StructureMap
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IEnvelope>().Use<DocuSignEnvelope>();
+                For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
-                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+					 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+					 For<IDocuSignRecipient>().Use<DocuSignRecipient>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
@@ -164,15 +165,16 @@ namespace Core.StructureMap
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
-                For<IEnvelope>().Use<DocuSignEnvelope>();
+                For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
                 pluginTransmitterMock.Setup(e => e.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).Returns(Task.FromResult<string>("{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"));
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IEnvelope>().Use<DocuSignEnvelope>();
+                For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
                 For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+					 For<IDocuSignRecipient>().Use<DocuSignRecipient>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();

@@ -10,7 +10,7 @@ using Utilities.Serializers.Json;
 
 namespace Data.Wrappers
 {
-    public class DocuSignEnvelope : Envelope, IEnvelope
+    public class DocuSignEnvelope : Envelope, IDocuSignEnvelope
     {
         private string _baseUrl;
         private readonly ITab _tab;
