@@ -368,13 +368,5 @@ namespace DockyardTest.Services
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
-
-        [Test]
-        public void GetActionsByProcessTemplate_ShouldReturnActions()
-        {
-            var pt = FixtureData.TestProcessTemplateWithSubscribeEvent();
-            var action = _action.GetByProcessTemplate(pt.Id);
-            Assert.AreEqual(1, action.Count());
-        }
     }
 }
