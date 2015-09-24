@@ -32,7 +32,7 @@ namespace DockyardTest.Actions
         public override void SetUp()
         {
             base.SetUp();
-            PluginAzureSqlServerStructureMapBootstrapper.ConfigureDependencies(PluginAzureSqlServerStructureMapBootstrapper.DependencyType.TEST);
+            ObjectFactory.Configure(PluginAzureSqlServerStructureMapRegistries.TestConfiguration);
         }
 
         [Test]

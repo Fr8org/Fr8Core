@@ -334,6 +334,7 @@
     <Compile Include="Controllers\StatusController.cs" />
     <Compile Include="Controllers\AngularTemplateController.cs" />
     <Compile Include="Controllers\ManageFileController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
@@ -380,7 +381,6 @@
     <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="MvcHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
     <Compile Include="ViewModels\ForgotPasswordVM.cs" />
@@ -757,11 +757,14 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\AccountListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FactDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDTO.ts" />
@@ -779,9 +782,11 @@
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\services\CrateHelper.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageFileService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ReportService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
@@ -3957,6 +3962,8 @@
     <Content Include="Views\AngularTemplate\RadioButtonGroup.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\AccountList.cshtml" />
+    <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <None Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
