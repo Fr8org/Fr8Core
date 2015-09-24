@@ -1,13 +1,16 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Core.Interfaces;
-using Core.Managers;
-using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
+using StructureMap;
+using Core.Interfaces;
+using Core.Managers;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
 
 namespace Web.Controllers
 {
@@ -37,7 +40,27 @@ namespace Web.Controllers
             EventReportMS eventReportMS = _crate.GetContents<EventReportMS>(curCrateStandardEventReport);
 
             //call DockyardEvent#ProcessInbound
-            _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
+
+            // Commented out by yakov.gnusin.
+            // We cannot use User.Identity.GetUserId() here,
+            // since this is asynchronous API call, no authorized user in HttpContext here.
+            // _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
+
+            // Added by yakov.gnusin, for test purposes only!!! Fix that later.
+            // Get first active ProcessTemplate and get its UserID.
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curActiveProcessTemplate = uow.ProcessTemplateRepository
+                    .GetQuery()
+                    .FirstOrDefault(x => x.ProcessTemplateState == ProcessTemplateState.Active);
+
+                if (curActiveProcessTemplate == null)
+                {
+                    throw new ApplicationException("No active process templates found.");
+                }
+
+                _dockyardEvent.ProcessInbound(curActiveProcessTemplate.DockyardAccount.Id, eventReportMS);
+            }
 
             return Ok();
         }
