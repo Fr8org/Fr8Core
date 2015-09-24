@@ -15,10 +15,8 @@ namespace Core.Services
 {
     public class Crate : ICrate
     {
-        private readonly JsonSerializer _serializer;
         public Crate()
         {
-            _serializer = new JsonSerializer();
         }
 
         public CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
@@ -52,7 +50,7 @@ namespace Core.Services
 
         public T GetContents<T>(CrateDTO crate)
         {
-            return _serializer.Deserialize<T>(crate.Contents);
+            return JsonConvert.DeserializeObject<T>(crate.Contents);
         }
 
         public IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName)

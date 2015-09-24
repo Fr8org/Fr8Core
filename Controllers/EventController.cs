@@ -103,7 +103,9 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async Task<IHttpActionResult> ProcessIncomingEvents(string pluginName, string pluginVersion)
+        public async Task<IHttpActionResult> ProcessIncomingEvents(
+            [FromUri(Name = "dockyard_plugin")] string pluginName,
+            [FromUri(Name = "version")] string pluginVersion)
         {
             //if either or both of the plugin name and version are not available, the action in question did not inform the correct URL to the external service
             if (string.IsNullOrEmpty(pluginName) || string.IsNullOrEmpty(pluginVersion))
