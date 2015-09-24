@@ -27,7 +27,7 @@ module dockyard.directives.paneWorkflowDesigner {
     export class CriteriaAddingEventArgs {
     }
 
-    export class AddProcessNodeTemplateEventArgs {
+    export class AddCriteriaEventArgs {
         public id: number;
         public isTempId: boolean;
         public name: string;
@@ -81,11 +81,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class AddActionEventArgs {
         public criteriaId: number;
-        public action: model.ActionDesignDTO;
+        public action: model.ActionDTO;
         public actionListType: model.ActionListType;
 
         constructor(criteriaId: number,
-            action: model.ActionDesignDTO,
+            action: model.ActionDTO,
             actionListType: model.ActionListType) {
 
             this.criteriaId = criteriaId;

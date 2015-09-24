@@ -11,7 +11,7 @@ module dockyard.directives.paneWorkflowDesigner {
         };
 
         
-        var onProcessNodeTemplateAdded = function (eventArgs: AddProcessNodeTemplateEventArgs, scope: IPaneWorkflowDesignerScope) {
+        var onProcessNodeTemplateAdded = function (eventArgs: AddCriteriaEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onCriteriaAdded', eventArgs);
             scope.widget.addCriteria({
                 id: eventArgs.id,
@@ -133,7 +133,7 @@ module dockyard.directives.paneWorkflowDesigner {
                     (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, scope));
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_AddCriteria],
-                    (event: ng.IAngularEvent, eventArgs: AddProcessNodeTemplateEventArgs) => onProcessNodeTemplateAdded(eventArgs, scope));
+                    (event: ng.IAngularEvent, eventArgs: AddCriteriaEventArgs) => onProcessNodeTemplateAdded(eventArgs, scope));
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_RemoveCriteria],
                     (event: ng.IAngularEvent, eventArgs: RemoveCriteriaEventArgs) => onProcessNodeTemplateRemoved(eventArgs, scope));

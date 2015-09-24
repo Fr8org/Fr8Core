@@ -119,10 +119,6 @@ namespace Web.Controllers
 
             var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
             return Ok(resultActionDTO);
-        }
-
-  
-
-        
+        }    
     }
 }
