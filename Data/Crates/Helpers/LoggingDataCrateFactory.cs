@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
 using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
@@ -13,8 +14,11 @@ namespace Data.Crates.Helpers
     {
         public CrateDTO Create(LoggingData loggingData)
         {
-            var serializer = new JsonSerializer();
-            var contents = serializer.Serialize(loggingData);
+            // var serializer = new JsonSerializer();
+            // var contents = serializer.Serialize(loggingData);
+
+            var contents = JsonConvert.SerializeObject(loggingData);
+
             return new CrateDTO()
             {
                 Id = Guid.NewGuid().ToString(),
