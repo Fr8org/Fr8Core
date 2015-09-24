@@ -27,7 +27,7 @@ module dockyard.directives {
                         { text: 'Not equal', value: 'neq' }
                     ];
 
-                    $scope.defaultOperator = 'gt';
+                    $scope.defaultOperator = '';
 
                     $scope.$watch('currentAction', function (newValue: model.ActionDTO) {
                         if (newValue && newValue.crateStorage) {
@@ -53,7 +53,12 @@ module dockyard.directives {
                             $scope.executionType = jsonValue.executionType;
                         }
                         else {
-                            $scope.conditions = [];
+                            $scope.conditions = [
+                                new model.Condition(
+                                    null,
+                                    $scope.defaultOperator,
+                                    null)
+                            ];
                             $scope.executionType = 1;
                         }
                     });

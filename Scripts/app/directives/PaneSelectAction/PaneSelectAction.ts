@@ -128,6 +128,7 @@ module dockyard.directives.paneSelectAction {
                     currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.activityTemplateId })[0];
 
                     if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
+                        $scope.currentAction.activityTemplateName = currentSelectedActivity.name;
                         // Ensure that we do not send CrateStorage of previously selected storage to server.
                         $scope.currentAction.crateStorage = new model.CrateStorage();
                         //Check for component activity

@@ -28,7 +28,7 @@ module dockyard.directives {
             controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {
                 $scope.addRow = function () {
                     var condition = new model.Condition(
-                        tryFirstFieldKey($scope.fields),
+                        null,
                         $scope.defaultOperator,
                         null
                         );
