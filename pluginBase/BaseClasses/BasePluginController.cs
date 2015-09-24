@@ -18,10 +18,13 @@ namespace PluginBase.BaseClasses
             _basePluginEvent = new BasePluginEvent();
         }
 
+        /// <summary>
+        /// Reports Plugin Error incident
+        /// </summary>
         [HttpGet]
         public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
         {
-            return Json(ReportPluginError(pluginName, pluginError.Message, pluginError.GetType().Name));
+            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, pluginError.Message, pluginError.GetType().Name));
         }
 
         /// <summary>
@@ -56,14 +59,6 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
         }﻿
 
-        /// <summary>
-        /// Reports Plugin Error incident
-        /// </summary>
-        private Task<string> ReportPluginError(string pluginName, string pluginErrorMessage, string pluginExceptionName)
-        {
-            return _basePluginEvent.SendPluginErrorIncident(pluginName, pluginErrorMessage, pluginExceptionName);
-        }
-
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
@@ -77,7 +72,5 @@ namespace PluginBase.BaseClasses
             var response = (object)curMethodInfo.Invoke(curObject, new Object[] { dataObject });
             return response;
         }
-
-
     }
 }

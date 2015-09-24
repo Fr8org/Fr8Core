@@ -5,6 +5,7 @@ using System.Web.Http;
 using Core.StructureMap;
 using PluginBase;
 using pluginDocuSign.Infrastructure;
+using PluginUtilities.BaseClasses;
 using StructureMap;
 
 namespace pluginDocuSign
@@ -13,21 +14,12 @@ namespace pluginDocuSign
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+            BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginDocuSign",
                 routeTemplate: "plugin_docusign/{controller}/{id}"
             );
-
-            //Web API Exception Filter
-            config.Filters.Add(new WebApiExceptionFilterAttribute());
-
-            //config.Routes.MapHttpRoute(
-            //    name: "PluginDocuSign",
-            //    routeTemplate: "plugin_docusign/actions/{action}"
-            //);
         }
     }
 }

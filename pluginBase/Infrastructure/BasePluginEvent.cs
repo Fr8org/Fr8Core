@@ -12,12 +12,13 @@ namespace PluginUtilities.Infrastructure
 {
     public class BasePluginEvent
     {
-        private readonly EventReportCrateFactory _eventReportCrateFactoryHelper;
-        private readonly LoggingDataCrateFactory _loggingDataCrateFactoryHelper;
+        private readonly EventReportCrateFactory _eventReportCrateFactory;
+        private readonly LoggingDataCrateFactory _loggingDataCrateFactory;
+
         public BasePluginEvent()
         {
-            _eventReportCrateFactoryHelper = new EventReportCrateFactory();
-            _loggingDataCrateFactoryHelper = new LoggingDataCrateFactory();
+            _eventReportCrateFactory = new EventReportCrateFactory();
+            _loggingDataCrateFactory = new LoggingDataCrateFactory();
         }
 
 
@@ -31,7 +32,7 @@ namespace PluginUtilities.Infrastructure
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
-            var loggingDataCrate = _loggingDataCrateFactoryHelper.Create(new LoggingData
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
             {
                 ObjectId = pluginName,
                 CustomerId = "not_applicable",
@@ -43,7 +44,7 @@ namespace PluginUtilities.Infrastructure
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed pluginName and eventType
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _eventReportCrateFactoryHelper.Create(eventType, pluginName, loggingDataCrate));
+                _eventReportCrateFactory.Create(eventType, pluginName, loggingDataCrate));
 
         }
 
@@ -62,7 +63,7 @@ namespace PluginUtilities.Infrastructure
             string url = ConfigurationManager.AppSettings[eventWebServerUrl];
 
             //create event logging data with required information
-            var loggingDataCrate = _loggingDataCrateFactoryHelper.Create(new LoggingData
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
             {
                 ObjectId = pluginName,
                 CustomerId = "",
@@ -74,7 +75,7 @@ namespace PluginUtilities.Infrastructure
             
             //return the response from the fr8's Event Controller
             return restClient.PostAsync(new Uri(url, UriKind.Absolute),
-                _eventReportCrateFactoryHelper.Create("Plugin Incident", pluginName, loggingDataCrate));
+                _eventReportCrateFactory.Create("Plugin Incident", pluginName, loggingDataCrate));
         }
 
         /// <summary>

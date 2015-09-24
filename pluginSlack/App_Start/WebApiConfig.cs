@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using PluginBase;
+using PluginUtilities.BaseClasses;
 using StructureMap;
 
 namespace pluginSlack
@@ -12,16 +13,12 @@ namespace pluginSlack
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+            BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginSlack",
                 routeTemplate: "plugin_slack/{controller}/{id}"                
             );
-
-            //Web API Exception Filter
-            config.Filters.Add(new WebApiExceptionFilterAttribute());
         }
     }
 }
