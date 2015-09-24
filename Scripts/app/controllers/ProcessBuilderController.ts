@@ -148,7 +148,6 @@ module dockyard.controllers {
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 self._scope.current.processTemplate = curProcessTemplate;
-                debugger;
                 var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists
                 self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0]
 
@@ -286,7 +285,6 @@ module dockyard.controllers {
             Handles message 'PaneWorkflowDesigner_ActionAdding'
         */
         private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
-            debugger;
             console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
             var processNodeTemplateId: number,
                 id: number;
@@ -321,7 +319,6 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("Action selected: " + eventArgs.actionId);
-            debugger;
             var originalId,
                 actionId = eventArgs.actionId,
                 canBypassActionLoading = false;
