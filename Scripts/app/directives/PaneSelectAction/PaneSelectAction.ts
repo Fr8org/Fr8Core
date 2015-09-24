@@ -4,8 +4,8 @@ module dockyard.directives.paneSelectAction {
     'use strict';
 
     export interface IPaneSelectActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) => void;
-        currentAction: model.ActionDesignDTO;
+        onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) => void;
+        currentAction: model.ActionDTO;
         isVisible: boolean;
         actionTypes: Array<model.ActivityTemplate>;
         ActionTypeSelected: () => void;
@@ -13,7 +13,7 @@ module dockyard.directives.paneSelectAction {
         componentActivities: string[];
         ChildActivityTypeSelected: (actionTemplateId: number) => void;
         childActivityStepId: number;
-        childActivity: model.ActionDesignDTO;
+        childActivity: model.ActionDTO;
     }
 
     export enum MessageType {
@@ -118,7 +118,7 @@ module dockyard.directives.paneSelectAction {
 
                 this.PopulateData($scope, $http);
 
-                $scope.$watch<model.ActionDesignDTO>(
+                $scope.$watch<model.ActionDTO>(
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
@@ -185,7 +185,7 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) {
 
         }
 

@@ -33,7 +33,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            
+
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -41,6 +41,43 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.ActionRepository.GetAll().Select(Mapper.Map<TViewModel>);
+            }
+        }
+
+        public IEnumerable<ActionDO> GetByProcessTemplate(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("id");
+            }
+
+            var result = new List<ActionDO>();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Get action list by process template first 
+                var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
+                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+
+                if (curProcessTemplate.Count() == 0
+                    || curProcessTemplate.SingleOrDefault().StartingProcessNodeTemplate == null)
+                    return result;
+
+                // Get ActionLists related to the ProcessTemplate
+                var curActionList = curProcessTemplate.SingleOrDefault()
+                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
+                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+
+                if (curActionList == null)
+                    return result;
+
+                // Get all the actions for that action list
+                var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
+
+                if (curActivities.Count() == 0)
+                    return result;
+
+                return curActivities;
             }
         }
 
@@ -79,7 +116,7 @@ namespace Core.Services
                 }
 
                 uow.SaveChanges();
-                curAction.IsTempId = false; 
+                curAction.IsTempId = false;
                 return curAction;
             }
         }
@@ -135,8 +172,8 @@ namespace Core.Services
                         }
 
                         //Converting Received ActionDTO in JSON Format to ActionDTO Object
-                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);                        
-                      
+                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);
+
                         //Plugin Configure Action Return ActionDTO
                         curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
@@ -144,7 +181,7 @@ namespace Core.Services
                         SaveOrUpdateAction(curActionDO);
 
                         //Returning ActionDTO
-                        return tempActionDTO;                       
+                        return tempActionDTO;
                     }
 
                     else
@@ -230,7 +267,7 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            
+
             //TODO : Cut base Url from PluginDO.Endpoint
 
             curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
@@ -241,7 +278,7 @@ namespace Core.Services
             return jsonResult;
         }
 
-       
+
 
         /// <summary>
         /// Retrieve authorization token
@@ -269,9 +306,7 @@ namespace Core.Services
                     return curToken;
                 return _plugin.Authorize();
             }
-
         }
-
 
         /// <summary>
         /// Retrieve account
@@ -344,7 +379,7 @@ namespace Core.Services
                     {
                         //convert the Action to a DTO in preparation for serialization and POST to the plugin
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-                        string curPluginUrl = string.Format("http://{0}/actions/{1}/",curActivityTemplate.Plugin.Endpoint, actionName);
+                        string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
                         var restClient = new RestfulServiceClient();
                         string result;
                         try

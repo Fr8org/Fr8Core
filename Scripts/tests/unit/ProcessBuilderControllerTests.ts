@@ -32,11 +32,12 @@ module dockyard.tests.controller {
             _urlPrefix: string,
             _crateHelper: services.CrateHelper,
             _localIdentityGenerator: services.LocalIdentityGenerator,
-            _$timeout: ng.ITimeoutService;
+            _$timeout: ng.ITimeoutService,
+            _$filter: ng.IFilterService;
 
         beforeEach(() => {
             
-            inject(($controller, $rootScope, $q, $http, $timeout) => {
+            inject(($controller, $rootScope, $q, $http, $timeout, $filter) => {
                 _actionServiceMock = new utils.ActionServiceMock($q);
                 _processTemplateServiceMock = new utils.ProcessTemplateServiceMock($q);
                 _actionListServiceMock = new utils.ActionListServiceMock($q);
@@ -46,6 +47,7 @@ module dockyard.tests.controller {
                 _$q = $q;
                 _$timeout = $timeout;
                 _$scope = tests.utils.Factory.GetProcessBuilderScope($rootScope);
+                _$filter = $filter;
                 _$state = {
                     data: {
                         pageSubTitle: ""
@@ -74,7 +76,8 @@ module dockyard.tests.controller {
                         ProcessBuilderService: _processBuilderServiceMock,
                         ActionListService: _actionListServiceMock,
                         CrateHelper: _crateHelper,
-                        ActivityTemplateService: null
+                        ActivityTemplateService: null,
+                        $filter: _$filter
                     });
             });
             spyOn(_$scope, "$broadcast");
@@ -86,7 +89,6 @@ module dockyard.tests.controller {
         };
         
         it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectAction_Hide should be received", () => {
-            
             _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
             resolvePromises();
             expect(_$scope.$broadcast).toHaveBeenCalledWith(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);

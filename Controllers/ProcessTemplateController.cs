@@ -38,7 +38,7 @@ namespace Web.Controllers
             _processTemplate = processTemplate;
         }
 
-        [Route("full")]
+        [Route("full/{id:int}")]
         [ResponseType(typeof(FullProcessTemplateDTO))]
         [HttpGet]
         public IHttpActionResult GetFullProcessTemplate(int id)

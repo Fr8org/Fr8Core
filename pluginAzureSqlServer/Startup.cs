@@ -61,12 +61,12 @@ namespace pluginAzureSqlServer
 
             if (!selfHost)
             {
-            Task.Run(() =>
-            {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_azure_sql_server");
-            });
-        }
+                Task.Run(() =>
+                {
+                    BasePluginController curController = new BasePluginController();
+                    curController.AfterStartup("plugin_azure_sql_server");
+                });
+            }
         }
 
         public class PluginControllerTypeResolver : IHttpControllerTypeResolver
