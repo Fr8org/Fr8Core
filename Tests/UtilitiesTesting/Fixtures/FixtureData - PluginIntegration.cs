@@ -7,6 +7,7 @@ namespace UtilitiesTesting.Fixtures
     {
         public static string TestPlugin_DocuSign_EndPoint = "localhost:60001";
         public static string TestPlugin_Core_EndPoint = "localhost:60002";
+        public static string TestPlugin_AzureSqlServer_EndPoint = "localhost:60003";
 
         public static ActionListDO TestActionList_ImmediateActions()
         {
@@ -39,6 +40,17 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static PluginDO TestPlugin_AzureSqlServer()
+        {
+            return new PluginDO
+            {
+                Name = "pluginAzureSqlServer",
+                Endpoint = TestPlugin_AzureSqlServer_EndPoint,
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDO TestActivityTemplateDO_WaitForDocuSignEvent()
         {
             return new ActivityTemplateDO()
@@ -56,6 +68,16 @@ namespace UtilitiesTesting.Fixtures
                 Name = "FilterUsingRunTimeData",
                 Version = "1",
                 Plugin = TestPlugin_Core()
+            };
+        }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_WriteToSqlServer()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "Write_To_Sql_Server",
+                Version = "1",
+                Plugin = TestPlugin_AzureSqlServer()
             };
         }
 
