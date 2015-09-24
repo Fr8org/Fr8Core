@@ -253,7 +253,7 @@ namespace Core.Services
             foreach (var processTemplateDO in subscribingProcessTemplates)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActivity(processTemplateDO) as ActionDO;
+                var actionDO = GetFirstActivity(processTemplateDO.Id) as ActionDO;
 
                 //Get the CrateStorage
                 if (actionDO != null && actionDO.CrateStorage != "")
@@ -275,21 +275,32 @@ namespace Core.Services
             return processTemplateSubscribers;
         }
 
-        public ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO)
+        public ActivityDO GetFirstActivity(int curProcessTemplateId)
         {
-            ActivityDO activityDO = null;
-            List<ActionListDO> actionLists = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.ActionLists).ToList();
-            if (actionLists.Count > 1)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new Exception("Multiple ActionList found in ProcessTemplateDO");
-            }
-            else if (actionLists.Count > 0)
-            {
-                ActionListDO actionListDO = actionLists[0];
-                activityDO = actionListDO.Activities.OrderBy(o => o.Ordering).FirstOrDefault();
-            }
+                var curProcessTemplateDO = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateId);
 
-            return activityDO;
+                ActivityDO activityDO = null;
+                var actionLists = curProcessTemplateDO.ProcessNodeTemplates
+                    .SelectMany(s => s.ActionLists.Where(x => x.ActionListType == ActionListType.Immediate))
+                    .ToList();
+
+                if (actionLists.Count > 1)
+                {
+                    throw new Exception("Multiple ActionList found in ProcessTemplateDO");
+                }
+
+                else if (actionLists.Count > 0)
+                {
+                    var actionListDO = actionLists[0];
+                    activityDO = actionListDO.Activities
+                        .OrderBy(o => o.Ordering)
+                        .FirstOrDefault();
+                }
+
+                return activityDO;
+            }
         }
 
     }

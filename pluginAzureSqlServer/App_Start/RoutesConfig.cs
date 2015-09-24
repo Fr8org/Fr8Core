@@ -10,21 +10,12 @@ using StructureMap;
 
 namespace pluginAzureSqlServer
 {
-    public static class WebApiConfig
+    public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
            
-          /*  ObjectFactory.Initialize(i =>
-            {
-                i.For<IDbProvider>().Use<SqlClientDbProvider>();
-                
-            });*/
-
-            // Web API configuration and services
-            new  Container().Inject<IDbProvider>(new SqlClientDbProvider());
-            
-            BasePluginWebApiConfig.Register(config);
+          BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginAzureSqlServer",

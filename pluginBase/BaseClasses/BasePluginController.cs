@@ -67,6 +67,11 @@ namespace PluginBase.BaseClasses
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
+            if (calledType == null)
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} plugin.", 
+                    curActionDTO.ActivityTemplate.Name,
+                    curActionDTO.ActivityTemplate.Version, 
+                    curPlugin), "curActionDTO");
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
             var response = (object)curMethodInfo.Invoke(curObject, new Object[] { dataObject });
