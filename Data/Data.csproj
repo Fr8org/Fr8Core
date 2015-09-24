@@ -297,10 +297,6 @@
     <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509232348573_UpdateProcessNodeTemplateDO.cs" />
-    <Compile Include="Migrations\201509232348573_UpdateProcessNodeTemplateDO.Designer.cs">
-      <DependentUpon>201509232348573_UpdateProcessNodeTemplateDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -545,9 +541,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509232348573_UpdateProcessNodeTemplateDO.resx">
-      <DependentUpon>201509232348573_UpdateProcessNodeTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
