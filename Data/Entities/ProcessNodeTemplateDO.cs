@@ -25,7 +25,7 @@ namespace Data.Entities
         public string Name { get; set; }
 
         [ForeignKey("ProcessTemplate")]
-        public int? ParentTemplateId { get; set; }
+        public int ParentTemplateId { get; set; }
 
         public virtual ProcessTemplateDO ProcessTemplate { get; set; }
 
