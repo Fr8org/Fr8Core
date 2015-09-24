@@ -54,12 +54,15 @@ namespace Web.Controllers
                     .GetQuery()
                     .FirstOrDefault(x => x.ProcessTemplateState == ProcessTemplateState.Active);
 
-                if (curActiveProcessTemplate == null)
+                if (curActiveProcessTemplate != null)
                 {
-                    throw new ApplicationException("No active process templates found.");
+                    _dockyardEvent.ProcessInbound(curActiveProcessTemplate.DockyardAccount.Id, eventReportMS);
+                    
                 }
-
-                _dockyardEvent.ProcessInbound(curActiveProcessTemplate.DockyardAccount.Id, eventReportMS);
+                else
+                {
+                    _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
+                }
             }
 
             return Ok();

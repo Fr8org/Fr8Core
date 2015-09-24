@@ -20,7 +20,7 @@ namespace Core.Interfaces
 
         IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport);
 
-        ActivityDO GetFirstActivity(ProcessTemplateDO curProcessTemplateDO);
+        ActivityDO GetFirstActivity(int curProcessTemplateId);
 
 
         string Activate(ProcessTemplateDO curProcessTemplate);
