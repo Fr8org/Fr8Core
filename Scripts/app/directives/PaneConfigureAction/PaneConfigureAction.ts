@@ -22,15 +22,15 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export class MapFieldsClickedEventArgs {
-        action: model.ActionDesignDTO;
+        action: model.ActionDTO;
 
-        constructor(action: model.ActionDesignDTO) {
+        constructor(action: model.ActionDTO) {
             this.action = action;
         }
     }
 
     export interface IPaneConfigureActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneConfigureActionScope) => void;
+        onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneConfigureActionScope) => void;
         action: interfaces.IActionDesignDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
@@ -54,7 +54,7 @@ module dockyard.directives.paneConfigureAction {
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _currentAction: interfaces.IActionDesignDTO =
-        new model.ActionDesignDTO(0, 0, false, 0); //a local immutable copy of current action
+        new model.ActionDTO(0, 0, false, 0); //a local immutable copy of current action
         private configurationWatchUnregisterer: Function;
 
         constructor(

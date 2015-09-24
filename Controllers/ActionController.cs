@@ -121,8 +121,11 @@ namespace Web.Controllers
             return Ok(resultActionDTO);
         }
 
-  
-
-        
+        [HttpGet]
+        [Route("bypt")]
+        public IEnumerable<ActionDTO> GetActionsByProcessTemplate(int id)
+        {
+            return _action.GetByProcessTemplate(id).Select(a => Mapper.Map<ActionDTO>(a));
+        }       
     }
 }

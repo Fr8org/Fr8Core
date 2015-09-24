@@ -4,11 +4,9 @@ var dockyard;
     (function (tests) {
         var utils;
         (function (utils) {
-            //The class contains methods to create mocks for complex objects
             var Factory = (function () {
                 function Factory() {
                 }
-                //Creates a mock for ProcessBuilderController $scope
                 Factory.GetProcessBuilderScope = function (rootScope) {
                     var scope = rootScope.$new();
                     scope.processTemplateId = 0;
@@ -19,9 +17,6 @@ var dockyard;
                 return Factory;
             })();
             utils.Factory = Factory;
-            /*
-                Mock for ActionService
-            */
             var ActionServiceMock = (function () {
                 function ActionServiceMock($q) {
                     this.save = jasmine.createSpy('save').and.callFake(function () {
@@ -50,9 +45,6 @@ var dockyard;
             var ActionListServiceMock = (function () {
                 function ActionListServiceMock($q) {
                     this.byProcessNodeTemplate = jasmine.createSpy('byProcessNodeTemplate').and.callFake(function () {
-                        /*var def: any = $q.defer();
-                        def.resolve(fixtures.ProcessBuilder.newActionListDTO);
-                        def.promise.$promise = def.promise;*/
                         return utils.fixtures.ProcessBuilder.newActionListDTO;
                     });
                 }
