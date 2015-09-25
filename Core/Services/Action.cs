@@ -51,7 +51,9 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 if (submittedActionData.ActivityTemplateId == 0)
+                {
                     submittedActionData.ActivityTemplateId = null;
+                }
 
                 if (submittedActionData.Id > 0)
                 {

@@ -298,19 +298,28 @@ namespace Core.Services
                 var actionDO = GetFirstActivity(processTemplateDO.Id) as ActionDO;
 
                 //Get the CrateStorage
-                if (actionDO != null && actionDO.CrateStorage != "")
+                if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
                 {
-                    //Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
+                    // Loop each CrateDTO in CrateStorage
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action
+                        .GetCratesByManifestType(
+                            CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
+                            actionDO.CrateStorageDTO()
+                        );
+
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
                         EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
 
-                        if (subscriptionsList != null && subscriptionsList.Subscriptions
-                            .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
-                            .Any())//check event names if its subscribing
+                        bool hasEvents = subscriptionsList.Subscriptions
+                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()))
+                            .Any();
+
+                        if (subscriptionsList != null && hasEvents)
+                        {
                             processTemplateSubscribers.Add(processTemplateDO);
+                        }
                     }
                 }
             }
