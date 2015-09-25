@@ -28,7 +28,7 @@ namespace Data.Infrastructure
 
             public override string ToString()
             {
-                
+
                 const string displayChange = "[{0}]: [{1}] -> [{2}]";
                 return String.Format(displayChange, PropertyName, OriginalValue, NewValue);
             }
@@ -44,7 +44,7 @@ namespace Data.Infrastructure
         public DockyardDbContext()
             : base("name=DockyardDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
 
@@ -57,7 +57,7 @@ namespace Data.Infrastructure
         private List<PropertyChangeInformation> GetEntityModifications<T>(DbEntityEntry<T> entity)
             where T : class
         {
-            return GetEntityModifications((DbEntityEntry) entity);
+            return GetEntityModifications((DbEntityEntry)entity);
         }
 
         public void DetectChanges()
@@ -116,7 +116,7 @@ namespace Data.Infrastructure
             var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
             foreach (DbEntityEntry<ICreateHook> entity in addHooks)
             {
-               createdEntityList.Add(entity);
+                createdEntityList.Add(entity);
             }
 
             FixForeignKeyIDs(adds);
@@ -132,7 +132,7 @@ namespace Data.Infrastructure
             {
                 createdEntity.Entity.AfterCreate();
             }
-            
+
             return saveResult;
         }
 
@@ -171,7 +171,7 @@ namespace Data.Infrastructure
                 foreach (var prop in propsWithForeignKeyNotation)
                 {
                     var attr = prop.GetCustomAttribute<ForeignKeyAttribute>(true);
-                    
+
                     //Now.. find out which way it goes..
                     var linkedName = attr.Name;
                     var linkedProp = propType.GetProperties().FirstOrDefault(n => n.Name == linkedName);
@@ -303,7 +303,7 @@ namespace Data.Infrastructure
                     "Index",
                     new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) { IsUnique = true }));
 
-        
+
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
@@ -312,14 +312,14 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionDO>()
                 .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-          
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
                     ts.Id,
                     ts.ForeignTableName
                 });
- 
+
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
 
@@ -341,11 +341,10 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.PluginID)
                 .WillCascadeOnDelete(false);
 
-                
 
             base.OnModelCreating(modelBuilder);
         }
 
-       // public System.Data.Entity.DbSet<Data.Entities.ProcessDO> Processes { get; set; }
+        // public System.Data.Entity.DbSet<Data.Entities.ProcessDO> Processes { get; set; }
     }
 }
