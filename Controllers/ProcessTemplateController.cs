@@ -1,24 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Microsoft.Ajax.Utilities;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Web.Controllers.Helpers;
-using Web.ViewModels;
 
 namespace Web.Controllers
 {
@@ -39,14 +31,14 @@ namespace Web.Controllers
         }
 
         [Route("full/{id:int}")]
-        [ResponseType(typeof(FullProcessTemplateDTO))]
+        [ResponseType(typeof(ProcessTemplateDTO))]
         [HttpGet]
         public IHttpActionResult GetFullProcessTemplate(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplate = uow.ProcessTemplateRepository.GetByKey(id);
-                var result = Mapper.Map<FullProcessTemplateDTO>(processTemplate,
+                var result = Mapper.Map<ProcessTemplateDTO>(processTemplate,
                     opts => { opts.Items[ProcessTemplateDOFullConverter.UnitOfWork_OptionsKey] = uow; });
 
                 return Ok(result);
@@ -64,18 +56,18 @@ namespace Web.Controllers
                 // User intentionally wants to receive a single JSON object in response.
                 if (id.HasValue)
                 {
-                    return Ok(Mapper.Map<ProcessTemplateDTO>(curProcessTemplates.First()));
+                    return Ok(Mapper.Map<ProcessTemplateOnlyDTO>(curProcessTemplates.First()));
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateDTO>));
+                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
             }
 
             //DO-840 Return empty view as having empty process templates are valid use case.
             return Ok();
         }
 
-        public IHttpActionResult Post(ProcessTemplateDTO processTemplateDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -89,7 +81,7 @@ namespace Web.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curProcessTemplateDO = Mapper.Map<ProcessTemplateDTO, ProcessTemplateDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
+                var curProcessTemplateDO = Mapper.Map<ProcessTemplateOnlyDTO, ProcessTemplateDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = User.Identity.GetUserId();
                 curProcessTemplateDO.DockyardAccount = uow.UserRepository
                     .GetQuery()

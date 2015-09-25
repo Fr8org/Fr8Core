@@ -11,12 +11,12 @@ namespace Data.Infrastructure.AutoMapper
     /// AutoMapper converter to convert ProcessTemplateDO to FullProcessTemplateDTO.
     /// </summary>
     public class ProcessTemplateDOFullConverter
-        : ITypeConverter<ProcessTemplateDO, FullProcessTemplateDTO>
+        : ITypeConverter<ProcessTemplateDO, ProcessTemplateDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
-        public FullProcessTemplateDTO Convert(ResolutionContext context)
+        public ProcessTemplateDTO Convert(ResolutionContext context)
         {
             var processTemplate = (ProcessTemplateDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
@@ -46,7 +46,7 @@ namespace Data.Infrastructure.AutoMapper
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<FullProcessTemplateDTO>(Mapper.Map<ProcessTemplateDTO>(processTemplate));
+            var result = Mapper.Map<ProcessTemplateDTO>(Mapper.Map<ProcessTemplateOnlyDTO>(processTemplate));
             result.ProcessNodeTemplates = processNodeTemplateDTOList;
 
             return result;
