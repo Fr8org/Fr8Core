@@ -97,6 +97,7 @@ namespace Core.StructureMap
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
@@ -144,7 +145,10 @@ namespace Core.StructureMap
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
-                For<IRestfulServiceClient>().Use<RestfulServiceClient>();
+                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
+
+                Mock<RestfulServiceClient> restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
+                For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
