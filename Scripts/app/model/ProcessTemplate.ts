@@ -8,6 +8,7 @@
         subscribedDocuSignTemplates: Array<string>;
         externalEventSubscription: Array<number>; 
         startingProcessNodeTemplateId: number;
+        processNodeTemplates: Array<ProcessNodeTemplateDTO>
     }
 
     export enum ProcessState {

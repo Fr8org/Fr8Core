@@ -5,7 +5,8 @@
         public processTemplateId: number;
         public name: string;
         public criteria: CriteriaDTO;
-        public actions: Array<ActionDesignDTO>;
+        public actions: Array<ActionDTO>;
+        public actionLists: Array<ActionList>
 
         constructor(
             id: number,
@@ -57,7 +58,6 @@
 
             return processNodeTemplate;
         };
-
     }
 }
  

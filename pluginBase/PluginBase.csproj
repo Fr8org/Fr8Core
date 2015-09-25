@@ -71,6 +71,7 @@
   <ItemGroup>
     <Compile Include="BaseClasses\BasePluginAction.cs" />
     <Compile Include="BaseClasses\BasePluginController.cs" />
+    <Compile Include="BaseClasses\BasePluginWebApiConfig.cs" />
     <Compile Include="Errors\PluginErrorCode.cs" />
     <Compile Include="Infrastructure\BasePluginEvent.cs" />
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Infrastructure\Validations.cs" />
     <Compile Include="Errors\PluginCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

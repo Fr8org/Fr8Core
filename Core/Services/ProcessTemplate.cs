@@ -235,6 +235,48 @@ namespace Core.Services
             return result;
         }
 
+        /// <summary>
+        /// Returns all actions created within a Process Template.
+        /// </summary>
+        /// <param name="id">Process Template id.</param>
+        /// <returns></returns>
+        public IEnumerable<ActionDO> GetActions(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("id");
+            }
+
+            var emptyResult = new List<ActionDO>();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Get action list by process template first 
+                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
+                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+
+                if (curProcessTemplateQuery.Count() == 0
+                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
+                    return emptyResult;
+
+                // Get ActionLists related to the ProcessTemplate
+                var curActionList = curProcessTemplateQuery.SingleOrDefault()
+                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
+                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+
+                if (curActionList == null)
+                    return emptyResult;
+
+                // Get all the actions for that action list
+                var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
+
+                if (curActivities.Count() == 0)
+                    return emptyResult;
+
+                return curActivities;
+            }
+        }
+
         public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
         {
             List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();
@@ -256,19 +298,28 @@ namespace Core.Services
                 var actionDO = GetFirstActivity(processTemplateDO.Id) as ActionDO;
 
                 //Get the CrateStorage
-                if (actionDO != null && actionDO.CrateStorage != "")
+                if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
                 {
-                    //Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
+                    // Loop each CrateDTO in CrateStorage
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action
+                        .GetCratesByManifestType(
+                            CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
+                            actionDO.CrateStorageDTO()
+                        );
+
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
                         EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
 
-                        if (subscriptionsList != null && subscriptionsList.Subscriptions
-                            .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
-                            .Any())//check event names if its subscribing
+                        bool hasEvents = subscriptionsList.Subscriptions
+                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()))
+                            .Any();
+
+                        if (subscriptionsList != null && hasEvents)
+                        {
                             processTemplateSubscribers.Add(processTemplateDO);
+                        }
                     }
                 }
             }

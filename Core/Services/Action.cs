@@ -33,7 +33,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            
+
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -51,7 +51,9 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 if (submittedActionData.ActivityTemplateId == 0)
+                {
                     submittedActionData.ActivityTemplateId = null;
+                }
 
                 if (submittedActionData.Id > 0)
                 {
@@ -79,7 +81,7 @@ namespace Core.Services
                 }
 
                 uow.SaveChanges();
-                curAction.IsTempId = false; 
+                curAction.IsTempId = false;
                 return curAction;
             }
         }
@@ -135,8 +137,8 @@ namespace Core.Services
                         }
 
                         //Converting Received ActionDTO in JSON Format to ActionDTO Object
-                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);                        
-                      
+                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);
+
                         //Plugin Configure Action Return ActionDTO
                         curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
@@ -144,7 +146,7 @@ namespace Core.Services
                         SaveOrUpdateAction(curActionDO);
 
                         //Returning ActionDTO
-                        return tempActionDTO;                       
+                        return tempActionDTO;
                     }
 
                     else
@@ -230,7 +232,7 @@ namespace Core.Services
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-            
+
             //TODO : Cut base Url from PluginDO.Endpoint
 
             curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
@@ -241,7 +243,7 @@ namespace Core.Services
             return jsonResult;
         }
 
-       
+
 
         /// <summary>
         /// Retrieve authorization token
@@ -269,9 +271,7 @@ namespace Core.Services
                     return curToken;
                 return _plugin.Authorize();
             }
-
         }
-
 
         /// <summary>
         /// Retrieve account
@@ -344,7 +344,7 @@ namespace Core.Services
                     {
                         //convert the Action to a DTO in preparation for serialization and POST to the plugin
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-                        string curPluginUrl = string.Format("http://{0}/actions/{1}/",curActivityTemplate.Plugin.Endpoint, actionName);
+                        string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
                         var restClient = new RestfulServiceClient();
                         string result;
                         try

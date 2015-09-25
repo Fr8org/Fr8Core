@@ -4,10 +4,13 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
+    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
+        getFull: (id: Object) => interfaces.IProcessTemplateVM
+    }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDesignDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -49,7 +52,17 @@ module dockyard.services {
         ProcessTemplateDTO CRUD service.
     */
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' })
+        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' },
+            {
+                'getFull': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/processTemplate/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                }
+            })
     ]);
 
     /*
@@ -92,7 +105,11 @@ module dockyard.services {
                     method: 'POST',
                     url: '/actions/configure'
                 },
-
+                'getByProcessTemplate': {
+                    method: 'GET',
+                    url: '/actions/bypt',
+                    isArray: true
+                },
                 'params': {
                     id: 'id'
                 }

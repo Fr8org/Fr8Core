@@ -16,5 +16,8 @@ namespace Core.Interfaces
 
         public const int STANDARD_CONF_CONTROLS_MANIFEST_ID = 6;
         public const string STANDARD_CONF_CONTROLS_NANIFEST_NAME = "Standard Configuration Controls";
+
+        public const int STANDARD_EVENT_SUBSCRIPTIONS_ID = 8;
+        public const string STANDARD_EVENT_SUBSCRIPTIONS_NAME = "Standard Event Subscriptions";
     }
 }

@@ -11,12 +11,12 @@ namespace Data.Infrastructure.AutoMapper
     /// AutoMapper converter to convert ProcessTemplateDO to FullProcessTemplateDTO.
     /// </summary>
     public class ProcessTemplateDOFullConverter
-        : ITypeConverter<ProcessTemplateDO, FullProcessTemplateDTO>
+        : ITypeConverter<ProcessTemplateDO, ProcessTemplateDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
-        public FullProcessTemplateDTO Convert(ResolutionContext context)
+        public ProcessTemplateDTO Convert(ResolutionContext context)
         {
             var processTemplate = (ProcessTemplateDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
@@ -28,33 +28,26 @@ namespace Data.Infrastructure.AutoMapper
 
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
-                .Include(x => x.Criteria)
                 .Include(x => x.ActionLists)
                 .Where(x => x.ParentTemplateId == processTemplate.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
-                .Select(x => new FullProcessNodeTemplateDTO()
+                .Select((ProcessNodeTemplateDO x) =>
                 {
-                    ProcessNodeTemplate = Mapper.Map<ProcessNodeTemplateDTO>(x),
-                    Criteria = Mapper.Map<CriteriaDTO>(x.Criteria),
-                    ActionLists = x.ActionLists
-                        .Select(y => new FullActionListDTO()
-                        {
-                            ActionList = Mapper.Map<ActionListDTO>(y),
-                            Actions = y.Activities
-                                .OfType<ActionDO>()
+                    var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
+                    pntDTO.ActionLists = x.ActionLists.Select(y =>
+                    {
+                        var actionList = Mapper.Map<FullActionListDTO>(y);
+                        actionList.Actions = y.Activities.OfType<ActionDO>()
                                 .Select(z => Mapper.Map<ActionDTO>(z))
-                                .ToList()
-                        })
-                        .ToList()
-                })
-                .ToList();
+                                .ToList();
+                        return actionList;
+                    }).ToList();
+                    return pntDTO;
+                }).ToList();
 
-            var result = new FullProcessTemplateDTO()
-            {
-                ProcessTemplate = Mapper.Map<ProcessTemplateDTO>(processTemplate),
-                ProcessNodeTemplates = processNodeTemplateDTOList
-            };
+            var result = Mapper.Map<ProcessTemplateDTO>(Mapper.Map<ProcessTemplateOnlyDTO>(processTemplate));
+            result.ProcessNodeTemplates = processNodeTemplateDTOList;
 
             return result;
         }
