@@ -3,6 +3,7 @@
         id: number;
         name: string;
         actionListType: ActionListType;
+        actions: Array<ActionDTO>
     }
 
     export enum ActionListType {
