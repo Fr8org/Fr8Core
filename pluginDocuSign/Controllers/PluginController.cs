@@ -33,6 +33,13 @@ namespace pluginDocuSign.Controllers
                 Plugin = plugin
             };
 
+				var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+				{
+					Version = "1",
+					Name = "Send_DocuSign_Envelope",
+					Plugin = plugin
+				};
+
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
