@@ -506,7 +506,6 @@
     <Compile Include="Wrappers\DocuSignPackager.cs" />
     <Compile Include="Wrappers\DocuSignRecipient.cs" />
     <Compile Include="Wrappers\DocuSignTemplate.cs" />
-    <Compile Include="Wrappers\DocuSignTextTab.cs" />
     <Compile Include="Wrappers\DocuSignUtils.cs" />
     <Compile Include="Wrappers\Signer.cs" />
     <Compile Include="Wrappers\Tab.cs" />
