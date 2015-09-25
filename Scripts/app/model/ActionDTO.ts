@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ActionDTO implements interfaces.IActionDesignDTO {
+    export class ActionDTO implements interfaces.IActionDTO {
         processNodeTemplateId: number;
         id: number;
         isTempId: boolean;
@@ -49,7 +49,7 @@
             return action && action.$resolved && !action.isTempId
         }
 
-        static create(dataObject: interfaces.IActionDesignDTO): ActionDTO {
+        static create(dataObject: interfaces.IActionDTO): ActionDTO {
             var result = new ActionDTO(0, 0, false, 0);
             result.actionListId = dataObject.actionListId;
             result.activityTemplateId = dataObject.activityTemplateId;

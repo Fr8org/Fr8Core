@@ -827,7 +827,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\IPaneWorkflowDesignerScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IQueryBuilderWidgetScope.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ActionDesignDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Condition.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Criteria.ts" />
     <TypeScriptCompile Include="Scripts\app\model\Field.ts" />

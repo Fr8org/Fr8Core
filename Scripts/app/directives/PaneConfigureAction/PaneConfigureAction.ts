@@ -13,9 +13,9 @@ module dockyard.directives.paneConfigureAction {
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
 
     export class RenderEventArgs {
-        public action: interfaces.IActionDesignDTO
+        public action: interfaces.IActionDTO
 
-        constructor(action: interfaces.IActionDesignDTO) {
+        constructor(action: interfaces.IActionDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
@@ -31,7 +31,7 @@ module dockyard.directives.paneConfigureAction {
 
     export interface IPaneConfigureActionScope extends ng.IScope {
         onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneConfigureActionScope) => void;
-        action: interfaces.IActionDesignDTO;
+        action: interfaces.IActionDTO;
         isVisible: boolean;
         currentAction: interfaces.IActionVM;
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
@@ -53,7 +53,7 @@ module dockyard.directives.paneConfigureAction {
         };
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
-        private _currentAction: interfaces.IActionDesignDTO =
+        private _currentAction: interfaces.IActionDTO =
         new model.ActionDTO(0, 0, false, 0); //a local immutable copy of current action
         private configurationWatchUnregisterer: Function;
 
@@ -158,7 +158,7 @@ module dockyard.directives.paneConfigureAction {
 
         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
             // We parse its contents and put it into currentAction.configurationControls structure.
-        private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDesignDTO) {
+        private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDTO) {
             var self = this;
             this.ActionService.configure(action).$promise.then(function (res: any) {               
                 scope.currentAction = res;

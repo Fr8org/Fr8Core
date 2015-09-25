@@ -27,9 +27,9 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionTypeSelectedEventArgs {
-        public action: interfaces.IActionDesignDTO
+        public action: interfaces.IActionDTO
 
-        constructor(action: interfaces.IActionDesignDTO) {
+        constructor(action: interfaces.IActionDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }

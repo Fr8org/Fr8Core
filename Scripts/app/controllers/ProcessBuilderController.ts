@@ -544,7 +544,7 @@ module dockyard.controllers {
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IActionDesignDTO =
+            var actions: interfaces.IActionDTO =
                 {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
@@ -553,9 +553,6 @@ module dockyard.controllers {
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    fieldMappingSettings: new model.FieldMappingSettings(),
-                    userLabel: "test",
-                    tempId: 0,
                     actionListId: 0,
                     activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "")
                 };

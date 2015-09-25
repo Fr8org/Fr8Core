@@ -44,43 +44,6 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<ActionDO> GetByProcessTemplate(int id)
-        {
-            if (id <= 0)
-            {
-                throw new ArgumentException("id");
-            }
-
-            var result = new List<ActionDO>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // Get action list by process template first 
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
-                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
-
-                if (curProcessTemplate.Count() == 0
-                    || curProcessTemplate.SingleOrDefault().StartingProcessNodeTemplate == null)
-                    return result;
-
-                // Get ActionLists related to the ProcessTemplate
-                var curActionList = curProcessTemplate.SingleOrDefault()
-                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
-                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-
-                if (curActionList == null)
-                    return result;
-
-                // Get all the actions for that action list
-                var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
-
-                if (curActivities.Count() == 0)
-                    return result;
-
-                return curActivities;
-            }
-        }
-
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
             ActionDO existingActionDO = null;

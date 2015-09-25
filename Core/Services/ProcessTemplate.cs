@@ -235,6 +235,48 @@ namespace Core.Services
             return result;
         }
 
+        /// <summary>
+        /// Returns all actions created within a Process Template.
+        /// </summary>
+        /// <param name="id">Process Template id.</param>
+        /// <returns></returns>
+        public IEnumerable<ActionDO> GetActions(int id)
+        {
+            if (id <= 0)
+            {
+                throw new ArgumentException("id");
+            }
+
+            var emptyResult = new List<ActionDO>();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Get action list by process template first 
+                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
+                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+
+                if (curProcessTemplateQuery.Count() == 0
+                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
+                    return emptyResult;
+
+                // Get ActionLists related to the ProcessTemplate
+                var curActionList = curProcessTemplateQuery.SingleOrDefault()
+                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
+                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+
+                if (curActionList == null)
+                    return emptyResult;
+
+                // Get all the actions for that action list
+                var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
+
+                if (curActivities.Count() == 0)
+                    return emptyResult;
+
+                return curActivities;
+            }
+        }
+
         public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
         {
             List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();

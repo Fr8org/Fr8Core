@@ -60,7 +60,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int?>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
             Mapper.CreateMap<IList<int?>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
 
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
 
             Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
                 .ForMember(x => x.ParentTemplateId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
@@ -72,10 +72,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<ProcessTemplateDO, FullProcessTemplateDTO>()
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>()
                 .ConvertUsing<ProcessTemplateDOFullConverter>();
 
-            Mapper.CreateMap<ProcessTemplateDTO, FullProcessTemplateDTO>();
+            Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDTO>();
             Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
 
