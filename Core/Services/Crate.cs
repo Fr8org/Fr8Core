@@ -48,6 +48,14 @@ namespace Core.Services
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 
+        public CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(new EventSubscriptionMS() { Subscriptions = subscriptions.ToList() }),
+                manifestType: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
+                manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
+        }
+
         public T GetContents<T>(CrateDTO crate)
         {
             return JsonConvert.DeserializeObject<T>(crate.Contents);

@@ -49,7 +49,7 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
         }
 
-
+        
         /// <summary>
         /// Reports event when process an action
         /// </summary>
