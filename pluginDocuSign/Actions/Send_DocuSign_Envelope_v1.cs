@@ -40,22 +40,24 @@ namespace pluginDocuSign.Actions
 		private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
 		{
 			CrateStorageDTO curCrates = curActionDTO.CrateStorage;
-			if (curCrates.CrateDTO.Count == 0)
+			// Do we have any crate? If no, it means that it's Initial configuration
+			if (!curCrates.CrateDTO.Any())
 				return ConfigurationRequestType.Initial;
 
-			var controlsCrates = _action.GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
-			var curDocuSignTemplateId = _crate.GetElementByKey(controlsCrates, key: "target_docusign_template", keyFieldName: "name")
-				 .Select(e => (string)e["value"])
-				 .FirstOrDefault(s => !string.IsNullOrEmpty(s));
-
-			if (curDocuSignTemplateId != null)
-			{
-				return ConfigurationRequestType.Followup;
-			}
-			else
-			{
+			// Try to find Configuration_Controls
+			var stdCfgControl = _action.GetConfigurationControls(curActionDTO);
+			if (stdCfgControl == null)
 				return ConfigurationRequestType.Initial;
-			}
+			// Try to get DropdownListField
+			var dropdownControl = stdCfgControl.FindByName("target_docusign_template") as DropdownListFieldDefinitionDTO;
+			if (dropdownControl == null)
+				return ConfigurationRequestType.Initial;
+
+			var docusignTemplateId = dropdownControl.Value;
+			if (string.IsNullOrEmpty(docusignTemplateId))
+				return ConfigurationRequestType.Initial;
+			
+			return ConfigurationRequestType.Followup;
 		}
 		protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
 		{
@@ -65,12 +67,10 @@ namespace pluginDocuSign.Actions
 			}
 			// Two crates are created
 			// One to hold the ui controls
-			var crateControls = CreateStandartConfigurationControls();
+			var crateControls = CreateDocusignTemplateConfigurationControls();
 			// and one to hold the available templates, which need to be requested from docusign
-			var crateDesignTimeFields = CreateStandardDesignTimeFields();
-			// target_docusign_template
-			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+			var crateDesignTimeFields = CreateDocusignTemplateNameCrate();
+			curActionDTO.CrateStorage = AssembleCrateStorage(crateControls, crateDesignTimeFields);
 			return curActionDTO;
 		}
 		protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
@@ -79,19 +79,16 @@ namespace pluginDocuSign.Actions
 
 			if (curCrates == null || curCrates.Count == 0)
 				return curActionDTO;
-			// Try to find Configuration_Controls create which conains Controls with name 'target_docusign_template'
-			var configurationFieldsCrate = curCrates.SingleOrDefault(c => c.Label == "Configuration_Controls");
-			if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
+			// Try to find Configuration_Controls
+			var stdCfgControl = _action.GetConfigurationControls(curActionDTO);
+			if (stdCfgControl == null)
+				return curActionDTO;
+			var dropdownControl = stdCfgControl.FindByName("target_docusign_template") as DropdownListFieldDefinitionDTO;
+			if (dropdownControl == null)
 				return curActionDTO;
 			
-			var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
-			if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "target_docusign_template"))
-				return curActionDTO;
-			
-			_crate.RemoveCrateByLabel(curActionDTO.CrateStorage.CrateDTO, "DocuSignTemplateUserDefinedFields");
-
-			// Extract DocuSign Template Id
-			var docusignTemplateId = configurationFields.Controls.SingleOrDefault(c => c.Name == "target_docusign_template").Value;
+			// Get DocuSign Template Id
+			var docusignTemplateId = dropdownControl.Value;
 			var userFields = new DocuSignTextTab().GetUserFields(docusignTemplateId);
 
 			//	when we're in design mode, there are no values
@@ -101,17 +98,13 @@ namespace pluginDocuSign.Actions
 			List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" }};
 			//  we're in design mode, there are no values 
 			var crateUserDefined = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray());
-			var crateStandart = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateStandardFields", standartFields.ToArray());
-			if (curActionDTO.CrateStorage == null)
-			{
-				curActionDTO.CrateStorage = new CrateStorageDTO();
-			}
-			curActionDTO.CrateStorage.CrateDTO.Add(crateUserDefined);
-			curActionDTO.CrateStorage.CrateDTO.Add(crateStandart);
+			var crateStandard = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateStandardFields", standartFields.ToArray());
+
+			curActionDTO.CrateStorage = AssembleCrateStorage(crateUserDefined, crateStandard);
 
 			return curActionDTO;
 		}
-		private CrateDTO CreateStandartConfigurationControls()
+		private CrateDTO CreateDocusignTemplateConfigurationControls()
 		{
 			var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
 			{
@@ -138,7 +131,7 @@ namespace pluginDocuSign.Actions
 			};
 			return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fields.ToArray());
 		}
-		private CrateDTO CreateStandardDesignTimeFields()
+		private CrateDTO CreateDocusignTemplateNameCrate()
 		{
 			var templates = _template.GetTemplates(null);
 			var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();

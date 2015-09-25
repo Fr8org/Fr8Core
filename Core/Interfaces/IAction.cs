@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 
 namespace Core.Interfaces
 {
@@ -21,5 +22,6 @@ namespace Core.Interfaces
         string Activate(ActionDO curActionDO);
         string Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
+		  StandardConfigurationControlsMS GetConfigurationControls(ActionDTO curActionDTO);
     }
 }

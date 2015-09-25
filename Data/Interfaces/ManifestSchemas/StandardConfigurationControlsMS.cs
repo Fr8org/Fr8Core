@@ -2,6 +2,7 @@
 using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using Utilities;
+using System.Linq;
 
 namespace Data.Interfaces.ManifestSchemas
 {
@@ -34,6 +35,10 @@ namespace Data.Interfaces.ManifestSchemas
         {
             Controls = new List<FieldDefinitionDTO>();
         }
+		 public FieldDefinitionDTO FindByName(string name)
+		  {
+			  return Controls.SingleOrDefault(x => x.Name == name);
+		  }
     }
 
 

@@ -222,7 +222,7 @@ namespace pluginDocuSign.Actions
             {
                 if (eventCheckBox.Selected)
                 {
-                    subscriptions.Add(eventCheckBox.FieldLabel);
+                    subscriptions.Add(eventCheckBox.Label);
                 }
             }
 

@@ -17,6 +17,9 @@ using System.Data.Entity;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
+using Data.Interfaces.ManifestSchemas;
+using Data.Constants;
+using Utilities;
 
 namespace Core.Services
 {
@@ -332,7 +335,16 @@ namespace Core.Services
         {
             return CallPluginAction(curActionDO, "deactivate");
         }
-
+		  public StandardConfigurationControlsMS GetConfigurationControls(ActionDTO curActionDTO)
+		  {
+			  var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+			  if (confControls.Count() != 0 && confControls.Count() != 1)
+				  throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
+			  if (confControls.Count() == 0)
+				  return null;
+			  StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+			  return standardCfgControlsMs;
+		  }
         private string CallPluginAction(ActionDO curActionDO, string actionName)
         {
             if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
@@ -371,5 +383,8 @@ namespace Core.Services
             }
 
         }
-    }
+
+
+		  
+	 }
 }
