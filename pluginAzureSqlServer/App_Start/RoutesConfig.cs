@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using pluginAzureSqlServer.Infrastructure;
+using PluginBase;
+using PluginUtilities.BaseClasses;
 using StructureMap;
 
 namespace pluginAzureSqlServer
@@ -12,8 +14,8 @@ namespace pluginAzureSqlServer
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+           
+          BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginAzureSqlServer",
