@@ -49,6 +49,8 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Unstarted;
                 curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO>() { curEvent });
 
+                //set CurrentActivity
+
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 

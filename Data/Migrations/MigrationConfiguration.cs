@@ -79,17 +79,30 @@ namespace Data.Migrations
 
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
-            var token = new AuthorizationTokenDO();
-            token.ExternalAccountId = "developer@dockyard.company";
-            token.Token = "";
-            token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-            var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
-            token.Plugin = docuSignPlugin;
-            token.PluginID = docuSignPlugin.Id;
-            token.ExpiresAt = DateTime.Now.AddDays(10);
 
-            uow.AuthorizationTokenRepository.Add(token);
-            uow.SaveChanges();
+            // Check that plugin does not exist yet.
+            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
+                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
+
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!docusignAuthToken)
+            {
+                var token = new AuthorizationTokenDO();
+                token.ExternalAccountId = "docusign_developer@dockyard.company";
+                token.Token = "";
+                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
+                var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
+                token.Plugin = docuSignPlugin;
+                token.PluginID = docuSignPlugin.Id;
+                token.ExpiresAt = DateTime.Now.AddDays(10);
+
+                uow.AuthorizationTokenRepository.Add(token);
+                uow.SaveChanges();
+
+            }
+
+
+           
 
 
         }

@@ -166,11 +166,11 @@ namespace Core.Services
             {
                 //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
                 //so make the existing call to ProcessTemplate#LaunchProcess.
-                // LaunchProcess(curProcessTemplate, curEventReport);
+                LaunchProcess(curProcessTemplate, curEventReport);
             }
         }
 
-        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
+        public void LaunchProcess( ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
         {
             if (curProcessTemplate == null)
                 throw new EntityNotFoundException(curProcessTemplate);
@@ -179,12 +179,7 @@ namespace Core.Services
             {
                 _process.Launch(curProcessTemplate, curEventData);
 
-                //todo: what does this do?
-                //ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
-                //    process =>
-                //        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(envelopeIdField.Value) &&
-                //        process.ProcessState == ProcessState.Executing);
-                //EventManager.ProcessLaunched(launchedProcess);
+
             }
         }
 

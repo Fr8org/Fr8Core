@@ -62,7 +62,7 @@ namespace Core.Services
 
                 //find this Account's ProcessTemplates
                 var initialProcessTemplatesList = uow.ProcessTemplateRepository
-                    .FindList(pt => pt.DockyardAccount == curDockyardAccount)
+                    .FindList(pt => pt.DockyardAccount.Id == curDockyardAccount.Id)
                     .Where(x => x.ProcessTemplateState == ProcessTemplateState.Active);
 
                 var subscribingProcessTemplates = _processTemplate.MatchEvents(initialProcessTemplatesList.ToList(),

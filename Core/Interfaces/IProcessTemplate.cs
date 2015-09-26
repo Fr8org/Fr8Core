@@ -11,7 +11,7 @@ namespace Core.Interfaces
 		IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null);
 		int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool withTemplate);
 		void Delete(IUnitOfWork uow, int id);
-        void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, CrateDTO curEventData = null);
+        void LaunchProcess(ProcessTemplateDO curProcessTemplate, CrateDTO curEventData = null);
 	    void LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport);
     
         void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class;
