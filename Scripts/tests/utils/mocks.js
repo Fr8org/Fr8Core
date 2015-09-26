@@ -43,6 +43,12 @@ var dockyard;
                         def.promise.$promise = def.promise;
                         return def.promise;
                     });
+                    this.getFull = jasmine.createSpy('getFull').and.callFake(function () {
+                        var def = $q.defer();
+                        def.resolve(utils.fixtures.ProcessBuilder.fullProcessTemplate);
+                        def.promise.$promise = def.promise;
+                        return def.promise;
+                    });
                 }
                 return ProcessTemplateServiceMock;
             })();

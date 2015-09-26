@@ -48,9 +48,9 @@ module dockyard.controllers {
             '$timeout',
             'CriteriaServiceWrapper',
             'ProcessBuilderService',
-            'ActionListService',
             'CrateHelper',
-            'ActivityTemplateService'
+            'ActivityTemplateService',
+            '$filter'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -69,9 +69,9 @@ module dockyard.controllers {
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
-            private ActionListService: services.IActionListService,
             private CrateHelper: services.CrateHelper,
-            private ActivityTemplateService: services.IActivityTemplateService
+            private ActivityTemplateService: services.IActivityTemplateService,
+            private $filter: ng.IFilterService 
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -85,10 +85,8 @@ module dockyard.controllers {
             this._scope.save = angular.bind(this, this.onSave);
 
             this.setupMessageProcessing();
+            this.loadData();
             var self = this;
-            this.loadProcessTemplate().$promise.then(() => {
-                self.loadImmediateActionList();
-            });
         }
 
         /*
@@ -106,7 +104,7 @@ module dockyard.controllers {
             this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected],
                 (event: ng.IAngularEvent, eventArgs: pwd.ActionSelectedEventArgs) => this.PaneWorkflowDesigner_ActionSelected(eventArgs));
             this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected],
-                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelecting(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelected(eventArgs));
 
             //Define Criteria Pane events
             // Commented out by yakov.gnusin to avoid breaking other V2 components.
@@ -144,16 +142,36 @@ module dockyard.controllers {
             this._scope.$on("OnExitFocus", (event: ng.IAngularEvent, eventArgs: pca.IConfigurationFieldScope) => this.OnExitFocus(eventArgs));
         }
 
-        private loadProcessTemplate() {
-            var processTemplatePromise = this.ProcessTemplateService.get({ id: this._scope.processTemplateId });
-            //       processTemplatePromise.$promise.then(() => this.displaySelectTemplatePane());
-            this._scope.current.processTemplate = processTemplatePromise;
-            return processTemplatePromise;
+        private loadData() {
+            var self = this;
+            var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this._scope.processTemplateId });
+
+            processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
+                self._scope.current.processTemplate = curProcessTemplate;
+                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists
+                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0]
+
+                self.renderProcessTemplate(curProcessTemplate);
+            });
         }
 
-        private loadImmediateActionList() {
-            var actionListPromise = this.ActionListService.byProcessNodeTemplate({ id: this._scope.current.processTemplate.startingProcessNodeTemplateId, actionListType: 1 });
-            this._scope.immediateActionListVM = actionListPromise;
+        private renderProcessTemplate(curProcessTemplate: interfaces.IProcessTemplateVM) {
+
+            if (curProcessTemplate.processNodeTemplates.length == 0) return;
+
+            for (var curProcessNodeTemplate of curProcessTemplate.processNodeTemplates);
+            {
+                for (var curActionList of curProcessNodeTemplate.actionLists) {
+
+                    for (var curAction of curActionList.actions) {
+
+                        this._scope.$broadcast(
+                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
+                            new pwd.AddActionEventArgs(curAction.processNodeTemplateId, angular.extend({}, curAction), curActionList.actionListType) //TODO: set real action type
+                            );
+                    }
+                }
+            }
         }
 
         // Find criteria by Id.
@@ -168,7 +186,7 @@ module dockyard.controllers {
         }
 
         // If action updated, notify interested parties
-        private handleActionUpdate(action: model.ActionDesignDTO) {
+        private handleActionUpdate(action: model.ActionDTO) {
 
             if (!action) return;
 
@@ -232,7 +250,7 @@ module dockyard.controllers {
                 // Have Workflow Designer add newly created criteria.
                 this._scope.$broadcast(
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddCriteria],
-                    new pwd.AddProcessNodeTemplateEventArgs(this.LocalIdentityGenerator.getNextId(), true, 'New criteria')
+                    new pwd.AddCriteriaEventArgs(this.LocalIdentityGenerator.getNextId(), true, 'New criteria')
                     );
             });
         }
@@ -283,7 +301,7 @@ module dockyard.controllers {
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();                
                 // Create new action object.
-                var action = new model.ActionDesignDTO(null, id, true, self._scope.immediateActionListVM.id);
+                var action = new model.ActionDTO(null, id, true, self._scope.immediateActionListVM.id);
 
                 action.name = 'New Action #' + Math.abs(id).toString();
 
@@ -302,7 +320,6 @@ module dockyard.controllers {
         */
         private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
             console.log("Action selected: " + eventArgs.actionId);
-
             var originalId,
                 actionId = eventArgs.actionId,
                 canBypassActionLoading = false;
@@ -389,7 +406,7 @@ module dockyard.controllers {
             }
             else {
                 //Render Configure Action Pane
-                eArgs = new pca.RenderEventArgs(new model.ActionDesignDTO(
+                eArgs = new pca.RenderEventArgs(new model.ActionDTO(
                     this._scope.current.action.processNodeTemplateId,
                     this._scope.current.action.id,
                     (this._scope.current.action.id > 0) ? false : true,
@@ -403,7 +420,7 @@ module dockyard.controllers {
         /*
             Handles message 'WorkflowDesignerPane_TemplateSelected'
         */
-        private PaneWorkflowDesigner_TemplateSelecting(eventArgs: pwd.TemplateSelectedEventArgs) {
+        private PaneWorkflowDesigner_TemplateSelected(eventArgs: pwd.TemplateSelectedEventArgs) {
             console.log("ProcessBuilderController: template selected");
 
             var scope = this._scope,
@@ -527,7 +544,7 @@ module dockyard.controllers {
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IActionDesignDTO =
+            var actions: interfaces.IActionDTO =
                 {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
@@ -536,9 +553,6 @@ module dockyard.controllers {
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    fieldMappingSettings: new model.FieldMappingSettings(),
-                    userLabel: "test",
-                    tempId: 0,
                     actionListId: 0,
                     activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "")
                 };

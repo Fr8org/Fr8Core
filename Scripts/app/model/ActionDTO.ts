@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ActionDesignDTO implements interfaces.IActionDesignDTO {
+    export class ActionDTO implements interfaces.IActionDTO {
         processNodeTemplateId: number;
         id: number;
         isTempId: boolean;
@@ -8,6 +8,7 @@
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
+        activityTemplateName: string;
         activityTemplate: model.ActivityTemplate;
         currentView: string;
 
@@ -37,8 +38,8 @@
             };
         }
 
-        clone(): ActionDesignDTO {
-            var result = new ActionDesignDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
+        clone(): ActionDTO {
+            var result = new ActionDTO(this.processNodeTemplateId, this.id, this.isTempId, this.actionListId);
             result.name = this.name;
 
             return result;
@@ -48,8 +49,8 @@
             return action && action.$resolved && !action.isTempId
         }
 
-        static create(dataObject: interfaces.IActionDesignDTO): ActionDesignDTO {
-            var result = new ActionDesignDTO(0, 0, false, 0);
+        static create(dataObject: interfaces.IActionDTO): ActionDTO {
+            var result = new ActionDTO(0, 0, false, 0);
             result.actionListId = dataObject.actionListId;
             result.activityTemplateId = dataObject.activityTemplateId;
             result.crateStorage = dataObject.crateStorage;

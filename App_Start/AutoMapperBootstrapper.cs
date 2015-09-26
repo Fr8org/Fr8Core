@@ -27,8 +27,8 @@ namespace Web.App_Start
                   .ForMember(activityTemplateDO => activityTemplateDO.Name, opts => opts.ResolveUsing(e => e.Name))
                   .ForMember(activityTemplateDO => activityTemplateDO.Version, opts => opts.ResolveUsing(e => e.Version));
              
-            Mapper.CreateMap<ProcessTemplateDTO, ProcessTemplateDO>();
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
+            Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDO>();
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
             Mapper.CreateMap<UserVM, EmailAddressDO>()
                 .ForMember(userDO => userDO.Address, opts => opts.ResolveUsing(e => e.EmailAddress));
             Mapper.CreateMap<UserVM, DockyardAccountDO>()
@@ -40,7 +40,10 @@ namespace Web.App_Start
                 .ForMember(userDO => userDO.Roles, opts => opts.Ignore());
 
             Mapper.CreateMap<ActionDO, ActionDTO>();
-          
+
+            Mapper.CreateMap<DockyardAccountDO, UserDTO>()
+                .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
+                .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
         }
     }
 }

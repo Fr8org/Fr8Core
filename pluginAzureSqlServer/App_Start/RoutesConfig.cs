@@ -4,25 +4,18 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using pluginAzureSqlServer.Infrastructure;
+using PluginBase;
+using PluginUtilities.BaseClasses;
 using StructureMap;
 
 namespace pluginAzureSqlServer
 {
-    public static class WebApiConfig
+    public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
            
-          /*  ObjectFactory.Initialize(i =>
-            {
-                i.For<IDbProvider>().Use<SqlClientDbProvider>();
-                
-            });*/
-
-            // Web API configuration and services
-            new  Container().Inject<IDbProvider>(new SqlClientDbProvider());
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+          BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginAzureSqlServer",

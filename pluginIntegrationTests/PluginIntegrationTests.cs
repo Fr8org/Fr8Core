@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Results;
 using AutoMapper;
+using Core.Interfaces;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
@@ -10,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using pluginAzureSqlServer;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
@@ -21,11 +23,13 @@ namespace pluginIntegrationTests
     {
         private IDisposable _docuSignServer;
         private IDisposable _dockyardCoreServer;
+        private IDisposable _azureSqlServerServer;
 
         private DockyardAccountDO _testUserAccount;
         private ActionListDO _actionList;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
         private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
+        private ActivityTemplateDO _writeToSqlServerActivityTemplate;
 
         /// <summary>
         /// Create _testUserAccount instance and store it in mock DB.
@@ -35,7 +39,6 @@ namespace pluginIntegrationTests
         public override void SetUp()
         {
             base.SetUp();
-
             _testUserAccount = FixtureData.TestUser1();
 
             _actionList = FixtureData.TestActionList_ImmediateActions();
@@ -46,11 +49,15 @@ namespace pluginIntegrationTests
             _filterUsingRunTimeDataActivityTemplate =
                 FixtureData.TestActivityTemplateDO_FilterUsingRunTimeData();
 
+            _writeToSqlServerActivityTemplate =
+                FixtureData.TestActivityTemplateDO_WriteToSqlServer();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActivityRepository.Add(_actionList);
                 uow.ActivityTemplateRepository.Add(_waitForDocuSignEventActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_filterUsingRunTimeDataActivityTemplate);
+                uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
                 uow.UserRepository.Add(_testUserAccount);
 
                 uow.SaveChanges();
@@ -61,6 +68,9 @@ namespace pluginIntegrationTests
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
             _dockyardCoreServer = pluginDockyardCore.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
+
+            var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
+            _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
         }
 
         /// <summary>
@@ -72,6 +82,7 @@ namespace pluginIntegrationTests
         {
             _dockyardCoreServer.Dispose();
             _docuSignServer.Dispose();
+            _azureSqlServerServer.Dispose();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -94,6 +105,13 @@ namespace pluginIntegrationTests
                 if (waitForDocSignActivityTemplate != null)
                 {
                     uow.ActivityTemplateRepository.Remove(waitForDocSignActivityTemplate);
+                }
+
+                var writeToSqlServerActivityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(_writeToSqlServerActivityTemplate.Id);
+                if (writeToSqlServerActivityTemplate != null)
+                {
+                    uow.ActivityTemplateRepository.Remove(writeToSqlServerActivityTemplate);
                 }
 
                 var actionList = uow.ActivityRepository
@@ -169,9 +187,9 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls")));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
+                .Any(x => x.Label == "Available Templates" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 
             return actionDTO.Content.CrateStorage;
         }
@@ -180,14 +198,14 @@ namespace pluginIntegrationTests
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrate = curCrateStorage.CrateDTO
-                .Single(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields");
+                .Single(x => x.Label == "Available Templates" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
 
             var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(
                 availableTemplatesCrate.Contents);
 
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CrateDTO
-                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls");
+                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
             var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
                 configurationControlsCrate.Contents);
@@ -211,13 +229,16 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(3, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.AreEqual(4, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
             //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed
               //  .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == "Standard Design-Time Fields"));
+                .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
+
+            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
+                .Any(x => x.Label == "Standard Event Subscriptions" && x.ManifestType == CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME));
 
             return actionDTO.Content.CrateStorage;
         }
@@ -238,11 +259,66 @@ namespace pluginIntegrationTests
             Assert.NotNull(result.Content.CrateStorage.CrateDTO);
             Assert.AreEqual(result.Content.CrateStorage.CrateDTO.Count, 2);
             Assert.True(result.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == "Standard Configuration Controls"));
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
             Assert.True(result.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "Queryable Criteria" && x.ManifestType == "Standard Design-Time Fields"));
+                .Any(x => x.Label == "Queryable Criteria" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 
             return result.Content.CrateStorage;
+        }
+
+        private CrateStorageDTO WriteToSqlServer_ConfigureInitial(ActionDTO curActionDTO)
+        {
+            curActionDTO.ActivityTemplateId = _writeToSqlServerActivityTemplate.Id;
+            curActionDTO.CrateStorage = new CrateStorageDTO();
+            var curActionController = CreateActionController();
+            var result = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
+
+            Assert.NotNull(result);
+            Assert.NotNull(result.Content);
+            Assert.NotNull(result.Content.CrateStorage.CrateDTO);
+            Assert.AreEqual(result.Content.CrateStorage.CrateDTO.Count, 1);
+            Assert.True(result.Content.CrateStorage.CrateDTO
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+
+            return result.Content.CrateStorage;
+        }
+
+        private void WriteToSqlServer_InputConnectionString(CrateStorageDTO curCrateStorage)
+        {
+            // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
+            var configurationControlsCrate = curCrateStorage.CrateDTO
+                .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
+                configurationControlsCrate.Contents);
+
+            // Modify value of Selected_DocuSign_Template field and push it back to crate,
+            // exact same way we do on front-end.
+            var connectionStringControl = controlsMS.Controls.Single(x => x.Name == "connection_string");
+            connectionStringControl.Value = "Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30;";
+
+            configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
+        }
+
+        private CrateStorageDTO WriteToSqlServer_ConfigureFollowUp(ActionDTO curActionDTO)
+        {
+            var curActionController = CreateActionController();
+
+            var actionDTO = curActionController.Configure(curActionDTO)
+                as OkNegotiatedContentResult<ActionDTO>;
+
+            // Assert FollowUp Configure result.
+            Assert.NotNull(actionDTO);
+            Assert.NotNull(actionDTO.Content);
+            Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
+            Assert.AreEqual(2, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
+                .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
+                .Any(x => x.Label == "Sql Table Columns" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
+
+            return actionDTO.Content.CrateStorage;
         }
 
         /// <summary>
@@ -302,6 +378,39 @@ namespace pluginIntegrationTests
 
             // Call Configure Initial for FilterUsingRunTimeData action.
             FilterUsingRunTimeData_ConfigureInitial(filterAction);
+        }
+
+        /// <summary>
+        /// Test WriteToSqlServer initial configuration.
+        /// </summary>
+        [Test]
+        public void PluginIntegration_WriteToSqlServer_ConfigureInitial()
+        {
+            // Create blank WaitForDocuSignEvent action.
+            var emptyAction = CreateEmptyAction();
+
+            // Call Configure Initial for WriteToSqlServer action.
+            WriteToSqlServer_ConfigureInitial(emptyAction);
+        }
+
+        /// <summary>
+        /// Test WriteToSqlServer follow-up configuration.
+        /// </summary>
+        [Test]
+        public void PluginIntegration_WriteToSqlServer_ConfigureFollowUp()
+        {
+            // Create blank WaitForDocuSignEventAction.
+            var savedActionDTO = CreateEmptyAction();
+
+            // Call Configure Initial for WaitForDocuSignEvent action.
+            var initCrateStorageDTO = WriteToSqlServer_ConfigureInitial(savedActionDTO);
+
+            // Select first available DocuSign template.
+            WriteToSqlServer_InputConnectionString(initCrateStorageDTO);
+            savedActionDTO.CrateStorage = initCrateStorageDTO;
+
+            // Call Configure FollowUp for WaitForDocuSignEvent action.
+            WriteToSqlServer_ConfigureFollowUp(savedActionDTO);
         }
 
         /// <summary>

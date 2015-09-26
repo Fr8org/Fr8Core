@@ -17,9 +17,9 @@ var dockyard;
                         $httpBackend.expectGET('/AngularTemplate/ProcessTemplateList').respond(200, '<div></div>');
                     }
                 ]);
-                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _processTemplateServiceMock, _actionListServiceMock, _processBuilderServiceMock, _$q, _$http, _urlPrefix, _crateHelper, _localIdentityGenerator, _$timeout;
+                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _processTemplateServiceMock, _actionListServiceMock, _processBuilderServiceMock, _$q, _$http, _urlPrefix, _crateHelper, _localIdentityGenerator, _$timeout, _$filter;
                 beforeEach(function () {
-                    inject(function ($controller, $rootScope, $q, $http, $timeout) {
+                    inject(function ($controller, $rootScope, $q, $http, $timeout, $filter) {
                         _actionServiceMock = new tests.utils.ActionServiceMock($q);
                         _processTemplateServiceMock = new tests.utils.ProcessTemplateServiceMock($q);
                         _actionListServiceMock = new tests.utils.ActionListServiceMock($q);
@@ -29,6 +29,7 @@ var dockyard;
                         _$q = $q;
                         _$timeout = $timeout;
                         _$scope = tests.utils.Factory.GetProcessBuilderScope($rootScope);
+                        _$filter = $filter;
                         _$state = {
                             data: {
                                 pageSubTitle: ""
@@ -56,7 +57,8 @@ var dockyard;
                             ProcessBuilderService: _processBuilderServiceMock,
                             ActionListService: _actionListServiceMock,
                             CrateHelper: _crateHelper,
-                            ActivityTemplateService: null
+                            ActivityTemplateService: null,
+                            $filter: _$filter
                         });
                     });
                     spyOn(_$scope, "$broadcast");

@@ -70,13 +70,15 @@ app.controller('FooterController', ['$scope', function ($scope) {
 }]);
 
 /* Setup Rounting For All Pages */
-app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/processes");
 
-    $stateProvider
+    // Install a HTTP request interceptor that causes 'Processing...' message to display
+    $httpProvider.interceptors.push('spinnerHttpInterceptor');
 
+    $stateProvider
     // Process Template list
         .state('processTemplates', {
             url: "/processes",
@@ -98,7 +100,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             data: { noTitle: true },
         })
 
-
         .state('showIncidents', {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
@@ -110,24 +111,56 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-       
+
         .state('processTemplateDetails', {
             url: "/processes/{id}/details",
             templateUrl: "/AngularTemplate/ProcessTemplateDetails",
             data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
         })
-    
-    // Manage files
 
+    // Manage files
         .state('managefiles', {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
-            data: { pageTitle: 'Manage Files', pageSubTitle: '' },
-        });
+            data: { pageTitle: 'Manage Files', pageSubTitle: '' }
+        })
 
+        .state('accounts', {
+            url: '/accounts',
+            templateUrl: '/AngularTemplate/AccountList',
+            data: { pageTitle: 'Manage Dockyard Accounts', pageSubTitle: '' }
+        })
+
+        .state('accountDetails', {
+            url: '/accounts/{id}',
+            templateUrl: '/AngularTemplate/AccountDetails',
+            data: { pageTitle: 'Account Details', pageSubTitle: '' }
+        });
 }]);
 
 /* Init global settings and run the app */
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
     $rootScope.$state = $state; // state to be accessed from view
 }]);
+
+app.constant('spinnerHttpInterceptor', {
+    request: function (config: ng.IRequestConfig) {
+        // Show page spinner If there is no request parameter suppressSpinner.
+        if (config && config.params && config.params['suppressSpinner']) {
+            // We don't want this parameter to be sent to backend so remove it if found.
+            delete (config.params.suppressSpinner);
+        }
+        else
+            Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+        return config;
+    },
+    response: function (config: ng.IRequestConfig) {
+        Metronic.stopPageLoading();
+        return config;
+    },
+    responseError: function (config: ng.IRequestConfig) {
+        Metronic.stopPageLoading();
+        return config;
+    }
+});
+

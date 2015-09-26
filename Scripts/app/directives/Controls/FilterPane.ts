@@ -27,9 +27,9 @@ module dockyard.directives {
                         { text: 'Not equal', value: 'neq' }
                     ];
 
-                    $scope.defaultOperator = 'gt';
+                    $scope.defaultOperator = '';
 
-                    $scope.$watch('currentAction', function (newValue: model.ActionDesignDTO) {
+                    $scope.$watch('currentAction', function (newValue: model.ActionDTO) {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
@@ -45,7 +45,6 @@ module dockyard.directives {
                     });
 
                     $scope.$watch('field', function (newValue: any) {
-                        debugger;
 
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);
@@ -53,7 +52,12 @@ module dockyard.directives {
                             $scope.executionType = jsonValue.executionType;
                         }
                         else {
-                            $scope.conditions = [];
+                            $scope.conditions = [
+                                new model.Condition(
+                                    null,
+                                    $scope.defaultOperator,
+                                    null)
+                            ];
                             $scope.executionType = 1;
                         }
                     });

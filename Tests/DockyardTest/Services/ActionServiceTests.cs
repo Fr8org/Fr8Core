@@ -64,7 +64,7 @@ namespace DockyardTest.Services
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
             //CrateStorageDTO result = _action.Configure(curActionDO);
-            
+
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);
             //Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
@@ -97,7 +97,7 @@ namespace DockyardTest.Services
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
-             
+
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete

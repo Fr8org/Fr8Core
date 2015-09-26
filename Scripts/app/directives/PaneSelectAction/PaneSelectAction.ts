@@ -4,8 +4,8 @@ module dockyard.directives.paneSelectAction {
     'use strict';
 
     export interface IPaneSelectActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) => void;
-        currentAction: model.ActionDesignDTO;
+        onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) => void;
+        currentAction: model.ActionDTO;
         isVisible: boolean;
         actionTypes: Array<model.ActivityTemplate>;
         ActionTypeSelected: () => void;
@@ -13,7 +13,7 @@ module dockyard.directives.paneSelectAction {
         componentActivities: string[];
         ChildActivityTypeSelected: (actionTemplateId: number) => void;
         childActivityStepId: number;
-        childActivity: model.ActionDesignDTO;
+        childActivity: model.ActionDTO;
     }
 
     export enum MessageType {
@@ -27,9 +27,9 @@ module dockyard.directives.paneSelectAction {
     }
 
     export class ActionTypeSelectedEventArgs {
-        public action: interfaces.IActionDesignDTO
+        public action: interfaces.IActionDTO
 
-        constructor(action: interfaces.IActionDesignDTO) {
+        constructor(action: interfaces.IActionDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
@@ -118,7 +118,7 @@ module dockyard.directives.paneSelectAction {
 
                 this.PopulateData($scope, $http);
 
-                $scope.$watch<model.ActionDesignDTO>(
+                $scope.$watch<model.ActionDTO>(
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
@@ -128,6 +128,7 @@ module dockyard.directives.paneSelectAction {
                     currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.activityTemplateId })[0];
 
                     if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
+                        $scope.currentAction.activityTemplateName = currentSelectedActivity.name;
                         // Ensure that we do not send CrateStorage of previously selected storage to server.
                         $scope.currentAction.crateStorage = new model.CrateStorage();
                         //Check for component activity
@@ -184,7 +185,7 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) {
 
         }
 

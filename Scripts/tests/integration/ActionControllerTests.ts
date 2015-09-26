@@ -71,7 +71,7 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IActionDesignDTO =
+            var actions: interfaces.IActionDTO =
             {
                     name: "test action type",
                     configurationControls: fx.ActionDesignDTO.configurationControls,
@@ -98,7 +98,7 @@ module dockyard.tests.controller {
         describe("Action#GetConfigurationSettings", function () {
             var endpoint = "/actions";
 
-            var currentActionDesignDTO: interfaces.IActionDesignDTO =
+            var currentActionDesignDTO: interfaces.IActionDTO =
                     {
                         name: "test action type",
                         configurationControls: fx.ActionDesignDTO.configurationControls,

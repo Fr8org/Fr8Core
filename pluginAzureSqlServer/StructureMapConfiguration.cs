@@ -10,37 +10,28 @@ using StructureMap;
 
 namespace pluginAzureSqlServer
 {
-    public class PluginAzureSqlServerStructureMapBootstrapper
+    public class PluginAzureSqlServerStructureMapRegistries
     {
-         public enum DependencyType
-         {
-             TEST = 0,
-             LIVE = 1
-         }
+        public class LiveMode : Registry
+        {
+            public LiveMode()
+            {
+                For<IAction>().Use<Core.Services.Action>();
+                For<IPlugin>().Use<Plugin>();
+                For<ICrate>().Use<Crate>();
+                For<IDbProvider>().Use<SqlClientDbProvider>();
+                For<IActivity>().Use<Activity>();
+            }
+        }
 
-         public static void ConfigureDependencies(DependencyType type)
-         {
-             switch (type)
-             {
-                 case DependencyType.TEST:
-                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>()); // No test mode yet
-                     break;
-                 case DependencyType.LIVE:
-                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
-                     break;
-             }
-         }
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
 
-         public class LiveMode : Registry
-         {
-             public LiveMode()
-             {
-                 For<IAction>().Use<Core.Services.Action>();
-                 For<IPlugin>().Use<Plugin>();
-                 For<ICrate>().Use<Crate>();
-                 For<IDbProvider>().Use<SqlClientDbProvider>();
-                 For<IActivity>().Use<Activity>();
-             }
-         }
+        public static void TestConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
     }
 }

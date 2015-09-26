@@ -19,10 +19,18 @@ namespace PluginBase.BaseClasses
         }
 
         /// <summary>
+        /// Reports Plugin Error incident
+        /// </summary>
+        [HttpGet]
+        public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
+        {
+            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, pluginError.Message, pluginError.GetType().Name));
+        }
+
+        /// <summary>
         /// Reports start up incident
         /// </summary>
         /// <param name="pluginName">Name of the plugin which is starting up</param>
-        
         [HttpGet]
         public IHttpActionResult AfterStartup(string pluginName)
         {
@@ -41,7 +49,7 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Incident");
         }
 
-
+        
         /// <summary>
         /// Reports event when process an action
         /// </summary>
@@ -51,8 +59,6 @@ namespace PluginBase.BaseClasses
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
         }﻿
 
-      
-
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
@@ -61,12 +67,15 @@ namespace PluginBase.BaseClasses
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curPlugin);
+            if (calledType == null)
+                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} plugin.", 
+                    curActionDTO.ActivityTemplate.Name,
+                    curActionDTO.ActivityTemplate.Version, 
+                    curPlugin), "curActionDTO");
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath);
             object curObject = Activator.CreateInstance(calledType);
             var response = (object)curMethodInfo.Invoke(curObject, new Object[] { dataObject });
             return response;
         }
-
-
     }
 }

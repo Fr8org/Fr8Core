@@ -120,7 +120,7 @@ namespace pluginAzureSqlServer.Actions
                         )
                 }
             };
-           
+
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");

@@ -40,7 +40,7 @@ namespace Core.StructureMap
 
         #region Method
 
-        public static void ConfigureDependencies(DependencyType type)
+        public static IContainer ConfigureDependencies(DependencyType type)
         {
 
             switch (type)
@@ -52,6 +52,17 @@ namespace Core.StructureMap
                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
                     break;
             }
+            return ObjectFactory.Container;
+        }
+
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
+
+        public static void TestConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
         }
 
         public class CoreRegistry : Registry

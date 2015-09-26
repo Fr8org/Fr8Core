@@ -150,6 +150,10 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\pluginAzureSqlServer\pluginAzureSqlServer.csproj">
+      <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
+      <Name>pluginAzureSqlServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\pluginDockyardCore\pluginDockyardCore.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>pluginDockyardCore</Name>
