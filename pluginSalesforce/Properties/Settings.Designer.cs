@@ -22,15 +22,5 @@ namespace pluginSalesforce.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://login.salesforce.com/services/Soap/c/34.0/0DF6100000001jl")]
-        public string pluginSalesforce_sforce_SforceService {
-            get {
-                return ((string)(this["pluginSalesforce_sforce_SforceService"]));
-            }
-        }
     }
 }
