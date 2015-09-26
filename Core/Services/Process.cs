@@ -63,6 +63,15 @@ namespace Core.Services
             return curProcessDO;
         }
 
+        public ActivityDO GetInitialActivity(ProcessDO curProcess)
+        {
+            ActivityDO initialActivity = null;
+
+
+
+            return initialActivity;
+        }
+
 
 
         public void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
