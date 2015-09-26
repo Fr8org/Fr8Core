@@ -7,6 +7,7 @@ namespace Data.Interfaces.ManifestSchemas
     {
         public string EventNames { get; set; }
         public string ProcessDOId { get; set; }
+        public string ExternalAccountId { get; set; }
         public List<CrateDTO> EventPayload { get; set; }
     }
 }
