@@ -17,7 +17,6 @@ namespace pluginSalesforce.Actions
         public ActionDTO CreateLead(ActionDTO curActionDTO)
         {
             bool result=_salesforce.CreateLead(curActionDTO);
-
             return curActionDTO;
         }
     }

@@ -1,35 +1,51 @@
 ﻿using pluginSalesforce.Infrastructure;
-using pluginSalesforce.sforce;
+using Salesforce.Common;
+using Salesforce.Force;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 
 namespace pluginSalesforce.Services
 {
     public class SalesforceAccount:ISalesforceAccount
     {
-        private SforceService binding;
+       
         public readonly string salesforceUserName;
         public readonly string salesforcePassword;
+        public readonly string salesforceConsumerKey;
+        public readonly string salesforceConsumerSecret;
+        ForceClient forceClient = null;
+        AuthenticationClient authclient;
 
         public SalesforceAccount()
         {
-            this.salesforceUserName = ConfigurationManager.AppSettings["SalesforceUserName"];
-            this.salesforcePassword = ConfigurationManager.AppSettings["SalesforcePassword"];
-            this.binding = new SforceService();
+           this.salesforceUserName = ConfigurationManager.AppSettings["SalesforceUserName"];
+           this.salesforcePassword = ConfigurationManager.AppSettings["SalesforcePassword"];
+           this.salesforceConsumerKey = ConfigurationManager.AppSettings["SalesforceConsumerKey"];
+           this.salesforceConsumerSecret = ConfigurationManager.AppSettings["SalesforceConsumerSecret"];
 
-            LoginResult lr = binding.login(salesforceUserName, salesforcePassword);
-            this.binding.Url = lr.serverUrl;
-            this.binding.SessionHeaderValue = new SessionHeader();
-            this.binding.SessionHeaderValue.sessionId = lr.sessionId;
+           authclient = new AuthenticationClient();
+           var connectionTask= GetConnection();
+           connectionTask.Wait();
+
+           var instanceUrl = authclient.InstanceUrl;
+           var accessToken = authclient.AccessToken;
+           var apiVersion = authclient.ApiVersion;
+
+           forceClient = new ForceClient(instanceUrl, accessToken, apiVersion);
         }
 
-        public SforceService GetSalesForceServiceBinding()
+        private async Task GetConnection()
         {
-            return this.binding;
+            await authclient.UsernamePasswordAsync(salesforceConsumerKey, salesforceConsumerSecret, salesforceUserName, salesforcePassword);
         }
-
+        
+        public ForceClient GetForceClient()
+        {
+            return forceClient;
+        }
     }
 }

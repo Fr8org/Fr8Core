@@ -106,10 +106,12 @@
     <Reference Include="Salesforce.Chatter">
       <HintPath>..\packages\DeveloperForce.Chatter.1.1.1\lib\Salesforce.Chatter.dll</HintPath>
     </Reference>
-    <Reference Include="Salesforce.Common">
-      <HintPath>..\packages\DeveloperForce.Chatter.1.1.1\lib\Salesforce.Common.dll</HintPath>
+    <Reference Include="Salesforce.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9f7864e53fb79388, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DeveloperForce.Force.1.1.1\lib\Salesforce.Common.dll</HintPath>
     </Reference>
-    <Reference Include="Salesforce.Force">
+    <Reference Include="Salesforce.Force, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9f7864e53fb79388, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\DeveloperForce.Force.1.1.1\lib\Salesforce.Force.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Text, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
@@ -210,6 +212,7 @@
     </Compile>
     <Compile Include="Infrastructure\ISalesforce.cs" />
     <Compile Include="Infrastructure\ISalesforceAccount.cs" />
+    <Compile Include="Infrastructure\Lead.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -222,7 +225,9 @@
     <Compile Include="StructureMapConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
