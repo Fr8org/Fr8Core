@@ -5,12 +5,14 @@
             <span class="caption-subject font-green-haze bold uppercase">{{currentAction.activityTemplateName}}</span>
         </div>
     </div>
-    <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-        <configuration-field current-action="currentAction" field="field" />
-    </div>
-    <div ng-if="currentAction.currentView">
-        <div ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-field current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+    <div class="portlet-body" block-if="processing === true">
+        <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
+            <configuration-field current-action="currentAction" field="field" />
+        </div>
+        <div ng-if="currentAction.currentView">
+            <div ng-repeat="field in currentAction.configurationControls.fields">
+                <configuration-field current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+            </div>
         </div>
     </div>
 </div>
