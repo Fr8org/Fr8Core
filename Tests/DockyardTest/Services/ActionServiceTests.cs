@@ -5,6 +5,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -53,7 +54,7 @@ namespace DockyardTest.Services
             //        pluginRegistration2Mock.Object
             //    });
             //ObjectFactory.Configure(cfg => cfg.For<ISubscription>().Use(subscriptionMock.Object));
-            _action = ObjectFactory.GetInstance<IAction>();
+            _action = new TestActionService();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
         }
@@ -367,6 +368,27 @@ namespace DockyardTest.Services
             _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
+        }
+    }
+
+    internal class TestActionService : Action
+    {
+        private IRestfulServiceClient _restfulServiceClient;
+
+        internal IRestfulServiceClient RestfulServiceClient
+        {
+            get { return _restfulServiceClient; }
+            private set { _restfulServiceClient = value; }
+        }
+
+        protected override IRestfulServiceClient PrepareRestfulClient()
+        {
+            if (_restfulServiceClient == null)
+            {
+                _restfulServiceClient = new Mock<IRestfulServiceClient>(MockBehavior.Default).Object;
+            }
+
+            return _restfulServiceClient;
         }
     }
 }
