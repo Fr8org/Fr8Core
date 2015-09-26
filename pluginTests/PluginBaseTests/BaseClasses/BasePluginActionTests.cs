@@ -55,16 +55,7 @@ namespace pluginTests.PluginBaseTests.Controllers
         public void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
-            ActionDO curAction = FixtureData.TestAction1();
-
-            //create connection string value crates with a vald connection string
-            var connectionStringCrate = FixtureData.TestCrateStorage();
-            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(connectionStringCrate.CrateDTO[0].Contents);
-            connectionStringFields.Controls[0].Value =
-                @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
-            connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);
-            curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
-
+            ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
             ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
             ConfigurationEvaluator curConfigurationEvaluator = EvaluateReceivedRequest;
 

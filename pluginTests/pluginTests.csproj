@@ -132,8 +132,8 @@
   <ItemGroup>
     <Compile Include="PluginAzureSqlServerTests\Controllers\ActionControllerTest.cs" />
     <Compile Include="PluginAzureSqlServerTests\SqlTests.cs" />
-    <Compile Include="PluginBaseTests\Controllers\BasePluginActionTests.cs" />
-    <Compile Include="PluginBaseTests\Controllers\BasePluginControllerTests.cs" />
+    <Compile Include="PluginBaseTests\BaseClasses\BasePluginActionTests.cs" />
+    <Compile Include="PluginBaseTests\BaseClasses\BasePluginControllerTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\BasePluginEventTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\TestBasePluginEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
