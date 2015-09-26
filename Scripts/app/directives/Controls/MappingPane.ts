@@ -5,7 +5,7 @@ module dockyard.directives {
 
     interface IMappingPaneScope extends ng.IScope {
         field: any;
-        currentAction: model.ActionDesignDTO;
+        currentAction: model.ActionDTO;
         dataItems: any;
     }
 
@@ -60,8 +60,8 @@ module dockyard.directives {
                                 targets: targets,
                                 selectedSource: null,
                                 selectedTarget: null
-                            });
-                        }
+                        });
+                    }
                     }
 
                     $scope.$watch('field', function (field: any) {
@@ -71,12 +71,12 @@ module dockyard.directives {
                         for (var i = 0; i < $scope.dataItems.length; ++i) {
                             if (!jsonValue || jsonValue.length <= i) {
                                 continue;
-                            }
+                                }
 
                             $scope.dataItems[i].selectedSource = jsonValue[i].source;
                             $scope.dataItems[i].selectedTarget = jsonValue[i].target;
-                        }
-                    });
+                            }
+                        });
 
                     $scope.$watch('dataItems', function (dataItem) {
                         var valueArr = [];

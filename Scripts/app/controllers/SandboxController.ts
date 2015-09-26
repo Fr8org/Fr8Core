@@ -191,7 +191,7 @@ module dockyard.controllers {
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IActionDesignDTO =
+            var actions: interfaces.IActionDTO =
                 {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),

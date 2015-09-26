@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -13,6 +14,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Name { get; set; }
 
-        public JToken TransitionKey { get; set; }
+        public string TransitionKey { get; set; }
     }
 }
