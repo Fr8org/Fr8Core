@@ -18,15 +18,20 @@ namespace Web.Controllers
     {
         private readonly IDockyardEvent _dockyardEvent;
         private readonly ICrate _crate;
+        private IProcessTemplate _processTemplate;
+
+
         public DockyardEventController()
         {
             _dockyardEvent = ObjectFactory.GetInstance<IDockyardEvent>();
             _crate = ObjectFactory.GetInstance<ICrate>();
+            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+
         }
 
         [HttpPost]
         [Route("dockyard_events")]
-        public IHttpActionResult dockyard_events(CrateDTO curCrateStandardEventReport)
+        public IHttpActionResult ProcessDockyardEvents(CrateDTO curCrateStandardEventReport)
         {
             //check if its not null
             if (curCrateStandardEventReport == null)
@@ -36,34 +41,8 @@ namespace Web.Controllers
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
             if (String.IsNullOrEmpty(curCrateStandardEventReport.Contents))
                 throw new ArgumentNullException("CrateDTO Content is empty.");
-
-            EventReportMS eventReportMS = _crate.GetContents<EventReportMS>(curCrateStandardEventReport);
-
-            //call DockyardEvent#ProcessInbound
-
-            // Commented out by yakov.gnusin.
-            // We cannot use User.Identity.GetUserId() here,
-            // since this is asynchronous API call, no authorized user in HttpContext here.
-            // _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
-
-            // Added by yakov.gnusin, for test purposes only!!! Fix that later.
-            // Get first active ProcessTemplate and get its UserID.
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActiveProcessTemplate = uow.ProcessTemplateRepository
-                    .GetQuery()
-                    .FirstOrDefault(x => x.ProcessTemplateState == ProcessTemplateState.Active);
-
-                if (curActiveProcessTemplate != null)
-                {
-                    _dockyardEvent.ProcessInbound(curActiveProcessTemplate.DockyardAccount.Id, eventReportMS);
-                    
-                }
-                else
-                {
-                    _dockyardEvent.ProcessInbound(User.Identity.GetUserId(), eventReportMS);
-                }
-            }
+            _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
+           
 
             return Ok();
         }

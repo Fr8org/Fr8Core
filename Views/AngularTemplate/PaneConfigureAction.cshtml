@@ -4,6 +4,11 @@
             <i class="icon-bar-chart font-green-haze hide"></i>
             <span class="caption-subject font-green-haze bold uppercase">{{currentAction.activityTemplateName}}</span>
         </div>
+        <div class="tools">
+            <a href="#" class="remove" ng-click="removeAction()">
+            </a>
+        </div>
+
     </div>
     <div class="portlet-body" block-if="processing === true">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">

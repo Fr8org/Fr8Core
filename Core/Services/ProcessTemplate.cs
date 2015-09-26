@@ -87,7 +87,7 @@ namespace Core.Services
             }
 
 
-            _processNodeTemplate.Create(uow,ptdo.StartingProcessNodeTemplate);
+            _processNodeTemplate.Create(uow, ptdo.StartingProcessNodeTemplate);
 
             //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
             return ptdo.Id;
@@ -100,7 +100,8 @@ namespace Core.Services
         /// <typeparam name="T"></typeparam>
         /// <param name="collectionToUpdate"></param>
         /// <param name="sourceCollection"></param>
-        public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class
+        public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection)
+            where T : class
         {
             List<T> itemsToAdd = new List<T>();
             List<T> itemsToRemove = new List<T>();
@@ -111,7 +112,7 @@ namespace Core.Services
                 found = false;
                 foreach (T entityToCompare in sourceCollection)
                 {
-                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    if (((IEquatable<T>) entity).Equals(entityToCompare))
                     {
                         found = true;
                         break;
@@ -129,7 +130,7 @@ namespace Core.Services
                 found = false;
                 foreach (T entityToCompare in collectionToUpdate)
                 {
-                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    if (((IEquatable<T>) entity).Equals(entityToCompare))
                     {
                         found = true;
                         break;
@@ -159,7 +160,17 @@ namespace Core.Services
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
         }
 
-        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
+        public void LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport)
+        {
+            foreach (var curProcessTemplate in curProcessTemplates)
+            {
+                //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
+                //so make the existing call to ProcessTemplate#LaunchProcess.
+                LaunchProcess(curProcessTemplate, curEventReport);
+            }
+        }
+
+        public void LaunchProcess( ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
         {
             if (curProcessTemplate == null)
                 throw new EntityNotFoundException(curProcessTemplate);
@@ -168,12 +179,7 @@ namespace Core.Services
             {
                 _process.Launch(curProcessTemplate, curEventData);
 
-                //todo: what does this do?
-                //ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
-                //    process =>
-                //        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(envelopeIdField.Value) &&
-                //        process.ProcessState == ProcessState.Executing);
-                //EventManager.ProcessLaunched(launchedProcess);
+
             }
         }
 
@@ -196,7 +202,9 @@ namespace Core.Services
             string result = "no action";
             foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
             {
-                foreach (ActionListDO curActionList in processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
+                foreach (
+                    ActionListDO curActionList in
+                        processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
                 {
                     foreach (ActionDO curActionDO in curActionList.Activities)
                     {
@@ -289,13 +297,21 @@ namespace Core.Services
             //2. are associated with the determined DockyardAccount
             //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
             //in the Crate of Class "Standard Event Reports" which was passed in.
-            var subscribingProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
+            var curProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
 
+            return MatchEvents(curProcessTemplates, curEventReport);
             //3. Get ActivityDO
-            foreach (var processTemplateDO in subscribingProcessTemplates)
+            
+        }
+
+        public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
+            EventReportMS curEventReport)
+        {
+            List<ProcessTemplateDO> subscribingProcessTemplates = new List<ProcessTemplateDO>();
+            foreach (var curProcessTemplate in curProcessTemplates)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActivity(processTemplateDO.Id) as ActionDO;
+                var actionDO = GetFirstActivity(curProcessTemplate.Id) as ActionDO;
 
                 //Get the CrateStorage
                 if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
@@ -310,7 +326,8 @@ namespace Core.Services
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
-                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
+                        EventSubscriptionMS subscriptionsList =
+                            _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
 
                         bool hasEvents = subscriptionsList.Subscriptions
                             .Where(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()))
@@ -318,15 +335,16 @@ namespace Core.Services
 
                         if (subscriptionsList != null && hasEvents)
                         {
-                            processTemplateSubscribers.Add(processTemplateDO);
+                            subscribingProcessTemplates.Add(curProcessTemplate);
                         }
                     }
                 }
             }
-            return processTemplateSubscribers;
-        }
+            return subscribingProcessTemplates;
+        
+    }
 
-        public ActivityDO GetFirstActivity(int curProcessTemplateId)
+    public ActivityDO GetFirstActivity(int curProcessTemplateId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
