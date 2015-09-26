@@ -301,13 +301,13 @@ namespace DockyardTest.Controllers
             {
                 // 
                 var processTemplate = FixtureData.TestProcessTemplate1();
-                
+                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.SaveChanges();
                 //Add a processnodetemplate to processtemplate 
                 var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                curProcessNodeTemplate.ParentTemplateId = processTemplate.Id;
                 processTemplate.StartingProcessNodeTemplate = curProcessNodeTemplate;
-                //uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
-                uow.ProcessTemplateRepository.Add(processTemplate);
-
+                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
                 uow.SaveChanges();
 
                 var actionList = FixtureData.TestEmptyActionList();
