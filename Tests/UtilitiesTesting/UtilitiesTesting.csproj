@@ -99,6 +99,8 @@
     <Compile Include="DocusignTools\DocusignApiHelper.cs" />
     <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
+    <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
+    <Compile Include="Fixtures\FixtureData - FieldDefinitionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Activity.cs" />
     <Compile Include="Fixtures\FixtureData - ActivityTemplateDTO.cs" />
