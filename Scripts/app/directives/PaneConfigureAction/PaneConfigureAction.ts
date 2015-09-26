@@ -7,7 +7,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_Render,
         PaneConfigureAction_Hide,
         PaneConfigureAction_MapFieldsClicked,
-        PaneConfigureAction_Cancelled
+        PaneConfigureAction_Cancelled,
+        PaneConfigureAction_ActionRemoved
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
@@ -29,10 +30,22 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
+    export class ActionRemovedEventArgs {
+        public id: number;
+        public isTempId: boolean;
+
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
+        }
+    }
+
+
     export interface IPaneConfigureActionScope extends ng.IScope {
         onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneConfigureActionScope) => void;
         action: interfaces.IActionDTO;
         isVisible: boolean;
+        removeAction: () => void;
         currentAction: interfaces.IActionVM;
         configurationControls: ng.resource.IResource<model.ControlsList> | model.ControlsList;
         crateStorage: ng.resource.IResource<model.CrateStorage> | model.CrateStorage;
@@ -54,6 +67,7 @@ module dockyard.directives.paneConfigureAction {
         };
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
+        private _$scope: IPaneConfigureActionScope;
         private _currentAction: interfaces.IActionDTO =
         new model.ActionDTO(0, 0, false, 0); //a local immutable copy of current action
         private configurationWatchUnregisterer: Function;
@@ -79,10 +93,12 @@ module dockyard.directives.paneConfigureAction {
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
                 this._$element = $element;
+                this._$scope = $scope;
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], <any>angular.bind(this, this.onHide));
                 $scope.$on("onFieldChange", <any>angular.bind(this, this.onFieldChange));
+                $scope.removeAction = <any>angular.bind(this, this.removeAction);
             };
         }
 
@@ -97,6 +113,23 @@ module dockyard.directives.paneConfigureAction {
             this.ActionService.save({ id: scope.currentAction.id },
                 scope.currentAction, null, null);
         }
+
+        private removeAction() {
+            if (!this._$scope.currentAction.isTempId) {
+                this.ActionService.delete({
+                    id: this._$scope.currentAction.id
+                });
+            }
+
+            this._$scope.$emit(
+                MessageType[MessageType.PaneConfigureAction_ActionRemoved],
+                new ActionRemovedEventArgs(this._$scope.currentAction.id, this._$scope.currentAction.isTempId)
+            );
+
+            this._$scope.currentAction = null;
+            this._$scope.isVisible = false;
+        };
+
 
         private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
@@ -171,7 +204,6 @@ module dockyard.directives.paneConfigureAction {
         private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDTO) {
             // Block pane and show pane-level 'loading' spinner
             scope.processing = true;
-
             var self = this;
             this.ActionService.configure(action).$promise.then(function (res: any) {
 

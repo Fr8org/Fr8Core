@@ -118,6 +118,8 @@ module dockyard.controllers {
             //Process Configure Action Pane events
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
+                (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
 
             //Select Template Pane events
             this._scope.$on(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated],
@@ -133,8 +135,6 @@ module dockyard.controllers {
             // TODO: do we need this any more?
             // this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
             //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
-            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionRemoved],
-                (event: ng.IAngularEvent, eventArgs: psa.ActionRemovedEventArgs) => this.PaneSelectAction_ActionRemoved(eventArgs));
             //Handles Save Request From PaneSelectAction
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
@@ -477,7 +477,10 @@ module dockyard.controllers {
         /*
             Handles message 'PaneSelectAction_ActionRemoved'
         */
-        private PaneSelectAction_ActionRemoved(eventArgs: psa.ActionRemovedEventArgs) {
+        private PaneConfigureAction_ActionRemoved(eventArgs: pca.ActionRemovedEventArgs) {
+
+
+            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
             this._scope.$broadcast(
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],
                 new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
