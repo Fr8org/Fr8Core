@@ -179,7 +179,7 @@ namespace Core.Services
             }
         }
 
-        public async Task<int> Process(ActionDO curAction, ProcessDO curProcessDO)
+        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

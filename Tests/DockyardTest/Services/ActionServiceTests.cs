@@ -159,7 +159,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
             }
 
-            action.Process(actionDo, procesDO).Wait();
+            action.PrepareToExecute(actionDo, procesDO).Wait();
 
             //Ensure that no Incidents were registered
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -195,7 +195,7 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
             }
 
-            action.Process(actionDo, process).Wait();
+            action.PrepareToExecute(actionDo, process).Wait();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -220,7 +220,7 @@ namespace DockyardTest.Services
             ActionDO actionDo = FixtureData.TestAction9();
             Action _action = ObjectFactory.GetInstance<Action>();
             ProcessDO procesDo = FixtureData.TestProcess1();
-            Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo, procesDo).Exception.InnerException.Message);
+            Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo).Exception.InnerException.Message);
         }
 
         [Test, Ignore]
@@ -233,7 +233,7 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             _action = ObjectFactory.GetInstance<IAction>();
 
-            _action.Process(actionDO, procesDo);
+            _action.PrepareToExecute(actionDO, procesDo);
 
             Assert.AreEqual(ActionState.Error, actionDO.ActionState);
         }
@@ -248,7 +248,7 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             _action = ObjectFactory.GetInstance<IAction>();
 
-            _action.Process(actionDO, procesDO);
+            _action.PrepareToExecute(actionDO, procesDO);
 
             Assert.AreEqual(ActionState.Active, actionDO.ActionState);
         }
@@ -259,7 +259,7 @@ namespace DockyardTest.Services
             ActionDO actionDo = FixtureData.TestActionUnstarted();
             ProcessDO procesDO = FixtureData.TestProcess1();
             Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            var response = _action.Process(actionDo, procesDO);
+            var response = _action.PrepareToExecute(actionDo, procesDO);
             Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
         }
 
