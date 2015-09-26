@@ -299,9 +299,15 @@ namespace DockyardTest.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Add a template
+                // 
+                var processTemplate = FixtureData.TestProcessTemplate1();
+                
+                //Add a processnodetemplate to processtemplate 
                 var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+                processTemplate.StartingProcessNodeTemplate = curProcessNodeTemplate;
+                //uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+                uow.ProcessTemplateRepository.Add(processTemplate);
+
                 uow.SaveChanges();
 
                 var actionList = FixtureData.TestEmptyActionList();
