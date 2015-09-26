@@ -45,6 +45,20 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 
+        public static ActionListDO TestActionList2()
+        {
+            var curActionListDO = new ActionListDO
+            {
+                Id = 1,
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
+            };
+            curActionListDO.Activities.Add(TestAction20());
+            curActionListDO.Activities.Add(TestAction21());
+
+            return curActionListDO;
+        }
+
         public static ActionListDO TestEmptyActionList()
         {
             var curActionListDO = new ActionListDO
