@@ -53,7 +53,8 @@ namespace Core.Services
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
+                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
+                
                 var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
                 uow.SaveChanges();

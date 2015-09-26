@@ -43,6 +43,7 @@ namespace Core.Services
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
+                    .Include(pt=>pt.ProcessNodeTemplates)
                     .Include("SubscribedDocuSignTemplates")
                     .Include("SubscribedExternalEvents");
 
@@ -63,7 +64,13 @@ namespace Core.Services
             if (creating)
             {
                 ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
+                var processNodeTemplate = new ProcessNodeTemplateDO(true);
+                ptdo.ProcessNodeTemplates.Add(processNodeTemplate);
+                // 2 lines above can be replaced with one line
+                // ptdo.StartingProcessNodeTemplate = processNodeTemplate;
+                
                 uow.ProcessTemplateRepository.Add(ptdo);
+
             }
             else
             {
@@ -153,15 +160,6 @@ namespace Core.Services
         {
             //var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(id);
             var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt=>pt.Id == id).SingleOrDefault();
-
-            foreach (var ptn in curProcessTemplate.ProcessNodeTemplates)
-            {
-                if (ptn.Id == curProcessTemplate.StartingProcessNodeTemplateId)
-                {
-                    curProcessTemplate.StartingProcessNodeTemplate = ptn;
-                    break;
-                }
-            }
 
             if (curProcessTemplate == null)
             {

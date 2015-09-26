@@ -68,11 +68,16 @@ namespace DockyardTest.Integration
 
             //add processnode to process
             var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
+            
             healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
-            uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
-
             //specify that this process node is the starting process node of the template
-            healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+            healthProcessNodeTemplateDO.StartingProcessNodeTemplate = true;
+            healthProcessTemplate.ProcessNodeTemplates.Add(healthProcessNodeTemplateDO);
+
+            // health healthProcessNodeTemplateDO will be saved automatically
+            //uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
+            //specify that this process node is the starting process node of the template
+            //healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
 
             //add criteria to processnode
             var healthCriteria = FixtureData.TestCriteriaHealthDemo();

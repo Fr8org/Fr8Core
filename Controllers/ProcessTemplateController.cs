@@ -38,6 +38,9 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplate = uow.ProcessTemplateRepository.GetByKey(id);
+
+                var test = Mapper.Map<ProcessTemplateOnlyDTO>(processTemplate);
+
                 var result = Mapper.Map<ProcessTemplateDTO>(processTemplate,
                     opts => { opts.Items[ProcessTemplateDOFullConverter.UnitOfWork_OptionsKey] = uow; });
 
