@@ -478,8 +478,6 @@ module dockyard.controllers {
             Handles message 'PaneSelectAction_ActionRemoved'
         */
         private PaneConfigureAction_ActionRemoved(eventArgs: pca.ActionRemovedEventArgs) {
-
-
             this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
             this._scope.$broadcast(
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],

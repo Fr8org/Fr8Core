@@ -172,7 +172,7 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = HandleCurrentActivity(id, uow);
+                var curAction = UpdateCurrentActivity(id, uow);
                 if (curAction == null)
                 {
                     curAction = new ActivityDO { Id = id };
@@ -190,7 +190,7 @@ namespace Core.Services
         /// <param name="curActionId">Action Id</param>
         /// <param name="uow">Unit of Work</param>
         /// <returns>Returns the current action (if found) or null if not.</returns>
-        private ActivityDO HandleCurrentActivity(int curActionId, IUnitOfWork uow)
+        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
         {
             // Find an ActionList for which the action is set as CurrentActivity
             // Also, get the whole list of actions for this Action List 
