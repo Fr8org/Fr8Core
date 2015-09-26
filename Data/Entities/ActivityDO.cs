@@ -26,8 +26,5 @@ namespace Data.Entities
 
         public int Ordering { get; set; }
 
-
-
-
     }
 }

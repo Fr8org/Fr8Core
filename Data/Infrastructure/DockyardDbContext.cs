@@ -323,22 +323,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
 
-            /*modelBuilder.Entity<ProcessTemplateDO>()
-               .HasRequired(x => x.StartingProcessNodeTemplate)
-               .WithMany()
-               .HasForeignKey(x => x.StartingProcessNodeTemplateId)
-               .WillCascadeOnDelete(false);*/
 
             modelBuilder.Entity<ProcessNodeTemplateDO>()
                 .HasMany<ActionListDO>(c => c.ActionLists)
                 .WithOptional(x => x.ProcessNodeTemplate)
                 .WillCascadeOnDelete(true);
-
-            /*modelBuilder.Entity<ActionListDO>()
-                .HasMany<ActionListDO>(c => c.ActionLists)
-                .WithOptional(x => x.ProcessNodeTemplate)
-                .WillCascadeOnDelete(true);*/
-
 
 
             modelBuilder.Entity<AuthorizationTokenDO>()

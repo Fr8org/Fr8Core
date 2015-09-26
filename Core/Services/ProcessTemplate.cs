@@ -158,13 +158,24 @@ namespace Core.Services
 
         public void Delete(IUnitOfWork uow, int id)
         {
-            //var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(id);
             var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt=>pt.Id == id).SingleOrDefault();
 
             if (curProcessTemplate == null)
             {
                 throw new EntityNotFoundException<ProcessTemplateDO>(id);
             }
+
+            foreach (var nodeTemplate in curProcessTemplate.ProcessNodeTemplates)
+            {
+                foreach(var actionList in nodeTemplate.ActionLists)
+                {
+                    foreach (var activity in actionList.Activities)
+                    {
+                        uow.ActivityRepository.Remove(activity);
+                    }
+                }
+            }
+            
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
 
         }

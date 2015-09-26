@@ -305,6 +305,10 @@
     <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.Designer.cs">
       <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.cs" />
+    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.Designer.cs">
+      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -555,6 +559,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.resx">
       <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509261521578_UpdateActivityDOandActionList.resx">
+      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
