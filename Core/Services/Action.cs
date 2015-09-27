@@ -226,8 +226,16 @@ namespace Core.Services
                 if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
                 {
                     curAction.ActionState = ActionState.InProcess;
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
+                    try
+                    {
+                        uow.ActionRepository.Attach(curAction);
+                        uow.SaveChanges();
+                    }
+                    catch(Exception e)
+                    {
+                        var foo = 3;
+                    }
+                 
 
                     EventManager.ActionStarted(curAction);
 
