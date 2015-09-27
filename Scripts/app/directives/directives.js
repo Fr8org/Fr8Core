@@ -14,6 +14,22 @@ app.directive('autoFocus', function ($timeout) {
         }
     };
 });
+app.directive('blockIf', function () {
+    return {
+        restrict: 'A',
+        link: function (_scope, _element, attrs) {
+            var expr = attrs['blockIf'];
+            _scope.$watch(expr, function (value) {
+                if (_scope.$eval(expr) === true) {
+                    Metronic.blockUI({ target: _element, animate: true });
+                }
+                else {
+                    Metronic.unblockUI(_element);
+                }
+            });
+        }
+    };
+});
 app.directive("checkboxGroup", function () {
     return {
         restrict: "A",
