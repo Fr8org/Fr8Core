@@ -144,9 +144,7 @@ module dockyard.controllers {
             }).result.then(function () {
                     //Deletion confirmed
                 me.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(function () {
-                    console.log('after me.scope');
                     me.$rootScope.lastResult = "success";
-                    console.log('after me.scope');
                     //now loop through our existing templates and remove from local memory
                     for (var i = 0; i < me._processTemplates.length; i++) {
                         if (me._processTemplates[i].id === processTemplateId) {

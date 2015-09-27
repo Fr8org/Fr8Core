@@ -62,7 +62,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "DocuSign",
                 Endpoint = "localhost",
-                PluginStatus = PluginStatus.Active
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
             };
         }
     }

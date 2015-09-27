@@ -7,7 +7,7 @@
     <!--
     <div ng-class="{'noclick-background': !isActionValid(currentAction) }">
     -->
-    <div>
+    <div class="quiery-builder" ng-class="{disabled: isDisabled}">
         <!--<table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}"> -->
         <table class="table query-builder-table">
             <thead>
@@ -21,12 +21,12 @@
             <tbody>
                 <tr ng-repeat="row in rows track by $index">
                     <td>
-                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field">
+                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field" ng-disabled="isDisabled">
                             <option value="">Select a Field</option>
                         </select>
                     </td>
                     <td>
-                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator" ng-disabled="!row.field">
+                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator" ng-disabled="!row.field || isDisabled">
                         </select>
                     </td>
                     <td>
@@ -36,14 +36,15 @@
                                    ng-required="true"
                                    ng-model="row.value"
                                    ng-change="valueChanged(row)"
-                                   ng-disabled="!row.field" />
+                                   ng-disabled="!row.field || isDisabled" />
                         </div>
                     </td>
                     <td>
                         <a href title="Delete filter rule"
                            class="btn btn-danger"
                            ng-show="rows.length > 1"
-                           ng-click="removeRow($index)">
+                           ng-click="removeRow($index)"
+                           ng-disabled="isDisabled">
                             Delete
                         </a>
                     </td>
@@ -51,7 +52,7 @@
             </tbody>
         </table>
         <div>
-            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()">Add Row</a>
+            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()" ng-disabled="isDisabled">Add Row</a>
         </div>
     </div>
 </div>

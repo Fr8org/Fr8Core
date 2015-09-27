@@ -1,5 +1,6 @@
 ﻿using Core.Interfaces;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Wrappers;
@@ -287,7 +288,8 @@ namespace UtilitiesTesting.Fixtures
               
                 Id = 1,
                 ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate
+                ActivityTemplate = actionTemplate,
+                CrateStorage = EnvelopeIdCrateJson()
             };
 
             return actionDo;

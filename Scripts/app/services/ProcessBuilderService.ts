@@ -91,7 +91,11 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/actions/save'
+                    url: '/actions/save',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
+
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -103,7 +107,10 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure'
+                    url: '/actions/configure',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
                 },
                 'getByProcessTemplate': {
                     method: 'GET',
@@ -226,19 +233,17 @@ module dockyard.services {
                     });
             }
 
-            //Save only Action 
+            //Save Action only
             else if (currentState.action) {
                 this.crateHelper.mergeControlListCrate(
                     currentState.action.configurationControls,
                     currentState.action.crateStorage
                 );
-
                 var promise = this.ActionService.save(
                     { id: currentState.action.id },
                     currentState.action,
                     null,
                     null).$promise;
-
                 promise
                     .then((result: interfaces.IActionVM) => {
                         newState.action = result;
@@ -254,7 +259,6 @@ module dockyard.services {
             }
 
             return deferred.promise;
-
         }
     }
 
@@ -365,14 +369,14 @@ module dockyard.services {
 
         /*
             This method does adding or updating depending on whether 
-            ProcessNodeTemplate has been saved or not yet.
+            ProcessNodeTemplate has been saved or not.
         */
         public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
             actionType: ActionTypeEnum,
             promise: ng.IPromise<model.ProcessNodeTemplateDTO>
         } {
             // Don't save anything if there is no criteria selected, 
-            // just return a null- valued resolved promise
+            // just return a null-valued resolved promise
             if (!curProcessNodeTemplate) {
                 var deferred = this.$q.defer<model.ProcessNodeTemplateDTO>();
                 deferred.resolve(null);

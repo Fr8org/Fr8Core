@@ -40,7 +40,8 @@ namespace pluginDocuSign.Services
             {
                 EventNames = "DocuSign Envelope " + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ProcessDOId = "",
-                EventPayload = ExtractEventPayload(curExternalEvents).ToList()
+                EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
+                ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
             };
 
             //prepare the event report
@@ -85,6 +86,7 @@ namespace pluginDocuSign.Services
                     new FieldDTO() {Key = "EnvelopeId", Value = curEvent.EnvelopeId},
                     new FieldDTO() {Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString()},
                     new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId}
+                   
                 };
 
                 curEventPayloadData.Add(_crate.Create("Payload Data", JsonConvert.SerializeObject(crateFields)));

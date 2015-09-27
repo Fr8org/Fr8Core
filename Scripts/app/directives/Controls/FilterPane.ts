@@ -45,7 +45,6 @@ module dockyard.directives {
                     });
 
                     $scope.$watch('field', function (newValue: any) {
-                        debugger;
 
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);

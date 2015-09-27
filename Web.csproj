@@ -752,6 +752,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
+    <Content Include="Scripts\lib\jquery.blockui.min.js" />
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
@@ -776,7 +777,7 @@
     <Content Include="Scripts\ProcessBuilder\pb-resources.js" />
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ActionList.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActionListDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
@@ -798,16 +799,15 @@
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\AngularTemplate\ManageFileList.cshtml" />
     <None Include="Views\AngularTemplate\MappingPane.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneSelectTemplate.html" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
     <TypeScriptCompile Include="Scripts\app\e2ehttpBackend.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDesignDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ProcessBuilder.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\ProcessBuilderControllerTests.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessBuilderController.ts" />
@@ -815,7 +815,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectTemplate\PaneSelectTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
@@ -3951,7 +3950,6 @@
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneConfigureMapping.html" />
     <Content Include="Scripts\tests\Chutzpah.json" />
     <Content Include="RunFrontEndTests - With Web Server.ps1" />
     <Content Include="RunFrontEndTests.ps1" />

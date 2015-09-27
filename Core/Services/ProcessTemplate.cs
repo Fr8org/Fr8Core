@@ -18,7 +18,7 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        private readonly IProcess _process;
+        // private readonly IProcess _process;
         private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
@@ -28,7 +28,6 @@ namespace Core.Services
 
         public ProcessTemplate()
         {
-            _process = ObjectFactory.GetInstance<IProcess>();
             _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             _action = ObjectFactory.GetInstance<IAction>();
@@ -43,7 +42,7 @@ namespace Core.Services
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
-                    .Include(pt=>pt.ProcessNodeTemplates)
+                    .Include(pt => pt.ProcessNodeTemplates)
                     .Include("SubscribedDocuSignTemplates")
                     .Include("SubscribedExternalEvents");
 
@@ -67,7 +66,7 @@ namespace Core.Services
                 var processNodeTemplate = new ProcessNodeTemplateDO(true);
                 processNodeTemplate.ProcessTemplate = ptdo;
                 ptdo.ProcessNodeTemplates.Add(processNodeTemplate);
-               
+
                 uow.ProcessTemplateRepository.Add(ptdo);
                 _processNodeTemplate.Create(uow, ptdo.StartingProcessNodeTemplate);
             }
@@ -81,15 +80,15 @@ namespace Core.Services
                 // ChildEntities update code has been deleted by demel 09/28/2015
             }
             //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
-           // return ptdo.Id;
+            // return ptdo.Id;
         }
 
-        
+
 
         public void Delete(IUnitOfWork uow, int id)
         {
-            var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt=>pt.Id == id).SingleOrDefault();
-
+            var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).SingleOrDefault();
+            
             if (curProcessTemplate == null)
             {
                 throw new EntityNotFoundException<ProcessTemplateDO>(id);
@@ -97,7 +96,7 @@ namespace Core.Services
 
             foreach (var nodeTemplate in curProcessTemplate.ProcessNodeTemplates)
             {
-                foreach(var actionList in nodeTemplate.ActionLists)
+                foreach (var actionList in nodeTemplate.ActionLists)
                 {
                     foreach (var activity in actionList.Activities)
                     {
@@ -105,28 +104,10 @@ namespace Core.Services
                     }
                 }
             }
-            
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
-
         }
 
-        public void LaunchProcess(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
-        {
-            if (curProcessTemplate == null)
-                throw new EntityNotFoundException(curProcessTemplate);
 
-            if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
-            {
-                _process.Launch(curProcessTemplate, curEventData);
-
-                //todo: what does this do?
-                //ProcessDO launchedProcess = uow.ProcessRepository.FindOne(
-                //    process =>
-                //        process.Name.Equals(curProcessTemplate.Name) && process.EnvelopeId.Equals(envelopeIdField.Value) &&
-                //        process.ProcessState == ProcessState.Executing);
-                //EventManager.ProcessLaunched(launchedProcess);
-            }
-        }
 
         public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
         {
@@ -147,7 +128,9 @@ namespace Core.Services
             string result = "no action";
             foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
             {
-                foreach (ActionListDO curActionList in processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
+                foreach (
+                    ActionListDO curActionList in
+                        processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
                 {
                     foreach (ActionDO curActionDO in curActionList.Activities)
                     {
@@ -186,6 +169,34 @@ namespace Core.Services
             return result;
         }
 
+        //like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
+        //because the database allows N ActionLists.
+        //we're waiting to reconcile this until we get some visibility into how the product is used by users
+        public ActionListDO GetActionList(int id)
+        {
+            ActionListDO curActionList = null;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Get action list by process template first 
+                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
+                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+
+                if (curProcessTemplateQuery.Count() == 0
+                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
+                    return null;
+
+                // Get ActionLists related to the ProcessTemplate
+                curActionList = curProcessTemplateQuery.SingleOrDefault()
+                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
+                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+
+
+            }
+            return curActionList;
+
+        }
+
+
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -198,25 +209,11 @@ namespace Core.Services
                 throw new ArgumentException("id");
             }
 
-            var emptyResult = new List<ActionDO>();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // Get action list by process template first 
-                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
-                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+                var emptyResult = new List<ActionDO>();
 
-                if (curProcessTemplateQuery.Count() == 0
-                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
-                    return emptyResult;
-
-                // Get ActionLists related to the ProcessTemplate
-                var curActionList = curProcessTemplateQuery.SingleOrDefault()
-                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
-                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-
-                if (curActionList == null)
-                    return emptyResult;
+                var curActionList = GetActionList(id);
 
                 // Get all the actions for that action list
                 var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
@@ -240,32 +237,51 @@ namespace Core.Services
             //2. are associated with the determined DockyardAccount
             //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
             //in the Crate of Class "Standard Event Reports" which was passed in.
-            var subscribingProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
+            var curProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
 
+            return MatchEvents(curProcessTemplates, curEventReport);
             //3. Get ActivityDO
-            foreach (var processTemplateDO in subscribingProcessTemplates)
+
+        }
+
+        public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
+            EventReportMS curEventReport)
+        {
+            List<ProcessTemplateDO> subscribingProcessTemplates = new List<ProcessTemplateDO>();
+            foreach (var curProcessTemplate in curProcessTemplates)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActivity(processTemplateDO.Id) as ActionDO;
+                var actionDO = GetFirstActivity(curProcessTemplate.Id) as ActionDO;
 
                 //Get the CrateStorage
-                if (actionDO != null && actionDO.CrateStorage != "")
+                if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
                 {
-                    //Loop each CrateDTO in CrateStorage
-                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action.GetCratesByManifestType("Standard Event Subscriptions", actionDO.CrateStorageDTO());
+                    // Loop each CrateDTO in CrateStorage
+                    IEnumerable<CrateDTO> eventSubscriptionCrates = _action
+                        .GetCratesByManifestType(
+                            CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
+                            actionDO.CrateStorageDTO()
+                        );
+
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
-                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
+                        EventSubscriptionMS subscriptionsList =
+                            _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
 
-                        if (subscriptionsList != null && subscriptionsList.Subscriptions
-                            .Where(events => events.ToLower().Contains(curEventReport.EventNames.ToLower().Trim()))
-                            .Any())//check event names if its subscribing
-                            processTemplateSubscribers.Add(processTemplateDO);
+                        bool hasEvents = subscriptionsList.Subscriptions
+                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()))
+                            .Any();
+
+                        if (subscriptionsList != null && hasEvents)
+                        {
+                            subscribingProcessTemplates.Add(curProcessTemplate);
+                        }
                     }
                 }
             }
-            return processTemplateSubscribers;
+            return subscribingProcessTemplates;
+
         }
 
         public ActivityDO GetFirstActivity(int curProcessTemplateId)
@@ -294,6 +310,23 @@ namespace Core.Services
 
                 return activityDO;
             }
+        }
+
+        public ActivityDO GetInitialActivity(ProcessTemplateDO curProcessTemplate)
+        {
+            ActivityDO initialActivity = null;
+            //at create time, find the lowest ordered activity in the immediate Action list and set that as the current activity.
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActionListDO curActionList = GetActionList(curProcessTemplate.Id);
+
+
+                // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+                return curActionList.Activities.OrderBy(a => a.Ordering).FirstOrDefault();
+            }
+
+
+
         }
 
 
