@@ -58,6 +58,7 @@ namespace Core.Services
                 var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
                 var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
+
                 uow.SaveChanges();
             }
             return curProcessDO;
@@ -85,6 +86,7 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
+                SetProcessInitialCurrentActivty(uow, curProcessDO);
                 Execute(curProcessDO);
             }
         }
@@ -131,6 +133,39 @@ namespace Core.Services
             }
 
             SetProcessNextActivity(curProcessDO);
+        }
+
+        private void SetProcessInitialCurrentActivty(IUnitOfWork uow, ProcessDO curProcessDO)
+        {
+            var curProcessTemplate = uow.ProcessTemplateRepository
+                .GetByKey(curProcessDO.ProcessTemplateId);
+
+            var curProcessNodeTemplate = curProcessTemplate
+                .ProcessNodeTemplates
+                .FirstOrDefault();
+
+            if (curProcessNodeTemplate == null)
+            {
+                throw new ApplicationException("No ProcessNodeTemplates found in ProcessTemplate.");
+            }
+
+            var curActionList = curProcessNodeTemplate
+                .ActionLists
+                .FirstOrDefault(x => x.ActionListType == ActionListType.Immediate);
+
+            if (curActionList == null)
+            {
+                throw new ApplicationException("No ActionLists found in ProcessNodeTemplate.");
+            }
+
+            var curActivity = curActionList.Activities.FirstOrDefault();
+
+            if (curActivity == null)
+            {
+                throw new ApplicationException("No Activities found in ActionList.");
+            }
+
+            curProcessDO.CurrentActivity = curActivity;
         }
 
         private void SetProcessNextActivity(ProcessDO curProcessDO)
