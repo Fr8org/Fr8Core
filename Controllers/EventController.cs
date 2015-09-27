@@ -20,7 +20,7 @@ namespace Web.Controllers
     {
         private readonly IEvent _event;
         private readonly ICrate _crate;
-        private readonly IPlugin _plugin;
+      
 
         private delegate void EventRouter(LoggingData loggingData);
 
@@ -28,7 +28,7 @@ namespace Web.Controllers
         {
             _event = ObjectFactory.GetInstance<IEvent>();
             _crate = ObjectFactory.GetInstance<ICrate>();
-            _plugin = ObjectFactory.GetInstance<IPlugin>();
+            
         }
 
         private EventRouter GetEventRouter(EventDTO eventDTO)
@@ -113,16 +113,15 @@ namespace Web.Controllers
                 EventManager.ReportUnparseableNotification(Request.RequestUri.AbsoluteUri, Request.Content.ReadAsStringAsync().Result);
             }
 
-            //get required plugin URL by plugin name and its version
-            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
-
             //create a plugin event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
-
-            //make POST with request content
-            await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), Request.Content);
+            
+            await
+                _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
 
             return Ok();
+            
+            
         }
     }
 }

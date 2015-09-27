@@ -7,7 +7,7 @@ Global Directives
 
 
 'use strict';
-
+ 
 app.directive('autoFocus', function ($timeout) {
     return {
         restrict: 'AC',
@@ -15,6 +15,23 @@ app.directive('autoFocus', function ($timeout) {
             $timeout(function () {
                 _element[0].focus();
             }, 0);
+        }
+    };
+});
+
+app.directive('blockIf', function () {
+    return {
+        restrict: 'A',
+        link: function (_scope, _element, attrs) {
+            var expr = attrs['blockIf'];
+            _scope.$watch(expr, function (value) {
+                if (_scope.$eval(expr) === true) {
+                    Metronic.blockUI({ target: _element, animate: true });
+                }
+                else {
+                    Metronic.unblockUI(_element);
+                }
+            });
         }
     };
 });

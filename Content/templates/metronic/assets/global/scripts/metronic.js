@@ -30,6 +30,8 @@ var Metronic = function() {
         'yellow': '#F8CB00'
     };
 
+    var spinnerVisible = false;
+
     // initializes main settings
     var handleInit = function() {
 
@@ -89,7 +91,8 @@ var Metronic = function() {
     };
 
     // Handles portlet tools & actions
-    var handlePortletTools = function() {
+    var handlePortletTools = function () {
+        return; // This is not necessary in Dockyard (fr8)
         // handle portlet remove
         $('body').on('click', '.portlet > .portlet-title > .tools > a.remove', function(e) {
             e.preventDefault();
@@ -745,6 +748,7 @@ var Metronic = function() {
             options = $.extend(true, {}, options);
             var html = '';
             if (options.animate) {
+                spinnerVisible = true;
                 html = '<div class="loading-message ' + (options.boxed ? 'loading-message-boxed' : '') + '">' + '<div class="block-spinner-bar"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>' + '</div>';
             } else if (options.iconOnly) {
                 html = '<div class="loading-message ' + (options.boxed ? 'loading-message-boxed' : '') + '"><img src="' + this.getGlobalImgPath() + 'loading-spinner-grey.gif" align=""></div>';
@@ -796,6 +800,7 @@ var Metronic = function() {
         // wrMetronicer function to  un-block element(finish loading)
         unblockUI: function(target) {
             if (target) {
+                spinnerVisible = false;
                 $(target).unblock({
                     onUnblock: function() {
                         $(target).css('position', '');
@@ -807,7 +812,9 @@ var Metronic = function() {
             }
         },
 
-        startPageLoading: function(options) {
+        startPageLoading: function (options) {
+            if (spinnerVisible) { return; } // Do not display spinner twice if it is displayed
+            spinnerVisible = true;
             if (options && options.animate) {
                 $('.page-spinner-bar').remove();
                 $('body').append('<div class="page-spinner-bar"><div class="bounce1"></div><div class="bounce2"></div><div class="bounce3"></div></div>');
@@ -817,7 +824,8 @@ var Metronic = function() {
             }
         },
 
-        stopPageLoading: function() {
+        stopPageLoading: function () {
+            spinnerVisible = false;
             $('.page-loading, .page-spinner-bar').remove();
         },
 

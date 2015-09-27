@@ -74,6 +74,35 @@ namespace DockyardTest.Services
         }
 
         [Test]
+        public void UpdateCurrentActivity_ShouldUpdateCurrentActivity()
+        {
+            var curActionList = FixtureData.TestActionList2();
+
+            // Set current activity
+            curActionList.CurrentActivity = curActionList.Activities.Single(a => a.Id == 1);
+            curActionList.Id = curActionList.CurrentActivity.Id;
+
+            Assert.AreEqual(1, curActionList.CurrentActivity.Id);
+
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionListRepository.Add(curActionList);
+                uow.SaveChanges();
+
+                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+
+                Assert.AreEqual(2, curActionList.CurrentActivity.Id);
+
+                // Check when current action is the only action in action list (should set null)
+                curActionList.Activities.RemoveAt(1);
+                uow.SaveChanges();
+
+                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+                Assert.AreEqual(null, curActionList.CurrentActivity);
+            }
+        }
+
+        [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionService_NULL_ActionTemplate()
         {

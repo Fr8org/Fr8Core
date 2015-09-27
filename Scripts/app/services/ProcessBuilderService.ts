@@ -91,7 +91,11 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/actions/save'
+                    url: '/actions/save',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
+
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -103,7 +107,10 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure'
+                    url: '/actions/configure',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
                 },
                 'getByProcessTemplate': {
                     method: 'GET',
