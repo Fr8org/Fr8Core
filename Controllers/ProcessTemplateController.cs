@@ -11,6 +11,8 @@ using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using System;
+using System.Data.Entity;
 
 namespace Web.Controllers
 {
@@ -38,17 +40,54 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var processTemplate = uow.ProcessTemplateRepository.GetByKey(id);
-                var result = Mapper.Map<ProcessTemplateDTO>(processTemplate,
-                    opts => { opts.Items[ProcessTemplateDOFullConverter.UnitOfWork_OptionsKey] = uow; });
+                var result = MapProcessTemplateToDTO(processTemplate, uow);
 
                 return Ok(result);
             };
         }
 
+        // Manual mapping method to resolve DO-1164.
+        private ProcessTemplateDTO MapProcessTemplateToDTO(ProcessTemplateDO curProcessTemplateDO, IUnitOfWork uow)
+        {
+            var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
+                .GetQuery()
+                .Include(x => x.ActionLists)
+                .Where(x => x.ParentTemplateId == curProcessTemplateDO.Id)
+                .OrderBy(x => x.Id)
+                .ToList()
+                .Select((ProcessNodeTemplateDO x) =>
+                {
+                    var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
+                    pntDTO.ActionLists = x.ActionLists.Select(y =>
+                    {
+                        var actionList = Mapper.Map<FullActionListDTO>(y);
+                        actionList.Actions = y.Activities.OfType<ActionDO>()
+                                .Select(z => Mapper.Map<ActionDTO>(z))
+                                .ToList();
+                        return actionList;
+                    }).ToList();
+                    return pntDTO;
+                }).ToList();
+
+            ProcessTemplateDTO result = new ProcessTemplateDTO()
+            {
+                Description = curProcessTemplateDO.Description,
+                Id = curProcessTemplateDO.Id,
+                Name = curProcessTemplateDO.Name,
+                ProcessTemplateState = curProcessTemplateDO.ProcessTemplateState,
+                StartingProcessNodeTemplateId = curProcessTemplateDO.StartingProcessNodeTemplateId,
+                SubscribedDocuSignTemplates = Mapper.Map<IList<string>>(curProcessTemplateDO.SubscribedDocuSignTemplates),
+                ProcessNodeTemplates = processNodeTemplateDTOList,
+                SubscribedExternalEvents = Mapper.Map<IList<int?>>(curProcessTemplateDO.SubscribedExternalEvents)
+            };
+
+            return result;
+        }
+
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin),id);
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
 
             if (curProcessTemplates.Any())
             {
@@ -118,7 +157,7 @@ namespace Web.Controllers
             }
         }
 
-        [Route("triggersettings"), ResponseType(typeof (List<ExternalEventDTO>))]
+        [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         public IHttpActionResult GetTriggerSettings()
         {
             var triggerSettings = new List<ExternalEventDTO>()

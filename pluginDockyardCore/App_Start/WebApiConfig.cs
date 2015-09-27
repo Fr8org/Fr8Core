@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
+using PluginBase;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDockyardCore
 {
@@ -10,8 +12,7 @@ namespace pluginDockyardCore
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+            BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginDockyardCoreServer",

@@ -268,6 +268,30 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(4, triggerSettings.Content.Count);
         }
 
+        [Test]
+        public void ShouldGetFullProcessTemplate()
+        {
+            var curProcessTemplateController = new ProcessTemplateController();
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                uow.SaveChanges();
+            }
+
+            var curResult = curProcessTemplateController.GetFullProcessTemplate(curProcessTemplateDO.Id) as OkNegotiatedContentResult<ProcessTemplateDTO>;
+            var curProcessTemplateDTO = curResult.Content;
+
+            Assert.AreEqual(curProcessTemplateDO.Name, curProcessTemplateDTO.Name);
+            Assert.AreEqual(curProcessTemplateDO.Description, curProcessTemplateDTO.Description);
+            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates.Count, 2);
+            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates[0].ActionLists.Count, 1);
+            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates[0].ActionLists[0].Activities.Count, 1);
+
+        }
+
+
         private static ProcessTemplateController CreateProcessTemplateController(string userId, string email)
         {
             var claims = new List<Claim>();
