@@ -150,7 +150,7 @@ namespace Core.Services
             else if (curActivityDO is ActionDO)
             {
                 IAction _action = ObjectFactory.GetInstance<IAction>();
-                _action.Process((ActionDO)curActivityDO, curProcessDO);
+                _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO);
             }
         }
 

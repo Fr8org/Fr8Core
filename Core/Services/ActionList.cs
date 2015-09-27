@@ -142,7 +142,7 @@ namespace Core.Services
 
         public void ProcessAction(ActionListDO curActionList, ProcessDO curProcessDO)
         {  
-            _action.Process((ActionDO) curActionList.CurrentActivity, curProcessDO);
+            _action.PrepareToExecute((ActionDO) curActionList.CurrentActivity, curProcessDO);
             UpdateActionListState(curActionList);
         }
         

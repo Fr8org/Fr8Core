@@ -50,7 +50,7 @@ namespace DockyardTest.Services
             ActionListDO actionListDO = FixtureData.TestActionList7();
             ProcessDO processDO = FixtureData.TestProcess1();
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
             
@@ -74,7 +74,7 @@ namespace DockyardTest.Services
                 .OfType<ActionDO>()
                 .OrderByDescending(o => o.Ordering).FirstOrDefault();
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
@@ -98,7 +98,7 @@ namespace DockyardTest.Services
             actionDO.ActionState = ActionState.Active;
             actionListDO.CurrentActivity = actionDO;
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Error; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Error; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
@@ -144,7 +144,7 @@ namespace DockyardTest.Services
                 .OfType<ActionDO>()
                 .OrderByDescending(o => o.Ordering).FirstOrDefault();
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
@@ -167,7 +167,7 @@ namespace DockyardTest.Services
             actionListDO.CurrentActivity = actionListDONext;
 
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.Process((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
