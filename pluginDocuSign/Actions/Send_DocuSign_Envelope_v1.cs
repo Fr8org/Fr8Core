@@ -49,7 +49,7 @@ namespace pluginDocuSign.Actions
 			if (stdCfgControl == null)
 				return ConfigurationRequestType.Initial;
 			// Try to get DropdownListField
-			var dropdownControl = stdCfgControl.FindByName("target_docusign_template") as DropdownListFieldDefinitionDTO;
+			var dropdownControl = stdCfgControl.FindByName("target_docusign_template");
 			if (dropdownControl == null)
 				return ConfigurationRequestType.Initial;
 
@@ -83,7 +83,7 @@ namespace pluginDocuSign.Actions
 			var stdCfgControl = _action.GetConfigurationControls(curActionDTO);
 			if (stdCfgControl == null)
 				return curActionDTO;
-			var dropdownControl = stdCfgControl.FindByName("target_docusign_template") as DropdownListFieldDefinitionDTO;
+			var dropdownControl = stdCfgControl.FindByName("target_docusign_template");
 			if (dropdownControl == null)
 				return curActionDTO;
 			
@@ -95,8 +95,8 @@ namespace pluginDocuSign.Actions
 			// we just want the names of the fields
 			List<FieldDTO> userDefinedFields = new List<FieldDTO>();
 			docuSignUserFields.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = null, Value = x.name }));
-			List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" }};
 			//  we're in design mode, there are no values 
+			List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" }};
 			var crateUserDefined = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray());
 			var crateStandard = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateStandardFields", standartFields.ToArray());
 
