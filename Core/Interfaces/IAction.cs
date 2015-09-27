@@ -23,5 +23,6 @@ namespace Core.Interfaces
         string Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
 		  StandardConfigurationControlsMS GetConfigurationControls(ActionDTO curActionDTO);
+        ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
     }
 }
