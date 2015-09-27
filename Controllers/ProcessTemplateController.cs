@@ -90,6 +90,7 @@ namespace Web.Controllers
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
+
                 //this will return 0 on create operation because of not saved changes
                 processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
                 uow.SaveChanges();

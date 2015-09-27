@@ -65,12 +65,13 @@ namespace Core.Services
             {
                 ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
                 var processNodeTemplate = new ProcessNodeTemplateDO(true);
+                processNodeTemplate.ProcessTemplate = ptdo;
                 ptdo.ProcessNodeTemplates.Add(processNodeTemplate);
                 // 2 lines above can be replaced with one line
                 // ptdo.StartingProcessNodeTemplate = processNodeTemplate;
                 
                 uow.ProcessTemplateRepository.Add(ptdo);
-
+                //uow.SaveChanges();
             }
             else
             {

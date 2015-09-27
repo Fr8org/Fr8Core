@@ -305,11 +305,11 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
                 //Add a processnodetemplate to processtemplate 
                 var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                curProcessNodeTemplate.StartingProcessNodeTemplate = true;
                 curProcessNodeTemplate.ParentTemplateId = processTemplate.Id;
-                processTemplate.StartingProcessNodeTemplate = curProcessNodeTemplate;
                 uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
                 uow.SaveChanges();
-
+                
                 var actionList = FixtureData.TestEmptyActionList();
                 actionList.Id = 1;
                 actionList.ActionListType = 1;

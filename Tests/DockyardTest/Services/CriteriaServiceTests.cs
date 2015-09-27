@@ -20,6 +20,7 @@ using Newtonsoft.Json.Serialization;
 namespace DockyardTest.Services
 {
 	[TestFixture]
+    [Ignore("Criteria is completely obsolete and should be removed.")]
 	[Category("CriteriaService")]
 	public class CriteriaServiceTests : BaseTest
 	{

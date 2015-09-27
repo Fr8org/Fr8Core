@@ -10,21 +10,21 @@ using Data.Interfaces.ManifestSchemas;
 using Utilities.Serializers.Json;
 namespace UtilitiesTesting.Fixtures
 {
-	public partial class FixtureData
-	{
-		public static ProcessTemplateDO TestProcessTemplate1()
-		{          
-			var processTemplate = new ProcessTemplateDO
-			{
-				Description = "descr 1",
-				Name = "template1",
-				ProcessTemplateState = ProcessTemplateState.Active,
+    public partial class FixtureData
+    {
+        public static ProcessTemplateDO TestProcessTemplate1()
+        {
+            var processTemplate = new ProcessTemplateDO
+            {
+                Description = "descr 1",
+                Name = "template1",
+                ProcessTemplateState = ProcessTemplateState.Active,
 
                 //UserId = "testUser1"
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
-			};
-			return processTemplate;
-		}
+            };
+            return processTemplate;
+        }
 
         public static ProcessTemplateDO TestProcessTemplate2()
         {
@@ -64,7 +64,7 @@ namespace UtilitiesTesting.Fixtures
                 ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
             };
 
-            for(int i = 1; i <= 4; ++i)
+            for (int i = 1; i <= 4; ++i)
             {
                 var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
                 {
@@ -107,7 +107,7 @@ namespace UtilitiesTesting.Fixtures
                 };
                 uow.ProcessRepository.Add(processDo);
 
-               
+
 
                 ProcessNodeTemplateDO processNodeTemplateDO = new ProcessNodeTemplateDO()
                 {
@@ -184,6 +184,52 @@ namespace UtilitiesTesting.Fixtures
                 };
                 curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
             }
+
+            return curProcessTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplates()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1124 Proper  deletion of ProcessTemplate",
+                Name = "TestProcessTemplateWithStartingProcessNodeTemplates",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                ProcessTemplate = curProcessTemplateDO,
+                StartingProcessNodeTemplate = true
+            };
+            curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+
+
+            return curProcessTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplates_ID0()
+            {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Description = "DO-1124 Proper  deletion of ProcessTemplate",
+                Name = "TestProcessTemplateWithStartingProcessNodeTemplates_ID0",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            {
+                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                ProcessTemplate = curProcessTemplateDO,
+                StartingProcessNodeTemplate = true
+            };
+            curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+
 
             return curProcessTemplateDO;
         }

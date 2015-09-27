@@ -47,7 +47,8 @@ namespace Data.Entities
                     return startingProcessNodeTemplate.Id;
                 else
                 {
-                    throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
+                    return 0;
+                    //throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
                 }
             }
         }
@@ -62,7 +63,8 @@ namespace Data.Entities
                 if (null != startingProcessNodeTemplate)
                     return startingProcessNodeTemplate;
                 else
-                    throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
+                    return null;
+                    //throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
             }
 
             set {
