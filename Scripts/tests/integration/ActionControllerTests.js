@@ -6,7 +6,7 @@ var dockyard;
     (function (tests) {
         var controller;
         (function (controller) {
-            var fx = tests.utils.fixtures;
+            var fx = tests.utils.fixtures; // just an alias
             describe("Action Controller ", function () {
                 var testData = {};
                 var errorHandler = function (response, done) {
@@ -44,6 +44,7 @@ var dockyard;
                             returnedData = data;
                             console.log("Got it Sucessfully");
                             console.log(returnedData);
+                            //Delete after get
                             deleteInvoker(data, done);
                         }).fail(function (response) {
                             errorHandler(response, done);
@@ -59,6 +60,7 @@ var dockyard;
                         }).done(function (data, status) {
                             console.log("Saved it Sucessfully");
                             console.log(data);
+                            // Then GET, 
                             getInvoker(data, done);
                         }).fail(function (response) {
                             errorHandler(response, done);
@@ -75,6 +77,7 @@ var dockyard;
                             isTempId: false,
                             id: 0,
                             fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
+                            // ActionListId is set to null, since there is no ActionsLists on a blank db.
                             actionListId: null,
                             activityTemplate: new dockyard.model.ActivityTemplate(1, "Write to SQL", "1", "")
                         };
@@ -95,6 +98,7 @@ var dockyard;
                         isTempId: false,
                         id: 1,
                         fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
+                        // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
                         activityTemplate: fx.ActivityTemplate.activityTemplateDO
                     };

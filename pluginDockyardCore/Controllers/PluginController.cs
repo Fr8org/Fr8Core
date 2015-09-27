@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
+using Core.Services;
 using Data.Entities;
 using Data.States;
 
@@ -31,6 +32,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "FilterUsingRunTimeData",
+                Category = ActivityCategory.fr8_Processor,
                 Plugin = plugin,
                 Version = "1"
             });
@@ -38,6 +40,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "MapFields",
+                Category = ActivityCategory.fr8_Processor,
                 Plugin = plugin,
                 Version = "1"
             });

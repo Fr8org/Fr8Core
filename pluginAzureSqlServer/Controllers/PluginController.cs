@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
@@ -23,6 +24,7 @@ namespace pluginAzureSqlServer.Controllers
             var template = new ActivityTemplateDO
             {
                 Name = "Write_To_Sql_Server",
+                Category = ActivityCategory.fr8_Forwarder,
                 Version = "1"
             };
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
 using Data.Entities;
@@ -23,6 +24,7 @@ namespace pluginSlack.Controllers
             var template = new ActivityTemplateDO
             {
                 Name = "Publish_To_Slack",
+                Category = ActivityCategory.fr8_Forwarder,
                 Version = "1"
             };
 
