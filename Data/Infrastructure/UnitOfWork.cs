@@ -153,15 +153,15 @@ namespace Data.Infrastructure
         }
 
 
-        private EventStatusRepository _eventStatusRepository;
+        //private EventStatusRepository _eventStatusRepository;
 
-        public EventStatusRepository EventStatusRepository
-        {
-            get
-            {
-                return _eventStatusRepository ?? (_eventStatusRepository = new EventStatusRepository(this));
-            }
-        }
+        //public EventStatusRepository EventStatusRepository
+        //{
+        //    get
+        //    {
+        //        return _eventStatusRepository ?? (_eventStatusRepository = new EventStatusRepository(this));
+        //    }
+        //}
 
         private InstructionRepository _instructionRepository;
 
@@ -459,15 +459,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private ExternalEventSubscriptionRepository _externalEventSubscriptionRepository;
+        //private ExternalEventSubscriptionRepository _externalEventSubscriptionRepository;
 
-	    public ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository
-	    {
-		    get
-		    {
-		        return _externalEventSubscriptionRepository ?? (_externalEventSubscriptionRepository = new ExternalEventSubscriptionRepository(this));
-		    }
-	    }
+        //public ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository
+        //{
+        //    get
+        //    {
+        //        return _externalEventSubscriptionRepository ?? (_externalEventSubscriptionRepository = new ExternalEventSubscriptionRepository(this));
+        //    }
+        //}
 
 	    private ProcessNodeTemplateRepository _processNodeTemplateRepository;
 

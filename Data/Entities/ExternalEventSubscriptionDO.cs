@@ -5,24 +5,24 @@ using System;
 
 namespace Data.Entities
 {
-    public class ExternalEventSubscriptionDO : BaseDO, IEquatable<ExternalEventSubscriptionDO>
-    {
-        [Key]
-        public int Id { get; set; }
+    //public class ExternalEventSubscriptionDO : BaseDO, IEquatable<ExternalEventSubscriptionDO>
+    //{
+    //    [Key]
+    //    public int Id { get; set; }
 
-        [ForeignKey("ExternalEventTypeTemplate")]
-        public int? ExternalEvent { get; set; }
+    //    [ForeignKey("ExternalEventTypeTemplate")]
+    //    public int? ExternalEvent { get; set; }
 
-        public virtual _ExternalEventTypeTemplate ExternalEventTypeTemplate { get; set; }
+    //    public virtual _ExternalEventTypeTemplate ExternalEventTypeTemplate { get; set; }
 
-        [ForeignKey("ExternalProcessTemplate")]
-        public int ExternalProcessTemplateId { get; set; }
+    //    [ForeignKey("ExternalProcessTemplate")]
+    //    public int ExternalProcessTemplateId { get; set; }
 
-        public virtual ProcessTemplateDO ExternalProcessTemplate { get; set; }
+    //    public virtual ProcessTemplateDO ExternalProcessTemplate { get; set; }
 
-        public bool Equals(ExternalEventSubscriptionDO other)
-        {
-            return ExternalProcessTemplateId == other.ExternalProcessTemplateId && ExternalEvent == other.ExternalEvent;
-        }
-    }
+    //    public bool Equals(ExternalEventSubscriptionDO other)
+    //    {
+    //        return ExternalProcessTemplateId == other.ExternalProcessTemplateId && ExternalEvent == other.ExternalEvent;
+    //    }
+    //}
 }

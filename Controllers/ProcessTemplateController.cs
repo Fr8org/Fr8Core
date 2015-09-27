@@ -76,9 +76,9 @@ namespace Web.Controllers
                 Name = curProcessTemplateDO.Name,
                 ProcessTemplateState = curProcessTemplateDO.ProcessTemplateState,
                 StartingProcessNodeTemplateId = curProcessTemplateDO.StartingProcessNodeTemplateId,
-                SubscribedDocuSignTemplates = Mapper.Map<IList<string>>(curProcessTemplateDO.SubscribedDocuSignTemplates),
-                ProcessNodeTemplates = processNodeTemplateDTOList,
-                SubscribedExternalEvents = Mapper.Map<IList<int?>>(curProcessTemplateDO.SubscribedExternalEvents)
+                //SubscribedDocuSignTemplates = Mapper.Map<IList<string>>(curProcessTemplateDO.SubscribedDocuSignTemplates),
+                ProcessNodeTemplates = processNodeTemplateDTOList
+                //SubscribedExternalEvents = Mapper.Map<IList<int?>>(curProcessTemplateDO.SubscribedExternalEvents)
             };
 
             return result;
@@ -162,10 +162,10 @@ namespace Web.Controllers
         {
             var triggerSettings = new List<ExternalEventDTO>()
             {
-                new ExternalEventDTO(ExternalEventType.EnvelopeSent, "Envelope Sent"),
-                new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Delivered"),
-                new ExternalEventDTO(ExternalEventType.RecipientSent, "Recipient Sent"),
-                new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Received")
+                //new ExternalEventDTO(ExternalEventType.EnvelopeSent, "Envelope Sent"),
+                //new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Delivered"),
+                //new ExternalEventDTO(ExternalEventType.RecipientSent, "Recipient Sent"),
+                //new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Received")
             };
 
             return Ok(triggerSettings);

@@ -74,16 +74,16 @@ namespace Core.Services
                 curProcessTemplate.Description = ptdo.Description;
 
                 //
-                if (updateChildEntities)
-                {
-                    //Update DocuSign template registration
-                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedDocuSignTemplates,
-                        ptdo.SubscribedDocuSignTemplates);
+                //if (updateChildEntities)
+                //{
+                //    //Update DocuSign template registration
+                //    MakeCollectionEqual(uow, curProcessTemplate.SubscribedDocuSignTemplates,
+                //        ptdo.SubscribedDocuSignTemplates);
 
-                    //Update DocuSign trigger registration
-                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedExternalEvents,
-                        ptdo.SubscribedExternalEvents);
-                }
+                //    //Update DocuSign trigger registration
+                //    MakeCollectionEqual(uow, curProcessTemplate.SubscribedExternalEvents,
+                //        ptdo.SubscribedExternalEvents);
+                //}
             }
 
 

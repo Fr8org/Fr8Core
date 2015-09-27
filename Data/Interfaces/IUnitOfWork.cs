@@ -19,7 +19,7 @@ namespace Data.Interfaces
         EmailStatusRepository EmailStatusRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }
         //EventRepository EventRepository { get; }
-        EventStatusRepository EventStatusRepository { get; }
+        //EventStatusRepository EventStatusRepository { get; }
         InstructionRepository InstructionRepository { get; }
         InvitationRepository InvitationRepository { get; }
         //InvitationResponseRepository InvitationResponseRepository { get; }
@@ -82,7 +82,7 @@ namespace Data.Interfaces
         RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository { get; }
+        //ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository { get; }
         MailerRepository MailerRepository { get; }
 
         /// <summary>
