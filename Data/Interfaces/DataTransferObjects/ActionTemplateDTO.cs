@@ -19,7 +19,6 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("componentActivities")]
         public string ComponentActivities { get; set; }
 
-        [JsonProperty("category")]
         public ActivityCategory Category { get; set; }
     }
 }
