@@ -58,7 +58,7 @@ namespace Core.Services
             }
         }
 
-        public int CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
+        public void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
             if (creating)
@@ -67,11 +67,9 @@ namespace Core.Services
                 var processNodeTemplate = new ProcessNodeTemplateDO(true);
                 processNodeTemplate.ProcessTemplate = ptdo;
                 ptdo.ProcessNodeTemplates.Add(processNodeTemplate);
-                // 2 lines above can be replaced with one line
-                // ptdo.StartingProcessNodeTemplate = processNodeTemplate;
-                
+               
                 uow.ProcessTemplateRepository.Add(ptdo);
-                //uow.SaveChanges();
+                _processNodeTemplate.Create(uow, ptdo.StartingProcessNodeTemplate);
             }
             else
             {
@@ -80,82 +78,13 @@ namespace Core.Services
                     throw new EntityNotFoundException();
                 curProcessTemplate.Name = ptdo.Name;
                 curProcessTemplate.Description = ptdo.Description;
-
-                //
-                if (updateChildEntities)
-                {
-                    //Update DocuSign template registration
-                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedDocuSignTemplates,
-                        ptdo.SubscribedDocuSignTemplates);
-
-                    //Update DocuSign trigger registration
-                    MakeCollectionEqual(uow, curProcessTemplate.SubscribedExternalEvents,
-                        ptdo.SubscribedExternalEvents);
-                }
+                // ChildEntities update code has been deleted by demel 09/28/2015
             }
-
-
-            _processNodeTemplate.Create(uow,ptdo.StartingProcessNodeTemplate);
-
             //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
-            return ptdo.Id;
+           // return ptdo.Id;
         }
 
-        /// <summary>
-        /// The function add/removes items on the current collection 
-        /// so that they match the items on the new collection.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="collectionToUpdate"></param>
-        /// <param name="sourceCollection"></param>
-        public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class
-        {
-            List<T> itemsToAdd = new List<T>();
-            List<T> itemsToRemove = new List<T>();
-            bool found;
-
-            foreach (T entity in collectionToUpdate)
-            {
-                found = false;
-                foreach (T entityToCompare in sourceCollection)
-                {
-                    if (((IEquatable<T>)entity).Equals(entityToCompare))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    itemsToRemove.Add(entity);
-                }
-            }
-            itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
-
-            foreach (T entity in sourceCollection)
-            {
-                found = false;
-                foreach (T entityToCompare in collectionToUpdate)
-                {
-                    if (((IEquatable<T>)entity).Equals(entityToCompare))
-                    {
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found)
-                {
-                    itemsToAdd.Add(entity);
-                }
-            }
-            itemsToAdd.ForEach(i => collectionToUpdate.Add(i));
-
-
-            //identify deleted items and remove them from the collection
-            //collectionToUpdate.Except(sourceCollection).ToList().ForEach(s => collectionToUpdate.Remove(s));
-            //identify added items and add them to the collection
-            //sourceCollection.Except(collectionToUpdate).ToList().ForEach(s => collectionToUpdate.Add(s));
-        }
+        
 
         public void Delete(IUnitOfWork uow, int id)
         {
@@ -367,5 +296,62 @@ namespace Core.Services
             }
         }
 
+
+        /// <summary>
+        /// The function add/removes items on the current collection 
+        /// so that they match the items on the new collection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collectionToUpdate"></param>
+        /// <param name="sourceCollection"></param>
+        /* public void MakeCollectionEqual<T>(IUnitOfWork uow, IList<T> collectionToUpdate, IList<T> sourceCollection) where T : class
+        {
+            List<T> itemsToAdd = new List<T>();
+            List<T> itemsToRemove = new List<T>();
+            bool found;
+
+            foreach (T entity in collectionToUpdate)
+            {
+                found = false;
+                foreach (T entityToCompare in sourceCollection)
+                {
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    itemsToRemove.Add(entity);
+                }
+            }
+            itemsToRemove.ForEach(e => uow.Db.Entry(e).State = EntityState.Deleted);
+
+            foreach (T entity in sourceCollection)
+            {
+                found = false;
+                foreach (T entityToCompare in collectionToUpdate)
+                {
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    itemsToAdd.Add(entity);
+                }
+            }
+            itemsToAdd.ForEach(i => collectionToUpdate.Add(i));
+
+
+            //identify deleted items and remove them from the collection
+            //collectionToUpdate.Except(sourceCollection).ToList().ForEach(s => collectionToUpdate.Remove(s));
+            //identify added items and add them to the collection
+            //sourceCollection.Except(collectionToUpdate).ToList().ForEach(s => collectionToUpdate.Add(s));
+        }
+        */
     }
 }

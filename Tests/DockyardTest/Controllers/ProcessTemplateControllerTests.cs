@@ -46,8 +46,8 @@ namespace DockyardTest.Controllers
                 var curUser = uow.UserRepository.GetQuery()
                     .SingleOrDefault(x => x.Id == _testUserAccount.Id);
 
-              //  uow.UserRepository.Remove(curUser);
-              //  uow.SaveChanges();
+                uow.UserRepository.Remove(curUser);
+                uow.SaveChanges();
             }
         }
 

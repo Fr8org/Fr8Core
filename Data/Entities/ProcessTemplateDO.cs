@@ -58,13 +58,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingProcessNodeTemplate = ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
-
-                if (null != startingProcessNodeTemplate)
-                    return startingProcessNodeTemplate;
-                else
-                    return null;
-                    //throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
+                return ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
             }
 
             set {
