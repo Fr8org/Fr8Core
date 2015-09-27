@@ -18,7 +18,7 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        private readonly IProcess _process;
+       // private readonly IProcess _process;
         private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
@@ -28,7 +28,6 @@ namespace Core.Services
 
         public ProcessTemplate()
         {
-            _process = ObjectFactory.GetInstance<IProcess>();
             _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             _action = ObjectFactory.GetInstance<IAction>();
@@ -160,28 +159,7 @@ namespace Core.Services
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
         }
 
-        public void LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport)
-        {
-            foreach (var curProcessTemplate in curProcessTemplates)
-            {
-                //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
-                //so make the existing call to ProcessTemplate#LaunchProcess.
-                LaunchProcess(curProcessTemplate, curEventReport);
-            }
-        }
-
-        public void LaunchProcess( ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
-        {
-            if (curProcessTemplate == null)
-                throw new EntityNotFoundException(curProcessTemplate);
-
-            if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
-            {
-                _process.Launch(curProcessTemplate, curEventData);
-
-
-            }
-        }
+        
 
         public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
         {
@@ -243,6 +221,34 @@ namespace Core.Services
             return result;
         }
 
+        //like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
+        //because the database allows N ActionLists.
+        //we're waiting to reconcile this until we get some visibility into how the product is used by users
+        public ActionListDO GetActionList(int id)
+        {
+            ActionListDO curActionList = null;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Get action list by process template first 
+                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
+                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+
+                if (curProcessTemplateQuery.Count() == 0
+                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
+                    return null;
+
+                // Get ActionLists related to the ProcessTemplate
+                curActionList = curProcessTemplateQuery.SingleOrDefault()
+                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
+                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+
+                
+            }
+            return curActionList;
+
+        }
+
+
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -255,31 +261,17 @@ namespace Core.Services
                 throw new ArgumentException("id");
             }
 
-            var emptyResult = new List<ActionDO>();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // Get action list by process template first 
-                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
-                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
+                var emptyResult = new List<ActionDO>();
 
-                if (curProcessTemplateQuery.Count() == 0
-                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
-                    return emptyResult;
+                var curActionList = GetActionList(id);
 
-                // Get ActionLists related to the ProcessTemplate
-                var curActionList = curProcessTemplateQuery.SingleOrDefault()
-                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
-                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-
-                if (curActionList == null)
-                    return emptyResult;
-
-                // Get all the actions for that action list
+                    // Get all the actions for that action list
                 var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
 
                 if (curActivities.Count() == 0)
-                    return emptyResult;
+                        return emptyResult;
 
                 return curActivities;
             }
@@ -370,6 +362,23 @@ namespace Core.Services
 
                 return activityDO;
             }
+        }
+
+        public ActivityDO GetInitialActivity(ProcessTemplateDO curProcessTemplate)
+        {
+            ActivityDO initialActivity = null;
+            //at create time, find the lowest ordered activity in the immediate Action list and set that as the current activity.
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ActionListDO curActionList = GetActionList(curProcessTemplate.Id);
+
+
+                // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+                return curActionList.Activities.OrderBy(a => a.Ordering).FirstOrDefault();
+            }
+               
+
+
         }
 
     }

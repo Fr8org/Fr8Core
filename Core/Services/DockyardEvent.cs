@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Exceptions;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 
@@ -16,11 +17,13 @@ namespace Core.Services
     public class DockyardEvent : IDockyardEvent
     {
         private readonly IProcessTemplate _processTemplate;
+        private readonly IProcess _process;
         private readonly ICrate _crate;
 
         public DockyardEvent()
         {
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            _process = ObjectFactory.GetInstance<IProcess>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
@@ -70,11 +73,32 @@ namespace Core.Services
 
 
 
-                _processTemplate.LaunchProcesses(subscribingProcessTemplates, curCrateStandardEventReport);
+                LaunchProcesses(subscribingProcessTemplates, curCrateStandardEventReport);
+            
+            }
+        }
+
+        public void LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport)
+        {
+            foreach (var curProcessTemplate in curProcessTemplates)
+            {
+                //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
+                //so make the existing call to ProcessTemplate#LaunchProcess.
+                LaunchProcess(curProcessTemplate, curEventReport);
+            }
+        }
+
+        public void LaunchProcess(ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
+        {
+            if (curProcessTemplate == null)
+                throw new EntityNotFoundException(curProcessTemplate);
+
+            if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
+            {
+                _process.Launch(curProcessTemplate, curEventData);
+
 
             }
-
-
         }
     }
 }
