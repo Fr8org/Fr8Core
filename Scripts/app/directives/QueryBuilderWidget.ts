@@ -13,7 +13,6 @@ module dockyard.directives {
             return null;
         };
 
-
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/QueryBuilderWidget',
