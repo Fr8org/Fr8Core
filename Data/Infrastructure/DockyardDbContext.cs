@@ -267,11 +267,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
-            //modelBuilder.Entity<ExternalEventSubscriptionDO>().ToTable("ExternalEventSubscriptions");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<MailerDO>().ToTable("Mailers");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
-            //modelBuilder.Entity<DocuSignTemplateSubscriptionDO>().ToTable("DocuSignTemplateSubscriptions");
             modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
             modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");
             modelBuilder.Entity<MT_Organization>().ToTable("MT_Organizations");

@@ -76,9 +76,7 @@ namespace Web.Controllers
                 Name = curProcessTemplateDO.Name,
                 ProcessTemplateState = curProcessTemplateDO.ProcessTemplateState,
                 StartingProcessNodeTemplateId = curProcessTemplateDO.StartingProcessNodeTemplateId,
-                //SubscribedDocuSignTemplates = Mapper.Map<IList<string>>(curProcessTemplateDO.SubscribedDocuSignTemplates),
                 ProcessNodeTemplates = processNodeTemplateDTOList
-                //SubscribedExternalEvents = Mapper.Map<IList<int?>>(curProcessTemplateDO.SubscribedExternalEvents)
             };
 
             return result;
@@ -160,15 +158,7 @@ namespace Web.Controllers
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         public IHttpActionResult GetTriggerSettings()
         {
-            var triggerSettings = new List<ExternalEventDTO>()
-            {
-                //new ExternalEventDTO(ExternalEventType.EnvelopeSent, "Envelope Sent"),
-                //new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Delivered"),
-                //new ExternalEventDTO(ExternalEventType.RecipientSent, "Recipient Sent"),
-                //new ExternalEventDTO(ExternalEventType.RecipientDelivered, "Recipient Received")
-            };
-
-            return Ok(triggerSettings);
+            return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
         [Route("activate")]

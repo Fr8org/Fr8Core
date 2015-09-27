@@ -72,18 +72,6 @@ namespace Core.Services
                     throw new EntityNotFoundException();
                 curProcessTemplate.Name = ptdo.Name;
                 curProcessTemplate.Description = ptdo.Description;
-
-                //
-                //if (updateChildEntities)
-                //{
-                //    //Update DocuSign template registration
-                //    MakeCollectionEqual(uow, curProcessTemplate.SubscribedDocuSignTemplates,
-                //        ptdo.SubscribedDocuSignTemplates);
-
-                //    //Update DocuSign trigger registration
-                //    MakeCollectionEqual(uow, curProcessTemplate.SubscribedExternalEvents,
-                //        ptdo.SubscribedExternalEvents);
-                //}
             }
 
 
