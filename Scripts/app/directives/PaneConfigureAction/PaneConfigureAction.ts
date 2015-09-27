@@ -39,8 +39,7 @@ module dockyard.directives.paneConfigureAction {
             this.isTempId = isTempId;
         }
     }
-
-
+    
     export interface IPaneConfigureActionScope extends ng.IScope {
         onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneConfigureActionScope) => void;
         action: interfaces.IActionDTO;
@@ -52,8 +51,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
     }
-
-
+    
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     //More detail on creating directives in TypeScript: 
@@ -68,8 +66,7 @@ module dockyard.directives.paneConfigureAction {
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IPaneConfigureActionScope;
-        private _currentAction: interfaces.IActionDTO =
-        new model.ActionDTO(0, 0, false, 0); //a local immutable copy of current action
+        private _currentAction: interfaces.IActionDTO = new model.ActionDTO(0, 0, false, 0);
         private configurationWatchUnregisterer: Function;
 
         constructor(
@@ -129,8 +126,7 @@ module dockyard.directives.paneConfigureAction {
             this._$scope.currentAction = null;
             this._$scope.isVisible = false;
         };
-
-
+        
         private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
             // Check if this event is defined for the current field
@@ -157,7 +153,6 @@ module dockyard.directives.paneConfigureAction {
                 
                 // Block the pane to prevent user from making more changes since pane controls may change
                 this.blockUI();
-
 
                 this.loadConfiguration(scope, scope.currentAction);
             }
@@ -205,14 +200,19 @@ module dockyard.directives.paneConfigureAction {
             // Block pane and show pane-level 'loading' spinner
             scope.processing = true;
             var self = this;
+            var activityTemplateName = scope.currentAction.activityTemplateName; // preserve activity name
             this.ActionService.configure(action).$promise.then(function (res: any) {
 
                 // Unblock pane
                 scope.processing = false;
 
+                // Assign name to res rather than currentAction to prevent 
+                // $watches from unnecessarily triggering
+                res.activityTemplateName = activityTemplateName; 
+
                 scope.currentAction = res;
                 (<any>scope.currentAction).configurationControls =
-                self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
+                    self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
             });
 
             if (this.configurationWatchUnregisterer == null) {
@@ -245,14 +245,5 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
-    //app.run([
-    //    "$httpBackend", "urlPrefix", (httpBackend, urlPrefix) => {
-
-    //        httpBackend
-    //            .whenGET("/apimock/Action/configuration/1")
-    //            .respond(tests.utils.Fixtures.configurationSettings);
-    //    }
-    //]);
     app.directive('paneConfigureAction', PaneConfigureAction.Factory());
-
 }
