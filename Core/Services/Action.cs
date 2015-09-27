@@ -169,14 +169,53 @@ namespace Core.Services
 
         public void Delete(int id)
         {
-            var entity = new ActionDO { Id = id };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionRepository.Attach(entity);
-                uow.ActionRepository.Remove(entity);
+                var curAction = UpdateCurrentActivity(id, uow);
+                if (curAction == null)
+                {
+                    curAction = new ActivityDO { Id = id };
+                    uow.ActivityRepository.Attach(curAction);
+                }
+                uow.ActivityRepository.Remove(curAction);
                 uow.SaveChanges();
             }
+        }
+
+        /// <summary>
+        /// The method checks if the action being deleted is CurrentActivity for its ActionList. 
+        /// if it is, sets CurrentActivity to the next Action, or null if it is the last action. 
+        /// </summary>
+        /// <param name="curActionId">Action Id</param>
+        /// <param name="uow">Unit of Work</param>
+        /// <returns>Returns the current action (if found) or null if not.</returns>
+        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
+        {
+            // Find an ActionList for which the action is set as CurrentActivity
+            // Also, get the whole list of actions for this Action List 
+            var curActionList = uow.ActionListRepository.GetQuery().Where(al => al.CurrentActivityID == curActionId).Include(al => al.Activities).SingleOrDefault();
+            if (curActionList == null) return null;
+
+            // Get current Action
+            var curAction = curActionList.Activities.Where(a => a.Id == curActionId).SingleOrDefault();
+            if (curAction == null) return null; // Well, who knows...
+
+            // Get ordered list of next Activities 
+            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+
+            //if no next activities, just nullify CurrentActivity 
+            if (activities.Count() == 0)
+            {
+                curActionList.CurrentActivity = null;
+            }
+            else
+            {
+                // if there is one, set it as CurrentActivity
+                curActionList.CurrentActivity = activities.ToList()[0];
+            }
+
+            return curAction;
         }
 
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO)

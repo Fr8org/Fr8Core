@@ -9,7 +9,6 @@ module dockyard.directives.paneSelectAction {
         isVisible: boolean;
         actionTypes: Array<model.ActivityTemplate>;
         ActionTypeSelected: () => void;
-        RemoveAction: () => void;
         componentActivities: string[];
         ChildActivityTypeSelected: (actionTemplateId: number) => void;
         childActivityStepId: number;
@@ -22,7 +21,6 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_Hide,
         PaneSelectAction_UpdateAction,
         PaneSelectAction_ActionTypeSelected,
-        PaneSelectAction_ActionRemoved,
         PaneSelectAction_InitiateSaveAction
     }
 
@@ -74,15 +72,6 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class ActionRemovedEventArgs {
-        public id: number;
-        public isTempId: boolean;
-
-        constructor(id: number, isTempId: boolean) {
-            this.id = id;
-            this.isTempId = isTempId;
-        }
-    }
 
 
     //More detail on creating directives in TypeScript: 
@@ -153,21 +142,6 @@ module dockyard.directives.paneSelectAction {
                     }
                 }
 
-                $scope.RemoveAction = () => {
-                    $scope.$emit(
-                        MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                        new ActionRemovedEventArgs($scope.currentAction.id, $scope.currentAction.isTempId)
-                    );
-
-                    if (!$scope.currentAction.isTempId) {
-                        this.ActionService.delete({
-                            id: $scope.currentAction.id
-                        }); 
-                    }
-
-                    $scope.currentAction = null;
-                    $scope.isVisible = false;
-                };
 
                 $scope.ChildActivityTypeSelected = (childActionTemplateId) => {
                     if (childActionTemplateId != null) {
