@@ -71,12 +71,13 @@ module dockyard.tests.controller {
         beforeEach(function (done) {
             // First POST, create a dummy entry
 
-            var actions: interfaces.IActionDesignDTO =
-                {
+            var actions: interfaces.IActionDTO =
+            {
                     name: "test action type",
-                    crateStorage: fx.ActionDesignDTO.crateStorage,
+                    configurationControls: fx.ActionDesignDTO.configurationControls,
+                    crateStorage: null,
                     processNodeTemplateId: 1,
-                    actionTemplateId: 1,
+                    activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
                     fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
@@ -97,12 +98,13 @@ module dockyard.tests.controller {
         describe("Action#GetConfigurationSettings", function () {
             var endpoint = "/actions";
 
-            var currentActionDesignDTO: interfaces.IActionDesignDTO =
+            var currentActionDesignDTO: interfaces.IActionDTO =
                     {
                         name: "test action type",
-                        crateStorage: fx.ActionDesignDTO.crateStorage,
+                        configurationControls: fx.ActionDesignDTO.configurationControls,
+                        crateStorage: null,
                         processNodeTemplateId: 1,
-                        actionTemplateId: 1,
+                        activityTemplateId: 1,
                         isTempId: false,
                         id: 1,
                         fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,

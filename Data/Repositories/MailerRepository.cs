@@ -35,7 +35,7 @@ namespace Data.Repositories
         {
             if (email == null)
                 throw new ArgumentNullException("email");
-            return ConfigureEnvelope(email, MailerDO.SendGridHander);
+            return ConfigureEnvelope(email, MailerDO.MailHandler);
         }
 
         public MailerDO ConfigureTemplatedEmail(EmailDO email, string templateName, IDictionary<string, object> mergeData = null)
@@ -47,7 +47,7 @@ namespace Data.Repositories
             if (string.IsNullOrEmpty(templateName))
                 throw new ArgumentNullException("templateName", "Template name is null or empty.");
 
-            return ConfigureEnvelope(email, MailerDO.SendGridHander, templateName, mergeData);
+            return ConfigureEnvelope(email, MailerDO.MailHandler, templateName, mergeData);
         }
 
         private MailerDO ConfigureEnvelope(EmailDO email, string handler, string templateName = null, IDictionary<string, object> mergeData = null)

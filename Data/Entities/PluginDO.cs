@@ -18,6 +18,9 @@ namespace Data.Entities
         [Required]
         public string Name { get; set; }
 
+        [Required]
+        public string Version { get; set; }
+
         [ForeignKey("PluginStatusTemplate")]
         public int PluginStatus { get; set; }
         public _PluginStatusTemplate PluginStatusTemplate { get; set; }

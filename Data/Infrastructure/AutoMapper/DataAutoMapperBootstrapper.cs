@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -22,15 +23,17 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
                  .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
-                .ForMember(a => a.ActionTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
-                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
+                .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
+                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore()); //
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ParentActivityId, opts => opts.ResolveUsing(ad => ad.ActionListId))
-                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActionTemplateId))
+                .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.SerializeObject(ad.CrateStorage)))
+                .ForMember(a => a.currentView, opts => opts.ResolveUsing(ad => ad.CurrentView))
                 .ForMember(a => a.IsTempId, opts => opts.ResolveUsing(ad => ad.IsTempId));
 
             Mapper.CreateMap<ActivityTemplateDO, ActivityTemplateDTO>()
@@ -44,7 +47,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.ComponentActivities, opts => opts.ResolveUsing(x => x.ComponentActivities))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-                .ForMember(x => x.PluginID, opts => opts.ResolveUsing(x => x.PluginID));
+                .ForMember(x => x.PluginID, opts => opts.ResolveUsing(x => x.PluginID))
+                .ForMember(x => x.Plugin, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
 
             Mapper.CreateMap<ActionListDO, ActionListDTO>()
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
@@ -56,7 +60,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int?>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
             Mapper.CreateMap<IList<int?>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
 
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>();
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
 
             Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
                 .ForMember(x => x.ParentTemplateId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
@@ -68,8 +72,12 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<ProcessTemplateDO, FullProcessTemplateDTO>()
+            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>()
                 .ConvertUsing<ProcessTemplateDOFullConverter>();
+
+            Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDTO>();
+            Mapper.CreateMap<ActionListDO, FullActionListDTO>();
+            Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
 
             Mapper.CreateMap<Signer, Wrappers.Signer>();
 
@@ -86,8 +94,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
             Mapper.CreateMap<string, FieldMappingSettingsDTO>()
                 .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
-        }
-    }
 
-   
+            Mapper.CreateMap<FileDO, FileDTO>();
+        }
+    }   
 }

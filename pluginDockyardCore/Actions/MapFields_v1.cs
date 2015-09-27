@@ -10,6 +10,7 @@ using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using Utilities;
@@ -18,11 +19,6 @@ namespace pluginDockyardCore.Actions
 {
     public class MapFields_v1 : BasePluginAction
     {
-        private class CrateConfigurationDTO
-        {
-            public string Id { get; set; }
-            public string Label { get; set; }
-        }
 
         /// <summary>
         /// Action processing infrastructure.
@@ -47,7 +43,7 @@ namespace pluginDockyardCore.Actions
                 {
                     Contents = curFieldMappingJson,
                     Label = "Payload",
-                    ManifestType = "Payload Data"
+                    ManifestType = "Standard Payload Data"
                 }
             };
 
@@ -59,20 +55,20 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public CrateStorageDTO Configure(ActionDTO actionDTO)
+        public ActionDTO Configure(ActionDTO actionDTO)
         {
             return ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
 
         private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
-            List<CrateConfigurationDTO> crateConfigList)
+            List<MappingFieldConfigurationDTO> crateConfigList)
         {
             foreach (var curAction in actions)
             {
                 var curCrateStorage = curAction.CrateStorageDTO();
                 foreach (var curCrate in curCrateStorage.CrateDTO)
                 {
-                    crateConfigList.Add(new CrateConfigurationDTO()
+                    crateConfigList.Add(new MappingFieldConfigurationDTO()
                     {
                         Id = curCrate.Id,
                         Label = curCrate.Label
@@ -82,63 +78,144 @@ namespace pluginDockyardCore.Actions
         }
 
         /// <summary>
-        /// Looks for upstream and downstream Creates.
+        /// Create configuration controls crate.
         /// </summary>
-        protected override CrateStorageDTO InitialConfigurationResponse(ActionDTO actionDTO)
+        private CrateDTO CreateStandardConfigurationControls()
         {
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
-            var curActivityService = ObjectFactory.GetInstance<IActivity>();
-
-            var curUpstreamActivities = curActivityService.GetUpstreamActivities(curActionDO);
-            var curDownstreamActivities = curActivityService.GetDownstreamActivities(curActionDO);
-
-            var curUpstreamFields = new List<CrateConfigurationDTO>();
-            FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curUpstreamFields);
-
-            var curDownstreamFields = new List<CrateConfigurationDTO>();
-            FillCrateConfigureList(curUpstreamActivities.OfType<ActionDO>(), curDownstreamFields);
-
-            if (curUpstreamFields.Count == 0 || curDownstreamFields.Count == 0)
+            var fieldFilterPane = new FieldDefinitionDTO()
             {
-                throw new ApplicationException("This action couldn't find either source fields or target fields (or both). "
-                    + "Try configuring some Actions first, then try this page again.");
-            }
-
-            var curUpstreamJson = JsonConvert.SerializeObject(curUpstreamFields, JsonSettings.CamelCase);
-            var curDownstreamJson = JsonConvert.SerializeObject(curDownstreamFields, JsonSettings.CamelCase);
-
-            var curResultDTO = new CrateStorageDTO()
-            {
-                CrateDTO = new List<CrateDTO>()
-                {
-                    new CrateDTO()
-                    {
-                        Id = "Upstream Plugin-Provided Fields",
-                        Label = "Upstream Plugin-Provided Fields",
-                        Contents = curUpstreamJson
-                    },
-
-                    new CrateDTO()
-                    {
-                        Id = "Downstream Plugin-Provided Fields",
-                        Label = "Downstream Plugin-Provided Fields",
-                        Contents = curDownstreamJson
-                    }
-                }
+                FieldLabel = "Configure Mapping",
+                Type = "mappingPane",
+                Name = "Selected_Mapping",
+                Required = true
             };
 
-            curActionDO.UpdateCrateStorageDTO(curResultDTO.CrateDTO);
-
-            return curResultDTO;
+            return PackControlsCrate(fieldFilterPane);
         }
 
+        /// <summary>
+        /// Looks for upstream and downstream Creates.
+        /// </summary>
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        {
+            CrateDTO getErrorMessageCrate = null; 
+
+            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+
+            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
+
+            var curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields.ToArray();
+
+            if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
+            {
+                getErrorMessageCrate = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
+                         "This action couldn't find either source fields or target fields (or both). " +
+                        "Try configuring some Actions first, then try this page again.");
+                curActionDTO.CurrentView = "MapFieldsErrorMessage";
+            }
+
+            //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
+            CrateDTO downstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+
+            var curConfigurationControlsCrate = CreateStandardConfigurationControls();
+
+            curActionDTO.CrateStorage = AssembleCrateStorage(downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate, getErrorMessageCrate);
+            return curActionDTO;
+
+        }
+
+        /// <summary>
+        /// Check if initial configuration was requested.
+        /// </summary>
+        private bool CheckIsInitialConfiguration(ActionDTO curAction)
+        {
+            // Check nullability for CrateStorage and Crates array length.
+            if (curAction.CrateStorage == null
+                || curAction.CrateStorage.CrateDTO == null
+                || curAction.CrateStorage.CrateDTO.Count == 0)
+            {
+                return true;
+            }
+
+            // Check nullability of Upstream and Downstream crates.
+            var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.Label == "Upstream Plugin-Provided Fields"
+                    && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
+
+            var downStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
+                x => x.Label == "Downstream Plugin-Provided Fields"
+                    && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
+
+            if (upStreamFieldsCrate == null
+                || string.IsNullOrEmpty(upStreamFieldsCrate.Contents)
+                || downStreamFieldsCrate == null
+                || string.IsNullOrEmpty(downStreamFieldsCrate.Contents))
+            {
+                return true;
+            }
+
+            // Check if Upstream and Downstream ManifestSchemas contain empty set of fields.
+            var upStreamFields = JsonConvert
+                .DeserializeObject<StandardDesignTimeFieldsMS>(upStreamFieldsCrate.Contents);
+
+            var downStreamFields = JsonConvert
+                .DeserializeObject<StandardDesignTimeFieldsMS>(downStreamFieldsCrate.Contents);
+
+            if (upStreamFields.Fields == null
+                || upStreamFields.Fields.Count == 0
+                || downStreamFields.Fields == null
+                || downStreamFields.Fields.Count == 0)
+            {
+                return true;
+        }
+
+            // If all rules are passed, then it is not an initial configuration request.
+            return false;
+        }
         /// <summary>
         /// ConfigurationEvaluator always returns Initial,
         /// since Initial and FollowUp phases are the same for current action.
         /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDO)
         {
+            if (CheckIsInitialConfiguration(curActionDO))
+            {
             return ConfigurationRequestType.Initial;
+        }
+            else
+            {
+                return ConfigurationRequestType.Followup;
+            }
+        }
+
+        //Returning the crate with text field control 
+        private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
+        {
+            var fields = new List<FieldDefinitionDTO>() 
+            {
+                new TextBlockFieldDTO()
+                {
+                    FieldLabel = fieldLabel,
+                    Value = errorMessage,
+                    Type = "textBlockField",
+                    cssClass = "well well-lg"
+                    
+                }
+            };
+
+            var controls = new StandardConfigurationControlsMS()
+            {
+                Controls = fields
+            };
+
+            var crateControls = _crate.Create(
+                        "Configuration_Controls",
+                        JsonConvert.SerializeObject(controls),
+                        "Standard Configuration Controls"
+                    );
+
+            return crateControls;
         }
     }
 }

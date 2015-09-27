@@ -62,9 +62,10 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            AddProfiles(uow);
-
+            AddProfiles(uow); 
+            AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
+            AddAuthorizationTokens(uow);
         }
 
         //Method to let us seed into memory as well
@@ -74,11 +75,44 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
-        //This method will automatically seed any constants file
-        //It looks for rows which implement IConstantRow<>
-        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
-        //The below method will then generate a new row for each constant found in BookingRequestState.
-        private static void SeedConstants(IUnitOfWork context)
+
+
+        private static void AddAuthorizationTokens(IUnitOfWork uow)
+        {
+
+            // Check that plugin does not exist yet.
+            var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
+                .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
+
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!docusignAuthToken)
+            {
+                var token = new AuthorizationTokenDO();
+                token.ExternalAccountId = "docusign_developer@dockyard.company";
+                token.Token = "";
+                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
+                var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginDocuSign");
+                token.Plugin = docuSignPlugin;
+                token.PluginID = docuSignPlugin.Id;
+                token.ExpiresAt = DateTime.Now.AddDays(10);
+
+                uow.AuthorizationTokenRepository.Add(token);
+                uow.SaveChanges();
+
+            }
+
+
+           
+
+
+        }
+
+
+    //This method will automatically seed any constants file
+    //It looks for rows which implement IConstantRow<>
+    //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+    //The below method will then generate a new row for each constant found in BookingRequestState.
+    private static void SeedConstants(IUnitOfWork context)
         {
             var constantsToSeed =
                 typeof(MigrationConfiguration).Assembly.GetTypes()
@@ -252,6 +286,7 @@ namespace Data.Migrations
             CreateAdmin("d1984v@gmail.com", "dmitry123", unitOfWork);
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
@@ -267,6 +302,7 @@ namespace Data.Migrations
         {
             CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
             CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
+            CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
         }
 
         /// <summary>
@@ -328,6 +364,59 @@ namespace Data.Migrations
 
             uow.SubscriptionRepository.Add(curSub);
         }
+
+
+        private void AddPlugins(IUnitOfWork uow)
+        {
+
+
+     // Create test DockYard account for plugin subscription.
+           // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+
+            // Check that plugin does not exist yet.
+            var pluginDocusign = uow.PluginRepository.GetQuery()
+                .Any(x => x.Name == "pluginDocuSign");
+
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!pluginDocusign)
+            {
+                // Create plugin instance.
+                var plugin = new PluginDO()
+                {
+                    Name = "pluginDocuSign",
+                    PluginStatus = PluginStatus.Active,
+                    Endpoint = "localhost:53234",
+                    Version = "1"
+                };
+
+                uow.PluginRepository.Add(plugin);
+     
+            }
+            uow.SaveChanges();
+        }
+
+        private void AddActionTemplates(IUnitOfWork uow)
+        {
+            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
+            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
+            uow.SaveChanges();
+        }
+
+        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
+        {
+            var existingActivityTemplateDO = uow.ActivityTemplateRepository
+                .GetQuery().Include("Plugin")
+                .SingleOrDefault(x => x.Name == name);
+
+            if (existingActivityTemplateDO != null)
+                return;
+
+            var curActivityTemplateDO = new ActivityTemplateDO(
+                name, version, endPoint, endPoint);
+            uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
+            }       
+
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
@@ -429,7 +518,7 @@ namespace Data.Migrations
             TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.Now + newSpan;
+            DateTime newDate = DateTime.Now; 
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));

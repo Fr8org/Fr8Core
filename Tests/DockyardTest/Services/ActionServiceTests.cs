@@ -63,14 +63,43 @@ namespace DockyardTest.Services
         {
             var expectedResult = FixtureData.TestConfigurationSettings();
             var curActionDO = FixtureData.TestAction22();
-            CrateStorageDTO result = _action.Configure(curActionDO);
-            
+            //CrateStorageDTO result = _action.Configure(curActionDO);
+
             //different in V2 format
             //Assert.AreEqual(1, result.Fields.Count);
             //Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
             //Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
             //Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
             //Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
+        }
+
+        [Test]
+        public void UpdateCurrentActivity_ShouldUpdateCurrentActivity()
+        {
+            var curActionList = FixtureData.TestActionList2();
+
+            // Set current activity
+            curActionList.CurrentActivity = curActionList.Activities.Single(a => a.Id == 1);
+            curActionList.Id = curActionList.CurrentActivity.Id;
+
+            Assert.AreEqual(1, curActionList.CurrentActivity.Id);
+
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionListRepository.Add(curActionList);
+                uow.SaveChanges();
+
+                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+
+                Assert.AreEqual(2, curActionList.CurrentActivity.Id);
+
+                // Check when current action is the only action in action list (should set null)
+                curActionList.Activities.RemoveAt(1);
+                uow.SaveChanges();
+
+                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+                Assert.AreEqual(null, curActionList.CurrentActivity);
+            }
         }
 
         [Test]
@@ -97,7 +126,7 @@ namespace DockyardTest.Services
                 Assert.AreEqual(origActionDO.Name, actionDO.Name);
                 Assert.AreEqual(origActionDO.Id, actionDO.Id);
                 Assert.AreEqual(origActionDO.CrateStorage, actionDO.CrateStorage);
-             
+
                 Assert.AreEqual(origActionDO.Ordering, actionDO.Ordering);
 
                 //Delete
@@ -249,7 +278,7 @@ namespace DockyardTest.Services
 
             _action.Process(actionDO, procesDO);
 
-            Assert.AreEqual(ActionState.Completed, actionDO.ActionState);
+            Assert.AreEqual(ActionState.Active, actionDO.ActionState);
         }
 
         [Test, Ignore("Vas, Ignored as part of V2 changes")]

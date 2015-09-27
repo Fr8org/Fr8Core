@@ -1,13 +1,18 @@
 ﻿<div>
+    <!--
     <div ng-if="!isActionValid(currentAction)" class="criteria-warning bg-purple">
         Please add or select an action in order to configure criteria
     </div>
+    -->
+    <!--
     <div ng-class="{'noclick-background': !isActionValid(currentAction) }">
-        <table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}">
+    -->
+    <div>
+        <!--<table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}"> -->
+        <table class="table query-builder-table">
             <thead>
                 <tr>
-                    <th class="col-md-1"></th>
-                    <th class="col-md-4">Field</th>
+                    <th class="col-md-5">Field</th>
                     <th class="col-md-3">Operator</th>
                     <th class="col-md-3">Value</th>
                     <th class="col-md-1"></th>
@@ -16,26 +21,22 @@
             <tbody>
                 <tr ng-repeat="row in rows track by $index">
                     <td>
-                        <div class="text-right">
-                            <div class="form-control-static">{{$index + 1}}</div>
-                        </div>
-                    </td>
-                    <td>
-                        <select class="form-control" ng-options="f.key as f.name for f in fields track by f.key" ng-model="row.field">
+                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field">
                             <option value="">Select a Field</option>
-
                         </select>
                     </td>
                     <td>
-                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator"></select>
+                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator" ng-disabled="!row.field">
+                        </select>
                     </td>
                     <td>
-                        <div ng-class="{ 'has-error': row.valueError }">
+                        <div>
                             <input type="text"
                                    class="form-control"
                                    ng-required="true"
                                    ng-model="row.value"
-                                   ng-change="valueChanged(row)" />
+                                   ng-change="valueChanged(row)"
+                                   ng-disabled="!row.field" />
                         </div>
                     </td>
                     <td>
@@ -50,7 +51,7 @@
             </tbody>
         </table>
         <div>
-            <a href class="btn btn-primary" ng-click="addRow()">Add Row</a>
+            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()">Add Row</a>
         </div>
     </div>
 </div>

@@ -22,18 +22,7 @@ namespace DockyardTest.Services
 			_processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
 		}
 
-		[Test]
-		[ExpectedException(typeof (EntityNotFoundException))]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessTemplateService_CanNot_LaunchProcess()
-		{
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curEvent = FixtureData.TestDocuSignEvent1();
-                ProcessTemplateDO processTemplate = null;
-                _processTemplateService.LaunchProcess(uow, processTemplate, FixtureData.DocuSignEventToCrate(curEvent));
-            }
-		}
+
 
         [Test]
         public void ProcessTemplateService_GetProcessNodeTemplates()
@@ -49,6 +38,38 @@ namespace DockyardTest.Services
                 Assert.IsNotNull(curProcessNodeTemplates);
                 Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates.Count, curProcessNodeTemplates.Count);
             }
+        }
+
+        [Test,Ignore]
+        public void CanActivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+           string result = _processTemplateService.Activate(curProcessTemplateDO);
+           Assert.AreEqual(result, "success");
+        }
+
+        [Test, Ignore]
+        public void FailsActivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            Assert.AreEqual(result, "failed");
+        }
+
+        [Test, Ignore]
+        public void CanDeactivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            Assert.AreEqual(result, "success");
+        }
+
+        [Test, Ignore]
+        public void FailsDeactivateProcessTemplate()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            Assert.AreEqual(result, "failed");
         }
 
 		//[Test]

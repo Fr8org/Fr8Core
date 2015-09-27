@@ -30,7 +30,8 @@ module dockyard.controllers {
             '$compile',
             '$q',
             'DTOptionsBuilder',
-            'DTColumnBuilder'
+            'DTColumnBuilder',
+            '$state'
         ];
         private _processTemplates: Array<interfaces.IProcessTemplateVM>;
 
@@ -42,7 +43,8 @@ module dockyard.controllers {
             private $compile: ng.ICompileService,
             private $q: ng.IQService,
             private DTOptionsBuilder,
-            private DTColumnBuilder) {
+            private DTColumnBuilder,
+            private $state) {
 
             //Clear the last result value (but still allow time for the confirmation message to show up)
             //TODO -> i really don't know why is this for??
@@ -63,7 +65,6 @@ module dockyard.controllers {
             $scope.dtInstance = {};
             $scope.GoToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.GoToProcessTemplatePage);
             $scope.DeleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.DeleteProcessTemplate);
-
         }
 
         //this function will be called on every reloadData call to data-table
@@ -86,10 +87,15 @@ module dockyard.controllers {
                 .withOption('createdRow', onRowCreate);
         }
 
-        private OnRowCreate(row: any) {
+        private OnRowCreate(row: any, data: any) {
+            var ctrl = this;
             //datatables doesn't compile inserted rows. to access to scope we need to compile them
             //i think source of datatables should be changed to compile rows with it's parent scope (which is ours)
             this.$compile(angular.element(row).contents())(this.$scope);
+
+            angular.element(row).bind('click', function () {
+                ctrl.$state.go('processTemplateDetails', { id: data.id });
+            });
         }
 
         private GetDataTableColumns() {
@@ -110,20 +116,24 @@ module dockyard.controllers {
                     .withTitle('Actions')
                     .notSortable()
                     .renderWith(function (data: interfaces.IProcessTemplateVM, type, full, meta) {
-                    var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id +');">Delete</button>';
-                    var editButton = '<button type="button" class="btn btn-sm green" ng-click="GoToProcessTemplatePage(' + data.id +');">Edit</button>';
+                    var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id +', $event);">Delete</button>';
+                    var editButton = '<button type="button" class="btn btn-sm green" ng-click="GoToProcessTemplatePage(' + data.id +', $event);">Edit</button>';
                     return deleteButton+editButton;
                     })
             ];            
         }
 
-        private GoToProcessTemplatePage(processTemplateId) {
-            //i think we should find a prettier way to change between controllers
-            window.location.href = '#processes/' + processTemplateId + '/builder';
+        private GoToProcessTemplatePage(processTemplateId, $event) {
+            $event.preventDefault();
+            $event.stopPropagation();
             
+            this.$state.go('processBuilder', { id: processTemplateId });
             }
 
-        private DeleteProcessTemplate(processTemplateId) {
+        private DeleteProcessTemplate(processTemplateId, $event) {
+            $event.preventDefault();
+            $event.stopPropagation();
+
             //to save closure of our controller
             var me = this;
             this.$modal.open({

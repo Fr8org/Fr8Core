@@ -28,7 +28,7 @@ module dockyard.directives {
             controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {
                 $scope.addRow = function () {
                     var condition = new model.Condition(
-                        tryFirstFieldKey($scope.fields),
+                        null,
                         $scope.defaultOperator,
                         null
                         );
@@ -46,7 +46,7 @@ module dockyard.directives {
                 };
 
                 $scope.isActionValid = function (action: interfaces.IActionVM) {
-                    return model.ActionDesignDTO.isActionValid(action);
+                    return model.ActionDTO.isActionValid(action);
                 }
             }
         };

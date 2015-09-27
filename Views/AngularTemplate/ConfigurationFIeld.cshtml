@@ -3,12 +3,12 @@
     Type check occurs with help of the ng-if directive on the outermost <div> of the snippet.
 *@
 <div class='form-group'>
-    @*
+    @* 
         Check box template
     *@
     <div class='col-sm-offset-1' ng-if='field.type == "checkboxField"'>
         <div class='checkbox checkbox-primary'>
-            <input type='checkbox' ng-model='field.selected' id='pca__chk__{{field.name}}' name='pca__chk__{{field.name}}'>
+            <input type='checkbox' ng-model='field.selected' ng-click="onFieldChange($event)" data-field-name='{{::field.name}}' id='pca__chk__{{field.name}}' name='pca__chk__{{field.name}}'>
             <label for='pca__chk__{{field.name}}'>{{field.fieldLabel}}</label>
         </div>
     </div>
@@ -18,7 +18,7 @@
     *@
     <div ng-if='field.type == "textField"'>
         <label class='control-label'>{{field.fieldLabel}}</label>
-        <input type='text' ng-model='field.value' ng-required='field.required' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
+        <input type='text' ng-model='field.value' ng-blur="onFieldChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
     </div>
 
     @*
@@ -36,6 +36,46 @@
         <label class='control-label'>{{field.fieldLabel}}</label>
         <radio-button-group field='field'></radio-button-group>
     </div>  
+    
+    @*
+        DownDownList template
+    *@
+    <div ng-if='field.type == "dropdownlistField"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <drop-down-list-box field='field' change='onFieldChange'></drop-down-list-box>
+    </div>  
+    
+    @*
+        TextBlock template
+    *@
+    <div ng-if='field.type == "textBlockField"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <text-block field='field'></text-block>
+    </div> 
+
+    @*
+        FilterPane template
+    *@
+    <div ng-if='field.type == "filterPane"'>
+        <filter-pane current-action='currentAction' field='field'></filter-pane>
+    </div>
+
+    @*
+        MappingPane template
+    *@
+    <div ng-if='field.type == "mappingPane"'>
+        <label class='control-label'>{{field.fieldLabel}}</label>
+        <mapping-pane current-action='currentAction' field='field'></mapping-pane>
+    </div>
+
+    @*
+        Routing control group template
+    *@
+    <div ng-if='field.type == "routing"'>
+        <div class="container_box" ng-repeat="route in field.routes">
+            <routing-control route="route" />
+        </div>
+    </div>
 
     @* Add more configuration field templates below *@
 </div>

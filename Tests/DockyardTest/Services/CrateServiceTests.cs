@@ -33,5 +33,21 @@ namespace DockyardTest.Services
             Assert.NotNull(crateDTO);
             Assert.IsNotEmpty(crateDTO.Id);
         }
+
+        [Test]
+        public void CanGetElementByKey()
+        {
+            var crates = new[]
+            {
+                _crate.Create("Label 1", "[ { name: \"connection_string\", value: \"TestConnectionStringA\" }, { name: \"Another Key\", value: \"Another Value\" } ]"),
+                _crate.Create("Label 2", "[ { name: \"connection_string\", value: \"TestConnectionStringC\" }, { name: \"Another Key\", value: \"Another Value\" } ]"),
+            };
+            var elements = _crate.GetElementByKey(crates, "connection_string", "name").ToArray();
+            var values = elements.Select(e => (string)e["value"]).ToArray();
+            Assert.NotNull(elements);
+            Assert.AreEqual(2, elements.Length);
+            Assert.Contains("TestConnectionStringA", values);
+            Assert.Contains("TestConnectionStringC", values);
+        }
     }
 }

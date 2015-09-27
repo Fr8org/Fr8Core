@@ -2,8 +2,13 @@
 module dockyard.directives.dropDownListBox {
     'use strict';
 
+    import pca = dockyard.directives.paneConfigureAction;
+
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownListBoxField;
+        change: () => (fieldName: string) => void;
+        selectedItem: model.DropDownListItem;
+        SetSelectedItem: (item: model.DropDownListItem) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -13,8 +18,10 @@ module dockyard.directives.dropDownListBox {
         public templateUrl = '/AngularTemplate/DropDownListBox';
         public controller: ($scope: IDropDownListBoxScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
-            field: '='
+            field: '=',
+            change: '&'
         };
+
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IDropDownListBoxScope;
@@ -34,7 +41,32 @@ module dockyard.directives.dropDownListBox {
                 $attrs: ng.IAttributes) => {
                 this._$element = $element;
                 this._$scope = $scope;
+                this._$scope.selectedItem = null;
+
+                $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
+                this.FindAndSetSelectedItem();
             };
+        }
+
+        private SetSelectedItem(item: model.DropDownListItem) {
+            this._$scope.field.value = item.Value;
+            this._$scope.selectedItem = item;
+
+            // Invoike onChange event handler
+            if (this._$scope.change != null && angular.isFunction(this._$scope.change))
+            {
+                this._$scope.change()(this._$scope.field.name);             
+            } 
+
+        }
+
+        private FindAndSetSelectedItem() {
+            for (var i = 0; i < this._$scope.field.listItems.length; i++) {
+                if (this._$scope.field.value == this._$scope.field.listItems[i].Value) {
+                    this._$scope.selectedItem = this._$scope.field.listItems[i];
+                    break;
+                }
+            }
         }
 
         //The factory function returns Directive object as per Angular requirements

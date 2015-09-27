@@ -4,24 +4,34 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
+    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
+        getFull: (id: Object) => interfaces.IProcessTemplateVM
+    }
+
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (actionTemplateId: { id: number }) => ng.resource.IResource<interfaces.ICrateStorageVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
+
     export interface IDocuSignTemplateService extends ng.resource.IResourceClass<interfaces.IDocuSignTemplateVM> { }
+
     export interface IDocuSignTriggerService extends ng.resource.IResourceClass<interfaces.IDocuSignExternalEventVM> { }
+
     interface __IProcessNodeTemplateService extends ng.resource.IResourceClass<interfaces.IProcessNodeTemplateVM> {
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
         update: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => interfaces.IProcessNodeTemplateVM;
     }
+
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
+
     export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
-        byProcessNodeTemplate: (id: { id: number }) => interfaces.IActionListVM;
+        byProcessNodeTemplate: (id: { id: number; actionListType: number; }) => interfaces.IActionListVM;
     }
+
     export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -31,15 +41,28 @@ module dockyard.services {
             promise: ng.IPromise<model.ProcessNodeTemplateDTO>
         }
     }
+
     export interface IProcessBuilderService {
         saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
     }
+
+    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> { }
 
     /*
         ProcessTemplateDTO CRUD service.
     */
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' })
+        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' },
+            {
+                'getFull': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/processTemplate/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                }
+            })
     ]);
 
     /*
@@ -67,8 +90,12 @@ module dockyard.services {
             {
                 'save': {
                     method: 'POST',
-                    isArray: true,
-                    url: '/actions/save'
+                    isArray: false,
+                    url: '/actions/save',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
+
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -81,9 +108,15 @@ module dockyard.services {
                 'configure': {
                     method: 'POST',
                     url: '/actions/configure',
-                    params: { curActionDesignDTO: model.ActionDesignDTO } //pass ActionDesignDTO as parameter
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
                 },
-
+                'getByProcessTemplate': {
+                    method: 'GET',
+                    url: '/actions/bypt',
+                    isArray: true
+                },
                 'params': {
                     id: 'id'
                 }
@@ -141,6 +174,10 @@ module dockyard.services {
             })
     ]);
 
+    app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
+        <IActivityTemplateService> $resource('/api/activityTemplates/:id', { id: '@id' })
+    ]);
+
     /*
         General data persistance methods for ProcessBuilder.
     */
@@ -148,10 +185,11 @@ module dockyard.services {
         constructor(
             private $q: ng.IQService,
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
-            private ActionService: IActionService
+            private ActionService: IActionService,
+            private crateHelper: CrateHelper
             ) { }
 
-        /*
+        /* 
             The function saves current entities if they are new or changed (dirty).
             At this time not all entities whose state we maintain on ProcessBuilder are saved here. 
             I (@alexavrutin) will add them one-by-one during the course of refactoring. 
@@ -159,6 +197,7 @@ module dockyard.services {
             if they were or were not changed. 
         */
         public saveCurrent(currentState: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState> {
+
             var deferred = this.$q.defer<model.ProcessBuilderState>(),
                 newState = new model.ProcessBuilderState()
 
@@ -168,10 +207,14 @@ module dockyard.services {
             if (currentState.processNodeTemplate) {
                 this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
                     .then((result: interfaces.IProcessNodeTemplateVM) => {
-                        debugger;
                         //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
                         newState.processNodeTemplate = result;
-                    
+
+                        this.crateHelper.mergeControlListCrate(
+                            currentState.action.configurationControls,
+                            currentState.action.crateStorage
+                        );
+
                         // If an Action is selected, save it
                         if (currentState.action) {
                             return this.ActionService.save({ id: currentState.action.id },
@@ -192,9 +235,18 @@ module dockyard.services {
 
             //Save only Action 
             else if (currentState.action) {
-                this.ActionService.save(
+                this.crateHelper.mergeControlListCrate(
+                    currentState.action.configurationControls,
+                    currentState.action.crateStorage
+                );
+
+                var promise = this.ActionService.save(
                     { id: currentState.action.id },
-                    currentState.action, null, null).$promise
+                    currentState.action,
+                    null,
+                    null).$promise;
+
+                promise
                     .then((result: interfaces.IActionVM) => {
                         newState.action = result;
                         return deferred.resolve(newState);
@@ -216,12 +268,13 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
-        ActionService: IActionService) => {
-            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService);
-    }
+        ActionService: IActionService,
+        crateHelper: CrateHelper) => {
+            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
+        }
     ]);
 
     /*
@@ -291,7 +344,6 @@ module dockyard.services {
 
         public load(id: number): ng.IPromise<model.ProcessNodeTemplateDTO> {
             var deferred = this.$q.defer<interfaces.IProcessNodeTemplateVM>();
-            debugger;
 
             // Save ProcessNodeTemplate object to server.
             // Server automatically creates empty criteria node.

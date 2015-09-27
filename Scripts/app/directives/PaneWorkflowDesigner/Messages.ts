@@ -17,7 +17,8 @@ module dockyard.directives.paneWorkflowDesigner {
         PaneWorkflowDesigner_ActionRemoved,
         PaneWorkflowDesigner_ActionNameUpdated,
         PaneWorkflowDesigner_ReplaceTempIdForProcessNodeTemplate,
-        PaneWorkflowDesigner_ActionTempIdReplaced
+        PaneWorkflowDesigner_ActionTempIdReplaced,
+        PaneWorkflowDesigner_UpdateActivityTemplateId
     }
 
     export class RenderEventArgs {
@@ -26,7 +27,7 @@ module dockyard.directives.paneWorkflowDesigner {
     export class CriteriaAddingEventArgs {
     }
 
-    export class AddProcessNodeTemplateEventArgs {
+    export class AddCriteriaEventArgs {
         public id: number;
         public isTempId: boolean;
         public name: string;
@@ -80,11 +81,11 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class AddActionEventArgs {
         public criteriaId: number;
-        public action: model.ActionDesignDTO;
+        public action: model.ActionDTO;
         public actionListType: model.ActionListType;
 
         constructor(criteriaId: number,
-            action: model.ActionDesignDTO,
+            action: model.ActionDTO,
             actionListType: model.ActionListType) {
 
             this.criteriaId = criteriaId;
@@ -97,15 +98,18 @@ module dockyard.directives.paneWorkflowDesigner {
         public processNodeTemplateId: number;
         public actionId: number;
         public actionListId: number;
+        public activityTemplateId: number;
 
         constructor(
             processNodeTemplateId: number,
             actionId: number,
-            actionListId: number) {
+            actionListId: number,
+            activityTemplateId: number) {
 
             this.processNodeTemplateId = processNodeTemplateId;
             this.actionId = actionId;
             this.actionListId = actionListId;
+            this.activityTemplateId = activityTemplateId;
         }
     }
 
@@ -149,6 +153,16 @@ module dockyard.directives.paneWorkflowDesigner {
         constructor(tempId: number, id: number) {
             this.tempId = tempId;
             this.id = id;
+        }
+    }
+
+    export class UpdateActivityTemplateIdEventArgs {
+        public id: number;
+        public activityTemplateId: number;
+
+        constructor(id: number, activityTemplateId: number) {
+            this.id = id;
+            this.activityTemplateId = activityTemplateId;
         }
     }
 

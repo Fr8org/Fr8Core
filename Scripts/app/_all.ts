@@ -8,18 +8,20 @@
 /// <reference path="interfaces/icriteria.ts" />
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
 /// <reference path="interfaces/iprocessbuilder.ts" />
+/// <reference path="interfaces/iuser.ts" />
 
 
 /*
     MODEL
 */
-/// <reference path="model/actiondesigndto.ts" />
+/// <reference path="model/actiondto.ts" />
 /// <reference path="model/condition.ts" />
 /// <reference path="model/criteria.ts" />
 /// <reference path="model/field.ts" />
-/// <reference path="model/configurationstore.ts" />
 /// <reference path="model/processtemplate.ts" />
+/// <reference path="model/controlslist.ts" />
 /// <reference path="model/processbuilderstate.ts" />
+/// <reference path="model/user.ts" />
 
 /*
     SERVICES
@@ -38,8 +40,6 @@
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 /// <reference path="directives/paneconfigureaction/configurationfield.ts" />
 
-/// <reference path="directives/panedefinecriteria/panedefinecriteria.ts" />
-
 /// <reference path="directives/paneselectaction/paneselectaction.ts" />
 
 
@@ -56,6 +56,7 @@
 /// <reference path="controllers/processbuildercontroller.ts" />
 /// <reference path="controllers/processtemplateformcontroller.ts" />
 /// <reference path="controllers/processtemplatelistcontroller.ts" />
+/// <reference path="controllers/managefilelistcontroller.ts" />
 
 
 /*

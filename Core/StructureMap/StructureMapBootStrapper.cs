@@ -40,7 +40,7 @@ namespace Core.StructureMap
 
         #region Method
 
-        public static void ConfigureDependencies(DependencyType type)
+        public static IContainer ConfigureDependencies(DependencyType type)
         {
 
             switch (type)
@@ -52,6 +52,17 @@ namespace Core.StructureMap
                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
                     break;
             }
+            return ObjectFactory.Container;
+        }
+
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
+        }
+
+        public static void TestConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
         }
 
         public class CoreRegistry : Registry
@@ -71,7 +82,7 @@ namespace Core.StructureMap
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.SendGridHander);
+                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
@@ -80,7 +91,7 @@ namespace Core.StructureMap
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
@@ -96,7 +107,6 @@ namespace Core.StructureMap
 				For<IActivity>().Use<Activity>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
@@ -108,6 +118,8 @@ namespace Core.StructureMap
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
+                For<IDockyardEvent>().Use<DockyardEvent>();
+                For<IReport>().Use<Report>();
             }
         }
 
@@ -119,7 +131,7 @@ namespace Core.StructureMap
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.SendGridHander);
+                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
@@ -129,7 +141,7 @@ namespace Core.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
-                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+                For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<DocusignAuthorizer>().Named("Docusign");
 
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
@@ -146,7 +158,6 @@ namespace Core.StructureMap
 					 For<IActivity>().Use<Activity>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IDocuSignNotification>().Use<DocuSignNotification>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //var mockProcess = new Mock<IProcessService>();
@@ -168,6 +179,7 @@ namespace Core.StructureMap
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
+                For<IDockyardEvent>().Use<DockyardEvent>();
             }
         }
 

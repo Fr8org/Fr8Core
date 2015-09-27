@@ -53,7 +53,7 @@ module dockyard.controllers {
                     var result = ProcessTemplateService.save($scope.ptvm);
 
                     result.$promise
-                        .finally(function () {
+                        .then(function () {
                             console.log(result);
                             $rootScope.lastResult = "success";
                             window.location.href = '#processes/' + result.id + '/builder';

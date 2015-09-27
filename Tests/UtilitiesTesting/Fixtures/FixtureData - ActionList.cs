@@ -45,6 +45,20 @@ namespace UtilitiesTesting.Fixtures
             return curActionListDO;
         }
 
+        public static ActionListDO TestActionList2()
+        {
+            var curActionListDO = new ActionListDO
+            {
+                Id = 1,
+                Name = "list1",
+                ActionListType = ActionListType.Immediate
+            };
+            curActionListDO.Activities.Add(TestAction20());
+            curActionListDO.Activities.Add(TestAction21());
+
+            return curActionListDO;
+        }
+
         public static ActionListDO TestEmptyActionList()
         {
             var curActionListDO = new ActionListDO
@@ -101,9 +115,9 @@ namespace UtilitiesTesting.Fixtures
                 ActionListState = ActionListState.Unstarted,
                 Activities = new System.Collections.Generic.List<ActivityDO>() 
                 { 
-                    FixtureData.TestAction10(),
-                    FixtureData.TestAction7(),
-                    FixtureData.TestAction8()             
+                    FixtureData.TestAction22(),
+                   // FixtureData.TestAction7(),
+                   // FixtureData.TestAction8()             
                 }
             };
         }
@@ -122,6 +136,22 @@ namespace UtilitiesTesting.Fixtures
         }
 
         public static ActionListDO TestActionList7()
+        {
+            return new ActionListDO
+            {
+                Id = 2,
+                CurrentActivity = FixtureData.TestAction6(),
+                ActionListState = ActionListState.Unstarted,
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                { 
+                    FixtureData.TestAction10(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
+            };
+        }
+
+        public static ActionListDO TestActionList8()
         {
             return new ActionListDO
             {
@@ -221,5 +251,23 @@ namespace UtilitiesTesting.Fixtures
 			  actionLists.Add(al_61);
 			  return actionLists;
 		  }
+          public static List<ActionListDO> TestActionList1()
+          {
+              List<ActionListDO> actionLists = new List<ActionListDO>();
+
+              var activityTempate = new ActivityTemplateDO()
+              {
+                  Id = 1,
+                  Version = "1",
+                  Plugin = FixtureData.PluginFive(),
+                  Name = "Wait_For_DocuSign_Event"
+              };
+              ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1",ParentActivityId = 1 };
+              ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
+              al_1.Activities.Add(a_23);
+              a_23.ParentActivity = al_1;
+              actionLists.Add(al_1);
+              return actionLists;
+          }
     }
 }

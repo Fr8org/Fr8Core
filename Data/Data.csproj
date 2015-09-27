@@ -222,6 +222,8 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionProcessResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionTemplateDTO.cs" />
@@ -245,6 +247,9 @@
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IEnvelope.cs">
       <SubType>Code</SubType>
@@ -254,12 +259,47 @@
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\EventReportMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionMS.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\DocuSignEnvelopeStatusReportMTO.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\DocuSignRecipientStatusReportMTO.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\MultiTenantObject.cs" />
     <Compile Include="Migrations\201509150029523_Initial.cs" />
     <Compile Include="Migrations\201509150029523_Initial.Designer.cs">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509151219496_EmptyMigration.cs" />
+    <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
+      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.cs" />
+    <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.Designer.cs">
+      <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509182154282_UpdateFileDO.cs" />
+    <Compile Include="Migrations\201509182154282_UpdateFileDO.Designer.cs">
+      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs" />
+    <Compile Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.Designer.cs">
+      <DependentUpon>201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509221705426_EmptyMigration1.cs" />
+    <Compile Include="Migrations\201509221705426_EmptyMigration1.Designer.cs">
+      <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs" />
+    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
+      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509262037112_addExternalAccountId.cs" />
+    <Compile Include="Migrations\201509262037112_addExternalAccountId.Designer.cs">
+      <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -419,7 +459,7 @@
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
-    <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
+    <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
     <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
@@ -448,8 +488,8 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Crates\Helpers\EventReportCrate.cs" />
-    <Compile Include="Crates\Helpers\LoggingDataCrate.cs" />
+    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
+    <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ProcessValidator.cs" />
     <Compile Include="Validations\ProcessNodeTemplateValidator.cs" />
@@ -487,6 +527,27 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
+      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509161527206_AddedVersionToPlugin.resx">
+      <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509182154282_UpdateFileDO.resx">
+      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.resx">
+      <DependentUpon>201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509221705426_EmptyMigration1.resx">
+      <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
+      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509262037112_addExternalAccountId.resx">
+      <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

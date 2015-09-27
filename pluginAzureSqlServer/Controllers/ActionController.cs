@@ -16,14 +16,21 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public string Configure(ActionDTO curActionDataPackage)
+        public ActionDTO Configure(ActionDTO curActionDTO)
         {
-            return _basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
         }
        
         [HttpPost]
         [Route("activate")]
         public string Activate(ActionDTO curActionDataPackage)
+        {
+            return string.Empty;
+        }
+
+        [HttpPost]
+        [Route("deactivate")]
+        public string Deactivate(ActionDTO curActionDataPackage)
         {
             return string.Empty;
         }

@@ -4,16 +4,15 @@ module dockyard.directives.paneSelectAction {
     'use strict';
 
     export interface IPaneSelectActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) => void;
-        currentAction: model.ActionDesignDTO;
+        onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) => void;
+        currentAction: model.ActionDTO;
         isVisible: boolean;
         actionTypes: Array<model.ActivityTemplate>;
         ActionTypeSelected: () => void;
-        RemoveAction: () => void;
         componentActivities: string[];
         ChildActivityTypeSelected: (actionTemplateId: number) => void;
         childActivityStepId: number;
-        childActivity: model.ActionDesignDTO;
+        childActivity: model.ActionDTO;
     }
 
     export enum MessageType {
@@ -22,14 +21,13 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_Hide,
         PaneSelectAction_UpdateAction,
         PaneSelectAction_ActionTypeSelected,
-        PaneSelectAction_ActionRemoved,
         PaneSelectAction_InitiateSaveAction
     }
 
     export class ActionTypeSelectedEventArgs {
-        public action: interfaces.IActionDesignDTO
+        public action: interfaces.IActionDTO
 
-        constructor(action: interfaces.IActionDesignDTO) {
+        constructor(action: interfaces.IActionDTO) {
             // Clone Action to prevent any issues due to possible mutation of source object
             this.action = angular.extend({}, action);
         }
@@ -74,15 +72,6 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class ActionRemovedEventArgs {
-        public id: number;
-        public isTempId: boolean;
-
-        constructor(id: number, isTempId: boolean) {
-            this.id = id;
-            this.isTempId = isTempId;
-        }
-    }
 
 
     //More detail on creating directives in TypeScript: 
@@ -118,17 +107,19 @@ module dockyard.directives.paneSelectAction {
 
                 this.PopulateData($scope, $http);
 
-                $scope.$watch<model.ActionDesignDTO>(
+                $scope.$watch<model.ActionDTO>(
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
                 $scope.ActionTypeSelected = () => {
-                    debugger;
                     var currentSelectedActivity: model.ActivityTemplate;
                     var activities = $scope.actionTypes;
                     //find the selected activity
-                    currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.actionTemplateId })[0];
+                    currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.activityTemplateId })[0];
 
                     if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
+                        $scope.currentAction.activityTemplateName = currentSelectedActivity.name;
+                        // Ensure that we do not send CrateStorage of previously selected storage to server.
+                        $scope.currentAction.crateStorage = new model.CrateStorage();
                         //Check for component activity
                         if (currentSelectedActivity.componentActivities != null) {
                             var componentActivities = angular.fromJson(currentSelectedActivity.componentActivities);
@@ -136,7 +127,7 @@ module dockyard.directives.paneSelectAction {
                             //Default configuration for the first child component activity will be shown
                             $scope.childActivityStepId = componentActivities[0].id;
                             $scope.childActivity = angular.extend({}, $scope.currentAction);
-                            $scope.childActivity.actionTemplateId = $scope.childActivityStepId;
+                            $scope.childActivity.activityTemplateId = $scope.childActivityStepId;
                             var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
                             $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                         }
@@ -146,28 +137,16 @@ module dockyard.directives.paneSelectAction {
                             $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
                         }
                     }
+                    else {
+                        $scope.componentActivities = null;                     
+                    }
                 }
 
-                $scope.RemoveAction = () => {
-                    $scope.$emit(
-                        MessageType[MessageType.PaneSelectAction_ActionRemoved],
-                        new ActionRemovedEventArgs($scope.currentAction.id, $scope.currentAction.isTempId)
-                    );
-
-                    if (!$scope.currentAction.isTempId) {
-                        this.ActionService.delete({
-                            id: $scope.currentAction.id
-                        }); 
-                    }
-
-                    $scope.currentAction = null;
-                    $scope.isVisible = false;
-                };
 
                 $scope.ChildActivityTypeSelected = (childActionTemplateId) => {
                     if (childActionTemplateId != null) {
                         $scope.$emit(MessageType[MessageType.PaneSelectAction_InitiateSaveAction], eventArgs);
-                        $scope.childActivity.actionTemplateId = childActionTemplateId;
+                        $scope.childActivity.activityTemplateId = childActionTemplateId;
                         var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
                         $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
 
@@ -180,7 +159,7 @@ module dockyard.directives.paneSelectAction {
             };
         }
 
-        private onActionChanged(newValue: model.ActionDesignDTO, oldValue: model.ActionDesignDTO, scope: IPaneSelectActionScope) {
+        private onActionChanged(newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) {
 
         }
 

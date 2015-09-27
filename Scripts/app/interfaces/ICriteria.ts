@@ -6,19 +6,20 @@ module dockyard.interfaces {
     export interface ICriteriaDTO {
         id: number;
         isTempId: boolean;
-        actions: Array<IActionDesignDTO>;
+        actions: Array<IActionDTO>;
         conditions: Array<ICondition>;
         executionType: model.CriteriaExecutionType;
     }
 
-    export interface IActionDesignDTO {
+    export interface IActionDTO {
         id: number,
         isTempId: boolean, 
         processNodeTemplateId: number,
         actionListId: number,
         name: string;
         crateStorage: model.CrateStorage;
-        actionTemplateId: number;
+        configurationControls: model.ControlsList;
+        activityTemplateId: number;
         activityTemplate: model.ActivityTemplate;
     }
 

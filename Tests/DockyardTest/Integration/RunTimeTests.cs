@@ -44,8 +44,8 @@ namespace DockyardTest.Integration
                 string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
 
                 var xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory, healthPayloadPath);
-                DocuSignNotification _docuSignNotification = ObjectFactory.GetInstance<DocuSignNotification>();
-                _docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
+                //DocuSignNotification _docuSignNotification = ObjectFactory.GetInstance<DocuSignNotification>();
+                //_docuSignNotification.Process(registeredAccount.Id, File.ReadAllText(xmlPayloadFullPath));
             }
 
             // EXECUTE

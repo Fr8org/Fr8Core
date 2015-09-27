@@ -4,18 +4,18 @@
 module dockyard.tests.controller {
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import pdc = dockyard.directives.paneDefineCriteria;
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
     import pst = dockyard.directives.paneSelectTemplate;
-    import pcm = dockyard.directives.paneConfigureMapping;
 
     describe("ProcessBuilder Framework message processing", () => {
+        
         beforeEach(module("app"));
 
-        app.run(['$httpBackend',
-            function ($httpBackend) {
-                $httpBackend.whenGET().passThrough();
+        app.run(['$httpBackend', ($httpBackend) => {
+                //we need this because stateProvider loads on test startup and routes us to default state 
+                //which is processes and has template URL with /AngularTemplate/ProcessTemplateList
+                $httpBackend.expectGET('/AngularTemplate/ProcessTemplateList').respond(200, '<div></div>');
             }
         ]);
 
@@ -24,15 +24,30 @@ module dockyard.tests.controller {
             _controller: any,
             _$state: ng.ui.IState,
             _actionServiceMock: utils.ActionServiceMock,
+            _processTemplateServiceMock: utils.ProcessTemplateServiceMock,
+            _actionListServiceMock: utils.ActionListServiceMock,
+            _processBuilderServiceMock: utils.ProcessBuilderServiceMock,
             _$q: ng.IQService,
             _$http: ng.IHttpService,
-            _urlPrefix: string;
+            _urlPrefix: string,
+            _crateHelper: services.CrateHelper,
+            _localIdentityGenerator: services.LocalIdentityGenerator,
+            _$timeout: ng.ITimeoutService,
+            _$filter: ng.IFilterService;
 
         beforeEach(() => {
-            inject(($controller, $rootScope, $q, $http) => {
+            
+            inject(($controller, $rootScope, $q, $http, $timeout, $filter) => {
                 _actionServiceMock = new utils.ActionServiceMock($q);
+                _processTemplateServiceMock = new utils.ProcessTemplateServiceMock($q);
+                _actionListServiceMock = new utils.ActionListServiceMock($q);
+                _processBuilderServiceMock = new utils.ProcessBuilderServiceMock($q);
+                _crateHelper = new services.CrateHelper();
+                _localIdentityGenerator = new services.LocalIdentityGenerator();
                 _$q = $q;
+                _$timeout = $timeout;
                 _$scope = tests.utils.Factory.GetProcessBuilderScope($rootScope);
+                _$filter = $filter;
                 _$state = {
                     data: {
                         pageSubTitle: ""
@@ -43,27 +58,66 @@ module dockyard.tests.controller {
                 };
                 _$http = $http;
                 _urlPrefix = '/api';
-
-                //Create a mock for ProcessTemplateService
+                //Create a mock for CriteriaServiceWrapper
                 _controller = $controller("ProcessBuilderController",
                     {
                         $rootScope: $rootScope,
                         $scope: _$scope,
                         stringService: null,
-                        LocalIdentityGenerator: null,
+                        LocalIdentityGenerator: _localIdentityGenerator,
                         $state: _$state,
                         ActionService: _actionServiceMock,
+                        $q: _$q,
                         $http: _$http,
-                        urlPrefix: _urlPrefix
+                        urlPrefix: _urlPrefix,
+                        ProcessTemplateService: _processTemplateServiceMock,
+                        $timeout: _$timeout,
+                        CriteriaServiceWrapper: null,
+                        ProcessBuilderService: _processBuilderServiceMock,
+                        ActionListService: _actionListServiceMock,
+                        CrateHelper: _crateHelper,
+                        ActivityTemplateService: null,
+                        $filter: _$filter
                     });
             });
             spyOn(_$scope, "$broadcast");
         });
 
+        //helper function
+        var resolvePromises = () => {
+            _$scope.$apply();
+        };
+        
+        it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectAction_Hide should be received", () => {
+            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
+            resolvePromises();
+            expect(_$scope.$broadcast).toHaveBeenCalledWith(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+        });
+
+        it("When PaneWorkflowDesigner_ActionAdding is emitted, PaneWorkflowDesigner_AddAction should be received", () => {
+            var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
+            resolvePromises();
+            expect(_$scope.$broadcast).toHaveBeenCalledWith(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction], jasmine.any(Object));
+        });
+
+        it("When PaneWorkflowDesigner_ActionAdding is emitted, newly created ActionDesignDTO should have correct values", () => {
+            var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
+            resolvePromises();
+            var createdActionDesignDTO = _$scope.current.action;
+            expect(createdActionDesignDTO.actionListId).toEqual(utils.fixtures.ProcessBuilder.newActionListDTO.id);
+            expect(createdActionDesignDTO.crateStorage).not.toBeNull();
+            expect(createdActionDesignDTO.isTempId).toBeTruthy();
+            expect(createdActionDesignDTO.id).toEqual(_localIdentityGenerator.getNextId() + 1);
+        });
+
+        //pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding]
+
         //Below rule number are given per part 3. "Message Processing" of Design Document for DO-781 
         //at https://maginot.atlassian.net/wiki/display/SH/Design+Document+for+DO-781
         //Rules 1, 3 and 4 are bypassed because these events not yet stabilized
-
+        /*
         //Rule #2
         it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectTemplate_Render should be received", () => {
             _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
@@ -78,7 +132,7 @@ module dockyard.tests.controller {
             var incomingEventArgs = new pst.ProcessTemplateUpdatedEventArgs(1, "testtemplate", ['test']);
             _$scope.$emit(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated], incomingEventArgs);
         });
-
+        */
         // TODO: do we need this ?
         //Rule #6
         // it("When PaneSelectAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
@@ -93,30 +147,20 @@ module dockyard.tests.controller {
         // 
         //         expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
         //     });
-
+        /*
         //Rule #7
         it("When PaneSelectAction_ActionTypeSelected is sent, " +
             "PaneConfigureAction_Render should be received with correct args", () => {
                 var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(new model.ActionDesignDTO(1, 2, false, 3)),
-                    outgoingEvent1Args = new pcm.RenderEventArgs(1, 2, false),
                     outgoingEvent2Args = new pca.RenderEventArgs(new model.ActionDesignDTO(1, 2, false, 3));
                  
                 _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
                 expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
             });
 
-        it("When PaneConfigureAction_MapFieldsClicked is sent, " +
-            "PaneConfigureMapping_Render should be received with correct args", () => {
-                var incomingEventArgs = new pca.MapFieldsClickedEventArgs(new model.ActionDesignDTO(1, 1, false, 1)),
-                    outgoingEvent1Args = new pcm.RenderEventArgs(1, 1, false);
-
-                _$scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_MapFieldsClicked], incomingEventArgs);
-                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureMapping_Render", outgoingEvent1Args);
-            });
-
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
-                var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1);
+                var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1, 1);
                 var currentAction = new model.ActionDesignDTO(1, 1, false, 1);
                 _$scope.current.action = <any>currentAction;
 
@@ -153,5 +197,6 @@ module dockyard.tests.controller {
                 _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], incomingEventArgs);
                 expect(_actionServiceMock.save).toHaveBeenCalledWith({ id: currentAction.id }, currentAction, null, null);
             });
+        */
     });
 }

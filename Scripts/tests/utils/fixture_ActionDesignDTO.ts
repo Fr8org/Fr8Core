@@ -9,7 +9,7 @@ module dockyard.tests.utils.fixtures {
             processTemplateState: 1
         };
 
-        public static crateStorage = {
+        public static configurationControls = {
             "fields":
             [
                 {
@@ -17,38 +17,44 @@ module dockyard.tests.utils.fixtures {
                     "name": "connection_string",
                     "required": true,
                     "value": "",
-                    "fieldLabel": "SQL Connection String"
+                    "fieldLabel": "SQL Connection String",
+                    "events": []
                 },
                 {
                     "type": "textField",
                     "name": "query",
                     "required": true,
                     "value": "",
-                    "fieldLabel": "Custom SQL Query"
+                    "fieldLabel": "Custom SQL Query",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions",
                     "selected": false,
-                    "fieldLabel": "Log All Transactions?"
+                    "fieldLabel": "Log All Transactions?",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions1",
                     "selected": false,
-                    "fieldLabel": "Log Some Transactions?"
+                    "fieldLabel": "Log Some Transactions?",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions2",
                     "selected": false,
-                    "fieldLabel": "Log No Transactions?"
+                    "fieldLabel": "Log No Transactions?",
+                    "events": []
                 },
                 {
                     "type": "checkboxField",
                     "name": "log_transactions3",
                     "selected": false,
-                    "fieldLabel": "Log Failed Transactions?"
+                    "fieldLabel": "Log Failed Transactions?",
+                    "events": []
                 }
             ]
         };
@@ -64,13 +70,14 @@ module dockyard.tests.utils.fixtures {
                     "value": "Checkbox"
                 }
             ]
-        };
+        };/*
 
         public static actionDesignDTO = <interfaces.IActionDesignDTO> {
             name: "test action type",
             crateStorage: null,
+            configurationControls: null,
             processNodeTemplateId: 1,
-            actionTemplateId: 1,
+            activityTemplateId: 1,
             isTempId: false,
             id: 1,
             fieldMappingSettings: ActionDesignDTO.fieldMappingSettings,
@@ -93,6 +100,6 @@ module dockyard.tests.utils.fixtures {
             name: "",
             preventDefault: null,
             stopPropagation: null
-        };
+        };*/
     }
 } 

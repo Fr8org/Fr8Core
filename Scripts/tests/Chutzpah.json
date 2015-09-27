@@ -24,11 +24,27 @@
       "Path": "../../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"
     },
     {
-      "Path": "../../bower_components/underscore/underscore.js"
-    },    
+        "Path": "../../bower_components/underscore/underscore.js"
+    },
+    {
+        "Path": "../../bower_components/jquery/dist/jquery.min.js"
+    },
+    {
+        "Path": "../../bower_components/datatables/media/js/jquery.dataTables.min.js"
+    },
+    {
+        "Path": "../../bower_components/angular-datatables/dist/angular-datatables.js"
+    },
+    {
+        "Path": "../../bower_components/ng-file-upload/ng-file-upload-all.min.js"
+    },
     {
       "Path": "../app/app.js"
-    },    
+    },   
+    {
+      "Path": "../../Scripts/lib/jquery.blockui.min.js"
+    },       
+     
     {
       "Path": "../../Content/templates/metronic/assets/global/scripts/metronic.js"
     },

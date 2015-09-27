@@ -2,7 +2,8 @@
     export class ActionList {
         id: number;
         name: string;
-        ActionListType: ActionListType;
+        actionListType: ActionListType;
+        actions: Array<ActionDTO>
     }
 
     export enum ActionListType {

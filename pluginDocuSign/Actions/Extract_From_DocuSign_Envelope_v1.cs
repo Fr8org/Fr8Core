@@ -13,6 +13,7 @@ using System.Web.Http;
 using System.Web.Http.Results;
 using PluginBase;
 using Data.Interfaces;
+using Data.Interfaces.ManifestSchemas;
 
 namespace pluginDocuSign.Actions
 {
@@ -22,13 +23,18 @@ namespace pluginDocuSign.Actions
         IAction _action = ObjectFactory.GetInstance<IAction>();
         IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
 
-        public object Configure(ActionDTO curActionDTO)
+        public ActionDTO Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
             return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
         public void Activate(ActionDTO curActionDTO)
+        {
+            return; // Will be changed when implementation is plumbed in.
+        }
+
+        public void Deactivate(ActionDTO curActionDTO)
         {
             return; // Will be changed when implementation is plumbed in.
         }
@@ -45,9 +51,7 @@ namespace pluginDocuSign.Actions
             var cratesList = new List<CrateDTO>()
             {
                 _crate.Create("DocuSign Envelope Data",
-                JsonConvert.SerializeObject(payload),
-                STANDARD_PAYLOAD_MANIFEST_NAME,
-                STANDARD_PAYLOAD_MANIFEST_ID)
+                JsonConvert.SerializeObject(payload), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
             };
             curActionDataPackageDTO.PayloadDTO.UpdateCrateStorageDTO(cratesList);     
         }
@@ -66,7 +70,7 @@ namespace pluginDocuSign.Actions
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
         {
-            var crate = curActionDO.CrateStorage.CrateDTO.SingleOrDefault(c => c.ManifestId == DESIGNTIME_FIELDS_MANIFEST_ID);
+            var crate = curActionDO.CrateStorage.CrateDTO.SingleOrDefault(c => c.ManifestId == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
             if (crate == null) return null;
 
             var fieldsList = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
@@ -77,7 +81,7 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault(c => c.ManifestId == STANDARD_PAYLOAD_MANIFEST_ID);
+            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault(c => c.ManifestId == CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
             if (crate == null) return null; //TODO: log it
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0)
@@ -90,6 +94,24 @@ namespace pluginDocuSign.Actions
                 return null; // TODO: log it
             }
             return envelopeIdField.Value;
+        }
+
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        {
+            // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
+            var textBlock = new TextBlockFieldDTO()
+            {
+                FieldLabel = "Docu Sign Envelope",
+                Value = "This Action doesn't require any configuration.",
+                Type = "textBlockField",
+                cssClass = "well well-lg"
+
+            };
+
+            var crateControls = PackControlsCrate(textBlock);
+
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            return curActionDTO;
         }
     }
 }

@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Infrastructure;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using StructureMap;
 
 namespace Data.Entities
 {
@@ -13,11 +17,17 @@ namespace Data.Entities
         [ForeignKey("ParentActivity")]
         public int? ParentActivityId { get; set; }
         
-        public virtual ActivityDO ParentActivity { get; set; }
+        public virtual ActivityDO ParentActivity 
+           { get; set; }
+
 
         [InverseProperty("ParentActivity")]
         public virtual List<ActivityDO> Activities { get; set; }
 
         public int Ordering { get; set; }
+
+
+
+
     }
 }

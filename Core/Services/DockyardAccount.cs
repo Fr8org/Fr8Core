@@ -11,6 +11,7 @@ using Data.States;
 using Data.Wrappers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
+using System.Data.Entity;
 using Utilities;
 
 namespace Core.Services
@@ -361,6 +362,22 @@ namespace Core.Services
         {
             var packager = new DocuSignPackager();
             return packager.Login();
+        }
+
+        public IEnumerable<ProcessTemplateDO> GetActiveProcessTemplates(string userId)
+        {
+            IEnumerable<ProcessTemplateDO> activeProcessTemplates;
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processTemplateQuery = unitOfWork.ProcessTemplateRepository.GetQuery().Include(i => i.DockyardAccount);
+
+                processTemplateQuery
+                    .Where(pt => pt.ProcessTemplateState == ProcessTemplateState.Active)//1.
+                    .Where(id => id.DockyardAccount.Id == userId);//2
+
+                activeProcessTemplates = processTemplateQuery.ToList();
+            }
+            return activeProcessTemplates;
         }
     }
 }

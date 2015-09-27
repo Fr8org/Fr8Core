@@ -13,5 +13,9 @@ namespace Data.Entities.DocuSignParserModels
 
         [XmlElement("RecipientStatuses")]
         public RecipientStatuses RecipientStatuses { get; set; }
+
+        [XmlElement("Email")]
+        public string Email { get; set; }
+
     }
 }

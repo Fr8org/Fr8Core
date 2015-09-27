@@ -22,11 +22,12 @@ namespace pluginDocuSign.Controllers
             {
                 Name = "pluginDocuSign",
                 PluginStatus = PluginStatus.Active,
-                Endpoint = "localhost:53234"
+                Endpoint = "localhost:53234",
+                Version = "1"
             };
 
             var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
-            {   
+            {
                 Version = "1",
                 Name = "Wait_For_DocuSign_Event",
                 Plugin = plugin

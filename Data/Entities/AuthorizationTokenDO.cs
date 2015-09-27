@@ -10,7 +10,7 @@ namespace Data.Entities
         public AuthorizationTokenDO()
         {
             Id = Guid.NewGuid();
-            Plugin = new PluginDO() { Name = "", PluginStatus = PluginStatus.Active };
+            Plugin = new PluginDO() { Name = "", Version = "1", PluginStatus = PluginStatus.Active };
         }
 
         public Guid Id { get; set; }
@@ -19,6 +19,9 @@ namespace Data.Entities
         public String SegmentTrackingEventName { get; set; }
         public String SegmentTrackingProperties { get; set; }
         public DateTime ExpiresAt { get; set; }
+
+        public String ExternalAccountId { get; set; }
+
 
         [ForeignKey("UserDO")]
         public String UserID { get; set; }

@@ -10,7 +10,7 @@ write-host "$($ChutzpahDir)"
 
 # Run tests using Chutzpah and export results as JUnit format to chutzpah-results.xml
 
-$ChutzpahCmd = "$($ChutzpahDir)\chutzpah.console.exe $($directoryPath)\Scripts\tests\unit /debug /junit .\chutzpah-results.xml"
+$ChutzpahCmd = "$($ChutzpahDir)\chutzpah.console.exe $($directoryPath)\Scripts\tests\unit /junit .\chutzpah-results.xml"
 Write-Host $ChutzpahCmd
 Invoke-Expression $ChutzpahCmd
 
@@ -39,5 +39,5 @@ foreach ($testsuite in $testsuites.testsuites.testsuite) {
 
 if ($anyFailures -eq $TRUE){
     write-host "Failing build as there are broken tests"
-    #$host.SetShouldExit(1)
+    $host.SetShouldExit(1)
 }
