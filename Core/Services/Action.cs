@@ -379,8 +379,9 @@ namespace Core.Services
         {
             return CallPluginAction(curActionDO, "deactivate");
         }
-		  public StandardConfigurationControlsMS GetConfigurationControls(ActionDTO curActionDTO)
+		  public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
 		  {
+			  var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 			  var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
 			  if (confControls.Count() != 0 && confControls.Count() != 1)
 				  throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
