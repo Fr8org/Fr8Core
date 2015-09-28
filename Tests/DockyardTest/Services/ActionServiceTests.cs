@@ -5,6 +5,7 @@ using AutoMapper;
 using Core.Interfaces;
 using Core.Managers;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -26,7 +27,7 @@ namespace DockyardTest.Services
     [Category("ActionService")]
     public class ActionServiceTests : BaseTest
     {
-        private IAction _action;
+        private TestActionService _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
@@ -36,46 +37,68 @@ namespace DockyardTest.Services
         public override void SetUp()
         {
             base.SetUp();
-            //var pluginRegistration1Mock = new Mock<IPluginRegistration>();
-            //pluginRegistration1Mock
-            //    .SetupGet(pr => pr.AvailableActions)
-            //    .Returns(_pr1Actions);
-            //var pluginRegistration2Mock = new Mock<IPluginRegistration>();
-            //pluginRegistration2Mock
-            //    .SetupGet(pr => pr.AvailableActions)
-            //    .Returns(_pr2Actions);
-            //var subscriptionMock = new Mock<ISubscription>();
-            //subscriptionMock
-            //    .Setup(s => s.GetAuthorizedPlugins(It.IsAny<IDockyardAccountDO>()))
-            //    .Returns(new[]
-            //    {
-            //        pluginRegistration1Mock.Object,
-            //        pluginRegistration2Mock.Object
-            //    });
-            //ObjectFactory.Configure(cfg => cfg.For<ISubscription>().Use(subscriptionMock.Object));
-            _action = ObjectFactory.GetInstance<IAction>();
+            _action = new TestActionService();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        public void ActionService_GetConfigurationSettings_CanGetCorrectJson()
+        [Test]
+        public void Action_Configure_ExistingActionShouldBeUpdatedWithNewAction()
         {
-            var expectedResult = FixtureData.TestConfigurationSettings();
-            var curActionDO = FixtureData.TestAction22();
-            //CrateStorageDTO result = _action.Configure(curActionDO);
+            //Arrange
+            ActionDO curActionDO = FixtureData.IntegrationTestAction();
+            UpdateDatabase(curActionDO);
 
-            //different in V2 format
-            //Assert.AreEqual(1, result.Fields.Count);
-            //Assert.AreEqual(expectedResult.Fields[0].FieldLabel, result.Fields[0].FieldLabel);
-            //Assert.AreEqual(expectedResult.Fields[0].Type, result.Fields[0].Type);
-            //Assert.AreEqual(expectedResult.Fields[0].Name, result.Fields[0].Name);
-            //Assert.AreEqual(expectedResult.Fields[0].Required, result.Fields[0].Required);
+            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_action.RestfulServiceClient);
+            ActionDTO actionDto = Mapper.Map<ActionDTO>(curActionDO);
+
+            //set the new name
+            actionDto.Name = "NewActionFromServer";
+            restClientMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
+                .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
+
+            //Act
+            var returnedAction = _action.Configure(curActionDO);
+
+            //Assert
+            //get the action from the database
+            var updatedActionDO = _uow.ActionRepository.GetByKey(returnedAction.Id);
+            Assert.IsNotNull(updatedActionDO);
+            Assert.AreEqual(updatedActionDO.Name, actionDto.Name);
+        }
+
+        [Test]
+        public void UpdateCurrentActivity_ShouldUpdateCurrentActivity()
+        {
+            var curActionList = FixtureData.TestActionList2();
+
+            // Set current activity
+            curActionList.CurrentActivity = curActionList.Activities.Single(a => a.Id == 1);
+            curActionList.Id = curActionList.CurrentActivity.Id;
+
+            Assert.AreEqual(1, curActionList.CurrentActivity.Id);
+
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActionListRepository.Add(curActionList);
+                uow.SaveChanges();
+
+                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+
+                Assert.AreEqual(2, curActionList.CurrentActivity.Id);
+
+                // Check when current action is the only action in action list (should set null)
+                curActionList.Activities.RemoveAt(1);
+                uow.SaveChanges();
+
+                _action.UpdateCurrentActivity(curActionList.CurrentActivityID.Value, uow);
+                Assert.AreEqual(null, curActionList.CurrentActivity);
+            }
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionService_NULL_ActionTemplate()
+        public void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
             Assert.IsNotNull(_service.Configure(null));
@@ -139,7 +162,7 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test, Ignore("Vas, Ignored as part of V2 changes")]
+        [Test]
         public void CanProcessDocuSignTemplate()
         {
             // Test.
@@ -147,6 +170,7 @@ namespace DockyardTest.Services
             var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
+            actionDo.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             ProcessDO procesDO = FixtureData.TestProcess1();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -156,9 +180,9 @@ namespace DockyardTest.Services
                 uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
                 uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
-            }
 
-            action.Process(actionDo, procesDO).Wait();
+                action.PrepareToExecute(actionDo, procesDO, uow).Wait();
+            }
 
             //Ensure that no Incidents were registered
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -171,58 +195,26 @@ namespace DockyardTest.Services
             var transmitter = ObjectFactory.GetInstance<IPluginTransmitter>(); //it is configured as a singleton so we get the "used" instance
             var mock = Mock.Get<IPluginTransmitter>(transmitter);
 
-            //TODO: Fix this line according to v2 changes
-            mock.Verify(e => e.PostActionAsync(It.Is<string>(s => s == "testaction"),
-                It.Is<ActionDTO>(a => true), It.IsAny<PayloadDTO>()));
+            // TODO: Fix this line according to v2 changes
+            // mock.Verify(e => e.PostActionAsync(It.Is<string>(s => s == "testaction"),
+            //     It.Is<ActionDTO>(a => true), It.IsAny<PayloadDTO>()));
         }
 
-        [Test, Ignore("Vas, Ignored as part of V2 changes")]
-        public void CanSavePayloadMappingToActionTabe()
-        {
-            Action action = new Action();
-            ProcessDO process = FixtureData.TestProcess1();
-
-            var payloadMappings = FixtureData.FieldMappings;
-            var actionDo = FixtureData.IntegrationTestAction();
-            var processTemplate = FixtureData.TestProcessTemplate2();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ProcessTemplateRepository.Add(processTemplate);
-                uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
-                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
-                uow.SaveChanges();
-            }
-
-            action.Process(actionDo, process).Wait();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionDo = uow.ActionRepository.FindOne((a) => true);
-                Assert.NotNull(curActionDo);
-
-                //Need an update due to v2 changes
-                //var curActionDto = Mapper.Map<ActionPayloadDTO>(curActionDo);
-                //Assert.IsTrue(IsPayloadValid(curActionDto));
-            }
-        }
-
-        //private bool IsPayloadValid(ActionPayloadDTO dto)
-        //{
-        //    return (dto.PayloadMappings.Any(m => m.Name == "Doctor" && m.Value == "Johnson") &&
-        //        dto.PayloadMappings.Any(m => m.Name == "Condition" && m.Value == "Marthambles"));
-        //}
-
-        [Test, Ignore]
+        [Test]
         public void Process_ActionNotUnstarted_ThrowException()
         {
             ActionDO actionDo = FixtureData.TestAction9();
             Action _action = ObjectFactory.GetInstance<Action>();
             ProcessDO procesDo = FixtureData.TestProcess1();
-            Assert.AreEqual("Action ID: 2 status is 4.", _action.Process(actionDo, procesDo).Exception.InnerException.Message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+
+                Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo, uow).Exception.InnerException.Message);
+        }
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
         public void Process_ReturnJSONDispatchError_ActionStateError()
         {
             ActionDO actionDO = FixtureData.IntegrationTestAction();
@@ -230,96 +222,58 @@ namespace DockyardTest.Services
             var pluginClientMock = new Mock<IPluginTransmitter>();
             pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).ReturnsAsync(@"{ ""error"" : { ""ErrorCode"": ""0000"" }}");
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
-            _action = ObjectFactory.GetInstance<IAction>();
+            //_action = ObjectFactory.GetInstance<IAction>();
 
-            _action.Process(actionDO, procesDo);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _action.PrepareToExecute(actionDO, procesDo, uow);
+            }
 
             Assert.AreEqual(ActionState.Error, actionDO.ActionState);
         }
 
-        [Test, Ignore("Vas, Ignored as part of V2 changes")]
+        [Test]
         public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()
         {
             ActionDO actionDO = FixtureData.IntegrationTestAction();
+            actionDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             ProcessDO procesDO = FixtureData.TestProcess1();
             var pluginClientMock = new Mock<IPluginTransmitter>();
             pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).ReturnsAsync(@"{ ""success"" : { ""ID"": ""0000"" }}");
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
-            _action = ObjectFactory.GetInstance<IAction>();
+            //_action = ObjectFactory.GetInstance<IAction>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
 
-            _action.Process(actionDO, procesDO);
+                _action.PrepareToExecute(actionDO, procesDO, uow);
+            }
 
             Assert.AreEqual(ActionState.Active, actionDO.ActionState);
         }
 
-        [Test, Ignore("Vas, Ignored as part of V2 changes")]
+        [Test]
         public void Process_ActionUnstarted_ShouldBeCompleted()
         {
+            //Arrange
             ActionDO actionDo = FixtureData.TestActionUnstarted();
+            actionDo.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_action.RestfulServiceClient);
+
+            ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
+            restClientMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
+                .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
+
             ProcessDO procesDO = FixtureData.TestProcess1();
-            Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            var response = _action.Process(actionDo, procesDO);
+
+            //Act
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var response = _action.PrepareToExecute(actionDo, procesDO, uow);
+
+            //Assert
             Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
         }
-
-        [Test, Ignore("Vas, ignored due to V2 changes")]
-        public void Dispatch_PayloadDTO_ShouldBeDispatched()
-        {
-            //ActionDO actionDo = FixtureData.TestActionUnstarted();
-            //Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            //var pluginRegistration = BasePluginRegistration.GetPluginType(actionDo);
-            //Uri baseUri = new Uri(pluginRegistration.BaseUrl, UriKind.Absolute);
-            //var response = _action.Dispatch(actionDo, baseUri);
-            //Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
-
-        }
-
-        //this test is being phased out
-        [Test, Ignore]
-        public void GetAvailableActions_ReturnsActionsForAccount()
-        {
-            //const string unavailablePluginName = "UnavailablePlugin";
-            //const string noAccessPluginName = "NoAccessPlugin";
-            //const string userAccessPluginName = "AvailableWithUserAccessPlugin";
-            //const string adminAccessPluginName = "AvailableWithAdminAccessPlugin";
-            //var unavailablePluginRegistration = new Mock<IPluginRegistration>();
-            //var noAccessPluginRegistration = new Mock<IPluginRegistration>();
-            //var userAccessPluginRegistration = new Mock<IPluginRegistration>();
-            //var adminAccessPluginRegistration = new Mock<IPluginRegistration>();
-            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(unavailablePluginRegistration.Object).Named(unavailablePluginName));
-            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(noAccessPluginRegistration.Object).Named(noAccessPluginName));
-            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(userAccessPluginRegistration.Object).Named(userAccessPluginName));
-            //ObjectFactory.Configure(i => i.For<IPluginRegistration>().Use(adminAccessPluginRegistration.Object).Named(adminAccessPluginName));
-            //var account = new DockyardAccountDO()
-            //{
-            //    Subscriptions = new List<SubscriptionDO>()
-            //    {
-            //        new SubscriptionDO()
-            //        {
-            //            AccessLevel = AccessLevel.None,
-            //            Plugin = new PluginDO() {Name = noAccessPluginName}
-            //        },
-            //        new SubscriptionDO()
-            //        {
-            //            AccessLevel = AccessLevel.User,
-            //            Plugin = new PluginDO() {Name = userAccessPluginName}
-            //        },
-            //        new SubscriptionDO()
-            //        {
-            //            AccessLevel = AccessLevel.Admin,
-            //            Plugin = new PluginDO() {Name = adminAccessPluginName}
-            //        },
-            //    }
-            //};
-
-            //Core.Services.Action _action = ObjectFactory.GetInstance<Core.Services.Action>();
-            //List<ActivityTemplateDO> curActivityTemplateDO = _action.GetAvailableActions(account).ToList();
-
-            ////Assert
-            //Assert.AreEqual(4, curActivityTemplateDO.Count);
-            //Assert.That(curActivityTemplateDO, Is.Ordered.By("ActionType"));
-
-
         }
 
         [Test]
@@ -367,6 +321,56 @@ namespace DockyardTest.Services
             _action.AddCrate(actionDO, FixtureData.CrateStorageDTO().CrateDTO);
 
             Assert.IsNotEmpty(actionDO.CrateStorage);
+        }
+
+        private void UpdateDatabase(ActionDO curActionDo)
+        {
+
+            curActionDo.ActivityTemplate.Plugin.Endpoint = "pluginDocusign";
+            _uow.ActivityTemplateRepository.Add(curActionDo.ActivityTemplate);
+            _uow.SaveChanges();
+
+            _uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate1());
+
+            ActionListDO parentActivity = (ActionListDO) curActionDo.ParentActivity;
+            parentActivity.Process.ProcessTemplateId = 1;
+            _uow.ProcessRepository.Add(parentActivity.Process);
+            _uow.SaveChanges();
+
+            _uow.ActionListRepository.Add(parentActivity);
+            _uow.SaveChanges();
+
+            _uow.ActionRepository.Add(curActionDo);
+            _uow.SaveChanges();
+        }
+    }
+
+    internal class TestActionService : Action
+    {
+        private IRestfulServiceClient _restfulServiceClient;
+
+        internal IRestfulServiceClient RestfulServiceClient
+        {
+            get
+            {
+                if (_restfulServiceClient == null)
+                {
+                    _restfulServiceClient = new Mock<IRestfulServiceClient>(MockBehavior.Default).Object;
+                }
+
+                return _restfulServiceClient;
+            }
+            private set { _restfulServiceClient = value; }
+        }
+
+        protected override IRestfulServiceClient PrepareRestfulClient()
+        {
+            if (_restfulServiceClient == null)
+            {
+                _restfulServiceClient = new Mock<IRestfulServiceClient>(MockBehavior.Default).Object;
+            }
+
+            return _restfulServiceClient;
         }
     }
 }

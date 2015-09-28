@@ -40,7 +40,11 @@
     },
     {
       "Path": "../app/app.js"
-    },    
+    },   
+    {
+      "Path": "../../Scripts/lib/jquery.blockui.min.js"
+    },       
+     
     {
       "Path": "../../Content/templates/metronic/assets/global/scripts/metronic.js"
     },

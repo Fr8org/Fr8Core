@@ -19,6 +19,16 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO TestActivityTemplateSalesforce()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "Create_Lead",
+                Version = "1"
+            };
+        }
+
 
     }
 }

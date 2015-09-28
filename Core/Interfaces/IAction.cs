@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
@@ -14,12 +14,13 @@ namespace Core.Interfaces
         ActionDO GetById(int id);
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
-        Task<int> Process(ActionDO curAction, ProcessDO curProcessDO);
+        Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow);
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
         string Activate(ActionDO curActionDO);
         string Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
+        ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
     }
 }

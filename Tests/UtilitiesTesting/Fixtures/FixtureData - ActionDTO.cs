@@ -17,5 +17,14 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
         }
+
+        public static ActionDTO TestActionDTOForSalesforce()
+        {
+            return new ActionDTO()
+            {
+                Name = "test salesforce action",
+                ActivityTemplate = FixtureData.TestActivityTemplateSalesforce()
+            };
+        }
     }
 }
