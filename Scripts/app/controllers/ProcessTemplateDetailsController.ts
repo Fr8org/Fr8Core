@@ -32,7 +32,7 @@ module dockyard.controllers {
             //Load detailed information
             $scope.id = $stateParams.id;
             if (/^[0-9]+$/.test($scope.id) && parseInt($scope.id) > 0) {
-                $scope.ptvm = ProcessTemplateService.get({ id: $stateParams.id });
+                $scope.ptvm = ProcessTemplateService.getFull({ id: $stateParams.id });
             }
         }
     }

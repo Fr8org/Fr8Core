@@ -11,7 +11,7 @@
             startingProcessNodeTemplateId: 1
         };
 
-        public static newActionListDTO = <model.ActionList>{
+        public static newActionListDTO = <model.ActionListDTO>{
             id: 9,
             actionListType: 1,
             name: "MockImmediate",

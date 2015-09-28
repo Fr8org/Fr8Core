@@ -109,8 +109,18 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
-            if (crate == null) return null;
+            var eventReportCrate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
+            if (eventReportCrate == null)
+            {
+                return null;
+            }
+
+            var eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(eventReportCrate.Contents);
+            var crate = eventReportMS.EventPayload.SingleOrDefault();
+            if (crate == null)
+            {
+                return null;
+            }
 
             var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
             if (fields == null || fields.Count == 0) return null;

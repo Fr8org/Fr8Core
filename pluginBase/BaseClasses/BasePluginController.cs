@@ -57,7 +57,7 @@ namespace PluginBase.BaseClasses
         private Task<string> ReportEvent(string pluginName)
         {
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
-        }﻿
+        }
 
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)

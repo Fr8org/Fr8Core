@@ -45,9 +45,9 @@ namespace pluginDockyardCore.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public ActionDTO Execute(ActionDTO curActionDTO)
+        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
         }
     }
 }

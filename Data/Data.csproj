@@ -197,7 +197,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\ActivityDO.cs" />
-    <Compile Include="Entities\DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
@@ -205,8 +204,6 @@
     <Compile Include="Entities\MT_Organization.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
-    <Compile Include="Infrastructure\AutoMapper\DocuSignExtEventSubscriptionToIntConverter.cs" />
-    <Compile Include="Infrastructure\AutoMapper\DocuSignTemplateSubscriptionToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
@@ -222,6 +219,8 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -297,6 +296,22 @@
     <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509262037112_addExternalAccountId.cs" />
+    <Compile Include="Migrations\201509262037112_addExternalAccountId.Designer.cs">
+      <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.cs" />
+    <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.Designer.cs">
+      <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509270413022_EmptyMergeMigration.cs" />
+    <Compile Include="Migrations\201509270413022_EmptyMergeMigration.Designer.cs">
+      <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509272003530_RemovedExternalEventType.cs" />
+    <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
+      <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -308,6 +323,7 @@
     <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\ActionState.cs" />
+    <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -317,7 +333,6 @@
     <Compile Include="Entities\DocuSignParserModels\EnvelopeStatus.cs" />
     <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
-    <Compile Include="Entities\ExternalEventSubscriptionDO.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\MailerDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
@@ -352,7 +367,6 @@
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
-    <Compile Include="Repositories\ExternalEventSubscriptionRepository.cs" />
     <Compile Include="Repositories\MailerRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
@@ -377,7 +391,6 @@
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
-    <Compile Include="States\ExternalEventType.cs" />
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
@@ -409,7 +422,6 @@
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
-    <Compile Include="States\Templates\_ExternalEventTypeTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
@@ -457,7 +469,6 @@
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\RemoteServiceAuthDataRepository.cs" />
     <Compile Include="Repositories\RemoteServiceProviderRepository.cs" />
-    <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
@@ -541,6 +552,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509262037112_addExternalAccountId.resx">
+      <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.resx">
+      <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509270413022_EmptyMergeMigration.resx">
+      <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
+      <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
