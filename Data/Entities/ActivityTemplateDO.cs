@@ -56,6 +56,7 @@ namespace Data.Entities
 
         public string Version { get; set; }
 
+
         public string AuthenticationType { get; set; }
 
         public string ComponentActivities { get; set; }
@@ -65,6 +66,6 @@ namespace Data.Entities
         
         public virtual PluginDO Plugin { get; set; }
 
-        public ActivityCategory Category { get; set; }
+
     }
 }
