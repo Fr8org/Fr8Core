@@ -262,14 +262,17 @@ namespace Core.Services
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
 
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
-
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
 
             //TODO : Cut base Url from PluginDO.Endpoint
             curPluginClient.BaseUri = CreateUri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActionDO.ActivityTemplate);
+
+            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
+
             var jsonResult = await curPluginClient.PostActionAsync("execute", curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);
 
