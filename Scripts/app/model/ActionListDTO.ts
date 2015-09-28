@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class ActionList {
+    export class ActionListDTO {
         id: number;
         name: string;
         actionListType: ActionListType;

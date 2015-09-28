@@ -56,7 +56,7 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
         {
             if (mailer == null)
                 throw new ArgumentNullException("mailer");
-            if (!string.Equals(mailer.Handler, MailerDO.SendGridHander, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(mailer.Handler, MailerDO.MailHandler, StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException(@"This envelope should not be handled with Gmail.", "mailer");
             if (mailer.Email == null)
                 throw new ArgumentException(@"This envelope has no Email.", "mailer");

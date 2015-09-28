@@ -78,6 +78,54 @@ namespace Web.Controllers
             return View();
         }
 
+        public ActionResult MultiPartWorkflows()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult ConditionalLogicBranching()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult DataExtractionIntoSalesforce()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult DataExtractionIntoServices()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult DataExtractionintoSQLServer()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult IntegrationWithOtherDataServices()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult InterOrganizationWorkflows()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
 
         //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
         [HttpPost]

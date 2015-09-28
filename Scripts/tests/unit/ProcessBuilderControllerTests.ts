@@ -6,7 +6,6 @@ module dockyard.tests.controller {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
-    import pst = dockyard.directives.paneSelectTemplate;
 
     describe("ProcessBuilder Framework message processing", () => {
         

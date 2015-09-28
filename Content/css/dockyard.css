@@ -93,6 +93,11 @@
 }
 
 /* Query Builder */
+.query-builder.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
 .query-builder-table {
     margin-left: 27px;
     margin-bottom: 10px;

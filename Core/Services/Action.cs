@@ -123,7 +123,7 @@ namespace Core.Services
 
                         string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
-                        var restClient = new RestfulServiceClient();
+                        var restClient = PrepareRestfulClient();
                         string actionDTOJSON;
                         try
                         {
@@ -169,25 +169,61 @@ namespace Core.Services
 
         public void Delete(int id)
         {
-            var entity = new ActionDO { Id = id };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActionRepository.Attach(entity);
-                uow.ActionRepository.Remove(entity);
+                var curAction = UpdateCurrentActivity(id, uow);
+                if (curAction == null)
+                {
+                    curAction = new ActivityDO { Id = id };
+                    uow.ActivityRepository.Attach(curAction);
+                }
+                uow.ActivityRepository.Remove(curAction);
                 uow.SaveChanges();
             }
         }
 
-        public async Task<int> Process(ActionDO curAction, ProcessDO curProcessDO)
+        /// <summary>
+        /// The method checks if the action being deleted is CurrentActivity for its ActionList. 
+        /// if it is, sets CurrentActivity to the next Action, or null if it is the last action. 
+        /// </summary>
+        /// <param name="curActionId">Action Id</param>
+        /// <param name="uow">Unit of Work</param>
+        /// <returns>Returns the current action (if found) or null if not.</returns>
+        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            // Find an ActionList for which the action is set as CurrentActivity
+            // Also, get the whole list of actions for this Action List 
+            var curActionList = uow.ActionListRepository.GetQuery().Where(al => al.CurrentActivityID == curActionId).Include(al => al.Activities).SingleOrDefault();
+            if (curActionList == null) return null;
+
+            // Get current Action
+            var curAction = curActionList.Activities.Where(a => a.Id == curActionId).SingleOrDefault();
+            if (curAction == null) return null; // Well, who knows...
+
+            // Get ordered list of next Activities 
+            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+
+            //if no next activities, just nullify CurrentActivity 
+            if (activities.Count() == 0)
+            {
+                curActionList.CurrentActivity = null;
+            }
+            else
+            {
+                // if there is one, set it as CurrentActivity
+                curActionList.CurrentActivity = activities.ToList()[0];
+            }
+
+            return curAction;
+        }
+
+        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
             {
                 //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
                 if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
                 {
                     curAction.ActionState = ActionState.InProcess;
-                    uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
 
                     EventManager.ActionStarted(curAction);
@@ -218,7 +254,6 @@ namespace Core.Services
                     uow.SaveChanges();
                     throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
-            }
             return curAction.ActionState.Value;
         }
 
@@ -345,7 +380,7 @@ namespace Core.Services
                         //convert the Action to a DTO in preparation for serialization and POST to the plugin
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
                         string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
-                        var restClient = new RestfulServiceClient();
+                        var restClient = PrepareRestfulClient();
                         string result;
                         try
                         {
@@ -370,6 +405,11 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
+        }
+
+        protected virtual IRestfulServiceClient PrepareRestfulClient()
+        {
+            return new RestfulServiceClient();
         }
     }
 }

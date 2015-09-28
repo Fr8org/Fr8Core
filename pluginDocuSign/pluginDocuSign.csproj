@@ -184,6 +184,7 @@
     <Compile Include="Infrastructure\DocuSignEnvelope.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Infrastructure\DocuSignEventNames.cs" />
     <Compile Include="Infrastructure\DocuSignPackager.cs" />
     <Compile Include="Infrastructure\Signer.cs" />
     <Compile Include="Infrastructure\Tab.cs" />
