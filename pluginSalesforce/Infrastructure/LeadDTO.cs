@@ -5,7 +5,7 @@ using System.Web;
 
 namespace pluginSalesforce.Infrastructure
 {
-    public class Lead
+    public class LeadDTO
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

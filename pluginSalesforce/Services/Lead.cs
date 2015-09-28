@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace pluginSalesforce.Services
 {
-    public class Salesforce : ISalesforce
+    public class Lead : ILead
     {
         ForceClient forceClient;
-        ISalesforceAccount _salesforceAccount = ObjectFactory.GetInstance<ISalesforceAccount>();
+        IConfiguration _salesforceAccount = ObjectFactory.GetInstance<IConfiguration>();
 
-        public Salesforce()
+        public Lead()
         {
             forceClient = _salesforceAccount.GetForceClient();
         }
@@ -40,7 +40,7 @@ namespace pluginSalesforce.Services
 
         private async Task CreateLead()
         {
-            Lead lead = new Lead();
+            LeadDTO lead = new LeadDTO();
             lead.FirstName = "Moble-FirstName";
             lead.LastName = "LastName";
             lead.Company = "Logiticks";

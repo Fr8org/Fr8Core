@@ -6,7 +6,7 @@ using Salesforce.Force;
 
 namespace pluginSalesforce.Infrastructure
 {
-    public interface ISalesforceAccount
+    public interface IConfiguration
     {
         ForceClient GetForceClient();
     }

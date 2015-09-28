@@ -17,7 +17,7 @@ namespace pluginSalesforce
     public class Startup
     {
         public void Configuration(IAppBuilder app)
-        {
+        {            
             PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);
 
             Task.Run(() =>

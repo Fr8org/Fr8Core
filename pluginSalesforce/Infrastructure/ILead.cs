@@ -6,7 +6,7 @@ using System.Web;
 
 namespace pluginSalesforce.Infrastructure
 {
-    public interface ISalesforce
+    public interface ILead
     {
         bool CreateLead(ActionDTO actionDTO);
     }

@@ -10,7 +10,7 @@ using System.Web;
 
 namespace pluginSalesforce.Services
 {
-    public class SalesforceAccount:ISalesforceAccount
+    public class Configuration:IConfiguration
     {
        
         public readonly string salesforceUserName;
@@ -20,7 +20,7 @@ namespace pluginSalesforce.Services
         ForceClient forceClient = null;
         AuthenticationClient authclient;
 
-        public SalesforceAccount()
+        public Configuration()
         {
            this.salesforceUserName = ConfigurationManager.AppSettings["SalesforceUserName"];
            this.salesforcePassword = ConfigurationManager.AppSettings["SalesforcePassword"];

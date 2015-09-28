@@ -8,6 +8,7 @@ using StructureMap.Configuration.DSL;
 using pluginSalesforce.Infrastructure;
 using StructureMap;
 using pluginSalesforce.Services;
+using Core.StructureMap;
 
 namespace pluginSalesforce
 {
@@ -39,8 +40,8 @@ namespace pluginSalesforce
                  For<IAction>().Use<Core.Services.Action>();
                  For<ICrate>().Use<Crate>();
                  For<IPlugin>().Use<Plugin>();
-                 For<ISalesforce>().Use<pluginSalesforce.Services.Salesforce>();
-                 For<ISalesforceAccount>().Use<pluginSalesforce.Services.SalesforceAccount>();                
+                 For<ILead>().Use<pluginSalesforce.Services.Lead>();
+                 For<IConfiguration>().Use<pluginSalesforce.Services.Configuration>();                
              }
          }
     }

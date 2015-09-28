@@ -12,7 +12,7 @@ namespace pluginSalesforce.Actions
 {
     public class Create_Lead_v1 : BasePluginAction
     {
-        ISalesforce _salesforce = ObjectFactory.GetInstance<ISalesforce>();
+        ILead _salesforce = ObjectFactory.GetInstance<ILead>();
 
         public ActionDTO CreateLead(ActionDTO curActionDTO)
         {
