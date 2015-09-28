@@ -126,7 +126,7 @@ namespace Core.Services
 
                         string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
-                        var restClient = new RestfulServiceClient();
+                        var restClient = PrepareRestfulClient();
                         string actionDTOJSON;
                         try
                         {
@@ -221,15 +221,12 @@ namespace Core.Services
             return curAction;
         }
 
-        public async Task<int> Process(ActionDO curAction, ProcessDO curProcessDO)
+        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
                 if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
                 {
                     curAction.ActionState = ActionState.InProcess;
-                    uow.ActionRepository.Attach(curAction);
                     uow.SaveChanges();
 
                     EventManager.ActionStarted(curAction);
@@ -260,7 +257,6 @@ namespace Core.Services
                     uow.SaveChanges();
                     throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
                 }
-            }
             return curAction.ActionState.Value;
         }
 
@@ -269,23 +265,32 @@ namespace Core.Services
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
 
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
-
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
 
             //TODO : Cut base Url from PluginDO.Endpoint
+            curPluginClient.BaseUri = CreateUri(curActionDO.ActivityTemplate.Plugin.Endpoint);
 
-            curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActionDO.ActivityTemplate);
 
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
+            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
+
+            var jsonResult = await curPluginClient.PostActionAsync("execute", curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);
 
             return jsonResult;
         }
 
-
+        private Uri CreateUri(string endpoint)
+        {
+            //TODO: Add support for https
+            if (!endpoint.StartsWith("http"))
+            {
+                endpoint = "http://" + endpoint;
+            }
+            return new Uri(endpoint);
+        }
 
         /// <summary>
         /// Retrieve authorization token
@@ -396,7 +401,7 @@ namespace Core.Services
                         //convert the Action to a DTO in preparation for serialization and POST to the plugin
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
                         string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
-                        var restClient = new RestfulServiceClient();
+                        var restClient = PrepareRestfulClient();
                         string result;
                         try
                         {
@@ -423,7 +428,12 @@ namespace Core.Services
 
         }
 
+        protected virtual IRestfulServiceClient PrepareRestfulClient()
+        {
+            return new RestfulServiceClient();
+        }
+
 
 		  
-	 }
+    }
 }

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using PluginBase.BaseClasses;
 using System.Collections.Generic;
+using Core.Services;
 using Data.States;
 
 namespace pluginDocuSign.Controllers
@@ -30,6 +31,7 @@ namespace pluginDocuSign.Controllers
             {
                 Version = "1",
                 Name = "Wait_For_DocuSign_Event",
+                Category = ActivityCategory.fr8_Receiver,
                 Plugin = plugin
             };
 
@@ -44,6 +46,7 @@ namespace pluginDocuSign.Controllers
             {
                 Version = "1",
                 Name = "Extract_From_DocuSign_Envelope",
+                Category = ActivityCategory.fr8_Receiver,
                 Plugin = plugin
             };
 

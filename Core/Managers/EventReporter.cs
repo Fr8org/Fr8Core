@@ -14,6 +14,7 @@ using StructureMap;
 using Utilities;
 using Utilities.Logging;
 using Data.Interfaces.DataTransferObjects;
+using System.Linq;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -695,14 +696,13 @@ namespace Core.Managers
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
+                processInExecution = uow.ProcessRepository.GetQuery().SingleOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = (processInExecution != null) ? processInExecution.DockyardAccountId : "unknown",
+                Data = (processInExecution != null) ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",

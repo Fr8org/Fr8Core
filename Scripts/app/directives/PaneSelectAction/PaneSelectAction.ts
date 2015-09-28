@@ -8,9 +8,9 @@ module dockyard.directives.paneSelectAction {
         currentAction: model.ActionDTO;
         isVisible: boolean;
         actionTypes: Array<model.ActivityTemplate>;
-        ActionTypeSelected: () => void;
+        actionTypeSelected: () => void;
         componentActivities: string[];
-        ChildActivityTypeSelected: (actionTemplateId: number) => void;
+        childActivityTypeSelected: (actionTemplateId: number) => void;
         childActivityStepId: number;
         childActivity: model.ActionDTO;
     }
@@ -72,8 +72,6 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-
-
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class PaneSelectAction implements ng.IDirective {
@@ -110,7 +108,7 @@ module dockyard.directives.paneSelectAction {
                 $scope.$watch<model.ActionDTO>(
                     (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
 
-                $scope.ActionTypeSelected = () => {
+                $scope.actionTypeSelected = () => {
                     var currentSelectedActivity: model.ActivityTemplate;
                     var activities = $scope.actionTypes;
                     //find the selected activity
@@ -142,8 +140,7 @@ module dockyard.directives.paneSelectAction {
                     }
                 }
 
-
-                $scope.ChildActivityTypeSelected = (childActionTemplateId) => {
+                $scope.childActivityTypeSelected = (childActionTemplateId) => {
                     if (childActionTemplateId != null) {
                         $scope.$emit(MessageType[MessageType.PaneSelectAction_InitiateSaveAction], eventArgs);
                         $scope.childActivity.activityTemplateId = childActionTemplateId;
@@ -185,7 +182,6 @@ module dockyard.directives.paneSelectAction {
             $http.get('/activities/available')
                 .then(function (resp) {
                     angular.forEach(resp.data, function (it) {
-                        console.log(it);
                         $scope.actionTypes.push(
                             new model.ActivityTemplate(
                                 it.id,
