@@ -9,7 +9,7 @@ namespace Core.Interfaces
 	{
 		List<ActivityDO> GetUpstreamActivities(ActivityDO curActivityDO);
 		List<ActivityDO> GetDownstreamActivities(ActivityDO curActivityDO);
-        void Process(ActivityDO curActivityDO, ProcessDO curProcessDO);
+        void Process(int curActivityId, ProcessDO curProcessDO);
         IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO);
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount);
 	}

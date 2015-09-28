@@ -98,7 +98,7 @@ namespace Core.Services
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    _activity.Process(curProcessDO.CurrentActivity, curProcessDO);
+                    _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }
