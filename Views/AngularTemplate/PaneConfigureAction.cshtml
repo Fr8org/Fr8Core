@@ -1,11 +1,16 @@
-﻿<div class="portlet light " ng-if="isVisible">
+﻿<div class="portlet light " ng-if="isVisible" block-if="processing === true">
     <div class="portlet-title">
         <div class="caption caption-md">
             <i class="icon-bar-chart font-green-haze hide"></i>
             <span class="caption-subject font-green-haze bold uppercase">{{currentAction.activityTemplateName}}</span>
         </div>
+        <div class="tools">
+            <a href="#" class="remove" ng-click="removeAction()">
+            </a>
+        </div>
+
     </div>
-    <div class="portlet-body" block-if="processing === true">
+    <div class="portlet-body">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
             <configuration-field current-action="currentAction" field="field" />
         </div>

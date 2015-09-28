@@ -5,7 +5,6 @@
 Global Directives
 ***/
 
-
 'use strict';
  
 app.directive('autoFocus', function ($timeout) {

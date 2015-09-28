@@ -91,7 +91,8 @@ var Metronic = function() {
     };
 
     // Handles portlet tools & actions
-    var handlePortletTools = function() {
+    var handlePortletTools = function () {
+        return; // This is not necessary in Dockyard (fr8)
         // handle portlet remove
         $('body').on('click', '.portlet > .portlet-title > .tools > a.remove', function(e) {
             e.preventDefault();

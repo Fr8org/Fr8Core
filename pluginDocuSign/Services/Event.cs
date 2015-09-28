@@ -12,6 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Newtonsoft.Json;
+using pluginDocuSign.Infrastructure;
 using StructureMap;
 
 namespace pluginDocuSign.Services
@@ -40,7 +41,8 @@ namespace pluginDocuSign.Services
             {
                 EventNames = "DocuSign Envelope " + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ProcessDOId = "",
-                EventPayload = ExtractEventPayload(curExternalEvents).ToList()
+                EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
+                ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
             };
 
             //prepare the event report
@@ -61,7 +63,7 @@ namespace pluginDocuSign.Services
                 curEvents.Add(new DocuSignEventDO
                 {
                     ExternalEventType =
-                        ExternalEventType.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
+                        DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
                     EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
                     RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id
                 });
@@ -85,6 +87,7 @@ namespace pluginDocuSign.Services
                     new FieldDTO() {Key = "EnvelopeId", Value = curEvent.EnvelopeId},
                     new FieldDTO() {Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString()},
                     new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId}
+                   
                 };
 
                 curEventPayloadData.Add(_crate.Create("Payload Data", JsonConvert.SerializeObject(crateFields)));

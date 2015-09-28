@@ -1,4 +1,7 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -16,5 +19,7 @@ namespace Core.Interfaces
         /// Handles Plugin Event 
         /// </summary>
         void HandlePluginEvent(LoggingData eventData);
+
+        Task<string> RequestParsingFromPlugins(HttpRequestMessage result, string pluginName, string pluginVersion);
     }
 }

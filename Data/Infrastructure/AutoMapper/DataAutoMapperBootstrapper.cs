@@ -55,11 +55,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<IList<DocuSignTemplateSubscriptionDO>, IList<string>>().ConvertUsing<DocuSignTemplateSubscriptionToStringConverter>();
-            Mapper.CreateMap<IList<string>, IList<DocuSignTemplateSubscriptionDO>>().ConvertUsing<StringToDocuSignTemplateSubscriptionConverter>();
-            Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int?>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
-            Mapper.CreateMap<IList<int?>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
-
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
 
             Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()

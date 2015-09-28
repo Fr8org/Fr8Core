@@ -1,0 +1,15 @@
+﻿* text=auto
+
+*.cs text
+*.sln text
+*.csproj text
+*.cshtml text
+*.js text
+*.ts text
+*.json text
+*.html text
+*.htm text
+*.config text
+*.svg text
+*.xml text
+*.txt text

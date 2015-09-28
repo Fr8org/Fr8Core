@@ -22,18 +22,7 @@ namespace DockyardTest.Services
 			_processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
 		}
 
-		[Test]
-		[ExpectedException(typeof (EntityNotFoundException))]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessTemplateService_CanNot_LaunchProcess()
-		{
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curEvent = FixtureData.TestDocuSignEvent1();
-                ProcessTemplateDO processTemplate = null;
-                _processTemplateService.LaunchProcess(uow, processTemplate, FixtureData.DocuSignEventToCrate(curEvent));
-            }
-		}
+
 
         [Test]
         public void ProcessTemplateService_GetProcessNodeTemplates()
