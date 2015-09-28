@@ -298,6 +298,14 @@
     <Compile Include="Migrations\201509262037112_addExternalAccountId.Designer.cs">
       <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.cs" />
+    <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.Designer.cs">
+      <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509270413022_EmptyMergeMigration.cs" />
+    <Compile Include="Migrations\201509270413022_EmptyMergeMigration.Designer.cs">
+      <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.cs" />
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
@@ -313,6 +321,7 @@
     <Compile Include="States\ActionListState.cs" />
     <Compile Include="States\ActionListType.cs" />
     <Compile Include="States\ActionState.cs" />
+    <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
@@ -544,6 +553,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509262037112_addExternalAccountId.resx">
       <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.resx">
+      <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509270413022_EmptyMergeMigration.resx">
+      <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
