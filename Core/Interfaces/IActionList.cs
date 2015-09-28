@@ -9,8 +9,8 @@ namespace Core.Interfaces
         IEnumerable<ActionListDO> GetAll();
         ActionListDO GetByKey(IUnitOfWork uow, int curActionListId);
         void AddAction(ActionDO curActionDO, string position);
-        void Process(ActionListDO curActionList, ProcessDO curProcessDO);
+        void Process(ActionListDO curActionList, ProcessDO curProcessDO, IUnitOfWork uow);
         void UpdateActionListState(ActionListDO curActionListDO);
-        void ProcessAction(ActionListDO curActionList, ProcessDO curProcessDO);
+        void ProcessAction(ActionListDO curActionList, ProcessDO curProcessDO, IUnitOfWork uow);
     }
 }
