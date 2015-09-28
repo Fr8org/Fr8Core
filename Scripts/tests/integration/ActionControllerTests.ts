@@ -80,10 +80,8 @@ module dockyard.tests.controller {
                     activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
-                    fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
-                    // ActionListId is set to null, since there is no ActionsLists on a blank db.
-                        actionListId: null,
-                        activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1","")
+                    actionListId: 1,
+                    activityTemplate: null
                 };
 
             postInvoker(done, actions);
@@ -107,7 +105,6 @@ module dockyard.tests.controller {
                         activityTemplateId: 1,
                         isTempId: false,
                         id: 1,
-                        fieldMappingSettings: fx.ActionDesignDTO.fieldMappingSettings,
                         // ActionListId is set to null, since there is no ActionsLists on a blank db.
                         actionListId: null,
                         activityTemplate: fx.ActivityTemplate.activityTemplateDO

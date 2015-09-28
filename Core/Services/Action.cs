@@ -123,7 +123,7 @@ namespace Core.Services
 
                         string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
 
-                        var restClient = new RestfulServiceClient();
+                        var restClient = PrepareRestfulClient();
                         string actionDTOJSON;
                         try
                         {
@@ -218,7 +218,7 @@ namespace Core.Services
             return curAction;
         }
 
-        public async Task<int> Process(ActionDO curAction, ProcessDO curProcessDO)
+        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -384,7 +384,7 @@ namespace Core.Services
                         //convert the Action to a DTO in preparation for serialization and POST to the plugin
                         var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
                         string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
-                        var restClient = new RestfulServiceClient();
+                        var restClient = PrepareRestfulClient();
                         string result;
                         try
                         {
@@ -409,6 +409,11 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
+        }
+
+        protected virtual IRestfulServiceClient PrepareRestfulClient()
+        {
+            return new RestfulServiceClient();
         }
     }
 }

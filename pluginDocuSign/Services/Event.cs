@@ -12,6 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Newtonsoft.Json;
+using pluginDocuSign.Infrastructure;
 using StructureMap;
 
 namespace pluginDocuSign.Services
@@ -62,7 +63,7 @@ namespace pluginDocuSign.Services
                 curEvents.Add(new DocuSignEventDO
                 {
                     ExternalEventType =
-                        ExternalEventType.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
+                        DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
                     EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
                     RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id
                 });
