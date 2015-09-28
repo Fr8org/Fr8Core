@@ -14,6 +14,7 @@ using System.Web.Http.Results;
 using PluginBase;
 using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
+using pluginDocuSign.Interfaces;
 
 namespace pluginDocuSign.Actions
 {

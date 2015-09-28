@@ -13,7 +13,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Data.States.Templates;
-using Data.Wrappers;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginDockyardCore.Interfaces;
@@ -54,13 +53,13 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
             }
 
-            // Prepare envelope data.
-            var curDocuSignEnvelope = new DocuSignEnvelope();
-                // Should just change GetEnvelopeData to pass an EnvelopeDO.
-            var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(GetEnvelopeId(curPayloadDTO));
+				//// Prepare envelope data.
+				//var curDocuSignEnvelope = new DocuSignEnvelope();
+				//	 // Should just change GetEnvelopeData to pass an EnvelopeDO.
+				//var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(GetEnvelopeId(curPayloadDTO));
 
-            // Evaluate criteria using Contents json body of found Crate.
-            var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curEnvelopeData);
+				//// Evaluate criteria using Contents json body of found Crate.
+				//var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curEnvelopeData);
 
             return curActionDTO;
         }

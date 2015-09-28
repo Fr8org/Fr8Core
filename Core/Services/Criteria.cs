@@ -15,10 +15,8 @@ namespace Core.Services
 {
 	public class Criteria : ICriteria
 	{
-		private IDocuSignEnvelope _envelope;
 		public Criteria()
 		{
-			_envelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 		}
 		public bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
 		{

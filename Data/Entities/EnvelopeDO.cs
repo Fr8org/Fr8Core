@@ -1,5 +1,4 @@
-﻿using Data.Wrappers;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
@@ -11,9 +10,6 @@ namespace Data.Entities
 
         public EnvelopeState EnvelopeStatus { get; set; } //renamed to envelopestatus because it will hide the parent status property
         public string DocusignEnvelopeId { get; set; }
-
-        [NotMapped]
-        public DocuSignEnvelope DocuSignEnvelope { get; set; }
 
         public enum EnvelopeState
         {

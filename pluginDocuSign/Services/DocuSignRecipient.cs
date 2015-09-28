@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
-using Data.Entities;
+﻿using AutoMapper;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
-using Utilities;
-using Data.Interfaces;
+using pluginDocuSign.DataTransferObjects;
+using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
-namespace Data.Wrappers
+namespace pluginDocuSign.Services
 {
 	public class DocuSignRecipient : Template, IDocuSignRecipient
 	{
@@ -35,6 +37,6 @@ namespace Data.Wrappers
 			var recipients = JsonConvert.DeserializeObject<Recipients>(recipientsToken.ToString());
 			return Mapper.Map<RecipientsDTO>(recipients);
 		}
-		
+
 	}
 }

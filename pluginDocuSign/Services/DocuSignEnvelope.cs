@@ -5,13 +5,13 @@ using System.Linq;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using DocuSign.Integrations.Client;
 using Utilities.Serializers.Json;
-using pluginDocuSign.Services;
+using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Interfaces;
 
-namespace pluginDocuSign.Infrastructure
+namespace pluginDocuSign.Services
 {
-    public class DocuSignEnvelope : Envelope, IDocuSignEnvelope
+    public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IDocuSignEnvelope
     {
         private string _baseUrl;
         private readonly ITab _tab;
@@ -81,7 +81,7 @@ namespace pluginDocuSign.Infrastructure
         /// List of Envelope Data.
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
-        public IList<EnvelopeDataDTO> GetEnvelopeData(Envelope envelope)
+        public IList<EnvelopeDataDTO> GetEnvelopeData(DocuSign.Integrations.Client.Envelope envelope)
         {
             Signer[] curSignersSet = _signer.GetFromRecipients(envelope);
             if (curSignersSet != null)

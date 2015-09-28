@@ -5,24 +5,22 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Newtonsoft.Json;
+using Utilities;
+using Data.Interfaces;
+using pluginDocuSign.Interfaces;
+using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Infrastructure;
 
 namespace pluginDocuSign.Services
 {
-    public interface IDocuSignTemplate
-    {
-        List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
-        IEnumerable<string> GetMappableSourceFields(string templateId);
-        IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
-    }
-
     public class DocuSignTemplate : Template, IDocuSignTemplate
     {
         private readonly DocuSignEnvelope _docusignEnvelope;
 
         public DocuSignTemplate()
         {
-            var packager = new pluginDocuSign.Infrastructure.DocuSignPackager();
+            var packager = new DocuSignPackager();
 
             Login = packager.Login();
             _docusignEnvelope = new DocuSignEnvelope();
@@ -72,5 +70,34 @@ namespace pluginDocuSign.Services
             }
             return curLstMappableSourceFields;
         }
-    }
+		  public List<TextTab> GetUserFields(string templateId)
+		  {
+			  if (templateId == null)
+				  throw new ArgumentNullException("templateId");
+			  if (templateId == string.Empty)
+				  throw new ArgumentException("templateId is empty", "templateId");
+			  // Get template
+			  var jObjTemplate = GetTemplate(templateId);
+			  // Checking is it ok?
+			  DocuSignUtils.ThrowInvalidOperationExceptionIfError(jObjTemplate);
+
+			  Recipients recipient = DocuSignUtils.GetRecipientsFromTemplate(jObjTemplate);
+			  // TODO Do we need to get textTabs for other types of recipients?
+			  var allSigners = recipient.signers.Concat(recipient.agents)
+				  .Concat(recipient.carbonCopies)
+				  .Concat(recipient.certifiedDeliveries)
+				  .Concat(recipient.editors)
+				  .Concat(recipient.inPersonSigners)
+				  .Concat(recipient.intermediaries).ToArray();
+
+			  List<TextTab> textTabs = new List<TextTab>();
+			  Array.ForEach(allSigners, x =>
+			  {
+				  if (x.tabs != null && x.tabs.textTabs != null)
+					  textTabs.AddRange(x.tabs.textTabs);
+			  });
+
+			  return textTabs;
+		  }
+	 }
 }

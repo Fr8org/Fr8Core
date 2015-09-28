@@ -11,7 +11,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
 using Newtonsoft.Json;
@@ -25,9 +24,7 @@ namespace Core.Services
 {
     public class Action : IAction
     {
-        private IDocuSignEnvelope _envelope;
         private IAction _action;
-        private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
@@ -433,8 +430,5 @@ namespace Core.Services
         {
             return new RestfulServiceClient();
         }
-
-
-		  
-    }
+	 }
 }

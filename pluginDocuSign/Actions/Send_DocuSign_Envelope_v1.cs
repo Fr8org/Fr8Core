@@ -9,12 +9,12 @@ using PluginBase.BaseClasses;
 using Core.Interfaces;
 using StructureMap;
 using Newtonsoft.Json;
-using Data.Wrappers;
 using Data.Interfaces;
 using PluginBase;
 using Data.Constants;
 using Utilities;
 using Data.Interfaces.ManifestSchemas;
+using pluginDocuSign.Interfaces;
 
 namespace pluginDocuSign.Actions
 {
@@ -43,9 +43,9 @@ namespace pluginDocuSign.Actions
 			// Do we have any crate? If no, it means that it's Initial configuration
 			if (!curCrates.CrateDTO.Any())
 				return ConfigurationRequestType.Initial;
-
+			var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 			// Try to find Configuration_Controls
-			var stdCfgControlMS = _action.GetConfigurationControls(curActionDTO);
+			var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
 			if (stdCfgControlMS == null)
 				return ConfigurationRequestType.Initial;
 			// Try to get DropdownListField
@@ -79,8 +79,9 @@ namespace pluginDocuSign.Actions
 
 			if (curCrates == null || curCrates.Count == 0)
 				return curActionDTO;
+			var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
 			// Try to find Configuration_Controls
-			var stdCfgControlMS = _action.GetConfigurationControls(curActionDTO);
+			var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
 			if (stdCfgControlMS == null)
 				return curActionDTO;
 			var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");

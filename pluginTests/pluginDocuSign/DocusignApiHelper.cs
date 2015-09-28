@@ -1,12 +1,13 @@
 ﻿using System;
 using Core.Services;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
-using UtilitiesTesting.DocusignTools.Interfaces;
 using Account = DocuSign.Integrations.Client.Account;
+using pluginTests.pluginDocuSign.Interfaces;
+using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Services;
 
-namespace UtilitiesTesting.DocusignTools
+namespace pluginTests.pluginDocuSign
 {
     /// <summary>
     /// Docusign .net api wrapper class.

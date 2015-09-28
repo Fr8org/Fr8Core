@@ -7,13 +7,14 @@ using System.Web;
 using StructureMap;
 using Newtonsoft.Json;
 using Core.Interfaces;
-using Data.Wrappers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase;
 using PluginBase.BaseClasses;
 using DocuSign.Integrations.Client;
+using pluginDocuSign.Interfaces;
+using pluginDocuSign.Infrastructure;
 
 namespace pluginDocuSign.Actions
 {

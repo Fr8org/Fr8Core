@@ -9,14 +9,14 @@ using NUnit.Framework;
 using Utilities;
 
 using UtilitiesTesting;
-using UtilitiesTesting.DocusignTools;
-using UtilitiesTesting.DocusignTools.Interfaces;
 using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using Data.Migrations;
-using Data.Wrappers;
 using Newtonsoft.Json;
 using StructureMap;
+using pluginDocuSign.Services;
+using pluginDocuSign.Interfaces;
+using pluginDocuSign;
 
 namespace DockyardTest.DocuSign
 {
@@ -24,7 +24,6 @@ namespace DockyardTest.DocuSign
 	public class DocuSignRecipientTests : BaseTest
 	{
 		private readonly string TEMPLATE_WITH_ROLES_ID = "9a318240-3bee-475c-9721-370d1c22cec4";
-		private IDocuSignRecipient _docusignRecipient;
 
 		public DocuSignRecipientTests()
 		{
@@ -34,13 +33,14 @@ namespace DockyardTest.DocuSign
 		public override void SetUp()
 		{
 			base.SetUp();
-			_docusignRecipient = ObjectFactory.GetInstance<IDocuSignRecipient>();
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(PluginDocuSignMapBootstrapper.DependencyType.LIVE);
 		}
 
 		[Test]
 		public void GetRecipients_ExistsTemplate_ShouldBeOk()
 		{
-			var recipientsDTO = _docusignRecipient.GetByTemplate(TEMPLATE_WITH_ROLES_ID);
+			DocuSignRecipient docusignRecipient = new DocuSignRecipient();
+			var recipientsDTO = docusignRecipient.GetByTemplate(TEMPLATE_WITH_ROLES_ID);
 			var recipients = recipientsDTO.Recipients;
 
 			Assert.AreEqual(4, recipients.Count);
@@ -59,7 +59,9 @@ namespace DockyardTest.DocuSign
 		[Test]
 		public void GetRecipients_NonExistsTemplate_ExpectedException()
 		{
-			var ex = Assert.Throws<InvalidOperationException>(() => _docusignRecipient.GetByTemplate(Guid.NewGuid().ToString()));
+			DocuSignRecipient docusignRecipient = new DocuSignRecipient();
+
+			var ex = Assert.Throws<InvalidOperationException>(() => docusignRecipient.GetByTemplate(Guid.NewGuid().ToString()));
 		}
 	}
 }

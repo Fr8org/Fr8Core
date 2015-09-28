@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -74,10 +73,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
 
-            Mapper.CreateMap<Signer, Wrappers.Signer>();
-
             //Mapper.CreateMap<Account, DocuSignAccount>();
-            Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
 
             Mapper.CreateMap<CrateStorageDTO, string>()
@@ -91,13 +87,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
 
             Mapper.CreateMap<FileDO, FileDTO>();
-
-				Mapper.CreateMap<Recipients, RecipientsDTO>().ConvertUsing<RecipientsToRecipientsDTOConverter>();
-				Mapper.CreateMap<Signer, RecipientDTO>()
-					.ForMember(x => x.Email, opts => opts.ResolveUsing(y => y.email))
-					.ForMember(x => x.Name, opts => opts.ResolveUsing(y => y.name))
-					.ForMember(x => x.RecipientId, opts => opts.ResolveUsing(y => y.recipientId))
-					.ForMember(x => x.Role, opts => opts.ResolveUsing(y => y.roleName));
 
         }
     }   

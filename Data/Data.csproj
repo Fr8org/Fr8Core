@@ -207,7 +207,6 @@
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
-    <Compile Include="Infrastructure\AutoMapper\RecipientsToRecipientsDTOConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
@@ -234,7 +233,6 @@
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
@@ -248,16 +246,10 @@
     <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
-    <Compile Include="Interfaces\IDocuSignRecipient.cs" />
-    <Compile Include="Interfaces\IDocuSignTemplate.cs" />
-    <Compile Include="Interfaces\IEnvelope.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
@@ -273,7 +265,6 @@
     <Compile Include="Interfaces\MultiTenantObjects\DocuSignEnvelopeStatusReportMTO.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\DocuSignRecipientStatusReportMTO.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\MultiTenantObject.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\RecipientsDTO.cs" />
     <Compile Include="Migrations\201509150029523_Initial.cs" />
     <Compile Include="Migrations\201509150029523_Initial.Designer.cs">
       <DependentUpon>201509150029523_Initial.cs</DependentUpon>
@@ -512,14 +503,6 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
-    <Compile Include="Wrappers\DocuSignAccount.cs" />
-    <Compile Include="Wrappers\DocuSignEnvelope.cs" />
-    <Compile Include="Wrappers\DocuSignPackager.cs" />
-    <Compile Include="Wrappers\DocuSignRecipient.cs" />
-    <Compile Include="Wrappers\DocuSignTemplate.cs" />
-    <Compile Include="Wrappers\DocuSignUtils.cs" />
-    <Compile Include="Wrappers\Signer.cs" />
-    <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -537,6 +520,7 @@
     <Folder Include="Authentication\" />
     <Folder Include="Entities\Enumerations\" />
     <Folder Include="Infrastructure\JsonNet\" />
+    <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">

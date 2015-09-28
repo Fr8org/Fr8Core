@@ -8,7 +8,6 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Data.Wrappers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using System.Data.Entity;
@@ -358,11 +357,11 @@ namespace Core.Services
             }
         }
 
-        public DocuSignAccount LoginToDocuSign()
-        {
-            var packager = new DocuSignPackager();
-            return packager.Login();
-        }
+		  //public DocuSignAccount LoginToDocuSign()
+		  //{
+		  //	 var packager = new DocuSignPackager();
+		  //	 return packager.Login();
+		  //}
 
         public IEnumerable<ProcessTemplateDO> GetActiveProcessTemplates(string userId)
         {

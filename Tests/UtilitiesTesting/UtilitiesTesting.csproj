@@ -96,8 +96,6 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="CsvReaderTests.cs" />
-    <Compile Include="DocusignTools\DocusignApiHelper.cs" />
-    <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Activity.cs" />
@@ -117,7 +115,6 @@
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Fixtures\FixtureData - DocusignAccount.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Envelope.cs" />
@@ -137,8 +134,6 @@
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
     <Compile Include="Fixtures\FixtureData - TestFiles.cs" />
-    <Compile Include="Fixtures\FixtureData - Recipient.cs" />
-    <Compile Include="Fixtures\FixtureData - Signer.cs" />
     <Compile Include="Fixtures\FixtureData - Tab.cs" />
     <Compile Include="Fixtures\FixtureData - Crate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -197,7 +192,9 @@
       <Name>Web</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DocusignTools\Interfaces\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

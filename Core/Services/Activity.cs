@@ -12,7 +12,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
 using System.Data.Entity;
