@@ -62,6 +62,10 @@ namespace PluginBase.BaseClasses
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
+            if (curActionDTO == null)
+                throw new ArgumentNullException("curActionDTO");
+            if (curActionDTO.ActivityTemplate == null)
+                throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
             if (dataObject == null) dataObject = curActionDTO;
 
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);

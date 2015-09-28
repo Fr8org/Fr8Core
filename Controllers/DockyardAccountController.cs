@@ -24,7 +24,7 @@ namespace Web.Controllers
     /// </summary>
     public class KwasantEmailService : IIdentityMessageService
     {
-        public async Task SendAsync(IdentityMessage message)
+        public Task SendAsync(IdentityMessage message)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -41,6 +41,7 @@ namespace Web.Controllers
 
                 //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
+                return Task.FromResult(0);
             }
         }
     }

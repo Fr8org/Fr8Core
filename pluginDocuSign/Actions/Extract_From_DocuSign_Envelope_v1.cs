@@ -19,8 +19,6 @@ namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
     {
-        ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-        IAction _action = ObjectFactory.GetInstance<IAction>();
         IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
 
         public ActionDTO Configure(ActionDTO curActionDTO)

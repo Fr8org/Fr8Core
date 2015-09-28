@@ -28,7 +28,7 @@ namespace PluginBase.BaseClasses
 
         protected IAction _action;
         protected ICrate _crate;
-        protected IActivity _activity;
+        //protected IActivity _activity;
 
         public BasePluginAction()
         {

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
 using Core.Interfaces;
+using Core.Managers.APIManagers.Transmitters.Plugin;
 using NUnit.Framework;
 using Newtonsoft.Json;
 using StructureMap;
@@ -39,6 +41,9 @@ namespace pluginIntegrationTests
         public override void SetUp()
         {
             base.SetUp();
+            // these are integration tests, we are using a real transmitter
+            ObjectFactory.Configure(c => c.For<IPluginTransmitter>().Use<PluginTransmitter>());
+
             _testUserAccount = FixtureData.TestUser1();
 
             _actionList = FixtureData.TestActionList_ImmediateActions();
@@ -125,7 +130,7 @@ namespace pluginIntegrationTests
             }
         }
 
-        private ActionDTO CreateEmptyAction()
+        private ActionDTO CreateEmptyAction(ActivityTemplateDO activityTemplate)
         {
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
@@ -134,6 +139,12 @@ namespace pluginIntegrationTests
             {
                 _actionList.Activities = new List<ActivityDO>();
                 _actionList.Activities.Add(curActionDO);
+            }
+
+            if (activityTemplate != null)
+            {
+                curActionDO.ActivityTemplate = activityTemplate;
+                curActionDO.ActivityTemplateId = activityTemplate.Id;
             }
 
             curActionDO.ParentActivity = _actionList;
@@ -168,16 +179,16 @@ namespace pluginIntegrationTests
             return result.Content;
         }
 
-        private CrateStorageDTO WaitForDocuSignEvent_ConfigureInitial(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> WaitForDocuSignEvent_ConfigureInitial(ActionDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
+            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_waitForDocuSignEventActivityTemplate);
             curActionDTO.ActivityTemplateId = _waitForDocuSignEventActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
 
             // Send initial configure request.
             var curActionController = CreateActionController();
-            var  actionDTO = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<ActionDTO>;
+            var  actionDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
 
             
 
@@ -218,12 +229,11 @@ namespace pluginIntegrationTests
             configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
         }
 
-        private CrateStorageDTO WaitForDocuSignEvent_ConfigureFollowUp(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> WaitForDocuSignEvent_ConfigureFollowUp(ActionDTO curActionDTO)
         {
             var curActionController = CreateActionController();
 
-            var actionDTO = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<ActionDTO>;
+            var actionDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
 
             // Assert FollowUp Configure result.
             Assert.NotNull(actionDTO);
@@ -243,7 +253,7 @@ namespace pluginIntegrationTests
             return actionDTO.Content.CrateStorage;
         }
 
-        private CrateStorageDTO FilterUsingRunTimeData_ConfigureInitial(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> FilterUsingRunTimeData_ConfigureInitial(ActionDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplateId = _filterUsingRunTimeDataActivityTemplate.Id;
@@ -251,8 +261,7 @@ namespace pluginIntegrationTests
 
             // Send initial configure request.
             var curActionController = CreateActionController();
-            var result = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<ActionDTO>;
+            var result = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
 
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
@@ -266,13 +275,13 @@ namespace pluginIntegrationTests
             return result.Content.CrateStorage;
         }
 
-        private CrateStorageDTO WriteToSqlServer_ConfigureInitial(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> WriteToSqlServer_ConfigureInitial(ActionDTO curActionDTO)
         {
+            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_writeToSqlServerActivityTemplate);
             curActionDTO.ActivityTemplateId = _writeToSqlServerActivityTemplate.Id;
             curActionDTO.CrateStorage = new CrateStorageDTO();
             var curActionController = CreateActionController();
-            var result = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<ActionDTO>;
+            var result = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
 
             Assert.NotNull(result);
             Assert.NotNull(result.Content);
@@ -301,12 +310,11 @@ namespace pluginIntegrationTests
             configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
         }
 
-        private CrateStorageDTO WriteToSqlServer_ConfigureFollowUp(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> WriteToSqlServer_ConfigureFollowUp(ActionDTO curActionDTO)
         {
             var curActionController = CreateActionController();
 
-            var actionDTO = curActionController.Configure(curActionDTO)
-                as OkNegotiatedContentResult<ActionDTO>;
+            var actionDTO = await curActionController.Configure(curActionDTO) as OkNegotiatedContentResult<ActionDTO>;
 
             // Assert FollowUp Configure result.
             Assert.NotNull(actionDTO);
@@ -325,92 +333,92 @@ namespace pluginIntegrationTests
         /// Test WaitForDocuSignEvent initial configuration.
         /// </summary>
         [Test]
-        public void PluginIntegration_WaitForDocuSign_ConfigureInitial()
+        public async Task PluginIntegration_WaitForDocuSign_ConfigureInitial()
         {
-            var savedActionDTO = CreateEmptyAction();
-            WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
+            var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+            await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
 
         /// <summary>
         /// Test WaitForDocuSignEvent follow-up configuration.
         /// </summary>
         [Test]
-        public void PluginIntegration_WaitForDocuSign_ConfigureFollowUp()
+        public async Task PluginIntegration_WaitForDocuSign_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyAction();
+            var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
             
             // Call Configure Initial for WaitForDocuSignEvent action.
-            var initCrateStorageDTO = WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
+            var initCrateStorageDTO = await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
             
             // Select first available DocuSign template.
             WaitForDocuSignEvent_SelectFirstTemplate(initCrateStorageDTO);
             savedActionDTO.CrateStorage = initCrateStorageDTO;
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
-            WaitForDocuSignEvent_ConfigureFollowUp(savedActionDTO);
+            await WaitForDocuSignEvent_ConfigureFollowUp(savedActionDTO);
         }
 
         /// <summary>
         /// Test FilterUsingRunTimeData initial configuration.
         /// </summary>
         [Test]
-        public void PluginIntegration_FilterUsingRunTimeData_ConfigureInitial()
+        public async Task PluginIntegration_FilterUsingRunTimeData_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var waitForDocuSignEventAction = CreateEmptyAction();
+            var waitForDocuSignEventAction = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
-            var initWaitForDocuSignEventCS = WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
+            var initWaitForDocuSignEventCS = await WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
 
             // Select first available DocuSign template.
             WaitForDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
             waitForDocuSignEventAction.CrateStorage = initWaitForDocuSignEventCS;
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
-            WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
+            await WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
 
             // Save WaitForDocuSignEvent action.
             SaveAction(waitForDocuSignEventAction);
 
             // Create blank FilterUsingRunTimeData action.
-            var filterAction = CreateEmptyAction();
+            var filterAction = CreateEmptyAction(_filterUsingRunTimeDataActivityTemplate);
 
             // Call Configure Initial for FilterUsingRunTimeData action.
-            FilterUsingRunTimeData_ConfigureInitial(filterAction);
+            await FilterUsingRunTimeData_ConfigureInitial(filterAction);
         }
 
         /// <summary>
         /// Test WriteToSqlServer initial configuration.
         /// </summary>
         [Test]
-        public void PluginIntegration_WriteToSqlServer_ConfigureInitial()
+        public async Task PluginIntegration_WriteToSqlServer_ConfigureInitial()
         {
             // Create blank WaitForDocuSignEvent action.
-            var emptyAction = CreateEmptyAction();
+            var emptyAction = CreateEmptyAction(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WriteToSqlServer action.
-            WriteToSqlServer_ConfigureInitial(emptyAction);
+            await WriteToSqlServer_ConfigureInitial(emptyAction);
         }
 
         /// <summary>
         /// Test WriteToSqlServer follow-up configuration.
         /// </summary>
         [Test]
-        public void PluginIntegration_WriteToSqlServer_ConfigureFollowUp()
+        public async Task PluginIntegration_WriteToSqlServer_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
-            var savedActionDTO = CreateEmptyAction();
+            var savedActionDTO = CreateEmptyAction(_writeToSqlServerActivityTemplate);
 
             // Call Configure Initial for WaitForDocuSignEvent action.
-            var initCrateStorageDTO = WriteToSqlServer_ConfigureInitial(savedActionDTO);
+            var initCrateStorageDTO = await WriteToSqlServer_ConfigureInitial(savedActionDTO);
 
             // Select first available DocuSign template.
             WriteToSqlServer_InputConnectionString(initCrateStorageDTO);
             savedActionDTO.CrateStorage = initCrateStorageDTO;
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
-            WriteToSqlServer_ConfigureFollowUp(savedActionDTO);
+            await WriteToSqlServer_ConfigureFollowUp(savedActionDTO);
         }
 
         /// <summary>

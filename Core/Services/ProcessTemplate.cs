@@ -200,12 +200,15 @@ namespace Core.Services
                 {
                     foreach (ActionDO curActionDO in curActionList.Activities)
                     {
-                        if (_action.Activate(curActionDO).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
-                            throw new Exception("Process template activation Fail.");
-                        else
+                        try
                         {
+                            _action.Activate(curActionDO).Wait();
                             curActionDO.ActionState = ActionState.Active;
                             result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
                         }
                     }
                 }
@@ -222,12 +225,15 @@ namespace Core.Services
                 {
                     foreach (ActionDO curActionDO in curActionList.Activities)
                     {
-                        if (_action.Deactivate(curActionDO).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
-                            throw new Exception("Process template Deactivation Fail.");
-                        else
+                        try
                         {
+                            _action.Deactivate(curActionDO).Wait();
                             curActionDO.ActionState = ActionState.Deactive;
                             result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template Deactivation failed.", ex);
                         }
                     }
                 }
