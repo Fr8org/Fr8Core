@@ -97,7 +97,7 @@ namespace Core.Services
                 found = false;
                 foreach (T entityToCompare in sourceCollection)
                 {
-                    if (((IEquatable<T>) entity).Equals(entityToCompare))
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
                     {
                         found = true;
                         break;
@@ -115,7 +115,7 @@ namespace Core.Services
                 found = false;
                 foreach (T entityToCompare in collectionToUpdate)
                 {
-                    if (((IEquatable<T>) entity).Equals(entityToCompare))
+                    if (((IEquatable<T>)entity).Equals(entityToCompare))
                     {
                         found = true;
                         break;

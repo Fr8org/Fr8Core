@@ -269,16 +269,22 @@ namespace Core.Services
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
 
             //TODO : Cut base Url from PluginDO.Endpoint
-
-            curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
-
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
+            curPluginClient.BaseUri = CreateUri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+            var jsonResult = await curPluginClient.PostActionAsync("execute", curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);
 
             return jsonResult;
         }
 
-
+        private Uri CreateUri(string endpoint)
+        {
+            //TODO: Add support for https
+            if (!endpoint.StartsWith("http"))
+            {
+                endpoint = "http://" + endpoint;
+            }
+            return new Uri(endpoint);
+        }
 
         /// <summary>
         /// Retrieve authorization token
