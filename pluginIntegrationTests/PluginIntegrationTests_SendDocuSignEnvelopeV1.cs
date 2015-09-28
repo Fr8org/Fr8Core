@@ -77,25 +77,25 @@ namespace pluginIntegrationTests
 		private void SendDocuSignEnvelope_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
 		{
 			// Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
-			var availableTemplatesCrate = curCrateStorage.CrateDTO
+			var availableTemplatesCrateDTO = curCrateStorage.CrateDTO
 				 .Single(x => x.Label == "Available Templates" && x.ManifestType == MT.StandardDesignTimeFields.GetEnumDisplayName());
 
 			var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(
-				 availableTemplatesCrate.Contents);
+				 availableTemplatesCrateDTO.Contents);
 
 			// Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
-			var configurationControlsCrate = curCrateStorage.CrateDTO
+			var configurationControlsCrateDTO = curCrateStorage.CrateDTO
 				 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == MT.StandardConfigurationControls.GetEnumDisplayName());
 
 			var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
-				 configurationControlsCrate.Contents);
+				 configurationControlsCrateDTO.Contents);
 
 			// Modify value of Selected_DocuSign_Template field and push it back to crate,
 			// exact same way we do on front-end.
-			var docuSignTemplateControl = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
-			docuSignTemplateControl.Value = fieldsMS.Fields.First().Value;
+			var docuSignTemplateControlDTO = controlsMS.Controls.Single(x => x.Name == "target_docusign_template");
+			docuSignTemplateControlDTO.Value = fieldsMS.Fields.First().Value;
 
-			configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
+			configurationControlsCrateDTO.Contents = JsonConvert.SerializeObject(controlsMS);
 		}
 		private CrateStorageDTO SendDocuSignEnvelope_ConfigureFollowUp(ActionDTO curActionDTO)
 		{
