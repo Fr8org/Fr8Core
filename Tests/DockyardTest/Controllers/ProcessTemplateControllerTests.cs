@@ -260,7 +260,7 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test]
+        [Test, Ignore("Ignored as part of External Event Type removal. This is handled in V2 Event Handling mechanism.")]
         public void ProcessController_CanGetExternalEventList()
         {
             ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);

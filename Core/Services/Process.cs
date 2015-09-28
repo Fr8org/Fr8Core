@@ -11,6 +11,7 @@ using Core.Helper;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
+using Data.States.Templates;
 using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Utilities;
@@ -22,11 +23,14 @@ namespace Core.Services
         private readonly IProcessNode _processNode;
         private readonly DocuSignEnvelope _envelope;
         private readonly IActivity _activity;
+        private readonly IProcessTemplate _processTemplate;
+
         public Process()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _envelope = new DocuSignEnvelope();
             _activity = ObjectFactory.GetInstance<IActivity>();
+            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Unstarted;
                 curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO>() { curEvent });
 
-                //set CurrentActivity
+                curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(curProcessTemplate);
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
@@ -64,14 +68,7 @@ namespace Core.Services
             return curProcessDO;
         }
 
-        public ActivityDO GetInitialActivity(ProcessDO curProcess)
-        {
-            ActivityDO initialActivity = null;
 
-
-
-            return initialActivity;
-        }
 
 
 
@@ -102,7 +99,7 @@ namespace Core.Services
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    _activity.Process(curProcessDO.CurrentActivity, curProcessDO);
+                    _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }
