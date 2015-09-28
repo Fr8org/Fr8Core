@@ -46,7 +46,8 @@ module dockyard.controllers {
             'ProcessBuilderService',
             'CrateHelper',
             'ActivityTemplateService',
-            '$filter'
+            '$filter',
+            '$modal'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -66,7 +67,8 @@ module dockyard.controllers {
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService,
-            private $filter: ng.IFilterService
+            private $filter: ng.IFilterService,
+            private $modal
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -163,7 +165,7 @@ module dockyard.controllers {
                     action.configurationControls = this.CrateHelper
                         .createControlListFromCrateStorage(action.crateStorage);
                 }
-        }
+            }
 
         /*
             Handles message 'PaneWorkflowDesigner_ActionAdding'
@@ -190,6 +192,19 @@ module dockyard.controllers {
                     pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
                     new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
                     );
+
+                this.$modal.open({
+                    animation: true,
+                    templateUrl: 'AngularTemplate/PaneSelectAction',
+                    controller: 'PaneSelectActionController'
+                }).result.then(function (data: model.ActivityTemplate) {
+                    self._scope.current.action.activityTemplateId = data.id;
+                    self._scope.current.action.activityTemplate = data;
+                    var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
+                    var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(self._scope.current.action.id, data.id);
+                    self._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
+                    self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);                    
+                });
             });
         }
 
@@ -282,7 +297,6 @@ module dockyard.controllers {
                     this._scope.current.action.id,
                     (this._scope.current.action.id > 0) ? false : true,
                     this._scope.current.action.actionListId);
-                this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Render], eArgs);
                 this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
             }
             else {
@@ -294,7 +308,6 @@ module dockyard.controllers {
                     (this._scope.current.action.id > 0) ? false : true,
                     this._scope.current.action.actionListId));
                 this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
-                this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
             }
         }
 
@@ -312,9 +325,6 @@ module dockyard.controllers {
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
 
-                //Hide Select Action Pane
-                scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
-                
                 //Hide Configure Action Pane
                 scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
             });
@@ -364,9 +374,6 @@ module dockyard.controllers {
         }
 
         private HideActionPanes() {
-            //Hide Select Action Pane
-            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
-
             //Hide Configure Action Pane
             this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
         }

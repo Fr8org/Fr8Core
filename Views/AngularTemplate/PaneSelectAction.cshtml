@@ -1,4 +1,4 @@
-﻿<div class="portlet light " ng-show="isVisible">
+﻿<div class="portlet light ">
     <div class="portlet-title">
         <div class="caption caption-md">
             <i class="icon-bar-chart font-green-haze hide"></i>
@@ -7,23 +7,10 @@
     </div>
     <div class="portlet-body">
         <div class="form-group">
-            <select ng-model="currentAction.activityTemplateId" class="form-control" ng-change="actionTypeSelected()"
+            <select ng-model="activityTemplateId" class="form-control" ng-change="ActionTypeSelected()"
                     ng-options="actionType.id as actionType.name for actionType in actionTypes">
                 <option value="">Select Action Type</option>
             </select>
         </div>
-        <div class="form-group">
-            <label class="control-label">Name</label>
-            <input type="text" class="form-control form-control-focus" ng-model-options="{ updateOn: 'blur'}"
-                   required size="20" maxlength="20" ng-model="currentAction.name" />
-        </div>
-        <div class="form-group" ng-if="componentActivities">
-            <span class="bold">Steps</span>
-            <span ng-class="activity.id==childActivity.activityTemplateId ? 'processActionStepSelected' : 'processActionStep'" ng-repeat="activity in componentActivities" ng-click="childActivityTypeSelected(activity.id)">
-                {{$index+1}}
-
-                <img ng-if="!$last" class="processActionStepsRightArrow" src="~/Content/img/ProcessBuilder/right-arrow.png" />
-            </span>
-        </div>       
     </div>
 </div>
