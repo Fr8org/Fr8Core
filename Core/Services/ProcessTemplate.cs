@@ -41,9 +41,7 @@ namespace Core.Services
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
-                    .Include("SubscribedDocuSignTemplates")
-                    .Include("SubscribedExternalEvents");
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
 
                 if (isAdmin)
                 {
