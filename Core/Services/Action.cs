@@ -226,8 +226,18 @@ namespace Core.Services
                 if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
                 {
                     curAction.ActionState = ActionState.InProcess;
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
+                    curAction.ActionStateTemplate = null; // To avoid conflict between ActionState (int) and ActionStateTemplate instance (entity)
+                    try
+                    {
+                        uow.ActionRepository.Attach(curAction);
+                        uow.Db.Entry<ActionDO>(curAction).State = EntityState.Modified;
+                        uow.SaveChanges();
+                    }
+                    catch(Exception e)
+                    {
+                        var foo = 3;
+                    }
+                 
 
                     EventManager.ActionStarted(curAction);
 
