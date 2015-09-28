@@ -180,9 +180,9 @@ namespace DockyardTest.Services
                 uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
                 uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
-            }
 
-            action.PrepareToExecute(actionDo, procesDO).Wait();
+                action.PrepareToExecute(actionDo, procesDO, uow).Wait();
+            }
 
             //Ensure that no Incidents were registered
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -206,7 +206,12 @@ namespace DockyardTest.Services
             ActionDO actionDo = FixtureData.TestAction9();
             Action _action = ObjectFactory.GetInstance<Action>();
             ProcessDO procesDo = FixtureData.TestProcess1();
-            Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo).Exception.InnerException.Message);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+
+                Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo, uow).Exception.InnerException.Message);
+            }
         }
 
         [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
@@ -219,7 +224,10 @@ namespace DockyardTest.Services
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             //_action = ObjectFactory.GetInstance<IAction>();
 
-            _action.PrepareToExecute(actionDO, procesDo);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _action.PrepareToExecute(actionDO, procesDo, uow);
+            }
 
             Assert.AreEqual(ActionState.Error, actionDO.ActionState);
         }
@@ -234,8 +242,11 @@ namespace DockyardTest.Services
             pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).ReturnsAsync(@"{ ""success"" : { ""ID"": ""0000"" }}");
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             //_action = ObjectFactory.GetInstance<IAction>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
 
-            _action.PrepareToExecute(actionDO, procesDO);
+                _action.PrepareToExecute(actionDO, procesDO, uow);
+            }
 
             Assert.AreEqual(ActionState.Active, actionDO.ActionState);
         }
@@ -256,10 +267,13 @@ namespace DockyardTest.Services
             ProcessDO procesDO = FixtureData.TestProcess1();
 
             //Act
-            var response = _action.PrepareToExecute(actionDo, procesDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var response = _action.PrepareToExecute(actionDo, procesDO, uow);
 
             //Assert
             Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
+            }
         }
 
         [Test]

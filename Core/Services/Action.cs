@@ -218,55 +218,41 @@ namespace Core.Services
             return curAction;
         }
 
-        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO)
+        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
             {
-                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
-                {
-                    curAction.ActionState = ActionState.InProcess;
-                    curAction.ActionStateTemplate = null; // To avoid conflict between ActionState (int) and ActionStateTemplate instance (entity)
-                    try
-                    {
-                        uow.ActionRepository.Attach(curAction);
-                        uow.Db.Entry<ActionDO>(curAction).State = EntityState.Modified;
-                        uow.SaveChanges();
-                    }
-                    catch(Exception e)
-                    {
-                        var foo = 3;
-                    }
-                 
+                curAction.ActionState = ActionState.InProcess;
+                uow.SaveChanges();
+                
+                EventManager.ActionStarted(curAction);
 
-                    EventManager.ActionStarted(curAction);
+                var jsonResult = await Execute(curAction, curProcessDO);
 
-                    var jsonResult = await Execute(curAction, curProcessDO);
-
-                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+                //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
 
 
-                    //check if the returned JSON is Error
-                    //  if (jsonResult.ToLower().Contains("error"))
-                    // {
-                    //     curAction.ActionState = ActionState.Error;
-                    //  }
-                    //   else
-                    //   {
-                    curAction.ActionState = ActionState.Active;
-                    //   }
+                //check if the returned JSON is Error
+                //  if (jsonResult.ToLower().Contains("error"))
+                // {
+                //     curAction.ActionState = ActionState.Error;
+                //  }
+                //   else
+                //   {
+                curAction.ActionState = ActionState.Active;
+                //   }
 
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
-                }
-                else
-                {
-                    curAction.ActionState = ActionState.Error;
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
-                    throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-                }
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+            }
+            else
+            {
+                curAction.ActionState = ActionState.Error;
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
             }
             return curAction.ActionState.Value;
         }
