@@ -11,6 +11,7 @@ namespace Data.Interfaces.ManifestSchemas
         }
 
         public List<PayloadObjectDTO> Payload { get; set; }
+        public string ObjectType { get; set; }
     }
 
 

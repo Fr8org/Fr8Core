@@ -50,6 +50,14 @@ namespace Core.Services
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
 
+        public CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(new StandardTableDataMS() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
+                manifestType: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
+                manifestId: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID);
+        }
+
         public T GetContents<T>(CrateDTO crate)
         {
             return _serializer.Deserialize<T>(crate.Contents);

@@ -1,11 +1,11 @@
-﻿
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Data.Interfaces.ManifestSchemas;
 
 namespace Core.Interfaces
 {
@@ -16,6 +16,7 @@ namespace Core.Interfaces
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls);
+        CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
 
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
         void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);

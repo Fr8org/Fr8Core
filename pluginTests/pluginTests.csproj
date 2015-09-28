@@ -122,6 +122,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PluginExcelTests\Controllers\ActionControllerTest.cs" />
+    <Compile Include="PluginExcelTests\ExtractDataTests.cs" />
     <Compile Include="PluginAzureSqlServerTests\Controllers\ActionControllerTest.cs" />
     <Compile Include="PluginAzureSqlServerTests\SqlTests.cs" />
     <Compile Include="PluginBaseTests\Controllers\BasePluginControllerTests.cs" />
@@ -144,6 +146,10 @@
     <ProjectReference Include="..\pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>PluginBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pluginExcel\pluginExcel.csproj">
+      <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
+      <Name>pluginExcel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>

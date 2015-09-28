@@ -8,6 +8,7 @@ namespace UtilitiesTesting.Fixtures
         public static string TestPlugin_DocuSign_EndPoint = "localhost:60001";
         public static string TestPlugin_Core_EndPoint = "localhost:60002";
         public static string TestPlugin_AzureSqlServer_EndPoint = "localhost:60003";
+        public static string TestPlugin_ExtractData_EndPoint = "localhost:60004";
 
         public static ActionListDO TestActionList_ImmediateActions()
         {
@@ -51,6 +52,17 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static PluginDO TestPlugin_ExtractData()
+        {
+            return new PluginDO
+            {
+                Name = "pluginExcel",
+                Endpoint = TestPlugin_ExtractData_EndPoint,
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDO TestActivityTemplateDO_WaitForDocuSignEvent()
         {
             return new ActivityTemplateDO()
@@ -78,6 +90,16 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Write_To_Sql_Server",
                 Version = "1",
                 Plugin = TestPlugin_AzureSqlServer()
+            };
+        }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_ExtractData()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "ExtractData",
+                Version = "1",
+                Plugin = TestPlugin_ExtractData()
             };
         }
 
