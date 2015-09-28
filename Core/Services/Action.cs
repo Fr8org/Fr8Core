@@ -17,6 +17,7 @@ using System.Data.Entity;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
+using Data.Interfaces.ManifestSchemas;
 
 namespace Core.Services
 {
@@ -364,6 +365,25 @@ namespace Core.Services
             crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.ManifestType == curManifestType);
 
             return crateDTO;
+        }
+
+        //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
+        public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
+        {
+
+            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
+            var curControlsCrate =
+                GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+                    .FirstOrDefault();
+
+            if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
+            {
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+            }
+
+
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+
         }
 
 
