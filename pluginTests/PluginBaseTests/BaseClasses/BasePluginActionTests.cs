@@ -44,7 +44,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)InvokeClassMethod(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = (ActionDTO)HelperLibrary.InvokeClassMethod(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -62,7 +62,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)InvokeClassMethod(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = (ActionDTO)HelperLibrary.InvokeClassMethod(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -78,7 +78,7 @@ namespace pluginTests.PluginBaseTests.Controllers
 
             ;
             //Act
-            var result = (CrateDTO)InvokeClassMethod(typeof(BasePluginAction), "PackControlsCrate", parameters);
+            var result = (CrateDTO)HelperLibrary.InvokeClassMethod(typeof(BasePluginAction), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
@@ -95,6 +95,42 @@ namespace pluginTests.PluginBaseTests.Controllers
         }
 
 
+
+        //TestActionTree
+        [Test]
+        public void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityRepository.Add(FixtureData.TestActionTree());
+                uow.SaveChanges();
+
+                ActionDO curAction = FixtureData.TestAction57();
+
+                var result = _basePluginAction.GetDesignTimeFields(curAction, BasePluginAction.GetCrateDirection.Upstream);
+                Assert.NotNull(result);
+                Assert.AreEqual(16, result.Fields.Count);
+
+            }
+        }
+
+        [Test]
+        public void GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityRepository.Add(FixtureData.TestActionTree());
+                uow.SaveChanges();
+
+                ActionDO curAction = FixtureData.TestAction57();
+
+                var result = _basePluginAction.GetDesignTimeFields(curAction, BasePluginAction.GetCrateDirection.Downstream);
+                Assert.NotNull(result);
+                Assert.AreEqual(18, result.Fields.Count);
+            }
+        }
+
+
         private ConfigurationRequestType EvaluateReceivedRequest(ActionDTO curActionDTO)
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
@@ -103,36 +139,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             return ConfigurationRequestType.Followup;
         }
 
-        private object InvokeClassMethod(Type calledType, string methodName, Object[] parameters)
-        { 
-            MethodInfo curMethodInfo = calledType.GetMethod(methodName,
-        BindingFlags.Default |
-        BindingFlags.DeclaredOnly |
-        BindingFlags.Instance |
-        BindingFlags.Static |
-        BindingFlags.Public |
-        BindingFlags.NonPublic |
-        BindingFlags.FlattenHierarchy |
-        BindingFlags.InvokeMethod |
-        BindingFlags.CreateInstance |
-        BindingFlags.GetField |
-      BindingFlags.SetField |
-      BindingFlags.GetProperty |
-       BindingFlags.SetProperty |
-       BindingFlags.PutDispProperty |
-      BindingFlags.PutRefDispProperty |
-         BindingFlags.ExactBinding |
-         BindingFlags.SuppressChangeType |
-         BindingFlags.OptionalParamBinding |
-           BindingFlags.IgnoreReturn
-
-                );
-            ParameterInfo[] curMethodParameters = curMethodInfo.GetParameters();
-            object curObject = Activator.CreateInstance(calledType);
-            var response = (object)curMethodInfo.Invoke(curObject, curMethodParameters.Length == 0 ? null : parameters);
-            return response;
-
-        }
+       
 
     }
 }
