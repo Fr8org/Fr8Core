@@ -169,7 +169,15 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityLists = this.GetChildren(curActivityDO);
+                // commented out by yakov.gnusin in scope of DO-1153.
+                // activityLists = this.GetChildren(curActivityDO);
+
+                // workaround for now.
+                activityLists = uow.ActivityRepository.GetQuery()
+                    .Where(x => x.ParentActivityId == curActivityDO.ParentActivityId)
+                    .Where(x => x.Ordering > curActivityDO.Ordering)
+                    .OrderBy(x => x.Ordering)
+                    .ToList();
             }
 
             return activityLists;
