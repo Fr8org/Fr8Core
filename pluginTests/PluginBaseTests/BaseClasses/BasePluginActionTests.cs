@@ -44,7 +44,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)HelperLibrary.InvokeClassMethod(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = (ActionDTO)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -62,7 +62,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)HelperLibrary.InvokeClassMethod(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = (ActionDTO)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -78,7 +78,7 @@ namespace pluginTests.PluginBaseTests.Controllers
 
             ;
             //Act
-            var result = (CrateDTO)HelperLibrary.InvokeClassMethod(typeof(BasePluginAction), "PackControlsCrate", parameters);
+            var result = (CrateDTO)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);

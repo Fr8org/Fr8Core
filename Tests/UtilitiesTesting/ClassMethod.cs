@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace UtilitiesTesting
 {
-    public static class HelperLibrary
+    public static class ClassMethod
     {
-        public static object InvokeClassMethod(Type calledType, string methodName, Object[] parameters)
+        public static object Invoke(Type calledType, string methodName, Object[] parameters)
         {
             MethodInfo curMethodInfo = calledType.GetMethod(methodName,
         BindingFlags.Default |
