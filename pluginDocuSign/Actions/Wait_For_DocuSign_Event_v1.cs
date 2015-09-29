@@ -91,18 +91,18 @@ namespace pluginDocuSign.Actions
             if (String.IsNullOrEmpty(envelopeId))
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
-            ////Create a field
-            //var fields = new List<FieldDTO>()
-            //{
-            //    new FieldDTO()
-            //    {
-            //        Key = "EnvelopeId",
-            //        Value = envelopeId
-            //    }
-            //};
+            //Create a field
+            var fields = new List<FieldDTO>()
+            {
+                new FieldDTO()
+                {
+                    Key = "EnvelopeId",
+                    Value = envelopeId
+                }
+            };
 
-            //var cratePayload = _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), STANDARD_PAYLOAD_MANIFEST_NAME, STANDARD_PAYLOAD_MANIFEST_ID);
-            //curActionDataPackage.ActionDTO.CrateStorage.CratesDTO.Add(cratePayload);
+            var cratePayload = _crate.Create("DocuSign Envelope Payload Data", JsonConvert.SerializeObject(fields), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+            curActionDataPackage.ActionDTO.CrateStorage.CrateDTO.Add(cratePayload);
 
             return null;
         }

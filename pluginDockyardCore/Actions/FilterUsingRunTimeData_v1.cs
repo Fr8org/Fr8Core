@@ -35,20 +35,10 @@ namespace pluginDockyardCore.Actions
             var curActionDTO = curActionDataPackage.ActionDTO;
             var curPayloadDTO = curActionDataPackage.PayloadDTO;
 
-            // Find crate with id "Criteria Filter Conditions".
-            var curCrateStorage = curActionDTO.CrateStorage;
-            var curControlsCrate = curCrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-                    && x.Label == "Configuration_Controls");
+            ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            var controlsMS = _action.GetControlsManifest(curAction);
 
-            if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
-            {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
-            }
-
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
-            
-            var filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
+            FieldDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
             if (filterPaneControl == null)
             {
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
