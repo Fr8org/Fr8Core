@@ -8,29 +8,13 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 
 namespace Web.Controllers
 {
-    [RoutePrefix("api/processes")]
     public class ProcessController : ApiController
     {
-        [HttpGet]
-        [Route("{id:int}")]
-        public IHttpActionResult Get(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curProcessDO = uow.ProcessRepository.GetByKey(id);
-                var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, id);
-
-                return Ok(curPayloadDTO);
-            }
-        }
 
        //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
        //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.

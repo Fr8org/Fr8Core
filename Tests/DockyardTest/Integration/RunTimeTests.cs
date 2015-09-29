@@ -18,7 +18,7 @@ namespace DockyardTest.Integration
 
         [Test, Ignore("In Process service it is now expecting CurrentActivity to process.")]
         [Category("IntegrationTests")]
-        public void ITest_CanProcessHealthDemo()
+        public async void ITest_CanProcessHealthDemo()
         {
             string email;
             string id;

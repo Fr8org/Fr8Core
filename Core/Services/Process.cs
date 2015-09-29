@@ -87,7 +87,7 @@ namespace Core.Services
             }
         }
 
-        public async void Execute(ProcessDO curProcessDO)
+        public void Execute(ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
@@ -99,7 +99,7 @@ namespace Core.Services
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
+                    _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }

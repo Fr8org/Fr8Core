@@ -137,12 +137,10 @@ namespace Core.Services
 		   
 		}
 
-        public async Task Process(int curActivityId, ProcessDO processDO)
+        public void Process(int curActivityId, ProcessDO curProcessDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = uow.ProcessRepository.GetByKey(processDO.Id);
-
                 var curActivityDO = uow.ActivityRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)
@@ -156,7 +154,7 @@ namespace Core.Services
                 else if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO, uow);
+                    _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO, uow);
                 }
             }
         }

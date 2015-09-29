@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
@@ -31,68 +30,98 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
         {
             var curActionDTO = curActionDataPackage.ActionDTO;
-            var curPayloadDTO = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+            var curPayloadDTO = curActionDataPackage.PayloadDTO;
 
-            ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var controlsMS = _action.GetControlsManifest(curAction);
+            // Find crate with id "Criteria Filter Conditions".
+            var curCrateStorage = curActionDTO.CrateStorage;
+            var curControlsCrate = curCrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    && x.Label == "Configuration_Controls");
 
-            FieldDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
+            if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
+            {
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
+            }
+
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            
+            var filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
             if (filterPaneControl == null)
             {
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
             }
 
-            var valuesCrate = curPayloadDTO.CrateStorageDTO()
-                .CrateDTO
-                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
-                    && x.Label == "DocuSign Envelope Data")
-                .FirstOrDefault();
-
             // Prepare envelope data.
-            var curValues = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
+            var curDocuSignEnvelope = new DocuSignEnvelope();
+                // Should just change GetEnvelopeData to pass an EnvelopeDO.
+            var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(GetEnvelopeId(curPayloadDTO));
 
             // Evaluate criteria using Contents json body of found Crate.
-            var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
+            var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curEnvelopeData);
 
-            return curPayloadDTO;
+            return curActionDTO;
         }
 
-        private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
+        private string GetEnvelopeId(PayloadDTO curPayloadDTO)
+        {
+            var eventReportCrate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
+            if (eventReportCrate == null)
+            {
+                return null;
+            }
+
+            var eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(eventReportCrate.Contents);
+            var crate = eventReportMS.EventPayload.SingleOrDefault();
+            if (crate == null)
+            {
+                return null;
+            }
+
+            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            if (fields == null || fields.Count == 0) return null;
+
+            var envelopeIdField = fields.SingleOrDefault(f => f.Key == "EnvelopeId");
+            if (envelopeIdField == null) return null;
+
+            return envelopeIdField.Value;
+        }
+
+        private bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
         {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
                 throw new ArgumentException("criteria is empty", "criteria");
-            if (values == null)
+            if (envelopeData == null)
                 throw new ArgumentNullException("envelopeData");
 
-            return Filter(criteria, processId, values.AsQueryable()).Any();
+            return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
         }
 
-        private IQueryable<FieldDTO> Filter(string criteria,
-            int processId, IQueryable<FieldDTO> values)
+        private IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId,
+            IQueryable<EnvelopeDataDTO> envelopeData)
         {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
                 throw new ArgumentException("criteria is empty", "criteria");
-            if (values == null)
+            if (envelopeData == null)
                 throw new ArgumentNullException("envelopeData");
 
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(criteria);
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
-                return values;
+                return envelopeData;
             }
             else
             {
                 EventManager.CriteriaEvaluationStarted(processId);
 
-                var filterExpression = ParseCriteriaExpression(filterDataDTO.Conditions, values);
-                var results = values.Provider.CreateQuery<FieldDTO>(filterExpression);
+                var filterExpression = ParseCriteriaExpression(filterDataDTO.Conditions, envelopeData);
+                var results = envelopeData.Provider.CreateQuery<EnvelopeDataDTO>(filterExpression);
 
                 return results;
             }
@@ -100,16 +129,16 @@ namespace pluginDockyardCore.Actions
 
         private Expression ParseCriteriaExpression(
             IEnumerable<FilterConditionDTO> conditions,
-            IQueryable<FieldDTO> queryableData)
+            IQueryable<EnvelopeDataDTO> queryableData)
         {
-            var curType = typeof(FieldDTO);
+            var curType = typeof(EnvelopeDataDTO);
 
             Expression criteriaExpression = null;
             var pe = Expression.Parameter(curType, "p");
 
             foreach (var condition in conditions)
             {
-                var namePropInfo = curType.GetProperty("Key");
+                var namePropInfo = curType.GetProperty("Name");
                 var valuePropInfo = curType.GetProperty("Value");
 
                 var nameLeftExpr = Expression.Property(pe, namePropInfo);
@@ -167,7 +196,7 @@ namespace pluginDockyardCore.Actions
                 "Where",
                 new[] { curType },
                 queryableData.Expression,
-                Expression.Lambda<Func<FieldDTO, bool>>(criteriaExpression, new[] { pe })
+                Expression.Lambda<Func<EnvelopeDataDTO, bool>>(criteriaExpression, new[] { pe })
             );
 
             return whereCallExpression;

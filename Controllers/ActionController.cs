@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -43,28 +42,13 @@ namespace Web.Controllers
         [Route("configuration")]
         [Route("configure")]
         //[ResponseType(typeof(CrateStorageDTO))]
-        public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
+        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
         {
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (curActionDO.ActivityTemplate == null
-                    && curActionDO.ActivityTemplateId.HasValue)
-                {
-                    curActionDO.ActivityTemplate = uow.ActivityTemplateRepository
-                        .GetByKey(curActionDO.ActivityTemplateId);
-                }
+            ActionDTO actionDTO = _action.Configure(curActionDO);
 
-                if (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.PluginID != 0)
-                {
-                    curActionDO.ActivityTemplate.Plugin =
-                        uow.PluginRepository.GetByKey(curActionDO.ActivityTemplate.PluginID);
-                }
-
-                ActionDTO actionDTO = await _action.Configure(curActionDO);
-                return Ok(actionDTO);
-            }
+            return Ok(actionDTO);
         }
 
 

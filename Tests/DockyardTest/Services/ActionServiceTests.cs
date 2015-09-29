@@ -19,7 +19,6 @@ using UtilitiesTesting.Fixtures;
 using Action = Core.Services.Action;
 using System.Threading.Tasks;
 using System.Web.Helpers;
-using Core.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 
 namespace DockyardTest.Services
@@ -28,42 +27,38 @@ namespace DockyardTest.Services
     [Category("ActionService")]
     public class ActionServiceTests : BaseTest
     {
-        private IAction _action;
+        private TestActionService _action;
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
-        private Mock<IPluginTransmitter> PluginTransmitterMock
-        {
-            get { return Mock.Get(ObjectFactory.GetInstance<IPluginTransmitter>()); }
-        }
-
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _action = ObjectFactory.GetInstance<IAction>();
+            _action = new TestActionService();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
         }
 
         [Test]
-        public async void Action_Configure_ExistingActionShouldBeUpdatedWithNewAction()
+        public void Action_Configure_ExistingActionShouldBeUpdatedWithNewAction()
         {
             //Arrange
             ActionDO curActionDO = FixtureData.IntegrationTestAction();
             UpdateDatabase(curActionDO);
 
+            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_action.RestfulServiceClient);
             ActionDTO actionDto = Mapper.Map<ActionDTO>(curActionDO);
 
             //set the new name
             actionDto.Name = "NewActionFromServer";
-            PluginTransmitterMock.Setup(rc => rc.CallActionAsync<ActionDTO, ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
-                .Returns(() => Task.FromResult(actionDto));
+            restClientMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
+                .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
             //Act
-            var returnedAction = await _action.Configure(curActionDO);
+            var returnedAction = _action.Configure(curActionDO);
 
             //Assert
             //get the action from the database
@@ -103,10 +98,10 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public async void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
+        public void Action_Configure_WithNullActionTemplate_ThrowsArgumentNullException()
         {
             var _service = new Action();
-            await _service.Configure(null);
+            Assert.IsNotNull(_service.Configure(null));
         }
 
         [Test]
@@ -168,21 +163,15 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public async void CanProcessDocuSignTemplate()
+        public void CanProcessDocuSignTemplate()
         {
             // Test.
             Action action = new Action();
             var processTemplate = FixtureData.TestProcessTemplate2();
             var payloadMappings = FixtureData.FieldMappings;
             var actionDo = FixtureData.IntegrationTestAction();
-            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
+            actionDo.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             ProcessDO procesDO = FixtureData.TestProcess1();
-            PluginTransmitterMock
-                .Setup(m => m.CallActionAsync<ActionDataPackageDTO, ActionDTO>(
-                    It.Is<string>(s => s == "testaction"),
-                    It.IsAny<ActionDataPackageDTO>()))
-                .Returns(() => Task.FromResult(Mapper.Map<ActionDTO>(actionDo)))
-                .Verifiable();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -192,7 +181,7 @@ namespace DockyardTest.Services
                 uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
                 uow.SaveChanges();
 
-                await action.PrepareToExecute(actionDo, procesDO, uow);
+                action.PrepareToExecute(actionDo, procesDO, uow).Wait();
             }
 
             //Ensure that no Incidents were registered
@@ -202,9 +191,13 @@ namespace DockyardTest.Services
             }
 
             //We use a mock of IPluginTransmitter. Get that mock and check that 
-            //CallActionAsync was called with the correct attributes
+            //PostActionAsync was called with the correct attributes
+            var transmitter = ObjectFactory.GetInstance<IPluginTransmitter>(); //it is configured as a singleton so we get the "used" instance
+            var mock = Mock.Get<IPluginTransmitter>(transmitter);
+
             // TODO: Fix this line according to v2 changes
-            PluginTransmitterMock.Verify();
+            // mock.Verify(e => e.PostActionAsync(It.Is<string>(s => s == "testaction"),
+            //     It.Is<ActionDTO>(a => true), It.IsAny<PayloadDTO>()));
         }
 
         [Test]
@@ -216,8 +209,9 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+
                 Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo, uow).Exception.InnerException.Message);
-            }
+        }
         }
 
         [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
@@ -226,7 +220,7 @@ namespace DockyardTest.Services
             ActionDO actionDO = FixtureData.IntegrationTestAction();
             ProcessDO procesDo = FixtureData.TestProcess1();
             var pluginClientMock = new Mock<IPluginTransmitter>();
-            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO, ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
+            pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).ReturnsAsync(@"{ ""error"" : { ""ErrorCode"": ""0000"" }}");
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             //_action = ObjectFactory.GetInstance<IAction>();
 
@@ -245,7 +239,7 @@ namespace DockyardTest.Services
             actionDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             ProcessDO procesDO = FixtureData.TestProcess1();
             var pluginClientMock = new Mock<IPluginTransmitter>();
-            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO, ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).Returns<string, ActionDTO>((s, a) => Task.FromResult(a));
+            pluginClientMock.Setup(s => s.PostActionAsync(It.IsAny<string>(), It.IsAny<ActionDTO>(), It.IsAny<PayloadDTO>())).ReturnsAsync(@"{ ""success"" : { ""ID"": ""0000"" }}");
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             //_action = ObjectFactory.GetInstance<IAction>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -264,9 +258,10 @@ namespace DockyardTest.Services
             ActionDO actionDo = FixtureData.TestActionUnstarted();
             actionDo.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_action.RestfulServiceClient);
 
             ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
-            PluginTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
+            restClientMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
                 .Returns(() => Task.FromResult<string>(JsonConvert.SerializeObject(actionDto)));
 
             ProcessDO procesDO = FixtureData.TestProcess1();
@@ -352,20 +347,30 @@ namespace DockyardTest.Services
 
     internal class TestActionService : Action
     {
-        private IPluginTransmitter _restfulServiceClient;
+        private IRestfulServiceClient _restfulServiceClient;
 
-        internal IPluginTransmitter RestfulServiceClient
+        internal IRestfulServiceClient RestfulServiceClient
         {
             get
             {
                 if (_restfulServiceClient == null)
                 {
-                    _restfulServiceClient = new Mock<IPluginTransmitter>(MockBehavior.Default).Object;
+                    _restfulServiceClient = new Mock<IRestfulServiceClient>(MockBehavior.Default).Object;
                 }
 
                 return _restfulServiceClient;
             }
             private set { _restfulServiceClient = value; }
+        }
+
+        protected override IRestfulServiceClient PrepareRestfulClient()
+        {
+            if (_restfulServiceClient == null)
+            {
+                _restfulServiceClient = new Mock<IRestfulServiceClient>(MockBehavior.Default).Object;
+            }
+
+            return _restfulServiceClient;
         }
     }
 }

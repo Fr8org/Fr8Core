@@ -24,6 +24,18 @@ namespace pluginAzureSqlServer.Actions
     public class Write_To_Sql_Server_v1 : BasePluginAction
     {
 
+        private IAction _action;
+        private ICrate _crate;
+
+        public Write_To_Sql_Server_v1()
+        {
+            _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
+        }
+
+
+
+
         //================================================================================
         //General Methods (every Action class has these)
 
