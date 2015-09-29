@@ -19,8 +19,6 @@ namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
     {
-        ICrate _crate = ObjectFactory.GetInstance<ICrate>();
-        IAction _action = ObjectFactory.GetInstance<IAction>();
         IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
 
         public ActionDTO Configure(ActionDTO curActionDTO)
@@ -47,6 +45,7 @@ namespace pluginDocuSign.Actions
             {
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
+
             var payload = CreateActionPayload(curActionDataPackageDTO.ActionDTO, envelopeId);
             var cratesList = new List<CrateDTO>()
             {
@@ -70,10 +69,14 @@ namespace pluginDocuSign.Actions
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
         {
-            var crate = curActionDO.CrateStorage.CrateDTO.SingleOrDefault(c => c.ManifestId == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
-            if (crate == null) return null;
+            var activityDO = AutoMapper.Mapper.Map<ActionDO>(curActionDO) as ActivityDO;
+            var crates = GetCratesByDirection(activityDO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, GetCrateDirection.Downstream);
 
-            var fieldsList = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            if (crates.Count() == 0) return null;
+
+            // Merge fields of multiple crates
+            var fieldsList = MergeContentFields(crates).Fields;
+
             if (fieldsList == null || fieldsList.Count == 0) return null;
 
             return fieldsList;
@@ -81,9 +84,17 @@ namespace pluginDocuSign.Actions
 
         private string GetEnvelopeId(PayloadDTO curPayloadDTO)
         {
-            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault(c => c.ManifestId == CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+            var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
             if (crate == null) return null; //TODO: log it
-            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+
+            var standardPayloadMS = JsonConvert.DeserializeObject<EventReportMS>(crate.Contents);
+            var payload = standardPayloadMS.EventPayload.SingleOrDefault();
+            if (payload == null)
+            {
+                return null;
+            }
+
+            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(payload.Contents);
             if (fields == null || fields.Count == 0)
             {
                 return null; // TODO: log it
