@@ -363,7 +363,7 @@ namespace PluginExtractDataTests
         /// <summary>
         /// Test ExtractData follow-up configuration.
         /// </summary>
-        [Test]
+        [Test, Ignore]
         public async void PluginIntegration_ExtractData_ExecuteWithoutStanardTableData()
         {
             // Create blank ExtractDataEvent.
