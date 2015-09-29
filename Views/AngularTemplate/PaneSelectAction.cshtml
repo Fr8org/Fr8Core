@@ -1,5 +1,8 @@
-﻿<div class="select-action-category">
-    <div class="select-action-row" ng-repeat="actionType in actionTypes" ng-click="actionTypeSelected(actionType)">
-        {{actionType.name}}
+﻿<div class="select-action-category" ng-repeat="actionCategory in actionCategories">
+    <h4>{{actionCategory[0].category}}</h4>
+    <div class="select-action-list">
+        <div class="select-action-row" ng-repeat="actionType in actionCategory" ng-click="actionTypeSelected(actionType)">
+            {{actionType.name}}
+        </div>
     </div>
 </div>

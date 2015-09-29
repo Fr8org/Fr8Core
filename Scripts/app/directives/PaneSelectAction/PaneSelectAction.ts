@@ -77,20 +77,10 @@ module dockyard.directives.paneSelectAction {
             '$http'
         ];
         constructor(private $scope, private $http) {
-            $scope.actionTypes = [];
+            $scope.actionCategories = [];
             $http.get('/activities/available')
                 .then(function (resp) {
-                    angular.forEach(resp.data, function (it) {
-                        $scope.actionTypes.push(
-                            new model.ActivityTemplate(
-                                it.id,
-                                it.name,
-                                it.version,
-                                it.componentActivities,
-                                it.category
-                                )
-                            );
-                    });
+                    $scope.actionCategories = resp.data;                        
                 });
 
             $scope.actionTypeSelected = function (actionType) {
