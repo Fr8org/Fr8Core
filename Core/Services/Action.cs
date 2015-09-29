@@ -98,67 +98,32 @@ namespace Core.Services
             }
         }
 
-        public ActionDTO Configure(ActionDO curActionDO)
+        public async Task<ActionDTO> Configure(ActionDO curActionDO)
         {
-            ActivityTemplateDO curActivityTemplate;
-
-            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
+            ActionDTO tempActionDTO;
+            try
             {
-                //fetch this Action's ActivityTemplate
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-
-                    if (curActivityTemplate != null)
-                    {
-                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-
-                        //convert the ActivityTemplate to a DTO as well
-                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
-
-                        // prepare the current plugin URL
-                        // TODO: Add logic to use https:// for production
-
-                        string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
-
-                        var restClient = PrepareRestfulClient();
-                        string actionDTOJSON;
-                        try
-                        {
-                            actionDTOJSON =
-                                restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
-                        }
-                        catch (Exception)
-                        {
-                            EventManager.PluginConfigureFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
-                            throw;
-                        }
-
-                        //Converting Received ActionDTO in JSON Format to ActionDTO Object
-                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);
-
-                        //Plugin Configure Action Return ActionDTO
-                        curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
-
-                        //save the received action as quickly as possible
-                        SaveOrUpdateAction(curActionDO);
-
-                        //Returning ActionDTO
-                        return tempActionDTO;
-                    }
-
-                    else
-                    {
-                        throw new ArgumentNullException("ActivityTemplateDO");
-                    }
-                }
+                tempActionDTO = await CallPluginActionAsync(curActionDO, "configure");
             }
-            else
+            catch (ArgumentException)
             {
-                throw new ArgumentNullException("ActivityTemplateDO");
+                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                throw;
             }
+            catch (Exception)
+            {
+                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                throw;
+            }
+
+            //Plugin Configure Action Return ActionDTO
+            curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+
+            //save the received action as quickly as possible
+            SaveOrUpdateAction(curActionDO);
+
+            //Returning ActionDTO
+            return tempActionDTO;
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -257,36 +222,25 @@ namespace Core.Services
             return curAction.ActionState.Value;
         }
 
-        public async Task<string> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
+        public async Task<ActionDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
         {
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
 
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
+
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
             var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
 
-            //TODO : Cut base Url from PluginDO.Endpoint
-            curPluginClient.BaseUri = CreateUri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+            curPluginClient.Plugin = curActionDO.ActivityTemplate.Plugin;
 
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActionDO.ActivityTemplate);
-
-            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
-
-            var jsonResult = await curPluginClient.PostActionAsync("execute", curActionDTO, curPayloadDTO);
+            var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
+            var actionDTO = await curPluginClient.CallActionAsync(curActionDO.Name, dataPackage);
             EventManager.ActionDispatched(curActionDTO);
 
-            return jsonResult;
-        }
-
-        private Uri CreateUri(string endpoint)
-        {
-            //TODO: Add support for https
-            if (!endpoint.StartsWith("http"))
-            {
-                endpoint = "http://" + endpoint;
-            }
-            return new Uri(endpoint);
+            return actionDTO;
         }
 
         /// <summary>
@@ -367,58 +321,49 @@ namespace Core.Services
         }
 
 
-        public string Activate(ActionDO curActionDO)
+        public async Task<ActionDTO> Activate(ActionDO curActionDO)
         {
-            return CallPluginAction(curActionDO, "activate");
-        }
-
-        public string Deactivate(ActionDO curActionDO)
-        {
-            return CallPluginAction(curActionDO, "deactivate");
-        }
-
-        private string CallPluginAction(ActionDO curActionDO, string actionName)
-        {
-            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
+            try
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
-                    if (curActivityTemplate != null)
-                    {
-                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-                        string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
-                        var restClient = PrepareRestfulClient();
-                        string result;
-                        try
-                        {
-                            result = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
-                            EventManager.ActionActivated(curActionDO);
-                        }
-                        catch (Exception)
-                        {
-                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDO));
-                            throw;
-                        }
-                        return result;
-                    }
-                    else
-                    {
-                        throw new ArgumentNullException("ActivityTemplateDO");
-                    }
-                }
+                var result = await CallPluginActionAsync(curActionDO, "activate");
+                EventManager.ActionActivated(curActionDO);
+                return result;
             }
-            else
+            catch (ArgumentException)
+            {
+                EventManager.PluginActionActivationFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                throw;
+            }
+            catch
+            {
+                EventManager.PluginActionActivationFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                throw;
+            }
+        }
+
+        public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
+        {
+            return await CallPluginActionAsync(curActionDO, "deactivate");
+        }
+
+        private async Task<ActionDTO> CallPluginActionAsync(ActionDO curActionDO, string actionName)
+        {
+            if (curActionDO == null || curActionDO.ActivityTemplateId == 0)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-        }
+            ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
+            if (curActivityTemplate == null)
+            {
+                throw new ArgumentNullException("curActionDO", "ActivityTemplateDO");
+            }
 
-        protected virtual IRestfulServiceClient PrepareRestfulClient()
-        {
-            return new RestfulServiceClient();
+            //convert the Action to a DTO in preparation for serialization and POST to the plugin
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
+            pluginTransmitter.Plugin = curActivityTemplate.Plugin;
+            return await pluginTransmitter.CallActionAsync(actionName, curActionDTO);
         }
     }
 }
