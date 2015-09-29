@@ -308,6 +308,7 @@
     <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.cs" />
     <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.Designer.cs">
       <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.cs" />
     <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.Designer.cs">
       <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
@@ -315,6 +316,7 @@
     <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.cs" />
     <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.Designer.cs">
       <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509270413022_EmptyMergeMigration.cs" />
     <Compile Include="Migrations\201509270413022_EmptyMergeMigration.Designer.cs">
       <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
@@ -322,6 +324,7 @@
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.cs" />
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509272213417_EmptyMigration2.cs" />
     <Compile Include="Migrations\201509272213417_EmptyMigration2.Designer.cs">
       <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
@@ -579,16 +582,19 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.resx">
       <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.resx">
       <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509261521578_UpdateActivityDOandActionList.resx">
       <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509270413022_EmptyMergeMigration.resx">
       <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272213417_EmptyMigration2.resx">
       <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
     </EmbeddedResource>

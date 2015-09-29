@@ -41,8 +41,7 @@ namespace Core.Services
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
-                    .Include(pt => pt.ProcessNodeTemplates)
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(pt => pt.ProcessNodeTemplates);
 
                 if (isAdmin)
                 {
