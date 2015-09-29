@@ -196,7 +196,8 @@ module dockyard.controllers {
                 this.$modal.open({
                     animation: true,
                     templateUrl: 'AngularTemplate/PaneSelectAction',
-                    controller: 'PaneSelectActionController'
+                    controller: 'PaneSelectActionController',
+                    windowClass: 'select-action-modal'
                 }).result.then(function (data: model.ActivityTemplate) {
                     self._scope.current.action.activityTemplateId = data.id;
                     self._scope.current.action.activityTemplate = data;
@@ -391,7 +392,7 @@ module dockyard.controllers {
                     id: 1,
                     isTempId: false,
                     actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "")
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", "")
                 };
 
             $httpBackend

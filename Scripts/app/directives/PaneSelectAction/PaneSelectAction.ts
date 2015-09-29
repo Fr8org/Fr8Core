@@ -86,16 +86,16 @@ module dockyard.directives.paneSelectAction {
                                 it.id,
                                 it.name,
                                 it.version,
-                                it.componentActivities
+                                it.componentActivities,
+                                it.category
                                 )
                             );
                     });
                 });
 
-            $scope.ActionTypeSelected = function () {
-                var currentSelectedActivity = $scope.actionTypes.filter(function (e) { return e.id == $scope.activityTemplateId })[0];
-                $scope.$close(currentSelectedActivity);
-        }
+            $scope.actionTypeSelected = function (actionType) {
+                $scope.$close(actionType);
+            }
         }
     }
 

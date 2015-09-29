@@ -1,16 +1,5 @@
-﻿<div class="portlet light ">
-    <div class="portlet-title">
-        <div class="caption caption-md">
-            <i class="icon-bar-chart font-green-haze hide"></i>
-            <span class="caption-subject font-green-haze bold uppercase">Select Action</span>
-        </div>
-    </div>
-    <div class="portlet-body">
-        <div class="form-group">
-            <select ng-model="activityTemplateId" class="form-control" ng-change="ActionTypeSelected()"
-                    ng-options="actionType.id as actionType.name for actionType in actionTypes">
-                <option value="">Select Action Type</option>
-            </select>
-        </div>
+﻿<div class="select-action-category">
+    <div class="select-action-row" ng-repeat="actionType in actionTypes" ng-click="actionTypeSelected(actionType)">
+        {{actionType.name}}
     </div>
 </div>

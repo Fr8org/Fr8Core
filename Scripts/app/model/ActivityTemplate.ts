@@ -5,14 +5,16 @@
         version: string;
         defaultEndPoint: string;
         componentActivities: string;
+        category: string;
 
         constructor(id: number, name: string,
-            version: string, componentActivities: string) {
+            version: string, componentActivities: string, category: string) {
 
             this.id = id;
             this.name = name;
             this.version = version;
             this.componentActivities = componentActivities;
+            this.category = category;
             //this.parentPluginRegistration = parentPluginRegistration;  the client shouldn't know anything about plugins
         }
 
@@ -21,7 +23,8 @@
                 this.id,
                 this.name,
                 this.version,
-                this.componentActivities
+                this.componentActivities,
+                this.category
             // this.parentPluginRegistration
                 );
 
