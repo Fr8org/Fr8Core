@@ -232,12 +232,12 @@ namespace Core.Services
             var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
-            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
+            var curPluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
 
-            curPluginClient.Plugin = curActionDO.ActivityTemplate.Plugin;
+            curPluginTransmitter.Plugin = curActionDO.ActivityTemplate.Plugin;
 
             var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
-            var actionDTO = await curPluginClient.CallActionAsync(curActionDO.Name, dataPackage);
+            var actionDTO = await curPluginTransmitter.CallActionAsync(curActionDO.Name, dataPackage);
             EventManager.ActionDispatched(curActionDTO);
 
             return actionDTO;
@@ -359,11 +359,14 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO", "ActivityTemplateDO");
             }
 
-            //convert the Action to a DTO in preparation for serialization and POST to the plugin
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
-            pluginTransmitter.Plugin = curActivityTemplate.Plugin;
-            return await pluginTransmitter.CallActionAsync(actionName, curActionDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+                var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
+                pluginTransmitter.Plugin = uow.PluginRepository.GetByKey(curActivityTemplate.PluginID);
+                return await pluginTransmitter.CallActionAsync(actionName, curActionDTO);
+            }
         }
     }
 }
