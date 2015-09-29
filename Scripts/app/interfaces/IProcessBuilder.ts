@@ -19,7 +19,7 @@ module dockyard.interfaces {
         externalEvent: number;
         processTemplateId: number;
     }
-    
+
     export interface IExternalEvent {
         id: number,
         name: string
@@ -27,7 +27,7 @@ module dockyard.interfaces {
 
     export interface IProcessNodeTemplateVM extends ng.resource.IResource<model.ProcessNodeTemplateDTO>, model.ProcessNodeTemplateDTO { }
     export interface ICriteriaVM extends ng.resource.IResource<model.CriteriaDTO>, model.CriteriaDTO { }
-    export interface IActionVM extends ng.resource.IResource<model.ActionDesignDTO>, model.ActionDesignDTO { }
+    export interface IActionVM extends ng.resource.IResource<model.ActionDTO>, model.ActionDTO { }
     export interface IDocuSignTemplateVM extends ng.resource.IResource<IDocuSignTemplate> { }
     export interface IDocuSignExternalEventVM extends ng.resource.IResource<IDocuSignExternalEvent> { }
     export interface IExternalEventVM extends ng.resource.IResource<IExternalEvent> { }
@@ -47,7 +47,7 @@ module dockyard.interfaces {
 
     export interface IControlsListVM extends ng.resource.IResource<model.ControlsList>, model.ControlsList {
     }
-    export interface IActionListVM extends ng.resource.IResource<model.ActionList>, model.ActionList {
+    export interface IActionListVM extends ng.resource.IResource<model.ActionListDTO>, model.ActionListDTO {
     }
 
     export interface IActivityTemplateVM extends ng.resource.IResource<model.ActivityTemplate>, model.ActivityTemplate {

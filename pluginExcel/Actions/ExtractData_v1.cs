@@ -87,7 +87,7 @@ namespace pluginExcel.Actions
 
             var payloadData = new StandardPayloadDataMS()
             {
-                Payload = new List<PayloadObjectDTO>(),
+                PayloadObjects = new List<PayloadObjectDTO>(),
                 ObjectType = "ExcelTableRow",
             };
 
@@ -105,7 +105,7 @@ namespace pluginExcel.Actions
                     };
                     fields.Add(listFieldDTO);
                 }
-                payloadData.Payload.Add(new PayloadObjectDTO() { Fields = fields, });
+                payloadData.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
             }
 
             var crate = _crate.Create("ExcelTableRow", JsonConvert.SerializeObject(payloadData), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);

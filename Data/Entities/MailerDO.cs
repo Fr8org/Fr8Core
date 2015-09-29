@@ -12,7 +12,7 @@ namespace Data.Entities
 {
     public class MailerDO : BaseDO, IMailerDO
     {
-        public const string SendGridHander = "Gmail";
+        public const string MailHandler = "Gmail";
 
         public MailerDO()
         {

@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+﻿using Data.States;
 using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
@@ -18,5 +18,7 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("componentActivities")]
         public string ComponentActivities { get; set; }
+
+        public ActivityCategory Category { get; set; }
     }
 }

@@ -20,6 +20,9 @@ namespace Data.Entities
         public String SegmentTrackingProperties { get; set; }
         public DateTime ExpiresAt { get; set; }
 
+        public String ExternalAccountId { get; set; }
+
+
         [ForeignKey("UserDO")]
         public String UserID { get; set; }
         public virtual DockyardAccountDO UserDO { get; set; }

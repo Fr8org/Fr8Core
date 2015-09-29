@@ -4,9 +4,9 @@ using Data.Entities;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ProcessTemplateDTO
+    public class ProcessTemplateOnlyDTO
     {
-        public ProcessTemplateDTO()
+        public ProcessTemplateOnlyDTO()
         {
             //     SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
             //     SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();

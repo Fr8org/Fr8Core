@@ -30,20 +30,13 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public ActionProcessResultDTO Execute(ActionDTO curActionDTO)
+        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            var actionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-
-            // Get parent action-list.
-            var curActionList = ((ActionListDO) actionDO.ParentActivity);
-
-            if (!curActionList.ProcessID.HasValue)
-            {
-                throw new ApplicationException("Action.ActionList.ProcessID is empty.");
-            }
+            var curActionDTO = curActionDataPackage.ActionDTO;
+            var curPayloadDTO = curActionDataPackage.PayloadDTO;
 
             // Find crate with id "Criteria Filter Conditions".
-            var curCrateStorage = actionDO.CrateStorageDTO();
+            var curCrateStorage = curActionDTO.CrateStorage;
             var curControlsCrate = curCrateStorage.CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                     && x.Label == "Configuration_Controls");
@@ -64,23 +57,36 @@ namespace pluginDockyardCore.Actions
             // Prepare envelope data.
             var curDocuSignEnvelope = new DocuSignEnvelope();
                 // Should just change GetEnvelopeData to pass an EnvelopeDO.
-            var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(curDocuSignEnvelope);
+            var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(GetEnvelopeId(curPayloadDTO));
 
             // Evaluate criteria using Contents json body of found Crate.
-            var result = Evaluate(filterPaneControl.Value,
-                curActionList.ProcessID.Value, curEnvelopeData);
+            var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curEnvelopeData);
 
-            // Process result.
-            if (result)
+            return curActionDTO;
+        }
+
+        private string GetEnvelopeId(PayloadDTO curPayloadDTO)
+        {
+            var eventReportCrate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
+            if (eventReportCrate == null)
             {
-                actionDO.ActionState = ActionState.Active;
-            }
-            else
-            {
-                curActionList.Process.ProcessState = ProcessState.Completed;
+                return null;
             }
 
-            return new ActionProcessResultDTO() {Success = true};
+            var eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(eventReportCrate.Contents);
+            var crate = eventReportMS.EventPayload.SingleOrDefault();
+            if (crate == null)
+            {
+                return null;
+            }
+
+            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+            if (fields == null || fields.Count == 0) return null;
+
+            var envelopeIdField = fields.SingleOrDefault(f => f.Key == "EnvelopeId");
+            if (envelopeIdField == null) return null;
+
+            return envelopeIdField.Value;
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
@@ -121,41 +127,50 @@ namespace pluginDockyardCore.Actions
             }
         }
 
-        private Expression ParseCriteriaExpression<T>(
+        private Expression ParseCriteriaExpression(
             IEnumerable<FilterConditionDTO> conditions,
-            IQueryable<T> queryableData)
+            IQueryable<EnvelopeDataDTO> queryableData)
         {
-            var curType = typeof(T);
+            var curType = typeof(EnvelopeDataDTO);
 
             Expression criteriaExpression = null;
             var pe = Expression.Parameter(curType, "p");
 
             foreach (var condition in conditions)
             {
-                var propInfo = curType.GetProperty(condition.Field);
+                var namePropInfo = curType.GetProperty("Name");
+                var valuePropInfo = curType.GetProperty("Value");
+
+                var nameLeftExpr = Expression.Property(pe, namePropInfo);
+                var nameRightExpr = Expression.Constant(condition.Field);
+                var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
+
+                var valueLeftExpr = Expression.Property(pe, valuePropInfo);
+                var valueRightExpr = Expression.Constant(condition.Value);
+
+
                 var op = condition.Operator;
-                var value = condition.Value;
-
-                var leftExpr = Expression.Property(pe, propInfo);
-                var rightExpr = Expression.Constant(value);
-
                 Expression criterionExpression;
+
                 switch (op)
                 {
-                    case "Equals":
-                        criterionExpression = Expression.Equal(leftExpr, rightExpr);
+                    case "eq":
+                        criterionExpression = Expression.Equal(valueLeftExpr, valueRightExpr);
                         break;
-                    case "GreaterThan":
-                        criterionExpression = Expression.GreaterThan(leftExpr, rightExpr);
+                    case "neq":
+                        criterionExpression = Expression.NotEqual(valueLeftExpr, valueRightExpr);
                         break;
-                    case "GreaterThanOrEquals":
-                        criterionExpression = Expression.GreaterThanOrEqual(leftExpr, rightExpr);
+                    case "gt":
+                        criterionExpression = Expression.GreaterThan(valueLeftExpr, valueRightExpr);
                         break;
-                    case "LessThan":
-                        criterionExpression = Expression.LessThan(leftExpr, rightExpr);
+                    case "gte":
+                        criterionExpression = Expression.GreaterThanOrEqual(valueLeftExpr, valueRightExpr);
                         break;
-                    case "LessThanOrEquals":
-                        criterionExpression = Expression.LessThanOrEqual(leftExpr, rightExpr);
+                    case "lt":
+                        criterionExpression = Expression.LessThan(valueLeftExpr, valueRightExpr);
+                        break;
+                    case "lte":
+                        criterionExpression = Expression.LessThanOrEqual(valueLeftExpr, valueRightExpr);
                         break;
                     default:
                         throw new NotSupportedException(string.Format("Not supported operator: {0}", op));
@@ -163,11 +178,11 @@ namespace pluginDockyardCore.Actions
 
                 if (criteriaExpression == null)
                 {
-                    criteriaExpression = criterionExpression;
+                    criteriaExpression = Expression.And(nameExpression, criterionExpression);
                 }
                 else
                 {
-                    criteriaExpression = Expression.AndAlso(criteriaExpression, criterionExpression);
+                    criteriaExpression = Expression.AndAlso(criteriaExpression, Expression.And(nameExpression, criterionExpression));
                 }
             }
 
@@ -179,9 +194,9 @@ namespace pluginDockyardCore.Actions
             var whereCallExpression = Expression.Call(
                 typeof (Queryable),
                 "Where",
-                new[] {typeof (T)},
+                new[] { curType },
                 queryableData.Expression,
-                Expression.Lambda<Func<T, bool>>(criteriaExpression, new[] {pe})
+                Expression.Lambda<Func<EnvelopeDataDTO, bool>>(criteriaExpression, new[] { pe })
             );
 
             return whereCallExpression;

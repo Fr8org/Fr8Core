@@ -16,6 +16,7 @@ namespace Core.Interfaces
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls);
+        CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
         CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);
 
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);

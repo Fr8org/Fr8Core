@@ -4,10 +4,13 @@
     The service enables operations with Process Templates
 */
 module dockyard.services {
-    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> { }
+    export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
+        getFull: (id: Object) => interfaces.IProcessTemplateVM
+    }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
-        configure: (action: interfaces.IActionDesignDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
+        getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -49,7 +52,17 @@ module dockyard.services {
         ProcessTemplateDTO CRUD service.
     */
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' })
+        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' },
+            {
+                'getFull': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/processTemplate/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                }
+            })
     ]);
 
     /*
@@ -78,7 +91,11 @@ module dockyard.services {
                 'save': {
                     method: 'POST',
                     isArray: false,
-                    url: '/actions/save'
+                    url: '/actions/save',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
+
                 },
                 //'get': {
                 //    transformResponse: function (data) {
@@ -90,9 +107,16 @@ module dockyard.services {
                 'delete': { method: 'DELETE' },
                 'configure': {
                     method: 'POST',
-                    url: '/actions/configure'
+                    url: '/actions/configure',
+                    params: {
+                        suppressSpinner: true // Do not show page-level spinner since we have one within the Configure Action pane
+                    }
                 },
-
+                'getByProcessTemplate': {
+                    method: 'GET',
+                    url: '/actions/bypt',
+                    isArray: true
+                },
                 'params': {
                     id: 'id'
                 }
@@ -209,19 +233,17 @@ module dockyard.services {
                     });
             }
 
-            //Save only Action 
+            //Save Action only
             else if (currentState.action) {
                 this.crateHelper.mergeControlListCrate(
                     currentState.action.configurationControls,
                     currentState.action.crateStorage
                 );
-
                 var promise = this.ActionService.save(
                     { id: currentState.action.id },
                     currentState.action,
                     null,
                     null).$promise;
-
                 promise
                     .then((result: interfaces.IActionVM) => {
                         newState.action = result;
@@ -237,7 +259,6 @@ module dockyard.services {
             }
 
             return deferred.promise;
-
         }
     }
 
@@ -348,14 +369,14 @@ module dockyard.services {
 
         /*
             This method does adding or updating depending on whether 
-            ProcessNodeTemplate has been saved or not yet.
+            ProcessNodeTemplate has been saved or not.
         */
         public addOrUpdate(curProcessNodeTemplate: model.ProcessNodeTemplateDTO): {
             actionType: ActionTypeEnum,
             promise: ng.IPromise<model.ProcessNodeTemplateDTO>
         } {
             // Don't save anything if there is no criteria selected, 
-            // just return a null- valued resolved promise
+            // just return a null-valued resolved promise
             if (!curProcessNodeTemplate) {
                 var deferred = this.$q.defer<model.ProcessNodeTemplateDTO>();
                 deferred.resolve(null);

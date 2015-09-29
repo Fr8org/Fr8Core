@@ -29,7 +29,7 @@ module dockyard.directives {
 
                     $scope.defaultOperator = '';
 
-                    $scope.$watch('currentAction', function (newValue: model.ActionDesignDTO) {
+                    $scope.$watch('currentAction', function (newValue: model.ActionDTO) {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage, 'Standard Design-Time Fields', 'Queryable Criteria');
@@ -45,7 +45,6 @@ module dockyard.directives {
                     });
 
                     $scope.$watch('field', function (newValue: any) {
-                        debugger;
 
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);

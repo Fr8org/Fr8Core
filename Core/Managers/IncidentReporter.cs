@@ -50,14 +50,14 @@ namespace Core.Managers
                 SecondaryCategory = "Activation",
                 Activity = "Completed"
             };
-            SaveAndLogFact(incident);
+            SaveAndLogIncident(incident);
         }
 
         /// <summary>
         /// Logs incident information using the standard log mechanisms.
        
       
-        private void SaveAndLogFact(IncidentDO curIncident)
+        private void SaveAndLogIncident(IncidentDO curIncident)
         {
             SaveIncident(curIncident);
             _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity);
@@ -82,7 +82,7 @@ namespace Core.Managers
                 SecondaryCategory = "Configure",
                 Activity = "Configuration Failed"
             };
-            SaveAndLogFact(incident);
+            SaveAndLogIncident(incident);
         }
 
         private void LogPluginIncident(LoggingData incidentItem)
@@ -97,13 +97,7 @@ namespace Core.Managers
                 Activity = incidentItem.Activity
             };
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(currentIncident);
-                uow.SaveChanges();
-
-                GenerateLogData(currentIncident);
-            }
+            SaveAndLogIncident(currentIncident);
         }
 
         private void LogUnparseableNotificationIncident(string curNotificationUrl, string curNotificationPayload)

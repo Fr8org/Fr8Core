@@ -70,27 +70,30 @@ app.controller('FooterController', ['$scope', function ($scope) {
 }]);
 
 /* Setup Rounting For All Pages */
-app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/processes");
 
+    // Install a HTTP request interceptor that causes 'Processing...' message to display
+    $httpProvider.interceptors.push('spinnerHttpInterceptor');
+
     $stateProvider
-        // Process Template list
+    // Process Template list
         .state('processTemplates', {
             url: "/processes",
             templateUrl: "/AngularTemplate/ProcessTemplateList",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'This page displays all process templates' }
         })
 
-        // Process Template form
+    // Process Template form
         .state('processTemplate', {
             url: "/processes/{id}",
             templateUrl: "/AngularTemplate/ProcessTemplateForm",
             data: { pageTitle: 'Process Templates', pageSubTitle: 'Add a new Process Template' },
         })
 
-        // Process Builder framework
+    // Process Builder framework
         .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
@@ -108,14 +111,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
             templateUrl: "/AngularTemplate/ShowFacts",
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
-       
+
         .state('processTemplateDetails', {
             url: "/processes/{id}/details",
             templateUrl: "/AngularTemplate/ProcessTemplateDetails",
             data: { pageTitle: 'Process Template Details', pageSubTitle: '' }
         })
 
-        // Manage files
+    // Manage files
         .state('managefiles', {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
@@ -139,3 +142,25 @@ app.config(['$stateProvider', '$urlRouterProvider', function ($stateProvider: ng
 app.run(["$rootScope", "settings", "$state", function ($rootScope, settings, $state) {
     $rootScope.$state = $state; // state to be accessed from view
 }]);
+
+app.constant('spinnerHttpInterceptor', {
+    request: function (config: ng.IRequestConfig) {
+        // Show page spinner If there is no request parameter suppressSpinner.
+        if (config && config.params && config.params['suppressSpinner']) {
+            // We don't want this parameter to be sent to backend so remove it if found.
+            delete (config.params.suppressSpinner);
+        }
+        else
+            Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+        return config;
+    },
+    response: function (config: ng.IRequestConfig) {
+        Metronic.stopPageLoading();
+        return config;
+    },
+    responseError: function (config: ng.IRequestConfig) {
+        Metronic.stopPageLoading();
+        return config;
+    }
+});
+
