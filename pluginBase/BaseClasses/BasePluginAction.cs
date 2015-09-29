@@ -1,12 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.Infrastructure;
 using StructureMap;
-using System;
-using System.Collections.Generic;
 using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
@@ -36,6 +39,18 @@ namespace PluginBase.BaseClasses
             _action = ObjectFactory.GetInstance<IAction>();
             //_activity = ObjectFactory.GetInstance<IActivity>();
         }
+
+        protected async Task<PayloadDTO> GetProcessPayload(int processId)
+        {
+            var httpClient = new HttpClient();
+            var url = ConfigurationManager.AppSettings["ProcessWebServerUrl"]
+                + processId.ToString();
+            var response = await httpClient.GetAsync(url);
+            var content = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<PayloadDTO>(content);
+        }
+
         protected ActionDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)

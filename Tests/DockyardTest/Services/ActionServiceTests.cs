@@ -216,9 +216,8 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
                 Assert.AreEqual("Action ID: 2 status is 4.", _action.PrepareToExecute(actionDo, procesDo, uow).Exception.InnerException.Message);
-        }
+            }
         }
 
         [Test, Ignore("Ignored execution related tests. Refactoring is going on")]

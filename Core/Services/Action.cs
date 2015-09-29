@@ -194,7 +194,11 @@ namespace Core.Services
 
                     EventManager.ActionStarted(curAction);
 
-                    var jsonResult = await Execute(curAction, curProcessDO);
+                    var payload = await Execute(curAction, curProcessDO);
+                    if (payload != null)
+                    {
+                        curProcessDO.CrateStorage = payload.CrateStorage;
+                    }
 
                     //this JSON error check is broken because it triggers on standard success messages, which look like this:
                     //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
@@ -224,12 +228,14 @@ namespace Core.Services
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<ActionDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
         {
             if (curActionDO == null)
                 throw new ArgumentNullException("curActionDO");
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActionDO.ActivityTemplate);
+
             var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
@@ -238,10 +244,14 @@ namespace Core.Services
             curPluginClient.Plugin = curActionDO.ActivityTemplate.Plugin;
 
             var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
-            var actionDTO = await curPluginClient.CallActionAsync(curActionDO.Name, dataPackage);
-            EventManager.ActionDispatched(curActionDTO);
+            // Commented out by yakov.gnusin. This breaks action execution.
+            // var actionDTO = await curPluginClient.CallActionAsync(curActionDO.Name, dataPackage);
+            var payloadDTO = await curPluginClient.CallActionAsync<ActionDataPackageDTO, PayloadDTO>("Execute", dataPackage);
+            
+            // Temporarily commented out by yakov.gnusin.
+            // EventManager.ActionDispatched(curActionDTO);
 
-            return actionDTO;
+            return payloadDTO;
         }
 
         /// <summary>
@@ -381,9 +391,11 @@ namespace Core.Services
 
             //convert the Action to a DTO in preparation for serialization and POST to the plugin
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+
             var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
             pluginTransmitter.Plugin = curActivityTemplate.Plugin;
-            return await pluginTransmitter.CallActionAsync(actionName, curActionDTO);
+            return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
         }
     }
 }
