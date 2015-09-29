@@ -9,6 +9,7 @@ namespace UtilitiesTesting.Fixtures
         public static string TestPlugin_Core_EndPoint = "localhost:60002";
         public static string TestPlugin_AzureSqlServer_EndPoint = "localhost:60003";
         public static string TestPlugin_ExtractData_EndPoint = "localhost:60004";
+        public static string TestPlugin_FileServer_EndPoint = "localhost:60005";
 
         public static ActionListDO TestActionList_ImmediateActions()
         {

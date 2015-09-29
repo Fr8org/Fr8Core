@@ -28,17 +28,9 @@ namespace pluginExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<ActionProcessResultDTO> Execute(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Execute(ActionDTO curActionDTO)
         {
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-
-            // Get parent action-list.
-            var curActionList = ((ActionListDO)curActionDO.ParentActivity);
-
-            if (!curActionList.ProcessID.HasValue)
-            {
-                throw new ApplicationException("Action.ActionList.ProcessID is empty.");
-            }
 
             // Find crate with with nmanifest type "Standard Table Data".
             var curCrateStorage = curActionDO.CrateStorageDTO();
@@ -48,6 +40,26 @@ namespace pluginExcel.Actions
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
             {
                 var curUpstreamFileHandle = GetCratesByDirection(curActionDO, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+                /*
+                // TODO: temporary code for testing code below 
+                StandardFileHandleMS fileHandleMS = new StandardFileHandleMS()
+                {
+                    DockyardStorageUrl = @"..\..\Sample Files\",
+                    Filename = "SampleFile1.xlsx",
+                };
+
+                var crate = new CrateDTO()
+                {
+                    Contents = JsonConvert.SerializeObject(fileHandleMS),
+                    Label = "file_handle",
+                    ManifestType = CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME,
+                    ManifestId = CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_ID
+                };
+                curUpstreamFileHandle.Insert(0, crate);
+                // Temp code end
+                */
+
+                // TODO : This code has not been tested yet - unit test creation is getting quite complex
                 if(curUpstreamFileHandle != null && curUpstreamFileHandle.Count() > 0)
                 {
                     var fileHandle = JsonConvert.DeserializeObject<StandardFileHandleMS>(curUpstreamFileHandle.ElementAt(0).Contents);
@@ -62,7 +74,7 @@ namespace pluginExcel.Actions
 
             curActionDO = ProcessCrate(curActionDO);
 
-            return new ActionProcessResultDTO() { Success = true };
+            return AutoMapper.Mapper.Map<ActionDTO>(curActionDO);
         }
 
         private ActionDO ProcessCrate(ActionDO curActionDO)
@@ -95,8 +107,9 @@ namespace pluginExcel.Actions
                 }
                 payloadData.Payload.Add(new PayloadObjectDTO() { Fields = fields, });
             }
-            
-            curActionDO.CrateStorageDTO().CrateDTO.Add(_crate.Create("ExcelTableRow", JsonConvert.SerializeObject(payloadData), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID));
+
+            var crate = _crate.Create("ExcelTableRow", JsonConvert.SerializeObject(payloadData), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+            _action.AddCrate(curActionDO, new List<CrateDTO>() { crate });
             return curActionDO;
         }
 
@@ -119,7 +132,6 @@ namespace pluginExcel.Actions
 
                 return curFileDOTask;
             }
-            //return null;
         }
 
         /// <summary>
