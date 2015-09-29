@@ -286,7 +286,7 @@ namespace DockyardTest.Services
         {
             var _activity = new Mock<IActivity>();
             _activity
-                .Setup(c => c.Process(It.IsAny<ActivityDO>(), It.IsAny<ProcessDO>())).Verifiable();
+                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>())).Verifiable();
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
             _processService = ObjectFactory.GetInstance<IProcess>();
             ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
@@ -298,14 +298,14 @@ namespace DockyardTest.Services
             Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
             Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
             Assert.IsNull(processDO.CurrentActivity);
-            _activity.Verify(p => p.Process(It.IsAny<ActivityDO>(), It.IsAny<ProcessDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
         }
 
         [Test]
         public void Execute_ProcessUntil3rdActivities_ProcessAllActivities()
         {
             var _activity = new Mock<IActivity>();
-            _activity.Setup(c => c.Process(It.IsAny<ActivityDO>(), It.IsAny<ProcessDO>())).Verifiable();
+            _activity.Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>())).Verifiable();
             //Setup 3rd ActivityDO
             _activity.Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>())).Returns(new List<ActivityDO>() { FixtureData.TestAction9() });
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
@@ -319,7 +319,7 @@ namespace DockyardTest.Services
             Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
             Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
             Assert.IsNull(processDO.CurrentActivity);
-            _activity.Verify(p => p.Process(It.IsAny<ActivityDO>(), It.IsAny<ProcessDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
         }
 
         [Test]
@@ -327,7 +327,7 @@ namespace DockyardTest.Services
         {
             var _activity = new Mock<IActivity>();
             _activity
-                .Setup(c => c.Process(It.IsAny<ActivityDO>(), It.IsAny<ProcessDO>())).Verifiable();
+                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>())).Verifiable();
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
             _processService = ObjectFactory.GetInstance<IProcess>();
             ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
@@ -336,7 +336,7 @@ namespace DockyardTest.Services
             _processService.Execute(processDO);
 
             Assert.IsNull(processDO.CurrentActivity);
-            _activity.Verify(p => p.Process(It.IsAny<ActivityDO>(), It.IsAny<ProcessDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
         }
 
         [Test]

@@ -11,9 +11,6 @@ namespace Data.Entities
     {
         public ProcessTemplateDO()
         {
-            SubscribedDocuSignTemplates = new List<DocuSignTemplateSubscriptionDO>();
-            SubscribedExternalEvents = new List<ExternalEventSubscriptionDO>();
-
             
             ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
             /*var startingProcessNodeTemplate = new ProcessNodeTemplateDO();
@@ -81,12 +78,6 @@ namespace Data.Entities
         public virtual _ProcessTemplateStateTemplate ProcessTemplateStateTemplate { get; set; }
 
         public virtual DockyardAccountDO DockyardAccount { get; set; }
-
-        [InverseProperty("DocuSignProcessTemplate")]
-        public virtual IList<DocuSignTemplateSubscriptionDO> SubscribedDocuSignTemplates { get; set; }
-
-        [InverseProperty("ExternalProcessTemplate")]
-        public virtual IList<ExternalEventSubscriptionDO> SubscribedExternalEvents { get; set; }
 
         [InverseProperty("ProcessTemplate")]
         public virtual ICollection<ProcessDO> ChildProcesses { get; set; }

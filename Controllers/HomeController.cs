@@ -1,4 +1,4 @@
-﻿using System.Web.Mvc;
+using System.Web.Mvc;
 using Data.Validations;
 using FluentValidation;
 using Data.Entities;
@@ -16,7 +16,7 @@ namespace Web.Controllers
 {
 
     public class HomeController : Controller
-    {   
+    {
         private readonly EmailAddress _emailAddress;
         private readonly Email _email;
 
@@ -35,7 +35,7 @@ namespace Web.Controllers
                 {
                     var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress);
                     dockyardAccountDO = uow.UserRepository.GetOrCreateUser(emailAddressDO);
-                    
+
                     //Save incase we created..
                     uow.SaveChanges();
                 }
@@ -45,7 +45,7 @@ namespace Web.Controllers
                     dockyardAccountDO = uow.UserRepository.GetByKey(userID);
                 }
 
-                var returnVM = new HomeVM {SegmentWriteKey = new ConfigRepository().Get("SegmentWriteKey")};
+                var returnVM = new HomeVM { SegmentWriteKey = new ConfigRepository().Get("SegmentWriteKey") };
 
                 if (dockyardAccountDO != null)
                 {
@@ -78,24 +78,72 @@ namespace Web.Controllers
             return View();
         }
 
+        public ActionResult MultiPartWorkflows()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult ConditionalLogicBranching()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult DataExtractionIntoSalesforce()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult DataExtractionIntoServices()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult DataExtractionintoSQLServer()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult IntegrationWithOtherDataServices()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
+
+        public ActionResult InterOrganizationWorkflows()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
 
         //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
-           
-      
-                RegexUtilities.ValidateEmailAddress(emailAddress);
-                if (meetingInfo.Trim().Length < 30)
-                    return Json(new { Message = "Meeting information must have at least 30 characters" });
 
-                return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
-            
-           
+
+            RegexUtilities.ValidateEmailAddress(emailAddress);
+            if (meetingInfo.Trim().Length < 30)
+                return Json(new { Message = "Meeting information must have at least 30 characters" });
+
+            return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
+
+
         }
 
 
-        
+
         //  EmailAddress  is valid then send mail .    
         // return "success" or  error 
         public ActionResult ProcessSubmittedEmail(string name, string emailId, string message)
@@ -109,10 +157,10 @@ namespace Web.Controllers
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                    string toRecipient ="info@kwasant.com";
-                    string fromAddress =emailId;
-                  
-                   // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
+                    string toRecipient = "info@kwasant.com";
+                    string fromAddress = emailId;
+
+                    // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
                     EmailDO emailDO = _email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
                     //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);

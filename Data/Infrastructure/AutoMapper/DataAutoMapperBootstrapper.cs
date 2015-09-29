@@ -22,10 +22,12 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionDO, ActionDTO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
                 .ForMember(a => a.ActionListId, opts => opts.ResolveUsing(ad => ad.ParentActivityId))
-                 .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
+                .ForMember(a => a.CrateStorage, opts => opts.ResolveUsing(ad => Newtonsoft.Json.JsonConvert.DeserializeObject<CrateStorageDTO>(ad.CrateStorage)))
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
-                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore()); //
+                // commented out by yakov.gnusin, this breaks design-time process.
+                // .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
+                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore());
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
@@ -54,11 +56,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
-
-            Mapper.CreateMap<IList<DocuSignTemplateSubscriptionDO>, IList<string>>().ConvertUsing<DocuSignTemplateSubscriptionToStringConverter>();
-            Mapper.CreateMap<IList<string>, IList<DocuSignTemplateSubscriptionDO>>().ConvertUsing<StringToDocuSignTemplateSubscriptionConverter>();
-            Mapper.CreateMap<IList<ExternalEventSubscriptionDO>, IList<int?>>().ConvertUsing<ExternalEventSubscriptionToIntConverter>();
-            Mapper.CreateMap<IList<int?>, IList<ExternalEventSubscriptionDO>>().ConvertUsing<IntToExternalEventSubscriptionConverter>();
 
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
 

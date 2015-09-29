@@ -148,7 +148,7 @@ namespace DockyardTest.Controllers
         [Test]
         [Category("ActionController.Configure")]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
-        public void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
+        public async void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -164,7 +164,7 @@ namespace DockyardTest.Controllers
 
                 var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
-                var result =
+                var result = await
                     new ActionController(_action).Configure(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
@@ -187,7 +187,7 @@ namespace DockyardTest.Controllers
         [Test]
         [Category("ActionController.Configure")]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
-        public void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
+        public async void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -205,7 +205,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
                 var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
-                var result =
+                var result = await
                     new ActionController(_action).Configure(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
@@ -222,7 +222,7 @@ namespace DockyardTest.Controllers
         [Test]
         [Category("ActionController.Configure")]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
-        public void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
+        public async void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -244,7 +244,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
                 var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
                 //Act
-                var result =
+                var result = await
                     new ActionController(_action).Configure(curActionDesignDO) as
                         OkNegotiatedContentResult<string>;
 
@@ -366,12 +366,12 @@ namespace DockyardTest.Controllers
 
         [Test, Ignore]
         [Category("ActionController")]
-        public void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
+        public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionController();
             ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.ActivityTemplate = FixtureData.TestActionTemplateDTOV2();
-            var actionResult = controller.Configure(actionDesignDTO);
+            var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
@@ -382,12 +382,12 @@ namespace DockyardTest.Controllers
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
         [Category("ActionController")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionController_GetConfigurationSettings_IdIsMissing()
+        public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
             ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.Id = 0;
-            var actionResult = controller.Configure(actionDesignDTO);
+            var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 
@@ -398,12 +398,12 @@ namespace DockyardTest.Controllers
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
         [Category("ActionController")]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
+        public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();
             ActionDTO actionDesignDTO = CreateActionWithId(2);
             actionDesignDTO.ActivityTemplateId = 0;
-            var actionResult = controller.Configure(actionDesignDTO);
+            var actionResult = await controller.Configure(actionDesignDTO);
 
             var okResult = actionResult as OkNegotiatedContentResult<ActionDO>;
 

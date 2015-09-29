@@ -63,12 +63,13 @@ namespace Core.Services
                 
                 var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
+
                 uow.SaveChanges();
             }
             return curProcessDO;
         }
 
-        
+
 
 
 
@@ -87,18 +88,19 @@ namespace Core.Services
             }
         }
 
-        public void Execute(ProcessDO curProcessDO)
+        public async void Execute(ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
 
             if (curProcessDO.CurrentActivity != null)
             {
+
                 //break if CurrentActivity Is NULL, it means all activities 
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    _activity.Process(curProcessDO.CurrentActivity, curProcessDO);
+                    await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }

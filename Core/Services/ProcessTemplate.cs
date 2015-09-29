@@ -41,10 +41,8 @@ namespace Core.Services
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery();
                     .Include(pt => pt.ProcessNodeTemplates)
-                    .Include("SubscribedDocuSignTemplates")
-                    .Include("SubscribedExternalEvents");
 
                 if (isAdmin)
                 {
@@ -134,12 +132,15 @@ namespace Core.Services
                 {
                     foreach (ActionDO curActionDO in curActionList.Activities)
                     {
-                        if (_action.Activate(curActionDO).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
-                            throw new Exception("Process template activation Fail.");
-                        else
+                        try
                         {
+                            _action.Activate(curActionDO).Wait();
                             curActionDO.ActionState = ActionState.Active;
                             result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template activation failed.", ex);
                         }
                     }
                 }
@@ -156,12 +157,15 @@ namespace Core.Services
                 {
                     foreach (ActionDO curActionDO in curActionList.Activities)
                     {
-                        if (_action.Deactivate(curActionDO).Equals("Fail", StringComparison.CurrentCultureIgnoreCase))
-                            throw new Exception("Process template Deactivation Fail.");
-                        else
+                        try
                         {
+                            _action.Deactivate(curActionDO).Wait();
                             curActionDO.ActionState = ActionState.Deactive;
                             result = "success";
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new ApplicationException("Process template Deactivation failed.", ex);
                         }
                     }
                 }
@@ -172,11 +176,10 @@ namespace Core.Services
         //like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N ActionLists.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
-        public ActionListDO GetActionList(int id)
+        public ActionListDO GetActionList(IUnitOfWork uow, int id)
         {
             ActionListDO curActionList = null;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+         
                 // Get action list by process template first 
                 var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
                     Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
@@ -191,7 +194,7 @@ namespace Core.Services
                     .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
 
 
-            }
+          
             return curActionList;
 
         }
@@ -213,7 +216,7 @@ namespace Core.Services
             {
                 var emptyResult = new List<ActionDO>();
 
-                var curActionList = GetActionList(id);
+                var curActionList = GetActionList(uow,id);
 
                 // Get all the actions for that action list
                 var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);
@@ -318,7 +321,7 @@ namespace Core.Services
             //at create time, find the lowest ordered activity in the immediate Action list and set that as the current activity.
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ActionListDO curActionList = GetActionList(curProcessTemplate.Id);
+                ActionListDO curActionList = GetActionList(uow, curProcessTemplate.Id);
 
 
                 // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list

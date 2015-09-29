@@ -28,12 +28,12 @@ namespace DockyardTest.Services
         [SetUp]
         public override void SetUp()
         {
- 	        base.SetUp();
+            base.SetUp();
             InitializeActionList();
         }
-        
 
-        [Test,Ignore]
+
+        [Test, Ignore]
         [ExpectedException(ExpectedMessage = "Action List ID: 2 status is not unstarted.")]
         public void Process_ActionListNotUnstarted_ThrowException()
         {
@@ -41,20 +41,26 @@ namespace DockyardTest.Services
             ProcessDO processDO = FixtureData.TestProcess1();
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.Process(actionListDo, processDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList.Process(actionListDo, processDO, uow);
+            }
         }
 
-        [Test,Ignore]
+        [Test, Ignore]
         public void Process_CurrentActionInLastList_SetToComplete()
         {
             ActionListDO actionListDO = FixtureData.TestActionList7();
             ProcessDO processDO = FixtureData.TestProcess1();
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
-            
-            _actionList.Process(actionListDO, processDO);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList.Process(actionListDO, processDO, uow);
+            }
 
             ActionDO actionDO = new ActionDO();
             if (actionListDO.CurrentActivity is ActionDO)
@@ -64,7 +70,7 @@ namespace DockyardTest.Services
         }
 
 
-        [Test,Ignore]
+        [Test, Ignore]
         public void Process_CurrentActionInLastList_EqualToCurrentAction()
         {
             ActionListDO actionListDO = FixtureData.TestActionList7();
@@ -74,11 +80,14 @@ namespace DockyardTest.Services
                 .OfType<ActionDO>()
                 .OrderByDescending(o => o.Ordering).FirstOrDefault();
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.Process(actionListDO, processDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList.Process(actionListDO, processDO, uow);
+            }
 
             ActionDO actionDO = new ActionDO();
             if (actionListDO.CurrentActivity is ActionDO)
@@ -98,11 +107,14 @@ namespace DockyardTest.Services
             actionDO.ActionState = ActionState.Active;
             actionListDO.CurrentActivity = actionDO;
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Error; });
-            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
-            _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.Process(actionListDO, processDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Error; });
+                _actionList = ObjectFactory.GetInstance<IActionList>();
+
+                _actionList.Process(actionListDO, processDO, uow);
+            }
         }
 
         [Test]
@@ -135,20 +147,25 @@ namespace DockyardTest.Services
             Assert.AreEqual(actionDO.Id, 7);
         }
 
-        [Test,Ignore]
+        [Test, Ignore]
         public void ProcessNextActivity_CheckLastActionOrder_EqualToCurrentActivity()
         {
             ActionListDO actionListDO = FixtureData.TestActionList7();
-            ProcessDO processDO = FixtureData.TestProcess1(); 
+            ProcessDO processDO = FixtureData.TestProcess1();
             ActionDO lastActionDO = actionListDO.Activities
                 .OfType<ActionDO>()
                 .OrderByDescending(o => o.Ordering).FirstOrDefault();
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+
+
+                _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
 
-            _actionList.ProcessAction(actionListDO, processDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList.ProcessAction(actionListDO, processDO, uow);
+            }
 
             ActionDO actionDO = new ActionDO();
             if (actionListDO.CurrentActivity is ActionDO)
@@ -156,7 +173,7 @@ namespace DockyardTest.Services
             Assert.AreEqual(actionDO.Id, lastActionDO.Id);
         }
 
-        [Test,Ignore]
+        [Test, Ignore]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ProcessNextActivity_NextActionListDONull_ThrowException()
         {
@@ -167,11 +184,14 @@ namespace DockyardTest.Services
             actionListDO.CurrentActivity = actionListDONext;
 
             _actionMock = new Mock<IAction>();
-            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
+
+            _actionMock.Setup(s => s.PrepareToExecute((ActionDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionDO>(p => { p.ActionState = ActionState.Active; });
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_actionMock.Object));
             _actionList = ObjectFactory.GetInstance<IActionList>();
-
-            _actionList.ProcessAction(actionListDO, processDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _actionList.ProcessAction(actionListDO, processDO, uow);
+            }
         }
 
         [Test]
@@ -180,18 +200,18 @@ namespace DockyardTest.Services
             _actionList = ObjectFactory.GetInstance<IActionList>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                
-               // Assert.IsNotNull(expectedAction);
-               // Assert.AreEqual(actualAction.Name, expectedAction.Name);
 
-                
+                // Assert.IsNotNull(expectedAction);
+                // Assert.AreEqual(actualAction.Name, expectedAction.Name);
+
+
 
                 ActionDO actionDO = FixtureData.TestAction22();
                 //Add one test action
                 //var action = FixtureData.TestAction1();
                 uow.ActionRepository.Add(actionDO);
                 uow.SaveChanges();
-                
+
                 _actionList.AddAction(actionDO, "last");
                 var expectedAction = uow.ActionRepository.GetByKey(actionDO.Id);
                 Assert.IsNotNull(expectedAction);

@@ -18,7 +18,7 @@ namespace DockyardTest.Integration
 
         [Test, Ignore("In Process service it is now expecting CurrentActivity to process.")]
         [Category("IntegrationTests")]
-        public async void ITest_CanProcessHealthDemo()
+        public void ITest_CanProcessHealthDemo()
         {
             string email;
             string id;
@@ -106,12 +106,6 @@ namespace DockyardTest.Integration
             healthWriteAction.CrateStorage = JsonConvert.SerializeObject(configuration_settings);
             uow.ActionRepository.Add(healthWriteAction);
 
-            //add a subscription to a specific template on the docusign platform
-            var health_ExternalEventSubscription = FixtureData.TestExternalEventSubscription_medical_form_v1();
-            health_ExternalEventSubscription.ExternalProcessTemplate = healthProcessTemplate;
-            uow.ExternalEventSubscriptionRepository.Add(health_ExternalEventSubscription);
-
-         
             return healthProcessTemplate;
         }
     }
