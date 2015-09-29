@@ -167,7 +167,7 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test]
+        [Test,Ignore]
         public async void CanProcessDocuSignTemplate()
         {
             // Test.
@@ -338,7 +338,7 @@ namespace DockyardTest.Services
             _uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate1());
 
             ActionListDO parentActivity = (ActionListDO) curActionDo.ParentActivity;
-            parentActivity.Process.ProcessTemplateId = 1;
+            parentActivity.Process.ProcessTemplateId = 33;
             _uow.ProcessRepository.Add(parentActivity.Process);
             _uow.SaveChanges();
 

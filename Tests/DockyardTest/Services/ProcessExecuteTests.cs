@@ -28,17 +28,7 @@ namespace DockyardTest.Services
             _process = ObjectFactory.GetInstance<IProcess>();
         }
 
-        [Test]
-
-        //NUnit framework feature: ability to test for an exception
-        [ExpectedException(typeof(ArgumentNullException))]
-
-        public void ExecuteFailsIfNullProcessDo()
-        {
-            //null is passed instead of ProcessDo object
-            _process.Execute(null);
-        
-        }
+   
         
         [Test]
 
