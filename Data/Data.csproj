@@ -259,6 +259,7 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
@@ -312,9 +313,11 @@
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
     </Compile>
+
     <Compile Include="Migrations\201509291928009_forcemerge.cs" />
     <Compile Include="Migrations\201509291928009_forcemerge.Designer.cs">
       <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
+
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -569,8 +572,13 @@
     <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
     </EmbeddedResource>
+<<<<<<< HEAD
     <EmbeddedResource Include="Migrations\201509291928009_forcemerge.resx">
       <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
+=======
+    <EmbeddedResource Include="Migrations\201509290529580_Fixup_Migration.resx">
+      <DependentUpon>201509290529580_Fixup_Migration.cs</DependentUpon>
+>>>>>>> parent of ee31536... Revert "Merge branch 'dev' of https://github.com/alexed1/dockyard into dev"
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
