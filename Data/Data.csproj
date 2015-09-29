@@ -259,7 +259,6 @@
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
@@ -328,10 +327,6 @@
     <Compile Include="Migrations\201509272213417_EmptyMigration2.cs" />
     <Compile Include="Migrations\201509272213417_EmptyMigration2.Designer.cs">
       <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509290529580_Fixup_Migration.cs" />
-    <Compile Include="Migrations\201509290529580_Fixup_Migration.Designer.cs">
-      <DependentUpon>201509290529580_Fixup_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -597,9 +592,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272213417_EmptyMigration2.resx">
       <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509290529580_Fixup_Migration.resx">
-      <DependentUpon>201509290529580_Fixup_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

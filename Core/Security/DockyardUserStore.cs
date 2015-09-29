@@ -25,88 +25,82 @@ namespace Core.Security
         {
         }
 
-        public Task CreateAsync(DockyardAccountDO dockyardAccount)
+        public async Task CreateAsync(DockyardAccountDO dockyardAccount)
         {
             _uow.UserRepository.Add(dockyardAccount);
-            return Task.FromResult(0);
         }
 
-        public Task UpdateAsync(DockyardAccountDO dockyardAccount)
+        public async Task UpdateAsync(DockyardAccountDO dockyardAccount)
         {
-            return Task.FromResult(0);
+            
         }
 
-        public Task DeleteAsync(DockyardAccountDO dockyardAccount)
+        public async Task DeleteAsync(DockyardAccountDO dockyardAccount)
         {
             _uow.UserRepository.Remove(dockyardAccount);
-            return Task.FromResult(0);
         }
 
-        public Task<DockyardAccountDO> FindByIdAsync(string userId)
+        public async Task<DockyardAccountDO> FindByIdAsync(string userId)
         {
-            return Task.FromResult(_uow.UserRepository.GetByKey(userId));
+            return _uow.UserRepository.GetByKey(userId);
         }
 
-        public Task<DockyardAccountDO> FindByNameAsync(string userName)
+        public async Task<DockyardAccountDO> FindByNameAsync(string userName)
         {
-            return Task.FromResult(_uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddress.Address == userName));
+            return _uow.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddress.Address == userName);
         }
 
-        public Task SetSecurityStampAsync(DockyardAccountDO dockyardAccount, string stamp)
+        public async Task SetSecurityStampAsync(DockyardAccountDO dockyardAccount, string stamp)
         {
             dockyardAccount.SecurityStamp = stamp;
-            return Task.FromResult(0);
         }
 
-        public Task<string> GetSecurityStampAsync(DockyardAccountDO dockyardAccount)
+        public async Task<string> GetSecurityStampAsync(DockyardAccountDO dockyardAccount)
         {
-            return Task.FromResult(dockyardAccount.SecurityStamp);
+            return dockyardAccount.SecurityStamp;
         }
 
-        public Task SetEmailAsync(DockyardAccountDO dockyardAccount, string email)
+        public async Task SetEmailAsync(DockyardAccountDO dockyardAccount, string email)
         {
             dockyardAccount.Email = email;
             dockyardAccount.EmailAddress.Address = email;
-            return Task.FromResult(0);
         }
 
-        public Task<string> GetEmailAsync(DockyardAccountDO dockyardAccount)
+        public async Task<string> GetEmailAsync(DockyardAccountDO dockyardAccount)
         {
-            return Task.FromResult(dockyardAccount.EmailAddress.Address);
+            return dockyardAccount.EmailAddress.Address;
         }
 
-        public Task<bool> GetEmailConfirmedAsync(DockyardAccountDO dockyardAccount)
+        public async Task<bool> GetEmailConfirmedAsync(DockyardAccountDO dockyardAccount)
         {
-            return Task.FromResult(dockyardAccount.EmailConfirmed);
+            return dockyardAccount.EmailConfirmed;
         }
 
-        public Task SetEmailConfirmedAsync(DockyardAccountDO dockyardAccount, bool confirmed)
+        public async Task SetEmailConfirmedAsync(DockyardAccountDO dockyardAccount, bool confirmed)
         {
             dockyardAccount.EmailConfirmed = confirmed;
-            return Task.FromResult(0);
         }
 
-        public Task<DockyardAccountDO> FindByEmailAsync(string email)
+        public async Task<DockyardAccountDO> FindByEmailAsync(string email)
         {
-            return Task.FromResult(_uow.UserRepository.FindOne(u => u.EmailAddress.Address == email));
+            return _uow.UserRepository.FindOne(u => u.EmailAddress.Address == email);
         }
 
         #region Implementation of IUserPasswordStore<DockyardAccountDO,in string>
 
-        public Task SetPasswordHashAsync(DockyardAccountDO dockyardAccount, string passwordHash)
+        public async Task SetPasswordHashAsync(DockyardAccountDO dockyardAccount, string passwordHash)
         {
             dockyardAccount.PasswordHash = passwordHash;
-            return Task.FromResult(0);
         }
 
-        public Task<string> GetPasswordHashAsync(DockyardAccountDO dockyardAccount)
+        public async Task<string> GetPasswordHashAsync(DockyardAccountDO dockyardAccount)
         {
-            return Task.FromResult(dockyardAccount.PasswordHash);
+            return dockyardAccount.PasswordHash;
         }
 
-        public Task<bool> HasPasswordAsync(DockyardAccountDO dockyardAccount)
+        public async Task<bool> HasPasswordAsync(DockyardAccountDO dockyardAccount)
         {
-            return Task.FromResult(!string.IsNullOrEmpty(dockyardAccount.PasswordHash));
+            return !string.IsNullOrEmpty(dockyardAccount.PasswordHash);
         }
 
         #endregion
