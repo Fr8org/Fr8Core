@@ -313,6 +313,10 @@
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509290529580_Fixup_Migration.cs" />
+    <Compile Include="Migrations\201509290529580_Fixup_Migration.Designer.cs">
+      <DependentUpon>201509290529580_Fixup_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -565,6 +569,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509290529580_Fixup_Migration.resx">
+      <DependentUpon>201509290529580_Fixup_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

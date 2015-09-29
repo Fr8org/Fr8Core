@@ -35,12 +35,12 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
         /// <param name="dto">DTO</param>
         /// <remarks>Uses <paramref name="curActionType"/> argument for constructing request uri replacing all space characters with "_"</remarks>
         /// <returns></returns>
-        public async Task<ActionDTO> CallActionAsync<T>(string curActionType, T dto)
+        public async Task<R> CallActionAsync<T, R>(string curActionType, T dto)
         {
             var action = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
             var requestUri = new Uri(string.Format("actions/{0}", action), UriKind.Relative);
 
-            return await PostAsync<T, ActionDTO>(requestUri, dto);
+            return await PostAsync<T, R>(requestUri, dto);
         }
     }
 }
