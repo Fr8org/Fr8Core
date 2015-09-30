@@ -78,15 +78,15 @@ namespace pluginAzureSqlServer.Actions
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDto)
         {
-            if (curActionDTO.CrateStorage == null)
+            if (curActionDto.CrateStorage == null)
             {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
+                curActionDto.CrateStorage = new CrateStorageDTO();
             }
             var crateControls = CreateControlsCrate();
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            return curActionDTO;
+            curActionDto.CrateStorage.CrateDTO.Add(crateControls);
+            return curActionDto;
         }
 
         private CrateDTO CreateControlsCrate() { 

@@ -270,7 +270,9 @@ namespace Core.Services
 
             //TODO : Cut base Url from PluginDO.Endpoint
 
-            curPluginClient.BaseUri = new Uri(curActionDO.ActivityTemplate.Plugin.Endpoint);
+
+            var uri = curActionDO.ActivityTemplate.Plugin.Endpoint.StartsWith("http") ? curActionDO.ActivityTemplate.Plugin.Endpoint : "http://" + curActionDO.ActivityTemplate.Plugin.Endpoint;
+            curPluginClient.BaseUri = new Uri(uri);
 
             var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
             EventManager.ActionDispatched(curActionDTO);

@@ -52,9 +52,9 @@ namespace PluginBase.BaseClasses
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual ActionDTO InitialConfigurationResponse(ActionDTO curActionDto)
         {
-            return curActionDTO;
+            return curActionDto;
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
