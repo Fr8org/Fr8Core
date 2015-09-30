@@ -311,6 +311,13 @@ namespace Data.Infrastructure
                 .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
 
+            /*modelBuilder.Entity<ActivityDO>()
+                .HasOptional(x => x.ParentActivity)
+                .WithMany(x=>x.Activities)
+                .HasForeignKey(x => x.ParentActivityId)
+                .WillCascadeOnDelete(true);*/
+            
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {

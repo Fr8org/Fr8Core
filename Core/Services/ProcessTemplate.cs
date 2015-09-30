@@ -85,7 +85,7 @@ namespace Core.Services
         public void Delete(IUnitOfWork uow, int id)
         {
             var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).SingleOrDefault();
-            
+
             if (curProcessTemplate == null)
             {
                 throw new EntityNotFoundException<ProcessTemplateDO>(id);
@@ -95,15 +95,23 @@ namespace Core.Services
             {
                 foreach (var actionList in nodeTemplate.ActionLists)
                 {
-                    foreach (var activity in actionList.Activities)
+                    var activities = new List<ActivityDO>();
+                    for (var i = 0; i < actionList.Activities.Count; i++)
                     {
-                        uow.ActivityRepository.Remove(activity);
+                        TraverseActivity(actionList.Activities[i], activities.Add);
                     }
+                    activities.ForEach(x=>uow.ActivityRepository.Remove(x));
                 }
             }
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
         }
 
+        private static void TraverseActivity(ActivityDO parent, Action<ActivityDO> visitAction)
+        {
+            visitAction(parent);
+            foreach (ActivityDO child in parent.Activities)
+                TraverseActivity(child, visitAction);
+        }
 
 
         public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
@@ -172,22 +180,22 @@ namespace Core.Services
         public ActionListDO GetActionList(IUnitOfWork uow, int id)
         {
             ActionListDO curActionList = null;
-         
-                // Get action list by process template first 
-                var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
-                    Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
 
-                if (curProcessTemplateQuery.Count() == 0
-                    || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
-                    return null;
+            // Get action list by process template first 
+            var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
+                Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
 
-                // Get ActionLists related to the ProcessTemplate
-                curActionList = curProcessTemplateQuery.SingleOrDefault()
-                    .ProcessNodeTemplates.FirstOrDefault().ActionLists
-                    .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+            if (curProcessTemplateQuery.Count() == 0
+                || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
+                return null;
+
+            // Get ActionLists related to the ProcessTemplate
+            curActionList = curProcessTemplateQuery.SingleOrDefault()
+                .ProcessNodeTemplates.FirstOrDefault().ActionLists
+                .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
 
 
-          
+
             return curActionList;
 
         }
@@ -209,7 +217,7 @@ namespace Core.Services
             {
                 var emptyResult = new List<ActionDO>();
 
-                var curActionList = GetActionList(uow,id);
+                var curActionList = GetActionList(uow, id);
 
                 // Get all the actions for that action list
                 var curActivities = uow.ActionRepository.GetAll().Where(a => a.ParentActivityId == curActionList.Id);

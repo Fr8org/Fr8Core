@@ -26,5 +26,7 @@ namespace Data.Entities
 
         public int Ordering { get; set; }
 
+
+        //public virtual List<ActivityDO> ChildActivities { get; set; }
     }
 }

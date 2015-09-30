@@ -328,6 +328,18 @@
     <Compile Include="Migrations\201509272213417_EmptyMigration2.Designer.cs">
       <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509301406085_EmptyMigration3.cs" />
+    <Compile Include="Migrations\201509301406085_EmptyMigration3.Designer.cs">
+      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.cs" />
+    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.Designer.cs">
+      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.cs" />
+    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.Designer.cs">
+      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -592,6 +604,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272213417_EmptyMigration2.resx">
       <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301406085_EmptyMigration3.resx">
+      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301545244_UpdatedDockyardDbContext.resx">
+      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301600207_UpdatedActivityDO_2.resx">
+      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
