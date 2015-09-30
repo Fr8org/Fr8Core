@@ -23,24 +23,10 @@ namespace pluginSalesforce.Controllers
         }
 
         [HttpPost]
-        [Route("activate")]
-        public string Activate(ActionDTO curActionDataPackage)
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
-        [Route("deactivate")]
-        public string Deactivate(ActionDTO curActionDataPackage)
-        {
-            return string.Empty;
-        }
-
-        [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDTO curActionDataPackage)
+        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            return string.Empty;
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
         }
     }
 }

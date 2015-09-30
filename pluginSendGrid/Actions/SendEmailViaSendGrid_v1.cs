@@ -6,8 +6,6 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using pluginAzureSqlServer.Infrastructure;
-using pluginAzureSqlServer.Services;
 using PluginBase.Infrastructure;
 using StructureMap;
 using PluginBase;
@@ -17,22 +15,22 @@ using Core.Services;
 using Core.StructureMap;
 using Data.States.Templates;
 using Data.Interfaces.ManifestSchemas;
+using pluginSendGrid.Infrastructure;
 
 namespace pluginSendGrid.Actions
 {
-    public class Send_Email_Via_SendGrid_v1 : BasePluginAction
+    public class SendEmailViaSendGrid_v1 : BasePluginAction
     {
-         private IAction _action;
+        private IAction _action;
         private ICrate _crate;
+        private IEmailPackager _emailPackager;
 
-        public Write_To_Sql_Server_v1()
+        public SendEmailViaSendGrid_v1()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrate>();
+            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
-
-
-
 
         //================================================================================
         //General Methods (every Action class has these)
@@ -62,41 +60,67 @@ namespace pluginSendGrid.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
             var crateControls = CreateControlsCrate();
-            var crateDataFields = CreateDataFields();
+            var crateAvailableDataFields = GetAvailableDataFields(curActionDTO);
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableDataFields);
             return curActionDTO;
         }
 
-        private CrateDTO CreateControlsCrate() { 
+        private CrateDTO CreateControlsCrate()
+        {
 
-            // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new FieldDefinitionDTO()
+            FieldDefinitionDTO[] controls = 
             {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+                new FieldDefinitionDTO()
+                {
+                        FieldLabel = "Recipient Email Address",
+                        Type = "textField",
+                        Name = "Recipient_Email_Address",
+                        Required = false
+                },
+                new FieldDefinitionDTO()
+                {
+                        FieldLabel = "Email Subject",
+                        Type = "textField",
+                        Name = "Email_Subject",
+                        Required = false
+                },
+                new FieldDefinitionDTO()
+                {
+                        FieldLabel = "Email Body",
+                        Type = "textField",
+                        Name = "Email_Body",
+                        Required = false
+                }
             };
-            return PackControlsCrate(control);
+            return _crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 
-         private CrateDTO CreateDataFields() { 
+        private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
+        {
+            CrateDTO crateDTO = null; 
 
-            var control = new FieldDefinitionDTO()
+            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
+
+            if (curUpstreamFields.Length == 0)
             {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
-            };
-            return PackControlsCrate(control);
+                crateDTO = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
+                         "This action couldn't find either source fields or target fields (or both). " +
+                        "Try configuring some Actions first, then try this page again.");
+                curActionDTO.CurrentView = "MapFieldsErrorMessage";
+            }
+            else
+            {
+                crateDTO = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            }
+
+            return crateDTO;
         }
 
         protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-         //not currently any requirements that need attention at FollowupConfigurationResponse
+            //not currently any requirements that need attention at FollowupConfigurationResponse
             return null;
         }
 
@@ -113,11 +137,9 @@ namespace pluginSendGrid.Actions
 
         public object Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            //var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDataPackage.ActionDTO);
-            //var curCommandArgs = PrepareSQLWrite(curActionDO);
-            //var dbService = new DbService();
+            var mailerDO = AutoMapper.Mapper.Map<MailerDO>(curActionDataPackage.PayloadDTO);
 
-            //dbService.WriteCommand(curCommandArgs);
+            _emailPackager.Send(mailerDO);
 
             return true;
         }

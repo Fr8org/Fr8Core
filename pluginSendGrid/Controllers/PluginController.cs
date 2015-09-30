@@ -27,7 +27,7 @@ namespace pluginSalesforce.Controllers
 
             var action = new ActivityTemplateDO()
             {
-                Name = "Send_Email_Via_SendGrid",
+                Name = "SendEmailViaSendGrid",
                 Version = "1",
                 Plugin = plugin,
                 Category = ActivityCategory.fr8_Forwarder
