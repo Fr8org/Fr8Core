@@ -17,8 +17,8 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
         /// <returns></returns>
         public async Task<string> PostActionAsync(string curActionType, ActionDTO curActionDTO, PayloadDTO curPayloadDTO)
         {
-            var action = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
-            var requestUri = new Uri(string.Format("actions/{0}", action), UriKind.Relative);
+//            var action = Regex.Replace(curActionType, @"[^-_\w\d]", "_");
+            var requestUri = new Uri(string.Format("actions/execute"), UriKind.Relative);
             var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
 
             return await PostAsync(requestUri, dataPackage);

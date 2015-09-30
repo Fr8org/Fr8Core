@@ -637,8 +637,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = processNode.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Process Node",
@@ -658,8 +658,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Criteria Evaluation",
@@ -679,8 +679,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = null,
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Criteria Evaluation",
@@ -701,8 +701,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",
@@ -723,8 +723,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",
@@ -760,8 +760,8 @@ namespace Core.Managers
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
+                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
+                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",

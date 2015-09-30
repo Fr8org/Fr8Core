@@ -14,6 +14,7 @@ using Data.Interfaces.ManifestSchemas;
 using PluginBase;
 using PluginBase.BaseClasses;
 using DocuSign.Integrations.Client;
+using Newtonsoft.Json.Linq;
 
 namespace pluginDocuSign.Actions
 {
@@ -114,8 +115,17 @@ namespace pluginDocuSign.Actions
             var crate = curPayloadDTO.CrateStorageDTO().CrateDTO.SingleOrDefault();
             if (crate == null) return null;
 
-            var fields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
-            if (fields == null || fields.Count == 0) return null;
+            var content = (JObject)JsonConvert.DeserializeObject(crate.Contents);
+            var payload = content["EventPayload"].Values<JObject>().FirstOrDefault();
+
+            if (payload == null)
+            {
+                return null;
+            }
+
+            var fields = JsonConvert.DeserializeObject<FieldDTO[]>(payload["Contents"].ToString());
+
+            if (fields == null || fields.Length == 0) return null;
 
             var envelopeIdField = fields.SingleOrDefault(f => f.Key == "EnvelopeId");
             if (envelopeIdField == null) return null;
