@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
@@ -8,7 +10,6 @@ using Data.States;
 using StructureMap;
 using Newtonsoft.Json;
 using Core.Helper;
-using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
@@ -73,7 +74,7 @@ namespace Core.Services
 
 
 
-        public void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+        public async void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEvent);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
@@ -84,11 +85,11 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                Execute(curProcessDO);
+                await Execute(curProcessDO);
             }
         }
 
-        public void Execute(ProcessDO curProcessDO)
+        public async Task Execute(ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
@@ -100,7 +101,7 @@ namespace Core.Services
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
+                    await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }
