@@ -79,6 +79,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
     $httpProvider.interceptors.push('spinnerHttpInterceptor');
 
     $stateProvider
+        .state('myaccount', {
+            url: "/myaccount",
+            templateUrl: "/AngularTemplate/MyAccountPage",
+            data: { pageTitle: 'My Account', pageSubTitle: '' }
+        })
     // Process Template list
         .state('processTemplates', {
             url: "/processes",

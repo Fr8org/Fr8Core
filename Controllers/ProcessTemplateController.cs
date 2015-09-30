@@ -81,6 +81,23 @@ namespace Web.Controllers
 
             return result;
         }
+        [Route("getactive")]
+        [HttpGet]
+        public IHttpActionResult GetActive(int? id = null, int? status = null)
+        {
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+
+            if (curProcessTemplates.Any())
+            {
+                if (status != null)
+                {
+                    curProcessTemplates = curProcessTemplates.Where(p => p.ProcessTemplateState == status).ToList();
+                    return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+                }
+                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+            }
+            return Ok();
+        }
 
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
@@ -104,6 +121,7 @@ namespace Web.Controllers
             return Ok();
         }
 
+        
         public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
