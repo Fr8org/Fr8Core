@@ -16,12 +16,13 @@ namespace UtilitiesTesting.Fixtures
 		{          
 			var processTemplate = new ProcessTemplateDO
 			{
-				Description = "descr 1",
+				Id = 33,
+                Description = "descr 1",
 				Name = "template1",
 				ProcessTemplateState = ProcessTemplateState.Active,
 
-                //UserId = "testUser1"
-                //DockyardAccount = FixtureData.TestDockyardAccount1()
+              
+                
 			};
 			return processTemplate;
 		}
