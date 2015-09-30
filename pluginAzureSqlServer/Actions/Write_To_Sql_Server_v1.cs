@@ -140,11 +140,11 @@ namespace pluginAzureSqlServer.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            var curCommandArgs = PrepareSQLWrite(curActionDataPackage.ActionDTO, processPayload);
+            var curCommandArgs = PrepareSQLWrite(actionDto, processPayload);
 
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);

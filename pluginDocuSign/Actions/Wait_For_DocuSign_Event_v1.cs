@@ -83,10 +83,12 @@ namespace pluginDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            
             // Extract envelope id from the payload Crate
-            string envelopeId = GetEnvelopeId(curActionDataPackage.PayloadDTO);
+            string envelopeId = GetEnvelopeId(processPayload);
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
@@ -101,8 +103,6 @@ namespace pluginDocuSign.Actions
                     Value = envelopeId
                 }
             };
-
-            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
 
             var cratePayload = _crate.Create(
                 "DocuSign Envelope Payload Data",

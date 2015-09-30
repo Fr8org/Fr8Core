@@ -38,18 +38,18 @@ namespace pluginDocuSign.Actions
             return; // Will be changed when implementation is plumbed in.
         }
 
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackageDTO)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var processPayload = await GetProcessPayload(curActionDataPackageDTO.PayloadDTO.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
             //Get envlopeId
-            string envelopeId = GetEnvelopeId(curActionDataPackageDTO.PayloadDTO);
+            string envelopeId = GetEnvelopeId(processPayload);
             if (envelopeId == null)
             {
                 throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
 
-            var payload = CreateActionPayload(curActionDataPackageDTO.ActionDTO, envelopeId);
+            var payload = CreateActionPayload(actionDto, envelopeId);
             var cratesList = new List<CrateDTO>()
             {
                 _crate.Create("DocuSign Envelope Data",

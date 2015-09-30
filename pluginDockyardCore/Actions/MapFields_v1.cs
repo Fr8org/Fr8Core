@@ -23,9 +23,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var curControlsCrate = curActionDataPackage.ActionDTO
+            var curControlsCrate = actionDto
                 .CrateStorage
                 .CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
@@ -47,7 +47,7 @@ namespace pluginDockyardCore.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
             var actionPayloadCrates = new List<CrateDTO>()
             {

@@ -31,10 +31,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
         {
-            var curActionDTO = curActionDataPackage.ActionDTO;
-            var curPayloadDTO = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+            var curPayloadDTO = await GetProcessPayload(curActionDTO.ProcessId);
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = _action.GetControlsManifest(curAction);

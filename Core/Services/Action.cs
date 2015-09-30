@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
 using Data.Interfaces.ManifestSchemas;
+using Google.Apis.Auth;
 
 namespace Core.Services
 {
@@ -45,47 +46,54 @@ namespace Core.Services
             }
         }
 
-        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
+        public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
             ActionDO existingActionDO = null;
             ActionDO curAction;
+
+            if (submittedActionData.ActivityTemplateId == 0)
+            {
+                submittedActionData.ActivityTemplateId = null;
+            }
+
+            if (submittedActionData.Id > 0)
+            {
+                existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
+            }
+
+            if (submittedActionData.IsTempId)
+            {
+                submittedActionData.Id = 0;
+            }
+
+            if (existingActionDO != null)
+            {
+                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
+                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
+                existingActionDO.Name = submittedActionData.Name;
+                existingActionDO.CrateStorage = submittedActionData.CrateStorage;
+                curAction = existingActionDO;
+            }
+            else
+            {
+                uow.ActionRepository.Add(submittedActionData);
+                curAction = submittedActionData;
+            }
+
+            uow.SaveChanges();
+            curAction.IsTempId = false;
+            return curAction;
+        }
+
+        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
+        {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (submittedActionData.ActivityTemplateId == 0)
-                {
-                    submittedActionData.ActivityTemplateId = null;
-                }
-
-                if (submittedActionData.Id > 0)
-                {
-                    existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
-                }
-
-                if (submittedActionData.IsTempId)
-                {
-                    submittedActionData.Id = 0;
-                }
-
-                if (existingActionDO != null)
-                {
-                    existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                    existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
-                    existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
-                    existingActionDO.Name = submittedActionData.Name;
-                    existingActionDO.CrateStorage = submittedActionData.CrateStorage;
-                    curAction = existingActionDO;
-                }
-                else
-                {
-                    uow.ActionRepository.Add(submittedActionData);
-                    curAction = submittedActionData;
-                }
-
-                uow.SaveChanges();
-                curAction.IsTempId = false;
-                return curAction;
+                return SaveOrUpdateAction(uow, submittedActionData);
             }
         }
+        
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -95,8 +103,13 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
+                return GetById(uow, id);
             }
+        }
+
+        public ActionDO GetById(IUnitOfWork uow, int id)
+        {
+            return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
         }
 
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
@@ -104,7 +117,7 @@ namespace Core.Services
             ActionDTO tempActionDTO;
             try
             {
-                tempActionDTO = await CallPluginActionAsync(curActionDO, "configure");
+                tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
             }
             catch (ArgumentException)
             {
@@ -231,22 +244,11 @@ namespace Core.Services
         public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
         {
             if (curActionDO == null)
+            {
                 throw new ArgumentNullException("curActionDO");
+            }
 
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActionDO.ActivityTemplate);
-
-            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
-
-            //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
-            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
-
-            curPluginClient.Plugin = curActionDO.ActivityTemplate.Plugin;
-
-            var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
-            // Commented out by yakov.gnusin. This breaks action execution.
-            // var actionDTO = await curPluginClient.CallActionAsync(curActionDO.Name, dataPackage);
-            var payloadDTO = await curPluginClient.CallActionAsync<ActionDataPackageDTO, PayloadDTO>("Execute", dataPackage);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
@@ -355,7 +357,7 @@ namespace Core.Services
         {
             try
             {
-                var result = await CallPluginActionAsync(curActionDO, "activate");
+                var result = await CallPluginActionAsync<ActionDTO>("activate", curActionDO);
                 EventManager.ActionActivated(curActionDO);
                 return result;
             }
@@ -373,29 +375,16 @@ namespace Core.Services
 
         public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
         {
-            return await CallPluginActionAsync(curActionDO, "deactivate");
+            return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
-        private async Task<ActionDTO> CallPluginActionAsync(ActionDO curActionDO, string actionName)
+        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
-            if (curActionDO == null || curActionDO.ActivityTemplateId == 0)
-            {
-                throw new ArgumentNullException("curActionDO");
-            }
+            var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
 
-            ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
-            if (curActivityTemplate == null)
-            {
-                throw new ArgumentNullException("curActionDO", "ActivityTemplateDO");
-            }
+            dto.ProcessId = processId;
 
-            //convert the Action to a DTO in preparation for serialization and POST to the plugin
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-
-            var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
-            pluginTransmitter.Plugin = curActivityTemplate.Plugin;
-            return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
+            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
         }
     }
 }

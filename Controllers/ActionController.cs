@@ -106,7 +106,10 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDTO>(_action.GetById(id));
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return Mapper.Map<ActionDTO>(_action.GetById(uow, id));
+            }
         }
 
         /// <summary>
@@ -127,14 +130,20 @@ namespace Web.Controllers
         public IHttpActionResult Save(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var resultActionDO = _action.SaveOrUpdateAction(submittedActionDO);
-            if (curActionDTO.IsTempId)
-            {
-                _actionList.AddAction(resultActionDO, "last");
-            }
 
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-            return Ok(resultActionDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+               
+                if (curActionDTO.IsTempId)
+                {
+                    _actionList.AddAction(resultActionDO, "last");
+                }
+
+                var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+                return Ok(resultActionDTO);
+            }
         }    
     }
 }

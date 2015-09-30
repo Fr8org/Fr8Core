@@ -59,7 +59,7 @@ namespace DockyardTest.Services
 
             //set the new name
             actionDto.Name = "NewActionFromServer";
-            PluginTransmitterMock.Setup(rc => rc.CallActionAsync<ActionDTO, ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
+            PluginTransmitterMock.Setup(rc => rc.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
                 .Returns(() => Task.FromResult(actionDto));
 
             //Act
@@ -167,44 +167,44 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test,Ignore]
+        [Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
         public async void CanProcessDocuSignTemplate()
         {
             // Test.
-            Action action = new Action();
-            var processTemplate = FixtureData.TestProcessTemplate2();
-            var payloadMappings = FixtureData.FieldMappings;
-            var actionDo = FixtureData.IntegrationTestAction();
-            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
-            ProcessDO procesDO = FixtureData.TestProcess1();
-            PluginTransmitterMock
-                .Setup(m => m.CallActionAsync<ActionDataPackageDTO, ActionDTO>(
-                    It.Is<string>(s => s == "testaction"),
-                    It.IsAny<ActionDataPackageDTO>()))
-                .Returns(() => Task.FromResult(Mapper.Map<ActionDTO>(actionDo)))
-                .Verifiable();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ProcessTemplateRepository.Add(processTemplate);
-                uow.ActionRepository.Add(actionDo);
-                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
-                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
-                uow.SaveChanges();
-
-                await action.PrepareToExecute(actionDo, procesDO, uow);
-            }
-
-            //Ensure that no Incidents were registered
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Assert.IsFalse(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
-            }
-
-            //We use a mock of IPluginTransmitter. Get that mock and check that 
-            //CallActionAsync was called with the correct attributes
-            // TODO: Fix this line according to v2 changes
-            PluginTransmitterMock.Verify();
+//            Action action = new Action();
+//            var processTemplate = FixtureData.TestProcessTemplate2();
+//            var payloadMappings = FixtureData.FieldMappings;
+//            var actionDo = FixtureData.IntegrationTestAction();
+//            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
+//            ProcessDO procesDO = FixtureData.TestProcess1();
+//            PluginTransmitterMock
+//                .Setup(m => m.CallActionAsync<ActionDataPackageDTO, ActionDTO>(
+//                    It.Is<string>(s => s == "testaction"),
+//                    It.IsAny<ActionDataPackageDTO>()))
+//                .Returns(() => Task.FromResult(Mapper.Map<ActionDTO>(actionDo)))
+//                .Verifiable();
+//
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                uow.ProcessTemplateRepository.Add(processTemplate);
+//                uow.ActionRepository.Add(actionDo);
+//                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
+//                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
+//                uow.SaveChanges();
+//
+//                await action.PrepareToExecute(actionDo, procesDO, uow);
+//            }
+//
+//            //Ensure that no Incidents were registered
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                Assert.IsFalse(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
+//            }
+//
+//            //We use a mock of IPluginTransmitter. Get that mock and check that 
+//            //CallActionAsync was called with the correct attributes
+//            // TODO: Fix this line according to v2 changes
+//            PluginTransmitterMock.Verify();
         }
 
         [Test]
@@ -226,7 +226,7 @@ namespace DockyardTest.Services
             ActionDO actionDO = FixtureData.IntegrationTestAction();
             ProcessDO procesDo = FixtureData.TestProcess1();
             var pluginClientMock = new Mock<IPluginTransmitter>();
-            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO, ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
+            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             //_action = ObjectFactory.GetInstance<IAction>();
 
@@ -245,7 +245,7 @@ namespace DockyardTest.Services
             actionDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             ProcessDO procesDO = FixtureData.TestProcess1();
             var pluginClientMock = new Mock<IPluginTransmitter>();
-            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO, ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).Returns<string, ActionDTO>((s, a) => Task.FromResult(a));
+            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).Returns<string, ActionDTO>((s, a) => Task.FromResult(a));
             ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
             //_action = ObjectFactory.GetInstance<IAction>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -11,8 +11,10 @@ namespace Core.Interfaces
     {
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
+        ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO currentActionDo);
         Task<ActionDTO> Configure(ActionDO curActionDO);
         ActionDO GetById(int id);
+        ActionDO GetById(IUnitOfWork uow, int id);
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
         Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow);
