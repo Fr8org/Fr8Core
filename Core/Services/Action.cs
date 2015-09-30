@@ -239,14 +239,14 @@ namespace Core.Services
             var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
 
             //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
-            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
+            var curPluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
 
-            curPluginClient.Plugin = curActionDO.ActivityTemplate.Plugin;
+            curPluginTransmitter.Plugin = curActionDO.ActivityTemplate.Plugin;
 
             var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
             // Commented out by yakov.gnusin. This breaks action execution.
-            // var actionDTO = await curPluginClient.CallActionAsync(curActionDO.Name, dataPackage);
-            var payloadDTO = await curPluginClient.CallActionAsync<ActionDataPackageDTO, PayloadDTO>("Execute", dataPackage);
+            // var actionDTO = await curPluginTransmitter.CallActionAsync(curActionDO.Name, dataPackage);
+            var payloadDTO = await curPluginTransmitter.CallActionAsync<ActionDataPackageDTO, PayloadDTO>("Execute", dataPackage);
             
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
@@ -378,24 +378,22 @@ namespace Core.Services
 
         private async Task<ActionDTO> CallPluginActionAsync(ActionDO curActionDO, string actionName)
         {
-            if (curActionDO == null || curActionDO.ActivityTemplateId == 0)
+            if (curActionDO == null || !curActionDO.ActivityTemplateId.HasValue)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-            ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
-            if (curActivityTemplate == null)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new ArgumentNullException("curActionDO", "ActivityTemplateDO");
+                var curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId.Value);
+                //convert the Action to a DTO in preparation for serialization and POST to the plugin
+                var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+                curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+
+                var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
+                pluginTransmitter.Plugin = uow.PluginRepository.GetByKey(curActivityTemplate.PluginID);
+                return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
             }
-
-            //convert the Action to a DTO in preparation for serialization and POST to the plugin
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-
-            var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
-            pluginTransmitter.Plugin = curActivityTemplate.Plugin;
-            return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
         }
     }
 }
