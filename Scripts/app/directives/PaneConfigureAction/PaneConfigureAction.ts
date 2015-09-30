@@ -201,6 +201,7 @@ module dockyard.directives.paneConfigureAction {
             scope.processing = true;
             var self = this;
             var activityTemplateName = scope.currentAction.activityTemplateName; // preserve activity name
+
             this.ActionService.configure(action).$promise.then(function (res: any) {
 
                 // Unblock pane
