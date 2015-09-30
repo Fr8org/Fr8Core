@@ -31,16 +31,12 @@ namespace DockyardTest.Services
    
         
         [Test]
-
-        //NUnit framework feature: ability to test for an exception
         [ExpectedException(typeof(ArgumentNullException))]
-
-        public void ExecuteFailsIfNullProcessDoCurrentActivity()
+        public async void ExecuteFailsIfNullProcessDoCurrentActivity()
         {
             //Get ProcessDO entity from static partial class FixtureData for already prepared data
             //The CurrentActivity value is already set to null and pass it immediately to service
-            _process.Execute(FixtureData.TestProcessCurrentActivityNULL());
-
+            await _process.Execute(FixtureData.TestProcessCurrentActivityNULL());
         }
     }
 
