@@ -143,8 +143,8 @@ namespace pluginAzureSqlServer.Actions
         {
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDataPackage.ActionDTO);
             var curCommandArgs = PrepareSQLWrite(curActionDO);
-            var dbService = new DbService();
 
+            var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
 
             return true;
@@ -222,7 +222,8 @@ namespace pluginAzureSqlServer.Actions
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);
         }
 
-        private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO, DbServiceJsonParser parser)
+        private IEnumerable<Table> ConvertActionPayloadToSqlInputs(
+            ActionDO curActionDO, DbServiceJsonParser parser)
         {
             //replace this with a Crate-based solution
             JObject payload = new JObject();//JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
