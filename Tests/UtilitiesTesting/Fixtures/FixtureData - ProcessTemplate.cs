@@ -17,7 +17,7 @@ namespace UtilitiesTesting.Fixtures
 			var processTemplate = new ProcessTemplateDO
 			{
 				Id = 33,
-                Description = "descr 1",
+				Description = "descr 1",
 				Name = "template1",
 				ProcessTemplateState = ProcessTemplateState.Active,
 

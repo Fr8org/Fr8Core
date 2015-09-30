@@ -64,6 +64,14 @@ namespace Web.Controllers
             }
         }
 
+
+        public ActionResult Index_Docusign()
+        {
+         
+
+            return View();
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
@@ -78,6 +86,12 @@ namespace Web.Controllers
             return View();
         }
 
+        public ActionResult fr8index()
+        {
+            ViewBag.Message = "Your contact page.";
+
+            return View();
+        }
         public ActionResult MultiPartWorkflows()
         {
             ViewBag.Message = "Your contact page.";
