@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
@@ -8,7 +10,6 @@ using Data.States;
 using StructureMap;
 using Newtonsoft.Json;
 using Core.Helper;
-using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
@@ -87,7 +88,7 @@ namespace Core.Services
             }
         }
 
-        public async void Execute(ProcessDO curProcessDO)
+        public async Task Execute(ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
