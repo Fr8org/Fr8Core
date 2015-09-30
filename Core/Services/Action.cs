@@ -380,6 +380,9 @@ namespace Core.Services
 
         private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
+            if (actionName == null) throw new ArgumentNullException("actionName");
+            if (curActionDO == null) throw new ArgumentNullException("curActionDO");
+            
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
 
             dto.ProcessId = processId;
