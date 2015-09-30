@@ -52,7 +52,10 @@ namespace pluginDocuSign.Actions
             var payload = CreateActionPayload(curActionDataPackageDTO.ActionDTO, envelopeId);
             var cratesList = new List<CrateDTO>()
             {
-                _crate.Create("DocuSign Envelope Data", JsonConvert.SerializeObject(payload), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
+                _crate.Create("DocuSign Envelope Data",
+                    JsonConvert.SerializeObject(payload),
+                    CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+                    CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
             };
 
             processPayload.UpdateCrateStorageDTO(cratesList);

@@ -1,10 +1,11 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using PluginBase.BaseClasses;
-using System.Collections.Generic;
 using Data.States;
-using System;
+using PluginBase.BaseClasses;
 
 namespace pluginAzureSqlServer.Controllers
 {    
@@ -37,12 +38,11 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public ActionDTO Execute(ActionDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage);
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
+                curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
         }
-
-
 
         //----------------------------------------------------------
 

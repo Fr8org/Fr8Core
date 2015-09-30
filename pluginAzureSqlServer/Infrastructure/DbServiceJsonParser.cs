@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Data.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Core.Interfaces;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 using PluginBase.Infrastructure;
 
 namespace pluginAzureSqlServer.Infrastructure
@@ -30,19 +34,26 @@ namespace pluginAzureSqlServer.Infrastructure
             return ExtractTable(data);
         }
 
-        public string ExtractConnectionString(ActionDO curActionDO)
+        public string ExtractConnectionString(ActionDTO curActionDTO)
         {
-            var curConnectionString = string.Empty;
-            var curSettings = JsonConvert.DeserializeObject<JObject>(curActionDO.CrateStorage);
-            var curConnStringObject = curSettings.ExtractPropertyValue<JArray>("configurationSettings");
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            foreach (var v in curConnStringObject.Select(item => item.SelectToken("textField")).Where(v => v != null))
+            if (controlsCrate == null)
             {
-                curConnectionString = v.SelectToken("value").ToString();
-                break;
+                throw new ApplicationException("No controls crate found.");
             }
 
-            return curConnectionString;
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var connectionStringControl = controlsMS.Controls
+                .FirstOrDefault(x => x.Name == "connection_string");
+
+            if (connectionStringControl == null)
+            {
+                throw new ApplicationException("No connection_string control found.");
+            }
+
+            return connectionStringControl.Value;
         }
 
         /// <summary>
