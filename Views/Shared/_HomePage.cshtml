@@ -236,23 +236,7 @@
             }
         </script>
 
-        <script type="text/javascript">
-            function SendMailMeetingRequest() {
-                $.ajax({
-                    url: "/Home/ProcessHomePageBookingRequest",
-                    type: "POST",
-                    async: true,
-                    data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val() },
-                    success: function (result) {
-
-                        $('#spBookingRequestMsg').html(result.Message);
-                        if (result.UserID) {
-                            analytics.alias(result.UserID);
-                        }
-                    }
-                });
-            }
-        </script>
+      
 
 </body>
 </html>
