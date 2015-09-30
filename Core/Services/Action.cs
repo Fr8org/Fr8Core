@@ -378,26 +378,21 @@ namespace Core.Services
 
         private async Task<ActionDTO> CallPluginActionAsync(ActionDO curActionDO, string actionName)
         {
-            if (curActionDO == null || curActionDO.ActivityTemplateId == 0)
+            if (curActionDO == null || !curActionDO.ActivityTemplateId.HasValue)
             {
                 throw new ArgumentNullException("curActionDO");
             }
 
-            ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
-            if (curActivityTemplate == null)
-            {
-                throw new ArgumentNullException("curActionDO", "ActivityTemplateDO");
-            }
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId.Value);
                 //convert the Action to a DTO in preparation for serialization and POST to the plugin
                 var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+                curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
 
                 var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
                 pluginTransmitter.Plugin = uow.PluginRepository.GetByKey(curActivityTemplate.PluginID);
-                return await pluginTransmitter.CallActionAsync(actionName, curActionDTO);
+                return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
             }
         }
     }
