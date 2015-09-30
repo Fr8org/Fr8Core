@@ -11,7 +11,7 @@
         <div class="row margin-top-15" ng-repeat="dataItem in dataItems">
             <div class="col-md-6">
                 <select ng-model="dataItem.selectedSource" class="form-control"
-                        ng-options="source.Value as source.Key for source in dataItem.sources"
+                        ng-options="source.Key as source.Key for source in dataItem.sources"
                         ng-change="uiDropDownChanged()">
                     <option value="">Select Document Field</option>
                 </select>
