@@ -47,6 +47,14 @@ namespace Web.Controllers
         {
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
+                if (curActionDO.ActivityTemplate == null
+                    && curActionDO.ActivityTemplateId.HasValue)
+                {
+                    curActionDO.ActivityTemplate = uow.ActivityTemplateRepository
+                        .GetByKey(curActionDO.ActivityTemplateId);
+                }
+
+
             ActionDTO actionDTO = await _action.Configure(curActionDO);
             return Ok(actionDTO);
         }
