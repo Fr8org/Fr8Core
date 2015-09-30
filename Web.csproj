@@ -4022,6 +4022,7 @@
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
+    <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />

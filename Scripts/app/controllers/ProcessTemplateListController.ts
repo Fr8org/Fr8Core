@@ -12,6 +12,13 @@ module dockyard.controllers {
         dtOptionsBuilder: any;
         dtColumnBuilder: any;
         dtInstance: any;
+        activedtOptionsBuilder: any;
+        activedtColumnBuilder: any;
+        inactivedtOptionsBuilder: any;
+        inactivedtColumnBuilder: any;   
+        isFr: boolean;
+        OpenFrlines();
+        OpenSettings();
     }
 
     /*
@@ -34,6 +41,8 @@ module dockyard.controllers {
             '$state'
         ];
         private _processTemplates: Array<interfaces.IProcessTemplateVM>;
+        private _processTemplatesAc: Array<interfaces.IProcessTemplateVM>;
+        private _processTemplatesIn: Array<interfaces.IProcessTemplateVM>;
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
@@ -58,13 +67,29 @@ module dockyard.controllers {
             });
 
             //Load Process Templates view model
+           
             this._processTemplates = ProcessTemplateService.query();
-            $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates();
-            $scope.dtColumnBuilder = this.GetDataTableColumns();
+            $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates();   
+            $scope.dtColumnBuilder = this.GetDataTableColumns();     
+            var Ac = { id: { id: null, status: 1 } }
+            var In = { id: { id: null, status: 2 } }
+            this._processTemplatesAc = ProcessTemplateService.getactive(Ac.id);   
+           this._processTemplatesIn = ProcessTemplateService.getactive(In.id);
+           $scope.activedtOptionsBuilder = this.GetDataTableOptionsFromTemplatesAc();
+           $scope.activedtColumnBuilder = this.GetDataTableColumnsAc(); 
+           $scope.inactivedtOptionsBuilder = this.GetDataTableOptionsFromTemplatesIn();
+           $scope.inactivedtColumnBuilder = this.GetDataTableColumnsIn(); 
             //hold a reference to data-tables instance to be able to refresh table later
             $scope.dtInstance = {};
             $scope.GoToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.GoToProcessTemplatePage);
             $scope.DeleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.DeleteProcessTemplate);
+            $scope.OpenFrlines = function () {
+                                $scope.isFr=true;
+                            }
+            
+            			$scope.OpenSettings = function () {
+                                $scope.isFr=false;
+                           }
         }
 
         //this function will be called on every reloadData call to data-table
@@ -78,9 +103,42 @@ module dockyard.controllers {
             return this.$q.when(this._processTemplates);
         }
 
+        private ResolveProcessTemplatesPromiseAc() {
+            if (this._processTemplatesAc.$promise) {
+                return this._processTemplatesAc.$promise;
+            }
+
+            return this.$q.when(this._processTemplatesAc);
+        }
+
+        private ResolveProcessTemplatesPromiseIn() {
+            if (this._processTemplatesIn.$promise) {
+                return this._processTemplatesIn.$promise;
+            }
+
+            return this.$q.when(this._processTemplatesIn);
+        }
+
         private GetDataTableOptionsFromTemplates() {
             var onRowCreate = <(row: any) => void> angular.bind(this, this.OnRowCreate);
             var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromise);
+            return this.DTOptionsBuilder
+                .fromFnPromise(resolveData)
+                .withPaginationType('full_numbers')
+                .withOption('createdRow', onRowCreate);
+        }
+        private GetDataTableOptionsFromTemplatesAc() {
+            var onRowCreate = <(row: any) => void> angular.bind(this, this.OnRowCreate);
+            var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromiseAc);
+            return this.DTOptionsBuilder
+                .fromFnPromise(resolveData)
+                .withPaginationType('full_numbers')
+                .withOption('createdRow', onRowCreate);
+        }
+
+        private GetDataTableOptionsFromTemplatesIn() {
+            var onRowCreate = <(row: any) => void> angular.bind(this, this.OnRowCreate);
+            var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromiseIn);
             return this.DTOptionsBuilder
                 .fromFnPromise(resolveData)
                 .withPaginationType('full_numbers')
@@ -121,6 +179,55 @@ module dockyard.controllers {
                     return deleteButton+editButton;
                     })
             ];            
+        }
+        private GetDataTableColumnsAc() {
+            return [
+                this.DTColumnBuilder.newColumn('id').withTitle('Id').notVisible(),
+                this.DTColumnBuilder.newColumn('name').withTitle('Name'),
+                this.DTColumnBuilder.newColumn('description').withTitle('Description'),
+                this.DTColumnBuilder.newColumn('processTemplateState').withTitle('Status')
+                    .renderWith(function (data, type, full, meta) {
+                        if (data.ProcessTemplateState === 1) {
+                            return '<span class="bold font-green-haze">Inactive</span>';
+                        } else {
+                            return '<span class="bold font-green-haze">Active</span>';
+                        }
+
+                    }),
+                this.DTColumnBuilder.newColumn(null)
+                    .withTitle('Actions')
+                    .notSortable()
+                    .renderWith(function (data: interfaces.IProcessTemplateVM, type, full, meta) {
+                        var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id + ', $event);">Delete</button>';
+                        var editButton = '<button type="button" class="btn btn-sm green" ng-click="GoToProcessTemplatePage(' + data.id + ', $event);">Edit</button>';
+                        return deleteButton + editButton;
+                    })
+            ];
+        }
+
+        private GetDataTableColumnsIn() {
+            return [
+                this.DTColumnBuilder.newColumn('id').withTitle('Id').notVisible(),
+                this.DTColumnBuilder.newColumn('name').withTitle('Name'),
+                this.DTColumnBuilder.newColumn('description').withTitle('Description'),
+                this.DTColumnBuilder.newColumn('processTemplateState').withTitle('Status')
+                    .renderWith(function (data, type, full, meta) {
+                        if (data.ProcessTemplateState === 1) {
+                            return '<span class="bold font-green-haze">Inactive</span>';
+                        } else {
+                            return '<span class="bold font-green-haze">Active</span>';
+                        }
+
+                    }),
+                this.DTColumnBuilder.newColumn(null)
+                    .withTitle('Actions')
+                    .notSortable()
+                    .renderWith(function (data: interfaces.IProcessTemplateVM, type, full, meta) {
+                        var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id + ', $event);">Delete</button>';
+                        var editButton = '<button type="button" class="btn btn-sm green" ng-click="GoToProcessTemplatePage(' + data.id + ', $event);">Edit</button>';
+                        return deleteButton + editButton;
+                    })
+            ];
         }
 
         private GoToProcessTemplatePage(processTemplateId, $event) {
