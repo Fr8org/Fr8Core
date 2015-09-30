@@ -3977,7 +3977,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\index_docusign.cshtml" />
     <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\DockyardAccount\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\DockyardAccount\_RemoveAccountPartial.cshtml" />
@@ -4073,7 +4073,7 @@
     <Content Include="Views\Home\IntegrationWithOtherDataServices.cshtml" />
     <Content Include="Views\Home\InterOrganizationWorkflows.cshtml" />
     <Content Include="Views\Home\MultiPartWorkflows.cshtml" />
-    <Content Include="Views\Home\fr8index.cshtml" />
+    <Content Include="Views\Home\index.cshtml" />
     <None Include="Views\JsTests\tests.cshtml" />
     <Content Include="Views\Shared\_JsTestsLayout.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
