@@ -29,7 +29,7 @@ namespace Web.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 String senderMailAddress =
-                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailAddress_GeneralInfo");
 
                 EmailDO emailDO = new EmailDO();
                 emailDO.AddEmailRecipient(EmailParticipantType.To,

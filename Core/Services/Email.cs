@@ -266,7 +266,7 @@ namespace Core.Services
         public void SendLoginCredentials(IUnitOfWork uow, string toRecipient, string newPassword) 
         {
             string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
-            string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+            string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailAddress_GeneralInfo");
             EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
 		    uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
 		    	  new Dictionary<string, object>

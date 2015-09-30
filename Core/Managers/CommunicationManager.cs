@@ -80,7 +80,7 @@ namespace Core.Managers
             {
                 var curUser = uow.UserRepository.GetByKey(curUserId);
                 EmailDO curEmail = new EmailDO();
-                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
+                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailAddress_GeneralInfo"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
 
