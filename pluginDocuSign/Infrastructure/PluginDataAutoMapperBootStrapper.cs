@@ -22,7 +22,7 @@ namespace pluginDocuSign.Infrastructure.AutoMapper
 		}
 	}
 	/// <summary>
-	/// AutoMapper converter to convert string JSON representation to JObject.
+	/// AutoMapper converter to convert JObject representation to DocuSignTemplateDTO.
 	/// </summary>
 	public class JObjectToDocuSignTemplateDTOConverter : ITypeConverter<JObject, DocuSignTemplateDTO>
 	{
