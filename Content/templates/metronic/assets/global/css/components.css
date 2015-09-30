@@ -13895,3 +13895,23 @@ Transparent Button
   height: 70px;
   width: 100%;
 }
+#single-button.btn.btn-primary.dropdown-toggle {
+  background-image: url("../../../../../img/select-info.png") !important;
+  background-position: 100% center;
+  background-repeat: no-repeat;
+  font-size: 13px;
+  min-height: 39px;
+  padding: 10px 54px 10px 10px;
+  text-align: left;
+  min-width: 300px;
+  background-color: #3379b5 !important;
+}
+.btn-group.dropdown {
+  margin-top: 10px;
+}
+#single-button.btn.btn-primary.dropdown-toggle:hover, #single-button.btn.btn-primary.dropdown-toggle:focus{
+    background-color: #3379b5 !important; 
+}
+.btn-group.dropdown .dropdown-menu{
+     width: 300px;
+}

@@ -5,6 +5,7 @@
             {{selectedItem.Key}} 
         </button>
         <ul class="dropdown-menu" role="menu">
+            <li role="menuitem"><a href="#" ng-click="SetSelectedItem(defaultitem);">Select Template</a></li>
             <li role="menuitem" ng-repeat="listItem in field.listItems"><a href="#" ng-click="SetSelectedItem(listItem);">{{listItem.Key}}</a></li>
         </ul>
 
