@@ -7,15 +7,6 @@ namespace UtilitiesTesting.Fixtures
 {
 	public partial class FixtureData
 	{
-		public static EnvelopeDO TestEnvelope1()
-		{
-			return new EnvelopeDO
-			{
-				DocusignEnvelopeId = "21",
-				EnvelopeStatus = EnvelopeDO.EnvelopeState.Any
-			};
-		}
-
 		public static DocuSignEnvelope TestEnvelope2(Account account)
 		{
 			// create envelope object and assign login info

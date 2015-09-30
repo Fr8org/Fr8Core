@@ -48,7 +48,7 @@ namespace Core.Services
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
-            uow.MailerRepository.ConfigurePlainEmail(emailDO);
+            uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
             uow.SaveChanges();
         }
 
@@ -213,7 +213,7 @@ namespace Core.Services
 
                 EmailDO curEmail = new EmailDO();
                 curEmail = GenerateBasicMessage(uow, subject, message ?? subject, fromAddress, "ops@kwasant.com");
-                uow.MailerRepository.ConfigurePlainEmail(curEmail);
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
         }
@@ -268,7 +268,7 @@ namespace Core.Services
             string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
             string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
             EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
-		    uow.MailerRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
+		    uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
 		    	  new Dictionary<string, object>
 		    	  {
 		    		{"credentials_string", credentials}

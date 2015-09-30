@@ -131,6 +131,7 @@ namespace Data.Infrastructure
             }
         }
 
+/*
         private EnvelopeRepository _envelopeRepository;
 
         public EnvelopeRepository EnvelopeRepository
@@ -140,15 +141,16 @@ namespace Data.Infrastructure
                 return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
             }
         }
+*/
 
 
-        private MailerRepository _mailerRepository;
+        private EnvelopeRepository _envelopeRepository;
 
-        public MailerRepository MailerRepository
+        public EnvelopeRepository EnvelopeRepository
         {
             get
             {
-                return _mailerRepository ?? (_mailerRepository = new MailerRepository(this));
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
             }
         }
 
