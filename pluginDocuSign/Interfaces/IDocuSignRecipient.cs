@@ -1,4 +1,5 @@
 ﻿using Data.Interfaces.DataTransferObjects;
+using DocuSign.Integrations.Client;
 using pluginDocuSign.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,6 @@ namespace pluginDocuSign.Interfaces
 {
 	public interface IDocuSignRecipient
 	{
-		RecipientsDTO GetByTemplate(string templateId);
+		Recipients GetByTemplate(string templateId);
 	}
 }

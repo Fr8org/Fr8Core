@@ -20,8 +20,14 @@ namespace pluginDocuSign.Actions
 {
 	public class Send_DocuSign_Envelope_v1 : BasePluginAction
 	{
-		IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-		IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		IDocuSignTemplate _template;
+		IDocuSignEnvelope _docusignEnvelope;
+
+		public Send_DocuSign_Envelope_v1()
+		{
+			_template = ObjectFactory.GetInstance<IDocuSignTemplate>();
+			_docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		}
 
 		public object Configure(ActionDTO curActionDTO)
 		{

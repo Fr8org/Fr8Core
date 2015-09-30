@@ -28,15 +28,15 @@ namespace pluginDocuSign
 			switch (type)
 			{
 				case DependencyType.TEST:
-					ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>()); // No test mode yet
+					ObjectFactory.Configure(x => x.AddRegistry<TestMode>()); // No test mode yet
 					break;
 				case DependencyType.LIVE:
-					ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
+					ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
 					break;
 			}
 		}
 
-		public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
+		public class LiveMode : Registry
 		{
 			public LiveMode()
 			{
@@ -46,11 +46,15 @@ namespace pluginDocuSign
 			}
 		}
 
-		public class CoreRegistry : Registry
+		public class TestMode : Registry
 		{
-			public CoreRegistry()
+			public TestMode()
 			{
+				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
+				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
+				For<IDocuSignRecipient>().Use<DocuSignRecipient>();
 			}
 		}
+
 	}
 }

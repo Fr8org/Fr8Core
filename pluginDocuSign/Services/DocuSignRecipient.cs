@@ -8,6 +8,7 @@ using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 
@@ -19,10 +20,10 @@ namespace pluginDocuSign.Services
 
 		public DocuSignRecipient()
 		{
-			var packager = new DocuSignPackager();
-			Login = packager.Login();
+			var docuSignPackager = new DocuSignPackager();
+			Login = docuSignPackager.Login();
 		}
-		public RecipientsDTO GetByTemplate(string templateId)
+		public Recipients GetByTemplate(string templateId)
 		{
 			if (templateId == null)
 				throw new ArgumentNullException("templateId");
@@ -35,7 +36,7 @@ namespace pluginDocuSign.Services
 
 			var recipientsToken = jObjTemplate.SelectToken("recipients");
 			var recipients = JsonConvert.DeserializeObject<Recipients>(recipientsToken.ToString());
-			return Mapper.Map<RecipientsDTO>(recipients);
+			return recipients;
 		}
 
 	}

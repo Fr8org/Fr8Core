@@ -20,11 +20,8 @@ namespace pluginDocuSign.Actions
 {
     public class Wait_For_DocuSign_Event_v1 : BasePluginAction
     {
-        IAction _action = ObjectFactory.GetInstance<IAction>();
-        ICrate _crate = ObjectFactory.GetInstance<ICrate>();
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
         IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-
 
         public ActionDTO Configure(ActionDTO curActionDTO)
         {

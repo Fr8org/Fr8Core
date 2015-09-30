@@ -29,9 +29,7 @@ namespace DockyardTest.DocuSign
 		public DocuSignTemplateTests()
 		{
 			base.SetUp();
-			PluginDocuSignMapBootstrapper.ConfigureDependencies(PluginDocuSignMapBootstrapper.DependencyType.LIVE);
 		}
-
 
 		[SetUp]
 		public void TestSetup()

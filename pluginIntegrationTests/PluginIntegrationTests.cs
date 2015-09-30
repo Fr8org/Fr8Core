@@ -41,6 +41,8 @@ namespace pluginIntegrationTests
 		public override void SetUp()
 		{
 			base.SetUp();
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(PluginDocuSignMapBootstrapper.DependencyType.TEST);
+
 			_testUserAccount = FixtureData.TestUser1();
 
 			_actionList = FixtureData.TestActionList_ImmediateActions();
@@ -77,9 +79,6 @@ namespace pluginIntegrationTests
 
 			var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
 			_azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
-
-
-			PluginDocuSignMapBootstrapper.ConfigureDependencies(PluginDocuSignMapBootstrapper.DependencyType.LIVE);
 		}
 
 		/// <summary>
