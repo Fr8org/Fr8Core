@@ -16,6 +16,7 @@ namespace pluginDocuSign.Interfaces
 		List<string> GetMappableSourceFields(DocuSignEnvelope envelope);
 		IEnumerable<string> GetMappableSourceFields(string templateId);
 		IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount);
-		List<TextTab> GetUserFields(string templateId);
+		List<string> GetUserFields(DocuSignTemplateDTO curDocuSignTemplateDTO);
+		DocuSignTemplateDTO GetTemplateById(string templateId);
 	}
 }

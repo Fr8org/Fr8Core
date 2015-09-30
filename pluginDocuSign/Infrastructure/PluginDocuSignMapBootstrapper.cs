@@ -13,16 +13,12 @@ using DocuSign.Integrations.Client;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
 
-namespace pluginDocuSign
+using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+
+namespace pluginDocuSign.Infrastructure.StructureMap
 {
 	public class PluginDocuSignMapBootstrapper
 	{
-		public enum DependencyType
-		{
-			TEST = 0,
-			LIVE = 1
-		}
-
 		public static void ConfigureDependencies(DependencyType type)
 		{
 			switch (type)
@@ -42,7 +38,6 @@ namespace pluginDocuSign
 			{
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
-				For<IDocuSignRecipient>().Use<DocuSignRecipient>();
 			}
 		}
 
@@ -52,7 +47,6 @@ namespace pluginDocuSign
 			{
 				For<IDocuSignEnvelope>().Use<DocuSignEnvelope>();
 				For<IDocuSignTemplate>().Use<DocuSignTemplate>();
-				For<IDocuSignRecipient>().Use<DocuSignRecipient>();
 			}
 		}
 

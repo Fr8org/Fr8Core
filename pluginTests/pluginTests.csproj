@@ -140,7 +140,6 @@
     <Compile Include="PluginBaseTests\Infrastructure\TestBasePluginEvent.cs" />
     <Compile Include="pluginDocuSign\DocusignApiHelper.cs" />
     <Compile Include="pluginDocuSign\IDocusignApiHelper.cs" />
-    <Compile Include="pluginDocuSign\Infrastructure\DocuSignRecipientTests.cs" />
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="pluginDocuSign\Services\EnvelopeServiceTests.cs" />
     <Compile Include="PluginSalesforceTests\ActionControllerTests.cs" />

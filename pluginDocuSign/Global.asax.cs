@@ -1,5 +1,10 @@
-﻿using Data.Infrastructure.AutoMapper;
-using System.Web.Http;
+﻿using System.Web.Http;
+using Core.StructureMap;
+using Data.Infrastructure.AutoMapper;
+using pluginDocuSign.Infrastructure.AutoMapper;
+using pluginDocuSign.Infrastructure.StructureMap;
+
+using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace pluginDocuSign
 {
@@ -8,10 +13,11 @@ namespace pluginDocuSign
         protected void Application_Start()
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
+				DataAutoMapperBootStrapper.ConfigureAutoMapper();
+				PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
-            Core.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
-				PluginDocuSignMapBootstrapper.ConfigureDependencies(PluginDocuSignMapBootstrapper.DependencyType.LIVE);
+            StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
+				PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
         }
     }
 }

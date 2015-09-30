@@ -17,6 +17,10 @@ using Web.Controllers;
 using UtilitiesTesting;
 using pluginDocuSign;
 
+using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using pluginDocuSign.Infrastructure.StructureMap;
+using pluginDocuSign.Infrastructure.AutoMapper;
+
 namespace pluginIntegrationTests
 {
 	[TestFixture]
@@ -41,7 +45,8 @@ namespace pluginIntegrationTests
 		public override void SetUp()
 		{
 			base.SetUp();
-			PluginDocuSignMapBootstrapper.ConfigureDependencies(PluginDocuSignMapBootstrapper.DependencyType.TEST);
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
+			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
 			_testUserAccount = FixtureData.TestUser1();
 

@@ -96,12 +96,13 @@ namespace pluginDocuSign.Actions
 			
 			// Get DocuSign Template Id
 			var docusignTemplateId = dropdownControlDTO.Value;
-			var docuSignUserFields = _template.GetUserFields(docusignTemplateId);
-
+			// Get Template
+			var docuSignTemplateDTO = _template.GetTemplateById(docusignTemplateId);
+			var docuSignUserFields = _template.GetUserFields(docuSignTemplateDTO);
 			//	when we're in design mode, there are no values
 			// we just want the names of the fields
 			List<FieldDTO> userDefinedFields = new List<FieldDTO>();
-			docuSignUserFields.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = null, Value = x.name }));
+			docuSignUserFields.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = null, Value = x }));
 			//  we're in design mode, there are no values 
 			List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" }};
 			var crateUserDefinedDTO = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray());

@@ -18,11 +18,6 @@ namespace pluginDocuSign.Infrastructure
             };
             _docuSignConnect.Login = _docuSignPackager.Login();
         }
-        public static DocuSignAccount Create(DocuSign.Integrations.Client.Account account)
-        {
-            return AutoMapper.Mapper.Map<DocuSignAccount>(account);
-        }
-
         public ConnectProfile GetDocuSignConnectProfiles()
         {
             DocuSignLogin();

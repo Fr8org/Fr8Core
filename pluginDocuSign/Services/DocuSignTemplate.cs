@@ -36,10 +36,27 @@ namespace pluginDocuSign.Services
 
 		public IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount)
 		{
-			//TODO: implement getting templates by the specified account.
-			return GetTemplates().Select(t => Mapper.Map<DocuSignTemplateDTO>(t));
+			List<DocuSignTemplateDTO> docuSignTemplateListDTO = new List<DocuSignTemplateDTO>();
+			var templateInfos = GetTemplates();
+			foreach(var templateInfo in templateInfos)
+			{
+				docuSignTemplateListDTO.Add(GetTemplateById(templateInfo.Id));
+			}
+			return docuSignTemplateListDTO;
 		}
+		public DocuSignTemplateDTO GetTemplateById(string templateId)
+		{
+			if (templateId == null)
+				throw new ArgumentNullException("templateId");
+			if (templateId == string.Empty)
+				throw new ArgumentException("templateId is empty", "templateId");
+			// Get template
+			var jObjTemplate = GetTemplate(templateId);
+			// Checking is it ok?
+			DocuSignUtils.ThrowInvalidOperationExceptionIfError(jObjTemplate);
 
+			return Mapper.Map<DocuSignTemplateDTO>(jObjTemplate);
+		}
 		//TODO: merge these
 		public IEnumerable<string> GetMappableSourceFields(string templateId)
 		{
@@ -70,18 +87,12 @@ namespace pluginDocuSign.Services
 			}
 			return curLstMappableSourceFields;
 		}
-		public List<TextTab> GetUserFields(string templateId)
+		public List<string> GetUserFields(DocuSignTemplateDTO curDocuSignTemplateDTO)
 		{
-			if (templateId == null)
-				throw new ArgumentNullException("templateId");
-			if (templateId == string.Empty)
-				throw new ArgumentException("templateId is empty", "templateId");
-			// Get template
-			var jObjTemplate = GetTemplate(templateId);
-			// Checking is it ok?
-			DocuSignUtils.ThrowInvalidOperationExceptionIfError(jObjTemplate);
-
-			Recipients recipient = DocuSignUtils.GetRecipientsFromTemplate(jObjTemplate);
+			if (curDocuSignTemplateDTO == null)
+				throw new ArgumentNullException("curDocuSignTemplateDTO");
+			
+			Recipients recipient = curDocuSignTemplateDTO.EnvelopeData.recipients;
 			// TODO Do we need to get textTabs for other types of recipients?
 			var allSigners = recipient.signers.Concat(recipient.agents)
 				.Concat(recipient.carbonCopies)
@@ -90,14 +101,15 @@ namespace pluginDocuSign.Services
 				.Concat(recipient.inPersonSigners)
 				.Concat(recipient.intermediaries).ToArray();
 
-			List<TextTab> textTabs = new List<TextTab>();
-			Array.ForEach(allSigners, x =>
+			// The only thing about it that we care about is the "value" property.
+			List<string> values = new List<string>();
+			foreach (var singer in allSigners)
 			{
-				if (x.tabs != null && x.tabs.textTabs != null)
-					textTabs.AddRange(x.tabs.textTabs);
-			});
-
-			return textTabs;
+				if (singer.tabs != null && singer.tabs.textTabs != null)
+					values.AddRange(singer.tabs.textTabs.Select(x => x.value));
+			}
+			return values;
 		}
+		
 	}
 }
