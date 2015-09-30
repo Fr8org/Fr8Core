@@ -151,9 +151,10 @@ namespace pluginDocuSign.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
+            return await (Task<PayloadDTO>) _basePluginController.HandleDockyardRequest(
+                    curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
         }
     }
 }

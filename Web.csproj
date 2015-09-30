@@ -17,10 +17,14 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -488,15 +492,9 @@
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
-    <Content Include="Content\img\site\example_using_kwasant_email.png" />
-    <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
-    <Content Include="Content\img\site\kwasant-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
-    <Content Include="Content\img\site\logo.png" />
-    <Content Include="Content\img\site\perfect-krawsant.jpg" />
-    <Content Include="Content\img\site\perfect-krawsant.png" />
     <Content Include="Content\img\site\site-logo.png" />
     <Content Include="Content\img\temp\background-test9.jpg" />
     <Content Include="Content\img\temp\homepage89.png" />
@@ -3977,7 +3975,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\index_docusign.cshtml" />
     <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\DockyardAccount\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\DockyardAccount\_RemoveAccountPartial.cshtml" />
@@ -4073,6 +4071,7 @@
     <Content Include="Views\Home\IntegrationWithOtherDataServices.cshtml" />
     <Content Include="Views\Home\InterOrganizationWorkflows.cshtml" />
     <Content Include="Views\Home\MultiPartWorkflows.cshtml" />
+    <Content Include="Views\Home\index.cshtml" />
     <None Include="Views\JsTests\tests.cshtml" />
     <Content Include="Views\Shared\_JsTestsLayout.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />
