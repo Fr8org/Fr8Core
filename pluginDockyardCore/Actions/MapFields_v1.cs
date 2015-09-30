@@ -44,12 +44,15 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("No Selected_Mapping control found.");
             }
 
+            var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
+            mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
+
             var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
 
             var actionPayloadCrates = new List<CrateDTO>()
             {
-                _crate.Create("Mapped Fields",
-                    curMappingControl.Value,
+                _crate.Create("MappedFields",
+                    JsonConvert.SerializeObject(mappedFields),
                     CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
                     CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
             };
