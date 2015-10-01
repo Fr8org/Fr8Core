@@ -8,7 +8,7 @@ namespace pluginSlack.Controllers
     {
         [HttpPost]
         [Route("events")]
-        public async void ProcessIncomingNotification()
+        public void ProcessIncomingNotification()
         {
             //implement the processing logic for slack plugin external events
         }

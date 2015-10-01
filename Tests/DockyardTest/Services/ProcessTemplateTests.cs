@@ -22,18 +22,7 @@ namespace DockyardTest.Services
 			_processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
 		}
 
-		[Test]
-		[ExpectedException(typeof (EntityNotFoundException))]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessTemplateService_CanNot_LaunchProcess()
-		{
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curEvent = FixtureData.TestDocuSignEvent1();
-                ProcessTemplateDO processTemplate = null;
-                _processTemplateService.LaunchProcess(uow, processTemplate, FixtureData.DocuSignEventToCrate(curEvent));
-            }
-		}
+
 
         [Test]
         public void ProcessTemplateService_GetProcessNodeTemplates()
@@ -48,6 +37,25 @@ namespace DockyardTest.Services
 
                 Assert.IsNotNull(curProcessNodeTemplates);
                 Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates.Count, curProcessNodeTemplates.Count);
+            }
+        }
+
+        [Test]
+        public void ProcessTemplateService_CanDelete()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplateDO = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates_ID0();
+                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                uow.SaveChanges();
+
+                Assert.AreNotEqual(curProcessTemplateDO.Id, 0);
+
+                var currProcessTemplateDOId = curProcessTemplateDO.Id;
+                _processTemplateService.Delete(uow, curProcessTemplateDO.Id);
+                var result = uow.ProcessTemplateRepository.GetByKey(currProcessTemplateDOId);
+                
+                Assert.NotNull(result);
             }
         }
 
@@ -82,6 +90,8 @@ namespace DockyardTest.Services
             string result = _processTemplateService.Activate(curProcessTemplateDO);
             Assert.AreEqual(result, "failed");
         }
+
+        
 
 		//[Test]
   //      public void TemplateRegistrationCollections_ShouldMakeIdentical()

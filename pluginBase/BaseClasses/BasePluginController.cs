@@ -19,10 +19,18 @@ namespace PluginBase.BaseClasses
         }
 
         /// <summary>
+        /// Reports Plugin Error incident
+        /// </summary>
+        [HttpGet]
+        public IHttpActionResult ReportPluginError(string pluginName, Exception pluginError)
+        {
+            return Json(_basePluginEvent.SendPluginErrorIncident(pluginName, pluginError.Message, pluginError.GetType().Name));
+        }
+
+        /// <summary>
         /// Reports start up incident
         /// </summary>
         /// <param name="pluginName">Name of the plugin which is starting up</param>
-        
         [HttpGet]
         public IHttpActionResult AfterStartup(string pluginName)
         {
@@ -49,13 +57,15 @@ namespace PluginBase.BaseClasses
         private Task<string> ReportEvent(string pluginName)
         {
             return _basePluginEvent.SendEventOrIncidentReport(pluginName, "Plugin Event");
-        }﻿
-
-
+        }
 
         // For /Configure and /Activate actions that accept ActionDTO
         public object HandleDockyardRequest(string curPlugin, string curActionPath, ActionDTO curActionDTO, object dataObject = null)
         {
+            if (curActionDTO == null)
+                throw new ArgumentNullException("curActionDTO");
+            if (curActionDTO.ActivityTemplate == null)
+                throw new ArgumentException("ActivityTemplate is null", "curActionDTO");
             if (dataObject == null) dataObject = curActionDTO;
 
             string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curPlugin, curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
@@ -71,7 +81,5 @@ namespace PluginBase.BaseClasses
             var response = (object)curMethodInfo.Invoke(curObject, new Object[] { dataObject });
             return response;
         }
-
-
     }
 }

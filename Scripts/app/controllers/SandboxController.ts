@@ -31,7 +31,6 @@ module dockyard.controllers {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
-    import pst = dockyard.directives.paneSelectTemplate;
 
     class SandboxController {
         // $inject annotation.
@@ -191,20 +190,16 @@ module dockyard.controllers {
 
     app.run([
         "$httpBackend", "urlPrefix", ($httpBackend, urlPrefix) => {
-            var actions: interfaces.IActionDesignDTO =
+            var actions: interfaces.IActionDTO =
                 {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
                     processNodeTemplateId: 1,
-                    actionTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    fieldMappingSettings: new model.FieldMappingSettings(),
-                    userLabel: "test",
-                    tempId: 0,
                     actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", ""),
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", ""),
                     activityTemplateId: 1
                 };
 

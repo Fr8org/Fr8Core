@@ -84,19 +84,24 @@ namespace Daemons
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                MailerRepository mailerRepository = unitOfWork.MailerRepository;
+
+                //A Mailer is essentially an envelope: it's an email plus a bunch of handler and template information so we know where to dispatch the email
+                EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 var numSent = 0;
-                foreach (
-                    MailerDO curMailerDO in mailerRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
+
+
+                //each queued message is processed
+                foreach ( EnvelopeDO curMailerDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
                     LogEvent("Sending an email with subject '" + curMailerDO.Email.Subject + "'");
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var mailer = subUow.MailerRepository.GetByKey(curMailerDO.Id);
+                        var mailer = subUow.EnvelopeRepository.GetByKey(curMailerDO.Id);
                         try
                         {
                             // we have to query EnvelopeDO one more time to have it loaded in subUow
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(mailer.Handler);
+
                             if (configRepository.Get<bool>("ArchiveOutboundEmail"))
                             {
                                 EmailAddressDO outboundemailaddress =

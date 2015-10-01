@@ -12,7 +12,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
 using System.Data.Entity;
@@ -137,20 +136,27 @@ namespace Core.Services
 		   
 		}
 
-        public void Process(ActivityDO curActivityDO, ProcessDO curProcessDO)
+        public async Task Process(int curActivityId, ProcessDO processDO)
         {
-            if (curActivityDO == null)
-                throw new ArgumentNullException("ActivityDO is null");
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessDO = uow.ProcessRepository.GetByKey(processDO.Id);
 
-            if (curActivityDO is ActionListDO)
-            {
-                IActionList _actionList = ObjectFactory.GetInstance<IActionList>();
-                _actionList.Process((ActionListDO)curActivityDO, curProcessDO);
-            }
-            else if (curActivityDO is ActionDO)
-            {
-                IAction _action = ObjectFactory.GetInstance<IAction>();
-                _action.Process((ActionDO)curActivityDO, curProcessDO);
+                var curActivityDO = uow.ActivityRepository.GetByKey(curActivityId);
+
+                if (curActivityDO == null)
+                    throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
+
+                if (curActivityDO is ActionListDO)
+                {
+                    IActionList _actionList = ObjectFactory.GetInstance<IActionList>();
+                    _actionList.Process((ActionListDO)curActivityDO, curProcessDO, uow);
+                }
+                else if (curActivityDO is ActionDO)
+                {
+                    IAction _action = ObjectFactory.GetInstance<IAction>();
+                    await _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO, uow);
+                }
             }
         }
 
@@ -164,7 +170,15 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                activityLists = this.GetChildren(curActivityDO);
+                // commented out by yakov.gnusin in scope of DO-1153.
+                // activityLists = this.GetChildren(curActivityDO);
+
+                // workaround for now.
+                activityLists = uow.ActivityRepository.GetQuery()
+                    .Where(x => x.ParentActivityId == curActivityDO.ParentActivityId)
+                    .Where(x => x.Ordering > curActivityDO.Ordering)
+                    .OrderBy(x => x.Ordering)
+                    .ToList();
             }
 
             return activityLists;

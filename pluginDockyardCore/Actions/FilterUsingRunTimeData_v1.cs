@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
@@ -13,7 +14,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Data.States.Templates;
-using Data.Wrappers;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginDockyardCore.Interfaces;
@@ -30,132 +30,117 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public ActionProcessResultDTO Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            var actionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            var curActionDTO = curActionDataPackage.ActionDTO;
+            var curPayloadDTO = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
 
-            // Get parent action-list.
-            var curActionList = ((ActionListDO) actionDO.ParentActivity);
-
-            if (!curActionList.ProcessID.HasValue)
-            {
-                throw new ApplicationException("Action.ActionList.ProcessID is empty.");
-            }
-
-            // Find crate with id "Criteria Filter Conditions".
-            var curCrateStorage = actionDO.CrateStorageDTO();
-            var curControlsCrate = curCrateStorage.CrateDTO
-                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-                    && x.Label == "Configuration_Controls");
-
-            if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
-            {
-                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
-            }
-
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            var controlsMS = _action.GetControlsManifest(curAction);
             
-            var filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
+            FieldDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
             if (filterPaneControl == null)
             {
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
             }
 
+            var valuesCrate = curPayloadDTO.CrateStorageDTO()
+                .CrateDTO
+                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
+                    && x.Label == "DocuSign Envelope Data")
+                .FirstOrDefault();
+
             // Prepare envelope data.
-            var curDocuSignEnvelope = new DocuSignEnvelope();
-                // Should just change GetEnvelopeData to pass an EnvelopeDO.
-            var curEnvelopeData = curDocuSignEnvelope.GetEnvelopeData(curDocuSignEnvelope);
+            var curValues = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
 
             // Evaluate criteria using Contents json body of found Crate.
-            var result = Evaluate(filterPaneControl.Value,
-                curActionList.ProcessID.Value, curEnvelopeData);
+            var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
 
-            // Process result.
-            if (result)
-            {
-                actionDO.ActionState = ActionState.Active;
-            }
-            else
-            {
-                curActionList.Process.ProcessState = ProcessState.Completed;
-            }
-
-            return new ActionProcessResultDTO() {Success = true};
+            return curPayloadDTO;
         }
 
-        private bool Evaluate(string criteria, int processId, IEnumerable<EnvelopeDataDTO> envelopeData)
-        {
+        private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
+            {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
                 throw new ArgumentException("criteria is empty", "criteria");
-            if (envelopeData == null)
+            if (values == null)
                 throw new ArgumentNullException("envelopeData");
 
-            return Filter(criteria, processId, envelopeData.AsQueryable()).Any();
+            return Filter(criteria, processId, values.AsQueryable()).Any();
         }
 
-        private IQueryable<EnvelopeDataDTO> Filter(string criteria, int processId,
-            IQueryable<EnvelopeDataDTO> envelopeData)
+        private IQueryable<FieldDTO> Filter(string criteria,
+            int processId, IQueryable<FieldDTO> values)
         {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
                 throw new ArgumentException("criteria is empty", "criteria");
-            if (envelopeData == null)
+            if (values == null)
                 throw new ArgumentNullException("envelopeData");
 
             var filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(criteria);
             if (filterDataDTO.ExecutionType == FilterExecutionType.WithoutFilter)
             {
-                return envelopeData;
+                return values;
             }
             else
             {
                 EventManager.CriteriaEvaluationStarted(processId);
 
-                var filterExpression = ParseCriteriaExpression(filterDataDTO.Conditions, envelopeData);
-                var results = envelopeData.Provider.CreateQuery<EnvelopeDataDTO>(filterExpression);
+                var filterExpression = ParseCriteriaExpression(filterDataDTO.Conditions, values);
+                var results = values.Provider.CreateQuery<FieldDTO>(filterExpression);
 
                 return results;
             }
         }
 
-        private Expression ParseCriteriaExpression<T>(
+        private Expression ParseCriteriaExpression(
             IEnumerable<FilterConditionDTO> conditions,
-            IQueryable<T> queryableData)
+            IQueryable<FieldDTO> queryableData)
         {
-            var curType = typeof(T);
+            var curType = typeof(FieldDTO);
 
             Expression criteriaExpression = null;
             var pe = Expression.Parameter(curType, "p");
 
             foreach (var condition in conditions)
             {
-                var propInfo = curType.GetProperty(condition.Field);
+                var namePropInfo = curType.GetProperty("Key");
+                var valuePropInfo = curType.GetProperty("Value");
+
+                var nameLeftExpr = Expression.Property(pe, namePropInfo);
+                var nameRightExpr = Expression.Constant(condition.Field);
+                var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
+
+                var valueLeftExpr = Expression.Property(pe, valuePropInfo);
+                var valueRightExpr = Expression.Constant(condition.Value);
+
+
                 var op = condition.Operator;
-                var value = condition.Value;
-
-                var leftExpr = Expression.Property(pe, propInfo);
-                var rightExpr = Expression.Constant(value);
-
                 Expression criterionExpression;
+
                 switch (op)
                 {
-                    case "Equals":
-                        criterionExpression = Expression.Equal(leftExpr, rightExpr);
+                    case "eq":
+                        criterionExpression = Expression.Equal(valueLeftExpr, valueRightExpr);
                         break;
-                    case "GreaterThan":
-                        criterionExpression = Expression.GreaterThan(leftExpr, rightExpr);
+                    case "neq":
+                        criterionExpression = Expression.NotEqual(valueLeftExpr, valueRightExpr);
                         break;
-                    case "GreaterThanOrEquals":
-                        criterionExpression = Expression.GreaterThanOrEqual(leftExpr, rightExpr);
+                    case "gt":
+                        criterionExpression = Expression.GreaterThan(valueLeftExpr, valueRightExpr);
                         break;
-                    case "LessThan":
-                        criterionExpression = Expression.LessThan(leftExpr, rightExpr);
+                    case "gte":
+                        criterionExpression = Expression.GreaterThanOrEqual(valueLeftExpr, valueRightExpr);
                         break;
-                    case "LessThanOrEquals":
-                        criterionExpression = Expression.LessThanOrEqual(leftExpr, rightExpr);
+                    case "lt":
+                        criterionExpression = Expression.LessThan(valueLeftExpr, valueRightExpr);
+                        break;
+                    case "lte":
+                        criterionExpression = Expression.LessThanOrEqual(valueLeftExpr, valueRightExpr);
                         break;
                     default:
                         throw new NotSupportedException(string.Format("Not supported operator: {0}", op));
@@ -163,11 +148,11 @@ namespace pluginDockyardCore.Actions
 
                 if (criteriaExpression == null)
                 {
-                    criteriaExpression = criterionExpression;
+                    criteriaExpression = Expression.And(nameExpression, criterionExpression);
                 }
                 else
                 {
-                    criteriaExpression = Expression.AndAlso(criteriaExpression, criterionExpression);
+                    criteriaExpression = Expression.AndAlso(criteriaExpression, Expression.And(nameExpression, criterionExpression));
                 }
             }
 
@@ -179,9 +164,9 @@ namespace pluginDockyardCore.Actions
             var whereCallExpression = Expression.Call(
                 typeof (Queryable),
                 "Where",
-                new[] {typeof (T)},
+                new[] { curType },
                 queryableData.Expression,
-                Expression.Lambda<Func<T, bool>>(criteriaExpression, new[] {pe})
+                Expression.Lambda<Func<FieldDTO, bool>>(criteriaExpression, new[] { pe })
             );
 
             return whereCallExpression;
@@ -199,8 +184,7 @@ namespace pluginDockyardCore.Actions
         {
             var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
             {
-                FieldLabel = "Execute Actions If:",
-                Type = "filterPane",
+                Label = "Execute Actions If:",
                 Name = "Selected_Filter",
                 Required = true,
                 Source = new FieldSourceDTO

@@ -6,11 +6,14 @@ namespace Data.Interfaces.ManifestSchemas
     public class StandardPayloadDataMS : ManifestSchema
     {
         public StandardPayloadDataMS()
+			  :base(Constants.MT.StandardPayloadData)
         {
-            Payload = new List<PayloadObjectDTO>();
+            PayloadObjects = new List<PayloadObjectDTO>();
+            ObjectType = "Unspecified";
         }
 
-        public List<PayloadObjectDTO> Payload { get; set; }
+        public List<PayloadObjectDTO> PayloadObjects { get; set; }
+        public string ObjectType { get; set; }
     }
 
 
@@ -19,10 +22,10 @@ namespace Data.Interfaces.ManifestSchemas
 
         public PayloadObjectDTO()
         {
-            Fields = new List<FieldDTO>();
+            PayloadObject = new List<FieldDTO>();
         }
 
-        public List<FieldDTO> Fields;
+        public List<FieldDTO> PayloadObject;
     }
 
 

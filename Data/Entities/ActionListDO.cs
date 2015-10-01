@@ -29,11 +29,6 @@ namespace Data.Entities
 		public int? ProcessID{ get; set; }
 		public virtual ProcessDO Process{ get; set; }
 
-		[ForeignKey("TriggerEvent")]
-		public int? TriggerEventID{ get; set; }
-
-		public virtual _ExternalEventTypeTemplate TriggerEvent{ get; set; }
-
         // [InverseProperty("ParentActionList")]
         // public virtual List<ActionListDO> ActionLists { get; set; }
 

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
@@ -8,10 +10,9 @@ using Data.States;
 using StructureMap;
 using Newtonsoft.Json;
 using Core.Helper;
-using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
-using Data.Wrappers;
+using Data.States.Templates;
 using DocuSign.Integrations.Client;
 using Utilities;
 
@@ -20,13 +21,14 @@ namespace Core.Services
     public class Process : IProcess
     {
         private readonly IProcessNode _processNode;
-        private readonly DocuSignEnvelope _envelope;
         private readonly IActivity _activity;
+        private readonly IProcessTemplate _processTemplate;
+
         public Process()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
-            _envelope = new DocuSignEnvelope();
             _activity = ObjectFactory.GetInstance<IActivity>();
+            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         /// <summary>
@@ -49,13 +51,17 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Unstarted;
                 curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO>() { curEvent });
 
+                curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(curProcessTemplate);
+
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
+                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
+                
                 var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
+
                 uow.SaveChanges();
             }
             return curProcessDO;
@@ -63,7 +69,9 @@ namespace Core.Services
 
 
 
-        public void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+
+
+        public async void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEvent);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
@@ -74,22 +82,23 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                Execute(curProcessDO);
+                await Execute(curProcessDO);
             }
         }
 
-        public void Execute(ProcessDO curProcessDO)
+        public async Task Execute(ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
 
             if (curProcessDO.CurrentActivity != null)
             {
+
                 //break if CurrentActivity Is NULL, it means all activities 
                 //are processed that there is no Next Activity to set as Current Activity
                 do
                 {
-                    _activity.Process(curProcessDO.CurrentActivity, curProcessDO);
+                    await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     UpdateNextActivity(curProcessDO);
                 } while (curProcessDO.CurrentActivity != null);
             }

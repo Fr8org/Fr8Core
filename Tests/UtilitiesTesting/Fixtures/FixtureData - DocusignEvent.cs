@@ -1,7 +1,6 @@
 ﻿using System;
 using Data.Entities;
 using Data.States;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace UtilitiesTesting.Fixtures
             return new DocuSignEventDO
             {
                    EnvelopeId    = "36",
-                   ExternalEventType = ExternalEventType.EnvelopeSent
+                   ExternalEventType = 1
             };
         }
 

@@ -45,9 +45,16 @@
                 def.promise.$promise = def.promise;
                 return def.promise;
             });
+            this.getFull = jasmine.createSpy('getFull').and.callFake(() => {
+                var def: any = $q.defer();
+                def.resolve(fixtures.ProcessBuilder.fullProcessTemplate);
+                def.promise.$promise = def.promise;
+                return def.promise;
+            });
         }
         public save: any;
         public get: any;
+        public getFull: any;
         public saveCurrent: any;
     }
 
@@ -83,5 +90,14 @@
         public save: any;
         public get: any;
         public saveCurrent: any;
+    }
+
+    export class $ModalMock {
+        constructor($q: ng.IQService) {
+            this.open = jasmine.createSpy('open').and.returnValue({
+                result: $q.when(fixtures.ActivityTemplate.activityTemplateDO)
+            });
+        }
+        public open: any;
     }
 }

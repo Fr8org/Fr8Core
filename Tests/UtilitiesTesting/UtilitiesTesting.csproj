@@ -96,9 +96,9 @@
   <ItemGroup>
     <Compile Include="BaseTest.cs" />
     <Compile Include="CsvReaderTests.cs" />
-    <Compile Include="DocusignTools\DocusignApiHelper.cs" />
-    <Compile Include="DocusignTools\Interfaces\IDocusignApiHelper.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
+    <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
+    <Compile Include="Fixtures\FixtureData - FieldDefinitionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Activity.cs" />
     <Compile Include="Fixtures\FixtureData - ActivityTemplateDTO.cs" />
@@ -115,10 +115,8 @@
     <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
-    <Compile Include="Fixtures\FixtureData - DocusignTemplateSubscription.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Fixtures\FixtureData - DocusignAccount.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Envelope.cs" />
@@ -130,7 +128,6 @@
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />
-    <Compile Include="Fixtures\FixtureData - DocuSignTemplateSubscriptionDO.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplate.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessTemplateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
@@ -139,10 +136,9 @@
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />
     <Compile Include="Fixtures\FixtureData - TestFiles.cs" />
-    <Compile Include="Fixtures\FixtureData - Recipient.cs" />
-    <Compile Include="Fixtures\FixtureData - Signer.cs" />
     <Compile Include="Fixtures\FixtureData - Tab.cs" />
     <Compile Include="Fixtures\FixtureData - Crate.cs" />
+    <Compile Include="ClassMethod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />
   </ItemGroup>
@@ -199,7 +195,9 @@
       <Name>Web</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DocusignTools\Interfaces\" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

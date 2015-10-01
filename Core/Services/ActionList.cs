@@ -49,7 +49,7 @@ namespace Core.Services
                     Reorder(curActionList, curActionDO, position);
                 else
                     throw new NotSupportedException("Unsupported value causing problems for Action ordering in ActionList.");
-                
+
                 if (curActionList.CurrentActivity == null)
                 {
                     curActionList.CurrentActivity =
@@ -72,20 +72,20 @@ namespace Core.Services
         }
 
         //if the list is unstarted, set it to inprocess
-        
+
         //until curActionList is Completed  
         //    if currentActivity is an Action, process it
         //    else it's an ActionList, call recursively
-        public void Process(ActionListDO curActionList, ProcessDO curProcessDO)
+        public void Process(ActionListDO curActionList, ProcessDO curProcessDO, IUnitOfWork uow)
         {
 
             //We assume that any unstarted ActionList that makes it to here should be put into process
-            if (curActionList.ActionListState == ActionListState.Unstarted && curActionList.CurrentActivity!=null) //need to add pending state for asynchronous cases
+            if (curActionList.ActionListState == ActionListState.Unstarted && curActionList.CurrentActivity != null) //need to add pending state for asynchronous cases
             {
-                SetState(curActionList, ActionListState.Inprocess);
+                SetState(curActionList, ActionListState.Inprocess, uow);
             }
 
-            
+
             if (curActionList.ActionListState != ActionListState.Inprocess) //need to add pending state for asynchronous cases
             {
                 throw new ArgumentException("tried to process an ActionList that was not in state=InProcess");
@@ -101,51 +101,48 @@ namespace Core.Services
             {
                 try
                 {
-                        var currentActivity = curActionList.CurrentActivity;
+                    var currentActivity = curActionList.CurrentActivity;
 
-                        //if the current activity is an Action, just process it
-                        //if the current activity is iself an ActionList, then recursively call ActionList#Process
-                        if (currentActivity is ActionListDO)
-                        {
-                            Process((ActionListDO)currentActivity, curProcessDO);
-                        }
-                        else
-                        {
-                            ProcessAction(curActionList, curProcessDO);
-                        }
+                    //if the current activity is an Action, just process it
+                    //if the current activity is iself an ActionList, then recursively call ActionList#Process
+                    if (currentActivity is ActionListDO)
+                    {
+                        Process((ActionListDO)currentActivity, curProcessDO, uow);
+                    }
+                    else
+                    {
+                        ProcessAction(curActionList, curProcessDO, uow);
+                    }
 
-        
+
                 }
                 catch (Exception ex)
                 {
-                    SetState(curActionList, ActionListState.Error);
+                    SetState(curActionList, ActionListState.Error, uow);
                     throw new Exception(ex.Message);
                 }
 
-                
+
             }
-            SetState(curActionList, ActionListState.Completed); //TODO probably need to test for this
+            SetState(curActionList, ActionListState.Completed, uow); //TODO probably need to test for this
 
 
 
         }
 
-        private void SetState(ActionListDO actionListDO, int actionListState)
+        private void SetState(ActionListDO actionListDO, int actionListState, IUnitOfWork uow)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                actionListDO.ActionListState = actionListState;
-                uow.ActionListRepository.Attach(actionListDO);
-                uow.SaveChanges();
-            }
+            actionListDO.ActionListState = actionListState;
+            uow.ActionListRepository.Attach(actionListDO);
+            uow.SaveChanges();
         }
 
-        public void ProcessAction(ActionListDO curActionList, ProcessDO curProcessDO)
-        {  
-            _action.Process((ActionDO) curActionList.CurrentActivity, curProcessDO);
+        public void ProcessAction(ActionListDO curActionList, ProcessDO curProcessDO, IUnitOfWork uow)
+        {
+            _action.PrepareToExecute((ActionDO)curActionList.CurrentActivity, curProcessDO, uow);
             UpdateActionListState(curActionList);
         }
-        
+
 
         public void UpdateActionListState(ActionListDO curActionListDO)
         {
@@ -183,7 +180,7 @@ namespace Core.Services
                     uow.SaveChanges();
                 }
             }
-                
+
         }
     }
 }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
 using Utilities.Serializers.Json;
 
 namespace Data.Crates.Helpers
@@ -29,8 +30,7 @@ namespace Data.Crates.Helpers
 
         public CrateDTO Create(EventDTO eventDTO)
         {
-            var serializer = new JsonSerializer();
-            var eventDTOContent = serializer.Serialize(eventDTO);
+            var eventDTOContent = JsonConvert.SerializeObject(eventDTO);
             return new CrateDTO()
             {
                 Id = Guid.NewGuid().ToString(),

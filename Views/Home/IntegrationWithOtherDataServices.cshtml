@@ -1,0 +1,41 @@
+﻿@{
+Layout = "~/Views/Shared/_HomePage.cshtml";
+}
+@{
+ViewBag.Title = "Flow docusign form data into web services";
+}
+<section class="text-block full-height-block inner-pages" data-section="2">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <div class="base-block-white title-block">
+                <p><span class="text green">Features coming soon:</span></p>
+            </div>
+            <div class="base-block-white content-block">
+                <p class="subtitle">Flow docusign form data into web services</p>
+                <p>fr8 provides a way to connect your DocuSign workflows to online services like Quickbooks, Expensify, and Salesforce.com.<br />You can activate the appropriate service, and specify which actions should be taken.<br />Some examples:</p>
+                <ul class="bordered-list">
+                    <li>Connect your completed expense reports to Quickbooks or Expensify,<br />and have fr8 automatically flow the data into your accounts</li>
+                    <li>Connect your Amazon S3 data store, or your Azure SQL Server,<br />and have fr8 flow your document data directly in.</li>
+                    <li>Connect your Salesforce.com account, and have fr8 flow your document data<br />directly into leads, opportunities, and contacts.</li>
+                    <li>Connect your Google Docs or Office 365 account,<br />and have fr8 flow your document data directly into spreadsheets.</li>
+                </ul>
+            </div>
+            <div class="base-block-white content-block">
+                <p>I'm interested in this feature. Please notify me when it is ready for use.</p>
+                <div class="row-fluid section email-section">
+                    <div class="col-md-12 email-section">
+                        <div class="span12 cform">
+                            <form class="form clearfix contact-form" action="#">
+                                <p><span id="spMessage" class="contact-hint"></span></p>
+                                <input type="email" class="span12" placeholder="Email Address" name="emailAddress" id="emailId">
+                                <button class="btn btn-large submit-btn" type="button" onclick="SendMail();">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

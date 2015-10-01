@@ -13,7 +13,6 @@ module dockyard.directives {
             return null;
         };
 
-
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/QueryBuilderWidget',
@@ -22,11 +21,14 @@ module dockyard.directives {
                 operators: '=',
                 defaultOperator: '=',
                 rows: '=',
-                currentAction: '='
+                currentAction: '=',
+                isDisabled: '='
             },
 
             controller: ($scope: interfaces.IQueryBuilderWidgetScope): void => {
                 $scope.addRow = function () {
+                    if ($scope.isDisabled)
+                        return;
                     var condition = new model.Condition(
                         null,
                         $scope.defaultOperator,
@@ -38,6 +40,8 @@ module dockyard.directives {
                 };
 
                 $scope.removeRow = function (index) {
+                    if ($scope.isDisabled)
+                        return;
                     $scope.rows.splice(index, 1);
                 };
 
@@ -46,7 +50,7 @@ module dockyard.directives {
                 };
 
                 $scope.isActionValid = function (action: interfaces.IActionVM) {
-                    return model.ActionDesignDTO.isActionValid(action);
+                    return model.ActionDTO.isActionValid(action);
                 }
             }
         };

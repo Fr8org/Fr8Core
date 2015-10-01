@@ -17,9 +17,8 @@ namespace Data.Interfaces
         EmailRepository EmailRepository { get; }
         IProcessRepository ProcessRepository { get; }
         EmailStatusRepository EmailStatusRepository { get; }
-        EnvelopeRepository EnvelopeRepository { get; }
+        //EnvelopeRepository EnvelopeRepository { get; }
         //EventRepository EventRepository { get; }
-        EventStatusRepository EventStatusRepository { get; }
         InstructionRepository InstructionRepository { get; }
         InvitationRepository InvitationRepository { get; }
         //InvitationResponseRepository InvitationResponseRepository { get; }
@@ -82,8 +81,7 @@ namespace Data.Interfaces
         RemoteServiceAuthDataRepository RemoteServiceAuthDataRepository { get; }
         //RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
         HistoryRepository HistoryRepository { get; }
-        ExternalEventSubscriptionRepository ExternalEventSubscriptionRepository { get; }
-        MailerRepository MailerRepository { get; }
+        EnvelopeRepository EnvelopeRepository { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

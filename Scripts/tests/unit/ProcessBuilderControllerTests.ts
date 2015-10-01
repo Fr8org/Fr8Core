@@ -6,7 +6,6 @@ module dockyard.tests.controller {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
-    import pst = dockyard.directives.paneSelectTemplate;
 
     describe("ProcessBuilder Framework message processing", () => {
         
@@ -32,11 +31,13 @@ module dockyard.tests.controller {
             _urlPrefix: string,
             _crateHelper: services.CrateHelper,
             _localIdentityGenerator: services.LocalIdentityGenerator,
-            _$timeout: ng.ITimeoutService;
+            _$timeout: ng.ITimeoutService,
+            _$filter: ng.IFilterService,
+            _$modalMock: utils.$ModalMock;
 
         beforeEach(() => {
             
-            inject(($controller, $rootScope, $q, $http, $timeout) => {
+            inject(($controller, $rootScope, $q, $http, $timeout, $filter, $httpBackend) => {
                 _actionServiceMock = new utils.ActionServiceMock($q);
                 _processTemplateServiceMock = new utils.ProcessTemplateServiceMock($q);
                 _actionListServiceMock = new utils.ActionListServiceMock($q);
@@ -46,6 +47,7 @@ module dockyard.tests.controller {
                 _$q = $q;
                 _$timeout = $timeout;
                 _$scope = tests.utils.Factory.GetProcessBuilderScope($rootScope);
+                _$filter = $filter;
                 _$state = {
                     data: {
                         pageSubTitle: ""
@@ -55,6 +57,7 @@ module dockyard.tests.controller {
                     }
                 };
                 _$http = $http;
+                _$modalMock = new utils.$ModalMock($q);
                 _urlPrefix = '/api';
                 //Create a mock for CriteriaServiceWrapper
                 _controller = $controller("ProcessBuilderController",
@@ -74,7 +77,9 @@ module dockyard.tests.controller {
                         ProcessBuilderService: _processBuilderServiceMock,
                         ActionListService: _actionListServiceMock,
                         CrateHelper: _crateHelper,
-                        ActivityTemplateService: null
+                        ActivityTemplateService: null,
+                        $filter: _$filter,
+                        $modal: _$modalMock
                     });
             });
             spyOn(_$scope, "$broadcast");
@@ -84,12 +89,12 @@ module dockyard.tests.controller {
         var resolvePromises = () => {
             _$scope.$apply();
         };
-        
-        it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectAction_Hide should be received", () => {
-            
-            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
+
+        it("When PaneWorkflowDesigner_ActionAdding is emitted, select action modal should be opened", () => {
+            var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
             resolvePromises();
-            expect(_$scope.$broadcast).toHaveBeenCalledWith(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+            expect(_$modalMock.open).toHaveBeenCalled();
         });
 
         it("When PaneWorkflowDesigner_ActionAdding is emitted, PaneWorkflowDesigner_AddAction should be received", () => {

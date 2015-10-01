@@ -383,6 +383,7 @@ header#site-header .navbar {
 	display: inline-block;
 	padding: 2rem 6rem;
 	line-height: 2.5rem;
+	margin-bottom: 2rem;
 }
 
 #services a {
@@ -399,30 +400,30 @@ header#site-header .navbar {
 }
 
 /* About Us Page Styles*/
-#about-us {
+#aboutus {
 	font-size: 2rem;
 }
 
-#about-us .inner-bg {
+#aboutus .inner-bg {
 	background-image: url('/Content/img/backgrounds/about-bg.jpg');
 }
 
-#about-us .container {
+#aboutus .container {
 	position: relative;
 	z-index: 2;
 	text-align: center;
 }
 
-#about-us .container p {
+#aboutus .container p {
 	margin-bottom: 4rem;
 }
 
-#about-us span.bordered-top-green {
+#aboutus span.bordered-top-green {
 	border-top-width: 4px;
 	padding-top: 0.5rem;
 }
 
-#about-us span.bordered-bottom-grey {
+#aboutus span.bordered-bottom-grey {
 	padding-bottom: 0.5rem;
 	border-bottom-color: #697882;
 }
@@ -486,6 +487,86 @@ header#site-header .navbar {
 	color: #444d58;
 }
 
+.inner-pages .inner-wrap {
+	margin-top: -30px;
+}
+
+
+.inner-pages .inner-bg {
+	background-image: url('/Content/img/backgrounds/services-bg.jpg');
+}
+
+.inner-pages .container {
+	position: relative;
+	z-index: 2;
+	text-align: center;
+}
+
+.inner-pages .base-block-white {
+	padding: 2rem;
+	font-size: 1rem;
+}
+
+.inner-pages .base-block-white p.subtitle {
+	font-size: 1.25rem;
+	padding-bottom: 1.25rem;
+	color: #46a597;
+}
+
+.inner-pages .base-block-white.title-block {
+	margin-bottom: 2rem;
+	font-size: 1.5rem;
+}
+
+.inner-pages .base-block-white.content-block {
+	display: inline-block;
+	padding: 2rem 6rem;
+	line-height: 2rem;
+	margin-bottom: 2rem;
+}
+
+.inner-pages a {
+	color: #697882;
+}
+
+.inner-pages a:hover {
+	color: #58b8a9;
+}
+
+.inner-pages p {
+	padding: 0;
+	margin: 0;
+}
+
+.inner-pages .email-section  {
+	padding: 0;
+	margin: 0;
+}
+
+.inner-pages .email-section input[type = "email"]  {
+	border: 2px solid #46a597;
+}
+
+.inner-pages .contact-form .submit-btn {
+	background: #46a597;
+	color: #fff;
+}
+
+.inner-pages .contact-form .submit-btn:hover {
+	background: #444d58;
+	color: #46a597;
+}
+
+
+ul.bordered-list li {
+	list-style: none;
+	padding: 1rem 0;
+	border-bottom: 1px solid #46a597;
+}
+
+ul.bordered-list li:first-child {
+	border-top: 1px solid #46a597;
+}
 
 /* Footer Styles */
 #site-footer {
@@ -724,7 +805,7 @@ header#site-header .navbar {
 		margin-right: -20px;
 	}
 
-	#welcome .container, #services .container, #about-us .container, #contacts .container {
+	#welcome .container, #services .container, #aboutus .container, #contacts .container, .inner-pages .container {
 		padding-left: 0;
 		padding-right: 0;
 	}

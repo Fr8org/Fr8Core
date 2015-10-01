@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
@@ -62,7 +61,8 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "DocuSign",
                 Endpoint = "localhost",
-                PluginStatus = PluginStatus.Active
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
             };
         }
     }
