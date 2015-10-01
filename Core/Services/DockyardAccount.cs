@@ -238,7 +238,7 @@ namespace Core.Services
             }
         }
 
-        public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
+        public Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -261,7 +261,7 @@ namespace Core.Services
                     curLoginStatus = LoginStatus.UnregisteredUser;
                 }
 
-                return curLoginStatus;
+                return Task.FromResult(curLoginStatus);
             }
         }
 

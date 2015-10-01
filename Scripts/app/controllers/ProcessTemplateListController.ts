@@ -146,7 +146,7 @@ module dockyard.controllers {
                 me.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(function () {
                     me.$rootScope.lastResult = "success";
                     //now loop through our existing templates and remove from local memory
-                    for (var i = 0; i < this._processTemplates.length; i++) {
+                    for (var i = 0; i < me._processTemplates.length; i++) {
                         if (me._processTemplates[i].id === processTemplateId) {
                             me._processTemplates.splice(i, 1);
                             me.$scope.dtInstance.reloadData();

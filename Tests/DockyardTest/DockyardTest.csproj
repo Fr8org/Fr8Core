@@ -255,6 +255,9 @@
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
+    <Compile Include="Services\ProcessExecuteTests.cs" />
+    <Compile Include="Services\ProcessCreateTests.cs" />
+    <Compile Include="Services\ProcessGetInitialActivityTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />

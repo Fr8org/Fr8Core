@@ -14,6 +14,7 @@ using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using Data.Entities;
 using System.Collections.Generic;
+using Moq;
 
 namespace DockyardTest.Controllers
 {
@@ -85,5 +86,20 @@ namespace DockyardTest.Controllers
             }
 
         }
+
+        //[Test]
+        //[Category("Controllers.EventController.Event")]
+        //public void EventController_ProcessIncomingEvents_WithPluginEvent_RetunsOK()
+        //{
+        //    //setup mock Event
+        //    var mockEvent = new Mock<IEvent>();
+
+        //    mockEvent.Setup(e => e.HandlePluginEvent(It.IsAny<LoggingData>()));
+
+        //    _eventController.ProcessIncomingEvents(mockEvent);
+        //}
+
+
+        
     }
 }
