@@ -297,13 +297,25 @@
     <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs" />
+    <Compile Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.Designer.cs">
+      <DependentUpon>201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509262037112_addExternalAccountId.cs" />
     <Compile Include="Migrations\201509262037112_addExternalAccountId.Designer.cs">
       <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.cs" />
+    <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.Designer.cs">
+      <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.cs" />
     <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.Designer.cs">
       <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.cs" />
+    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.Designer.cs">
+      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201509270413022_EmptyMergeMigration.cs" />
     <Compile Include="Migrations\201509270413022_EmptyMergeMigration.Designer.cs">
@@ -313,11 +325,27 @@
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
     </Compile>
-
-    <Compile Include="Migrations\201509291928009_forcemerge.cs" />
+    <Compile Include="Migrations\201509272213417_EmptyMigration2.cs" />
+    <Compile Include="Migrations\201509272213417_EmptyMigration2.Designer.cs">
+      <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301406085_EmptyMigration3.cs" />
+    <Compile Include="Migrations\201509301406085_EmptyMigration3.Designer.cs">
+      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
+    </Compile>
+    
+      <Compile Include="Migrations\201509291928009_forcemerge.cs" />
     <Compile Include="Migrations\201509291928009_forcemerge.Designer.cs">
       <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
-
+    </Compile>
+    
+    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.cs" />
+    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.Designer.cs">
+      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.cs" />
+    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.Designer.cs">
+      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -560,17 +588,38 @@
     <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.resx">
+      <DependentUpon>201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509262037112_addExternalAccountId.resx">
       <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.resx">
       <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.resx">
+      <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509261521578_UpdateActivityDOandActionList.resx">
+      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509270413022_EmptyMergeMigration.resx">
       <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509272213417_EmptyMigration2.resx">
+      <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301406085_EmptyMigration3.resx">
+      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301545244_UpdatedDockyardDbContext.resx">
+      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301600207_UpdatedActivityDO_2.resx">
+      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
     </EmbeddedResource>
 
     <EmbeddedResource Include="Migrations\201509291928009_forcemerge.resx">

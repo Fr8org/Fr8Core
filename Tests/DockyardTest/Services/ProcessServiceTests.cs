@@ -141,7 +141,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestProcessTemplate1();
+                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates();
 
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.SaveChanges();
@@ -160,7 +160,7 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var processTemplate = FixtureData.TestProcessTemplate1();
+                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates();
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.ProcessTemplateRepository.Add(processTemplate);

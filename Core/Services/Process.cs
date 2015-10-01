@@ -60,7 +60,8 @@ namespace Core.Services
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
+                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
+                
                 var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
 
@@ -73,7 +74,7 @@ namespace Core.Services
 
 
 
-        public void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+        public async void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEvent);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
@@ -84,7 +85,7 @@ namespace Core.Services
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                Execute(curProcessDO);
+                await Execute(curProcessDO);
             }
         }
 

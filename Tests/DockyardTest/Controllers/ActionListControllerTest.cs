@@ -64,6 +64,10 @@ namespace DockyardTest.Controllers
                 uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
                 uow.SaveChanges();
 
+                /*_curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+                uow.SaveChanges();*/
+
                 _curActionList = FixtureData.TestActionList();
                 _curActionList.ActionListType = ActionListType.Immediate;
                 _curActionList.CurrentActivity = null;

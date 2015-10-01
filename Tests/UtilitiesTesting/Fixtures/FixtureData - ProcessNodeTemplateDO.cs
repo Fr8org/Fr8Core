@@ -34,7 +34,8 @@ namespace UtilitiesTesting.Fixtures
                 Name = "TestName",
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]",
-                ParentTemplateId = 50
+                ParentTemplateId = 50,
+                StartingProcessNodeTemplate = true
             };
             return ProcessNodeTemplateDO;
         }

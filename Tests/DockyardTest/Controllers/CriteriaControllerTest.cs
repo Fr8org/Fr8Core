@@ -50,10 +50,18 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
 
                 //Add a template
+                var processTemplate = FixtureData.TestProcessTemplate1();
+                uow.ProcessTemplateRepository.Add(processTemplate);
+                uow.SaveChanges();
+                //Add a processnodetemplate to processtemplate 
                 _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                _curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+                _curProcessNodeTemplate.ParentTemplateId = processTemplate.Id;
                 uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
                 uow.SaveChanges();
+
+                /*_curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
+                uow.SaveChanges();*/
 
                 _curCriteria = FixtureData.TestCriteria1();
                 _curCriteria.ProcessNodeTemplate = _curProcessNodeTemplate;

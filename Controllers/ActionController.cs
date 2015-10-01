@@ -47,24 +47,8 @@ namespace Web.Controllers
         {
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (curActionDO.ActivityTemplate == null
-                    && curActionDO.ActivityTemplateId.HasValue)
-                {
-                    curActionDO.ActivityTemplate = uow.ActivityTemplateRepository
-                        .GetByKey(curActionDO.ActivityTemplateId);
-                }
-
-                if (curActionDO.ActivityTemplate != null && curActionDO.ActivityTemplate.PluginID != 0)
-                {
-                    curActionDO.ActivityTemplate.Plugin =
-                        uow.PluginRepository.GetByKey(curActionDO.ActivityTemplate.PluginID);
-                }
-
-                ActionDTO actionDTO = await _action.Configure(curActionDO);
-                return Ok(actionDTO);
-            }
+            ActionDTO actionDTO = await _action.Configure(curActionDO);
+            return Ok(actionDTO);
         }
 
 
