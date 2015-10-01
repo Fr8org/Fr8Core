@@ -3,18 +3,6 @@
 module dockyard.directives.paneSelectAction {
     'use strict';
 
-    export interface IPaneSelectActionScope extends ng.IScope {
-        onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) => void;
-        currentAction: model.ActionDTO;
-        isVisible: boolean;
-        actionTypes: Array<model.ActivityTemplate>;
-        actionTypeSelected: () => void;
-        componentActivities: string[];
-        childActivityTypeSelected: (actionTemplateId: number) => void;
-        childActivityStepId: number;
-        childActivity: model.ActionDTO;
-    }
-
     export enum MessageType {
         PaneSelectAction_ActionUpdated,
         PaneSelectAction_Render,
@@ -72,140 +60,34 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    //More detail on creating directives in TypeScript: 
-    //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class PaneSelectAction implements ng.IDirective {
-        public link: (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public templateUrl = '/AngularTemplate/PaneSelectAction';
-        public controller: ($scope: ng.IScope, element: ng.IAugmentedJQuery,
-            attrs: ng.IAttributes, $http: ng.IHttpService, urlPrefix: string) => void;
-        public scope = {
-            currentAction: '='
-        };
-        public restrict = 'E';
+    export class ActionRemovedEventArgs {
+        public id: number;
+        public isTempId: boolean;
 
-        constructor(
-            private $rootScope: interfaces.IAppRootScope,
-            private ActionService: services.IActionService
-            ) {
-
-            PaneSelectAction.prototype.link = (
-                scope: IPaneSelectActionScope,
-                element: ng.IAugmentedJQuery,
-                attrs: ng.IAttributes) => {
-
-                //Link function goes here
-            };
-
-            PaneSelectAction.prototype.controller = (
-                $scope: IPaneSelectActionScope,
-                $element: ng.IAugmentedJQuery,
-                $attrs: ng.IAttributes,
-                $http: ng.IHttpService) => {
-
-                this.PopulateData($scope, $http);
-
-                $scope.$watch<model.ActionDTO>(
-                    (scope: IPaneSelectActionScope) => scope.currentAction, this.onActionChanged, true);
-
-                $scope.actionTypeSelected = () => {
-                    var currentSelectedActivity: model.ActivityTemplate;
-                    var activities = $scope.actionTypes;
-                    //find the selected activity
-                    currentSelectedActivity = activities.filter(function (e) { return e.id == $scope.currentAction.activityTemplateId })[0];
-
-                    if (currentSelectedActivity != null || currentSelectedActivity != undefined) {
-                        $scope.currentAction.activityTemplateName = currentSelectedActivity.name;
-                        // Ensure that we do not send CrateStorage of previously selected storage to server.
-                        $scope.currentAction.crateStorage = new model.CrateStorage();
-                        //Check for component activity
-                        if (currentSelectedActivity.componentActivities != null) {
-                            var componentActivities = angular.fromJson(currentSelectedActivity.componentActivities);
-                            $scope.componentActivities = componentActivities;                           
-                            //Default configuration for the first child component activity will be shown
-                            $scope.childActivityStepId = componentActivities[0].id;
-                            $scope.childActivity = angular.extend({}, $scope.currentAction);
-                            $scope.childActivity.activityTemplateId = $scope.childActivityStepId;
-                            var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
-                            $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
-                        }
-                        else {
-                            $scope.componentActivities = null;
-                            var eventArgs = new ActionTypeSelectedEventArgs($scope.currentAction);
-                            $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
-                        }
-                    }
-                    else {
-                        $scope.componentActivities = null;                     
-                    }
-                }
-
-                $scope.childActivityTypeSelected = (childActionTemplateId) => {
-                    if (childActionTemplateId != null) {
-                        $scope.$emit(MessageType[MessageType.PaneSelectAction_InitiateSaveAction], eventArgs);
-                        $scope.childActivity.activityTemplateId = childActionTemplateId;
-                        var eventArgs = new ActionTypeSelectedEventArgs($scope.childActivity);
-                        $scope.$emit(MessageType[MessageType.PaneSelectAction_ActionTypeSelected], eventArgs);
-
-                    }
-                }
-
-                $scope.$on(MessageType[MessageType.PaneSelectAction_Render], this.onRender);
-                $scope.$on(MessageType[MessageType.PaneSelectAction_Hide], this.onHide);
-                $scope.$on(MessageType[MessageType.PaneSelectAction_UpdateAction], this.onUpdate);
-            };
-        }
-
-        private onActionChanged(newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneSelectActionScope) {
-
-        }
-
-        private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            var scope = (<IPaneSelectActionScope> event.currentScope);
-            scope.isVisible = true;
-        }
-
-        private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<IPaneSelectActionScope>event.currentScope).isVisible = false;
-        }
-
-        private onUpdate(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<any>$).notify("Greetings from Select Action Pane. I've got a message about my neighbor saving its data so I saved my data, too.", "success");
-        }
-
-        private PopulateData(
-            $scope: IPaneSelectActionScope,
-            $http: ng.IHttpService) {
-
-            $scope.actionTypes = [];
-
-            $http.get('/activities/available')
-                .then(function (resp) {
-                    angular.forEach(resp.data, function (it) {
-                        $scope.actionTypes.push(
-                            new model.ActivityTemplate(
-                                it.id,
-                                it.name,
-                                it.version,
-                                it.componentActivities
-                                )
-                            );
-                    });
-                });
-        }
-
-        //The factory function returns Directive object as per Angular requirements
-        public static Factory() {
-            var directive = (
-                $rootScope: interfaces.IAppRootScope,
-                ActionService: services.IActionService) => {
-
-                return new PaneSelectAction($rootScope, ActionService);
-            };
-
-            directive['$inject'] = ['$rootScope', 'ActionService'];
-            return directive;
+        constructor(id: number, isTempId: boolean) {
+            this.id = id;
+            this.isTempId = isTempId;
         }
     }
-    app.directive('paneSelectAction', PaneSelectAction.Factory());
+
+    export class PaneSelectActionController {
+        actionTypes: Array<model.ActivityTemplate> = []
+        public static $inject = [
+            '$scope',
+            '$http'
+        ];
+        constructor(private $scope, private $http) {
+            $scope.actionCategories = [];
+            $http.get('/activities/available')
+                .then(function (resp) {
+                    $scope.actionCategories = resp.data;                        
+                });
+
+            $scope.actionTypeSelected = function (actionType) {
+                $scope.$close(actionType);
+            }
+        }
+    }
+
+    app.controller('PaneSelectActionController', PaneSelectActionController);
 }
