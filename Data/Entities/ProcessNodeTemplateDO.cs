@@ -18,6 +18,14 @@ namespace Data.Entities
             this.ProcessNode = new List<ProcessNodeDO>();
         }
 
+        public ProcessNodeTemplateDO(bool startingProcessNodeTemplate)
+        {
+            this.StartingProcessNodeTemplate = true;
+            this.Criteria = new List<CriteriaDO>();
+            this.ActionLists = new List<ActionListDO>();
+            this.ProcessNode = new List<ProcessNodeDO>();
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -25,7 +33,9 @@ namespace Data.Entities
         public string Name { get; set; }
 
         [ForeignKey("ProcessTemplate")]
-        public int? ParentTemplateId { get; set; }
+        public int ParentTemplateId { get; set; }
+
+        public bool StartingProcessNodeTemplate { get; set; } 
 
         public virtual ProcessTemplateDO ProcessTemplate { get; set; }
 

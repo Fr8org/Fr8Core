@@ -12,7 +12,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 using Utilities.Serializers.Json;
 using System.Data.Entity;
@@ -137,10 +136,12 @@ namespace Core.Services
 		   
 		}
 
-        public void Process(int curActivityId, ProcessDO curProcessDO)
+        public async Task Process(int curActivityId, ProcessDO processDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curProcessDO = uow.ProcessRepository.GetByKey(processDO.Id);
+
                 var curActivityDO = uow.ActivityRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)
@@ -154,7 +155,7 @@ namespace Core.Services
                 else if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO, uow);
+                    await _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO, uow);
                 }
             }
         }

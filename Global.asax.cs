@@ -27,7 +27,6 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
-using Data.Wrappers;
 using System.Web.Http;
 using FluentValidation.WebApi;
 using System.Net.Http.Formatting;

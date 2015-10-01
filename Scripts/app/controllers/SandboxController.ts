@@ -199,7 +199,7 @@ module dockyard.controllers {
                     id: 1,
                     isTempId: false,
                     actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", ""),
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", ""),
                     activityTemplateId: 1
                 };
 

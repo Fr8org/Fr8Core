@@ -2,6 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
+using System.Linq;
+using System;
 
 namespace Data.Entities
 {
@@ -9,9 +11,13 @@ namespace Data.Entities
     {
         public ProcessTemplateDO()
         {
-            StartingProcessNodeTemplate = new ProcessNodeTemplateDO();
+            
             ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
+            /*var startingProcessNodeTemplate = new ProcessNodeTemplateDO();
+            startingProcessNodeTemplate.StartingProcessNodeTemplate = true;
+            ProcessNodeTemplates.Add(startingProcessNodeTemplate);*/
         }
+
 
         [Key]
         public int Id { get; set; }
@@ -23,10 +29,47 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
-        [ForeignKey("StartingProcessNodeTemplate")]
+        /*[ForeignKey("StartingProcessNodeTemplate")]
         public int StartingProcessNodeTemplateId { get; set; }
 
-        public virtual ProcessNodeTemplateDO StartingProcessNodeTemplate { get; set; }
+        public virtual ProcessNodeTemplateDO StartingProcessNodeTemplate { get; set; }*/
+
+        [NotMapped]
+        public int StartingProcessNodeTemplateId
+        {
+            get
+            {
+                var startingProcessNodeTemplate = ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
+                if (null != startingProcessNodeTemplate)
+                    return startingProcessNodeTemplate.Id;
+                else
+                {
+                    return 0;
+                    //throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
+                }
+            }
+        }
+
+        [NotMapped]
+        public ProcessNodeTemplateDO StartingProcessNodeTemplate
+        {
+            get
+            {
+                return ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
+            }
+
+            set {
+                var startingProcessNodeTemplate = ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
+                if (null != startingProcessNodeTemplate)
+                    startingProcessNodeTemplate = value;
+                else
+                {
+                    ProcessNodeTemplates.ToList().ForEach(pnt => pnt.StartingProcessNodeTemplate = false);
+                    value.StartingProcessNodeTemplate = true;
+                    ProcessNodeTemplates.Add(value);
+                }
+            }
+        }
 
         [Required]
         [ForeignKey("ProcessTemplateStateTemplate")]

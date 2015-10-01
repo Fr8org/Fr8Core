@@ -40,6 +40,25 @@ namespace DockyardTest.Services
             }
         }
 
+        [Test]
+        public void ProcessTemplateService_CanDelete()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplateDO = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates_ID0();
+                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                uow.SaveChanges();
+
+                Assert.AreNotEqual(curProcessTemplateDO.Id, 0);
+
+                var currProcessTemplateDOId = curProcessTemplateDO.Id;
+                _processTemplateService.Delete(uow, curProcessTemplateDO.Id);
+                var result = uow.ProcessTemplateRepository.GetByKey(currProcessTemplateDOId);
+                
+                Assert.NotNull(result);
+            }
+        }
+
         [Test,Ignore]
         public void CanActivateProcessTemplate()
         {
@@ -71,6 +90,8 @@ namespace DockyardTest.Services
             string result = _processTemplateService.Activate(curProcessTemplateDO);
             Assert.AreEqual(result, "failed");
         }
+
+        
 
 		//[Test]
   //      public void TemplateRegistrationCollections_ShouldMakeIdentical()

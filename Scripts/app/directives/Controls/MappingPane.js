@@ -53,14 +53,14 @@ var dockyard;
                                 if (!jsonValue || jsonValue.length <= i) {
                                     continue;
                                 }
-                                $scope.dataItems[i].selectedSource = jsonValue[i].source;
-                                $scope.dataItems[i].selectedTarget = jsonValue[i].target;
+                                $scope.dataItems[i].selectedSource = jsonValue[i].Key;
+                                $scope.dataItems[i].selectedTarget = jsonValue[i].Value;
                             }
                         });
                         $scope.$watch('dataItems', function (dataItem) {
                             var valueArr = [];
                             angular.forEach($scope.dataItems, function (it) {
-                                valueArr.push({ source: it.selectedSource, target: it.selectedTarget });
+                                valueArr.push({ Key: it.selectedSource, Value: it.selectedTarget });
                             });
                             $scope.field.value = angular.toJson(valueArr);
                         }, true);

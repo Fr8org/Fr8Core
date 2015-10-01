@@ -91,4 +91,13 @@
         public get: any;
         public saveCurrent: any;
     }
+
+    export class $ModalMock {
+        constructor($q: ng.IQService) {
+            this.open = jasmine.createSpy('open').and.returnValue({
+                result: $q.when(fixtures.ActivityTemplate.activityTemplateDO)
+            });
+        }
+        public open: any;
+    }
 }
