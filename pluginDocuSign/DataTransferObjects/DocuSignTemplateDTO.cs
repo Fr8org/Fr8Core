@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Interfaces.DataTransferObjects
+namespace pluginDocuSign.DataTransferObjects
 {
     public class DocuSignTemplateDTO : TemplateInfo
     {
-
+		 public DocuSignEnvelopeDTO EnvelopeData { get; set; }
     }
 }

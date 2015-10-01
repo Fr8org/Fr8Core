@@ -1,7 +1,6 @@
 ﻿using System;
 using Data.Entities;
 using DocuSign.Integrations.Client;
-using Data.Wrappers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -16,19 +15,7 @@ namespace UtilitiesTesting.Fixtures
 			};
 		}
 
-		public static DocuSignEnvelope TestEnvelope2(Account account)
-		{
-			// create envelope object and assign login info
-			return new DocuSignEnvelope
-            {
-				// assign account info from above
-				Login = account,
-				// "sent" to send immediately, "created" to save envelope as draft
-				Status = "created",
-				Created = DateTime.UtcNow,
-				Recipients = TestRecipients1()
-			};
-		}
+		
 
 	    public static string TestTemplateId = "58521204-58AF-4E65-8A77-4F4B51FEF626";
 	}

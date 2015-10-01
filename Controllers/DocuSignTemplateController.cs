@@ -1,4 +1,4 @@
-﻿using Data.Wrappers;
+﻿using Data.Interfaces;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -9,19 +9,19 @@ using System.Web.Http;
 
 namespace Web.Controllers
 {
-    [Authorize]
-    public class DocuSignTemplateController : ApiController
-    {
-        IDocuSignTemplate _template;
+	 //[Authorize]
+	 //public class DocuSignTemplateController : ApiController
+	 //{
+	 //	 IDocuSignTemplate _template;
 
-        public DocuSignTemplateController()
-        {
-            _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        }
+	 //	 public DocuSignTemplateController()
+	 //	 {
+	 //		  _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
+	 //	 }
 
-        public IHttpActionResult Get()
-        {
-            return Ok(_template.GetTemplates(null));
-        }
-    }
+	 //	 public IHttpActionResult Get()
+	 //	 {
+	 //		  return Ok(_template.GetTemplates(null));
+	 //	 }
+	 //}
 }

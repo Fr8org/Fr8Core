@@ -1,13 +1,10 @@
 using System.Collections.Generic;
-
 using DocuSign.Integrations.Client;
-
 using Data.Interfaces.DataTransferObjects;
-using Data.Wrappers;
 
-namespace Data.Interfaces
+namespace pluginDocuSign.Interfaces
 {
-    public interface IEnvelope
+    public interface IDocuSignEnvelope
     {
         /// <summary>
         /// Get Envelope Data from a docusign envelope. 

@@ -209,8 +209,6 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Actions\WaitForDocuSignEventV1Tests.cs" />
-    <Compile Include="Actions\WriteToSqlServerV1Tests.cs" />
     <Compile Include="Controllers\ActionListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\ActionControllerTest.cs" />
@@ -224,7 +222,6 @@
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
-    <Compile Include="DocuSign\DocuSignTemplateTests.cs" />
     <Compile Include="Entities\ActionRegistrationTests.cs" />
     <Compile Include="Entities\ProcessTemplateTests.cs" />
     <Compile Include="Entities\ActionTests .cs" />
@@ -249,7 +246,6 @@
     <Compile Include="Services\ActionServiceTests.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\DockyardEventTests.cs" />
-    <Compile Include="Services\EnvelopeServiceTests.cs" />
     <Compile Include="Services\IPluginClient.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
@@ -307,10 +303,6 @@
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>pluginDockyardCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginDocuSign\pluginDocuSign.csproj">
-      <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
-      <Name>pluginDocuSign</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>Web</Name>
@@ -325,6 +317,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Actions\" />
+    <Folder Include="DocuSign\" />
     <Folder Include="Timeslots\" />
   </ItemGroup>
   <ItemGroup>

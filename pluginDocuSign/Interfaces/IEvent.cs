@@ -1,4 +1,4 @@
-﻿namespace pluginDocuSign.Services
+﻿namespace pluginDocuSign.Interfaces
 {
     public interface IEvent
     {
