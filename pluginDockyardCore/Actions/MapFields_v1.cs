@@ -92,10 +92,9 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private CrateDTO CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new FieldDefinitionDTO()
+            var fieldFilterPane = new FieldDefinitionDTO("mappingPane")
             {
-                FieldLabel = "Configure Mapping",
-                Type = "mappingPane",
+                Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
@@ -218,9 +217,8 @@ namespace pluginDockyardCore.Actions
             {
                 new TextBlockFieldDTO()
                 {
-                    FieldLabel = fieldLabel,
+                    Label = fieldLabel,
                     Value = errorMessage,
-                    Type = "textBlockField",
                     cssClass = "well well-lg"
                     
                 }

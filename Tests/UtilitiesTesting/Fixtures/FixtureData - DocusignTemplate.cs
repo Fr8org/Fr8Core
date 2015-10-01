@@ -1,5 +1,4 @@
 ﻿using System;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 
 namespace UtilitiesTesting.Fixtures

@@ -196,6 +196,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -232,7 +233,6 @@
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
@@ -250,9 +250,6 @@
     <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
-    <Compile Include="Interfaces\IEnvelope.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
@@ -297,13 +294,25 @@
     <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs" />
+    <Compile Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.Designer.cs">
+      <DependentUpon>201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509262037112_addExternalAccountId.cs" />
     <Compile Include="Migrations\201509262037112_addExternalAccountId.Designer.cs">
       <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.cs" />
+    <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.Designer.cs">
+      <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.cs" />
     <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.Designer.cs">
       <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.cs" />
+    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.Designer.cs">
+      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201509270413022_EmptyMergeMigration.cs" />
     <Compile Include="Migrations\201509270413022_EmptyMergeMigration.Designer.cs">
@@ -328,6 +337,18 @@
     <Compile Include="Migrations\201509301243507_Merge20150930.cs" />
     <Compile Include="Migrations\201509301243507_Merge20150930.Designer.cs">
       <DependentUpon>201509301243507_Merge20150930.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.cs" />
+    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.Designer.cs">
+      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.cs" />
+    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.Designer.cs">
+      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510010808502_Merge20151001.cs" />
+    <Compile Include="Migrations\201510010808502_Merge20151001.Designer.cs">
+      <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -521,12 +542,6 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
-    <Compile Include="Wrappers\DocuSignAccount.cs" />
-    <Compile Include="Wrappers\DocuSignEnvelope.cs" />
-    <Compile Include="Wrappers\DocuSignPackager.cs" />
-    <Compile Include="Wrappers\DocuSignTemplate.cs" />
-    <Compile Include="Wrappers\Signer.cs" />
-    <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -542,9 +557,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Authentication\" />
-    <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
     <Folder Include="Infrastructure\JsonNet\" />
+    <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">
@@ -568,17 +583,38 @@
     <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
       <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.resx">
+      <DependentUpon>201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509262037112_addExternalAccountId.resx">
       <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.resx">
       <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.resx">
+      <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509261521578_UpdateActivityDOandActionList.resx">
+      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509270413022_EmptyMergeMigration.resx">
       <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509272213417_EmptyMigration2.resx">
+      <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301406085_EmptyMigration3.resx">
+      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301545244_UpdatedDockyardDbContext.resx">
+      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301600207_UpdatedActivityDO_2.resx">
+      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509291459441_RemoveEnvelopeDO.resx">
       <DependentUpon>201509291459441_RemoveEnvelopeDO.cs</DependentUpon>
@@ -591,6 +627,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509301243507_Merge20150930.resx">
       <DependentUpon>201509301243507_Merge20150930.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510010808502_Merge20151001.resx">
+      <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

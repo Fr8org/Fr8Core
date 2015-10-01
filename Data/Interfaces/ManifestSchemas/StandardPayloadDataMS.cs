@@ -6,6 +6,7 @@ namespace Data.Interfaces.ManifestSchemas
     public class StandardPayloadDataMS : ManifestSchema
     {
         public StandardPayloadDataMS()
+			  :base(Constants.MT.StandardPayloadData)
         {
             PayloadObjects = new List<PayloadObjectDTO>();
             ObjectType = "Unspecified";

@@ -1,7 +1,6 @@
 ﻿using System;
 using Data.Entities;
 using Data.States;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;

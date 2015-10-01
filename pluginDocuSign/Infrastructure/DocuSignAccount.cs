@@ -1,10 +1,44 @@
-﻿namespace pluginDocuSign.Infrastructure
+﻿using DocuSign.Integrations.Client;
+using Newtonsoft.Json.Linq;
+using System.Configuration;
+
+namespace pluginDocuSign.Infrastructure
 {
-    public class DocuSignAccount : DocuSign.Integrations.Client.Account
+    public class DocuSignAccount : Account
     {
-        public static DocuSignAccount Create(DocuSign.Integrations.Client.Account account)
+        DocuSignPackager _docuSignPackager;
+        DocuSignConnect _docuSignConnect;
+        private void DocuSignLogin()
         {
-            return AutoMapper.Mapper.Map<DocuSignAccount>(account);
+            _docuSignConnect = new DocuSignConnect();
+            _docuSignPackager = new DocuSignPackager
+            {
+                CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
+                CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
+            };
+            _docuSignConnect.Login = _docuSignPackager.Login();
+        }
+        public ConnectProfile GetDocuSignConnectProfiles()
+        {
+            DocuSignLogin();
+            return _docuSignConnect.Get();
+        }
+
+		  public DocuSign.Integrations.Client.Configuration CreateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
+        {
+            DocuSignLogin();
+            return _docuSignConnect.Create(configuration);
+        }
+		  public DocuSign.Integrations.Client.Configuration UpdateDocuSignConnectProfile(DocuSign.Integrations.Client.Configuration configuration)
+        {
+            DocuSignLogin();
+            return _docuSignConnect.Update(configuration);
+        }
+
+        public void DeleteDocuSignConnectProfile(string connectId)
+        {
+            DocuSignLogin();
+            _docuSignConnect.Delete(connectId);
         }
     }
 }

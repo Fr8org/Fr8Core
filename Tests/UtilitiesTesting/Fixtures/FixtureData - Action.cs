@@ -3,7 +3,6 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
@@ -442,10 +441,9 @@ namespace UtilitiesTesting.Fixtures
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
 
-            var fieldSelectDockusignTemplate = new FieldDefinitionDTO()
+            var fieldSelectDockusignTemplate = new DropdownListFieldDefinitionDTO()
             {
-                FieldLabel = "Select DocuSign Template",
-                Type = "dropdownlistField",
+                Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
                 Value = templateId,

@@ -53,10 +53,9 @@ namespace UtilitiesTesting.Fixtures
 
         public static FieldDefinitionDTO TestConnectionStringFieldDefinition()
         {
-            return new FieldDefinitionDTO()
+            return new TextBlockFieldDTO()
             {
-                FieldLabel = "SQL Connection String",
-                Type = "textField",
+                Label = "SQL Connection String",
                 Name = "connection_string",
                 Required = true,
                 Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") }
