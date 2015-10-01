@@ -15,12 +15,18 @@ using PluginBase;
 using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
+using pluginDocuSign.Interfaces;
 
 namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
     {
-        IEnvelope _envelope = ObjectFactory.GetInstance<IEnvelope>();
+		 IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+
+		 public Extract_From_DocuSign_Envelope_v1()
+		 {
+			 _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		 }
 
         public ActionDTO Configure(ActionDTO curActionDTO)
         {
@@ -65,14 +71,14 @@ namespace pluginDocuSign.Actions
 
         public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDO, string curEnvelopeId)
         {
-            var curEnvelopeData = _envelope.GetEnvelopeData(curEnvelopeId);
+            var curEnvelopeData = _docusignEnvelope.GetEnvelopeData(curEnvelopeId);
             var fields = GetFields(curActionDO);
 
             if (fields.Count == 0)
             {
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
             }
-            return _envelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
+            return _docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
         }
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
@@ -167,7 +173,7 @@ namespace pluginDocuSign.Actions
             // If DocuSignTemplate Id was found, then add design-time fields.
             if (!string.IsNullOrEmpty(docusignTemplateId))
             {
-                var userDefinedFields = _envelope
+                var userDefinedFields = _docusignEnvelope
                     .GetEnvelopeDataByTemplate(docusignTemplateId);
 
                 var fieldCollection = userDefinedFields

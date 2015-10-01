@@ -17,6 +17,7 @@ using Web.Controllers;
 using UtilitiesTesting;
 using Data.Constants;
 using Utilities;
+using System.Threading.Tasks;
 
 namespace pluginIntegrationTests
 {
@@ -26,22 +27,22 @@ namespace pluginIntegrationTests
 		/// Test Send_DocuSign_Envelope_v1 initial configuration.
 		/// </summary>
 		[Test]
-		public void PluginIntegration_SendDocuSignEnvelope_ConfigureInitial()
+		public async Task PluginIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
-			var curActionDTO = CreateEmptyAction();
-			SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
+			var curActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
+			await SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
 		}
 		/// <summary>
 		/// Test Send_DocuSign_Envelope_v1 follow-up configuration.
 		/// </summary>
 		[Test]
-		public void PluginIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
+		public async Task PluginIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
-			var savedActionDTO = CreateEmptyAction();
+			var savedActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
 
 			// Call Configure Initial for WaitForDocuSignEvent action.
-			var initCrateStorageDTO = SendDocuSignEnvelope_ConfigureInitial(savedActionDTO);
+			var initCrateStorageDTO = await SendDocuSignEnvelope_ConfigureInitial(savedActionDTO);
 
 			// Select first available DocuSign template.
 			SendDocuSignEnvelope_SelectFirstTemplate(initCrateStorageDTO);
@@ -51,7 +52,7 @@ namespace pluginIntegrationTests
 			SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
 
 		}
-		private CrateStorageDTO SendDocuSignEnvelope_ConfigureInitial(ActionDTO curActionDTO)
+		private async Task<CrateStorageDTO> SendDocuSignEnvelope_ConfigureInitial(ActionDTO curActionDTO)
 		{
 			// Fill values as it would be on front-end.
 			curActionDTO.ActivityTemplateId = _sendDocuSignEnvelopeActivityTemplate.Id;
@@ -59,7 +60,7 @@ namespace pluginIntegrationTests
 
 			// Send initial configure request.
 			var curActionController = CreateActionController();
-			var actionDTO = curActionController.Configure(curActionDTO)
+			var actionDTO = await curActionController.Configure(curActionDTO)
 				 as OkNegotiatedContentResult<ActionDTO>;
 
 			// Assert initial configuration returned in CrateStorage.
@@ -97,11 +98,11 @@ namespace pluginIntegrationTests
 
 			configurationControlsCrateDTO.Contents = JsonConvert.SerializeObject(controlsMS);
 		}
-		private CrateStorageDTO SendDocuSignEnvelope_ConfigureFollowUp(ActionDTO curActionDTO)
+		private async Task<CrateStorageDTO> SendDocuSignEnvelope_ConfigureFollowUp(ActionDTO curActionDTO)
 		{
 			var curActionController = CreateActionController();
 
-			var actionDTO = curActionController.Configure(curActionDTO)
+			var actionDTO = await curActionController.Configure(curActionDTO)
 				 as OkNegotiatedContentResult<ActionDTO>;
 
 			// Assert FollowUp Configure result.

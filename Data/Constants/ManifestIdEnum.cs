@@ -32,5 +32,8 @@ namespace Data.Constants
 
 		[Display(Name = "Standard File Handle")]
 		StandardFileHandle = 10,
+
+		[Display(Name = "Standard Routing Directive")]
+		StandardRoutingDirective = 11,
 	}
 }
