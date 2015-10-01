@@ -5,28 +5,23 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
+using Data.Constants;
 using Newtonsoft.Json;
-using System.Net;
-using System.Net.Http;
 using Data.Interfaces.ManifestSchemas;
-using Google.Apis.Auth;
+using Utilities;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        private IEnvelope _envelope;
         private IAction _action;
-        private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
         private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
@@ -109,7 +104,7 @@ namespace Core.Services
 
         public ActionDO GetById(IUnitOfWork uow, int id)
         {
-            return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
+            return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
 
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
@@ -138,6 +133,18 @@ namespace Core.Services
 
             //Returning ActionDTO
             return tempActionDTO;
+        }
+
+        public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
+        {
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+            if (confControls.Count() != 0 && confControls.Count() != 1)
+                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
+            if (confControls.Count() == 0)
+                return null;
+            StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+            return standardCfgControlsMs;
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -177,66 +184,57 @@ namespace Core.Services
             if (curActionList == null) return null;
 
             // Get current Action
-            var curAction = curActionList.Activities.Where(a => a.Id == curActionId).SingleOrDefault();
+            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
             if (curAction == null) return null; // Well, who knows...
 
             // Get ordered list of next Activities 
             var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-
-            //if no next activities, just nullify CurrentActivity 
-            if (activities.Count() == 0)
-            {
-                curActionList.CurrentActivity = null;
-            }
-            else
-            {
-                // if there is one, set it as CurrentActivity
-                curActionList.CurrentActivity = activities.ToList()[0];
-            }
+            
+            curActionList.CurrentActivity = activities.FirstOrDefault();
 
             return curAction;
         }
 
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        {
+            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
             {
-                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
+                curAction.ActionState = ActionState.InProcess;
+                uow.SaveChanges();
+
+                EventManager.ActionStarted(curAction);
+
+                var payload = await Execute(curAction, curProcessDO);
+                if (payload != null)
                 {
-                    curAction.ActionState = ActionState.InProcess;
-                    uow.SaveChanges();
-
-                    EventManager.ActionStarted(curAction);
-
-                    var payload = await Execute(curAction, curProcessDO);
-                    if (payload != null)
-                    {
-                        curProcessDO.CrateStorage = payload.CrateStorage;
-                    }
-
-                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
-
-
-                    //check if the returned JSON is Error
-                    //  if (jsonResult.ToLower().Contains("error"))
-                    // {
-                    //     curAction.ActionState = ActionState.Error;
-                    //  }
-                    //   else
-                    //   {
-                    curAction.ActionState = ActionState.Active;
-                    //   }
-
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
+                    curProcessDO.CrateStorage = payload.CrateStorage;
                 }
-                else
-                {
-                    curAction.ActionState = ActionState.Error;
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
-                    throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-                }
+
+                //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+
+
+                //check if the returned JSON is Error
+                //  if (jsonResult.ToLower().Contains("error"))
+                // {
+                //     curAction.ActionState = ActionState.Error;
+                //  }
+                //   else
+                //   {
+                curAction.ActionState = ActionState.Active;
+                //   }
+
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+            }
+            else
+            {
+                curAction.ActionState = ActionState.Error;
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
+            }
             return curAction.ActionState.Value;
         }
 

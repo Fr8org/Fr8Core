@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -178,20 +179,23 @@ namespace Utilities
         }
     }
 
-    public static class EnumExtensions 
-    {
-        public static string GetEnumDescription(this Enum value, string defaultValue = null) {
-            return value.GetEnumAttribute<DescriptionAttribute>(a => a.Description, defaultValue);
-        }
-        public static string GetEnumDisplayName(this Enum value, string defaultValue = null) {
-            return value.GetEnumAttribute<DisplayNameAttribute>(a => a.DisplayName, defaultValue);
-        }
-        private static string GetEnumAttribute<TAttr>(this Enum value, Func<TAttr, string> expr, string defaultValue = null) where TAttr : Attribute {
-            FieldInfo fi = value.GetType().GetField(value.ToString());
-            var attributes = fi.GetCustomAttributes<TAttr>(false).ToArray();
-            return (attributes != null && attributes.Length > 0) ? expr(attributes.First()) : (defaultValue ?? value.ToString());
-        }
-    }
+	 public static class EnumExtensions
+	 {
+		 public static string GetEnumDescription(this Enum value, string defaultValue = null)
+		 {
+			 return value.GetEnumAttribute<DescriptionAttribute>(a => a.Description, defaultValue);
+		 }
+		 public static string GetEnumDisplayName(this Enum value, string defaultValue = null)
+		 {
+			 return value.GetEnumAttribute<DisplayAttribute>(a => a.Name, defaultValue);
+		 }
+		 private static string GetEnumAttribute<TAttr>(this Enum value, Func<TAttr, string> expr, string defaultValue = null) where TAttr : Attribute
+		 {
+			 FieldInfo fi = value.GetType().GetField(value.ToString());
+			 var attributes = fi.GetCustomAttributes<TAttr>(false).ToArray();
+			 return (attributes != null && attributes.Length > 0) ? expr(attributes.First()) : (defaultValue ?? value.ToString());
+		 }
+	 }
 
 
     public static class TypeExtensions 

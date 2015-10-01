@@ -19,7 +19,6 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Moq;
 using SendGrid;
@@ -111,9 +110,7 @@ namespace Core.StructureMap
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IEnvelope>().Use<DocuSignEnvelope>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
-                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
@@ -168,14 +165,11 @@ namespace Core.StructureMap
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
                 //For<IProcessService>().Use(mockProcess.Object);
                 //For<Mock<IProcessService>>().Use(mockProcess);
-                For<IEnvelope>().Use<DocuSignEnvelope>();
 
                 var pluginTransmitterMock = new Mock<IPluginTransmitter>();
                 For<IPluginTransmitter>().Use(pluginTransmitterMock.Object).Singleton();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
-                For<IEnvelope>().Use<DocuSignEnvelope>();
-                For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();

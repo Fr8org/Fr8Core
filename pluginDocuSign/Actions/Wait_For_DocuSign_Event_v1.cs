@@ -8,21 +8,21 @@ using System.Web;
 using StructureMap;
 using Newtonsoft.Json;
 using Core.Interfaces;
-using Data.Wrappers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase;
 using PluginBase.BaseClasses;
 using DocuSign.Integrations.Client;
+using pluginDocuSign.Interfaces;
+using pluginDocuSign.Infrastructure;
 
 namespace pluginDocuSign.Actions
 {
     public class Wait_For_DocuSign_Event_v1 : BasePluginAction
     {
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        IEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IEnvelope>();
-
+        IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
         public ActionDTO Configure(ActionDTO curActionDTO)
         {
@@ -147,10 +147,10 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-			var crateControls = CreateStandardConfigurationControls();
-			var crateDesignTimeFields = CreateStandardDesignTimeFields();
-			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+				var crateControls = CreateStandardConfigurationControls();
+				var crateDesignTimeFields = CreateStandardDesignTimeFields();
+				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             return curActionDTO;
         }
@@ -246,7 +246,7 @@ namespace pluginDocuSign.Actions
             {
                 if (eventCheckBox.Selected)
                 {
-                    subscriptions.Add(eventCheckBox.FieldLabel);
+                    subscriptions.Add(eventCheckBox.Label);
                 }
             }
 
@@ -260,8 +260,7 @@ namespace pluginDocuSign.Actions
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
-	            FieldLabel = "Select DocuSign Template",
-	            Type = "dropdownlistField",
+	            Label = "Select DocuSign Template",
 	            Name = "Selected_DocuSign_Template",
 	            Required = true,
 	            Events = new List<FieldEvent>()
@@ -275,48 +274,28 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var fieldEnvelopeSent = new FieldDefinitionDTO()
+            var fieldEnvelopeSent = new CheckBoxFieldDefinitionDTO()
             {
-                FieldLabel = "Envelope Sent",
-                Type = "checkboxField",
-                Name = "Event_Envelope_Sent",
-                Events = new List<FieldEvent>()
-                {
-                    new FieldEvent("onChange", "requestConfig")
-                }
+                Label = "Envelope Sent",
+                Name = "Event_Envelope_Sent"
             };
 
-            var fieldEnvelopeReceived = new FieldDefinitionDTO()
+				var fieldEnvelopeReceived = new CheckBoxFieldDefinitionDTO()
             {
-                FieldLabel = "Envelope Received",
-                Type = "checkboxField",
-                Name = "Event_Envelope_Received",
-                Events = new List<FieldEvent>()
-                {
-                    new FieldEvent("onChange", "requestConfig")
-                }
+                Label = "Envelope Received",
+                Name = "Event_Envelope_Received"
             };
 
-            var fieldRecipientSigned = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Recipient Signed",
-                Type = "checkboxField",
-                Name = "Event_Recipient_Signed",
-                Events = new List<FieldEvent>()
+				var fieldRecipientSigned = new CheckBoxFieldDefinitionDTO()
                 {
-                    new FieldEvent("onChange", "requestConfig")
-                }
+                Label = "Recipient Signed",
+                Name = "Event_Recipient_Signed"
             };
 
-            var fieldEventRecipientSent = new FieldDefinitionDTO()
-            {
-                FieldLabel = "Recipient Sent",
-                Type = "checkboxField",
-                Name = "Event_Recipient_Sent",
-                Events = new List<FieldEvent>()
+				var fieldEventRecipientSent = new CheckBoxFieldDefinitionDTO()
                 {
-                    new FieldEvent("onChange", "requestConfig")
-                }
+                Label = "Recipient Sent",
+                Name = "Event_Recipient_Sent"
             };
 
             return PackControlsCrate(

@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 ﻿using Core.Managers.APIManagers.Transmitters.Plugin;
 ﻿using Core.Services;
 ﻿using Data.Entities;
@@ -67,6 +67,8 @@ namespace DockyardTest.Integration
         //    healthProcessTemplate.DockyardAccount = registeredAccount;
         //    uow.ProcessTemplateRepository.Add(healthProcessTemplate);
         //    uow.SaveChanges();
+        //   healthProcessNodeTemplateDO.StartingProcessNodeTemplate = true;
+        //  healthProcessTemplate.ProcessNodeTemplates.Add(healthProcessNodeTemplateDO);
 
         //    //add processnode to process
         //    var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();

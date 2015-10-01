@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Services;
@@ -13,6 +14,7 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
 {
     public class PluginTransmitter : RestfulServiceClient, IPluginTransmitter
     {
+        /// <summary>
         /// Posts ActionDTO to "/actions/&lt;actionType&gt;"
         /// </summary>
         /// <param name="curActionType">Action Type</param>
@@ -35,13 +37,15 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
 
             if (actionDTO.ActivityTemplate == null)
             {
-                pluginId = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value).PluginID;
+                var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>().GetByKey(actionDTO.ActivityTemplateId.Value);
+                actionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDO, ActivityTemplateDTO>(activityTemplate);
+                pluginId = activityTemplate.PluginID;
             }
             else
             {
                 pluginId = actionDTO.ActivityTemplate.PluginID;
             }
-            
+           
             var plugin = ObjectFactory.GetInstance<IPlugin>().GetAll().FirstOrDefault(x => x.Id == pluginId);
 
             if (plugin == null || string.IsNullOrEmpty(plugin.Endpoint))

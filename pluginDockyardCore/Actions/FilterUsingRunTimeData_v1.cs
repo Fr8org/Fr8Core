@@ -14,7 +14,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Data.States.Templates;
-using Data.Wrappers;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginDockyardCore.Interfaces;
@@ -37,7 +36,7 @@ namespace pluginDockyardCore.Actions
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = _action.GetControlsManifest(curAction);
-
+            
             FieldDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
             if (filterPaneControl == null)
             {
@@ -60,7 +59,7 @@ namespace pluginDockyardCore.Actions
         }
 
         private bool Evaluate(string criteria, int processId, IEnumerable<FieldDTO> values)
-        {
+            {
             if (criteria == null)
                 throw new ArgumentNullException("criteria");
             if (criteria == string.Empty)
@@ -184,8 +183,7 @@ namespace pluginDockyardCore.Actions
         {
             var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
             {
-                FieldLabel = "Execute Actions If:",
-                Type = "filterPane",
+                Label = "Execute Actions If:",
                 Name = "Selected_Filter",
                 Required = true,
                 Source = new FieldSourceDTO

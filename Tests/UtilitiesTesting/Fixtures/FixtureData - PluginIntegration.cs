@@ -80,7 +80,15 @@ namespace UtilitiesTesting.Fixtures
                 Plugin = TestPlugin_AzureSqlServer()
             };
         }
-
+		  public static ActivityTemplateDO TestActivityTemplateDO_SendDocuSignEnvelope()
+		  {
+			  return new ActivityTemplateDO()
+			  {
+				  Name = "Send_DocuSign_Envelope",
+				  Version = "1",
+				  Plugin = TestPlugin_DocuSign()
+			  };
+		  }
         public static ActionDO TestAction_Blank()
         {
             return new ActionDO()

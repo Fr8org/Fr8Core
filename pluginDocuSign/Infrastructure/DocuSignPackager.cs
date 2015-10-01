@@ -17,9 +17,10 @@ namespace pluginDocuSign.Infrastructure
         public DocuSignAccount Login()
         {
            var curDocuSignAccount = new DocuSignAccount
-            {
+            {					
                 Email = CurrentEmail,
-                ApiPassword = CurrentApiPassword
+                ApiPassword = CurrentApiPassword,
+					 BaseUrl = RestSettings.Instance.WebServiceUrl,
             };
 
             if (curDocuSignAccount.Login())

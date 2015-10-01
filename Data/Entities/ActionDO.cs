@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using AutoMapper;
-using Data.Wrappers;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;

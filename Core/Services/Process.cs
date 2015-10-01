@@ -13,7 +13,6 @@ using Core.Helper;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Utilities;
 
@@ -22,14 +21,12 @@ namespace Core.Services
     public class Process : IProcess
     {
         private readonly IProcessNode _processNode;
-        private readonly DocuSignEnvelope _envelope;
         private readonly IActivity _activity;
         private readonly IProcessTemplate _processTemplate;
 
         public Process()
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
-            _envelope = new DocuSignEnvelope();
             _activity = ObjectFactory.GetInstance<IActivity>();
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
@@ -60,7 +57,8 @@ namespace Core.Services
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplateId;
+                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
+                
                 var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
 
