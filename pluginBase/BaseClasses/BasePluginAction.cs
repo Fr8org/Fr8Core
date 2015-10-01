@@ -162,9 +162,8 @@ namespace PluginBase.BaseClasses
             {
                 new TextBlockFieldDTO()
                 {
-                    FieldLabel = fieldLabel,
+                    Label = fieldLabel,
                     Value = errorMessage,
-                    Type = "textBlockField",
                     cssClass = "well well-lg"
                     
                 }

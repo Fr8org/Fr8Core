@@ -16,6 +16,7 @@ using Core.StructureMap;
 using Data.States.Templates;
 using Data.Interfaces.ManifestSchemas;
 using pluginSendGrid.Infrastructure;
+using Data.Interfaces;
 
 namespace pluginSendGrid.Actions
 {
@@ -71,24 +72,21 @@ namespace pluginSendGrid.Actions
 
             FieldDefinitionDTO[] controls = 
             {
-                new FieldDefinitionDTO()
+                new FieldDefinitionDTO("textField")
                 {
-                        FieldLabel = "Recipient Email Address",
-                        Type = "textField",
+                        Label = "Recipient Email Address",
                         Name = "Recipient_Email_Address",
                         Required = false
                 },
-                new FieldDefinitionDTO()
+                new FieldDefinitionDTO("textField")
                 {
-                        FieldLabel = "Email Subject",
-                        Type = "textField",
+                        Label = "Email Subject",
                         Name = "Email_Subject",
                         Required = false
                 },
-                new FieldDefinitionDTO()
+                new FieldDefinitionDTO("textField")
                 {
-                        FieldLabel = "Email Body",
-                        Type = "textField",
+                        Label = "Email Body",
                         Name = "Email_Body",
                         Required = false
                 }
@@ -137,7 +135,7 @@ namespace pluginSendGrid.Actions
 
         public object Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            var mailerDO = AutoMapper.Mapper.Map<MailerDO>(curActionDataPackage.PayloadDTO);
+            var mailerDO = AutoMapper.Mapper.Map<IMailerDO>(curActionDataPackage.PayloadDTO);
 
             _emailPackager.Send(mailerDO);
 

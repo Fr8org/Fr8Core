@@ -1,9 +1,10 @@
 ﻿using Data.Entities;
+using Data.Interfaces;
 
 namespace pluginSendGrid.Infrastructure
 {
     public interface IEmailPackager
     {
-        void Send(MailerDO envelope);
+        void Send(IMailerDO envelope);
     }
 }
