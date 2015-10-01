@@ -71,8 +71,8 @@ module dockyard.controllers {
             this._processTemplates = ProcessTemplateService.query();
             $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates(0);   
             $scope.dtColumnBuilder = this.GetDataTableColumns();   
-            this._processTemplatesAc = ProcessTemplateService.getactive({ id: null, status: 1 });   
-            this._processTemplatesIn = ProcessTemplateService.getactive({ id: null, status: 2 });
+            this._processTemplatesAc = ProcessTemplateService.getactive({ id: null, status: 2 });   
+            this._processTemplatesIn = ProcessTemplateService.getactive({ id: null, status: 1 });
            $scope.activedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(2);
            $scope.activedtColumnBuilder = this.GetDataTableColumns(); 
            $scope.inactivedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(1);
