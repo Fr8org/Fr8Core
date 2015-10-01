@@ -10,6 +10,8 @@ using Data.Crates.Helpers;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
+using System.Xml;
+using System.Net;
 
 namespace Web.Controllers
 {
@@ -119,9 +121,28 @@ namespace Web.Controllers
             await
                 _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
 
+
+            //Check if responding to Salesforce
+            if(pluginName=="pluginSalesforce")
+            {
+                //We need to acknowledge the request from Salesforce
+                //Creating a SOAP response to acknowledge
+                string response = @"<?xml version=""1.0"" encoding=""UTF-8""?>
+                <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" 
+                xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+                 <soapenv:Body>
+                  <notificationsResponse xmlns=""http://soap.sforce.com/2005/09/outbound"">
+                         <Ack>true</Ack>
+                      </notificationsResponse>
+                  </soapenv:Body>
+                </soapenv:Envelope>";
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(response);
+                return Content(HttpStatusCode.OK, doc, Configuration.Formatters.XmlFormatter);
+            }
+
+
             return Ok();
-            
-            
         }
     }
 }

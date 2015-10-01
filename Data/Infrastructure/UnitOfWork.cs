@@ -14,7 +14,7 @@ namespace Data.Infrastructure
         private TransactionScope _transaction;
         private readonly IDBContext _context;
 
-        internal UnitOfWork(IDBContext context)
+        public UnitOfWork(IDBContext context)
         {
             _context = context;
             _context.UnitOfWork = this;

@@ -102,6 +102,26 @@ namespace Data.Migrations
             }
 
 
+            var salesforceAuthToken = uow.AuthorizationTokenRepository.GetQuery()
+             .Any(x => x.ExternalAccountId == "alex@dockyard.company");
+
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!salesforceAuthToken)
+            {
+                var token = new AuthorizationTokenDO();
+                token.ExternalAccountId = "00561000000JECsAAO";
+                token.Token = "";
+                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
+                var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginSalesforce");
+                token.Plugin = docuSignPlugin;
+                token.PluginID = docuSignPlugin.Id;
+                token.ExpiresAt = DateTime.Now.AddDays(10);
+
+                uow.AuthorizationTokenRepository.Add(token);
+                uow.SaveChanges();
+
+            }
+
            
 
 
