@@ -124,13 +124,15 @@ namespace Web.Controllers
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
+
                 //this will return 0 on create operation because of not saved changes
-                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
-                uow.SaveChanges();
-                //what a mess lets try this
-                curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
                 uow.SaveChanges();
                 processTemplateDto.Id = curProcessTemplateDO.Id;
+                //what a mess lets try this
+                /*curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curProcessTemplateDO.Id;*/
                 return Ok(processTemplateDto);
             }
         }

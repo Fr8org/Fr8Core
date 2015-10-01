@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
 
 namespace Core.Interfaces
 {
@@ -10,7 +11,7 @@ namespace Core.Interfaces
     {
         IEnumerable<TViewModel> GetAllActions<TViewModel>();
         ActionDO SaveOrUpdateAction(ActionDO currentActionDo);
-        ActionDTO Configure(ActionDO curActionDO);
+        Task<ActionDTO> Configure(ActionDO curActionDO);
         ActionDO GetById(int id);
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
@@ -18,9 +19,11 @@ namespace Core.Interfaces
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);
         List<CrateDTO> GetCrates(ActionDO curActionDO);
-        string Activate(ActionDO curActionDO);
-        string Deactivate(ActionDO curActionDO);
+        Task<ActionDTO> Activate(ActionDO curActionDO);
+        Task<ActionDTO> Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
+		  StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
         ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
+        StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
     }
 }

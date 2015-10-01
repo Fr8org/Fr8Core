@@ -7,9 +7,23 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+	public class CheckBoxFieldDefinitionDTO : FieldDefinitionDTO
+	{
+		public CheckBoxFieldDefinitionDTO()
+		{
+			Type = "checkboxField";
+		}
+	}
     public class DropdownListFieldDefinitionDTO : FieldDefinitionDTO
     {
-       
+		 [JsonProperty("listItems")]
+		 public List<ListItem> ListItems { get; set; }
+
+		 public DropdownListFieldDefinitionDTO()
+		 {
+			 ListItems = new List<ListItem>();
+			 Type = "dropdownlistField";
+		 }
     }
 
     public class RadioButtonGroupFieldDefinitionDTO : FieldDefinitionDTO
@@ -19,17 +33,34 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("radios")]
         public List<RadioButton> Radios { get; set; }
+
+		 public RadioButtonGroupFieldDefinitionDTO()
+		  {
+			  Radios = new List<RadioButton>();
+			  Type = "radioGroup";
+		  }
     }
 
     public class FilterPaneFieldDefinitionDTO : FieldDefinitionDTO
     {
         [JsonProperty("fields")]
         public List<FilterPaneField> Fields { get; set;}
+		 
+		 public FilterPaneFieldDefinitionDTO()
+		  {
+			  Type = "filterPane";
+		  }
     }
-
+	 // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
+	 // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
     public class FieldDefinitionDTO
     {
         public FieldDefinitionDTO() { }
+
+		  public FieldDefinitionDTO(string type) 
+		  {
+			  Type = type;
+		  }
 
         public FieldDefinitionDTO(string name, bool required, string value, string fieldLabel)
         {
@@ -37,7 +68,7 @@ namespace Data.Interfaces.DataTransferObjects
             Name = name;
             Required = required;
             Value = value;
-            FieldLabel = fieldLabel;
+            Label = fieldLabel;
         }
 
         public FieldDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
@@ -46,7 +77,7 @@ namespace Data.Interfaces.DataTransferObjects
             Name = name;
             Required = required;
             Value = value;
-            FieldLabel = fieldLabel;
+            Label = fieldLabel;
         }
 
         public const string CHECKBOX_FIELD = "checkboxField";
@@ -61,11 +92,11 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("value")]
         public string Value { get; set; }
 
-        [JsonProperty("fieldLabel")]
-        public string FieldLabel { get; set; }
+        [JsonProperty("label")]
+        public string Label { get; set; }
 
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public string Type { get; protected set; }
 
         [JsonProperty("selected")]
         public bool Selected { get; set; }
@@ -117,4 +148,15 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("name")]
         public string Name { get; set; }
     }
+	 public class ListItem
+	 {
+		 [JsonProperty("selected")]
+		 public bool Selected { get; set; }
+
+		 [JsonProperty("key")]
+		 public string Key { get; set; }
+
+		 [JsonProperty("value")]
+		 public string Value { get; set; }
+	 }
 }

@@ -300,7 +300,6 @@
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\SMSMessage.cs" />
     <Compile Include="Services\Subscription.cs" />
-    <Compile Include="Services\Template.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>

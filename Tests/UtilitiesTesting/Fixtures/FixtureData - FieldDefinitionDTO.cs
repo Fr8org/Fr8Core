@@ -14,8 +14,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
-                FieldLabel = "Select DocuSign Template",
-                Type = "dropdownlistField",
+                Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
                 Events = new List<FieldEvent>()
@@ -31,29 +30,25 @@ namespace UtilitiesTesting.Fixtures
 
             var fieldEnvelopeSent = new FieldDefinitionDTO()
             {
-                FieldLabel = "Envelope Sent",
-                Type = "checkboxField",
+                Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
             var fieldEnvelopeReceived = new FieldDefinitionDTO()
             {
-                FieldLabel = "Envelope Received",
-                Type = "checkboxField",
+                Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
             var fieldRecipientSigned = new FieldDefinitionDTO()
             {
-                FieldLabel = "Recipient Signed",
-                Type = "checkboxField",
+                Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
             var fieldEventRecipientSent = new FieldDefinitionDTO()
             {
-                FieldLabel = "Recipient Sent",
-                Type = "checkboxField",
+                Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"
             };
 

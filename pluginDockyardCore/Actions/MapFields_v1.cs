@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using AutoMapper;
 using Newtonsoft.Json;
@@ -19,37 +20,46 @@ namespace pluginDockyardCore.Actions
 {
     public class MapFields_v1 : BasePluginAction
     {
-
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public ActionProcessResultDTO Execute(ActionDO actionDO)
+        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            var curFieldMappingSettings = actionDO.CrateStorageDTO()
+            var curControlsCrate = curActionDataPackage.ActionDTO
+                .CrateStorage
                 .CrateDTO
-                .Where(x => x.Label == "Field Mappings")
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            if (curFieldMappingSettings == null)
+            if (curControlsCrate == null)
             {
-                throw new ApplicationException("No Field Mapping cratefound for current action.");
+                throw new ApplicationException("No controls crate found.");
             }
 
-            var curFieldMappingJson = JsonConvert.SerializeObject(curFieldMappingSettings, JsonSettings.CamelCase);
+            var curControlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            var curMappingControl = curControlsMS.Controls
+                .FirstOrDefault(x => x.Name == "Selected_Mapping");
 
-            var crates = new List<CrateDTO>()
+            if (curMappingControl == null || string.IsNullOrEmpty(curMappingControl.Value))
             {
-                new CrateDTO()
-                {
-                    Contents = curFieldMappingJson,
-                    Label = "Payload",
-                    ManifestType = "Standard Payload Data"
-                }
+                throw new ApplicationException("No Selected_Mapping control found.");
+            }
+
+            var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
+            mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
+
+            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+
+            var actionPayloadCrates = new List<CrateDTO>()
+            {
+                _crate.Create("MappedFields",
+                    JsonConvert.SerializeObject(mappedFields),
+                    CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+                    CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID)
             };
 
-            ((ActionListDO)actionDO.ParentActivity).Process.UpdateCrateStorageDTO(crates);
+            processPayload.UpdateCrateStorageDTO(actionPayloadCrates);
 
-            return new ActionProcessResultDTO() { Success = true };
+            return processPayload;
         }
 
         /// <summary>
@@ -82,10 +92,9 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private CrateDTO CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new FieldDefinitionDTO()
+            var fieldFilterPane = new FieldDefinitionDTO("mappingPane")
             {
-                FieldLabel = "Configure Mapping",
-                Type = "mappingPane",
+                Label = "Configure Mapping",
                 Name = "Selected_Mapping",
                 Required = true
             };
@@ -120,7 +129,19 @@ namespace pluginDockyardCore.Actions
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
-            curActionDTO.CrateStorage = AssembleCrateStorage(downstreamFieldsCrate, upstreamFieldsCrate, curConfigurationControlsCrate, getErrorMessageCrate);
+            var cratesToAssemble = new List<CrateDTO>()
+            {
+                downstreamFieldsCrate,
+                upstreamFieldsCrate,
+                curConfigurationControlsCrate
+            };
+
+            if (getErrorMessageCrate != null)
+            {
+                cratesToAssemble.Add(getErrorMessageCrate);
+            }
+
+            curActionDTO.CrateStorage = AssembleCrateStorage(cratesToAssemble.ToArray());
             return curActionDTO;
 
         }
@@ -196,9 +217,8 @@ namespace pluginDockyardCore.Actions
             {
                 new TextBlockFieldDTO()
                 {
-                    FieldLabel = fieldLabel,
+                    Label = fieldLabel,
                     Value = errorMessage,
-                    Type = "textBlockField",
                     cssClass = "well well-lg"
                     
                 }

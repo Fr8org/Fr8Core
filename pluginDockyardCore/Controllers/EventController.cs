@@ -7,7 +7,7 @@ namespace pluginDockyardCore.Controllers
     {
         [HttpPost]
         [Route("events")]
-        public async void ProcessIncomingNotification()
+        public void ProcessIncomingNotification()
         {
             //Implement the processing logic of dockyard core plugin
         }
