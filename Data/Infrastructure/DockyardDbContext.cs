@@ -240,7 +240,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
-            modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
+            //modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<InvitationDO>().ToTable("Invitations");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
@@ -268,7 +268,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
-            modelBuilder.Entity<MailerDO>().ToTable("Mailers");
+            modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<MT_Field>().ToTable("MT_Fields");
             modelBuilder.Entity<MT_Object>().ToTable("MT_Objects");

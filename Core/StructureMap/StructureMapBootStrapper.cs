@@ -81,7 +81,7 @@ namespace Core.StructureMap
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.MailHandler);
+                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
@@ -129,7 +129,7 @@ namespace Core.StructureMap
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(MailerDO.MailHandler);
+                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
