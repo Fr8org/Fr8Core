@@ -6,6 +6,7 @@ namespace Data.Interfaces.ManifestSchemas
     public class StandardDesignTimeFieldsMS : ManifestSchema
     {
         public StandardDesignTimeFieldsMS()
+			  :base(Constants.MT.StandardDesignTimeFields)
         {
             Fields = new List<FieldDTO>();
         }

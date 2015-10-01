@@ -196,6 +196,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
@@ -232,7 +233,6 @@
     <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\DocuSignTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EnvelopeDataDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
@@ -250,9 +250,6 @@
     <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
-    <Compile Include="Interfaces\IEnvelope.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
@@ -541,12 +538,6 @@
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
-    <Compile Include="Wrappers\DocuSignAccount.cs" />
-    <Compile Include="Wrappers\DocuSignEnvelope.cs" />
-    <Compile Include="Wrappers\DocuSignPackager.cs" />
-    <Compile Include="Wrappers\DocuSignTemplate.cs" />
-    <Compile Include="Wrappers\Signer.cs" />
-    <Compile Include="Wrappers\Tab.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -562,9 +553,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Authentication\" />
-    <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
     <Folder Include="Infrastructure\JsonNet\" />
+    <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">

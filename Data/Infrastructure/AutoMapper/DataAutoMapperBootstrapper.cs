@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Wrappers;
 using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -76,10 +75,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
 
-            Mapper.CreateMap<Signer, Wrappers.Signer>();
-
             //Mapper.CreateMap<Account, DocuSignAccount>();
-            Mapper.CreateMap<TemplateInfo, DocuSignTemplateDTO>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();
 
             Mapper.CreateMap<CrateStorageDTO, string>()
@@ -93,6 +89,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
 
             Mapper.CreateMap<FileDO, FileDTO>();
+
         }
     }   
 }
