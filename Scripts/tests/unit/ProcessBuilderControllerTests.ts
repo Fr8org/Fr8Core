@@ -4,7 +4,6 @@
 module dockyard.tests.controller {
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
 
     describe("ProcessBuilder Framework message processing", () => {
@@ -136,31 +135,9 @@ module dockyard.tests.controller {
             _$scope.$emit(pst.MessageType[pst.MessageType.PaneSelectTemplate_ProcessTemplateUpdated], incomingEventArgs);
         });
         */
-        // TODO: do we need this ?
-        //Rule #6
-        // it("When PaneSelectAction_ActionUpdated is sent, PaneWorkflowDesigner_UpdateAction " +
-        //     "should be received with correct args", () => {
-        //         var incomingEventArgs = new psa.ActionUpdatedEventArgs(1, 2, true, "testaction"),
-        //             outgoingEventArgs = new pwd.ActionNameUpdatedEventArgs(2, "testaction");
-        // 
-        //         console.log(incomingEventArgs);
-        //         console.log(outgoingEventArgs);
-        // 
-        //         _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated], incomingEventArgs);
-        // 
-        //         expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneWorkflowDesigner_UpdateAction", outgoingEventArgs);
-        //     });
-        /*
-        //Rule #7
-        it("When PaneSelectAction_ActionTypeSelected is sent, " +
-            "PaneConfigureAction_Render should be received with correct args", () => {
-                var incomingEventArgs = new psa.ActionTypeSelectedEventArgs(new model.ActionDesignDTO(1, 2, false, 3)),
-                    outgoingEvent2Args = new pca.RenderEventArgs(new model.ActionDesignDTO(1, 2, false, 3));
-                 
-                _$scope.$emit(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected], incomingEventArgs);
-                expect(_$scope.$broadcast).toHaveBeenCalledWith("PaneConfigureAction_Render", outgoingEvent2Args);
-            });
 
+        /*
+        
         it("When PaneWorkflowDesigner_ActionSelected is sent and selectedAction!=null " +
             "Save method should be called on ProcessTemplateService", () => {
                 var incomingEventArgs = new pwd.ActionSelectedEventArgs(1, 1, 1, 1);

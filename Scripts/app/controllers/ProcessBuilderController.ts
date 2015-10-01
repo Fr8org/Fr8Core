@@ -21,7 +21,6 @@ module dockyard.controllers {
 
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
 
     class ProcessBuilderController {
@@ -98,17 +97,7 @@ module dockyard.controllers {
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
-                (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
-
-            //Process Select Action Pane events
-            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
-                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
-            // TODO: do we need this any more?
-            // this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
-            //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
-            //Handles Save Request From PaneSelectAction
-            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
-                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));            
         }
 
         private loadProcessTemplate() {
@@ -196,11 +185,12 @@ module dockyard.controllers {
                 this.$modal.open({
                     animation: true,
                     templateUrl: 'AngularTemplate/PaneSelectAction',
-                    controller: 'PaneSelectActionController',
+                    controller: 'SelectActionController',
                     windowClass: 'select-action-modal'
                 }).result.then(function (data: model.ActivityTemplate) {
                     self._scope.current.action.activityTemplateId = data.id;
                     self._scope.current.action.activityTemplate = data;
+
                     var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
                     var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(self._scope.current.action.id, data.id);
                     self._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
@@ -292,13 +282,7 @@ module dockyard.controllers {
             if (this._scope.current.action.activityTemplateId == null
                 || this._scope.current.action.activityTemplateId === 0) {
                 
-                //Render Select Action Pane
-                eArgs = new psa.RenderEventArgs(
-                    this._scope.current.action.processNodeTemplateId,
-                    this._scope.current.action.id,
-                    (this._scope.current.action.id > 0) ? false : true,
-                    this._scope.current.action.actionListId);
-                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+
             }
             else {
 
@@ -335,39 +319,12 @@ module dockyard.controllers {
             Handles message 'ConfigureActionPane_ActionUpdated'
         */
         private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
-            // Force update on Select Action Pane (FOR DEMO ONLY, NOT IN DESIGN DOCUMENT)
-            var psaArgs = new psa.UpdateActionEventArgs(
-                eventArgs.criteriaId,
-                eventArgs.actionId,
-                eventArgs.isTempId);
-
-            this._scope.$broadcast(
-                psa.MessageType[psa.MessageType.PaneSelectAction_UpdateAction],
-                psaArgs);
         }
 
         /*
-            Handles message 'SelectActionPane_ActionTypeSelected'
-        */
-        private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
-            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplateId);
-            this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
-        }
-
-        /*
-           Handles message 'SelectActionPane_InitiateSaveAction'
-       */
-        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {
-            var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
-        }
-
-        /*
-            Handles message 'PaneSelectAction_ActionRemoved'
+            Handles message 'PaneConfigureAction_ActionRemoved'
         */
         private PaneConfigureAction_ActionRemoved(eventArgs: pca.ActionRemovedEventArgs) {
-            this._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
             this._scope.$broadcast(
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],
                 new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
