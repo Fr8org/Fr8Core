@@ -134,8 +134,11 @@ namespace Core.Services
             SetProcessNextActivity(curProcessDO);
         }
 
-        private void SetProcessNextActivity(ProcessDO curProcessDO)
+        public void SetProcessNextActivity(ProcessDO curProcessDO)
         {
+            if(curProcessDO == null)
+                throw new ArgumentNullException("Paramter ProcessDO is null.");
+
             if (curProcessDO.CurrentActivity != null)
             {
                 List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
@@ -148,6 +151,10 @@ namespace Core.Services
                 {
                     curProcessDO.NextActivity = null;
                 }
+            }
+            else
+            {
+                curProcessDO.NextActivity = null;//set NexActivity to null since the currentActivity is null
             }
         }
 
