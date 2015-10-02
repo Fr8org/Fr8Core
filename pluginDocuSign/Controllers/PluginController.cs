@@ -35,12 +35,13 @@ namespace pluginDocuSign.Controllers
                 Plugin = plugin
             };
 
-				var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
-				{
-					Version = "1",
-					Name = "Send_DocuSign_Envelope",
-					Plugin = plugin
-				};
+			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+			{
+				Version = "1",
+				Name = "Send_DocuSign_Envelope",
+                Category = ActivityCategory.fr8_Receiver,
+                Plugin = plugin
+			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
@@ -53,7 +54,8 @@ namespace pluginDocuSign.Controllers
             var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
-                extractDataFromEnvelopeActionTemplate
+                extractDataFromEnvelopeActionTemplate,
+                sendDocuSignEnvelopeActionTemplate
             };
 
             return Ok(actionList);
