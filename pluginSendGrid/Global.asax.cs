@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Data.Infrastructure.AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,8 +14,10 @@ namespace pluginSendGrid
     {
         protected void Application_Start()
         {
-            AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
+            DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            // StructureMap Dependencies configuration
+            Core.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Core.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
         }
     }
 }

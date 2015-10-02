@@ -35,5 +35,20 @@ namespace pluginSendGrid.Services
                 throw;
             }
         }
+
+        public void Deliver(ISendGrid message)
+        {
+            _serviceManager.LogEvent("Sending an email...");
+            try
+            {
+                _transport.Deliver(message);
+                _serviceManager.LogSucessful("Email sent.");
+            }
+            catch (Exception ex)
+            {
+                _serviceManager.LogFail(ex, "Failed to send email.");
+                throw;
+            }
+        }
     }
 }
