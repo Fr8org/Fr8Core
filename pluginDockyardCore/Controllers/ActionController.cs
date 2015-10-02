@@ -47,10 +47,10 @@ namespace pluginDockyardCore.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
             return await (Task<PayloadDTO>) _basePluginController.HandleDockyardRequest(
-                curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
+                curPlugin, "Execute", actionDto);
         }
     }
 }

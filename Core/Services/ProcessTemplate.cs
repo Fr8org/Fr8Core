@@ -194,22 +194,28 @@ namespace Core.Services
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
         public ActionListDO GetActionList(IUnitOfWork uow, int id)
         {
-            ActionListDO curActionList = null;
-
             // Get action list by process template first 
-            var curProcessTemplateQuery = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).
-                Include(pt => pt.StartingProcessNodeTemplate.ActionLists);
-
-            if (curProcessTemplateQuery.Count() == 0
-                || curProcessTemplateQuery.SingleOrDefault().StartingProcessNodeTemplate == null)
+            var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
+            
+            if (currentProcessTemplate.Length == 0)
+            {
                 return null;
+            }
+
+            if (currentProcessTemplate.Length > 1)
+            {
+                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
+            }
+
+            var startingProcessTemplate = currentProcessTemplate[0].StartingProcessNodeTemplate;
+
+            if (startingProcessTemplate == null)
+            {
+                return null;
+            }
 
             // Get ActionLists related to the ProcessTemplate
-            curActionList = curProcessTemplateQuery.SingleOrDefault()
-                .ProcessNodeTemplates.FirstOrDefault().ActionLists
-                .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-
-
+            var curActionList = startingProcessTemplate.ActionLists.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
 
             return curActionList;
 
