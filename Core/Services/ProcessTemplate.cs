@@ -130,24 +130,33 @@ namespace Core.Services
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
         {
+            if (curProcessTemplate.ProcessNodeTemplates == null)
+                throw new ArgumentNullException("Parameter ProcessNodeTemplates is null.");
+
             string result = "no action";
             foreach (ProcessNodeTemplateDO processNodeTemplates in curProcessTemplate.ProcessNodeTemplates)
             {
-                foreach (
-                    ActionListDO curActionList in
-                        processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
+                if (processNodeTemplates.ActionLists != null)
                 {
-                    foreach (ActionDO curActionDO in curActionList.Activities)
+                    foreach (
+                        ActionListDO curActionList in
+                            processNodeTemplates.ActionLists.Where(p => p.ParentActivityId == p.Id))
                     {
-                        try
+                        if (curActionList.Activities != null)
                         {
-                            _action.Activate(curActionDO).Wait();
-                            curActionDO.ActionState = ActionState.Active;
-                            result = "success";
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ApplicationException("Process template activation failed.", ex);
+                            foreach (ActionDO curActionDO in curActionList.Activities)
+                            {
+                                try
+                                {
+                                    _action.Activate(curActionDO).Wait();
+                                    curActionDO.ActionState = ActionState.Active;
+                                    result = "success";
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new ApplicationException("Process template activation failed.", ex);
+                                }
+                            }
                         }
                     }
                 }
