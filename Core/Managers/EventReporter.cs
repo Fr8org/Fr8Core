@@ -784,19 +784,22 @@ namespace Core.Managers
         /// <param name="message"></param>
         public void ImproperSalesforceNotificationReceived(string message)
         {
-            var incident = new IncidentDO
+            var currentIncident = new IncidentDO
             {
-                PrimaryCategory = "Notification",
-                Activity = "Received",
-                Data = message
+                ObjectId = "",
+                CustomerId = "",
+                Data = message,
+                PrimaryCategory = "Event",
+                SecondaryCategory = "External",
+                Activity = "Unparseble Notification"
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.IncidentRepository.Add(incident);
+                uow.IncidentRepository.Add(currentIncident);
                 uow.SaveChanges();
             }
-            LogFactInformation(incident, "ImproperSalesforceNotificationReceived", EventType.Warning);
+            LogFactInformation(currentIncident, "ImproperSalesforceNotificationReceived", EventType.Warning);
         }
     }
 }

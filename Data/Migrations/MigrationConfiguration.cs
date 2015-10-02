@@ -112,9 +112,9 @@ namespace Data.Migrations
                 token.ExternalAccountId = "00561000000JECsAAO";
                 token.Token = "";
                 token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
-                var docuSignPlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginSalesforce");
-                token.Plugin = docuSignPlugin;
-                token.PluginID = docuSignPlugin.Id;
+                var salesforcePlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginSalesforce");
+                token.Plugin = salesforcePlugin;
+                token.PluginID = salesforcePlugin.Id;
                 token.ExpiresAt = DateTime.Now.AddDays(10);
 
                 uow.AuthorizationTokenRepository.Add(token);
@@ -411,6 +411,27 @@ namespace Data.Migrations
 
                 uow.PluginRepository.Add(plugin);
      
+            }
+            uow.SaveChanges();
+
+
+            var pluginSalesforce = uow.PluginRepository.GetQuery()
+               .Any(x => x.Name == "pluginSalesforce");
+
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!pluginSalesforce)
+            {
+                // Create plugin instance.
+                var plugin = new PluginDO()
+                {
+                    Name = "pluginSalesforce",
+                    PluginStatus = PluginStatus.Active,
+                    Endpoint = "localhost:51234",
+                    Version = "1"
+                };
+
+                uow.PluginRepository.Add(plugin);
+
             }
             uow.SaveChanges();
         }
