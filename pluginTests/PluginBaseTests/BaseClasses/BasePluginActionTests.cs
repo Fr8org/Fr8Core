@@ -9,6 +9,7 @@ using NUnit.Framework;
 using pluginAzureSqlServer.Actions;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
+using pluginTests.Fixtures;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -26,17 +27,30 @@ namespace pluginTests.PluginBaseTests.Controllers
     [Category("BasePluginAction")]
     public class BasePluginActionTests : BaseTest
     {
+        IDisposable _coreServer;
         BasePluginAction _basePluginAction;
 
-        public BasePluginActionTests()
+
+        [SetUp]
+        public override void SetUp()
         {
             base.SetUp();
             _basePluginAction = new BasePluginAction();
+            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            if (_coreServer != null)
+            {
+                _coreServer.Dispose();
+                _coreServer = null;
+            }
+        }
 
         [Test]
-        public void ProcessConfigurationRequest_CrateStroageIsNull_ShouldNotCrateStorage()
+        public async void ProcessConfigurationRequest_CrateStroageIsNull_ShouldNotCrateStorage()
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
@@ -44,7 +58,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDTO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -52,7 +66,7 @@ namespace pluginTests.PluginBaseTests.Controllers
 
 
         [Test]
-        public void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
+        public async void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
             ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
@@ -62,7 +76,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
