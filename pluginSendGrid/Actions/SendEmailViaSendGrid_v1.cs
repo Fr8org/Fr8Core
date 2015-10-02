@@ -31,7 +31,7 @@ namespace pluginSendGrid.Actions
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrate>();
-            _emailPackager = new SendGridPackager();
+            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
         //================================================================================
@@ -96,16 +96,7 @@ namespace pluginSendGrid.Actions
         private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
         {
             CrateDTO crateDTO = null;
-            ActionDO curActionDO = null;
-            try
-            {
-               curActionDO = _action.MapFromDTO(curActionDTO);
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
+            ActionDO curActionDO =  _action.MapFromDTO(curActionDTO);
             var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
 
             if (curUpstreamFields.Length == 0)

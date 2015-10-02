@@ -14,6 +14,7 @@ namespace pluginSendGrid
     {
         public void Configuration(IAppBuilder app)
         {
+            PluginSendGridStructureMapBootstrapper.ConfigureDependencies(PluginSendGridStructureMapBootstrapper.DependencyType.LIVE);
         }
     }
 }

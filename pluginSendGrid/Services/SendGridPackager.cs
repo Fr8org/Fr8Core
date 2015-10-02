@@ -58,7 +58,7 @@ namespace pluginSendGrid.Services
         {
             //if (mailer == null)
             //    throw new ArgumentNullException("mailer");
-            //if (!string.Equals(mailer.Handler, IMailerDO.MailHandler, StringComparison.OrdinalIgnoreCase))
+            //if (!string.Equals(mailer.Handler, IMailerDO.Handler, StringComparison.OrdinalIgnoreCase))
             //    throw new ArgumentException(@"This envelope should not be handled with Gmail.", "mailer");
             //if (mailer.Email == null)
             //    throw new ArgumentException(@"This envelope has no Email.", "mailer");
@@ -73,11 +73,11 @@ namespace pluginSendGrid.Services
             //{
             //    var fromName = !String.IsNullOrWhiteSpace(email.FromName) ? email.FromName : email.From.Name;
 
-            //    var mailMessage = new SendGridMessage {From = new MailAddress(email.From.Address, fromName)};
+            //    var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
 
             //    if (!String.IsNullOrWhiteSpace(email.ReplyToAddress))
             //    {
-            //        mailMessage.ReplyTo = new[] {new MailAddress(email.ReplyToAddress, email.ReplyToName)};
+            //        mailMessage.ReplyTo = new[] { new MailAddress(email.ReplyToAddress, email.ReplyToName) };
             //    }
 
             //    mailMessage.To =
@@ -121,7 +121,7 @@ namespace pluginSendGrid.Services
             //    if (!string.IsNullOrEmpty(mailer.TemplateName))
             //    {
             //        mailMessage.EnableTemplateEngine(mailer.TemplateName);
-            //            //Now TemplateName will be TemplateId on Sendgrid.
+            //        //Now TemplateName will be TemplateId on Sendgrid.
             //        if (mailer.MergeData != null)
             //        {
             //            //Now, we need to do some magic.

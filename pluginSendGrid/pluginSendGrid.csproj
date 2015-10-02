@@ -199,6 +199,7 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Services\TransportFactory.cs" />
     <Compile Include="Services\TransportWrapper.cs" />
+    <Compile Include="StructureMapConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
