@@ -357,5 +357,55 @@ namespace DockyardTest.Services
 
             await _processService.Execute(FixtureData.TestProcessCurrentActivityNULL());
         }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void SetProcessNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+
+            _processService.SetProcessNextActivity(null);
+        }
+
+        [Test]
+        public void SetProcessNextActivity_ProcessDOCurrenctActivityIsNull_NextActivityIsNull()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO process = FixtureData.TestProcessCurrentActivityNULL();
+            process.NextActivity = FixtureData.TestAction2();
+
+            _processService.SetProcessNextActivity(process);
+
+            Assert.IsNull(process.CurrentActivity);
+            Assert.IsNull(process.NextActivity);
+        }
+
+        [Test]
+        public void SetProcessNextActivity_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO process = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
+
+            _processService.SetProcessNextActivity(process);
+
+            Assert.IsNull(process.NextActivity);
+        }
+
+        [Test]
+        public void SetProcessNextActivity_ProcessDOGetNextActivity_NewNextActivity()
+        {
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
+                .Returns(new List<ActivityDO>() { FixtureData.TestAction8() });
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO process = FixtureData.TestProcessSetNextActivity();
+
+            _processService.SetProcessNextActivity(process);
+
+            Assert.IsNotNull(process.NextActivity);
+            Assert.AreEqual(process.NextActivity.Id, FixtureData.TestAction8().Id);
+        }
     }
 }

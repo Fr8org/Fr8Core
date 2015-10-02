@@ -189,6 +189,32 @@ namespace UtilitiesTesting.Fixtures
             return curProcessTemplateDO;
         }
 
+        public static ProcessTemplateDO TestProcessTemplateNoMatchingParentActivity()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1040 Process Template Test",
+                Name = "Poress template",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            for (int i = 1; i <= 2; ++i)
+            {
+                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    Id = i,
+                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    ProcessTemplate = curProcessTemplateDO,
+                    ActionLists = FixtureData.TestActionListParentActivityID12()
+                };
+                curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+            }
+
+            return curProcessTemplateDO;
+        }
+
         public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplates()
         {
             var curProcessTemplateDO = new ProcessTemplateDO
@@ -232,6 +258,18 @@ namespace UtilitiesTesting.Fixtures
             curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
 
 
+            return curProcessTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplate_CanCreate()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Description = "DO-1217 Unit Tests for Process#Create",
+                Name = "DO-1217",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                //ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
             return curProcessTemplateDO;
         }
     }

@@ -9,6 +9,7 @@ using NUnit.Framework;
 using pluginAzureSqlServer.Actions;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
+using pluginTests.Fixtures;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -26,17 +27,30 @@ namespace pluginTests.PluginBaseTests.Controllers
     [Category("BasePluginAction")]
     public class BasePluginActionTests : BaseTest
     {
+        IDisposable _coreServer;
         BasePluginAction _basePluginAction;
 
-        public BasePluginActionTests()
+
+        [SetUp]
+        public override void SetUp()
         {
             base.SetUp();
             _basePluginAction = new BasePluginAction();
+            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            if (_coreServer != null)
+            {
+                _coreServer.Dispose();
+                _coreServer = null;
+            }
+        }
 
         [Test]
-        public void ProcessConfigurationRequest_CrateStroageIsNull_ShouldNotCrateStorage()
+        public async void ProcessConfigurationRequest_CrateStroageIsNull_ShouldNotCrateStorage()
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
@@ -44,7 +58,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDTO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -52,7 +66,7 @@ namespace pluginTests.PluginBaseTests.Controllers
 
 
         [Test]
-        public void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
+        public async void ProcessConfigurationRequest_ConfigurationRequestTypeIsFollowUp_ReturnsExistingCrateStorage()
         {
             //Arrange
             ActionDO curAction = FixtureData.TestConfigurationSettingsDTO1();
@@ -62,7 +76,7 @@ namespace pluginTests.PluginBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = (ActionDTO)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -98,7 +112,7 @@ namespace pluginTests.PluginBaseTests.Controllers
 
         //TestActionTree
         [Test]
-        public void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
+        public async void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -107,15 +121,15 @@ namespace pluginTests.PluginBaseTests.Controllers
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = _basePluginAction.GetDesignTimeFields(curAction, BasePluginAction.GetCrateDirection.Upstream);
+                var result = await _basePluginAction.GetDesignTimeFields(
+                    curAction.Id, BasePluginAction.GetCrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
-
             }
         }
 
         [Test]
-        public void GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
+        public async void GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -124,7 +138,8 @@ namespace pluginTests.PluginBaseTests.Controllers
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = _basePluginAction.GetDesignTimeFields(curAction, BasePluginAction.GetCrateDirection.Downstream);
+                var result = await _basePluginAction.GetDesignTimeFields(
+                    curAction.Id, BasePluginAction.GetCrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

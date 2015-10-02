@@ -32,7 +32,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
-
             };
         }
 
