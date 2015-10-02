@@ -98,7 +98,7 @@ namespace pluginTests.PluginBaseTests.Controllers
 
         //TestActionTree
         [Test]
-        public void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
+        public async void GetDesignTimeFields_CrateDirectionIsUpstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -107,15 +107,15 @@ namespace pluginTests.PluginBaseTests.Controllers
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = _basePluginAction.GetDesignTimeFields(curAction, BasePluginAction.GetCrateDirection.Upstream);
+                var result = await _basePluginAction.GetDesignTimeFields(
+                    curAction.Id, BasePluginAction.GetCrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
-
             }
         }
 
         [Test]
-        public void GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
+        public async void GetDesignTimeFields_CrateDirectionIsDownstream_ReturnsMergeDesignTimeFields()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -124,7 +124,8 @@ namespace pluginTests.PluginBaseTests.Controllers
 
                 ActionDO curAction = FixtureData.TestAction57();
 
-                var result = _basePluginAction.GetDesignTimeFields(curAction, BasePluginAction.GetCrateDirection.Downstream);
+                var result = await _basePluginAction.GetDesignTimeFields(
+                    curAction.Id, BasePluginAction.GetCrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

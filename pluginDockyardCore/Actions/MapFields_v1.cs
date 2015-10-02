@@ -65,9 +65,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public ActionDTO Configure(ActionDTO actionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO actionDTO)
         {
-            return ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
 
         private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
@@ -105,15 +105,19 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             CrateDTO getErrorMessageCrate = null; 
 
-            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+            var curUpstreamFields =
+                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                .Fields
+                .ToArray();
 
-            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
-
-            var curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields.ToArray();
+            var curDownstreamFields =
+                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Downstream))
+                .Fields
+                .ToArray();
 
             if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
@@ -143,7 +147,6 @@ namespace pluginDockyardCore.Actions
 
             curActionDTO.CrateStorage = AssembleCrateStorage(cratesToAssemble.ToArray());
             return curActionDTO;
-
         }
 
         /// <summary>
@@ -202,8 +205,8 @@ namespace pluginDockyardCore.Actions
         {
             if (CheckIsInitialConfiguration(curActionDO))
             {
-            return ConfigurationRequestType.Initial;
-        }
+                return ConfigurationRequestType.Initial;
+            }
             else
             {
                 return ConfigurationRequestType.Followup;

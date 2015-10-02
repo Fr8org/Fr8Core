@@ -1,19 +1,20 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
-using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
-using Core.Interfaces;
-using StructureMap;
 using Newtonsoft.Json;
-using Data.Interfaces;
-using PluginBase;
+using StructureMap;
+using Core.Interfaces;
 using Data.Constants;
-using Utilities;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using PluginBase;
+using PluginBase.BaseClasses;
+using PluginBase.Infrastructure;
+using Utilities;
 using pluginDocuSign.Interfaces;
 
 namespace pluginDocuSign.Actions
@@ -43,6 +44,7 @@ namespace pluginDocuSign.Actions
 		{			
 			return null;
 		}
+
 		private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
 		{
 			CrateStorageDTO curCrates = curActionDTO.CrateStorage;
@@ -65,7 +67,8 @@ namespace pluginDocuSign.Actions
 			
 			return ConfigurationRequestType.Followup;
 		}
-		protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+
+		protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
 		{
 			if (curActionDTO.CrateStorage == null)
 			{
@@ -79,7 +82,8 @@ namespace pluginDocuSign.Actions
 			curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
 			return curActionDTO;
 		}
-		protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+
+		protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
 		{
 			var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
@@ -112,6 +116,7 @@ namespace pluginDocuSign.Actions
 
 			return curActionDTO;
 		}
+
 		private CrateDTO CreateDocusignTemplateConfigurationControls()
 		{
 			var fieldSelectDocusignTemplateDTO = new DropdownListFieldDefinitionDTO()
@@ -139,6 +144,7 @@ namespace pluginDocuSign.Actions
 			};
 			return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
 		}
+
 		private CrateDTO CreateDocusignTemplateNameCrate()
 		{
 			var templatesDTO = _template.GetTemplates(null);

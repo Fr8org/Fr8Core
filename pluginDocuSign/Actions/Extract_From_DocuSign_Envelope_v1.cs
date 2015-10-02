@@ -28,10 +28,10 @@ namespace pluginDocuSign.Actions
 			 _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 		 }
 
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
         }
 
         public void Activate(ActionDTO curActionDTO)
@@ -123,7 +123,7 @@ namespace pluginDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
             var textBlock = new TextBlockFieldDTO()
@@ -137,17 +137,11 @@ namespace pluginDocuSign.Actions
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
             // Extract upstream crates.
-            List<CrateDTO> upstreamCrates;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActivityDO = uow.ActivityRepository.GetByKey(curActionDTO.Id);
-                upstreamCrates = GetCratesByDirection(
-                    curActivityDO,
-                    CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-                    GetCrateDirection.Upstream
-                );
-            }
+            List<CrateDTO> upstreamCrates = await GetCratesByDirection(
+                curActionDTO.Id,
+                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                GetCrateDirection.Upstream
+            );
 
             // Extract DocuSignTemplate Id.
             string docusignTemplateId = null;
