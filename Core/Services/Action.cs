@@ -380,10 +380,10 @@ namespace Core.Services
             if (curActionDO == null || !curActionDO.ActivityTemplateId.HasValue)
             {
                 throw new ArgumentNullException("curActionDO");
-        }
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        {
+            {
                 var curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId.Value);
                 //convert the Action to a DTO in preparation for serialization and POST to the plugin
                 var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
@@ -394,16 +394,17 @@ namespace Core.Services
                 return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
             }
         }
-		  public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
-		  {
-			  var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-			  var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
-			  if (confControls.Count() != 0 && confControls.Count() != 1)
-				  throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
-			  if (confControls.Count() == 0)
-				  return null;
-			  StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
-			  return standardCfgControlsMs;
-		  }
+
+		public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
+		{
+			var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+			var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+			if (confControls.Count() != 0 && confControls.Count() != 1)
+			    throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
+			if (confControls.Count() == 0)
+			    return null;
+			StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+			return standardCfgControlsMs;
+		}
     }
 }

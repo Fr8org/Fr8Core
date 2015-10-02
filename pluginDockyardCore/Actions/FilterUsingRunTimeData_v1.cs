@@ -175,9 +175,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public ActionDTO Configure(ActionDTO curActionDataPackageDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
-            return ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
         }
 
         private CrateDTO CreateControlsCrate()
@@ -200,36 +200,32 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
         /// </summary>
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.Id > 0)
             {
                 //this conversion from actiondto to Action should be moved back to the controller edge
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+                var curUpstreamFields =
+                    (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                    .Fields
+                    .ToArray();
 
-                    var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
-
-                    //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate(
-                        "Queryable Criteria", curUpstreamFields);
+                //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+                CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate(
+                    "Queryable Criteria", curUpstreamFields);
                     
-                    //build a controls crate to render the pane
-                    CrateDTO configurationControlsCrate = CreateControlsCrate();
+                //build a controls crate to render the pane
+                CrateDTO configurationControlsCrate = CreateControlsCrate();
 
-
-
-                    var crateStrorageDTO = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
-                    curActionDTO.CrateStorage = crateStrorageDTO;
-
-                }
+                var crateStrorageDTO = AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate);
+                curActionDTO.CrateStorage = crateStrorageDTO;
             }
             else
             {
                 throw new ArgumentException(
                     "Configuration requires the submission of an Action that has a real ActionId");
             }
+
             return curActionDTO;
         }
 
