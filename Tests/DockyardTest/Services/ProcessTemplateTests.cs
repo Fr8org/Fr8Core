@@ -7,21 +7,26 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-
+using System.Linq;
+using Moq;
+using System.Collections.Generic;
+using Data.Interfaces.DataTransferObjects;
+using System.Threading.Tasks;
+using System;
 namespace DockyardTest.Services
 {
-	[TestFixture]
-	[Category("ProcessTemplateService")]
-	public class ProcessTemplateTests : BaseTest
-	{
-		private IProcessTemplate _processTemplateService;
+    [TestFixture]
+    [Category("ProcessTemplateService")]
+    public class ProcessTemplateTests : BaseTest
+    {
+        private IProcessTemplate _processTemplateService;
 
-		[SetUp]
-		public override void SetUp()
-		{
-			base.SetUp();
-			_processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
-		}
+        [SetUp]
+        public override void SetUp()
+        {
+            base.SetUp();
+            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
+        }
 
 
 
@@ -75,56 +80,66 @@ namespace DockyardTest.Services
                 var currProcessTemplateDOId = curProcessTemplateDO.Id;
                 _processTemplateService.Delete(uow, curProcessTemplateDO.Id);
                 var result = uow.ProcessTemplateRepository.GetByKey(currProcessTemplateDOId);
-                
+
                 Assert.NotNull(result);
             }
         }
 
 
-        [Test,Ignore]
-        public void CanActivateProcessTemplate()
+        [Test]
+        public void Activate_HasParentActivity_SetActionStateActive()
         {
             var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
-           string result = _processTemplateService.Activate(curProcessTemplateDO);
-           Assert.AreEqual(result, "success");
-        }
+            var _action = new Mock<IAction>();
+            _action
+                .Setup(c => c.Activate(It.IsAny<ActionDO>()))
+                .Returns(Task.FromResult(new ActionDTO()));
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_action.Object));
+            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
 
-        [Test, Ignore]
-        public void FailsActivateProcessTemplate()
-        {
-            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
             string result = _processTemplateService.Activate(curProcessTemplateDO);
-            Assert.AreEqual(result, "failed");
-        }
 
-        [Test, Ignore]
-        public void CanDeactivateProcessTemplate()
-        {
-            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
-            string result = _processTemplateService.Activate(curProcessTemplateDO);
+
             Assert.AreEqual(result, "success");
+            var activities = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.ActionLists).SelectMany(s => s.Activities);
+            foreach (ActionDO curActionDO in activities)
+            {
+                Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
+            }
         }
 
-        [Test, Ignore]
-        public void FailsDeactivateProcessTemplate()
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Activate_ProcessNodeTemplatesIsNULL_ThrowsArgumentNULLException()
         {
             var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            curProcessTemplateDO.ProcessNodeTemplates = null;
+
             string result = _processTemplateService.Activate(curProcessTemplateDO);
-            Assert.AreEqual(result, "failed");
         }
 
-        
+        [Test]
+        public void Activate_NoMatchingParentActivityId_ReturnsNoAction()
+        {
+            var curProcessTemplateDO = FixtureData.TestProcessTemplateNoMatchingParentActivity();
+            
+            string result = _processTemplateService.Activate(curProcessTemplateDO);
 
-		//[Test]
-  //      public void TemplateRegistrationCollections_ShouldMakeIdentical()
-  //      {
-  //          var curSubscriptions = FixtureData.DocuSignTemplateSubscriptionList1();
-  //          var newSubscriptions = FixtureData.DocuSignTemplateSubscriptionList2();
-  //          using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-  //          {
-  //              _processTemplateService.MakeCollectionEqual(uow, curSubscriptions, newSubscriptions);
-  //          }
-  //          CollectionAssert.AreEquivalent(newSubscriptions, curSubscriptions);
-  //      }
+            Assert.AreEqual(result, "no action");
+        }
+
+
+
+        //[Test]
+        //      public void TemplateRegistrationCollections_ShouldMakeIdentical()
+        //      {
+        //          var curSubscriptions = FixtureData.DocuSignTemplateSubscriptionList1();
+        //          var newSubscriptions = FixtureData.DocuSignTemplateSubscriptionList2();
+        //          using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //          {
+        //              _processTemplateService.MakeCollectionEqual(uow, curSubscriptions, newSubscriptions);
+        //          }
+        //          CollectionAssert.AreEquivalent(newSubscriptions, curSubscriptions);
+        //      }
     }
 }
