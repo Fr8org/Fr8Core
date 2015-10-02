@@ -17,6 +17,7 @@ using Data.States.Templates;
 using Data.Interfaces.ManifestSchemas;
 using pluginSendGrid.Infrastructure;
 using Data.Interfaces;
+using pluginSendGrid.Services;
 
 namespace pluginSendGrid.Actions
 {
@@ -30,7 +31,7 @@ namespace pluginSendGrid.Actions
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _crate = ObjectFactory.GetInstance<ICrate>();
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            _emailPackager = new SendGridPackager();
         }
 
         //================================================================================
@@ -60,10 +61,8 @@ namespace pluginSendGrid.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-            var crateControls = CreateControlsCrate();
-            var crateAvailableDataFields = GetAvailableDataFields(curActionDTO);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            curActionDTO.CrateStorage.CrateDTO.Add(crateAvailableDataFields);
+            curActionDTO.CrateStorage.CrateDTO.Add(CreateControlsCrate());
+            curActionDTO.CrateStorage.CrateDTO.Add(GetAvailableDataFields(curActionDTO));
             return curActionDTO;
         }
 
@@ -96,9 +95,17 @@ namespace pluginSendGrid.Actions
 
         private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
         {
-            CrateDTO crateDTO = null; 
+            CrateDTO crateDTO = null;
+            ActionDO curActionDO = null;
+            try
+            {
+               curActionDO = _action.MapFromDTO(curActionDTO);
+            }
+            catch (Exception ex)
+            {
 
-            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+                throw;
+            }
             var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
 
             if (curUpstreamFields.Length == 0)

@@ -9,6 +9,8 @@ using Data.Interfaces;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using pluginSendGrid.Infrastructure;
+using StructureMap;
+using Utilities;
 
 namespace pluginSendGrid.Services
 {
@@ -16,12 +18,11 @@ namespace pluginSendGrid.Services
     {
         private readonly ITransport _transport;
 
-        public SendGridPackager(ITransport transport)
+        public SendGridPackager() 
         {
-            if (transport == null)
-                throw new ArgumentNullException("transport");
-            _transport = transport;
+            _transport = TransportFactory.CreateWeb(ObjectFactory.GetInstance<IConfigRepository>());
         }
+
 
         public delegate void EmailSuccessArgs(int emailID);
 
