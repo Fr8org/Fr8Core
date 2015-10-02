@@ -189,7 +189,7 @@ namespace Core.Services
             return result;
         }
 
-        //like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
+        // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N ActionLists.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
         public ActionListDO GetActionList(IUnitOfWork uow, int id)
@@ -208,8 +208,6 @@ namespace Core.Services
             curActionList = curProcessTemplateQuery.SingleOrDefault()
                 .ProcessNodeTemplates.FirstOrDefault().ActionLists
                 .SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-
-
 
             return curActionList;
 

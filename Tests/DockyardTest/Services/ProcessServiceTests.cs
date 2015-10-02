@@ -141,7 +141,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates();
+                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplateAndActionList();
 
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.SaveChanges();
