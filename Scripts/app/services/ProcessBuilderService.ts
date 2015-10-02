@@ -5,7 +5,7 @@
 */
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
-        getactive: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
+        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
         getFull: (id: Object) => interfaces.IProcessTemplateVM;
     }
 
@@ -57,7 +57,7 @@ module dockyard.services {
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
         <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' },
             {
-                'getactive': {
+                'getbystatus': {
                     method: 'GET',
                     isArray: true,
                     url: '/api/processTemplate/getactive'
