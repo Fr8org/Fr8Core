@@ -9,6 +9,7 @@ module dockyard.directives.dropDownListBox {
         change: () => (fieldName: string) => void;
         selectedItem: model.DropDownListItem;
         SetSelectedItem: (item: model.DropDownListItem) => void;
+        defaultitem: any;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -45,6 +46,8 @@ module dockyard.directives.dropDownListBox {
 
                 $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
                 this.FindAndSetSelectedItem();
+                $scope.defaultitem = null;
+
             };
         }
 
