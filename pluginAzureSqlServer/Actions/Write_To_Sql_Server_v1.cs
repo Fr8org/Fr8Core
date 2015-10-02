@@ -81,12 +81,12 @@ namespace pluginAzureSqlServer.Actions
         private CrateDTO CreateControlsCrate() { 
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new TextBlockFieldDTO()
+            var control = new FieldDefinitionDTO(FieldDefinitionDTO.TEXTBOX_FIELD)
             {
-                    Label = "SQL Connection String",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+                Label = "SQL Connection String",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") }
             };
             return PackControlsCrate(control);
         }
