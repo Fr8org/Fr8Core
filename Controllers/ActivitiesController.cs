@@ -31,7 +31,7 @@ namespace Web.Controllers
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				var actionDO = uow.ActionRepository.GetByKey(id);
-				var upstreamActivities = _activity.GetUpstreamActivities(actionDO);
+				var upstreamActivities = _activity.GetUpstreamActivities(uow, actionDO);
 				return Ok(upstreamActivities);
 			}
 		}
@@ -43,7 +43,7 @@ namespace Web.Controllers
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var downstreamActivities = _activity.GetDownstreamActivities(actionDO);
+                var downstreamActivities = _activity.GetDownstreamActivities(uow, actionDO);
 				return Ok(downstreamActivities);
 			}
 		}
@@ -57,7 +57,7 @@ namespace Web.Controllers
 			{
 				var actionDO = uow.ActionRepository.GetByKey(id);
 				var upstreamActions = _activity
-                    .GetUpstreamActivities(actionDO)
+                    .GetUpstreamActivities(uow, actionDO)
                     .OfType<ActionDO>()
                     .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
@@ -75,7 +75,7 @@ namespace Web.Controllers
 			{
 				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
 				var downstreamActions = _activity
-                    .GetDownstreamActivities(actionDO)
+                    .GetDownstreamActivities(uow, actionDO)
                     .OfType<ActionDO>()
                     .Select(x => Mapper.Map<ActionDTO>(x))
                     .ToList();
