@@ -234,5 +234,17 @@ namespace UtilitiesTesting.Fixtures
 
             return curProcessTemplateDO;
         }
+
+        public static ProcessTemplateDO TestProcessTemplate_CanCreate()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Description = "DO-1217 Unit Tests for Process#Create",
+                Name = "DO-1217",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                //ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+            return curProcessTemplateDO;
+        }
     }
 }

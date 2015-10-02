@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Web.Helpers;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
+using Data.Infrastructure;
 
 namespace DockyardTest.Services
 {
@@ -32,6 +33,7 @@ namespace DockyardTest.Services
         private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
+        private bool _eventReceived;
 
         private Mock<IPluginTransmitter> PluginTransmitterMock
         {
@@ -45,6 +47,7 @@ namespace DockyardTest.Services
             _action = ObjectFactory.GetInstance<IAction>();
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixtureData = new FixtureData(_uow);
+            _eventReceived = false;
         }
 
         [Test]
@@ -132,39 +135,39 @@ namespace DockyardTest.Services
             }
         }
 
-		  //[Test]
-		  //public void CanParsePayload()
-		  //{
-		  //	 var envelope = new DocuSignEnvelope();
-		  //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-		  //	 var payloadMappings = FixtureData.ListFieldMappings;
+        //[Test]
+        //public void CanParsePayload()
+        //{
+        //	 var envelope = new DocuSignEnvelope();
+        //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+        //	 var payloadMappings = FixtureData.ListFieldMappings;
 
-		  //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
+        //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
 
-		  //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
+        //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
 
-		  //	 Assert.AreEqual("Johnson", result.Where(p => p.Key == "Doctor").Single().Value);
-		  //	 Assert.AreEqual("Marthambles", result.Where(p => p.Key == "Condition").Single().Value);
-		  //}
+        //	 Assert.AreEqual("Johnson", result.Where(p => p.Key == "Doctor").Single().Value);
+        //	 Assert.AreEqual("Marthambles", result.Where(p => p.Key == "Condition").Single().Value);
+        //}
 
-		  //[Test]
-		  //public void CanLogIncidentWhenFieldIsMissing()
-		  //{
-		  //	 IncidentReporter incidentReporter = new IncidentReporter();
-		  //	 incidentReporter.SubscribeToAlerts();
+        //[Test]
+        //public void CanLogIncidentWhenFieldIsMissing()
+        //{
+        //	 IncidentReporter incidentReporter = new IncidentReporter();
+        //	 incidentReporter.SubscribeToAlerts();
 
-		  //	 var envelope = new DocuSignEnvelope();
-		  //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-		  //	 var payloadMappings = FixtureData.ListFieldMappings2; //Wrong mappings
+        //	 var envelope = new DocuSignEnvelope();
+        //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+        //	 var payloadMappings = FixtureData.ListFieldMappings2; //Wrong mappings
 
-		  //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
-		  //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
+        //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
+        //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
 
-		  //	 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-		  //	 {
-		  //		  Assert.IsTrue(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
-		  //	 }
-		  //}
+        //	 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //	 {
+        //		  Assert.IsTrue(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
+        //	 }
+        //}
 
         [Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
         public async void CanProcessDocuSignTemplate()
@@ -275,9 +278,9 @@ namespace DockyardTest.Services
             {
                 var response = _action.PrepareToExecute(actionDo, procesDO, uow);
 
-            //Assert
-            Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
-        }
+                //Assert
+                Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
+            }
         }
 
         [Test]
@@ -327,6 +330,121 @@ namespace DockyardTest.Services
             Assert.IsNotEmpty(actionDO.CrateStorage);
         }
 
+        [Test]
+        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
+        public async void ActionStateActive_ThrowsException()
+        {
+            ActionDO actionDo = FixtureData.TestActionStateActive();
+            Action _action = ObjectFactory.GetInstance<Action>();
+            ProcessDO procesDo = FixtureData.TestProcess1();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _action.PrepareToExecute(actionDo, procesDo, uow);
+            }
+        }
+
+        [Test]
+        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
+        public async void ActionStateDeactive_ThrowsException()
+        {
+            ActionDO actionDo = FixtureData.TestActionStateDeactive();
+            Action _action = ObjectFactory.GetInstance<Action>();
+            ProcessDO procesDo = FixtureData.TestProcess1();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _action.PrepareToExecute(actionDo, procesDo, uow);
+            }
+        }
+
+        [Test]
+        [ExpectedException(ExpectedMessage = "Action ID: 2 status is 4.")]
+        public async void ActionStateError_ThrowsException()
+        {
+            ActionDO actionDo = FixtureData.TestActionStateError();
+            Action _action = ObjectFactory.GetInstance<Action>();
+            ProcessDO procesDo = FixtureData.TestProcess1();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _action.PrepareToExecute(actionDo, procesDo, uow);
+            }
+        }
+
+        [Test]
+        public async void PrepareToExecute_WithMockedExecute_WithoutPayload()
+        {
+            ActionDO actionDo = FixtureData.TestActionStateInProcess();
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+
+            Action _action = ObjectFactory.GetInstance<Action>();
+            ProcessDO processDo = FixtureData.TestProcess1();
+            EventManager.EventActionStarted += EventManager_EventActionStarted;
+            var executeActionMock = new Mock<IAction>();
+            executeActionMock.Setup(s => s.Execute(actionDo, processDo)).Returns<Task<PayloadDTO>>(null);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var count = uow.ActionRepository.GetAll().Count();
+                await _action.PrepareToExecute(actionDo, processDo, uow);
+                //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
+            }
+            Assert.IsNull(processDo.CrateStorage);
+            Assert.IsTrue(_eventReceived);
+            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
+        }
+
+        [Test]
+        public async void PrepareToExecute_WithMockedExecute_WithPayload()
+        {
+            ActionDO actionDo = FixtureData.TestActionStateInProcess();
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { ActionName = "Test Action" });
+
+            IAction _action = ObjectFactory.GetInstance<IAction>();
+            ProcessDO processDo = FixtureData.TestProcess1();
+            EventManager.EventActionStarted += EventManager_EventActionStarted;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var pluginClientMock = new Mock<IPluginTransmitter>();
+                pluginClientMock.Setup(s => s.CallActionAsync<PayloadDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>()))
+                                .Returns(Task.FromResult(new PayloadDTO(actionDo.CrateStorage, processDo.Id)));
+                ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
+
+                var count = uow.ActionRepository.GetAll().Count();
+                await _action.PrepareToExecute(actionDo, processDo, uow);
+                //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
+            }
+            Assert.IsNotNull(processDo.CrateStorage);
+            Assert.IsTrue(_eventReceived);
+            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
+        }
+
+        [Test]
+        public async void ActionStarted_EventRaisedSuccessfully()
+        {
+            ActionDO actionDo = FixtureData.TestActionStateInProcess();
+            actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+
+            Action _action = ObjectFactory.GetInstance<Action>();
+            ProcessDO procesDo = FixtureData.TestProcess1();
+            EventManager.EventActionStarted += EventManager_EventActionStarted;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var count = uow.ActionRepository.GetAll().Count();
+                await _action.PrepareToExecute(actionDo, procesDo, uow);
+                //Assert.AreEqual(uow.ActionRepository.GetAll().Count(), count + 1);
+            }
+            Assert.IsTrue(_eventReceived);
+            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
+        }
+
+        private void EventManager_EventActionStarted(ActionDO action)
+        {
+            _eventReceived = true;
+        }
+
         private void UpdateDatabase(ActionDO curActionDo)
         {
 
@@ -336,7 +454,7 @@ namespace DockyardTest.Services
 
             _uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate1());
 
-            ActionListDO parentActivity = (ActionListDO) curActionDo.ParentActivity;
+            ActionListDO parentActivity = (ActionListDO)curActionDo.ParentActivity;
             parentActivity.Process.ProcessTemplateId = 33;
             _uow.ProcessRepository.Add(parentActivity.Process);
             _uow.SaveChanges();

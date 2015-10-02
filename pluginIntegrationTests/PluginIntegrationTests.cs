@@ -28,6 +28,7 @@ namespace pluginIntegrationTests
     [TestFixture]
 	public partial class PluginIntegrationTests : BaseTest
     {
+        private IDisposable _coreServer;
         private IDisposable _docuSignServer;
         private IDisposable _dockyardCoreServer;
         private IDisposable _azureSqlServerServer;
@@ -81,6 +82,8 @@ namespace pluginIntegrationTests
                 uow.SaveChanges();
             }
 
+            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
+
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
             _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
@@ -89,6 +92,8 @@ namespace pluginIntegrationTests
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
             _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+
+
         }
 
         /// <summary>
@@ -98,6 +103,7 @@ namespace pluginIntegrationTests
         [TearDown]
         public void TearDown()
         {
+            _coreServer.Dispose();
             _dockyardCoreServer.Dispose();
             _docuSignServer.Dispose();
             _azureSqlServerServer.Dispose();

@@ -17,9 +17,10 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
+            return await (Task<ActionDTO>) _basePluginController
+                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
         }
        
         [HttpPost]

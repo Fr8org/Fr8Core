@@ -322,17 +322,21 @@
     <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
       <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509272213417_EmptyMigration2.cs" />
-    <Compile Include="Migrations\201509272213417_EmptyMigration2.Designer.cs">
-      <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
+    <Compile Include="Migrations\201509291459441_RemoveEnvelopeDO.cs" />
+    <Compile Include="Migrations\201509291459441_RemoveEnvelopeDO.Designer.cs">
+      <DependentUpon>201509291459441_RemoveEnvelopeDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509301406085_EmptyMigration3.cs" />
-    <Compile Include="Migrations\201509301406085_EmptyMigration3.Designer.cs">
-      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
+    <Compile Include="Migrations\201509291511124_RenameMailerToEnvelope.cs" />
+    <Compile Include="Migrations\201509291511124_RenameMailerToEnvelope.Designer.cs">
+      <DependentUpon>201509291511124_RenameMailerToEnvelope.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201509291928009_forcemerge.cs" />
+      <Compile Include="Migrations\201509291928009_forcemerge.cs" />
     <Compile Include="Migrations\201509291928009_forcemerge.Designer.cs">
       <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201509301243507_Merge20150930.cs" />
+    <Compile Include="Migrations\201509301243507_Merge20150930.Designer.cs">
+      <DependentUpon>201509301243507_Merge20150930.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.cs" />
     <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.Designer.cs">
@@ -341,6 +345,10 @@
     <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.cs" />
     <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.Designer.cs">
       <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510010808502_Merge20151001.cs" />
+    <Compile Include="Migrations\201510010808502_Merge20151001.Designer.cs">
+      <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
@@ -365,7 +373,7 @@
     <Compile Include="Entities\DocuSignParserModels\RecipientStatus.cs" />
     <Compile Include="Entities\DocuSignParserModels\RecipientStatuses.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
-    <Compile Include="Entities\MailerDO.cs" />
+    <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
@@ -398,7 +406,7 @@
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
-    <Compile Include="Repositories\MailerRepository.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
     <Compile Include="Repositories\ProcessTemplateRepository.cs" />
@@ -464,7 +472,6 @@
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
-    <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="States\CommunicationType.cs" />
     <Compile Include="States\EmailParticipantType.cs" />
@@ -506,7 +513,6 @@
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
-    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
@@ -611,8 +617,20 @@
     <EmbeddedResource Include="Migrations\201509301600207_UpdatedActivityDO_2.resx">
       <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509291459441_RemoveEnvelopeDO.resx">
+      <DependentUpon>201509291459441_RemoveEnvelopeDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509291511124_RenameMailerToEnvelope.resx">
+      <DependentUpon>201509291511124_RenameMailerToEnvelope.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509291928009_forcemerge.resx">
       <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
+  </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509301243507_Merge20150930.resx">
+      <DependentUpon>201509301243507_Merge20150930.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510010808502_Merge20151001.resx">
+      <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
