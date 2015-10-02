@@ -98,6 +98,10 @@ namespace Data.Infrastructure
         //public delegate void BookingRequestMergedHandler(int originalBRId, int targetBRId);
         //public static event BookingRequestMergedHandler AlertBookingRequestMerged;
 
+        //EventProcessRequestReceived 
+        public delegate void EventProcessRequestReceivedHandler(ProcessDO processId);
+        public static event EventProcessRequestReceivedHandler EventProcessRequestReceived;
+
         public delegate void OAuthEventHandler(string userId);
         public static event OAuthEventHandler AlertTokenRequestInitiated;
         public static event OAuthEventHandler AlertTokenObtained;
@@ -420,7 +424,16 @@ namespace Data.Infrastructure
             var handler = PluginActionActivated;
             if (handler != null) handler(action);
         }
+
+        public static void ProcessRequestReceived(ProcessDO process)
+        {
+            var handler = EventProcessRequestReceived;
+            if (handler != null) handler(process);
+        }
+
         #endregion
+
+        
     }
 
 }

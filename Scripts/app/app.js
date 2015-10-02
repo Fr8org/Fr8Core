@@ -64,6 +64,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         // Install a HTTP request interceptor that causes 'Processing...' message to display
         $httpProvider.interceptors.push('spinnerHttpInterceptor');
         $stateProvider
+            .state('myaccount', {
+            url: "/myaccount",
+            templateUrl: "/AngularTemplate/MyAccountPage",
+            data: { pageTitle: 'My Account', pageSubTitle: '' }
+        })
             .state('processTemplates', {
             url: "/processes",
             templateUrl: "/AngularTemplate/ProcessTemplateList",

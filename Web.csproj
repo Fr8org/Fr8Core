@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -742,6 +742,9 @@
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
+    <Content Include="Scripts\lib\jpattern.js" />
+    <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
+    <Content Include="Scripts\tests\integration\ProcessControllerTests.js" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PaneSelectActionController.ts" />
@@ -4023,6 +4026,7 @@
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateList.cshtml" />
+    <Content Include="Views\AngularTemplate\MyAccountPage.cshtml" />
     <None Include="Views\Dashboard\Index.cshtml.bak" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
@@ -4153,7 +4157,7 @@
         <WebProjectProperties>
           <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>56596</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:56158/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
