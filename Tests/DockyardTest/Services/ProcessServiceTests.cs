@@ -135,7 +135,7 @@ namespace DockyardTest.Services
         }
 
         //get this working again once 1124 is merged
-        [Test,Ignore]
+        [Test]
         public void ProcessService_Can_CreateProcess()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
