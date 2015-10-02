@@ -147,8 +147,8 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-				var crateControls = CreateStandardConfigurationControls();
-				var crateDesignTimeFields = CreateStandardDesignTimeFields();
+				var crateControls = CreateConfigurationCrate();
+				var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames();
 				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
@@ -179,46 +179,14 @@ namespace pluginDocuSign.Actions
                 return curActionDTO;
             }
 
-            // TODO: remove this, as of DO-1194
-            // Remove previously added crate of the same schema
-            // _crate.RemoveCrateByLabel(
-            //     curActionDTO.CrateStorage.CrateDTO,
-            //     "DocuSignTemplateUserDefinedFields"
-            //     );
-
             // Remove previously added crate of "Standard Event Subscriptions" schema
             _crate.RemoveCrateByManifestType(
                 curActionDTO.CrateStorage.CrateDTO,
                 "Standard Event Subscriptions"
                 );
 
-            // TODO: remove this, as of DO-1194
-            // var docusignTemplateId = configurationFields.Controls
-            //     .SingleOrDefault(c => c.Name == "Selected_DocuSign_Template")
-            //     .Value;
-
-            // TODO: remove this, as of DO-1194
-            // var userDefinedFields = _docusignEnvelope
-            //     .GetEnvelopeDataByTemplate(docusignTemplateId);
-
+          
             var crateConfiguration = new List<CrateDTO>();
-
-            // TODO: remove this, as of DO-1194
-            // var fieldCollection = userDefinedFields
-            //     .Select(f => new FieldDTO()
-            //     {
-            //         Key = f.Name,
-            //         Value = f.Value
-            //     })
-            //     .ToArray();
-
-            // TODO: remove this, as of DO-1194
-            // crateConfiguration.Add(
-            //     _crate.CreateDesignTimeFieldsCrate(
-            //         "DocuSignTemplateUserDefinedFields",
-            //         fieldCollection
-            //         )
-            //     );
 
             crateConfiguration.Add(
                 CreateEventSubscriptionCrate(configurationFields)
@@ -256,7 +224,7 @@ namespace pluginDocuSign.Actions
                 );
         }
 
-        private CrateDTO CreateStandardConfigurationControls()
+        private CrateDTO CreateConfigurationCrate()
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
@@ -306,7 +274,7 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent);
         }
 
-        private CrateDTO CreateStandardDesignTimeFields()
+        private CrateDTO CreateDesignFieldsCrate_TemplateNames()
         {
             var templates = _template.GetTemplates(null);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();

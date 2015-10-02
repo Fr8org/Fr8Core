@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Exceptions;
 using Data.Interfaces;
+using Data.States;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -40,6 +41,46 @@ namespace DockyardTest.Services
             }
         }
 
+        [Test]
+        public void ProcessTemplateService_CanCreate()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplateDO = FixtureData.TestProcessTemplate_CanCreate();
+                var curUserAccount = FixtureData.TestDockyardAccount1();
+                curProcessTemplateDO.DockyardAccount = curUserAccount;
+                _processTemplateService.CreateOrUpdate(uow, curProcessTemplateDO, false);
+                uow.SaveChanges();
+
+                var result = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateDO.Id);
+                Assert.NotNull(result);
+                Assert.AreNotEqual(result.Id, 0);
+                Assert.NotNull(result.StartingProcessNodeTemplate);
+                Assert.AreEqual(result.ProcessNodeTemplates.Count, 1);
+                Assert.AreEqual(result.StartingProcessNodeTemplate.ActionLists.Count, 2);
+            }
+        }
+
+        [Test]
+        public void ProcessTemplateService_CanDelete()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplateDO = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates_ID0();
+                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                uow.SaveChanges();
+
+                Assert.AreNotEqual(curProcessTemplateDO.Id, 0);
+
+                var currProcessTemplateDOId = curProcessTemplateDO.Id;
+                _processTemplateService.Delete(uow, curProcessTemplateDO.Id);
+                var result = uow.ProcessTemplateRepository.GetByKey(currProcessTemplateDOId);
+                
+                Assert.NotNull(result);
+            }
+        }
+
+
         [Test,Ignore]
         public void CanActivateProcessTemplate()
         {
@@ -71,6 +112,8 @@ namespace DockyardTest.Services
             string result = _processTemplateService.Activate(curProcessTemplateDO);
             Assert.AreEqual(result, "failed");
         }
+
+        
 
 		//[Test]
   //      public void TemplateRegistrationCollections_ShouldMakeIdentical()
