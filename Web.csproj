@@ -4037,7 +4037,6 @@
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
     <Content Include="Views\Shared\_HomeNav.cshtml" />
-    <Content Include="Views\Booker\Index.cshtml" />
     <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
     <Content Include="Views\User\ExistingUserAlert.cshtml" />
     <Content Include="Views\User\UserRoles.cshtml" />
