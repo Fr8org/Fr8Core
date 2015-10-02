@@ -147,10 +147,10 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-			var crateControls = CreateStandardConfigurationControls();
-			var crateDesignTimeFields = CreateStandardDesignTimeFields();
-			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+				var crateControls = CreateConfigurationCrate();
+				var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames();
+				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             return curActionDTO;
         }
@@ -185,6 +185,7 @@ namespace pluginDocuSign.Actions
                 "Standard Event Subscriptions"
                 );
 
+          
             var crateConfiguration = new List<CrateDTO>();
 
             crateConfiguration.Add(
@@ -223,7 +224,7 @@ namespace pluginDocuSign.Actions
                 );
         }
 
-        private CrateDTO CreateStandardConfigurationControls()
+        private CrateDTO CreateConfigurationCrate()
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
@@ -273,7 +274,7 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent);
         }
 
-        private CrateDTO CreateStandardDesignTimeFields()
+        private CrateDTO CreateDesignFieldsCrate_TemplateNames()
         {
             var templates = _template.GetTemplates(null);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();

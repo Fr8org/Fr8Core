@@ -40,7 +40,7 @@ namespace pluginDocuSign.Controllers
 					Version = "1",
 					Name = "Send_DocuSign_Envelope",
                     Category = ActivityCategory.fr8_Forwarder,
-                    Plugin = plugin
+					Plugin = plugin
 				};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
