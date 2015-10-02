@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
@@ -29,6 +30,18 @@ namespace Web.Controllers
                 var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, id);
 
                 return Ok(curPayloadDTO);
+            }
+        }
+
+        [Route("getIdsByName")]
+        [HttpGet]
+        public IHttpActionResult GetIdsByName(string name)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processIds = uow.ProcessRepository.GetQuery().Where(x=>x.Name == name).Select(x=>x.Id).ToArray();
+                
+                return Json(processIds);
             }
         }
 
