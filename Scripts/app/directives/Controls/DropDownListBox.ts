@@ -42,11 +42,10 @@ module dockyard.directives.dropDownListBox {
                 $attrs: ng.IAttributes) => {
                 this._$element = $element;
                 this._$scope = $scope;
-                this._$scope.selectedItem = { "Key": "Select Template", "Value": "0" };
-
+                this._$scope.selectedItem = { "Key": "Select", "Value": "0" };
                 $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
                 this.FindAndSetSelectedItem();
-                $scope.defaultitem = { "Key": "Select Template", "Value": "0" };
+                $scope.defaultitem = { "Key": "Select", "Value": "0" };
             };
         }
 
