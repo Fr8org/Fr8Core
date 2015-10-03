@@ -17,11 +17,16 @@ using pluginAzureSqlServer;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
+using pluginDocuSign;
+
+using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
+using pluginDocuSign.Infrastructure.StructureMap;
+using pluginDocuSign.Infrastructure.AutoMapper;
 
 namespace pluginIntegrationTests
 {
     [TestFixture]
-    public class PluginIntegrationTests : BaseTest
+	public partial class PluginIntegrationTests : BaseTest
     {
         private IDisposable _docuSignServer;
         private IDisposable _dockyardCoreServer;
@@ -32,6 +37,7 @@ namespace pluginIntegrationTests
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
         private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
         private ActivityTemplateDO _writeToSqlServerActivityTemplate;
+		private ActivityTemplateDO _sendDocuSignEnvelopeActivityTemplate;
 
         /// <summary>
         /// Create _testUserAccount instance and store it in mock DB.
@@ -41,6 +47,9 @@ namespace pluginIntegrationTests
         public override void SetUp()
         {
             base.SetUp();
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
+			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+
             // these are integration tests, we are using a real transmitter
             ObjectFactory.Configure(c => c.For<IPluginTransmitter>().Use<PluginTransmitter>());
 
@@ -57,12 +66,16 @@ namespace pluginIntegrationTests
             _writeToSqlServerActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WriteToSqlServer();
 
+			_sendDocuSignEnvelopeActivityTemplate =
+				FixtureData.TestActivityTemplateDO_SendDocuSignEnvelope();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActivityRepository.Add(_actionList);
                 uow.ActivityTemplateRepository.Add(_waitForDocuSignEventActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_filterUsingRunTimeDataActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
+				uow.ActivityTemplateRepository.Add(_sendDocuSignEnvelopeActivityTemplate);
                 uow.UserRepository.Add(_testUserAccount);
 
                 uow.SaveChanges();
@@ -118,6 +131,13 @@ namespace pluginIntegrationTests
                 {
                     uow.ActivityTemplateRepository.Remove(writeToSqlServerActivityTemplate);
                 }
+
+				var sendDocuSignEnvelopeActivityTemplate = uow.ActivityTemplateRepository
+					  .GetByKey(_sendDocuSignEnvelopeActivityTemplate.Id);
+				if (sendDocuSignEnvelopeActivityTemplate != null)
+				{
+					uow.ActivityTemplateRepository.Remove(sendDocuSignEnvelopeActivityTemplate);
+				}
 
                 var actionList = uow.ActivityRepository
                     .GetByKey(_actionList.Id);
@@ -239,13 +259,13 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(4, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
+            Assert.AreEqual(3, actionDTO.Content.CrateStorage.CrateDTO.Count);//replace this with 3 when 1123 is fixed
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
             //Assert.True(result.Content.CrateDTO   //uncomment this when 1123 is fixed
               //  .Any(x => x.Label == "Available Templates" && x.ManifestType == "Standard Design-Time Fields"));
-            Assert.True(actionDTO.Content.CrateStorage.CrateDTO
-                .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
+            //Assert.True(actionDTO.Content.CrateStorage.CrateDTO
+            //    .Any(x => x.Label == "DocuSignTemplateUserDefinedFields" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Standard Event Subscriptions" && x.ManifestType == CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME));

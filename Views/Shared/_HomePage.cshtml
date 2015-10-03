@@ -27,7 +27,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Cargo</title>
+    <title>fr8</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='shortcut icon' type='image/x-icon' href='~/Content/img/favicon.ico' />
@@ -121,7 +121,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <h1 class="site-logo"><a class="navbar-brand" href="/" title="Cargo"><img src="~/Content/img/site/site-logo.png" alt="Cargo" title="Cargo"></a></h1>
+                    <h1 class="site-logo"><a class="navbar-brand" href="/" title="fr8"><img src="~/Content/img/site/site-logo.png" alt="fr8" title="fr8"></a></h1>
                 </div>
             </div>
             <div class="main-nav">
@@ -144,7 +144,7 @@
                 <div class="row">
                     <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                         <h2>About</h2>
-                        <p>Dockyard is the leading provider of advanced services for the DocuSign Platform.</p>
+                        <p>fr8 is the open standard for cloud workflow.</p>
                     </div>
                     <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                         <h2>Subscribe Email</h2>
@@ -187,8 +187,8 @@
                     <div class="col-md-3 col-sm-6 col-xs-12 footer-block">
                         <h2>Contacts</h2>
                         <address class="margin-bottom-40">
-                            Phone: 415 806 7915<br>
-                            Email: <a href="mailto:info@metronic.com">info@dockyard.company</a>
+                            Phone: 415 555 1212<br>
+                            Email: <a href="mailto:info@metronic.com">info@fr8.co</a>
                         </address>
                     </div>
                 </div>
@@ -236,23 +236,7 @@
             }
         </script>
 
-        <script type="text/javascript">
-            function SendMailMeetingRequest() {
-                $.ajax({
-                    url: "/Home/ProcessHomePageBookingRequest",
-                    type: "POST",
-                    async: true,
-                    data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val() },
-                    success: function (result) {
-
-                        $('#spBookingRequestMsg').html(result.Message);
-                        if (result.UserID) {
-                            analytics.alias(result.UserID);
-                        }
-                    }
-                });
-            }
-        </script>
+      
 
 </body>
 </html>

@@ -488,15 +488,9 @@
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
-    <Content Include="Content\img\site\example_using_kwasant_email.png" />
-    <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
-    <Content Include="Content\img\site\kwasant-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
-    <Content Include="Content\img\site\logo.png" />
-    <Content Include="Content\img\site\perfect-krawsant.jpg" />
-    <Content Include="Content\img\site\perfect-krawsant.png" />
     <Content Include="Content\img\site\site-logo.png" />
     <Content Include="Content\img\temp\background-test9.jpg" />
     <Content Include="Content\img\temp\homepage89.png" />
@@ -750,6 +744,7 @@
     <Content Include="newrelic\NewRelic.Profiler.dll" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PaneSelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
@@ -765,6 +760,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
@@ -818,7 +814,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\QueryBuilderWidget.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateFormController.ts" />
@@ -3977,7 +3972,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\index_docusign.cshtml" />
     <Content Include="Views\DockyardAccount\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\DockyardAccount\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\DockyardAccount\_RemoveAccountPartial.cshtml" />
@@ -4042,7 +4037,6 @@
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
     <Content Include="Views\Shared\_HomeNav.cshtml" />
-    <Content Include="Views\Booker\Index.cshtml" />
     <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
     <Content Include="Views\User\ExistingUserAlert.cshtml" />
     <Content Include="Views\User\UserRoles.cshtml" />
@@ -4073,6 +4067,7 @@
     <Content Include="Views\Home\IntegrationWithOtherDataServices.cshtml" />
     <Content Include="Views\Home\InterOrganizationWorkflows.cshtml" />
     <Content Include="Views\Home\MultiPartWorkflows.cshtml" />
+    <Content Include="Views\Home\index.cshtml" />
     <None Include="Views\JsTests\tests.cshtml" />
     <Content Include="Views\Shared\_JsTestsLayout.cshtml" />
     <TypeScriptCompile Include="Scripts\typings\underscore\underscore.d.ts" />

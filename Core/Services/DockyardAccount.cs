@@ -8,7 +8,6 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Data.Wrappers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using System.Data.Entity;
@@ -110,7 +109,16 @@ namespace Core.Services
         {
             submittedDockyardAccountData.State = UserState.Active;
             submittedDockyardAccountData.Id = Guid.NewGuid().ToString();
-            submittedDockyardAccountData.UserName = submittedDockyardAccountData.FirstName;
+            if (string.IsNullOrEmpty(submittedDockyardAccountData.UserName))
+            {
+                submittedDockyardAccountData.UserName = submittedDockyardAccountData.EmailAddress != null
+                    ? submittedDockyardAccountData.EmailAddress.Address
+                    : null;
+            }
+            if (string.IsNullOrEmpty(submittedDockyardAccountData.UserName))
+            {
+                throw new ApplicationException("User must have username or email address");
+            }
             submittedDockyardAccountData.EmailAddress =
                 uow.EmailAddressRepository.GetOrCreateEmailAddress(submittedDockyardAccountData.EmailAddress.Address);
             submittedDockyardAccountData.Roles.ToList().ForEach(e =>
@@ -120,7 +128,10 @@ namespace Core.Services
                     UserId = submittedDockyardAccountData.Id
                 }));
             submittedDockyardAccountData.Roles.Clear();
-            uow.UserRepository.Add(submittedDockyardAccountData);
+            var userManager = new DockyardIdentityManager(uow);
+            var result = userManager.Create(submittedDockyardAccountData);
+            if (!result.Succeeded)
+                throw new AggregateException(result.Errors.Select(s => new ApplicationException(s)));
             uow.SaveChanges();
             EventManager.ExplicitCustomerCreated(submittedDockyardAccountData.Id);
         }
@@ -309,7 +320,7 @@ namespace Core.Services
                 }
 
                 var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
-                var callbackUrl = string.Format("{0}Account/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
+                var callbackUrl = string.Format("{0}DockyardAccount/ResetPassword?UserId={1}&code={2}", Server.ServerUrl,
                     user.Id, code);
 
                 var emailDO = new EmailDO();
@@ -322,9 +333,9 @@ namespace Core.Services
                     uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
                 emailDO.Subject = "Password Recovery Request";
 
-                //uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
-                //  new Dictionary<string, object>()
-                // {{"-callback_url-", callbackUrl}});
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
+                  new Dictionary<string, object>()
+                 {{"-callback_url-", callbackUrl}});
                 uow.SaveChanges();
             }
         }
@@ -358,11 +369,11 @@ namespace Core.Services
             }
         }
 
-        public DocuSignAccount LoginToDocuSign()
-        {
-            var packager = new DocuSignPackager();
-            return packager.Login();
-        }
+		  //public DocuSignAccount LoginToDocuSign()
+		  //{
+		  //	 var packager = new DocuSignPackager();
+		  //	 return packager.Login();
+		  //}
 
         public IEnumerable<ProcessTemplateDO> GetActiveProcessTemplates(string userId)
         {

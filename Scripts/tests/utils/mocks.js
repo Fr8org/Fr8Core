@@ -83,6 +83,15 @@ var dockyard;
                 return ProcessBuilderServiceMock;
             })();
             utils.ProcessBuilderServiceMock = ProcessBuilderServiceMock;
+            var $ModalMock = (function () {
+                function $ModalMock($q) {
+                    this.open = jasmine.createSpy('open').and.returnValue({
+                        result: $q.when(utils.fixtures.ActivityTemplate.activityTemplateDO)
+                    });
+                }
+                return $ModalMock;
+            })();
+            utils.$ModalMock = $ModalMock;
         })(utils = tests.utils || (tests.utils = {}));
     })(tests = dockyard.tests || (dockyard.tests = {}));
 })(dockyard || (dockyard = {}));

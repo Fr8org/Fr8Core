@@ -196,9 +196,17 @@ namespace DockyardTest.Controllers
         public void ProcessController_CanEditProcess()
         {
             //Arrange 
+            //var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             var processTemplateDto = FixtureData.CreateTestProcessTemplateDTO();
             var processTemplateController = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            
+
+            var tPT = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates_ID0();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ProcessTemplateRepository.Add(tPT);
+                uow.SaveChanges();
+            }
+
             //Save First
             var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<ProcessTemplateOnlyDTO>;
             Assert.NotNull(postResult);
@@ -223,6 +231,8 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Id);
             Assert.AreEqual(postEditGetResult.Content.Id, getResult.Content.Id);            
         }
+
+
 
         [Test,Ignore]
         public void ProcessController_CanUpdateDocuSignTemplate()

@@ -87,6 +87,35 @@
     margin-top: -15px;
 }
 
+/* Select Action */
+.select-action-modal .modal-dialog {
+    width: 1000px;
+}
+
+.select-action-category {
+    display: inline-block;
+    margin: 20px;
+    vertical-align: top;
+}
+
+.select-action-list {
+    border: 2px solid black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 200px;
+}
+
+.select-action-row {
+    cursor: default;
+    border-bottom: 1px solid black;
+    padding: 8px;
+}
+
+.select-action-row:hover {
+    color: white;
+    background-color: black;
+}
+
 /* Filter Pane */
 .filter-pane .radio:last-of-type {
     margin-bottom: 0;
