@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -13,11 +12,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using StructureMap;
 using System.Data.Entity;
-using Newtonsoft.Json;
-using System.Net;
-using System.Net.Http;
-using Data.Interfaces.ManifestSchemas;
 using Data.Constants;
+using Newtonsoft.Json;
+using Data.Interfaces.ManifestSchemas;
 using Utilities;
 
 namespace Core.Services
@@ -44,47 +41,54 @@ namespace Core.Services
             }
         }
 
-        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
+        public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
             ActionDO existingActionDO = null;
             ActionDO curAction;
+
+            if (submittedActionData.ActivityTemplateId == 0)
+            {
+                submittedActionData.ActivityTemplateId = null;
+            }
+
+            if (submittedActionData.Id > 0)
+            {
+                existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
+            }
+
+            if (submittedActionData.IsTempId)
+            {
+                submittedActionData.Id = 0;
+            }
+
+            if (existingActionDO != null)
+            {
+                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
+                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
+                existingActionDO.Name = submittedActionData.Name;
+                existingActionDO.CrateStorage = submittedActionData.CrateStorage;
+                curAction = existingActionDO;
+            }
+            else
+            {
+                uow.ActionRepository.Add(submittedActionData);
+                curAction = submittedActionData;
+            }
+
+            uow.SaveChanges();
+            curAction.IsTempId = false;
+            return curAction;
+        }
+
+        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
+        {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (submittedActionData.ActivityTemplateId == 0)
-                {
-                    submittedActionData.ActivityTemplateId = null;
-                }
-
-                if (submittedActionData.Id > 0)
-                {
-                    existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
-                }
-
-                if (submittedActionData.IsTempId)
-                {
-                    submittedActionData.Id = 0;
-                }
-
-                if (existingActionDO != null)
-                {
-                    existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                    existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
-                    existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
-                    existingActionDO.Name = submittedActionData.Name;
-                    existingActionDO.CrateStorage = submittedActionData.CrateStorage;
-                    curAction = existingActionDO;
-                }
-                else
-                {
-                    uow.ActionRepository.Add(submittedActionData);
-                    curAction = submittedActionData;
-                }
-
-                uow.SaveChanges();
-                curAction.IsTempId = false;
-                return curAction;
+                return SaveOrUpdateAction(uow, submittedActionData);
             }
         }
+        
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -94,37 +98,54 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
+                return GetById(uow, id);
             }
+        }
+
+        public ActionDO GetById(IUnitOfWork uow, int id)
+        {
+            return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
         }
 
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
         {
             ActionDTO tempActionDTO;
-                        try
-                        {
-                tempActionDTO = await CallPluginActionAsync(curActionDO, "configure");
-                        }
+            try
+            {
+                tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
+            }
             catch (ArgumentException)
             {
                 EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
                 throw;
             }
-                        catch (Exception)
-                        {
+            catch (Exception)
+            {
                 EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
-                            throw;
-                        }
+                throw;
+            }
 
-                        //Plugin Configure Action Return ActionDTO
-                        curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+            //Plugin Configure Action Return ActionDTO
+            curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-                        //save the received action as quickly as possible
-                        SaveOrUpdateAction(curActionDO);
+            //save the received action as quickly as possible
+            SaveOrUpdateAction(curActionDO);
 
-                        //Returning ActionDTO
-                        return tempActionDTO;
-                    }
+            //Returning ActionDTO
+            return tempActionDTO;
+        }
+
+        public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
+        {
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+            if (confControls.Count() != 0 && confControls.Count() != 1)
+                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
+            if (confControls.Count() == 0)
+                return null;
+            StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+            return standardCfgControlsMs;
+        }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
         {
@@ -163,66 +184,57 @@ namespace Core.Services
             if (curActionList == null) return null;
 
             // Get current Action
-            var curAction = curActionList.Activities.Where(a => a.Id == curActionId).SingleOrDefault();
+            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
             if (curAction == null) return null; // Well, who knows...
 
             // Get ordered list of next Activities 
             var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-
-            //if no next activities, just nullify CurrentActivity 
-            if (activities.Count() == 0)
-            {
-                curActionList.CurrentActivity = null;
-            }
-            else
-            {
-                // if there is one, set it as CurrentActivity
-                curActionList.CurrentActivity = activities.ToList()[0];
-            }
+            
+            curActionList.CurrentActivity = activities.FirstOrDefault();
 
             return curAction;
         }
 
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        {
+            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
             {
-                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
+                curAction.ActionState = ActionState.InProcess;
+                uow.SaveChanges();
+
+                EventManager.ActionStarted(curAction);
+
+                var payload = await Execute(curAction, curProcessDO);
+                if (payload != null)
                 {
-                    curAction.ActionState = ActionState.InProcess;
-                    uow.SaveChanges();
-
-                    EventManager.ActionStarted(curAction);
-
-                    var payload = await Execute(curAction, curProcessDO);
-                    if (payload != null)
-                    {
-                        curProcessDO.CrateStorage = payload.CrateStorage;
-                    }
-
-                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
-
-
-                    //check if the returned JSON is Error
-                    //  if (jsonResult.ToLower().Contains("error"))
-                    // {
-                    //     curAction.ActionState = ActionState.Error;
-                    //  }
-                    //   else
-                    //   {
-                    curAction.ActionState = ActionState.Active;
-                    //   }
-
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
+                    curProcessDO.CrateStorage = payload.CrateStorage;
                 }
-                else
-                {
-                    curAction.ActionState = ActionState.Error;
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
-                    throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-                }
+
+                //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+
+
+                //check if the returned JSON is Error
+                //  if (jsonResult.ToLower().Contains("error"))
+                // {
+                //     curAction.ActionState = ActionState.Error;
+                //  }
+                //   else
+                //   {
+                curAction.ActionState = ActionState.Active;
+                //   }
+
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+            }
+            else
+            {
+                curAction.ActionState = ActionState.Error;
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
+            }
             return curAction.ActionState.Value;
         }
 
@@ -230,22 +242,11 @@ namespace Core.Services
         public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
         {
             if (curActionDO == null)
+            {
                 throw new ArgumentNullException("curActionDO");
+            }
 
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActionDO.ActivityTemplate);
-
-            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
-
-            //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
-            var curPluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
-
-            curPluginTransmitter.Plugin = curActionDO.ActivityTemplate.Plugin;
-
-            var dataPackage = new ActionDataPackageDTO(curActionDTO, curPayloadDTO);
-            // Commented out by yakov.gnusin. This breaks action execution.
-            // var actionDTO = await curPluginTransmitter.CallActionAsync(curActionDO.Name, dataPackage);
-            var payloadDTO = await curPluginTransmitter.CallActionAsync<ActionDataPackageDTO, PayloadDTO>("Execute", dataPackage);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
@@ -340,9 +341,9 @@ namespace Core.Services
                     .FirstOrDefault();
 
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
-        {
+            {
                 throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
-        }
+            }
 
 
             return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
@@ -351,59 +352,40 @@ namespace Core.Services
 
 
         public async Task<ActionDTO> Activate(ActionDO curActionDO)
-                    {
-                        try
-                        {
-                var result = await CallPluginActionAsync(curActionDO, "activate");
-                            EventManager.ActionActivated(curActionDO);
+        {
+            try
+            {
+                var result = await CallPluginActionAsync<ActionDTO>("activate", curActionDO);
+                EventManager.ActionActivated(curActionDO);
                 return result;
-                        }
+            }
             catch (ArgumentException)
-                        {
+            {
                 EventManager.PluginActionActivationFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
-                            throw;
-                        }
+                throw;
+            }
             catch
-                    {
+            {
                 EventManager.PluginActionActivationFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
                 throw;
-                }
             }
+        }
 
         public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
-            {
-            return await CallPluginActionAsync(curActionDO, "deactivate");
-            }
-
-        private async Task<ActionDTO> CallPluginActionAsync(ActionDO curActionDO, string actionName)
         {
-            if (curActionDO == null || !curActionDO.ActivityTemplateId.HasValue)
-            {
-                throw new ArgumentNullException("curActionDO");
+            return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
-                var curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId.Value);
-                //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-                curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
+            if (actionName == null) throw new ArgumentNullException("actionName");
+            if (curActionDO == null) throw new ArgumentNullException("curActionDO");
+            
+            var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
 
-                var pluginTransmitter = ObjectFactory.GetInstance<IPluginTransmitter>();
-                pluginTransmitter.Plugin = uow.PluginRepository.GetByKey(curActivityTemplate.PluginID);
-                return await pluginTransmitter.CallActionAsync<ActionDTO, ActionDTO>(actionName, curActionDTO);
-            }
+            dto.ProcessId = processId;
+
+            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
         }
-		  public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
-		  {
-			  var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-			  var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
-			  if (confControls.Count() != 0 && confControls.Count() != 1)
-				  throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
-			  if (confControls.Count() == 0)
-				  return null;
-			  StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
-			  return standardCfgControlsMs;
-		  }
     }
 }

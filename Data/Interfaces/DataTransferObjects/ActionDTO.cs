@@ -31,5 +31,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string ActionVersion { get; set; }
 
         public string CurrentView { get; set; }
+
+        public int ProcessId { get; set; }
     }
 }

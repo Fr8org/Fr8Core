@@ -31,91 +31,95 @@ namespace PluginBase.BaseClasses
 
         protected IAction _action;
         protected ICrate _crate;
-        //protected IActivity _activity;
 
         public BasePluginAction()
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
-            //_activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
-            var url = ConfigurationManager.AppSettings["ProcessWebServerUrl"]
+            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+                + "api/processes/"
                 + processId.ToString();
-            var response = await httpClient.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<PayloadDTO>(content);
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<PayloadDTO>(content);
+            }
         }
 
-        protected ActionDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
+        protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
-                return InitialConfigurationResponse(curActionDTO);
+                return await InitialConfigurationResponse(curActionDTO);
             }
 
             else if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Followup)
             {
-                return FollowupConfigurationResponse(curActionDTO);
+                return await FollowupConfigurationResponse(curActionDTO);
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             return curActionDTO;
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             return curActionDTO;
         }
 
-        //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
-        //    string manifestType, GetCrateDirection direction)
-        //{
-        //    return GetCratesByDirection(actionDTO, x => x.ManifestType == manifestType, direction);
-        //}
-
-        //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
-        //{
-        //    var actionDO = Mapper.Map<ActionDO>(actionDTO);
-        //    return GetCratesByDirection(actionDO, predicate, direction);
-        //}
-
-        protected virtual List<CrateDTO> GetCratesByDirection(ActivityDO activityDO, string manifestType, GetCrateDirection direction)
+        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId,
+            string manifestType, GetCrateDirection direction)
         {
-            var curActivityService = ObjectFactory.GetInstance<IActivity>();
+            var httpClient = new HttpClient();
 
-            var curUpstreamActivities = (direction == GetCrateDirection.Upstream)
-                ? curActivityService.GetUpstreamActivities(activityDO)
-                : curActivityService.GetDownstreamActivities(activityDO);
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == GetCrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
 
-            List<CrateDTO> upstreamCrates = new List<CrateDTO>();
+            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+                + "activities/"
+                + directionSuffix
+                + "?id=" + activityId.ToString();
 
-            //assemble all of the crates belonging to upstream activities
-            foreach (var curAction in curUpstreamActivities.OfType<ActionDO>())
+            using (var response = await httpClient.GetAsync(url))
             {
-                upstreamCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorageDTO()).ToList());            
-            }
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
 
-            return upstreamCrates;
+                var curCrates = new List<CrateDTO>();
+
+                foreach (var curAction in curActions)
+                {
+                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                }
+
+                return curCrates;
+            }
         }
 
-        public StandardDesignTimeFieldsMS GetDesignTimeFields(ActionDO curActionDO, GetCrateDirection direction)
+        public async Task<StandardDesignTimeFieldsMS> GetDesignTimeFields(
+            int activityId, GetCrateDirection direction)
         {
 
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
 
-            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+            List<CrateDTO> curCrates = await GetCratesByDirection(
+                activityId,
+                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);

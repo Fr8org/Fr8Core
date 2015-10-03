@@ -24,10 +24,10 @@ namespace pluginDocuSign.Actions
         IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
         IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo)); // will be changed to complete the config feature for docu sign
+            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo)); // will be changed to complete the config feature for docu sign
         }
 
         public ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -83,10 +83,12 @@ namespace pluginDocuSign.Actions
             }
         }
 
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+            
             // Extract envelope id from the payload Crate
-            string envelopeId = GetEnvelopeId(curActionDataPackage.PayloadDTO);
+            string envelopeId = GetEnvelopeId(processPayload);
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
@@ -101,8 +103,6 @@ namespace pluginDocuSign.Actions
                     Value = envelopeId
                 }
             };
-
-            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
 
             var cratePayload = _crate.Create(
                 "DocuSign Envelope Payload Data",
@@ -140,7 +140,7 @@ namespace pluginDocuSign.Actions
             return envelopeIdField.Value;
         }
 
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null)
             {
@@ -155,7 +155,7 @@ namespace pluginDocuSign.Actions
             return curActionDTO;
         }
 
-        protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
