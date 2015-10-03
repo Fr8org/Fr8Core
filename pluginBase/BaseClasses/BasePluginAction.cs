@@ -38,6 +38,34 @@ namespace PluginBase.BaseClasses
             _action = ObjectFactory.GetInstance<IAction>();
         }
 
+        protected bool IsEmptyAuthToken(ActionDTO actionDTO)
+        {
+            if (actionDTO == null
+                || actionDTO.AuthToken == null
+                || string.IsNullOrEmpty(actionDTO.AuthToken.AuthToken))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void AppendDockyardAuthenticationCrate(
+            ActionDTO actionDTO, AuthenticationMode mode, string url = null)
+        {
+            if (actionDTO.CrateStorage == null)
+            {
+                actionDTO.CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                };
+            }
+
+            actionDTO.CrateStorage.CrateDTO.Add(
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode, url)
+            );
+        }
+
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();

@@ -32,6 +32,21 @@ namespace Core.Services
             return crateDTO;
         }
 
+        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode, string url = null)
+        {
+            var manifestSchema = new StandardAuthenticationMS()
+            {
+                Mode = mode,
+                Url = url
+            };
+
+            return Create(
+                label,
+                JsonConvert.SerializeObject(manifestSchema),
+                manifestType: CrateManifests.STANDARD_AUTHENTICATION_NAME,
+                manifestId: CrateManifests.STANDARD_AUTHENTICATION_ID);
+        }
+
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
             return Create(label, 

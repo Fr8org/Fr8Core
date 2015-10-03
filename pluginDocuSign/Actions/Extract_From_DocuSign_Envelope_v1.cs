@@ -21,17 +21,22 @@ namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
     {
-		 IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
-		 public Extract_From_DocuSign_Envelope_v1()
-		 {
-			 _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-		 }
+		public Extract_From_DocuSign_Envelope_v1()
+		{
+		 _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		}
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.DockyardMode);
+                return curActionDTO;
+            }
+
+            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
         }
 
         public void Activate(ActionDTO curActionDTO)
