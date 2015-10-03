@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -279,6 +281,64 @@ namespace Core.Services
                 if (!string.IsNullOrEmpty(curToken))
                     return curToken;
                 return _plugin.Authorize();
+            }
+        }
+
+        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin, string username, string password)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var credentialsDTO = new CredentialsDTO()
+            {
+                Username = username,
+                Password = password
+            };
+
+            var response = await restClient.PostAsync<CredentialsDTO>(
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate"),
+                credentialsDTO
+            );
+
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                if (authToken == null)
+                {
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        Token = authTokenDTO.AuthToken,
+                        Plugin = curPlugin,
+                        UserDO = curAccount,
+                        ExpiresAt = DateTime.Today.AddMonths(1)
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.Token = authTokenDTO.AuthToken;
+                }
+
+                try
+                {
+                    uow.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
         }
 

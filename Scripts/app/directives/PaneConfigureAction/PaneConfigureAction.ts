@@ -8,10 +8,19 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_Hide,
         PaneConfigureAction_MapFieldsClicked,
         PaneConfigureAction_Cancelled,
-        PaneConfigureAction_ActionRemoved
+        PaneConfigureAction_ActionRemoved,
+        PaneConfigureAction_InternalAuthentication
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
+
+    export class InternalAuthenticationArgs {
+        public activityTemplateId: number;
+
+        constructor(activityTemplateId: number) {
+            this.activityTemplateId = activityTemplateId;
+        }
+    }
 
     export class RenderEventArgs {
         public action: interfaces.IActionDTO
@@ -203,6 +212,29 @@ module dockyard.directives.paneConfigureAction {
             var activityTemplateName = scope.currentAction.activityTemplateName; // preserve activity name
 
             this.ActionService.configure(action).$promise.then(function (res: any) {
+                // Check if authentication is required.
+                if (self.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
+                    var authCrate = self.crateHelper
+                        .findByManifestType(res.crateStorage, 'Standard Authentication');
+
+                    var authMS = angular.fromJson(authCrate.contents);
+
+                    // Dockyard auth mode.
+                    if (authMS.Mode == 1) {
+                        scope.$emit(
+                            MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
+                            new InternalAuthenticationArgs(res.activityTemplateId)
+                        );
+                    }
+
+                    // External auth mode.
+                    else {
+                        alert('TODO: External auth');
+                    }
+
+                    scope.processing = false;
+                    return;
+                }
 
                 // Unblock pane
                 scope.processing = false;

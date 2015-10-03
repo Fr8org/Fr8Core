@@ -22,7 +22,7 @@ namespace Data.Interfaces.ManifestSchemas
         /// <summary>
         /// When application shows default credentials window.
         /// </summary>
-        DockyardMode = 1,
+        InternalMode = 1,
 
         /// <summary>
         /// When external auth form URL is triggered.

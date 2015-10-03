@@ -52,6 +52,45 @@ namespace Web.Controllers
         }
 
 
+        [HttpPost]
+        [Route("authenticate")]
+        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
+        {
+            DockyardAccountDO account;
+            PluginDO plugin;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(credentials.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+
+                var accountId = User.Identity.GetUserId();
+                account = uow.UserRepository.FindOne(x => x.Id == accountId);
+                
+                if (account == null)
+                {
+                    throw new ApplicationException("User was not found.");
+                }
+            }
+
+            await _action.Authenticate(
+                account,
+                plugin,
+                credentials.Username,
+                credentials.Password);
+
+            return Ok();
+        }
+
+
         // TODO: to be removed.
         // commented out by yakov.gnusin as of DO-1064
         // [Route("configure")]

@@ -50,6 +50,22 @@ namespace PluginBase.BaseClasses
             return false;
         }
 
+        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        {
+            if (actionDTO.CrateStorage != null
+                && actionDTO.CrateStorage.CrateDTO != null)
+            {
+                var authCrates = actionDTO.CrateStorage.CrateDTO
+                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+                    .ToList();
+
+                foreach (var authCrate in authCrates)
+                {
+                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                }
+            }
+        }
+
         protected void AppendDockyardAuthenticationCrate(
             ActionDTO actionDTO, AuthenticationMode mode, string url = null)
         {
