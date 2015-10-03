@@ -52,36 +52,38 @@ namespace Web.Controllers
         }
 
 
-        [Route("configure")]
-        [Route("process")]
-        [HttpGet]
-        public string HandleDockyardRequest(ActionDTO actionDTO)
-        {
-            // Extract from current request URL.
-            var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
-
-            //Figure out which request is being made
-            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-                curActionDO.ActivityTemplate.Name,
-                curActionDO.ActivityTemplate.Version);
-            var calledType = Type.GetType(curAssemblyName);
-            var curMethodInfo = calledType
-                .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
-            var curObject = Activator.CreateInstance(calledType);
-            ActionDTO curActionDTO;
-            try
-            {
-                curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-            }
-            catch 
-            {
-                throw new ApplicationException("PluginRequestError");
-            }
-
-            curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            return JsonConvert.SerializeObject(curActionDO);
-        }
+        // TODO: to be removed.
+        // commented out by yakov.gnusin as of DO-1064
+        // [Route("configure")]
+        // [Route("process")]
+        // [HttpGet]
+        // public string HandleDockyardRequest(ActionDTO actionDTO)
+        // {
+        //     // Extract from current request URL.
+        //     var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
+        //     var curActionDO = Mapper.Map<ActionDO>(actionDTO);
+        // 
+        //     //Figure out which request is being made
+        //     var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
+        //         curActionDO.ActivityTemplate.Name,
+        //         curActionDO.ActivityTemplate.Version);
+        //     var calledType = Type.GetType(curAssemblyName);
+        //     var curMethodInfo = calledType
+        //         .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
+        //     var curObject = Activator.CreateInstance(calledType);
+        //     ActionDTO curActionDTO;
+        //     try
+        //     {
+        //         curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+        //     }
+        //     catch 
+        //     {
+        //         throw new ApplicationException("PluginRequestError");
+        //     }
+        // 
+        //     curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+        //     return JsonConvert.SerializeObject(curActionDO);
+        // }
 
         /// <summary>
         /// GET : Returns an action with the specified id

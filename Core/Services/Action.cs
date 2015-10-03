@@ -376,16 +376,70 @@ namespace Core.Services
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
+        /// <summary>
+        /// Prepare AuthToken for ActionDTO request message.
+        /// </summary>
+        private void PrepareAuthToken(ActionDTO actionDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Fetch ActivityTemplate.
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(actionDTO.ActivityTemplateId);
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("Could not find ActivityTemplate.");
+                }
+
+                // Fetch Action.
+                var action = uow.ActionRepository.GetByKey(actionDTO.Id);
+                if (action == null)
+                {
+                    throw new ApplicationException("Could not find Action.");
+                }
+
+                // Try to find AuthToken if plugin requires authentication.
+                if (activityTemplate.Plugin.RequiresAuthentication)
+                {
+                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
+                    var actionList = (ActionListDO)action.ParentActivity;
+                    var dockyardAccount = actionList.ProcessNodeTemplate
+                        .ProcessTemplate.DockyardAccount;
+                    if (dockyardAccount == null)
+                    {
+                        throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
+                    }
+
+                    var accountId = dockyardAccount.Id;
+
+                    // Try to find AuthToken for specified plugin and account.
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                            && x.UserDO.Id == accountId);
+
+                    // If AuthToken is not empty, fill AuthToken property for ActionDTO.
+                    if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
+                    {
+                        actionDTO.AuthToken = new AuthTokenDTO()
+                        {
+                            AuthToken = authToken.Token
+                        };
+                    }
+                }
+            }
+        }
+
         private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
             
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
-
             dto.ProcessId = processId;
+            PrepareAuthToken(dto);
 
-            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
+            return ObjectFactory.GetInstance<IPluginTransmitter>()
+                .CallActionAsync<TResult>(actionName, dto);
         }
     }
 }
