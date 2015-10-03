@@ -135,13 +135,13 @@ namespace DockyardTest.Services
         }
 
         //get this working again once 1124 is merged
-        [Test,Ignore]
+        [Test]
         public void ProcessService_Can_CreateProcess()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates();
+                var processTemplate = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplateAndActionList();
 
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.SaveChanges();
