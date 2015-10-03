@@ -1,10 +1,11 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using PluginBase.BaseClasses;
-using System.Collections.Generic;
 using Data.States;
-using System;
+using PluginBase.BaseClasses;
 
 namespace pluginAzureSqlServer.Controllers
 {    
@@ -16,33 +17,33 @@ namespace pluginAzureSqlServer.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
+            return await (Task<ActionDTO>) _basePluginController
+                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
         }
        
         [HttpPost]
         [Route("activate")]
-        public string Activate(ActionDTO curActionDataPackage)
+        public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            return string.Empty;
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("deactivate")]
-        public string Deactivate(ActionDTO curActionDataPackage)
+        public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            return string.Empty;
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            return string.Empty;
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
+                curPlugin, "Execute", actionDto);
         }
-
-
 
         //----------------------------------------------------------
 

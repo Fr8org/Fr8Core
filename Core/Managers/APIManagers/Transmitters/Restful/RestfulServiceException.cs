@@ -8,6 +8,17 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
 {
     public class RestfulServiceException : ApplicationException
     {
+        public RestfulServiceException()
+        {
+            
+        }
+
+        public RestfulServiceException(string message)
+            : base(message)
+        {
+            
+        }
+
         public RestfulServiceException(string message, Exception innerException)
             : base(message, innerException)
         {

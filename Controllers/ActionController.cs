@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -42,12 +43,11 @@ namespace Web.Controllers
         [Route("configuration")]
         [Route("configure")]
         //[ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
+        public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = _action.Configure(curActionDO);
-
+            ActionDTO actionDTO = await _action.Configure(curActionDO);
             return Ok(actionDTO);
         }
 
@@ -90,7 +90,10 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDTO>(_action.GetById(id));
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return Mapper.Map<ActionDTO>(_action.GetById(uow, id));
+            }
         }
 
         /// <summary>
@@ -111,14 +114,20 @@ namespace Web.Controllers
         public IHttpActionResult Save(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var resultActionDO = _action.SaveOrUpdateAction(submittedActionDO);
-            if (curActionDTO.IsTempId)
-            {
-                _actionList.AddAction(resultActionDO, "last");
-            }
 
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-            return Ok(resultActionDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+               
+                if (curActionDTO.IsTempId)
+                {
+                    _actionList.AddAction(resultActionDO, "last");
+                }
+
+                var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+                return Ok(resultActionDTO);
+            }
         }    
     }
 }

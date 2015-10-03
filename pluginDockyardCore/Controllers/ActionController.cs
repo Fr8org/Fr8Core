@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -24,9 +25,10 @@ namespace pluginDockyardCore.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>) _basePluginController
+                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
@@ -45,9 +47,10 @@ namespace pluginDockyardCore.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
+            return await (Task<PayloadDTO>) _basePluginController.HandleDockyardRequest(
+                curPlugin, "Execute", actionDto);
         }
     }
 }

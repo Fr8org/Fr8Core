@@ -127,5 +127,28 @@ namespace UtilitiesTesting.Fixtures
             return process;
         }
 
+        public static ProcessDO TestProcesswithCurrentActivityAndNextActivityTheSame()
+        {
+            var process = new ProcessDO();
+            process.Id = 49;
+            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.ProcessState = 1;
+            process.ProcessNodes.Add(TestProcessNode1());
+            process.CurrentActivity = FixtureData.TestAction7();
+            process.NextActivity = FixtureData.TestAction7();
+            return process;
+        }
+
+        public static ProcessDO TestProcessSetNextActivity()
+        {
+            var process = new ProcessDO();
+            process.Id = 49;
+            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.ProcessState = 1;
+            process.ProcessNodes.Add(TestProcessNode1());
+            process.CurrentActivity = FixtureData.TestAction7();
+            process.NextActivity = null;
+            return process;
+        }
 	}
 }

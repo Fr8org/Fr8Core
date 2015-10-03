@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
@@ -24,25 +25,13 @@ namespace pluginAzureSqlServer.Actions
     public class Write_To_Sql_Server_v1 : BasePluginAction
     {
 
-        private IAction _action;
-        private ICrate _crate;
-
-        public Write_To_Sql_Server_v1()
-        {
-            _action = ObjectFactory.GetInstance<IAction>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
-        }
-
-
-
-
         //================================================================================
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
@@ -78,33 +67,34 @@ namespace pluginAzureSqlServer.Actions
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
+
             var crateControls = CreateControlsCrate();
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+
             return curActionDTO;
         }
 
         private CrateDTO CreateControlsCrate() { 
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new FieldDefinitionDTO()
+            var control = new FieldDefinitionDTO(FieldDefinitionDTO.TEXTBOX_FIELD)
             {
-                    FieldLabel = "SQL Connection String",
-                    Type = "textField",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+                Label = "SQL Connection String",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") }
             };
             return PackControlsCrate(control);
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             //In all followup calls, update data fields of the configuration store          
             List<String> contentsList = GetFieldMappings(curActionDTO);
@@ -135,6 +125,7 @@ namespace pluginAzureSqlServer.Actions
                 curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
                 _action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
+
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
             curActionDTO.CrateStorage = curCrateStorageDTO;
             return curActionDTO;
@@ -151,15 +142,16 @@ namespace pluginAzureSqlServer.Actions
             return "Deactivated";
         }
 
-        public object Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDataPackage.ActionDTO);
-            var curCommandArgs = PrepareSQLWrite(curActionDO);
-            var dbService = new DbService();
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
+            var curCommandArgs = PrepareSQLWrite(actionDto, processPayload);
+
+            var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);
 
-            return true;
+            return processPayload;
         }
 
         //===============================================================================================
@@ -225,29 +217,107 @@ namespace pluginAzureSqlServer.Actions
 
         //EXECUTION-Related Methods
         //-----------------------------------------
-        private WriteCommandArgs PrepareSQLWrite(ActionDO curActionDO)
+        private WriteCommandArgs PrepareSQLWrite(ActionDTO curActionDTO, PayloadDTO processPayload)
         {
             var parser = new DbServiceJsonParser();
-            var curConnStringObject = parser.ExtractConnectionString(curActionDO);
-            var curSQLData = ConvertActionPayloadToSqlInputs(curActionDO, parser);
+            var curConnStringObject = parser.ExtractConnectionString(curActionDTO);
+            var curSQLData = ConvertProcessPayloadToSqlInputs(processPayload);
 
             return new WriteCommandArgs(ProviderName, curConnStringObject, curSQLData);
         }
 
-        private IEnumerable<Table> ConvertActionPayloadToSqlInputs(ActionDO curActionDO, DbServiceJsonParser parser)
+        private IEnumerable<Table> ConvertProcessPayloadToSqlInputs(PayloadDTO processPayload)
         {
-            //replace this with a Crate-based solution
-            JObject payload = new JObject();//JsonConvert.DeserializeObject<JObject>(curActionDO.PayloadMappings);
-            var payloadArray = payload.ExtractPropertyValue<JObject>("payload");
+            var mappedFieldsCrate = processPayload.CrateStorageDTO()
+                .CrateDTO
+                .Where(x => x.Label == "MappedFields"
+                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
+                .FirstOrDefault();
 
-            if (payloadArray.Count == 0)
+            if (mappedFieldsCrate == null)
             {
-                throw new Exception("\"payload\" data is empty");
+                throw new ApplicationException("No payload crate found with Label == MappdFields.");
             }
 
-            var table = parser.CreateTable(payloadArray);
+            var valuesCrate = processPayload.CrateStorageDTO()
+                .CrateDTO
+                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
+                    && x.Label == "DocuSign Envelope Data")
+                .FirstOrDefault();
 
-            return new List<Table> { table };
+            if (valuesCrate == null)
+            {
+                throw new ApplicationException("No payload crate found with Label == DocuSign Envelope Data");
+            }
+
+
+            var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
+            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
+
+            return CreateTables(mappedFields, values);
+        }
+
+        private IEnumerable<Table> CreateTables(List<FieldDTO> fields, List<FieldDTO> values)
+        {
+            // Map tableName -> field -> value.
+            var tableMap = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach (var field in fields)
+            {
+                var tableTokens = field.Value.Split('.');
+                if (tableTokens == null || tableTokens.Length != 2)
+                {
+                    throw new ApplicationException(string.Format("Invalid column name {0}", field.Value));
+                }
+
+                var tableName = PrepareSqlName(tableTokens[0]);
+                var columnName = PrepareSqlName(tableTokens[1]);
+                var valueField = values.FirstOrDefault(x => x.Key == field.Key);
+
+                string value = "";
+                if (value != null)
+                {
+                    value = valueField.Value;
+                }
+
+                Dictionary<string, string> columnMap;
+                if (!tableMap.TryGetValue(tableName, out columnMap))
+                {
+                    columnMap = new Dictionary<string, string>();
+                    tableMap.Add(tableName, columnMap);
+                }
+
+                columnMap[columnName] = value;
+            }
+
+            var tables = CreateTablesFromMap(tableMap);
+            return tables;
+        }
+
+        private IEnumerable<Table> CreateTablesFromMap(
+            Dictionary<string, Dictionary<string, string>> tableMap)
+        {
+            var tables = new List<Table>();
+
+            foreach (var tablePair in tableMap)
+            {
+                var values = new List<FieldValue>();
+
+                foreach (var columnPair in tablePair.Value)
+                {
+                    values.Add(new FieldValue(columnPair.Key, columnPair.Value));
+                }
+
+                // TODO: change "dbo" schema later.
+                tables.Add(new Table("dbo", tablePair.Key, new[] { new Row(values) }));
+            }
+
+            return tables;
+        }
+
+        private string PrepareSqlName(string rawName)
+        {
+            return rawName.Replace("[", "").Replace("]", "");
         }
     }
 }

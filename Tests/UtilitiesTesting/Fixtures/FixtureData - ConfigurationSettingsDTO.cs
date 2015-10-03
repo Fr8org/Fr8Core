@@ -4,6 +4,8 @@ using Core.Services;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using StructureMap;
+using Data.Entities;
+using Data.Interfaces.ManifestSchemas;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -30,7 +32,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
-
             };
         }
 
@@ -51,14 +52,28 @@ namespace UtilitiesTesting.Fixtures
 
         public static FieldDefinitionDTO TestConnectionStringFieldDefinition()
         {
-            return new FieldDefinitionDTO()
+            return new TextBlockFieldDTO()
             {
-                FieldLabel = "SQL Connection String",
-                Type = "textField",
+                Label = "SQL Connection String",
                 Name = "connection_string",
                 Required = true,
-                Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+                Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") }
             };
+        }
+
+        public static ActionDO TestConfigurationSettingsDTO1()
+        {
+            ActionDO curAction = FixtureData.TestAction1();
+
+            //create connection string value crates with a vald connection string
+            var connectionStringCrate = FixtureData.TestCrateStorage();
+            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(connectionStringCrate.CrateDTO[0].Contents);
+            connectionStringFields.Controls[0].Value =
+                @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
+            connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);
+            curAction.CrateStorage = JsonConvert.SerializeObject(connectionStringCrate);
+            return curAction;
+
         }
     }
 }

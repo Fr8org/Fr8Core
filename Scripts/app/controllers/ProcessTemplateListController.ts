@@ -12,6 +12,13 @@ module dockyard.controllers {
         dtOptionsBuilder: any;
         dtColumnBuilder: any;
         dtInstance: any;
+        activedtOptionsBuilder: any;
+        activedtColumnBuilder: any;
+        inactivedtOptionsBuilder: any;
+        inactivedtColumnBuilder: any;   
+        isFr: boolean;
+        OpenFrlines();
+        OpenSettings();
     }
 
     /*
@@ -34,6 +41,8 @@ module dockyard.controllers {
             '$state'
         ];
         private _processTemplates: Array<interfaces.IProcessTemplateVM>;
+        private _processTemplatesAc: Array<interfaces.IProcessTemplateVM>;
+        private _processTemplatesIn: Array<interfaces.IProcessTemplateVM>;
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
@@ -58,13 +67,27 @@ module dockyard.controllers {
             });
 
             //Load Process Templates view model
+           
             this._processTemplates = ProcessTemplateService.query();
-            $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates();
-            $scope.dtColumnBuilder = this.GetDataTableColumns();
+            $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates(0);   
+            $scope.dtColumnBuilder = this.GetDataTableColumns();   
+            this._processTemplatesAc = ProcessTemplateService.getactive({ id: null, status: 1 });   
+            this._processTemplatesIn = ProcessTemplateService.getactive({ id: null, status: 2 });
+           $scope.activedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(2);
+           $scope.activedtColumnBuilder = this.GetDataTableColumns(); 
+           $scope.inactivedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(1);
+           $scope.inactivedtColumnBuilder = this.GetDataTableColumns(); 
             //hold a reference to data-tables instance to be able to refresh table later
             $scope.dtInstance = {};
             $scope.GoToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.GoToProcessTemplatePage);
             $scope.DeleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.DeleteProcessTemplate);
+            $scope.OpenFrlines = function () {
+                                $scope.isFr=true;
+                            }
+            
+            			$scope.OpenSettings = function () {
+                                $scope.isFr=false;
+                           }
         }
 
         //this function will be called on every reloadData call to data-table
@@ -78,9 +101,32 @@ module dockyard.controllers {
             return this.$q.when(this._processTemplates);
         }
 
-        private GetDataTableOptionsFromTemplates() {
+        private ResolveProcessTemplatesPromiseAc() {
+            if (this._processTemplatesAc.$promise) {
+                return this._processTemplatesAc.$promise;
+            }
+
+            return this.$q.when(this._processTemplatesAc);
+        }
+
+        private ResolveProcessTemplatesPromiseIn() {
+            if (this._processTemplatesIn.$promise) {
+                return this._processTemplatesIn.$promise;
+            }
+
+            return this.$q.when(this._processTemplatesIn);
+        }
+
+        private GetDataTableOptionsFromTemplates(processtype) {
             var onRowCreate = <(row: any) => void> angular.bind(this, this.OnRowCreate);
-            var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromise);
+            if (processtype == 2) {
+                var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromiseAc);
+            }
+            else if (processtype == 1) {
+                var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromiseIn);
+            } else {
+                var resolveData = <() => void> angular.bind(this, this.ResolveProcessTemplatesPromise);
+            }
             return this.DTOptionsBuilder
                 .fromFnPromise(resolveData)
                 .withPaginationType('full_numbers')
@@ -146,7 +192,7 @@ module dockyard.controllers {
                 me.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(function () {
                     me.$rootScope.lastResult = "success";
                     //now loop through our existing templates and remove from local memory
-                    for (var i = 0; i < this._processTemplates.length; i++) {
+                    for (var i = 0; i < me._processTemplates.length; i++) {
                         if (me._processTemplates[i].id === processTemplateId) {
                             me._processTemplates.splice(i, 1);
                             me.$scope.dtInstance.reloadData();

@@ -13,8 +13,8 @@ module dockyard.tests.controller {
 
         app.run(['$httpBackend', ($httpBackend) => {
                 //we need this because stateProvider loads on test startup and routes us to default state 
-                //which is processes and has template URL with /AngularTemplate/ProcessTemplateList
-                $httpBackend.expectGET('/AngularTemplate/ProcessTemplateList').respond(200, '<div></div>');
+                //which is myaccount and has template URL with /AngularTemplate/MyAccountPage
+                $httpBackend.expectGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
             }
         ]);
 
@@ -32,11 +32,12 @@ module dockyard.tests.controller {
             _crateHelper: services.CrateHelper,
             _localIdentityGenerator: services.LocalIdentityGenerator,
             _$timeout: ng.ITimeoutService,
-            _$filter: ng.IFilterService;
+            _$filter: ng.IFilterService,
+            _$modalMock: utils.$ModalMock;
 
         beforeEach(() => {
             
-            inject(($controller, $rootScope, $q, $http, $timeout, $filter) => {
+            inject(($controller, $rootScope, $q, $http, $timeout, $filter, $httpBackend) => {
                 _actionServiceMock = new utils.ActionServiceMock($q);
                 _processTemplateServiceMock = new utils.ProcessTemplateServiceMock($q);
                 _actionListServiceMock = new utils.ActionListServiceMock($q);
@@ -56,6 +57,7 @@ module dockyard.tests.controller {
                     }
                 };
                 _$http = $http;
+                _$modalMock = new utils.$ModalMock($q);
                 _urlPrefix = '/api';
                 //Create a mock for CriteriaServiceWrapper
                 _controller = $controller("ProcessBuilderController",
@@ -76,7 +78,8 @@ module dockyard.tests.controller {
                         ActionListService: _actionListServiceMock,
                         CrateHelper: _crateHelper,
                         ActivityTemplateService: null,
-                        $filter: _$filter
+                        $filter: _$filter,
+                        $modal: _$modalMock
                     });
             });
             spyOn(_$scope, "$broadcast");
@@ -86,11 +89,12 @@ module dockyard.tests.controller {
         var resolvePromises = () => {
             _$scope.$apply();
         };
-        
-        it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectAction_Hide should be received", () => {
-            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
+
+        it("When PaneWorkflowDesigner_ActionAdding is emitted, select action modal should be opened", () => {
+            var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
             resolvePromises();
-            expect(_$scope.$broadcast).toHaveBeenCalledWith(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+            expect(_$modalMock.open).toHaveBeenCalled();
         });
 
         it("When PaneWorkflowDesigner_ActionAdding is emitted, PaneWorkflowDesigner_AddAction should be received", () => {
