@@ -13880,6 +13880,7 @@ Transparent Button
 #inner-tab-content.tab-content {
   border-left: 1px solid #ddd;
   padding: 20px 0 20px 20px;
+  min-height: 680px;
 }
 .col-md-10.col-sm-10.remove-left-padding {
   padding-left: 0;

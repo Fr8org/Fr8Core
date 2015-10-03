@@ -54,11 +54,10 @@ module dockyard.directives.dropDownListBox {
             this._$scope.selectedItem = item;
 
             // Invoike onChange event handler
-            if (item.Value != "0") {
                 if (this._$scope.change != null && angular.isFunction(this._$scope.change)) {
                     this._$scope.change()(this._$scope.field.name);
                 } 
-            }
+           
         }
 
         private FindAndSetSelectedItem() {
