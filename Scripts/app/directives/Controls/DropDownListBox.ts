@@ -43,11 +43,9 @@ module dockyard.directives.dropDownListBox {
                 this._$element = $element;
                 this._$scope = $scope;
                 this._$scope.selectedItem = null;
-
                 $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
                 this.FindAndSetSelectedItem();
                 $scope.defaultitem = null;
-
             };
         }
 
@@ -56,11 +54,11 @@ module dockyard.directives.dropDownListBox {
             this._$scope.selectedItem = item;
 
             // Invoike onChange event handler
-            if (this._$scope.change != null && angular.isFunction(this._$scope.change))
-            {
-                this._$scope.change()(this._$scope.field.name);             
-            } 
-
+            if (item.Value != "0") {
+                if (this._$scope.change != null && angular.isFunction(this._$scope.change)) {
+                    this._$scope.change()(this._$scope.field.name);
+                } 
+            }
         }
 
         private FindAndSetSelectedItem() {

@@ -26,6 +26,7 @@ var dockyard;
                         _this._$scope.selectedItem = null;
                         $scope.SetSelectedItem = angular.bind(_this, _this.SetSelectedItem);
                         _this.FindAndSetSelectedItem();
+                        $scope.defaultitem = null;
                     };
                 }
                 DropDownListBox.prototype.SetSelectedItem = function (item) {
