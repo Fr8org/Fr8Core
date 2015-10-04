@@ -18,6 +18,7 @@ using Data.Interfaces.ManifestSchemas;
 using pluginSendGrid.Infrastructure;
 using Data.Interfaces;
 using pluginSendGrid.Services;
+using System.Threading.Tasks;
 
 namespace pluginSendGrid.Actions
 {
@@ -27,9 +28,9 @@ namespace pluginSendGrid.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
@@ -44,14 +45,15 @@ namespace pluginSendGrid.Actions
                 return ConfigurationRequestType.Followup;
         }
 
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
             curActionDTO.CrateStorage.CrateDTO.Add(CreateControlsCrate());
-            curActionDTO.CrateStorage.CrateDTO.Add(GetAvailableDataFields(curActionDTO));
+            //commeted first for the avialble datafields for the dropdownlist to wait for the Nested Controls to be implemented
+            //curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
             return curActionDTO;
         }
 
@@ -82,18 +84,17 @@ namespace pluginSendGrid.Actions
             return _crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 
-        private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
+        private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
         {
             CrateDTO crateDTO = null;
             ActionDO curActionDO =  _action.MapFromDTO(curActionDTO);
-            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream)).Fields.ToArray();
 
             if (curUpstreamFields.Length == 0)
             {
-                crateDTO = GetTextBoxControlForDisplayingError("MapFieldsErrorMessage",
-                         "This action couldn't find either source fields or target fields (or both). " +
-                        "Try configuring some Actions first, then try this page again.");
-                curActionDTO.CurrentView = "MapFieldsErrorMessage";
+                crateDTO = GetTextBoxControlForDisplayingError("Error_NoUpstreamLists",
+                         "No Upstream fr8 Lists Were Found.");
+                curActionDTO.CurrentView = "Error_NoUpstreamLists";
             }
             else
             {
@@ -103,21 +104,21 @@ namespace pluginSendGrid.Actions
             return crateDTO;
         }
 
-        protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             //not currently any requirements that need attention at FollowupConfigurationResponse
-            return null;
+            return curActionDTO;
         }
 
         public object Activate(ActionDO curActionDO)
         {
             //not currently any requirements that need attention at Activation Time
-            return null;
+            return curActionDO;
         }
 
         public object Deactivate(ActionDO curActionDO)
         {
-            return null;
+            return curActionDO;
         }
 
         public object Execute(ActionDataPackageDTO curActionDataPackage)
