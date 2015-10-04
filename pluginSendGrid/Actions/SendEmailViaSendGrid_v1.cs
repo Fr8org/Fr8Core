@@ -23,14 +23,9 @@ namespace pluginSendGrid.Actions
 {
     public class SendEmailViaSendGrid_v1 : BasePluginAction
     {
-        private IAction _action;
-        private ICrate _crate;
-        private IEmailPackager _emailPackager;
-
-        public SendEmailViaSendGrid_v1()
+        protected override void SetupServices()
         {
-            _action = ObjectFactory.GetInstance<IAction>();
-            _crate = ObjectFactory.GetInstance<ICrate>();
+            base.SetupServices();
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 

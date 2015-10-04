@@ -31,13 +31,17 @@ namespace PluginBase.BaseClasses
 
         protected IAction _action;
         protected ICrate _crate;
-        //protected IActivity _activity;
+        protected IEmailAddress _emailPackager;
 
         public BasePluginAction()
         {
+            this.SetupServices();
+        }
+
+        protected virtual void SetupServices()
+        {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
-            //_activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
@@ -158,26 +162,18 @@ namespace PluginBase.BaseClasses
 
         protected CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
         {
-            var fields = new List<FieldDefinitionDTO>() 
+            FieldDefinitionDTO[] fields = 
             {
                 new TextBlockFieldDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
                     cssClass = "well well-lg"
-                    
                 }
             };
 
-            var controls = new StandardConfigurationControlsMS()
-            {
-                Controls = fields
-            };
-
-            var crateControls = _crate.Create(
-                        "Configuration_Controls",
-                        JsonConvert.SerializeObject(controls),
-                        "Standard Configuration Controls"
+            var crateControls = _crate.CreateStandardConfigurationControlsCrate(
+                        "Configuration_Controls", fields
                     );
 
             return crateControls;
