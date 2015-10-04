@@ -42,7 +42,7 @@ namespace PluginBase.BaseClasses
         {
             if (actionDTO == null
                 || actionDTO.AuthToken == null
-                || string.IsNullOrEmpty(actionDTO.AuthToken.AuthToken))
+                || string.IsNullOrEmpty(actionDTO.AuthToken.Token))
             {
                 return true;
             }

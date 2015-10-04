@@ -318,7 +318,7 @@ namespace Core.Services
                 {
                     authToken = new AuthorizationTokenDO()
                     {
-                        Token = authTokenDTO.AuthToken,
+                        Token = authTokenDTO.Token,
                         Plugin = curPlugin,
                         UserDO = curAccount,
                         ExpiresAt = DateTime.Today.AddMonths(1)
@@ -328,17 +328,10 @@ namespace Core.Services
                 }
                 else
                 {
-                    authToken.Token = authTokenDTO.AuthToken;
+                    authToken.Token = authTokenDTO.Token;
                 }
 
-                try
-                {
-                    uow.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-
-                }
+                uow.SaveChanges();
             }
         }
 
@@ -482,7 +475,7 @@ namespace Core.Services
                     {
                         actionDTO.AuthToken = new AuthTokenDTO()
                         {
-                            AuthToken = authToken.Token
+                            Token = authToken.Token
                         };
                     }
                 }

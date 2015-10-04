@@ -13,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new AuthorizationTokenDO()
             {
-                Token = "SomeTestToken"
+                Token = @"{""Email"":""64684b41-bdfd-4121-8f81-c825a6a03582"",""ApiPassword"":""H1e0D79tpJ3a/7klfhPkPxNMcOo=""}"
             };
         }
 

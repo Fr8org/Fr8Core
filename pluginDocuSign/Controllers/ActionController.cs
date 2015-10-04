@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
+using pluginDocuSign.DataTransferObjects;
 
 
 namespace pluginDocuSign.Controllers
@@ -51,81 +52,21 @@ namespace pluginDocuSign.Controllers
         {
             // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
 
-            //var loginInfoJObject = await RunLoginInformationRequest(curCredentials);
-            //var baseUrl = FetchBaseUrl(loginInfoJObject);
-            //var oauthToken = await ObtainOAuthToken(curCredentials, baseUrl);
             var oauthToken = await ObtainOAuthToken(curCredentials, ConfigurationManager.AppSettings["endpoint"]);
 
-            return new AuthTokenDTO() { AuthToken = oauthToken };
-            
+            var docuSignAuthDTO = new DocuSignAuthDTO()
+            {
+                Email = curCredentials.Username,
+                ApiPassword = oauthToken
+            };
+
+            return new AuthTokenDTO() { Token = JsonConvert.SerializeObject(docuSignAuthDTO) };
         }
 
         private HttpClient CreateHttpClient(string endPoint)
         {
             return new HttpClient() { BaseAddress = new Uri(endPoint) };
         }
-
-        // private async Task<JObject> RunLoginInformationRequest(CredentialsDTO curCredentials)
-        // {
-        //     var endPoint = ConfigurationManager.AppSettings["endpoint"];
-        // 
-        //     var httpClient = CreateHttpClient(endPoint);
-        // 
-        //     var httpMessage = new HttpRequestMessage(HttpMethod.Get, "login_information");
-        //     httpMessage.Headers.Add("X-DocuSign-Authentication", CreateDocuSignAuthHeader(curCredentials));
-        // 
-        //     var response = await httpClient.SendAsync(httpMessage);
-        // 
-        //     try
-        //     {
-        //         var responseContent = await response.Content.ReadAsStringAsync();
-        // 
-        //         var resultJObject = JsonConvert.DeserializeObject<JObject>(responseContent);
-        //         return resultJObject;
-        //     }
-        //     finally
-        //     {
-        //         if (response != null)
-        //         {
-        //             response.Dispose();
-        //         }
-        //     }
-        // }
-
-        // private string CreateDocuSignAuthHeader(CredentialsDTO curCredentials)
-        // {
-        //     var headerValue =
-        //         new XElement("DocuSignCredentials",
-        //             new XElement("Username", curCredentials.Username),
-        //             new XElement("Password", curCredentials.Password),
-        //             new XElement("IntegratorKey", ConfigurationManager.AppSettings["DocuSignIntegratorKey"])
-        //         )
-        //         .ToString()
-        //         .Replace("\r", "")
-        //         .Replace("\n", "");
-        // 
-        //     return headerValue;
-        // }
-
-        // private string FetchBaseUrl(JObject loginInfoResponse)
-        // {
-        //     var loginAccountsToken = loginInfoResponse.Value<JArray>("loginAccounts");
-        // 
-        //     if (loginAccountsToken == null || loginAccountsToken.Count == 0)
-        //     {
-        //         throw new ApplicationException("loginAccounts property was not found or empty.");
-        //     }
-        // 
-        //     var accountToken = loginAccountsToken[0];
-        //     var baseUrl = accountToken.Value<string>("baseUrl");
-        // 
-        //     if (string.IsNullOrEmpty(baseUrl))
-        //     {
-        //         throw new ApplicationException("baseUrl property was not found or empty.");
-        //     }
-        // 
-        //     return baseUrl;
-        // }
 
         private async Task<string> ObtainOAuthToken(CredentialsDTO curCredentials, string baseUrl)
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -19,6 +20,10 @@ namespace pluginDocuSign.Services
         //Can't use DockYardAccount here - circular dependency
         private readonly DocuSignPackager _docuSignPackager;
 
+        private readonly string _email;
+        private readonly string _apiPassword;
+
+        // TODO: remove default auth in future.
         public DocuSignEnvelope()
         {
             //TODO change baseUrl later. Remove it to constructor parameter etc.
@@ -33,7 +38,28 @@ namespace pluginDocuSign.Services
                 CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
                 CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
             };
+
+            _email = null;
+            _apiPassword = null;
+
             Login = _docuSignPackager.Login();
+        }
+
+        public DocuSignEnvelope(string email, string apiPassword)
+        {
+            //TODO change baseUrl later. Remove it to constructor parameter etc.
+            _baseUrl = string.Empty;
+
+            //TODO move ioc container.
+            _tab = new Tab();
+            _signer = new Signer();
+
+            _docuSignPackager = new DocuSignPackager();
+
+            _email = email;
+            _apiPassword = apiPassword;
+
+            Login = _docuSignPackager.Login(email, apiPassword);
         }
 
 
@@ -127,8 +153,17 @@ namespace pluginDocuSign.Services
         public IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId)
         {
             var curDocuSignTemplate = new DocuSignTemplate();
+            if (string.IsNullOrEmpty(_email) || string.IsNullOrEmpty(_apiPassword))
+            {
+                curDocuSignTemplate.Login = new DocuSignPackager().Login();
+            }
+            else
+            {
+                curDocuSignTemplate.Login = new DocuSignPackager().Login(_email, _apiPassword);
+            }
 
             var templateDetails = curDocuSignTemplate.GetTemplate(templateId);
+
             foreach (var signer in templateDetails["recipients"]["signers"])
             {
                 if (signer["tabs"]["textTabs"] != null)

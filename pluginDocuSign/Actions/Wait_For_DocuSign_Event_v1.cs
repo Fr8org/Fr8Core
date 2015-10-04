@@ -14,15 +14,18 @@ using Data.Interfaces.ManifestSchemas;
 using PluginBase;
 using PluginBase.BaseClasses;
 using DocuSign.Integrations.Client;
+using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
     public class Wait_For_DocuSign_Event_v1 : BasePluginAction
     {
-        IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-        IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+        // TODO: remove this as of DO-1064.
+        // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
+        // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
@@ -149,13 +152,16 @@ namespace pluginDocuSign.Actions
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
+            var docuSignAuthDTO = JsonConvert
+                .DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
 			var crateControls = CreateConfigurationCrate();
-			var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames();
+			var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames(docuSignAuthDTO);
 			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
@@ -281,9 +287,11 @@ namespace pluginDocuSign.Actions
                 fieldEventRecipientSent);
         }
 
-        private CrateDTO CreateDesignFieldsCrate_TemplateNames()
+        private CrateDTO CreateDesignFieldsCrate_TemplateNames(DocuSignAuthDTO authDTO)
         {
-            var templates = _template.GetTemplates(null);
+            var template = new DocuSignTemplate();
+
+            var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
             var createDesignTimeFields = _crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",

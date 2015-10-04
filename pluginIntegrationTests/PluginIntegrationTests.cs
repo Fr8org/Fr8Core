@@ -79,6 +79,7 @@ namespace pluginIntegrationTests
 
 			_sendDocuSignEnvelopeActivityTemplate =
 				FixtureData.TestActivityTemplateDO_SendDocuSignEnvelope();
+            _sendDocuSignEnvelopeActivityTemplate.Plugin = _waitForDocuSignEventActivityTemplate.Plugin;
 
             _authToken = FixtureData.AuthToken_PluginIntegration();
             _authToken.Plugin = _waitForDocuSignEventActivityTemplate.Plugin;
