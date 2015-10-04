@@ -99,6 +99,8 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
+                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
@@ -372,6 +374,25 @@ module dockyard.controllers {
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],
                 new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
                 );
+        }
+
+        private PaneConfigureAction_InternalAuthentication(eventArgs: pca.InternalAuthenticationArgs) {
+            var self = this;
+
+            var modalScope = <any>this.$rootScope.$new(true);
+            modalScope.activityTemplateId = eventArgs.activityTemplateId;
+
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'AngularTemplate/InternalAuthentication',
+                controller: 'InternalAuthenticationController',
+                scope: modalScope
+            })
+            .result
+            .then(function () {
+                var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
+                self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            });
         }
 
         private HideActionPanes() {
