@@ -539,7 +539,7 @@ namespace DockyardTest.Services
 			  }
 		  } 
 		 [Test]
-		  public async void Execute_ManyActivity_ShouldBeOk()
+		  public async void Execute_ManyActivities_ShouldBeOk()
 		  {
 			  string crateStorage = GetCrateStorageAsString();
 
