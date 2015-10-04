@@ -134,39 +134,36 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            try
+            EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+            
+            var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+            int count = 0;
+            foreach (string url in activityTemplateHosts)
             {
-                var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-                int count = 0;
-                foreach (string url in activityTemplateHosts)
+                //discover what's at this url
+                try
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
                     var pluginService = new Plugin();
                     var activityTemplateList = await pluginService.GetAvailableActions(uri);
-                    // For discover serialization see:
-                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
-                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
-                     
                     foreach (var curItem in activityTemplateList)
                     {
                         new ActivityTemplate().Register(curItem);
                         count++;
                     }
                 }
+                catch (Exception ex)
+                {
+                    alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                }
 
-                var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
             }
-            catch (Exception ex)
-            {
-                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
-                //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
-            }
+            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
+            
+           
         }
 
         public bool CheckForActivityTemplate(string templateName)
