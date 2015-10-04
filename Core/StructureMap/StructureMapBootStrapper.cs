@@ -8,7 +8,6 @@ using Core.Managers.APIManagers.Authorizers.Docusign;
 using Core.Managers.APIManagers.Authorizers.Google;
 using Core.Managers.APIManagers.Packagers;
 using Core.Managers.APIManagers.Packagers.SegmentIO;
-using Core.Managers.APIManagers.Packagers.SendGrid;
 using Core.Managers.APIManagers.Packagers.Twilio;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
@@ -81,7 +80,6 @@ namespace Core.StructureMap
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
@@ -95,7 +93,7 @@ namespace Core.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
-                For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
@@ -129,7 +127,6 @@ namespace Core.StructureMap
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();

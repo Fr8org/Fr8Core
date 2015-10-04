@@ -1,5 +1,5 @@
 ﻿using Core.Managers.APIManagers.Packagers;
-using Core.Managers.APIManagers.Packagers.SendGrid;
+using pluginSendGrid.Services;
 
 namespace Daemons.EventExposers
 {

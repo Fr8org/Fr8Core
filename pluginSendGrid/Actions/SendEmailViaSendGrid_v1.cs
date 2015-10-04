@@ -23,12 +23,6 @@ namespace pluginSendGrid.Actions
 {
     public class SendEmailViaSendGrid_v1 : BasePluginAction
     {
-        protected override void SetupServices()
-        {
-            base.SetupServices();
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-        }
-
         //================================================================================
         //General Methods (every Action class has these)
 

@@ -14,6 +14,7 @@ using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
 using Newtonsoft.Json;
+using Core.Managers.APIManagers.Packagers;
 
 namespace PluginBase.BaseClasses
 {
@@ -31,8 +32,7 @@ namespace PluginBase.BaseClasses
 
         protected IAction _action;
         protected ICrate _crate;
-        protected IEmailAddress _emailPackager;
-
+        protected IEmailPackager _emailPackager;
         public BasePluginAction()
         {
             this.SetupServices();
@@ -42,6 +42,7 @@ namespace PluginBase.BaseClasses
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
+            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)

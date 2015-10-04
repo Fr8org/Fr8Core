@@ -87,6 +87,10 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\pluginSendGrid\pluginSendGrid.csproj">
+      <Project>{1e1ab01b-f6ab-4420-bf1d-5e6ef41d76bf}</Project>
+      <Name>pluginSendGrid</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>

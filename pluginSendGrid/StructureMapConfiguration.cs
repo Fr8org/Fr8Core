@@ -8,6 +8,8 @@ using StructureMap;
 using Core.StructureMap;
 using pluginSendGrid.Infrastructure;
 using pluginSendGrid.Services;
+using SendGrid;
+using Utilities;
 
 namespace pluginSendGrid
 {
@@ -24,10 +26,9 @@ namespace pluginSendGrid
             switch (type)
             {
                 case DependencyType.TEST:
-                    ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use<SendGridPackager>());
-                    break;
                 case DependencyType.LIVE:
                     ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use<SendGridPackager>());
+                    ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
                     break;
             }
         }
