@@ -1,18 +1,85 @@
-﻿
-@{
-Layout = "~/Views/Shared/_HomePage.cshtml";
+﻿@{
+    Layout = "~/Views/Shared/_HomePage.cshtml";
 }
+@{
+    ViewBag.Title = "Add Note";
+}
+<!--<div id="fullpage">-->
+<section id="welcome" class="top-banner home-welcome text-block full-height-block" data-section="welcome">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <div class="landing-welcome-area">
+                <div id="logotext" class="text">
+                    <h2><span class="bordered-top-green">fr8 </span></h2>
+                    <p class="descr"><span class="bordered-bottom-grey">Cloud Freight Services for DocuSign</span></p>
+                </div>
+                <div class="next-page-bnt"><img src="Content/img/icons/next-page-bnt.png" alt="Next" title="Next"></div>
+            </div>
+        </div>
+    </div>
+</section>
 
-fr8 Services for DocuSign
 
+<section id="services" class="text-block full-height-block" data-section="services">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <div class="base-block-white title-block">
+                <p>
+                    <span class="text green">fr8</span> is a secure web service that enables the point-and-click creation of <br />
+                    powerful web applications, processes and workflows that connect different cloud services<br />
+                    <br /> It's a zero-code programming environment that uses open standards to produce highly portable solutions that can :
+                </p>
+            </div>
+            <div class="base-block-white content-block">
+                <p><a href="/Home/MultiPartWorkflows">Connect different cloud services</a></p>
+                <p><a href="/Home/ConditionalLogicBranching">Create customized dashboards and notifications</a></p>
+                <p><a href="/Home/IntegrationWithOtherDataServices">Easily merge and process web data</a></p>
+                <p><a href="/Home/InterOrganizationWorkflow">Generate powerful workflows that can be shared securely between enterprises</a></p>
 
-<!--<!DOCTYPE html>
-<html>
-<head>
-    <title>fr8 Services for DocuSign</title>
-	<meta charset="utf-8" />
-</head>
-<body>
-    
-</body>
-</html>-->
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="aboutus" class="text-block full-height-block" data-section="aboutus">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <p>
+                <span class="bordered-top-green"><span class="text green">fr8 is supported commercially by The fr8 Company,</span>a San Francisco-based startup.</span><br />
+            </p>
+            <p>
+                Our executive team has worked at<br />
+                <span class="bordered-bottom-grey">Microsoft, Netscape, Inktomi, and other internet startups.</span>
+            </p>
+        </div>
+    </div>
+</section>
+
+<section id="contacts" class="text-block full-height-block" data-section="contacts">
+    <div class="inner-bg full-size-bg"></div>
+    <div class="container full-height-block">
+        <div class="inner-wrap cetered">
+            <h2>Get in touch</h2>
+            <div class="row-fluid section">
+                <div class="col-md-8 col-md-offset-2">
+                    <div class="span12 cform">
+                        <h3>Want to ask something?</h3>
+                        <form class="form clearfix contact-form" action="#">
+                            <p><span id="spMessage" class="contact-hint"></span></p>
+                            <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                            <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                            <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                            <button class="btn btn-large submit-btn" type="button" onclick="SendMail();">Submit</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--</div>-->
