@@ -23,6 +23,7 @@ using pluginDocuSign.Infrastructure.StructureMap;
 
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
 using pluginDocuSign.DataTransferObjects;
+using pluginDocuSign.Infrastructure;
 
 namespace DockyardTest.DocuSign
 {
@@ -31,7 +32,7 @@ namespace DockyardTest.DocuSign
 	{
 		private readonly string TEMPLATE_WITH_ROLES_ID = "9a318240-3bee-475c-9721-370d1c22cec4"; 
 		private readonly string TEMPLATE_WITH_USER_FIELDS_ID = "9a318240-3bee-475c-9721-370d1c22cec4";
-		private IDocuSignTemplate _docusignTemplate;
+		private DocuSignTemplate _docusignTemplate;
 		
 		[SetUp]
 		public override void SetUp()
@@ -40,7 +41,9 @@ namespace DockyardTest.DocuSign
 			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
 			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
 
-			_docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+			// _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
+            _docusignTemplate = new DocuSignTemplate();
+            _docusignTemplate.Login = new DocuSignPackager().Login();
 		}
 		[Test]
 		public void GetUserFields_ExistsTempate_ShouldBeOk()

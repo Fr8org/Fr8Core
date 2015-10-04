@@ -15,23 +15,34 @@ using PluginBase;
 using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
+using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Interfaces;
+using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
     public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
     {
-		 IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+        // TODO: remove this as of DO-1064
+		// IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
 
-		 public Extract_From_DocuSign_Envelope_v1()
-		 {
-			 _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-		 }
+		public Extract_From_DocuSign_Envelope_v1()
+		{
+            // TODO: remove this as of DO-1064
+		    // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		}
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            //TODO: The coniguration feature for Docu Sign is not yet defined. The configuration evaluation needs to be implemented.
-            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial); // will be changed to complete the config feature for docu sign
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
+                return curActionDTO;
+            }
+
+            RemoveAuthenticationCrate(curActionDTO);
+
+            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
         }
 
         public void Activate(ActionDTO curActionDTO)
@@ -71,14 +82,17 @@ namespace pluginDocuSign.Actions
 
         public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDO, string curEnvelopeId)
         {
-            var curEnvelopeData = _docusignEnvelope.GetEnvelopeData(curEnvelopeId);
+            var docusignEnvelope = new DocuSignEnvelope();
+
+            var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
             var fields = GetFields(curActionDO);
 
             if (fields.Count == 0)
             {
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
             }
-            return _docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
+
+            return docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);
         }
 
         private List<FieldDTO> GetFields(ActionDTO curActionDO)
@@ -125,6 +139,9 @@ namespace pluginDocuSign.Actions
 
         protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(
+                curActionDTO.AuthToken.Token);
+
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
             var textBlock = new TextBlockFieldDTO()
             {
@@ -167,7 +184,10 @@ namespace pluginDocuSign.Actions
             // If DocuSignTemplate Id was found, then add design-time fields.
             if (!string.IsNullOrEmpty(docusignTemplateId))
             {
-                var userDefinedFields = _docusignEnvelope
+                var docusignEnvelope = new DocuSignEnvelope(
+                    docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+
+                var userDefinedFields = docusignEnvelope
                     .GetEnvelopeDataByTemplate(docusignTemplateId);
 
                 var fieldCollection = userDefinedFields

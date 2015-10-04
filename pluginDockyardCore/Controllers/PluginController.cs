@@ -26,6 +26,7 @@ namespace pluginDockyardCore.Controllers
                 Endpoint = "localhost:50705",
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginDockyardCore",
+                RequiresAuthentication = false,
                 Version = "1"
             };
 

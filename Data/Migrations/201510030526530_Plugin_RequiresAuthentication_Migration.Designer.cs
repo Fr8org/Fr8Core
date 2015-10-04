@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class forcemerge1 : IMigrationMetadata
+    public sealed partial class Plugin_RequiresAuthentication_Migration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(forcemerge1));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Plugin_RequiresAuthentication_Migration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201510040304239_forcemerge1"; }
+            get { return "201510030526530_Plugin_RequiresAuthentication_Migration"; }
         }
         
         string IMigrationMetadata.Source

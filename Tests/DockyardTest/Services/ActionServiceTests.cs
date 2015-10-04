@@ -245,6 +245,14 @@ namespace DockyardTest.Services
         {
             ActionDO actionDO = FixtureData.IntegrationTestAction();
             actionDO.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(actionDO.ActivityTemplate);
+                uow.ActionRepository.Add(actionDO);
+                uow.SaveChanges();
+            }
+
             ProcessDO procesDO = FixtureData.TestProcess1();
             var pluginClientMock = new Mock<IPluginTransmitter>();
             pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).Returns<string, ActionDTO>((s, a) => Task.FromResult(a));
@@ -266,6 +274,13 @@ namespace DockyardTest.Services
             ActionDO actionDo = FixtureData.TestActionUnstarted();
             actionDo.ActivityTemplate.Plugin.Endpoint = "http://localhost:53234/actions/configure";
             actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
+                uow.ActionRepository.Add(actionDo);
+                uow.SaveChanges();
+            }
 
             ActionDTO actionDto = Mapper.Map<ActionDTO>(actionDo);
             PluginTransmitterMock.Setup(rc => rc.PostAsync(It.IsAny<Uri>(), It.IsAny<object>()))
@@ -378,6 +393,13 @@ namespace DockyardTest.Services
             ActionDO actionDo = FixtureData.TestActionStateInProcess();
             actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
 
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
+                uow.ActionRepository.Add(actionDo);
+                uow.SaveChanges();
+            }
+
             Action _action = ObjectFactory.GetInstance<Action>();
             ProcessDO processDo = FixtureData.TestProcess1();
             EventManager.EventActionStarted += EventManager_EventActionStarted;
@@ -400,6 +422,13 @@ namespace DockyardTest.Services
         {
             ActionDO actionDo = FixtureData.TestActionStateInProcess();
             actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO() { ActionName = "Test Action" });
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
+                uow.ActionRepository.Add(actionDo);
+                uow.SaveChanges();
+            }
 
             IAction _action = ObjectFactory.GetInstance<IAction>();
             ProcessDO processDo = FixtureData.TestProcess1();
@@ -426,6 +455,14 @@ namespace DockyardTest.Services
         {
             ActionDO actionDo = FixtureData.TestActionStateInProcess();
             actionDo.CrateStorage = JsonConvert.SerializeObject(new ActionDTO());
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(actionDo.ActivityTemplate);
+                uow.ActionRepository.Add(actionDo);
+                uow.SaveChanges();
+            }
+
 
             Action _action = ObjectFactory.GetInstance<Action>();
             ProcessDO procesDo = FixtureData.TestProcess1();
