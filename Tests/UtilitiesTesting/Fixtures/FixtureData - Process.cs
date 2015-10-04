@@ -108,11 +108,12 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
+				process.ProcessTemplate = TestProcessTemplate2();
             process.ProcessTemplateId = TestProcessTemplate2().Id;
             process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
             process.CurrentActivity = FixtureData.TestAction7();
-            process.NextActivity = FixtureData.TestAction8();
+				process.NextActivity = FixtureData.TestAction10();
             return process;
         }
 

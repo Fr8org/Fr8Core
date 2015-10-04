@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using Moq;
 
 using File = System.IO.File;
+using Newtonsoft.Json;
+using System.Collections;
 
 namespace DockyardTest.Services
 {
@@ -407,5 +409,190 @@ namespace DockyardTest.Services
             Assert.IsNotNull(process.NextActivity);
             Assert.AreEqual(process.NextActivity.Id, FixtureData.TestAction8().Id);
         }
+		  [Test]
+		  public async void Execute_CurrentActivitIsNull_ExpectedArgumentNullException()
+		  {
+			  var processDO = FixtureData.TestProcessCurrentActivityNULL();
+
+			  var exp = Assert.Throws<ArgumentNullException>(async() => await _processService.Execute(processDO));
+		  }
+		  [Test]
+		  public async void Execute_CurrentActivityStateIsActive_ExpectedException()
+		  {
+			  string crateStorage = GetCrateStorageAsString();
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = GetProcessDO();
+				  var currAction = FixtureData.TestAction4();
+				  currAction.ActionState = ActionState.Active;
+				  currAction.CrateStorage = crateStorage;
+				  var nextAction = FixtureData.TestAction5();
+				  nextAction.CrateStorage = crateStorage;
+				  nextAction.ActionState = ActionState.Unstarted;
+				  processDO.CurrentActivity = currAction;
+				  processDO.NextActivity = nextAction;
+
+				  uow.ProcessRepository.Add(processDO);
+				  uow.ActivityRepository.Add(currAction);
+				  uow.ActivityRepository.Add(nextAction);
+
+				  uow.SaveChanges();
+			  }
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = uow.ProcessRepository.GetByKey(49);
+				  var ex = Assert.Throws<Exception>(async() => await _processService.Execute(processDO));
+				  Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
+			  }
+		  }
+		  [Test]
+		  public async void Execute_CurrentActivityStateIsDeactive_ExpectedException()
+		  {
+			  string crateStorage = GetCrateStorageAsString();
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = GetProcessDO();
+				  var currAction = FixtureData.TestAction4();
+				  currAction.ActionState = ActionState.Deactive;
+				  currAction.CrateStorage = crateStorage;
+				  var nextAction = FixtureData.TestAction5();
+				  nextAction.CrateStorage = crateStorage;
+				  nextAction.ActionState = ActionState.Unstarted;
+				  processDO.CurrentActivity = currAction;
+				  processDO.NextActivity = nextAction;
+
+				  uow.ProcessRepository.Add(processDO);
+				  uow.ActivityRepository.Add(currAction);
+				  uow.ActivityRepository.Add(nextAction);
+
+				  uow.SaveChanges();
+			  }
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = uow.ProcessRepository.GetByKey(49);
+				  var ex = Assert.Throws<Exception>(async () => await _processService.Execute(processDO));
+				  Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
+			  }
+		  }
+		  [Test]
+		  public async void Execute_CurrentActivityStateIsError_ExpectedException()
+		  {
+			  string crateStorage = GetCrateStorageAsString();
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = GetProcessDO();
+				  var currAction = FixtureData.TestAction4();
+				  currAction.ActionState = ActionState.Error;
+				  currAction.CrateStorage = crateStorage;
+				  var nextAction = FixtureData.TestAction5();
+				  nextAction.CrateStorage = crateStorage;
+				  nextAction.ActionState = ActionState.Unstarted;
+				  processDO.CurrentActivity = currAction;
+				  processDO.NextActivity = nextAction;
+
+				  uow.ProcessRepository.Add(processDO);
+				  uow.ActivityRepository.Add(currAction);
+				  uow.ActivityRepository.Add(nextAction);
+
+				  uow.SaveChanges();
+			  }
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = uow.ProcessRepository.GetByKey(49);
+				  var ex = Assert.Throws<Exception>(async () => await _processService.Execute(processDO));
+				  Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
+			  }
+		  }
+		  [Test]
+		  public async void Execute_OneActivity_ShouldBeOk()
+		  {
+			  string crateStorage = GetCrateStorageAsString();
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = GetProcessDO();
+				  var currAction = FixtureData.TestAction4();
+				  currAction.ActionState = ActionState.Unstarted;
+				  currAction.CrateStorage = crateStorage;
+				  var nextAction = FixtureData.TestAction5();
+				  nextAction.CrateStorage = crateStorage;
+				  nextAction.ActionState = ActionState.Unstarted;
+				  processDO.CurrentActivity = currAction;
+				  processDO.NextActivity = nextAction;
+
+				  uow.ProcessRepository.Add(processDO);
+				  uow.ActivityRepository.Add(currAction);
+				  uow.ActivityRepository.Add(nextAction);
+
+				  uow.SaveChanges();
+			  }
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = uow.ProcessRepository.GetByKey(49);
+				  await _processService.Execute(processDO);
+
+				  Assert.IsNull(processDO.CurrentActivity);
+				  Assert.IsNull(processDO.NextActivity);
+			  }
+		  } 
+		 [Test]
+		  public async void Execute_ManyActivity_ShouldBeOk()
+		  {
+			  string crateStorage = GetCrateStorageAsString();
+
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = GetProcessDO();
+				  var currActivity = FixtureData.TestActionTree();
+				  SetActionStateUnstarted(currActivity);
+				  processDO.CurrentActivity = currActivity;
+				  uow.ProcessRepository.Add(processDO);
+				  uow.ActivityRepository.Add(currActivity);
+
+				  uow.SaveChanges();
+			  }
+			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			  {
+				  var processDO = uow.ProcessRepository.GetByKey(49);
+				  await _processService.Execute(processDO);
+
+				  Assert.IsNull(processDO.CurrentActivity);
+				  Assert.IsNull(processDO.NextActivity);
+			  }
+		  }
+
+		 private static void SetActionStateUnstarted(ActivityDO currActivity)
+		 {
+			 if (currActivity == null)
+				 return;
+			 if (currActivity is ActionDO)
+				 (currActivity as ActionDO).ActionState = ActionState.Unstarted;
+			 if (currActivity.Activities != null)
+			 {
+				 foreach (var activity in currActivity.Activities)
+					 SetActionStateUnstarted(activity);
+			 }
+		 }
+		  private static ProcessDO GetProcessDO()
+		  {
+			  var processDO = new ProcessDO();
+			  processDO.Id = 49;
+			  processDO.ProcessTemplate = FixtureData.TestProcessTemplate2();
+			  processDO.ProcessTemplateId = processDO.ProcessTemplate.Id;
+			  processDO.ProcessState = 1;
+			  processDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
+			  return processDO;
+		  }
+		  private static string GetCrateStorageAsString()
+		  {
+			  List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
+			  CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+			  crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+			  string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+			  return crateStorage;
+		  }		
     }
 }
