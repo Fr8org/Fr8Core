@@ -462,7 +462,7 @@ namespace Core.Services
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
                     // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
-                    var actionList = (ActionListDO)action.ParentActivity;
+                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
                     var dockyardAccount = actionList.ProcessNodeTemplate
                         .ProcessTemplate.DockyardAccount;
                     if (dockyardAccount == null)

@@ -262,12 +262,24 @@ namespace UtilitiesTesting.Fixtures
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
             var actionTemplate = ActionTemplate();
 
+
+            var processTemplateDo = TestProcessTemplate2();
+
             var processDo = new ProcessDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessTemplateId = TestProcessTemplate2().Id,
-                ProcessState = 1
+                ProcessState = 1,
+                ProcessTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
+            };
+
+            var processNodeTemplateDo = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = "C",
+                ParentTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
             };
 
             var actionListDo = new ActionListDO()
@@ -275,7 +287,9 @@ namespace UtilitiesTesting.Fixtures
                 Process = processDo,
                 ProcessID = ProcessState.Unstarted,
                 Id = 1,
-                ActionListType = ActionListType.Immediate
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = processNodeTemplateDo.Id,
+                ProcessNodeTemplate = processNodeTemplateDo
             };
 
             var actionDo = new ActionDO()
@@ -336,11 +350,30 @@ namespace UtilitiesTesting.Fixtures
         {
             var actionTemplate = ActionTemplate();
             string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+
+            var processTemplateDo = new ProcessTemplateDO()
+            {
+                Id = 1,
+                Name = "A",
+                Description = "B",
+                ProcessTemplateState = ProcessTemplateState.Active
+            };
+
             var processDo = new ProcessDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessState = 1
+                ProcessState = 1,
+                ProcessTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
+            };
+
+            var processNodeTemplateDo = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = "C",
+                ParentTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
             };
 
             var actionListDo = new ActionListDO()
@@ -348,7 +381,9 @@ namespace UtilitiesTesting.Fixtures
                 Process = processDo,
                 ProcessID = ProcessState.Unstarted,
                 Id = 1,
-                ActionListType = ActionListType.Immediate
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = processNodeTemplateDo.Id,
+                ProcessNodeTemplate = processNodeTemplateDo
             };
 
             return new ActionDO

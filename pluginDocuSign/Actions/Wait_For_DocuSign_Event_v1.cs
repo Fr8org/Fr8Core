@@ -154,10 +154,10 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-				var crateControls = CreateConfigurationCrate();
-				var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames();
-				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+			var crateControls = CreateConfigurationCrate();
+			var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames();
+			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             return curActionDTO;
         }
