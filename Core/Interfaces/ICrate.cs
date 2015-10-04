@@ -1,10 +1,10 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 
 namespace Core.Interfaces
@@ -14,6 +14,7 @@ namespace Core.Interfaces
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
+        CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode, string url = null);
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls);
         CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);

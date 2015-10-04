@@ -60,13 +60,10 @@ namespace Web.Controllers
 		{
 			ViewBag.ReturnUrl = returnUrl;
 			TempData["urlReferrer"] = urlReferrer;
-			if (!this.UserIsAuthenticated())
-			{
+            if (this.UserIsAuthenticated())
 				throw new HttpException(403, "We're sorry, but you don't have permission to access this page.");
+            return View("Index");
 			}
-			var controller_and_action = (returnUrl.TrimStart(new char[]{'/'}) + '/').Split('/');
-			return RedirectToAction(controller_and_action[1], controller_and_action[0]);
-		}
 
 		[AllowAnonymous]
 		public ActionResult AccessDenied(string errorMessage)
@@ -90,45 +87,6 @@ namespace Web.Controllers
 		{
 			return View();
 		}
-
-		[HttpPost]
-		[AllowAnonymous]
-		[ValidateAntiForgeryToken]
-		public ActionResult Register(RegistrationVM model)
-		{
-			try
-			{
-				if (ModelState.IsValid)
-				{
-					RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
-					if (curRegStatus == RegistrationStatus.UserMustLogIn)
-					{
-						ModelState.AddModelError("", @"You are already registered with us. Please login.");
-					}
-					else
-					{
-						// return RedirectToAction("Index", "Home");
-						return this.Login(new LoginVM
-						{
-							Email = model.Email.Trim(),
-							Password = model.Password.Trim(),
-							RememberMe = false
-						}, string.Empty).Result;
-					}
-				}
-			}
-			catch (ApplicationException appEx)
-			{
-				ModelState.AddModelError("", appEx.Message);
-			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("", ex.Message);
-			}
-
-			return View();
-		}
-
 
 		[AllowAnonymous]
 		public ActionResult RegistrationSuccessful()
@@ -387,4 +345,5 @@ Please register first.");
 			return View(viewModel);
 		}
 	}
+
 }

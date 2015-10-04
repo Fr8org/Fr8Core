@@ -25,5 +25,8 @@ namespace Core.Interfaces
 
         public const int STANDARD_FILE_HANDLE_MANIFEST_ID = 10;
         public const string STANDARD_FILE_HANDLE_MANIFEST_NAME = "Standard File Handle";
+
+        public const int STANDARD_AUTHENTICATION_ID = 12;
+        public const string STANDARD_AUTHENTICATION_NAME = "Standard Authentication";
     }
 }

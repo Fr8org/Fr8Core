@@ -2,6 +2,6 @@
 {
     public class AuthTokenDTO
     {
-        public string AuthToken { get; set; }
+        public string Token { get; set; }
     }
 }

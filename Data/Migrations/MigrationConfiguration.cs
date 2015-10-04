@@ -65,10 +65,12 @@ namespace Data.Migrations
             AddRoles(uow);
             AddAdmins(uow);
             AddDockyardAccounts(uow);
-            AddProfiles(uow);
-            AddPlugins(uow);
+            AddProfiles(uow); 
+            // commented out by yakov.gnusin as of DO-1064
+            // AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            AddAuthorizationTokens(uow);
+            // commented out by yakov.gnusin as of DO-1064
+            // AddAuthorizationTokens(uow);
             AddProcessDOForTestingApi(uow);
         }
 
@@ -177,16 +179,16 @@ namespace Data.Migrations
             }
 
 
-
+           
 
 
         }
 
-        //This method will automatically seed any constants file
-        //It looks for rows which implement IConstantRow<>
-        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
-        //The below method will then generate a new row for each constant found in BookingRequestState.
-        private static void SeedConstants(IUnitOfWork context)
+    //This method will automatically seed any constants file
+    //It looks for rows which implement IConstantRow<>
+    //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+    //The below method will then generate a new row for each constant found in BookingRequestState.
+    private static void SeedConstants(IUnitOfWork context)
         {
             var constantsToSeed =
                 typeof(MigrationConfiguration).Assembly.GetTypes()
@@ -206,7 +208,7 @@ namespace Data.Migrations
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
             if (seedMethod == null)
                 throw new Exception("Unable to find SeedConstants method.");
-
+            
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -265,8 +267,8 @@ namespace Data.Migrations
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
+                let name = constant.Name
+                let value = constant.GetValue(null)
                                      select creatorFunc((int)value, name)).ToList();
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
@@ -328,9 +330,9 @@ namespace Data.Migrations
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
             var rolesToAdd = (from constant in constants
-                              let name = constant.Name
-                              let value = constant.GetValue(null)
-                              select creatorFunc((string)value, name)).ToList();
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
+                                     select creatorFunc((string)value, name)).ToList();
 
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
@@ -339,7 +341,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-                }
+            }
             }
             foreach (var row in rolesToAdd)
             {
@@ -437,8 +439,8 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-            // Create test DockYard account for plugin subscription.
-            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+     // Create test DockYard account for plugin subscription.
+           // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
             AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
@@ -463,7 +465,7 @@ namespace Data.Migrations
                 };
 
                 uow.PluginRepository.Add(pluginDO);
-
+     
             }
         }
 
@@ -488,18 +490,18 @@ namespace Data.Migrations
             var curActivityTemplateDO = new ActivityTemplateDO(
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
-        }
+            }       
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
-
-            AddMultiTenantOrganizations(uow);
+            
+            AddMultiTenantOrganizations(uow);   
             AddMultiTenantObjects(uow);
 
             //add field for DocuSignEnvelopeStatusReport Object in DocuSign organization
             int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
                 "DocuSignEnvelopeStatusReport");
-
+            
             AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
 
             //add field for DocuSignRecipientStatusReportMTO Object in DocuSign organization
@@ -583,14 +585,14 @@ namespace Data.Migrations
 
             uow.SaveChanges();
         }
-
+        
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
         {
             TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
             var randomTest = new Random();
             TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
-            DateTime newDate = DateTime.Now;
+            DateTime newDate = DateTime.Now; 
             while (newDate.TimeOfDay.Hours < 9)
             {
                 newDate = newDate.Add(new TimeSpan(1, 0, 0));

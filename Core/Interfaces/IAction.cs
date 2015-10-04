@@ -29,5 +29,7 @@ namespace Core.Interfaces
 		StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
         ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
+        Task Authenticate(DockyardAccountDO user,
+            PluginDO plugin, string username, string password);
     }
 }
