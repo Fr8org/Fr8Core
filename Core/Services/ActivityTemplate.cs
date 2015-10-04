@@ -44,6 +44,11 @@ namespace Core.Services
                 {
                     activityTemplateDO.Plugin = existingPlugin;
                 }
+                else
+                {
+                    uow.PluginRepository.Add(activityTemplateDO.Plugin);
+                    uow.SaveChanges();
+                }
 
                 if (!uow.ActivityTemplateRepository.GetQuery().Any(t => t.Name == activityTemplateDO.Name))
                 {

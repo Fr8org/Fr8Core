@@ -66,9 +66,11 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow); 
-            AddPlugins(uow);                     
+            // commented out by yakov.gnusin as of DO-1064
+            // AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            AddAuthorizationTokens(uow);
+            // commented out by yakov.gnusin as of DO-1064
+            // AddAuthorizationTokens(uow);
             AddProcessDOForTestingApi(uow);
         }
 
@@ -78,7 +80,6 @@ namespace Data.Migrations
             SeedConstants(uow);
             SeedInstructions(uow);
         }
-
 
         private static void AddProcessTemplate(IUnitOfWork uow)
         {
@@ -144,7 +145,7 @@ namespace Data.Migrations
                     ManifestId = 5,
                     CreateTime = DateTime.Now,
                     ManifestType = "Standard Payload Data",
-                    Contents = JsonConvert.SerializeObject(new []
+                    Contents = JsonConvert.SerializeObject(new[]
                     {
                         new {Key = "EnvelopeId", Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"}
                     })
@@ -152,7 +153,6 @@ namespace Data.Migrations
 
             uow.SaveChanges();
         }
-
 
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
@@ -183,7 +183,6 @@ namespace Data.Migrations
 
 
         }
-
 
     //This method will automatically seed any constants file
     //It looks for rows which implement IConstantRow<>
@@ -259,7 +258,6 @@ namespace Data.Migrations
                 genericSeedMethod.Invoke(null, new object[] { context, compiledExpression });
             }
         }
-
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
         // ReSharper disable UnusedMember.Local
@@ -420,15 +418,12 @@ namespace Data.Migrations
             return user;
         }
 
-
-
         private void AddProfiles(IUnitOfWork uow)
         {
             var users = uow.UserRepository.GetAll().ToList();
             foreach (var user in users)
                 uow.UserRepository.AddDefaultProfile(user);
         }
-
 
         private void AddSubscription(IUnitOfWork uow, DockyardAccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
         {
@@ -442,34 +437,36 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-
         private void AddPlugins(IUnitOfWork uow)
         {
-
-
      // Create test DockYard account for plugin subscription.
            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            uow.SaveChanges();
+        }
+
+        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint, string version)
+        {
             // Check that plugin does not exist yet.
-            var pluginDocusign = uow.PluginRepository.GetQuery()
-                .Any(x => x.Name == "pluginDocuSign");
+            var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
 
             // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!pluginDocusign)
+            if (!pluginExists)
             {
                 // Create plugin instance.
-                var plugin = new PluginDO()
+                var pluginDO = new PluginDO()
                 {
-                    Name = "pluginDocuSign",
+                    Name = pluginName,
                     PluginStatus = PluginStatus.Active,
-                    Endpoint = "localhost:53234",
-                    Version = "1"
+                    Endpoint = endPoint,
+                    Version = version,
                 };
 
-                uow.PluginRepository.Add(plugin);
+                uow.PluginRepository.Add(pluginDO);
      
             }
-            uow.SaveChanges();
         }
 
         private void AddActionTemplates(IUnitOfWork uow)
@@ -477,6 +474,7 @@ namespace Data.Migrations
             AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
             AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
             AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
             uow.SaveChanges();
         }
 
@@ -493,7 +491,6 @@ namespace Data.Migrations
                 name, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }       
-
 
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
@@ -529,12 +526,12 @@ namespace Data.Migrations
             var orgDocuSign = uow.MTOrganizationRepository.GetQuery().First(org => org.Name.Equals("DocuSign"));
 
             //add MT object for Dockyard
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DockyardEvent", MT_OrganizationId = orgDockyard.Id});
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DockyardIncident", MT_OrganizationId = orgDockyard.Id});
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DockyardEvent", MT_OrganizationId = orgDockyard.Id });
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DockyardIncident", MT_OrganizationId = orgDockyard.Id });
 
             //add MT object for DocuSign
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DocuSignEnvelopeStatusReport", MT_OrganizationId = orgDocuSign.Id});
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DocuSignRecipientStatusReport", MT_OrganizationId = orgDocuSign.Id});
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DocuSignEnvelopeStatusReport", MT_OrganizationId = orgDocuSign.Id });
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DocuSignRecipientStatusReport", MT_OrganizationId = orgDocuSign.Id });
 
             uow.SaveChanges();
         }
@@ -606,7 +603,6 @@ namespace Data.Migrations
             }
             return newDate;
         }
-
 
     }
 }

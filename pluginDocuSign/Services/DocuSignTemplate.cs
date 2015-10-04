@@ -17,14 +17,7 @@ namespace pluginDocuSign.Services
 {
 	public class DocuSignTemplate : Template, IDocuSignTemplate
 	{
-		private readonly DocuSignEnvelope _docusignEnvelope;
-
-		public DocuSignTemplate()
-		{
-			var docuSignPackager = new DocuSignPackager();
-			Login = docuSignPackager.Login();
-			_docusignEnvelope = new DocuSignEnvelope();
-		}
+		private DocuSignEnvelope _docusignEnvelope;
 
 		public TemplateInfo Create(TemplateInfo submissionData)
 		{
@@ -36,14 +29,36 @@ namespace pluginDocuSign.Services
 
 		public IEnumerable<DocuSignTemplateDTO> GetTemplates(DockyardAccountDO curDockyardAccount)
 		{
+            var docuSignPackager = new DocuSignPackager();
+            Login = docuSignPackager.Login();
+            _docusignEnvelope = new DocuSignEnvelope();
+
 			List<DocuSignTemplateDTO> docuSignTemplateListDTO = new List<DocuSignTemplateDTO>();
 			var templateInfos = GetTemplates();
 			foreach(var templateInfo in templateInfos)
 			{
 				docuSignTemplateListDTO.Add(GetTemplateById(templateInfo.Id));
 			}
+
 			return docuSignTemplateListDTO;
 		}
+
+        public IEnumerable<DocuSignTemplateDTO> GetTemplates(string email, string apiPassword)
+        {
+            var docuSignPackager = new DocuSignPackager();
+            Login = docuSignPackager.Login(email, apiPassword);
+            _docusignEnvelope = new DocuSignEnvelope();
+
+            List<DocuSignTemplateDTO> docuSignTemplateListDTO = new List<DocuSignTemplateDTO>();
+            var templateInfos = GetTemplates();
+            foreach (var templateInfo in templateInfos)
+            {
+                docuSignTemplateListDTO.Add(GetTemplateById(templateInfo.Id));
+            }
+
+            return docuSignTemplateListDTO;
+        }
+
 		public DocuSignTemplateDTO GetTemplateById(string templateId)
 		{
 			if (templateId == null)
@@ -87,6 +102,7 @@ namespace pluginDocuSign.Services
 			}
 			return curLstMappableSourceFields;
 		}
+
 		public List<string> GetUserFields(DocuSignTemplateDTO curDocuSignTemplateDTO)
 		{
 			if (curDocuSignTemplateDTO == null)
