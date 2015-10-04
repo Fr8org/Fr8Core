@@ -26,6 +26,13 @@ namespace Web.Controllers
             _email = ObjectFactory.GetInstance<Email>();
         }
 
+
+
+        public ActionResult DocuSign()
+        {
+            return View();
+        }
+
         public ActionResult Index(string emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
