@@ -148,6 +148,8 @@
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="pluginDocuSign\Services\EnvelopeServiceTests.cs" />
     <Compile Include="PluginSalesforceTests\ActionControllerTests.cs" />
+    <Compile Include="pluginSendGridTests\Action\ITransport.cs" />
+    <Compile Include="pluginSendGridTests\Action\SendEmailViaSendGrid_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginAzureSqlServerTests\TestDbHelper.cs" />
   </ItemGroup>
@@ -175,6 +177,10 @@
     <ProjectReference Include="..\pluginSalesforce\pluginSalesforce.csproj">
       <Project>{85cb0215-96df-4c38-a022-1be6c952813b}</Project>
       <Name>pluginSalesforce</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pluginSendGrid\pluginSendGrid.csproj">
+      <Project>{1e1ab01b-f6ab-4420-bf1d-5e6ef41d76bf}</Project>
+      <Name>pluginSendGrid</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>

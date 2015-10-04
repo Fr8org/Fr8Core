@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 using PluginBase.BaseClasses;
 
-namespace pluginSalesforce.Controllers
+namespace pluginSendGrid.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
