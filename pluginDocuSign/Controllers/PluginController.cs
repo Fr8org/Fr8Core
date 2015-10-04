@@ -24,6 +24,7 @@ namespace pluginDocuSign.Controllers
                 Name = "pluginDocuSign",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = "localhost:53234",
+                RequiresAuthentication = true,
                 Version = "1"
             };
 
@@ -35,13 +36,13 @@ namespace pluginDocuSign.Controllers
                 Plugin = plugin
             };
 
-				var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
-				{
-					Version = "1",
-					Name = "Send_DocuSign_Envelope",
-                    Category = ActivityCategory.fr8_Forwarder,
-                    Plugin = plugin
-				};
+			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+			{
+				Version = "1",
+				Name = "Send_DocuSign_Envelope",
+                Category = ActivityCategory.fr8_Forwarder,
+				Plugin = plugin
+			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {

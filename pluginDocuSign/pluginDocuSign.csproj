@@ -180,6 +180,7 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
+    <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />

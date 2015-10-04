@@ -30,20 +30,57 @@ namespace Web.Controllers
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var upstreamActivities = _activity.GetUpstreamActivities(actionDO);
+				var actionDO = uow.ActionRepository.GetByKey(id);
+				var upstreamActivities = _activity.GetUpstreamActivities(uow, actionDO);
 				return Ok(upstreamActivities);
 			}
 		}
-		[Route("downstream")]
+
+        [Route("downstream")]
 		[ResponseType(typeof(List<ActivityDO>))]
 		public IHttpActionResult GetDownstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var downstreamActivities = _activity.GetDownstreamActivities(actionDO);
+                var downstreamActivities = _activity.GetDownstreamActivities(uow, actionDO);
 				return Ok(downstreamActivities);
+			}
+		}
+
+        // TODO: after DO-1214 is completed, this method must be removed.
+		[Route("upstream_actions")]
+		[ResponseType(typeof(List<ActionDTO>))]
+		public IHttpActionResult GetUpstreamActions(int id)
+		{
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			{
+				var actionDO = uow.ActionRepository.GetByKey(id);
+				var upstreamActions = _activity
+                    .GetUpstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .ToList();
+
+				return Ok(upstreamActions);
+			}
+		}
+
+        // TODO: after DO-1214 is completed, this method must be removed.
+        [Route("downstream_actions")]
+		[ResponseType(typeof(List<ActionDTO>))]
+		public IHttpActionResult GetDownstreamActions(int id)
+		{
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			{
+				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
+				var downstreamActions = _activity
+                    .GetDownstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .ToList();
+
+				return Ok(downstreamActions);
 			}
 		}
 
