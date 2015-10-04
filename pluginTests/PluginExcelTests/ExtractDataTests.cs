@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.Linq;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces;
 using NUnit.Framework;
@@ -9,8 +10,14 @@ using StructureMap;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using pluginTests.Fixtures;
+using pluginExcel.Actions;
+using Core.Interfaces;
+using Newtonsoft.Json;
 
-namespace pluginTests.PluginAzureSqlServerTests
+namespace pluginTests.PluginExcelTests
 {
     [TestFixture]
     public class ExtractDataTests : BaseTest
@@ -19,10 +26,10 @@ namespace pluginTests.PluginAzureSqlServerTests
 
         public const string filesCommand = "files";
 
+        private IAction _action;
+        private ICrate _crate;
         private FixtureData _fixtureData;
-        private TestDbHelper _helper;
         private IDisposable _server;
-
 
         [SetUp]
         public override void SetUp()
@@ -30,74 +37,54 @@ namespace pluginTests.PluginAzureSqlServerTests
             base.SetUp();
 
             _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
-            //_helper = new TestDbHelper();
-
-            //// Check if table exists, then drop the test table.
-            //// Create/recreate the test table.
-            //using (var dbconn = _helper.CreateConnection())
-            //{
-            //    dbconn.Open();
-
-            //    using (var tx = dbconn.BeginTransaction())
-            //    {
-            //        if (_helper.TableExists(tx, _fixtureData.TestCustomerTable1_Schema(), _fixtureData.TestCustomerTable1_Table()))
-            //        {
-            //            _helper.ExecuteSql(tx, _fixtureData.TestCustomerTable1_Drop());
-            //        }
-
-            //        _helper.ExecuteSql(tx, _fixtureData.TestCustomerTable1_Create());
-
-            //        tx.Commit();
-            //    }
-            //}
-
-            var url = ConfigurationManager.AppSettings[ExcelTestServerUrl];
-            _server = SelfHostFactory.CreateServer(url);
+            _action = ObjectFactory.GetInstance<IAction>();
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         [TearDown]
         public void Cleanup()
         {
-            //// Check if table exists, then drop the test table.
-            //using (var dbconn = _helper.CreateConnection())
-            //{
-            //    dbconn.Open();
-
-            //    using (var tx = dbconn.BeginTransaction())
-            //    {
-            //        if (_helper.TableExists(tx, _fixtureData.TestCustomerTable1_Schema(), _fixtureData.TestCustomerTable1_Table()))
-            //        {
-            //            _helper.ExecuteSql(tx, _fixtureData.TestCustomerTable1_Drop());
-            //        }
-
-            //        tx.Commit();
-            //    }
-            //}
-
-            _server.Dispose();
+            
         }
 
         [Test]
-        public void CallExtractData_Execute()
+        public async void CallExtractData_Execute()
         {
-            var baseUrl = ConfigurationManager.AppSettings[ExcelTestServerUrl];
-
-            // Sending http request.
-            var restCall = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            restCall.BaseUri = new Uri(baseUrl);
-            
-            // Composing json data.
-            var content = new
+            var bytesFromExcel = PluginFixtureData.TestExcelData();
+            var columnHeaders = PluginFixtureData.TestColumnHeaders();
+            var excelRows = PluginFixtureData.TestRows();
+            var tableDataMS = new StandardTableDataMS()
             {
-                connectionString = _helper.GetConnectionString().Replace("\\", "\\\\"),
-                provider = "System.Data.SqlClient",
-                tables = new[] {_fixtureData.TestCustomerTable1_Content()}
+                FirstRowHeaders = true,
+                Table = new ExtractData_v1().ConvertRowsDictToListOfTableRowDTO(excelRows, columnHeaders),
             };
 
-            // Getting http response.
-            var response = restCall.PostAsync(new Uri(filesCommand, UriKind.Relative), content).Result;
-            Debug.WriteLine(response);            
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>() 
+                    { 
+                        new CrateDTO()
+                        {
+                            ManifestId = CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID,
+                            ManifestType = CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
+                            Contents = JsonConvert.SerializeObject(tableDataMS),
+                        },
+                    },
+                },
+            };
 
+            var result = await new ExtractData_v1().Execute(curActionDTO);
+            var payloadCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
+            var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataMS>(payloadCrates.First().Contents);
+
+            Assert.IsNotNull(result.CrateStorage);
+            Assert.IsNotNull(payloadCrates);
+            Assert.IsNotNull(payloadDataMS);
+            Assert.AreEqual(payloadDataMS.PayloadObjects.Count, 3);
+            Assert.AreEqual(payloadDataMS.PayloadObjects[0].PayloadObject[0].Key, "FirstName");
+            Assert.AreEqual(payloadDataMS.PayloadObjects[0].PayloadObject[0].Value, "Alex");
             
         }
     }

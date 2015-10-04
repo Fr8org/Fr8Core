@@ -134,6 +134,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fixtures\PluginFixtureData - ExcelData.cs" />
     <Compile Include="Fixtures\PluginFixtureData - Signer.cs" />
     <Compile Include="Fixtures\PluginFixtureData - Recipient.cs" />
     <Compile Include="Fixtures\PluginFixtureData - DocusignAccount.cs" />
@@ -199,6 +200,7 @@
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Fixtures\Sample Files\SampleFile1.xlsx" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

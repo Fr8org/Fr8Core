@@ -135,14 +135,12 @@
   </Choose>
   <ItemGroup>
     <Compile Include="PluginIntegrationTests_SendDocuSignEnvelopeV1.cs" />
-    <Compile Include="PluginExtractDataTests.cs" />
     <Compile Include="PluginIntegrationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Sample Files\SampleFile1.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

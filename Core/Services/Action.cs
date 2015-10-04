@@ -331,6 +331,20 @@ namespace Core.Services
             return crateDTO;
         }
 
+        public IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO)
+        {
+            if (String.IsNullOrEmpty(curLabel))
+                throw new ArgumentNullException("Parameter Label is empty");
+            if (curCrateStorageDTO == null)
+                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+
+            IEnumerable<CrateDTO> crateDTO = null;
+
+            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
+
+            return crateDTO;
+        }
+
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
         {
