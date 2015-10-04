@@ -56,118 +56,102 @@ namespace pluginSendGrid.Services
 
         public async void Send(IMailerDO mailer)
         {
-            //if (mailer == null)
-            //    throw new ArgumentNullException("mailer");
-            //if (!string.Equals(mailer.Handler, IMailerDO.Handler, StringComparison.OrdinalIgnoreCase))
-            //    throw new ArgumentException(@"This envelope should not be handled with Gmail.", "mailer");
-            //if (mailer.Email == null)
-            //    throw new ArgumentException(@"This envelope has no Email.", "mailer");
-            //if (mailer.Email.Recipients.Count == 0)
-            //    throw new ArgumentException(@"This envelope has no recipients.", "mailer");
+            if (mailer == null)
+                throw new ArgumentNullException("mailer");
+            if (mailer.Email == null)
+                throw new ArgumentException(@"This envelope has no Email.", "mailer");
+            if (mailer.Email.To.Count() == 0)
+                throw new ArgumentException(@"This envelope has no recipients.", "mailer");
 
-            //var email = mailer.Email;
-            //if (email == null)
-            //    throw new ArgumentException(@"Envelope email is null", "mailer");
+            var email = mailer.Email;
 
-            //try
-            //{
-            //    var fromName = !String.IsNullOrWhiteSpace(email.FromName) ? email.FromName : email.From.Name;
+            try
+            {
+                var fromName = email.From.Name;
 
-            //    var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
+                var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
 
-            //    if (!String.IsNullOrWhiteSpace(email.ReplyToAddress))
-            //    {
-            //        mailMessage.ReplyTo = new[] { new MailAddress(email.ReplyToAddress, email.ReplyToName) };
-            //    }
+                if (!String.IsNullOrWhiteSpace(email.From.Address))
+                {
+                    mailMessage.ReplyTo = new[] { new MailAddress(email.From.Address, fromName) };
+                }
 
-            //    mailMessage.To =
-            //        email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.NameOrAddress())).ToArray();
-            //    mailMessage.Bcc = email.BCC.Select(bcc => new MailAddress(bcc.Address, bcc.NameOrAddress())).ToArray();
-            //    mailMessage.Cc = email.CC.Select(cc => new MailAddress(cc.Address, cc.NameOrAddress())).ToArray();
+                mailMessage.To =
+                    email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.NameOrAddress())).ToArray();
 
-            //    mailMessage.Subject = email.Subject;
+                mailMessage.Subject = email.Subject;
 
-            //    if ((email.PlainText == null || email.HTMLText == null) && string.IsNullOrEmpty(mailer.TemplateName))
-            //    {
-            //        throw new ArgumentException(
-            //            "Trying to send an email that doesn't have both an HTML and plain text body");
-            //    }
+                if ((email.HTMLText == null) && string.IsNullOrEmpty(mailer.TemplateName))
+                {
+                    throw new ArgumentException(
+                        "Trying to send an email that doesn't have both an HTML and plain text body");
+                }
 
-            //    if (email.PlainText == null || email.HTMLText == null)
-            //    {
-            //        mailMessage.Html = "<html></html>";
-            //        mailMessage.Text = "";
-            //    }
-            //    else
-            //    {
-            //        mailMessage.Html = email.HTMLText;
-            //        mailMessage.Text = email.PlainText;
-            //    }
+                if (email.HTMLText == null)
+                {
+                    mailMessage.Html = "<html></html>";
+                    mailMessage.Text = "";
+                }
+                else
+                {
+                    mailMessage.Html = email.HTMLText;
+                }
 
-            //    var headers = new Dictionary<String, String>();
-            //    if (!String.IsNullOrEmpty(email.MessageID))
-            //        headers.Add("Message-ID", email.MessageID);
-            //    if (!String.IsNullOrEmpty(email.References))
-            //        headers.Add("References", email.References);
+                var headers = new Dictionary<String, String>();
 
-            //    if (headers.Any())
-            //        mailMessage.AddHeaders(headers);
+                if (headers.Any())
+                    mailMessage.AddHeaders(headers);
 
-            //    foreach (var attachment in email.Attachments)
-            //    {
-            //        mailMessage.AddAttachment(attachment.GetData(), attachment.OriginalName);
-            //    }
+                if (!string.IsNullOrEmpty(mailer.TemplateName))
+                {
+                    mailMessage.EnableTemplateEngine(mailer.TemplateName);
+                    //Now TemplateName will be TemplateId on Sendgrid.
+                    if (mailer.MergeData != null)
+                    {
+                        //Now, we need to do some magic.
+                        //Basically - we need the length of each substitution to match the length of recipients
+                        //In our case, most of the time, all the substitutions are the same, except for token-related fields
+                        //To make it easier to use, we attempt to pad out the substition arrays if they lengths don't match
+                        //We only do that if we're given a string value. In any other case, we allow sengrid to fail.
+                        var subs = new Dictionary<String, List<String>>();
+                        foreach (var pair in mailer.MergeData)
+                        {
 
-            //    if (!string.IsNullOrEmpty(mailer.TemplateName))
-            //    {
-            //        mailMessage.EnableTemplateEngine(mailer.TemplateName);
-            //        //Now TemplateName will be TemplateId on Sendgrid.
-            //        if (mailer.MergeData != null)
-            //        {
-            //            //Now, we need to do some magic.
-            //            //Basically - we need the length of each substitution to match the length of recipients
-            //            //In our case, most of the time, all the substitutions are the same, except for token-related fields
-            //            //To make it easier to use, we attempt to pad out the substition arrays if they lengths don't match
-            //            //We only do that if we're given a string value. In any other case, we allow sengrid to fail.
-            //            var subs = new Dictionary<String, List<String>>();
-            //            foreach (var pair in mailer.MergeData)
-            //            {
+                            var arrayType = pair.Value as JArray;
+                            List<String> listVal;
+                            if (arrayType != null)
+                            {
+                                listVal = arrayType.Select(a => a.ToString()).ToList();
+                            }
+                            else
+                            {
+                                listVal = new List<string>();
+                                for (var i = 0; i < email.To.Count(); i++) //Pad out the substitution
+                                    listVal.Add(pair.Value == null ? String.Empty : pair.Value.ToString());
+                            }
+                            subs.Add(pair.Key, listVal);
 
-            //                var arrayType = pair.Value as JArray;
-            //                List<String> listVal;
-            //                if (arrayType != null)
-            //                {
-            //                    listVal = arrayType.Select(a => a.ToString()).ToList();
-            //                }
-            //                else
-            //                {
-            //                    listVal = new List<string>();
-            //                    for (var i = 0; i < email.Recipients.Count(); i++) //Pad out the substitution
-            //                        listVal.Add(pair.Value == null ? String.Empty : pair.Value.ToString());
-            //                }
-            //                subs.Add(pair.Key, listVal);
+                        }
+                        foreach (var sub in subs)
+                            mailMessage.AddSubstitution(sub.Key, sub.Value);
+                    }
+                }
 
-            //            }
-            //            foreach (var sub in subs)
-            //                mailMessage.AddSubstitution(sub.Key, sub.Value);
-            //        }
-            //    }
+                try
+                {
+                    await _transport.DeliverAsync(mailMessage);
 
-            //    try
-            //    {
-            //        await _transport.DeliverAsync(mailMessage);
-
-            //        OnEmailSent(email.Id);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        OnEmailRejected(ex.Message, email.Id);
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    OnEmailCriticalError(-1, "Unhandled exception.", ex.Message, email.Id);
-            //}
+                    OnEmailSent(email.Id);
+                }
+                catch (Exception ex)
+                {
+                    OnEmailRejected(ex.Message, email.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                OnEmailCriticalError(-1, "Unhandled exception.", ex.Message, email.Id);
+            }
         }
     }
 }

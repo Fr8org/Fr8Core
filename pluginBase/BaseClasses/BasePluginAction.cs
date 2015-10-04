@@ -32,7 +32,7 @@ namespace PluginBase.BaseClasses
 
         protected IAction _action;
         protected ICrate _crate;
-        protected IEmailPackager _emailPackager;
+        
         public BasePluginAction()
         {
             this.SetupServices();
@@ -42,7 +42,6 @@ namespace PluginBase.BaseClasses
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
