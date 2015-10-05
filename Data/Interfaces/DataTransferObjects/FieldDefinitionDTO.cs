@@ -137,7 +137,7 @@ namespace Data.Interfaces.DataTransferObjects
         public bool Selected { get; set; }
 
         [JsonProperty("value")]
-        public string Value { get; set; }
+        public string Value { get; set; }   
     }
 
     public class FilterPaneField

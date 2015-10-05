@@ -12,12 +12,16 @@
             <input type="radio" name="pca__chk__{{field.groupName}}" ng-checked="radio.selected" ng-value="true" />
             {{radio.value}}
         </label>
+        @* Support nested fields *@
+        <blockquote ng-repeat="field in radio.fields">
+            <configuration-field current-action="currentAction" field="field"/>
+        </blockquote>
     </div>
-    <br />
+    @*<br />
     <pre>With UI-Bootstrap</pre>
     <div class="well well-lg">
         <div class="btn-group">
             <label ng-click="ChangeSelection(radio)" name="pca__chk__{{field.groupName}}" ng-repeat="radio in field.radios" class="btn btn-primary" ng-model="radio.selected" btn-radio="true">{{radio.value}}</label>
         </div>
-    </div>
+    </div>*@
 </div>

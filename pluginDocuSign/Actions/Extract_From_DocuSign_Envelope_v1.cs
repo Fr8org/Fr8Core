@@ -150,6 +150,32 @@ namespace pluginDocuSign.Actions
                 cssClass = "well well-lg"
             };
 
+            var radioButtonGroup = new RadioButtonGroupFieldDefinitionDTO()
+            {
+                Label = "Test RadioButtons",
+                GroupName = "Group1",
+                Name = "Group1",
+                Radios  = new List<RadioButton>()
+                {
+                    new RadioButton()
+                    {
+                        Selected = true,
+                        Value ="Test 1"
+                    },
+                    new RadioButton()
+                    {
+                        Selected = true,
+                        Value ="Test 2"
+                    },
+                    new RadioButton()
+                    {
+                        Selected = true,
+                        Value ="Test 3"
+                    },
+
+                }
+            }
+
             var crateControls = PackControlsCrate(textBlock);
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
