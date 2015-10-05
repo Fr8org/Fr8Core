@@ -1,4 +1,4 @@
-var __extends = this.__extends || function (d, b) {
+var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
     __.prototype = b.prototype;
@@ -19,6 +19,7 @@ var dockyard;
                 MessageType[MessageType["PaneConfigureAction_MapFieldsClicked"] = 3] = "PaneConfigureAction_MapFieldsClicked";
                 MessageType[MessageType["PaneConfigureAction_Cancelled"] = 4] = "PaneConfigureAction_Cancelled";
                 MessageType[MessageType["PaneConfigureAction_ActionRemoved"] = 5] = "PaneConfigureAction_ActionRemoved";
+                MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 6] = "PaneConfigureAction_InternalAuthentication";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -29,6 +30,13 @@ var dockyard;
                 return ActionUpdatedEventArgs;
             })(directives.ActionUpdatedEventArgsBase);
             paneConfigureAction.ActionUpdatedEventArgs = ActionUpdatedEventArgs;
+            var InternalAuthenticationArgs = (function () {
+                function InternalAuthenticationArgs(activityTemplateId) {
+                    this.activityTemplateId = activityTemplateId;
+                }
+                return InternalAuthenticationArgs;
+            })();
+            paneConfigureAction.InternalAuthenticationArgs = InternalAuthenticationArgs;
             var RenderEventArgs = (function () {
                 function RenderEventArgs(action) {
                     // Clone Action to prevent any issues due to possible mutation of source object
@@ -170,6 +178,21 @@ var dockyard;
                     var self = this;
                     var activityTemplateName = scope.currentAction.activityTemplateName; // preserve activity name
                     this.ActionService.configure(action).$promise.then(function (res) {
+                        // Check if authentication is required.
+                        if (self.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
+                            var authCrate = self.crateHelper
+                                .findByManifestType(res.crateStorage, 'Standard Authentication');
+                            var authMS = angular.fromJson(authCrate.contents);
+                            // Dockyard auth mode.
+                            if (authMS.Mode == 1) {
+                                scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs(res.activityTemplateId));
+                            }
+                            else {
+                                alert('TODO: External auth');
+                            }
+                            scope.processing = false;
+                            return;
+                        }
                         // Unblock pane
                         scope.processing = false;
                         // Assign name to res rather than currentAction to prevent 

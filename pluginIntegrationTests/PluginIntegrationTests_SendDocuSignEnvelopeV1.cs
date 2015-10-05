@@ -49,7 +49,7 @@ namespace pluginIntegrationTests
 			savedActionDTO.CrateStorage = initCrateStorageDTO;
 			
 			// Call Configure FollowUp for SendDocuSignEnvelope action.
-			SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
+			await SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
 
 		}
 		private async Task<CrateStorageDTO> SendDocuSignEnvelope_ConfigureInitial(ActionDTO curActionDTO)

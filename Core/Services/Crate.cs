@@ -32,6 +32,21 @@ namespace Core.Services
             return crateDTO;
         }
 
+        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode, string url = null)
+        {
+            var manifestSchema = new StandardAuthenticationMS()
+            {
+                Mode = mode,
+                Url = url
+            };
+
+            return Create(
+                label,
+                JsonConvert.SerializeObject(manifestSchema),
+                manifestType: CrateManifests.STANDARD_AUTHENTICATION_NAME,
+                manifestId: CrateManifests.STANDARD_AUTHENTICATION_ID);
+        }
+
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
             return Create(label, 
@@ -54,6 +69,14 @@ namespace Core.Services
                 JsonConvert.SerializeObject(new EventSubscriptionMS() { Subscriptions = subscriptions.ToList() }),
                 manifestType: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
                 manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
+        }
+
+        public CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(new StandardTableDataMS() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
+                manifestType: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
+                manifestId: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID);
         }
 
         public T GetContents<T>(CrateDTO crate)

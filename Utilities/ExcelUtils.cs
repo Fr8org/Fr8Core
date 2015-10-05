@@ -74,5 +74,71 @@ namespace Utilities
 				}
 			}
 		}
+
+        public static string[] GetColumnHeaders(byte[] fileBytes, string extension)
+        {
+            IExcelDataReader excelReader = null;
+            string[] columnHeaders;
+             
+            using (var fileStream = new MemoryStream(fileBytes))
+            {
+                if (extension == ".xls")
+                    excelReader = ExcelReaderFactory.CreateBinaryReader(fileStream);
+                else
+                    excelReader = ExcelReaderFactory.CreateOpenXmlReader(fileStream);
+
+                using (excelReader)
+                {
+                    excelReader.IsFirstRowAsColumnNames = true;
+                    var dataSet = excelReader.AsDataSet();
+                    var table = dataSet.Tables[0];
+                    columnHeaders = new string[table.Columns.Count];
+
+                    for (int i = 0; i < table.Columns.Count; ++i)
+                    {
+                        columnHeaders[i] = table.Columns[i].ColumnName;
+                    }
+                }
+            }
+            return columnHeaders;
+        }
+
+        /// <summary>
+        /// Fetches rows from the excel byte stream and returns as a Dictionary. 
+        /// </summary>
+        /// <param name="fileBytes">Byte rray representing Excel data.</param>
+        /// <param name="extension">Excel file extension.</param>
+        /// <returns>Dictionary<string, List<Tuple<string, string>>> => Dictionary<"Row Number", List<Tuple<"Column Number", "Cell Value">>></returns>
+        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension)
+        {
+            Dictionary<string, List<Tuple<string, string>>> excelRows = new Dictionary<string, List<Tuple<string, string>>>();
+            IExcelDataReader excelReader = null;
+
+            using (var byteStream = new MemoryStream(fileBytes))
+            {
+                if (extension == ".xls")
+                    excelReader = ExcelReaderFactory.CreateBinaryReader(byteStream);
+                else
+                    excelReader = ExcelReaderFactory.CreateOpenXmlReader(byteStream);
+
+                using (excelReader)
+                {
+                    excelReader.IsFirstRowAsColumnNames = true;
+                    var dataSet = excelReader.AsDataSet();
+                    var table = dataSet.Tables[0];
+
+                    for (int i = 0; i < table.Rows.Count; i++)
+                    {
+                        List<Tuple<string, string>> rowDataList = new List<Tuple<string, string>>();
+                        for (int j = 0; j < table.Columns.Count; j++)
+                        {
+                            rowDataList.Add(new Tuple<string, string>((j + 1).ToString(), Convert.ToString(table.Rows[i][j] ?? "")));
+                        }
+                        excelRows[(i + 1).ToString()] = rowDataList;
+                    }
+                }
+            }
+            return excelRows;
+        }
 	}
 }

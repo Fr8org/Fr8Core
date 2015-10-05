@@ -6,5 +6,6 @@
         string Name { get; set; }
         int PluginStatus { get; set; }
         string Endpoint { get; set; }
+        bool RequiresAuthentication { get; set; }
     }
 }

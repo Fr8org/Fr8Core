@@ -275,5 +275,43 @@ namespace UtilitiesTesting
 				catch { }
 			}
 		}
+        [Test]
+        public void GetColumnHeadersTest()
+        {
+            string pathToExcel = @"..\..\Tools\FileTools\TestFiles\SampleFile1.xlsx";
+            try
+            {
+                var byteArray = File.ReadAllBytes(pathToExcel);
+                var columns = ExcelUtils.GetColumnHeaders(byteArray, "xlsx");
+                Assert.IsNotNull(columns);
+                Assert.AreEqual(columns.Count(), 3);
+                Assert.AreEqual(columns[0], "FirstName");
+                Assert.AreEqual(columns[1], "LastName");
+                Assert.AreEqual(columns[2], "Email Address");
+            }
+            finally
+            {
+            }
+        }
+        [Test]
+        public void GetRowsTest()
+        {
+            string pathToExcel = @"..\..\Tools\FileTools\TestFiles\SampleFile1.xlsx";
+            try
+            {
+                var byteArray = File.ReadAllBytes(pathToExcel);
+                var rows = ExcelUtils.GetTabularData(byteArray, "xlsx");
+                Assert.IsNotNull(rows);
+                Assert.AreEqual(rows.Count(), 3);
+                Assert.AreEqual(rows["1"].Count, 3);
+                Assert.AreEqual(rows["1"][0].Item1, "1");
+                Assert.AreEqual(rows["1"][0].Item2, "Alex");
+                Assert.AreEqual(rows["2"].Count, 3);
+                Assert.AreEqual(rows["3"].Count, 3);
+            }
+            finally
+            {
+            }
+        }
 	}
 }

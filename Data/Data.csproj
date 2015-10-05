@@ -255,6 +255,7 @@
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
@@ -350,9 +351,13 @@
     <Compile Include="Migrations\201510010808502_Merge20151001.Designer.cs">
       <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510040304239_forcemerge1.cs" />
-    <Compile Include="Migrations\201510040304239_forcemerge1.Designer.cs">
-      <DependentUpon>201510040304239_forcemerge1.cs</DependentUpon>
+    <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.cs" />
+    <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
+      <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510041907362_forcemerge1.cs" />
+    <Compile Include="Migrations\201510041907362_forcemerge1.Designer.cs">
+      <DependentUpon>201510041907362_forcemerge1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
@@ -636,8 +641,11 @@
     <EmbeddedResource Include="Migrations\201510010808502_Merge20151001.resx">
       <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510040304239_forcemerge1.resx">
-      <DependentUpon>201510040304239_forcemerge1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.resx">
+      <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510041907362_forcemerge1.resx">
+      <DependentUpon>201510041907362_forcemerge1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
