@@ -355,6 +355,10 @@
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510052045282_UpdateMT_Data.cs" />
+    <Compile Include="Migrations\201510052045282_UpdateMT_Data.Designer.cs">
+      <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -639,6 +643,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.resx">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510052045282_UpdateMT_Data.resx">
+      <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
