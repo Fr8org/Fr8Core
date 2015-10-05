@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Interfaces;
-using Core.Managers;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
@@ -15,8 +13,6 @@ using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
-using Action = System.Action;
-using File = System.IO.File;
 
 namespace DockyardTest.Services
 {
