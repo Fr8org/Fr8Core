@@ -10,7 +10,7 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static FieldDefinitionDTO[] FieldDefinitionDTO1()
+        public static ControlsDefinitionDTO[] FieldDefinitionDTO1()
         {
             var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
             {
@@ -28,31 +28,31 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var fieldEnvelopeSent = new FieldDefinitionDTO()
+            var fieldEnvelopeSent = new ControlsDefinitionDTO()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
-            var fieldEnvelopeReceived = new FieldDefinitionDTO()
+            var fieldEnvelopeReceived = new ControlsDefinitionDTO()
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
-            var fieldRecipientSigned = new FieldDefinitionDTO()
+            var fieldRecipientSigned = new ControlsDefinitionDTO()
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
-            var fieldEventRecipientSent = new FieldDefinitionDTO()
+            var fieldEventRecipientSent = new ControlsDefinitionDTO()
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"
             };
 
-            return new FieldDefinitionDTO[] {
+            return new ControlsDefinitionDTO[] {
                 fieldSelectDocusignTemplate,
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,
