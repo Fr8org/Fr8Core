@@ -95,6 +95,11 @@ namespace pluginDocuSign.Actions
 
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
+            if (IsEmptyAuthToken(actionDto))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
             var processPayload = await GetProcessPayload(actionDto.ProcessId);
             
             // Extract envelope id from the payload Crate

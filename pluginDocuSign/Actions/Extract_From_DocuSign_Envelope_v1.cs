@@ -57,6 +57,11 @@ namespace pluginDocuSign.Actions
 
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
+            if (IsEmptyAuthToken(actionDto))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
             var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
             //Get envlopeId
@@ -80,16 +85,21 @@ namespace pluginDocuSign.Actions
             return processPayload;
         }
 
-        public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDO, string curEnvelopeId)
+        public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDTO, string curEnvelopeId)
         {
-            var docusignEnvelope = new DocuSignEnvelope();
+            var docuSignAuthDTO = JsonConvert
+                .DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+
+            var docusignEnvelope = new DocuSignEnvelope(
+                docuSignAuthDTO.Email,
+                docuSignAuthDTO.ApiPassword);
 
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
-            var fields = GetFields(curActionDO);
+            var fields = GetFields(curActionDTO);
 
             if (fields.Count == 0)
             {
-                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDO.Id);
+                throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDTO.Id);
             }
 
             return docusignEnvelope.ExtractPayload(fields, curEnvelopeId, curEnvelopeData);

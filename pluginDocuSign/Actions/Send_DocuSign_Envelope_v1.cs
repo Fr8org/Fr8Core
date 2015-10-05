@@ -37,6 +37,14 @@ namespace pluginDocuSign.Actions
 
 		public object Configure(ActionDTO curActionDTO)
 		{
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
+                return curActionDTO;
+            }
+
+            RemoveAuthenticationCrate(curActionDTO);
+
 			return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo));
 		}
 

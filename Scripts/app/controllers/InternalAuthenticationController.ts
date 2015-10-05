@@ -14,7 +14,7 @@
 
             $scope.authError = false;
             $scope.formData = {
-                username: '64684b41-bdfd-4121-8f81-c825a6a03582',
+                username: 'docusign_developer@dockyard.company',
                 password: 'grolier34'
             };
 
