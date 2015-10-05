@@ -57,7 +57,9 @@ namespace Core.Managers
             EventManager.EventActionDispatched += LogEventActionDispatched;
             EventManager.PluginEventReported += LogPluginEvent;
             EventManager.PluginActionActivated  += PluginActionActivated;
+            EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
         }
+
 
         public void UnsubscribeFromAlerts()
         {
@@ -190,6 +192,22 @@ namespace Core.Managers
                 uow.SaveChanges();
             }
         }
+
+        private void EventManagerOnEventProcessRequestReceived(ProcessDO process)
+        {
+            var fact = new FactDO
+            {
+                CustomerId = process.DockyardAccountId,
+                Data = process.Id.ToStr(),
+                ObjectId = process.Id.ToStr(),
+                PrimaryCategory = "Process Access",
+                SecondaryCategory = "Process",
+                Activity = "Requested"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
 
         //private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
         //{

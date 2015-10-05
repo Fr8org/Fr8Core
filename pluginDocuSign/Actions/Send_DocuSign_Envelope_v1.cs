@@ -1,33 +1,39 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
-using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
-using Core.Interfaces;
-using StructureMap;
 using Newtonsoft.Json;
-using Data.Interfaces;
-using PluginBase;
+using StructureMap;
+using Core.Interfaces;
 using Data.Constants;
-using Utilities;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using PluginBase;
+using PluginBase.BaseClasses;
+using PluginBase.Infrastructure;
+using Utilities;
+using pluginDocuSign.DataTransferObjects;
+using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
+using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
 	public class Send_DocuSign_Envelope_v1 : BasePluginAction
 	{
-		IDocuSignTemplate _template;
-		IDocuSignEnvelope _docusignEnvelope;
+        // TODO: remove this as of DO-1064.
+		// IDocuSignTemplate _template;
+		// IDocuSignEnvelope _docusignEnvelope;
 
 		public Send_DocuSign_Envelope_v1()
 		{
-			_template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-			_docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
-		}
+            // TODO: remove this as of DO-1064.
+			// _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
+			// _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+		}   
 
 		public object Configure(ActionDTO curActionDTO)
 		{
@@ -43,6 +49,7 @@ namespace pluginDocuSign.Actions
 		{			
 			return null;
 		}
+
 		private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
 		{
 			CrateStorageDTO curCrates = curActionDTO.CrateStorage;
@@ -65,23 +72,37 @@ namespace pluginDocuSign.Actions
 			
 			return ConfigurationRequestType.Followup;
 		}
-		protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+
+		protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
 		{
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+
+            var template = new DocuSignTemplate();
+            template.Login = new DocuSignPackager()
+                .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+
 			if (curActionDTO.CrateStorage == null)
 			{
 				curActionDTO.CrateStorage = new CrateStorageDTO();
 			}
+
 			// Two crates are created
 			// One to hold the ui controls
 			var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
 			// and one to hold the available templates, which need to be requested from docusign
-			var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate();
+            var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
 			curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
 			return curActionDTO;
 		}
-		protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+
+		protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
 		{
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
 			var curCrates = curActionDTO.CrateStorage.CrateDTO;
+
+            var template = new DocuSignTemplate();
+            template.Login = new DocuSignPackager()
+                .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
 			if (curCrates == null || curCrates.Count == 0)
 				return curActionDTO;
@@ -97,8 +118,8 @@ namespace pluginDocuSign.Actions
 			// Get DocuSign Template Id
 			var docusignTemplateId = dropdownControlDTO.Value;
 			// Get Template
-			var docuSignTemplateDTO = _template.GetTemplateById(docusignTemplateId);
-			var docuSignUserFields = _template.GetUserFields(docuSignTemplateDTO);
+            var docuSignTemplateDTO = template.GetTemplateById(docusignTemplateId);
+            var docuSignUserFields = template.GetUserFields(docuSignTemplateDTO);
 			//	when we're in design mode, there are no values
 			// we just want the names of the fields
 			List<FieldDTO> userDefinedFields = new List<FieldDTO>();
@@ -112,6 +133,7 @@ namespace pluginDocuSign.Actions
 
 			return curActionDTO;
 		}
+
 		private CrateDTO CreateDocusignTemplateConfigurationControls()
 		{
 			var fieldSelectDocusignTemplateDTO = new DropdownListFieldDefinitionDTO()
@@ -129,7 +151,7 @@ namespace pluginDocuSign.Actions
 				}
 			};
 
-			var fieldsDTO = new List<FieldDefinitionDTO>()
+			var fieldsDTO = new List<ControlsDefinitionDTO>()
 			{
 				fieldSelectDocusignTemplateDTO,
 			};
@@ -139,9 +161,10 @@ namespace pluginDocuSign.Actions
 			};
 			return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
 		}
-		private CrateDTO CreateDocusignTemplateNameCrate()
+
+		private CrateDTO CreateDocusignTemplateNameCrate(IDocuSignTemplate template)
 		{
-			var templatesDTO = _template.GetTemplates(null);
+            var templatesDTO = template.GetTemplates(null);
 			var fieldsDTO = templatesDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
 			var controls = new StandardDesignTimeFieldsMS()
 			{

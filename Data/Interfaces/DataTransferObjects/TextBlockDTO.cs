@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-	public class TextBlockFieldDTO : FieldDefinitionDTO
+	public class TextBlockFieldDTO : ControlsDefinitionDTO
 	{
 		[JsonProperty("class")]
 		public string cssClass;
