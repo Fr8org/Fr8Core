@@ -151,7 +151,7 @@ namespace pluginDocuSign.Actions
 				}
 			};
 
-			var fieldsDTO = new List<FieldDefinitionDTO>()
+			var fieldsDTO = new List<ControlsDefinitionDTO>()
 			{
 				fieldSelectDocusignTemplateDTO,
 			};

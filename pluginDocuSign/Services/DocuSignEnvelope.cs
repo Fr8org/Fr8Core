@@ -197,11 +197,11 @@ namespace pluginDocuSign.Services
             switch (name)
             {
                 case "Checkbox":
-                    return FieldDefinitionDTO.CHECKBOX_FIELD;
+                    return ControlsDefinitionDTO.CHECKBOX_FIELD;
                 case "Text":
-                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                    return ControlsDefinitionDTO.TEXTBOX_FIELD;
                 default:
-                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                    return ControlsDefinitionDTO.TEXTBOX_FIELD;
             }
         }
     }
