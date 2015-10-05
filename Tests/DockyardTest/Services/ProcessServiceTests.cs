@@ -15,7 +15,7 @@ using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
-
+using Action = System.Action;
 using File = System.IO.File;
 
 namespace DockyardTest.Services
@@ -49,45 +49,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessService_ThrowsIfXmlInvalid()
-        {
-            //_docuSignNotificationService.Process(_testUserId,
-            //    File.ReadAllText(xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
-        }
-
-        [Test]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessService_NotificationReceivedAlertCreated()
-        {
-            //Arrange 
-            //create a test process
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var process = FixtureData.TestProcess1();
-                process.CrateStorage = FixtureData.EnvelopeIdCrateJson();
-                process.ProcessState = ProcessState.Executing;
-                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
-                uow.ProcessRepository.Add(process);
-                uow.SaveChanges();
-            }
-
-            //subscribe the events
-            new EventReporter().SubscribeToAlerts();
-
-            //Act
-            //_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
-
-            //Assert
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();
-                Assert.IsNotNull(fact);
-            }
-        }
-
-        [Test]
         public void ProcessService_CanRetrieveValidProcesses()
         {
             //Arrange 
@@ -107,31 +68,6 @@ namespace DockyardTest.Services
 
             //Assert
             Assert.AreEqual(2, processList.Count());
-        }
-
-        [Test]
-        [Ignore("Seems like this test has no sense anymore due to the latest process changes")]
-        public void ProcessService_CanCreateProcessProcessingAlert()
-        {
-            //Arrange 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                foreach (var p in FixtureData.GetProcesses())
-                {
-                    uow.ProcessRepository.Add(p);
-                }
-                uow.SaveChanges();
-            }
-
-            //Act
-            //_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
-
-            //Assert
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Processed");
-                Assert.AreEqual(2, fact.Count());
-            }
         }
 
         //get this working again once 1124 is merged
@@ -218,19 +154,27 @@ namespace DockyardTest.Services
 */
 
         [Test]
-        [Ignore("Too broad for a unit test")]
-        public void ProcessService_Can_ExecuteWithoutExceptions()
+        public void ProcessService_Can_LaunchWithoutExceptions()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var template = FixtureData.TestProcessTemplate1();
+                //Arrange
+                //Create a process template
+                var curProcessTemplate = FixtureData.TestProcessTemplateWithSubscribeEvent();
                 var curEvent = FixtureData.TestDocuSignEvent1();
 
+                //Create activity mock to process the actions
+                Mock<IActivity> activityMock = new Mock<IActivity>(MockBehavior.Default);
+                activityMock.Setup(a => a.Process(1, It.IsAny<ProcessDO>())).Returns(Task.Delay(2));
+                ObjectFactory.Container.Inject(typeof(IActivity), activityMock.Object);
 
-                uow.ProcessTemplateRepository.Add(template);
-                uow.SaveChanges();
+                //Act
+                _processService = new Process();
+                _processService.Launch(curProcessTemplate, FixtureData.DocuSignEventToCrate(curEvent));
 
-                _processService.Launch(template, FixtureData.DocuSignEventToCrate(curEvent));
+                //Assert
+                //since we have only one action in the template, the process should be called exactly once
+                activityMock.Verify(activity => activity.Process(1, It.IsAny<ProcessDO>()), Times.Exactly(1));
             }
         }
 
