@@ -110,7 +110,6 @@ module dockyard.directives.paneConfigureAction {
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
             if (!newValue || !newValue.fields || newValue.fields.length == 0) return;
-
             this.crateHelper.mergeControlListCrate(
                 scope.currentAction.configurationControls,
                 scope.currentAction.crateStorage
@@ -241,13 +240,11 @@ module dockyard.directives.paneConfigureAction {
 
                 // Assign name to res rather than currentAction to prevent 
                 // $watches from unnecessarily triggering
-                res.activityTemplateName = activityTemplateName; 
-
+                res.activityTemplateName = activityTemplateName;
                 scope.currentAction = res;
                 (<any>scope.currentAction).configurationControls =
-                    self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
+                self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
             });
-
             if (this.configurationWatchUnregisterer == null) {
                 this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
                     this.configurationWatchUnregisterer = scope.$watch<model.ControlsList>((scope: IPaneConfigureActionScope) => scope.currentAction.configurationControls, <any>angular.bind(this, this.onConfigurationChanged), true);

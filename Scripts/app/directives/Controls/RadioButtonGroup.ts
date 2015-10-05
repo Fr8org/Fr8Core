@@ -14,6 +14,7 @@ module dockyard.directives.radioButtonGroup {
         public templateUrl = '/AngularTemplate/RadioButtonGroup';
         public controller: ($scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
+            currentAction: '=',
             field: '='
         };
         public restrict = 'E';
@@ -64,3 +65,4 @@ module dockyard.directives.radioButtonGroup {
 
     app.directive('radioButtonGroup', RadioButtonGroup.Factory());
 }
+

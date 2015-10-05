@@ -151,10 +151,43 @@ namespace pluginDocuSign.Actions
 				}
 			};
 
-			var fieldsDTO = new List<ControlsDefinitionDTO>()
+            var radioButtonGroup = new RadioButtonGroupFieldDefinitionDTO()
+            {
+                Label = "Test RadioButtons",
+                GroupName = "Group1",
+                Name = "Group1",
+                Radios = new List<RadioButton>()
+                {
+                    new RadioButton()
+                    {
+                        Selected = true,
+                        Value ="Test 1"
+                    },
+                    new RadioButton()
+                    {
+                        Selected = false,
+                        Value ="Test 2"
+                    },
+                    new RadioButton()
+                    {
+                        Selected = false,
+                        Value ="Test 3"
+                    }
+                }
+            };
+
+            radioButtonGroup.Radios[0].Fields.Add(new TextFieldDefinitionDTO()
+            {
+                Label = "Test field",
+                Name = "Test field"
+            });
+
+
+            var fieldsDTO = new List<ControlsDefinitionDTO>()
 			{
 				fieldSelectDocusignTemplateDTO,
-			};
+                radioButtonGroup
+            };
 			var controls = new StandardConfigurationControlsMS()
 			{
 				Controls = fieldsDTO
