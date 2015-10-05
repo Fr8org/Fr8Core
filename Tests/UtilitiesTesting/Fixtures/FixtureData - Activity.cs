@@ -23,6 +23,17 @@ namespace UtilitiesTesting.Fixtures
 
         }
 
+        public static ActivityDO TestActivityNotExists()
+        {
+            return new ActivityDO
+            {
+                Id = 57,
+                Ordering = 2,
+                ParentActivityId = 54
+            };
+
+        }
+
         public static ActivityDO TestActivityTree()
         {
             return new ActivityDO
