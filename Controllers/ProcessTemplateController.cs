@@ -83,17 +83,12 @@ namespace Web.Controllers
         }
         [Route("getactive")]
         [HttpGet]
-        public IHttpActionResult GetActive(int? id = null, int? status = null)
+        public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
 
             if (curProcessTemplates.Any())
-            {
-                if (status != null)
-                {
-                    curProcessTemplates = curProcessTemplates.Where(p => p.ProcessTemplateState == status).ToList();
-                    return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
-                }
+            {               
                 return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
             }
             return Ok();

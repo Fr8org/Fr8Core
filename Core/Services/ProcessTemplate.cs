@@ -34,7 +34,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
+        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null,int? status=null)
         {
             if (userId == null)
                 throw new ApplicationException("UserId must not be null");
@@ -45,12 +45,15 @@ namespace Core.Services
 
                 if (isAdmin)
                 {
-                    return (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id)).ToList();
+                    queryableRepo= (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                    return ( status== null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
                 }
 
-                return (id == null
+                queryableRepo = (id == null
                     ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId)).ToList();
+                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId ));
+                return (status == null
+                    ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
             }
         }
 

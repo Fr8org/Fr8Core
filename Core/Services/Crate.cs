@@ -55,7 +55,7 @@ namespace Core.Services
                 manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls)
         {
             return Create(label, 
                 JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),

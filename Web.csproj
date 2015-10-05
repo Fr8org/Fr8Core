@@ -479,6 +479,7 @@
     <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
     <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
     <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
+    <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
