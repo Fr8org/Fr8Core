@@ -18,7 +18,7 @@ using UtilitiesTesting.Fixtures;
 using Action = Core.Services.Action;
 using System.Threading.Tasks;
 using System.Web.Helpers;
-using Core.Managers.APIManagers.Transmitters.Restful;
+
 using Newtonsoft.Json;
 using Data.Infrastructure;
 
