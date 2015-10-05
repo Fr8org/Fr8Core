@@ -239,7 +239,6 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />

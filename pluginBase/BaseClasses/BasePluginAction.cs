@@ -202,7 +202,7 @@ namespace PluginBase.BaseClasses
             };
         }
 
-        protected CrateDTO PackControlsCrate(params FieldDefinitionDTO[] controlsList)
+        protected CrateDTO PackControlsCrate(params ControlsDefinitionDTO[] controlsList)
         {
             var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);

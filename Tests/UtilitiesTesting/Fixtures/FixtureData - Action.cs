@@ -498,7 +498,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate
             };
 
-            var fields = new List<FieldDefinitionDTO>()
+            var fields = new List<ControlsDefinitionDTO>()
             {
                 fieldSelectDockusignTemplate
             };
