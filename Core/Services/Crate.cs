@@ -148,5 +148,14 @@ namespace Core.Services
                 }
             }
         }
+
+        public StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType)
+        {
+            return new StandardPayloadDataMS()
+            {
+                PayloadObjects = new List<PayloadObjectDTO>(),
+                ObjectType = curObjectType,
+            };
+        }
     }
 }

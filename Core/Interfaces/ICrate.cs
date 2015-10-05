@@ -23,5 +23,7 @@ namespace Core.Interfaces
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
         void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);
         void RemoveCrateByLabel(IList<CrateDTO> crates, string label);
+
+        StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
     }
 }

@@ -20,6 +20,7 @@ using Data.Interfaces;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Configuration;
+using pluginExcel.Infrastructure;
 
 namespace pluginExcel.Actions
 {
@@ -37,29 +38,7 @@ namespace pluginExcel.Actions
         {
             var curActionDO = _action.MapFromDTO(curActionDTO);
 
-            // Find crates of manifest type Standard Table Data
-            var standardTableDataCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curActionDO.CrateStorageDTO());
-
-            // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
-            if (!standardTableDataCrates.Any())
-            {
-                var upstreamFileHandleCrate = await GetCratesByDirection(curActionDO.Id, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
-
-                //if no "Standard File Handle" crate found then return
-                if (!upstreamFileHandleCrate.Any())
-                    return curActionDTO;
-
-                // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-                StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrate.First().Contents);
-
-                // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-                curActionDTO = await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, fileHandleMS.DockyardStorageUrl);
-
-                // Find crates of manifest type Standard Table Data
-                standardTableDataCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curActionDO.CrateStorageDTO());
-            }
-
-            StandardTableDataMS tableDataMS = JsonConvert.DeserializeObject<StandardTableDataMS>(standardTableDataCrates.First().Contents);
+            StandardTableDataMS tableDataMS = await GetTargetTableData(curActionDO.Id, curActionDO.CrateStorageDTO());
             if (!tableDataMS.FirstRowHeaders)
                 throw new Exception("No headers found in the Standard Table Data Manifest.");
 
@@ -68,20 +47,49 @@ namespace pluginExcel.Actions
 
             // Add a crate of PayloadData to action's crate storage
             var payloadDataCrate = _crate.Create("Excel Data", JsonConvert.SerializeObject(payloadDataMS), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
-            _action.AddCrate(curActionDO, new List<CrateDTO>() { payloadDataCrate });
+            _action.AddCrate(curActionDO, payloadDataCrate);
 
-            curActionDTO.CrateStorage = curActionDO.CrateStorageDTO();
+            return Mapper.Map<ActionDTO>(curActionDO);
+        }
 
-            return curActionDTO;
+        private async Task<StandardTableDataMS> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
+        {
+            // Find crates of manifest type Standard Table Data
+            var standardTableDataCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curCrateStorageDTO);
+
+            // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
+            if (!standardTableDataCrates.Any())
+            {
+                return await GetUpstreamTableData(actionId, curCrateStorageDTO);
+            }
+
+            return JsonConvert.DeserializeObject<StandardTableDataMS>(standardTableDataCrates.First().Contents);
+        }
+
+        private async Task<StandardTableDataMS> GetUpstreamTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
+        {
+            var upstreamFileHandleCrate = await GetCratesByDirection(actionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+
+            //if no "Standard File Handle" crate found then return
+            if (!upstreamFileHandleCrate.Any())
+                return null;
+
+            //if more than one "Standard File Handle" crates found then throw an exception
+            if (upstreamFileHandleCrate.Count > 1)
+                throw new Exception("More than one Standard File Handle crates found upstream.");
+
+            // Deserialize the Standard File Handle crate to StandardFileHandleMS object
+            StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrate.First().Contents);
+
+            // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
+            StandardTableDataMS tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
+
+            return tableDataMS;
         }
 
         private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(StandardTableDataMS tableDataMS)
         {
-            var payloadDataMS = new StandardPayloadDataMS()
-            {
-                PayloadObjects = new List<PayloadObjectDTO>(),
-                ObjectType = "ExcelTableRow",
-            };
+            var payloadDataMS = _crate.CreatePayloadDataCrate("ExcelTableRow");
 
             // Rows containing column names
             var columnHeadersRowDTO = tableDataMS.Table[0];
@@ -128,17 +136,9 @@ namespace pluginExcel.Actions
         //}
 
         /// <summary>
-        /// Configure infrastructure.
-        /// </summary>
-        public async Task<ActionDTO> Configure(ActionDTO actionDTO)
-        {
-            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
-        }
-
-        /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private CrateDTO CreateStandardConfigurationControls()
+        private CrateDTO CreateConfigurationControls()
         {
             var fieldFilterPane = new FieldDefinitionDTO("filePicker")
             {
@@ -170,12 +170,12 @@ namespace pluginExcel.Actions
                     var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream)).Fields.ToArray();
 
                     //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO filePickerCrate = _crate.CreateDesignTimeFieldsCrate("Select Excel File", curUpstreamFields);
+                    CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Select Excel File", curUpstreamFields);
 
                     //build a controls crate to render the pane
-                    CrateDTO configurationControlsCrate = CreateStandardConfigurationControls();
+                    CrateDTO configurationControlsCrate = CreateConfigurationControls();
 
-                    var crateStrorageDTO = AssembleCrateStorage(filePickerCrate, configurationControlsCrate);
+                    var crateStrorageDTO = AssembleCrateStorage(upstreamFieldsCrate, configurationControlsCrate);
                     curActionDTO.CrateStorage = crateStrorageDTO;
                 }
             }
@@ -190,7 +190,7 @@ namespace pluginExcel.Actions
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
-        private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
@@ -261,41 +261,25 @@ namespace pluginExcel.Actions
             if (headersArray != null)
             {
                 var headers = headersArray.ToList();
-                var curColumnHeadersCrateStorageDTO = new CrateStorageDTO
-                {
-                    //this needs to be updated to hold Crates instead of FieldDefinitionDTO
-                    CrateDTO = new List<CrateDTO>
-                    {
-                        _crate.CreateDesignTimeFieldsCrate(
+                var curCrateDTO = _crate.CreateDesignTimeFieldsCrate(
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
-                        ),
-                    }
-                };
-                var columnHeaderCratesInActionDO = _action.GetCratesByLabel("Spreadsheet Column Headers", curActionDO.CrateStorageDTO());
-                if (!columnHeaderCratesInActionDO.Any()) // no existing column headers crate found, then add the crate
-                {
-                    _action.AddCrate(curActionDO, curColumnHeadersCrateStorageDTO.CrateDTO.ToList());
-                }
-                else
-                {
-                    // Remove the existing crate for this label
-                    _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, "Spreadsheet Column Headers");
-
-                    //CrateStorageDTO actionCrateStorageDTO = curActionDO.CrateStorageDTO();
-                    //curActionDO.CrateStorage = JsonConvert.SerializeObject(actionCrateStorageDTO);
-
-                    // Add the newly created crate for this label to action's crate storage
-                    _action.AddCrate(curActionDO, curColumnHeadersCrateStorageDTO.CrateDTO.ToList());
-                }
+                        );
+                _action.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
             }
 
+            CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
+
+            return Mapper.Map<ActionDTO>(curActionDO);
+        }
+
+        private void CreatePayloadCrate_ExcelRows(ActionDO curActionDO, byte[] fileAsByteArray, string[] headersArray, string extension)
+        {
             // Fetch rows in Excel file and assign them to the action's crate storage as Standard Table Data crate
-            var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, ext);
-            //List<TableRowDTO> rows = GetTabularDataFromExcel(curActionDTO, selectedFilePath, csvFilePath);
+            var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, extension);
             if (rowsDictionary != null && rowsDictionary.Count > 0)
             {
-                var rows = ConvertRowsDictToListOfTableRowDTO(rowsDictionary, headersArray);
+                var rows = ExcelUtils.CreateTableCellPayloadObjects(rowsDictionary, headersArray);
                 if (rows != null && rows.Count > 0)
                 {
                     var curExcelPayloadRowsCrateStorageDTO = new CrateStorageDTO
@@ -307,58 +291,6 @@ namespace pluginExcel.Actions
                     };
                     _action.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
                 }
-            }
-
-            var curActionDTOCrateStorageDTO = curActionDO.CrateStorageDTO();
-            curActionDTO.CrateStorage = curActionDTOCrateStorageDTO;
-            return curActionDTO;
-        }
-
-        public List<TableRowDTO> ConvertRowsDictToListOfTableRowDTO(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray)
-        {
-            try
-            {
-                var listOfRows = new List<TableRowDTO>();
-                // Add header as the first row in List<TableRowDTO> so that it is becomes the first row in StandardTableMS.
-                var headerTableRowDTO = new TableRowDTO() { Row = new List<TableCellDTO>(), };
-                for (int i = 0; i < headersArray.Count(); ++i)
-                {
-                    var tableCellDTO = new TableCellDTO()
-                    {
-                        Cell = new FieldDTO()
-                        {
-                            Key = (i + 1).ToString(),
-                            Value = headersArray[i]
-                        }
-                    };
-                    headerTableRowDTO.Row.Add(tableCellDTO);
-                }
-                listOfRows.Insert(0, headerTableRowDTO);
-
-                // Process each item in the dictionary and add it as an item in List<TableRowDTO>
-                foreach (var row in rowsDictionary.Keys)
-                {
-                    var listOfCells = new List<TableCellDTO>();
-                    foreach (var columnCellValuePair in rowsDictionary[row])
-                    {
-                        listOfCells.Add(
-                            new TableCellDTO()
-                            {
-                                Cell = new FieldDTO()
-                                {
-                                    Key = columnCellValuePair.Item1, // Column number
-                                    Value = columnCellValuePair.Item2 // Column/cell value
-                                }
-                            }
-                        );
-                    }
-                    listOfRows.Add(new TableRowDTO() { Row = listOfCells });
-                }
-                return listOfRows;
-            }
-            catch (Exception exp)
-            {
-                throw exp;
             }
         }
     }

@@ -111,6 +111,25 @@ namespace PluginBase.BaseClasses
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
+        /// <summary>
+        /// Configure infrastructure.
+        /// </summary>
+        public virtual async Task<ActionDTO> Configure(ActionDTO actionDTO)
+        {
+            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+        }
+
+        /// <summary>
+        /// This method "evaluates" as to what configuration should be called. 
+        /// Every plugin action will have its own decision making; hence this method must be implemented in the relevant child class.
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <returns></returns>
+        public virtual ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        {
+            throw new NotImplementedException("ConfigurationEvaluator method not implemented in child class.");
+        }
+
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
@@ -171,7 +190,6 @@ namespace PluginBase.BaseClasses
             return mergedFields;
         }
 
-
         public StandardDesignTimeFieldsMS MergeContentFields(List<CrateDTO> curCrates)
         {
             StandardDesignTimeFieldsMS tempMS = new StandardDesignTimeFieldsMS();
@@ -203,7 +221,5 @@ namespace PluginBase.BaseClasses
 
             return controlsCrate;
         }
-
-
     }
 }

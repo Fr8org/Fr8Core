@@ -31,5 +31,7 @@ namespace Core.Interfaces
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
         Task Authenticate(DockyardAccountDO user,
             PluginDO plugin, string username, string password);
+        void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
+        void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
     }
 }

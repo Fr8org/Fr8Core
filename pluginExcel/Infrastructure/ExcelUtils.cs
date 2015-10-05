@@ -1,4 +1,10 @@
-﻿using Excel;
+﻿using Core.Interfaces;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Excel;
+using Newtonsoft.Json;
+using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities
+namespace pluginExcel.Infrastructure
 {
 	public static class ExcelUtils
 	{
@@ -139,6 +145,89 @@ namespace Utilities
                 }
             }
             return excelRows;
+        }
+
+        public static StandardTableDataMS GetTableData(string selectedFilePath)
+        {
+            // Check if the file is an Excel file.
+            string ext = Path.GetExtension(selectedFilePath);
+            if (ext != ".xls" && ext != ".xlsx")
+                throw new ArgumentException("Expected '.xls' or '.xlsx'", "selectedFile");
+
+            FileDO curFileDO = new FileDO()
+            {
+                CloudStorageUrl = selectedFilePath,
+            };
+
+            IFile file = ObjectFactory.GetInstance<IFile>();
+            ICrate crate = ObjectFactory.GetInstance<ICrate>();
+
+            // Read file from repository
+            var fileAsByteArray = file.Retrieve(curFileDO);
+
+            // Fetch column headers in Excel file
+            var headersArray = ExcelUtils.GetColumnHeaders(fileAsByteArray, ext);
+
+            // Fetch rows in Excel file
+            var rowsDictionary = ExcelUtils.GetTabularData(fileAsByteArray, ext);
+
+            CrateDTO curExcelPayloadRowsCrateDTO = null;
+            
+            if (rowsDictionary != null && rowsDictionary.Count > 0)
+            {
+                var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray);
+                if (rows != null && rows.Count > 0)
+                {
+                    curExcelPayloadRowsCrateDTO = crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray());
+                }
+            }
+
+            var curStandardTableDataMS = (curExcelPayloadRowsCrateDTO != null) ?
+                JsonConvert.DeserializeObject<StandardTableDataMS>(curExcelPayloadRowsCrateDTO.Contents)
+                : new StandardTableDataMS();
+
+            return curStandardTableDataMS;
+        }
+
+        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray)
+        {
+            try
+            {
+                var listOfRows = new List<TableRowDTO>();
+                // Add header as the first row in List<TableRowDTO> so that it is becomes the first row in StandardTableMS.
+                var headerTableRowDTO = new TableRowDTO() { Row = new List<TableCellDTO>(), };
+                for (int i = 0; i < headersArray.Count(); ++i)
+                {
+                    var tableCellDTO = TableCellDTO.Create((i + 1).ToString(), headersArray[i]);
+                    headerTableRowDTO.Row.Add(tableCellDTO);
+                }
+                listOfRows.Insert(0, headerTableRowDTO);
+
+                // Process each item in the dictionary and add it as an item in List<TableRowDTO>
+                foreach (var row in rowsDictionary.Keys)
+                {
+                    var listOfCells = new List<TableCellDTO>();
+                    foreach (var columnCellValuePair in rowsDictionary[row])
+                    {
+                        listOfCells.Add(
+                            new TableCellDTO()
+                            {
+                                Cell = new FieldDTO()
+                                {
+                                    Key = columnCellValuePair.Item1, // Column number
+                                    Value = columnCellValuePair.Item2 // Column/cell value
+                                }
+                            }
+                        );
+                    }
+                    listOfRows.Add(new TableRowDTO() { Row = listOfCells });
+                }
+                return listOfRows;
+            }
+            catch (Exception exp)
+            {
+                throw exp;
+            }
         }
 	}
 }

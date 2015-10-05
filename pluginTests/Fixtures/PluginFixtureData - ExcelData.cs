@@ -5,6 +5,7 @@ using Utilities;
 using Data.Interfaces.ManifestSchemas;
 using Core.Interfaces;
 using System.Collections.Generic;
+using pluginExcel.Infrastructure;
 
 namespace pluginTests.Fixtures
 {

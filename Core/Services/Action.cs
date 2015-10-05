@@ -24,6 +24,7 @@ namespace Core.Services
     public class Action : IAction
     {
         private IAction _action;
+        private ICrate _crate;
         private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
@@ -32,6 +33,8 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
+            _action = ObjectFactory.GetInstance<IAction>();
+            _crate= ObjectFactory.GetInstance<ICrate>();
 
         }
 
@@ -90,7 +93,7 @@ namespace Core.Services
                 return SaveOrUpdateAction(uow, submittedActionData);
             }
         }
-        
+
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -191,7 +194,7 @@ namespace Core.Services
 
             // Get ordered list of next Activities 
             var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-            
+
             curActionList.CurrentActivity = activities.FirstOrDefault();
 
             return curAction;
@@ -249,7 +252,7 @@ namespace Core.Services
             }
 
             var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
-            
+
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
 
@@ -391,11 +394,11 @@ namespace Core.Services
             if (curCrateStorageDTO == null)
                 throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
 
-            IEnumerable<CrateDTO> crateDTO = null;
+            IEnumerable<CrateDTO> crateDTOList = null;
 
-            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
+            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
 
-            return crateDTO;
+            return crateDTOList;
         }
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
@@ -416,7 +419,6 @@ namespace Core.Services
             return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
 
         }
-
 
         public async Task<ActionDTO> Activate(ActionDO curActionDO)
         {
@@ -500,13 +502,35 @@ namespace Core.Services
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
-            
+
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
             dto.ProcessId = processId;
             PrepareAuthToken(dto);
 
             return ObjectFactory.GetInstance<IPluginTransmitter>()
                 .CallActionAsync<TResult>(actionName, dto);
+        }
+
+        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
+        }
+
+        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            var existingCratesWithLabelInActionDO = _action.GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
+            {
+                _action.AddCrate(curActionDO, curCrateDTO);
+            }
+            else
+            {
+                // Remove the existing crate for this label
+                _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
+
+                // Add the newly created crate for this label to action's crate storage
+                _action.AddCrate(curActionDO, curCrateDTO);
+            }
         }
     }
 }

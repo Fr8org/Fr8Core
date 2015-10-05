@@ -16,6 +16,7 @@ using pluginTests.Fixtures;
 using pluginExcel.Actions;
 using Core.Interfaces;
 using Newtonsoft.Json;
+using pluginExcel.Infrastructure;
 
 namespace pluginTests.PluginExcelTests
 {
@@ -56,7 +57,7 @@ namespace pluginTests.PluginExcelTests
             var tableDataMS = new StandardTableDataMS()
             {
                 FirstRowHeaders = true,
-                Table = new ExtractData_v1().ConvertRowsDictToListOfTableRowDTO(excelRows, columnHeaders),
+                Table = ExcelUtils.CreateTableCellPayloadObjects(excelRows, columnHeaders),
             };
 
             var curActionDTO = new ActionDTO()
