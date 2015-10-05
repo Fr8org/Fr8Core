@@ -521,14 +521,24 @@ namespace Data.Infrastructure
             }
         }
 
+        private MultiTenantObjectRepository _multiTenantObjectRepository;
 
-        private PluginRepository _pluginRepository;
+        public MultiTenantObjectRepository MultiTenantObjectRepository
+        {
+            get
+            {
+                return _multiTenantObjectRepository ?? (_multiTenantObjectRepository = new MultiTenantObjectRepository(this));
+            }
+        }
+
+
+        private MultiTenantObjectRepository _pluginRepository;
 
         public IPluginRepository PluginRepository
         {
             get
             {
-                return _pluginRepository ?? (_pluginRepository = new PluginRepository(this));
+                return _pluginRepository ?? (_pluginRepository = new MultiTenantObjectRepository(this));
             }
         }
 

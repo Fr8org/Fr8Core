@@ -549,7 +549,7 @@ namespace Data.Migrations
                     .Id;
         }
 
-        private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, MultiTenantObject curMto)
+        private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, BaseMultiTenantObject curMto)
         {
             var _mtField = new MT_FieldService();
 
