@@ -11,7 +11,7 @@ namespace Core.Interfaces
 		IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null);
 		void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool withTemplate);
 		void Delete(IUnitOfWork uow, int id);
-	    ActivityDO GetInitialActivity(ProcessTemplateDO curProcessTemplate);
+	    ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate);
 
         IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO);
         IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport);
