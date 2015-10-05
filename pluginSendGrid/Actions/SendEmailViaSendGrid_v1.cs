@@ -66,21 +66,21 @@ namespace pluginSendGrid.Actions
         private CrateDTO CreateControlsCrate()
         {
 
-            FieldDefinitionDTO[] controls = 
+            ControlsDefinitionDTO[] controls = 
             {
-                new FieldDefinitionDTO("textField")
+                new ControlsDefinitionDTO("textField")
                 {
                         Label = "Recipient Email Address",
                         Name = "Recipient_Email_Address",
                         Required = false
                 },
-                new FieldDefinitionDTO("textField")
+                new ControlsDefinitionDTO("textField")
                 {
                         Label = "Email Subject",
                         Name = "Email_Subject",
                         Required = false
                 },
-                new FieldDefinitionDTO("textField")
+                new ControlsDefinitionDTO("textField")
                 {
                         Label = "Email Body",
                         Name = "Email_Body",

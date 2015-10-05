@@ -212,18 +212,19 @@ namespace PluginBase.BaseClasses
 
         protected CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
         {
-            FieldDefinitionDTO[] fields = 
+            ControlsDefinitionDTO[] controls =  
             {
                 new TextBlockFieldDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
                     cssClass = "well well-lg"
+                    
                 }
             };
 
             var crateControls = _crate.CreateStandardConfigurationControlsCrate(
-                        "Configuration_Controls", fields
+                        "Configuration_Controls", controls
                     );
 
             return crateControls;
