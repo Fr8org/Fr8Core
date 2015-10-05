@@ -2,7 +2,6 @@
 using System.Web.Http;
 using Core.Interfaces;
 using Core.Services;
-using Owin;
 using StructureMap.Configuration.DSL;
 using StructureMap;
 using Core.StructureMap;
