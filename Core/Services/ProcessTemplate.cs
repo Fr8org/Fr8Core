@@ -338,21 +338,12 @@ namespace Core.Services
             }
         }
 
-        public ActivityDO GetInitialActivity(ProcessTemplateDO curProcessTemplate)
+        public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
         {
-            ActivityDO initialActivity = null;
             //at create time, find the lowest ordered activity in the immediate Action list and set that as the current activity.
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActionListDO curActionList = GetActionList(uow, curProcessTemplate.Id);
-
-
-                // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
-                return curActionList.Activities.OrderBy(a => a.Ordering).FirstOrDefault();
-            }
-
-
-
+            ActionListDO curActionList = GetActionList(uow, curProcessTemplate.Id);
+            // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+            return curActionList.Activities.OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
 
