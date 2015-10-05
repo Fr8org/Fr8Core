@@ -58,7 +58,7 @@ namespace Data.Infrastructure
                 return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
-        
+
 
         private SlipRepository _SlipRepository;
 
@@ -90,7 +90,7 @@ namespace Data.Infrastructure
             }
         }
 
-        
+
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
         public CommunicationConfigurationRepository CommunicationConfigurationRepository
@@ -131,17 +131,17 @@ namespace Data.Infrastructure
             }
         }
 
-/*
-        private EnvelopeRepository _envelopeRepository;
+        /*
+                private EnvelopeRepository _envelopeRepository;
 
-        public EnvelopeRepository EnvelopeRepository
-        {
-            get
-            {
-                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
-            }
-        }
-*/
+                public EnvelopeRepository EnvelopeRepository
+                {
+                    get
+                    {
+                        return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+                    }
+                }
+        */
 
 
         private EnvelopeRepository _envelopeRepository;
@@ -174,7 +174,7 @@ namespace Data.Infrastructure
             }
         }
 
-    
+
 
         private StoredFileRepository _storedFileRepository;
 
@@ -207,7 +207,7 @@ namespace Data.Infrastructure
         }
 
         private FactRepository _factRepository;
-        
+
         public FactRepository FactRepository
         {
             get
@@ -215,7 +215,7 @@ namespace Data.Infrastructure
                 return _factRepository ?? (_factRepository = new FactRepository(this));
             }
         }
-     
+
         private UserRepository _userRepository;
 
         public UserRepository UserRepository
@@ -396,8 +396,8 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionRepository _actionRepository;
-	  public ActionRepository ActionRepository
+        private ActionRepository _actionRepository;
+        public ActionRepository ActionRepository
         {
             get
             {
@@ -414,23 +414,23 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionListRepository _actionListRepository;
-	  public ActionListRepository ActionListRepository
+        private ActionListRepository _actionListRepository;
+        public ActionListRepository ActionListRepository
         {
             get
             {
                 return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
             }
         }
-	  private ActivityRepository _activityRepository;
-	  public ActivityRepository ActivityRepository
-	  {
-		  get
-		  {
-			  return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
-		  }
-	  }
-      private IProcessTemplateRepository _processTemplateRepository;
+        private ActivityRepository _activityRepository;
+        public ActivityRepository ActivityRepository
+        {
+            get
+            {
+                return _activityRepository ?? (_activityRepository = new ActivityRepository(this));
+            }
+        }
+        private IProcessTemplateRepository _processTemplateRepository;
 
         public IProcessTemplateRepository ProcessTemplateRepository
         {
@@ -440,7 +440,7 @@ namespace Data.Infrastructure
             }
         }
 
-		private ProcessNodeRepository _proeProcessNodeRepository;
+        private ProcessNodeRepository _proeProcessNodeRepository;
 
         public ProcessNodeRepository ProcessNodeRepository
         {
@@ -532,13 +532,13 @@ namespace Data.Infrastructure
         }
 
 
-        private MultiTenantObjectRepository _pluginRepository;
+        private PluginRepository _pluginRepository;
 
         public IPluginRepository PluginRepository
         {
             get
             {
-                return _pluginRepository ?? (_pluginRepository = new MultiTenantObjectRepository(this));
+                return _pluginRepository ?? (_pluginRepository = new PluginRepository(this));
             }
         }
 
@@ -553,7 +553,7 @@ namespace Data.Infrastructure
             }
         }
 
-	    public void Save()
+        public void Save()
         {
             _context.SaveChanges();
         }
@@ -612,7 +612,7 @@ namespace Data.Infrastructure
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
         }
 
-        public bool IsEntityModified<TEntity>(TEntity entity) 
+        public bool IsEntityModified<TEntity>(TEntity entity)
             where TEntity : class
         {
             return _context.Entry(entity).State == EntityState.Modified;
