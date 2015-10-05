@@ -34,7 +34,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null,int? status=null)
+        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
             if (userId == null)
                 throw new ApplicationException("UserId must not be null");
@@ -45,13 +45,13 @@ namespace Core.Services
 
                 if (isAdmin)
                 {
-                    queryableRepo= (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                    return ( status== null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
+                    queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
                 }
 
                 queryableRepo = (id == null
                     ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId ));
+                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
                 return (status == null
                     ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
             }
@@ -103,7 +103,7 @@ namespace Core.Services
                     {
                         TraverseActivity(actionList.Activities[i], activities.Add);
                     }
-                    activities.ForEach(x=>uow.ActivityRepository.Remove(x));
+                    activities.ForEach(x => uow.ActivityRepository.Remove(x));
                 }
             }
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
@@ -199,7 +199,7 @@ namespace Core.Services
         {
             // Get action list by process template first 
             var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-            
+
             if (currentProcessTemplate.Length == 0)
             {
                 return null;
