@@ -23,8 +23,8 @@ namespace Core.Services
 {
     public class Action : IAction
     {
-        private IAction _action;
-        private Task curAction;
+        //private IAction _action;
+        //private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
 

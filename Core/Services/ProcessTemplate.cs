@@ -337,7 +337,7 @@ namespace Core.Services
 
         public ActivityDO GetInitialActivity(ProcessTemplateDO curProcessTemplate)
         {
-            ActivityDO initialActivity = null;
+            //ActivityDO initialActivity = null;
             //at create time, find the lowest ordered activity in the immediate Action list and set that as the current activity.
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

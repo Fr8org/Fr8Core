@@ -169,9 +169,9 @@ namespace DockyardTest.Services
         //	 }
         //}
 
-        [Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
-        public async void CanProcessDocuSignTemplate()
-        {
+        //[Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
+        //public async void CanProcessDocuSignTemplate()
+        //{
             // Test.
 //            Action action = new Action();
 //            var processTemplate = FixtureData.TestProcessTemplate2();
@@ -207,7 +207,7 @@ namespace DockyardTest.Services
 //            //CallActionAsync was called with the correct attributes
 //            // TODO: Fix this line according to v2 changes
 //            PluginTransmitterMock.Verify();
-        }
+        //}
 
         [Test]
         public void Process_ActionNotUnstarted_ThrowException()

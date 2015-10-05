@@ -11,11 +11,9 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
-using Web.ViewModels;
 using Moq;
 using System;
 using Core.Interfaces;
-using System.Web.Http.Results;
 using AutoMapper;
 
 namespace DockyardTest.Controllers

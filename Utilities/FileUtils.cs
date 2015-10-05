@@ -27,7 +27,7 @@ namespace Utilities
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //TODO: Replace with incedent
                 //Logger.GetLogger().ErrorFormat("Error register plugins actions: '{0}'", ex.Message);
