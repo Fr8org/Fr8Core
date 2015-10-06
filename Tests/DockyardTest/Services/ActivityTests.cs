@@ -23,7 +23,7 @@ namespace DockyardTest.Services
     public class ActivityTests : BaseTest
     {
         private IActivity _activity;
-        private Mock<IAction> _actionMock;
+        //private Mock<IAction> _actionMock;
         private ProcessNodeTemplateDO _curProcessNodeTemplate;
         private ActionListDO _curActionList;
         [SetUp]

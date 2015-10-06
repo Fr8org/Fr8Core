@@ -95,17 +95,16 @@ namespace pluginDocuSign.Actions
 			}
 
             // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
-            // Two crates are created
-            // One to hold the ui controls
+			// Two crates are created
+			// One to hold the ui controls
 
             if (!curActionDTO.CrateStorage.CrateDTO.Any(c => c.ManifestId == (int)MT.StandardDesignTimeFields))
             {
-                var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
-                // and one to hold the available templates, which need to be requested from docusign
-                var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-                curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
-            }
-			return curActionDTO;
+			var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
+			// and one to hold the available templates, which need to be requested from docusign
+            var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+			curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+            return await Task.FromResult<ActionDTO>(curActionDTO);
 		}
 
 		protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
@@ -144,7 +143,7 @@ namespace pluginDocuSign.Actions
 
 			curActionDTO.CrateStorage = AssembleCrateStorage(crateUserDefinedDTO, crateStandardDTO);
 
-			return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
 		}
 
 		private CrateDTO CreateDocusignTemplateConfigurationControls()
@@ -196,11 +195,11 @@ namespace pluginDocuSign.Actions
             });
 
 
-            var fieldsDTO = new List<ControlsDefinitionDTO>()
+			var fieldsDTO = new List<ControlsDefinitionDTO>()
 			{
 				fieldSelectDocusignTemplateDTO,
                 radioButtonGroup
-            };
+			};
 			var controls = new StandardConfigurationControlsMS()
 			{
 				Controls = fieldsDTO
