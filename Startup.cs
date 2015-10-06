@@ -23,7 +23,6 @@ using Utilities.Logging;
 using Utilities.Serializers.Json;
 using Core.Services;
 using Core.Managers;
-using Microsoft.Owin.Hosting;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -100,6 +99,8 @@ namespace Web
 
         }
 
+
+
         private static void ConfigureDaemons()
         {
             DaemonSettings daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
@@ -134,20 +135,22 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
-            
-            var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-            int count = 0;
-            foreach (string url in activityTemplateHosts)
+            try
             {
-                //discover what's at this url
-                try
+                var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+                int count = 0;
+                foreach (string url in activityTemplateHosts)
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
 
                     var pluginService = new Plugin();
                     var activityTemplateList = await pluginService.GetAvailableActions(uri);
+                    // For discover serialization see:
+                    //   # pluginAzureSqlServer.Controllers.PluginController#DiscoverPlugins()
+                    //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
+                    //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
+
 
                     foreach (var curItem in activityTemplateList)
                     {
@@ -155,16 +158,18 @@ namespace Web
                         count++;
                     }
                 }
-                catch (Exception ex)
-                {
-                    alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
-                }
 
+                var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
             }
-            alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
-            
-           
+            catch (Exception ex)
+            {
+                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
+                //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
+            }
         }
+
 
         public bool CheckForActivityTemplate(string templateName)
         {
@@ -190,9 +195,5 @@ namespace Web
             return found;
         }
 
-        public static IDisposable CreateServer(string url)
-        {
-            return WebApp.Start<Startup>(url: url);
-        }
     }
 }
