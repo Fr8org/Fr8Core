@@ -834,7 +834,7 @@ namespace UtilitiesTesting.Fixtures
                                         Ordering = 1,
                                 CrateStorage=  crateStorage
                                     },
-                                    new ActivityDO
+                                    new ActionDO
                                     {
                                         Id = 57,
                                         ParentActivityId = 54,

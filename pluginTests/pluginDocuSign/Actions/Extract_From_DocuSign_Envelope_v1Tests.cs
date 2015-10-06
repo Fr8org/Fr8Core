@@ -12,9 +12,11 @@ using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
+using Moq.Protected;
 using PluginBase.BaseClasses;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Linq;
 
 namespace pluginTests.pluginDocuSign.Actions
 {
@@ -22,28 +24,32 @@ namespace pluginTests.pluginDocuSign.Actions
     public class Extract_From_DocuSign_Envelope_v1Tests : BaseTest
     {
         Extract_From_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
+      
 
         public Extract_From_DocuSign_Envelope_v1Tests()
         {
             base.SetUp();
             _extract_From_DocuSign_Envelope_v1 = new Extract_From_DocuSign_Envelope_v1();
+           
         }
 
         [TestMethod]
-        public void Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
+        public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Arrange
-
                 uow.ActivityRepository.Add(FixtureData.ConfigureTestActionTree());
                 uow.SaveChanges();
-
                 ActionDO curAction = FixtureData.ConfigureTestAction57();
+                ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
+                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(FixtureData.TestDocuSignAuthDTO1()) };
+
+                Extract_From_DocuSign_Envelope_v1_For_Testing curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_For_Testing();
 
                 //Act
-                var result = _extract_From_DocuSign_Envelope_v1.Configure(Mapper.Map<ActionDTO>(curAction));
+                var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
 
                 //Assert
                 Assert.IsNotNull(result.CrateStorage);
@@ -104,6 +110,39 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Johnson", result[2].Value);
             Assert.AreEqual("Marthambles", result[3].Value);
 
+        }
+    }
+
+    public class Extract_From_DocuSign_Envelope_v1_For_Testing : Extract_From_DocuSign_Envelope_v1
+    {
+        private readonly IActivity _activity;
+        public Extract_From_DocuSign_Envelope_v1_For_Testing()
+        {
+            _activity = ObjectFactory.GetInstance<IActivity>();
+        }
+        protected async override Task<List<CrateDTO>> GetCratesByDirection(int activityId,
+          string manifestType, GetCrateDirection direction)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var actionDO = uow.ActionRepository.GetByKey(activityId);
+                var upstreamActions = _activity
+                    .GetUpstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .ToList();
+
+                var curCrates = new List<CrateDTO>();
+
+                foreach (var curAction in upstreamActions)
+                {
+                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                }
+
+                //return curCrates;
+
+                return await Task.FromResult(curCrates);
+            }
         }
     }
 }

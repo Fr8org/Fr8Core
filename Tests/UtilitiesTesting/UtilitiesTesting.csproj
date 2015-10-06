@@ -114,6 +114,7 @@
     <Compile Include="BaseTest.cs" />
     <Compile Include="CsvReaderTests.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
+    <Compile Include="Fixtures\FixtureData - DocuSignAuthDTO.cs" />
     <Compile Include="Fixtures\FixtureData - PayloadDTO.cs" />
     <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
     <Compile Include="Fixtures\FixtureData - FieldDefinitionDTO.cs" />

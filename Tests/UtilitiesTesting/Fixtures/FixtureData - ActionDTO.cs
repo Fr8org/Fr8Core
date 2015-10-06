@@ -1,6 +1,8 @@
 ﻿﻿using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
+using pluginDocuSign.DataTransferObjects;
+using System;
 using System.Collections.Generic;
 
 namespace UtilitiesTesting.Fixtures
@@ -12,7 +14,8 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDTO()
             {
                 Name = "test action type",
-                ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
+                ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
+                AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TestDocuSignAuthDTO1()) }
             };
         }
         public static ActionDTO TestActionDTO2()
