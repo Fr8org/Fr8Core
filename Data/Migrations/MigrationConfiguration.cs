@@ -66,11 +66,11 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow); 
-            // commented out by yakov.gnusin as of DO-1064
-            // AddPlugins(uow);                     
+            
+             AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            // commented out by yakov.gnusin as of DO-1064
-            // AddAuthorizationTokens(uow);
+             
+             AddAuthorizationTokens(uow);
             AddProcessDOForTestingApi(uow);
         }
 
@@ -182,7 +182,7 @@ namespace Data.Migrations
 
 
             var salesforceAuthToken = uow.AuthorizationTokenRepository.GetQuery()
-             .Any(x => x.ExternalAccountId == "alex@dockyard.company");
+             .Any(x => x.ExternalAccountId == "00561000000JECsAAO");
 
             // Add new plugin and subscription to repository, if plugin doesn't exist.
             if (!salesforceAuthToken)
@@ -485,7 +485,8 @@ namespace Data.Migrations
                     Name = "pluginDocuSign",
                     PluginStatus = PluginStatus.Active,
                     Endpoint = "localhost:53234",
-                    Version = "1"
+                    Version = "1",
+                    RequiresAuthentication =true
                 };
 
                 uow.PluginRepository.Add(plugin);
