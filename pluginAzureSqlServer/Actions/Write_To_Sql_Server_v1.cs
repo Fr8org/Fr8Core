@@ -77,7 +77,7 @@ namespace pluginAzureSqlServer.Actions
             var crateControls = CreateControlsCrate();
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
-            return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private CrateDTO CreateControlsCrate() { 
@@ -128,7 +128,7 @@ namespace pluginAzureSqlServer.Actions
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
             curActionDTO.CrateStorage = curCrateStorageDTO;
-            return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         public object Activate(ActionDO curActionDO)

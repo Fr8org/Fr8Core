@@ -61,7 +61,7 @@ namespace Web.Filters
                 filterContext.Result = new RedirectResult(urlBuilder.ToString());
 */
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 OnPlainParams(filterContext);
             }
