@@ -6,10 +6,10 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using PluginBase.Infrastructure;
+using terminalBase.Infrastructure;
 using StructureMap;
-using PluginBase;
-using PluginBase.BaseClasses;
+using terminalBase;
+using terminalBase.BaseClasses;
 using Core.Interfaces;
 using System.Configuration;
 using System.Net;
@@ -19,7 +19,7 @@ using System.Text;
 namespace pluginSlack.Actions
 {
 
-    public class Publish_To_Slack_v1 : BasePluginAction
+    public class Publish_To_Slack_v1 : BaseTerminalAction
     {
 
    

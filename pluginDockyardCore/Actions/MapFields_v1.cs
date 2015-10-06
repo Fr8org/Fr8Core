@@ -12,13 +12,13 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
-using PluginBase.Infrastructure;
+using terminalBase.BaseClasses;
+using terminalBase.Infrastructure;
 using Utilities;
 
 namespace pluginDockyardCore.Actions
 {
-    public class MapFields_v1 : BasePluginAction
+    public class MapFields_v1 : BaseTerminalAction
     {
         /// <summary>
         /// Action processing infrastructure.

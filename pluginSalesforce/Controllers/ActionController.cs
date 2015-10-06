@@ -5,7 +5,7 @@ using AutoMapper;
 using Data.Entities;
 using Newtonsoft.Json;
 using System.Reflection;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 
 namespace pluginSalesforce.Controllers
 {
@@ -13,7 +13,7 @@ namespace pluginSalesforce.Controllers
     public class ActionController:ApiController
     {
         private const string curPlugin = "pluginSalesforce";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("create")]

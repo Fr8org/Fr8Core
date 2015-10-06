@@ -9,14 +9,14 @@ using NUnit.Framework;
 using Utilities;
 
 using Data.Interfaces.DataTransferObjects;
-using pluginTests.pluginDocuSign.Interfaces;
+using terminalTests.pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
-using pluginTests.Fixtures;
+using terminalTests.Fixtures;
 using pluginDocuSign.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace pluginTests.pluginDocuSign.Services
+namespace terminalTests.pluginDocuSign.Services
 {
 	[TestFixture]
 	public class EnvelopeServiceTests : BaseTest

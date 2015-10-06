@@ -1,26 +1,26 @@
 ﻿﻿using System;
 using UtilitiesTesting;
 using NUnit.Framework;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 
-namespace pluginTests.PluginBaseTests.Controllers
+namespace terminalTests.TerminalBaseTests.Controllers
 {
     [TestFixture]
     [Category("BasePluginController")]
     public class BasePluginControllerTests : BaseTest
     {
         IDisposable _coreServer;
-        BasePluginController _basePluginController;
+        BaseTerminalController _basePluginController;
 
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginController = new BasePluginController();
+            _basePluginController = new BaseTerminalController();
             _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
         }
 

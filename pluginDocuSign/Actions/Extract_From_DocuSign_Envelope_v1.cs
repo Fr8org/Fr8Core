@@ -1,17 +1,17 @@
 ﻿using Data.Entities;
-using PluginBase.Infrastructure;
+using terminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 using Newtonsoft.Json;
 using Core.Interfaces;
 using StructureMap;
 using System.Web.Http;
 using System.Web.Http.Results;
-using PluginBase;
+using terminalBase;
 using Data.Interfaces;
 using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
@@ -21,7 +21,7 @@ using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
-    public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
+    public class Extract_From_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         // TODO: remove this as of DO-1064
 		// IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
@@ -68,7 +68,7 @@ namespace pluginDocuSign.Actions
             string envelopeId = GetEnvelopeId(processPayload);
             if (envelopeId == null)
             {
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
 
             var payload = CreateActionPayload(actionDto, envelopeId);

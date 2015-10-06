@@ -295,9 +295,9 @@
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>pluginAzureSqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
+    <ProjectReference Include="..\..\pluginBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginBase</Name>
+      <Name>TerminalBase</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\pluginDockyardCore\pluginDockyardCore.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>

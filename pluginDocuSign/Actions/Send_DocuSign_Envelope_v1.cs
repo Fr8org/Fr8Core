@@ -11,9 +11,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase;
-using PluginBase.BaseClasses;
-using PluginBase.Infrastructure;
+using terminalBase;
+using terminalBase.BaseClasses;
+using terminalBase.Infrastructure;
 using Utilities;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Infrastructure;
@@ -22,7 +22,7 @@ using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
-	public class Send_DocuSign_Envelope_v1 : BasePluginAction
+	public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
 	{
         // TODO: remove this as of DO-1064.
 		// IDocuSignTemplate _template;

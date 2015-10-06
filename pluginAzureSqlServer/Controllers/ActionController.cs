@@ -5,7 +5,7 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 
 namespace pluginAzureSqlServer.Controllers
 {    
@@ -13,7 +13,7 @@ namespace pluginAzureSqlServer.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "pluginAzureSqlServer";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

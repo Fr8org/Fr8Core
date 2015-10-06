@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 using System;
 using pluginSlack.Actions;
 using StructureMap;
@@ -12,7 +12,7 @@ namespace pluginSlack.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "pluginSlack";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

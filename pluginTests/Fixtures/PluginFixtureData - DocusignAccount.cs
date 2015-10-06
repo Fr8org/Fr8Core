@@ -3,7 +3,7 @@ using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Services;
 using System;
 
-namespace pluginTests.Fixtures
+namespace terminalTests.Fixtures
 {
 	public partial class PluginFixtureData
     {

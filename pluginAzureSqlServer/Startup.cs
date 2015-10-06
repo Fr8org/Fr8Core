@@ -11,8 +11,8 @@ using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
+using terminalBase;
+using terminalBase.BaseClasses;
 using StructureMap;
 
 [assembly: OwinStartup(typeof(pluginAzureSqlServer.Startup))]
@@ -63,7 +63,7 @@ namespace pluginAzureSqlServer
             {
                 Task.Run(() =>
                 {
-                    BasePluginController curController = new BasePluginController();
+                    BaseTerminalController curController = new BaseTerminalController();
                     curController.AfterStartup("plugin_azure_sql_server");
                 });
             }

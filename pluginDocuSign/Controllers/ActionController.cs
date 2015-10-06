@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 using pluginDocuSign.DataTransferObjects;
 
 
@@ -21,7 +21,7 @@ namespace pluginDocuSign.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "pluginDocuSign";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
 
         [HttpPost]

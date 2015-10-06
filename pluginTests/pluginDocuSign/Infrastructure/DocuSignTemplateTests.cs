@@ -14,7 +14,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Migrations;
 using Newtonsoft.Json;
 using StructureMap;
-using pluginTests.pluginDocuSign.Interfaces;
+using terminalTests.pluginDocuSign.Interfaces;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
 using pluginDocuSign;

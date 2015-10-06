@@ -4,7 +4,7 @@ using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Services;
 using Account = DocuSign.Integrations.Client.Account;
 
-namespace pluginTests.pluginDocuSign.Interfaces
+namespace terminalTests.pluginDocuSign.Interfaces
 {
     public interface IDocusignApiHelper
     {

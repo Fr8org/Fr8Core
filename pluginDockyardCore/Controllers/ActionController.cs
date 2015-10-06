@@ -13,7 +13,7 @@ using Core.Managers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 
 namespace pluginDockyardCore.Controllers
 {
@@ -21,7 +21,7 @@ namespace pluginDockyardCore.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "pluginDockyardCore";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private BaseTerminalController _basePluginController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]

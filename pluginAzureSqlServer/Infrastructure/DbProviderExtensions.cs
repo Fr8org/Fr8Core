@@ -1,4 +1,4 @@
-﻿using PluginBase;
+﻿using terminalBase;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace pluginAzureSqlServer.Infrastructure {
         public static object ConnectToSql(this IDbProvider provider, string connectionString, Func<IDbCommand, object> innerAction) {
             if (string.IsNullOrEmpty(connectionString)) {
                 //Error point 1
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             //We have a conn string, initiate db connection and open
@@ -29,7 +29,7 @@ namespace pluginAzureSqlServer.Infrastructure {
             }
             catch (Exception ex) {
                 //Should any exception be caught during the process, a connection failed error code is returned with the details
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_FAILED, ex.Message);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_FAILED, ex.Message);
             }
             finally {
                 //Ensure the connection is closed after use if still open.

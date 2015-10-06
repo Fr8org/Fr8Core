@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
-using PluginBase;
+using terminalBase;
 using pluginDocuSign.Infrastructure;
-using PluginUtilities.BaseClasses;
+using TerminalBase.BaseClasses;
 using StructureMap;
 
 namespace pluginDocuSign
@@ -14,7 +14,7 @@ namespace pluginDocuSign
     {
         public static void Register(HttpConfiguration config)
         {
-            BasePluginWebApiConfig.Register(config);
+            BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginDocuSign",

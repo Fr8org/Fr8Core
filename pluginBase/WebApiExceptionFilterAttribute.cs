@@ -6,11 +6,11 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http.Filters;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 using StructureMap;
 using Utilities;
 
-namespace PluginBase
+namespace terminalBase
 {
     public class WebApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
@@ -21,14 +21,14 @@ namespace PluginBase
             var pluginName = GetPluginName(actionExecutedContext.ActionContext.ControllerContext.Controller);
 
             //POST event to fr8 about this plugin error
-            new BasePluginController().ReportPluginError(pluginName, curPluginError);
+            new BaseTerminalController().ReportTerminalError(pluginName, curPluginError);
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-            if (curPluginError is PluginCodedException)
+            if (curPluginError is TerminalCodedException)
             {
                 //if plugin error is Plugin Coded Exception, place the error code description in message
-                var pluginEx = (PluginCodedException) curPluginError;
+                var pluginEx = (TerminalCodedException) curPluginError;
                 var pluginError =
                     JsonConvert.SerializeObject(new {status = "plugin_error", message = pluginEx.ErrorCode.GetEnumDescription()});
                 actionExecutedContext.Response.Content = new StringContent(pluginError, Encoding.UTF8, "application/json");

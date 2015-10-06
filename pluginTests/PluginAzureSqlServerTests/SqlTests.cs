@@ -10,7 +10,7 @@ using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace pluginTests.PluginAzureSqlServerTests
+namespace terminalTests.PluginAzureSqlServerTests
 {
     [TestFixture]
     public class SqlTests : BaseTest

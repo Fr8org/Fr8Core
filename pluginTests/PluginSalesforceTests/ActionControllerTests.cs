@@ -1,24 +1,24 @@
 ﻿﻿using System;
 using UtilitiesTesting;
 using NUnit.Framework;
-using PluginBase.BaseClasses;
+using terminalBase.BaseClasses;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 using pluginSalesforce;
 
-namespace pluginTests.PluginSalesforceTests
+namespace terminalTests.PluginSalesforceTests
 {
     [TestFixture]
     public class SalesforceActionControllerTests : BaseTest
     {
-        BasePluginController _basePluginController;
+        BaseTerminalController _basePluginController;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginController = new BasePluginController();
+            _basePluginController = new BaseTerminalController();
             PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);            
         }
 

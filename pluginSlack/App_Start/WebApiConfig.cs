@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
-using PluginBase;
-using PluginUtilities.BaseClasses;
+using terminalBase;
+using TerminalBase.BaseClasses;
 using StructureMap;
 
 namespace pluginSlack
@@ -13,7 +13,7 @@ namespace pluginSlack
     {
         public static void Register(HttpConfiguration config)
         {
-            BasePluginWebApiConfig.Register(config);
+            BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
                 name: "PluginSlack",

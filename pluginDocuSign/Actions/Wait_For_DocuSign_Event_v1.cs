@@ -1,5 +1,5 @@
 ﻿using Data.Entities;
-using PluginBase.Infrastructure;
+using terminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,8 @@ using Core.Interfaces;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase;
-using PluginBase.BaseClasses;
+using terminalBase;
+using terminalBase.BaseClasses;
 using DocuSign.Integrations.Client;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Interfaces;
@@ -21,7 +21,7 @@ using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
-    public class Wait_For_DocuSign_Event_v1 : BasePluginAction
+    public class Wait_For_DocuSign_Event_v1 : BaseTerminalAction
     {
         // TODO: remove this as of DO-1064.
         // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -107,7 +107,7 @@ namespace pluginDocuSign.Actions
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
             //Create a field
             var fields = new List<FieldDTO>()
