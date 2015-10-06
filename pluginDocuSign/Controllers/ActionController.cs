@@ -60,7 +60,11 @@ namespace pluginDocuSign.Controllers
                 ApiPassword = oauthToken
             };
 
-            return new AuthTokenDTO() { Token = JsonConvert.SerializeObject(docuSignAuthDTO) };
+            return new AuthTokenDTO()
+            {
+                Token = JsonConvert.SerializeObject(docuSignAuthDTO),
+                ExternalAccountId = curCredentials.Username
+            };
         }
 
         private HttpClient CreateHttpClient(string endPoint)

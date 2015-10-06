@@ -248,7 +248,8 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
+                "Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
@@ -284,7 +285,8 @@ namespace Core.Services
             }
         }
 
-        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin, string username, string password)
+        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin,
+            string username, string password)
         {
             if (!plugin.RequiresAuthentication)
             {
@@ -319,6 +321,7 @@ namespace Core.Services
                     authToken = new AuthorizationTokenDO()
                     {
                         Token = authTokenDTO.Token,
+                        ExternalAccountId = authTokenDTO.ExternalAccountId,
                         Plugin = curPlugin,
                         UserDO = curAccount,
                         ExpiresAt = DateTime.Today.AddMonths(1)
@@ -329,6 +332,7 @@ namespace Core.Services
                 else
                 {
                     authToken.Token = authTokenDTO.Token;
+                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
                 }
 
                 uow.SaveChanges();

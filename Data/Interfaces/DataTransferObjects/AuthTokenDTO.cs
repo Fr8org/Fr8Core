@@ -3,5 +3,6 @@
     public class AuthTokenDTO
     {
         public string Token { get; set; }
+        public string ExternalAccountId { get; set; }
     }
 }
