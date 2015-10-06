@@ -110,7 +110,6 @@ module dockyard.directives.paneConfigureAction {
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
             if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
-            debugger;
             this.crateHelper.mergeControlListCrate(
                 scope.currentAction.configurationControls,
                 scope.currentAction.crateStorage

@@ -194,8 +194,7 @@ module dockyard.services {
             private $q: ng.IQService,
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
             private ActionService: IActionService,
-            private crateHelper: CrateHelper,
-            private $timeout: ng.ITimeoutService
+            private crateHelper: CrateHelper
         ) { }
 
         /* 
@@ -211,9 +210,6 @@ module dockyard.services {
 
             // TODO: bypass save for unchanged entities
               
-            // Allow some time (~300 ms) for Action updates to bubble up from directives (panes). 
-            // Due to how Angular works this does not happen imemdiately.
-            this.$timeout(() => {
                 // Save processNodeTemplate if not null
                 if (currentState.processNodeTemplate) {
                     this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
@@ -246,7 +242,6 @@ module dockyard.services {
 
                 //Save Action only
                 else if (currentState.action) {
-                    debugger;
                     this.crateHelper.mergeControlListCrate(
                         currentState.action.configurationControls,
                         currentState.action.crateStorage
@@ -270,8 +265,6 @@ module dockyard.services {
                     //Nothing to save
                     deferred.resolve(newState);
                 }
-
-            }, 500);
             return deferred.promise;
         }
     }
@@ -279,13 +272,12 @@ module dockyard.services {
     /*
         Register ProcessBuilderService with AngularJS
     */
-    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', '$timeout', (
+    app.factory('ProcessBuilderService', ['$q', 'CriteriaServiceWrapper', 'ActionService', 'CrateHelper', (
         $q: ng.IQService,
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
         ActionService: IActionService,
-        crateHelper: CrateHelper,
-        $timeout: ng.ITimeoutService) => {
-        return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper, $timeout);
+        crateHelper: CrateHelper) => {
+        return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
     }
     ]);
 
