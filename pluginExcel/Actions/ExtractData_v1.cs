@@ -68,18 +68,18 @@ namespace pluginExcel.Actions
 
         private async Task<StandardTableDataMS> GetUpstreamTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
         {
-            var upstreamFileHandleCrate = await GetCratesByDirection(actionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(actionId);
 
             //if no "Standard File Handle" crate found then return
-            if (!upstreamFileHandleCrate.Any())
+            if (!upstreamFileHandleCrates.Any())
                 return null;
 
             //if more than one "Standard File Handle" crates found then throw an exception
-            if (upstreamFileHandleCrate.Count > 1)
+            if (upstreamFileHandleCrates.Count > 1)
                 throw new Exception("More than one Standard File Handle crates found upstream.");
 
             // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-            StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrate.First().Contents);
+            StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrates.First().Contents);
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
             StandardTableDataMS tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);

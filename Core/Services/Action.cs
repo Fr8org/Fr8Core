@@ -23,7 +23,6 @@ namespace Core.Services
 {
     public class Action : IAction
     {
-        private IAction _action;
         private ICrate _crate;
         private Task curAction;
         private IPlugin _plugin;
@@ -33,9 +32,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-            _action = ObjectFactory.GetInstance<IAction>();
             _crate= ObjectFactory.GetInstance<ICrate>();
-
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -518,10 +515,10 @@ namespace Core.Services
 
         public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
         {
-            var existingCratesWithLabelInActionDO = _action.GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
             if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
             {
-                _action.AddCrate(curActionDO, curCrateDTO);
+                AddCrate(curActionDO, curCrateDTO);
             }
             else
             {
@@ -529,7 +526,7 @@ namespace Core.Services
                 _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
 
                 // Add the newly created crate for this label to action's crate storage
-                _action.AddCrate(curActionDO, curCrateDTO);
+                AddCrate(curActionDO, curCrateDTO);
             }
         }
     }

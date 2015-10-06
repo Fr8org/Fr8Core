@@ -221,5 +221,10 @@ namespace PluginBase.BaseClasses
 
             return controlsCrate;
         }
+
+        protected async virtual Task<List<CrateDTO>> GetUpstreamFileHandleCrates(int curActionId)
+        {
+           return await GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+        }
     }
 }
