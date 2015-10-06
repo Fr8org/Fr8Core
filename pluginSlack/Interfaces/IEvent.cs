@@ -2,6 +2,6 @@
 {
     public interface IEvent
     {
-        void Process(string curExternalEventPayload);
+        void Process(string externalEventPayload);
     }
 }
