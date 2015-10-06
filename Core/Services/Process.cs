@@ -111,6 +111,9 @@ namespace Core.Services
 
         private void UpdateNextActivity(ProcessDO curProcessDO)
         {
+            if (curProcessDO == null)
+                throw new ArgumentNullException("ProcessDO is null");
+
             if (curProcessDO.NextActivity != null)
             {
                 curProcessDO.CurrentActivity = curProcessDO.NextActivity;
