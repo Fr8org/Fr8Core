@@ -6,7 +6,7 @@ using Data.Interfaces.ManifestSchemas;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 
-namespace pluginAzureSqlServer.Actions
+namespace pluginSlack.Actions
 {
     public class Monitor_Channel_v1 : BasePluginAction
     {
