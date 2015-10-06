@@ -17,7 +17,7 @@ namespace Data.Entities
 
 
 
-        [Required, ForeignKey("Id")]
+      
         public MT_FieldType MT_FieldType { get; set; }
 
         [Required, Index("FieldColumnOffsetIndex", 3)]

@@ -16,10 +16,12 @@ namespace UtilitiesTesting.Fixtures
                 CompletedDate = DateTime.Now.ToShortDateString(),
                 DeliveredDate = DateTime.Now.AddDays(1).ToShortDateString(),
                 Email = "some@email.mine",
-                fr8AccountId = 1,
+                fr8AccountId = 0,
                 Name = "SomeName",
                 Status = "SomeStatus"
             };
         }
+
+
     }
 }

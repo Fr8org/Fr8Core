@@ -360,9 +360,13 @@
     <Compile Include="Migrations\201510052045282_UpdateMT_Data.Designer.cs">
       <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510060025304_MT_Tables_Update.cs" />
-    <Compile Include="Migrations\201510060025304_MT_Tables_Update.Designer.cs">
-      <DependentUpon>201510060025304_MT_Tables_Update.cs</DependentUpon>
+    <Compile Include="Migrations\201510061434128_UpdateMTOtables.cs" />
+    <Compile Include="Migrations\201510061434128_UpdateMTOtables.Designer.cs">
+      <DependentUpon>201510061434128_UpdateMTOtables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.cs" />
+    <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.Designer.cs">
+      <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
@@ -654,8 +658,11 @@
     <EmbeddedResource Include="Migrations\201510052045282_UpdateMT_Data.resx">
       <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510060025304_MT_Tables_Update.resx">
-      <DependentUpon>201510060025304_MT_Tables_Update.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510061434128_UpdateMTOtables.resx">
+      <DependentUpon>201510061434128_UpdateMTOtables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510062113219_AddFieldsToMTObject.resx">
+      <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

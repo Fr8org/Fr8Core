@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class MT_Tables_Update : IMigrationMetadata
+    public sealed partial class AddFieldsToMTObject : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(MT_Tables_Update));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddFieldsToMTObject));
         
         string IMigrationMetadata.Id
         {
-            get { return "201510060025304_MT_Tables_Update"; }
+            get { return "201510062113219_AddFieldsToMTObject"; }
         }
         
         string IMigrationMetadata.Source

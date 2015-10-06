@@ -10,6 +10,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using RestSharp.Serializers;
 
 namespace DockyardTest.MockedDB
 {
@@ -196,22 +197,53 @@ namespace DockyardTest.MockedDB
         [Test]
         public void MTO_Test_CRUD()
         {
-            var obj = FixtureData___MultiTenantObjectSubClass.TestData1();
+           
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //adding organization
+                var fixtureOrganization = FixtureData_MTOobjects.TestOrganization();
+                uow.MTOrganizationRepository.Add(fixtureOrganization);
+                uow.SaveChanges();
+                fixtureOrganization = uow.MTOrganizationRepository.GetByKey(1);
 
+                //adding object to repo
+                var obj = FixtureData___MultiTenantObjectSubClass.TestData1();
+                obj.fr8AccountId = fixtureOrganization.Id;
                 uow.MultiTenantObjectRepository.Add(obj);
                 uow.SaveChanges();
 
-                var obj2 = uow.MultiTenantObjectRepository.GetByKey(1);
+                
+                obj.MT_DataId = 1;
+                var obj2 = uow.MultiTenantObjectRepository.GetByKey(obj.MT_DataId);
+                
+                XmlSerializer xmlSerializer = new XmlSerializer();
 
-                Assert.AreEqual(obj, obj2);
+                var str_obj1 = xmlSerializer.Serialize(obj);
+                var str_obj2 = xmlSerializer.Serialize(obj2);
+                //Add & Get test
+                Assert.AreEqual(str_obj1, str_obj2);
+
+
+                //Edit test
+                obj.Status = "newvalue";
+                uow.MultiTenantObjectRepository.Update(obj);
+                uow.SaveChanges();
+                obj2 = uow.MultiTenantObjectRepository.GetByKey(obj.MT_DataId);
+                str_obj1 = xmlSerializer.Serialize(obj);
+                str_obj2 = xmlSerializer.Serialize(obj2);
+                Assert.AreEqual(str_obj1, str_obj2);
+
+
+                //Delete test
+                uow.MultiTenantObjectRepository.Remove(1);
+                obj2 = uow.MultiTenantObjectRepository.GetByKey(1);
+                Assert.AreEqual(obj2, null);
             }
-
-
-            //  
         }
+
+
+
 
 
     }
