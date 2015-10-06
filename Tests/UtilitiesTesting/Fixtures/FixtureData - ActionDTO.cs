@@ -23,7 +23,8 @@ namespace UtilitiesTesting.Fixtures
             ActionDTO curActionDTO = new ActionDTO()
             {
                 Name = "test action type",
-                ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
+                ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
+                AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TestDocuSignAuthDTO1()) }
             };
             curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
 
@@ -50,6 +51,7 @@ namespace UtilitiesTesting.Fixtures
             ActionDTO curActionDTO = new ActionDTO();
             List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO2();
             curActionDTO.CrateStorage.CrateDTO.AddRange(curCratesDTO);
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(TestDocuSignAuthDTO1()) };
             return curActionDTO;
         }
 

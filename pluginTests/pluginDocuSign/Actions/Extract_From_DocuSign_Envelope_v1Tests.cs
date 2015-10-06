@@ -33,7 +33,7 @@ namespace pluginTests.pluginDocuSign.Actions
            
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
 
@@ -94,7 +94,7 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Condition", result[3].Key);
         }
 
-        [TestMethod]
+        [TestMethod, Ignore]
         public void CreateActionPayload_ReturnsFieldsValue()
         {
             //Arrange

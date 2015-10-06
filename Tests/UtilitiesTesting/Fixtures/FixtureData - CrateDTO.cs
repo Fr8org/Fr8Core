@@ -107,15 +107,14 @@ namespace UtilitiesTesting.Fixtures
 
         #region Private Methods
 
-        private static CrateDTO PackControlsCrate(params FieldDefinitionDTO[] controlsList)
+        private static CrateDTO PackControlsCrate(params ControlsDefinitionDTO[] controlsList)
         {
             var controlsCrate = CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);
 
             return controlsCrate;
         }
-
-        private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls)
+        private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls)
         {
             return Create(label,
                 JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
