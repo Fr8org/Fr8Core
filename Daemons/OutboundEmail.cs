@@ -17,7 +17,7 @@ namespace Daemons
 {
     public class OutboundEmail : Daemon<OutboundEmail>
     {
-        private string logString;
+        //private string logString;
 
         public OutboundEmail()
         {

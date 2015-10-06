@@ -170,7 +170,7 @@ namespace pluginDocuSign.Actions
 			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
-            return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
@@ -179,7 +179,7 @@ namespace pluginDocuSign.Actions
 
             if (curCrates == null || curCrates.Count == 0)
             {
-                return curActionDTO;
+                return await Task.FromResult<ActionDTO>(curActionDTO);
             }
 
             // Extract DocuSign Template Id
@@ -187,14 +187,14 @@ namespace pluginDocuSign.Actions
 
             if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
             {
-                return curActionDTO;
+                return await Task.FromResult<ActionDTO>(curActionDTO);
             }
 
             var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
 
             if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
-                return curActionDTO;
+                return await Task.FromResult<ActionDTO>(curActionDTO);
             }
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
@@ -217,7 +217,7 @@ namespace pluginDocuSign.Actions
 
             curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
 
-            return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private CrateDTO CreateEventSubscriptionCrate(
