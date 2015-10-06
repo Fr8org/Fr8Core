@@ -21,8 +21,8 @@ namespace pluginSlack.Actions
 
     public class Publish_To_Slack_v1 : BasePluginAction
     {
-
-   
+        // TODO: finish that later.
+        /*
         public object Execute(SlackPayloadDTO curSlackPayload)
         {
             string responseText = string.Empty;
@@ -44,6 +44,6 @@ namespace pluginSlack.Actions
             }
             return responseText;
         }
-
+        */
     }
 }

@@ -155,6 +155,7 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\Monitor_Channel_v1.cs" />
     <Compile Include="Actions\Publish_To_Slack_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActionController.cs" />

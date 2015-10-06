@@ -19,8 +19,6 @@ namespace pluginSlack.Controllers
         [ResponseType(typeof(List<ActivityTemplateDO>))]
         public IHttpActionResult DiscoverPlugins()
         {
-            var result = new List<ActivityTemplateDO>();
-
             var plugin = new PluginDO
             {
                 Endpoint = "localhost:39504",
@@ -30,7 +28,15 @@ namespace pluginSlack.Controllers
                 Version = "1"
             };
 
-            var template = new ActivityTemplateDO
+            var monitorChannelAction = new ActivityTemplateDO
+            {
+                Name = "Monitor_Channel",
+                Category = ActivityCategory.fr8_Monitor,
+                Plugin = plugin,
+                Version = "1"
+            };
+
+            var publishToSlackAction = new ActivityTemplateDO
             {
                 Name = "Publish_To_Slack",
                 Category = ActivityCategory.fr8_Forwarder,
@@ -38,7 +44,11 @@ namespace pluginSlack.Controllers
                 Version = "1"
             };
 
-            result.Add(template);
+            var result = new List<ActivityTemplateDO>()
+            {
+                monitorChannelAction,
+                publishToSlackAction
+            };
 
             return Json(result);    
         }

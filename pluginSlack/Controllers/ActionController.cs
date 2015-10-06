@@ -1,10 +1,11 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web.Http;
+using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
-using System;
 using pluginSlack.Actions;
-using StructureMap;
 
 namespace pluginSlack.Controllers
 {
@@ -16,12 +17,10 @@ namespace pluginSlack.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
-            if (response == null)
-                response = new CrateStorageDTO();
-            return response;
+            return await (Task<ActionDTO>) _basePluginController
+                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
@@ -45,15 +44,12 @@ namespace pluginSlack.Controllers
             return string.Empty;
         }
 
-        [HttpPost]
-        [Route("Publish_To_Slack")]
-        public IHttpActionResult PublishToSlack(SlackPayloadDTO curSlackPayload)
-        {
-            var _actionHandler = ObjectFactory.GetInstance<Publish_To_Slack_v1>();
-            return Ok(_actionHandler.Execute(curSlackPayload));
-
-        }
-
-
+        // TODO: do we need this?
+        // [HttpPost]
+        // [Route("Publish_To_Slack")]
+        // public IHttpActionResult PublishToSlack(SlackPayloadDTO curSlackPayload)
+        // {
+        //     return Ok(_actionHandler.Execute(curSlackPayload));
+        // }
     }
 }
