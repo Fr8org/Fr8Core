@@ -24,7 +24,7 @@ namespace DockyardTest.MockedDB
             {
                 var curUser = FixtureData.TestUser1();
                 curUser.Id = "1";
-               
+
                 uow.UserRepository.Add(curUser);
 
                 using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -102,96 +102,118 @@ namespace DockyardTest.MockedDB
         public void AssertAllTestsImplementBaseTest()
         {
             var failedTypes = new List<Type>();
-                foreach (var testClass in GetType().Assembly.GetTypes().Where(t => t.GetCustomAttributes<TestFixtureAttribute>().Any()))
-                {
-                    if (testClass != typeof(BaseTest) && !testClass.IsSubclassOf(typeof(BaseTest)))
-                        failedTypes.Add(testClass);
-                }
-                var exceptionMessages = new List<String>();
-                foreach (var failedType in failedTypes)
-                {
-                    var testClassName = failedType.Name;
-                    exceptionMessages.Add(testClassName + " must implement 'BaseTest'");
-                }
-                if (exceptionMessages.Any())
-                    Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
+            foreach (var testClass in GetType().Assembly.GetTypes().Where(t => t.GetCustomAttributes<TestFixtureAttribute>().Any()))
+            {
+                if (testClass != typeof(BaseTest) && !testClass.IsSubclassOf(typeof(BaseTest)))
+                    failedTypes.Add(testClass);
             }
-		  [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
-		  public void ActivityRepository_AddActionDOandActivityListDO_Failed()
-		  {
-			  var activityTempate = new ActivityTemplateDO()
-			 {
-				 Id = 1,
-				 Version = "1"
-			 };
-
-			  ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a1 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate };
-			  al1.Activities.Add(a1);
-			  a1.ParentActivity = al1;
-
-			  ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a2 = new ActionDO() { Id = 24, ActivityTemplate = activityTempate };
-			  al2.Activities.Add(a2);
-			  a2.ParentActivity = al2;
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  uow.ActivityRepository.Add(al1);
-				  uow.ActivityRepository.Add(al2);
-				  uow.SaveChanges();
-
-				  var allActivites = uow.ActivityRepository.GetAll().ToList();
-
-				  Assert.AreEqual(4, allActivites.Count);
-
-			  }
-		  }
-		  [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
-		  public void ActivityRepository_AddActionDOandActivityListDO_Failed2()
-		  {
-			  var activityTempate = new ActivityTemplateDO()
-			  {
-				  Id = 1,
-				  Version = "1"
-			  };
-
-			  ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a1 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate };
-			  al1.Activities.Add(a1);
-			  a1.ParentActivity = al1;
-
-			  ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
-			  ActionDO a2 = new ActionDO() { Id = 24, ActivityTemplate = activityTempate };
-			  al2.Activities.Add(a2);
-			  a2.ParentActivity = al2;
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  uow.ActivityRepository.Add(al1);
-				  uow.ActivityRepository.Add(a1);
-				  uow.ActivityRepository.Add(al2);
-				  uow.ActivityRepository.Add(a2);
-				  uow.SaveChanges();
-
-				  var allActivites = uow.ActivityRepository.GetAll().ToList();
-
-				  Assert.AreEqual(4, allActivites.Count);
-
-			  }
-		  }
-            //[Test, ExpectedException(ExpectedMessage = "Foreign row does not exist.\nValue '0' on 'NegotiationDO.NegotiationState' pointing to '_NegotiationStateTemplate.Id'")]
-            //public void TestForeignKeyEnforced()
-            //{
-            //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //    {
-            //        var br = new FixtureData(uow).TestBookingRequest1();
-            //        var negDO = new NegotiationDO {Id = 1};
-            //        negDO.NegotiationState = 0;
-            //        negDO.BookingRequest = br;
-            //        uow.NegotiationsRepository.Add(negDO);
-
-            //        uow.SaveChanges();
-            //    }
-            //}
+            var exceptionMessages = new List<String>();
+            foreach (var failedType in failedTypes)
+            {
+                var testClassName = failedType.Name;
+                exceptionMessages.Add(testClassName + " must implement 'BaseTest'");
+            }
+            if (exceptionMessages.Any())
+                Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
         }
+        [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
+        public void ActivityRepository_AddActionDOandActivityListDO_Failed()
+        {
+            var activityTempate = new ActivityTemplateDO()
+            {
+                Id = 1,
+                Version = "1"
+            };
+
+            ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
+            ActionDO a1 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate };
+            al1.Activities.Add(a1);
+            a1.ParentActivity = al1;
+
+            ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
+            ActionDO a2 = new ActionDO() { Id = 24, ActivityTemplate = activityTempate };
+            al2.Activities.Add(a2);
+            a2.ParentActivity = al2;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityRepository.Add(al1);
+                uow.ActivityRepository.Add(al2);
+                uow.SaveChanges();
+
+                var allActivites = uow.ActivityRepository.GetAll().ToList();
+
+                Assert.AreEqual(4, allActivites.Count);
+
+            }
+        }
+        [Test, Ignore("https://maginot.atlassian.net/browse/DO-1008")]
+        public void ActivityRepository_AddActionDOandActivityListDO_Failed2()
+        {
+            var activityTempate = new ActivityTemplateDO()
+            {
+                Id = 1,
+                Version = "1"
+            };
+
+            ActionListDO al1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate };
+            ActionDO a1 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate };
+            al1.Activities.Add(a1);
+            a1.ParentActivity = al1;
+
+            ActionListDO al2 = new ActionListDO() { Id = 2, Ordering = 1, ActionListType = ActionListType.Immediate };
+            ActionDO a2 = new ActionDO() { Id = 24, ActivityTemplate = activityTempate };
+            al2.Activities.Add(a2);
+            a2.ParentActivity = al2;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityRepository.Add(al1);
+                uow.ActivityRepository.Add(a1);
+                uow.ActivityRepository.Add(al2);
+                uow.ActivityRepository.Add(a2);
+                uow.SaveChanges();
+
+                var allActivites = uow.ActivityRepository.GetAll().ToList();
+
+                Assert.AreEqual(4, allActivites.Count);
+
+            }
+        }
+        //[Test, ExpectedException(ExpectedMessage = "Foreign row does not exist.\nValue '0' on 'NegotiationDO.NegotiationState' pointing to '_NegotiationStateTemplate.Id'")]
+        //public void TestForeignKeyEnforced()
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var br = new FixtureData(uow).TestBookingRequest1();
+        //        var negDO = new NegotiationDO {Id = 1};
+        //        negDO.NegotiationState = 0;
+        //        negDO.BookingRequest = br;
+        //        uow.NegotiationsRepository.Add(negDO);
+
+        //        uow.SaveChanges();
+        //    }
+        //}
+
+        [Test]
+        public void MTO_Test_CRUD()
+        {
+            var obj = FixtureData___MultiTenantObjectSubClass.TestData1();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+
+                uow.MultiTenantObjectRepository.Add(obj);
+                uow.SaveChanges();
+
+                var obj2 = uow.MultiTenantObjectRepository.GetByKey(1);
+
+                Assert.AreEqual(obj, obj2);
+            }
+
+
+            //  
+        }
+
+
     }
+}
 

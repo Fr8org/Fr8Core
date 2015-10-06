@@ -11,6 +11,9 @@ namespace Data.Entities
         [Required]
         public string Name { get; set; }
 
+        [Required, ForeignKey("Id")]
+        public MT_FieldType MT_FieldType { get; set; }
+
         [Required, ForeignKey("MT_Organization")]
         public int MT_OrganizationId { get; set; }
 

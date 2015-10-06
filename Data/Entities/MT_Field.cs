@@ -4,12 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Data.Entities
 {
 
-    public enum MT_FieldType
-    {
-        String,
-        Int,
-        Boolean
-    }
+
 
     public class MT_Field
     {
@@ -20,8 +15,10 @@ namespace Data.Entities
         [Index("FieldColumnOffsetIndex", 2)]
         public string Name { get; set; }
 
-        [Required]
-        public MT_FieldType Type { get; set; }
+
+
+        [Required, ForeignKey("Id")]
+        public MT_FieldType MT_FieldType { get; set; }
 
         [Required, Index("FieldColumnOffsetIndex", 3)]
         public int FieldColumnOffset { get; set; }
@@ -31,5 +28,17 @@ namespace Data.Entities
         public int MT_ObjectId { get; set; }
 
         public MT_Object MT_Object { get; set; }
+    }
+
+    public class MT_FieldType
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
+        [Required]
+        public string TypeName { get; set; }
+
+        [Required]
+        public string AssemblyName { get; set; }
     }
 }

@@ -18,7 +18,7 @@ using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using StructureMap;
 using MT_Field = Data.Entities.MT_Field;
-using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
+//using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {
@@ -501,19 +501,19 @@ namespace Data.Migrations
         {
             
             AddMultiTenantOrganizations(uow);   
-            AddMultiTenantObjects(uow);
+        //    AddMultiTenantObjects(uow);
 
             //add field for DocuSignEnvelopeStatusReport Object in DocuSign organization
-            int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
-                "DocuSignEnvelopeStatusReport");
+            //int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
+            //    "DocuSignEnvelopeStatusReport");
             
-            AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
+            //AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
 
-            //add field for DocuSignRecipientStatusReportMTO Object in DocuSign organization
-            int docuSignRecipientStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
-                "DocuSignRecipientStatusReport");
+            ////add field for DocuSignRecipientStatusReportMTO Object in DocuSign organization
+            //int docuSignRecipientStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
+            //    "DocuSignRecipientStatusReport");
 
-            AddMultiTenantFields(uow, docuSignRecipientStatusReportObjectId, new DocuSignRecipientStatusReportMTO());
+            //AddMultiTenantFields(uow, docuSignRecipientStatusReportObjectId, new DocuSignRecipientStatusReportMTO());
         }
 
         private void AddMultiTenantOrganizations(UnitOfWork uow)
@@ -541,55 +541,55 @@ namespace Data.Migrations
             uow.SaveChanges();
         }
 
-        private int GetMultiTenantObjectID(IUnitOfWork uow, string curMtOrganizationName, string curMtObjectName)
-        {
-            return
-                uow.MTObjectRepository.FindOne(
-                    obj => obj.MT_Organization.Name.Equals(curMtOrganizationName) && obj.Name.Equals(curMtObjectName))
-                    .Id;
-        }
+        //private int GetMultiTenantObjectID(IUnitOfWork uow, string curMtOrganizationName, string curMtObjectName)
+        //{
+        //    return
+        //        uow.MTObjectRepository.FindOne(
+        //            obj => obj.MT_Organization.Name.Equals(curMtOrganizationName) && obj.Name.Equals(curMtObjectName))
+        //            .Id;
+        //}
 
-        private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, BaseMultiTenantObject curMto)
-        {
-            var _mtField = new MT_FieldService();
+        //private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, BaseMultiTenantObject curMto)
+        //{
+        //    var _mtField = new MT_FieldService();
 
-            var typeMap = new Dictionary<Type, MT_FieldType>()
-            {
-                {typeof (string), MT_FieldType.String},
-                {typeof (int), MT_FieldType.Int},
-                {typeof (bool), MT_FieldType.Boolean}
-            };
+        //    var typeMap = new Dictionary<Type, MT_FieldType>()
+        //    {
+        //        {typeof (string), MT_FieldType.String},
+        //        {typeof (int), MT_FieldType.Int},
+        //        {typeof (bool), MT_FieldType.Boolean}
+        //    };
 
-            //get the current MTO fields
-            Type curMtoType = curMto.GetType();
-            var curMtoProperties = curMtoType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+        //    //get the current MTO fields
+        //    Type curMtoType = curMto.GetType();
+        //    var curMtoProperties = curMtoType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
 
-            //for each field
-            foreach (PropertyInfo propertyInfo in curMtoProperties)
-            {
+        //    //for each field
+        //    foreach (PropertyInfo propertyInfo in curMtoProperties)
+        //    {
 
-                MT_Field curMtField = new MT_Field();
+        //        MT_Field curMtField = new MT_Field();
 
-                //set property name, type and Object ID
-                curMtField.Name = propertyInfo.Name;
-                curMtField.Type = typeMap[propertyInfo.PropertyType];
-                curMtField.MT_ObjectId = curObjectId;
+        //        //set property name, type and Object ID
+        //        curMtField.Name = propertyInfo.Name;
+        //        curMtField.Type = typeMap[propertyInfo.PropertyType];
+        //        curMtField.MT_ObjectId = curObjectId;
 
-                curMtField.FieldColumnOffset =
-                    _mtField.GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId) ??
-                    _mtField.GenerateFieldColumnOffset(uow, curMtField.MT_ObjectId);
+        //        curMtField.FieldColumnOffset =
+        //            _mtField.GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId) ??
+        //            _mtField.GenerateFieldColumnOffset(uow, curMtField.MT_ObjectId);
 
-                if (curMtField.FieldColumnOffset > 50)
-                {
-                    throw new InvalidOperationException(
-                        "MTO fields are limited to only 50 Columns. Check your MTO to keep its number of Properties to be less than or equal to 50.");
-                }
+        //        if (curMtField.FieldColumnOffset > 50)
+        //        {
+        //            throw new InvalidOperationException(
+        //                "MTO fields are limited to only 50 Columns. Check your MTO to keep its number of Properties to be less than or equal to 50.");
+        //        }
 
-                _mtField.Add(uow, curMtField);
-            }
+        //        _mtField.Add(uow, curMtField);
+        //    }
 
-            uow.SaveChanges();
-        }
+        //    uow.SaveChanges();
+        //}
         
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()

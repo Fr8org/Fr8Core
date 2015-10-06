@@ -41,7 +41,18 @@ namespace Data.Repositories
                     mtField.FieldColumnOffset = i;
                     mtField.MT_ObjectId = correspondingDTObject.Id;
                     mtField.Name = property.Name;
-                    mtField.Type = 0;
+
+                    //get or create FieldType
+                    var correspondingMTFieldType = _uow.MTFieldTypeRepository.GetQuery().Where(a => a.TypeName == property.PropertyType.FullName).FirstOrDefault();
+                    if (correspondingMTFieldType == null)
+                    {
+                        correspondingMTFieldType = new MT_FieldType();
+                        correspondingMTFieldType.AssemblyName = property.PropertyType.AssemblyQualifiedName;
+                        correspondingMTFieldType.TypeName = property.PropertyType.FullName;
+                        _uow.MTFieldTypeRepository.Add(correspondingMTFieldType);
+                    }
+                    mtField.MT_FieldType = correspondingMTFieldType;
+
                     _uow.MTFieldRepository.Add(mtField);
                 }
             }
@@ -54,7 +65,7 @@ namespace Data.Repositories
             _uow.MTDataRepository.Add(data);
         }
 
-      
+
 
         public void Update(BaseMultiTenantObject curData)
         {
@@ -82,12 +93,13 @@ namespace Data.Repositories
             if (correspondingMT_Object == null) return null;
 
             var correspondingMT_Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == correspondingMT_Object.Id);
-            
+
 
             return new BaseMultiTenantObject();
         }
 
 
+        //maps BaseMTO to MTData
         private void Map(BaseMultiTenantObject curData, List<PropertyInfo> curDataProperties, MT_Data data, IEnumerable<MT_Field> correspondingDTFields, MT_Object correspondingDTObject)
         {
             data.fr8AccountId = curData.fr8AccountId;
@@ -103,10 +115,29 @@ namespace Data.Repositories
             }
         }
 
+        //instantiate object from MTData
         private BaseMultiTenantObject MapBack(MT_Data data, IEnumerable<MT_Field> correspondingDTFields, MT_Object correspondingDTObject)
         {
-            return null;
+            var objMTType = correspondingDTObject.MT_FieldType;
+
+            BaseMultiTenantObject obj = Activator.CreateInstanceFrom(objMTType.AssemblyName, objMTType.TypeName).Unwrap() as BaseMultiTenantObject;
+            obj.fr8AccountId = data.fr8AccountId;
+            obj.Name = correspondingDTObject.Name;
+
+            var properties = obj.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+            var dataValueCells = data.GetType().GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
+
+            foreach (var DTField in correspondingDTFields)
+            {
+                var correspondingProperty = properties.Where(a => a.Name == DTField.Name).FirstOrDefault();
+                var valueCell = dataValueCells.Where(a => a.Name == "Value" + DTField.FieldColumnOffset).FirstOrDefault();
+                var val = valueCell.GetValue(data);
+                correspondingProperty.SetValue(obj, val);
+            }
+
+            return obj;
         }
+
 
         public void Dispose()
         {
