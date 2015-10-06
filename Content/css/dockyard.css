@@ -87,6 +87,43 @@
     margin-top: -15px;
 }
 
+/* Process Builder */
+
+.action {
+    border: 2px solid black;
+    display: inline-block;
+    height: 300px;
+    margin: 10px;
+    vertical-align: top;
+    width: 230px;
+}
+
+.action:hover,
+.action.selected {
+    border-color: red;
+}
+
+.action-name {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.action-to-add {
+    opacity: 0.5;
+}
+
+.action-to-add:hover {
+    border-color: black;
+    opacity: 1;
+}
+
+.action .pane-configure-action {
+    
+    height: 250px;
+    display: block;
+    width: 100%;
+}
+
 /* Select Action */
 .select-action-modal .modal-dialog {
     width: 1000px;

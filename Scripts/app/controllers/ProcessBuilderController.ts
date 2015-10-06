@@ -17,6 +17,10 @@ module dockyard.controllers {
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.ProcessBuilderState;
+        actions: Array<model.ActionDTO>
+
+        addAction(): void;
+        selectAction(action): void;
     }
 
     //Setup aliases
@@ -71,13 +75,20 @@ module dockyard.controllers {
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
-            this._scope.processNodeTemplates = [];
-            this._scope.fields = [];
             this._scope.current = new model.ProcessBuilderState();
+            this._scope.actions = [];
 
             this.setupMessageProcessing();
             this.loadProcessTemplate();
-            var self = this;
+
+            this._scope.addAction = () => {
+                this.addAction();
+            }
+
+            this._scope.selectAction = (action: model.ActionDTO) => {
+                if (!this._scope.current.action || this._scope.current.action.id !== action.id)
+                    this.selectAction(action);
+            }
         }
 
         /*
@@ -85,13 +96,6 @@ module dockyard.controllers {
         */
         private setupMessageProcessing() {
 
-            //Process Designer Pane events
-            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding],
-                (event: ng.IAngularEvent, eventArgs: pwd.ActionAddingEventArgs) => this.PaneWorkflowDesigner_ActionAdding(eventArgs));
-            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionSelected],
-                (event: ng.IAngularEvent, eventArgs: pwd.ActionSelectedEventArgs) => this.PaneWorkflowDesigner_ActionSelected(eventArgs));
-            this._scope.$on(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected],
-                (event: ng.IAngularEvent, eventArgs: pwd.TemplateSelectedEventArgs) => this.PaneWorkflowDesigner_TemplateSelected(eventArgs));
 
             //Process Configure Action Pane events
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
@@ -120,11 +124,8 @@ module dockyard.controllers {
             {
                 for (var curActionList of curProcessNodeTemplate.actionLists) {
                     for (var curAction of curActionList.actions) {
-                        this._scope.$broadcast(
-                            pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                            new pwd.AddActionEventArgs(curAction.processNodeTemplateId, angular.extend({}, curAction), curActionList.actionListType) //TODO: set real action type
-                        );
-        }
+                        this._scope.actions.push(curAction);
+                    }
                 }
             }
         }
@@ -155,12 +156,9 @@ module dockyard.controllers {
                         .createControlListFromCrateStorage(action.crateStorage);
                 }
             }
-
-        /*
-            Handles message 'PaneWorkflowDesigner_ActionAdding'
-        */
-        private PaneWorkflowDesigner_ActionAdding(eventArgs: pwd.ActionAddingEventArgs) {
-            console.log('ProcessBuilderController::PaneWorkflowDesigner_ActionAdding', eventArgs);
+                
+        private addAction() {
+            console.log('Add action');
             var processNodeTemplateId: number,
                 id: number;
 
@@ -168,45 +166,33 @@ module dockyard.controllers {
 
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-                // Generate next Id.
-                var id = self.LocalIdentityGenerator.getNextId();                
-
-                // Create new action object.
-                var action = new model.ActionDTO(null, id, true, self._scope.immediateActionListVM.id);
-                action.name = 'New Action #' + Math.abs(id).toString();
-
-                // Add action to Workflow Designer.
-                self._scope.current.action = action.toActionVM();
-                self._scope.$broadcast(
-                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                    new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), eventArgs.actionListType)
-                    );
-
                 this.$modal.open({
                     animation: true,
                     templateUrl: 'AngularTemplate/PaneSelectAction',
                     controller: 'SelectActionController',
                     windowClass: 'select-action-modal'
-                }).result.then(function (data: model.ActivityTemplate) {
-                    self._scope.current.action.activityTemplateId = data.id;
-                    self._scope.current.action.activityTemplate = data;
+                }).result.then(function (activityTemplate: model.ActivityTemplate) {
+                    // Generate next Id.
+                    var id = self.LocalIdentityGenerator.getNextId();                
 
-                    var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
-                    var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(self._scope.current.action.id, data.id);
-                    self._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
-                    self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);                    
+                    // Create new action object.
+                    var action = new model.ActionDTO(null, id, true, self._scope.immediateActionListVM.id);
+                    action.name = activityTemplate.name;
+
+                    // Add action to Workflow Designer.
+                    self._scope.current.action = action.toActionVM();
+                    self._scope.current.action.activityTemplateId = activityTemplate.id;
+                    self._scope.actions.push(action);
+
+                    self.selectAction(action);
                 });
             });
         }
 
-        /*
-            Handles message 'WorkflowDesignerPane_ActionSelected'. 
-            This message is sent when user is selecting an existing action or after addng a new action. 
-        */
-        private PaneWorkflowDesigner_ActionSelected(eventArgs: pwd.ActionSelectedEventArgs) {
-            console.log("Action selected: " + eventArgs.actionId);
+        private selectAction(action: model.ActionDTO) {
+            console.log("Action selected: " + action.id);
             var originalId,
-                actionId = eventArgs.actionId,
+                actionId = action.id,
                 canBypassActionLoading = false; // Whether we can avoid reloading an action from the backend
 
             if (this._scope.current.action) {
@@ -218,13 +204,6 @@ module dockyard.controllers {
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
 
             promise.then((result: model.ProcessBuilderState) => {
-                //Assume that Criteria is persisted so we always have a permanent id)
-                this._scope.current.criteria = new model.CriteriaDTO(
-                    eventArgs.processNodeTemplateId,
-                    false,
-                    eventArgs.processNodeTemplateId,
-                    model.CriteriaExecutionType.NoSet
-                );
 
                 if (result.action != null) {
                     // Notity interested parties of action update and update $scope
@@ -242,10 +221,10 @@ module dockyard.controllers {
                     // the permanent id we received after saving operation. 
                     actionId = idChangedFromTempToPermanent && result.action
                         ? result.action.id
-                        : eventArgs.actionId;
+                        : action.id;
 
                     //Whether user selected a new action or just clicked on the current one
-                    var actionChanged = eventArgs.actionId != originalId
+                    var actionChanged = action.id != originalId
                 
                     // Determine if we need to load action from the db or we can just use 
                     // the one returned from the above saveCurrent operation.
@@ -265,6 +244,7 @@ module dockyard.controllers {
                 }
                 if (canBypassActionLoading) {
                     this._scope.current.action = result.action;
+                    this._scope.actions[this._scope.actions.length - 1] = result.action;
                     this.visualizeCurrentAction();
                 }
                 else {
@@ -277,23 +257,6 @@ module dockyard.controllers {
         }
 
         private visualizeCurrentAction() {
-            var eArgs;
-
-            if (this._scope.current.action.activityTemplateId == null
-                || this._scope.current.action.activityTemplateId === 0) {
-                
-
-            }
-            else {
-
-                //Render Configure Action Pane
-                eArgs = new pca.RenderEventArgs(new model.ActionDTO(
-                    this._scope.current.action.processNodeTemplateId,
-                    this._scope.current.action.id,
-                    (this._scope.current.action.id > 0) ? false : true,
-                    this._scope.current.action.actionListId));
-                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], eArgs);
-            }
         }
 
         /*
@@ -309,9 +272,7 @@ module dockyard.controllers {
                 .then((result: model.ProcessBuilderState) => {
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
-
-                //Hide Configure Action Pane
-                scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+                
             });
         }
 
@@ -330,11 +291,6 @@ module dockyard.controllers {
                 new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
                 );
         }
-
-        private HideActionPanes() {
-            //Hide Configure Action Pane
-            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
-        }
     }
 
     app.run([
@@ -348,8 +304,7 @@ module dockyard.controllers {
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,
-                    actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", "")
+                    actionListId: 0
                 };
 
             $httpBackend
