@@ -48,7 +48,7 @@ module dockyard.directives.paneConfigureAction {
             this.isTempId = isTempId;
         }
     }
-    
+
     export interface IPaneConfigureActionScope extends ng.IScope {
         onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneConfigureActionScope) => void;
         action: interfaces.IActionDTO;
@@ -60,7 +60,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
     }
-    
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     //More detail on creating directives in TypeScript: 
@@ -115,6 +115,7 @@ module dockyard.directives.paneConfigureAction {
                 scope.currentAction.crateStorage
             );
             scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates //backend expects crates on CrateDTO field
+            debugger;
             this.ActionService.save({ id: scope.currentAction.id },
                 scope.currentAction, null, null);
         }
@@ -134,7 +135,7 @@ module dockyard.directives.paneConfigureAction {
             this._$scope.currentAction = null;
             this._$scope.isVisible = false;
         };
-        
+
         private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
             // Check if this event is defined for the current field
@@ -172,7 +173,11 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
             var scope = (<IPaneConfigureActionScope>event.currentScope);
-            if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
+
+            // Avoid unnecessary Save while 
+            if (this.configurationWatchUnregisterer) {
+                this.configurationWatchUnregisterer();
+            }
 
             //for now ignore actions which were not saved in the database
             if (eventArgs.action.isTempId) return;
@@ -198,7 +203,7 @@ module dockyard.directives.paneConfigureAction {
                 // Create a directive-local immutable copy of action so we can detect 
                 // a change of actionTemplateId in the currently selected action
                 this._currentAction = angular.extend({}, scope.currentAction);
-            }, 100);
+            }, 300);
 
         }
 
@@ -244,12 +249,15 @@ module dockyard.directives.paneConfigureAction {
                 scope.currentAction = res;
                 (<any>scope.currentAction).configurationControls =
                 self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
+
+                if (self.configurationWatchUnregisterer) {
+                    self.configurationWatchUnregisterer();
+                }
+
+                self.$timeout(() => { // let the control list create, we don't want false change notification during creation process
+                    self.configurationWatchUnregisterer = scope.$watch<model.ControlsList>((scope: IPaneConfigureActionScope) => scope.currentAction.configurationControls, <any>angular.bind(self, self.onConfigurationChanged), true);
+                }, 1000);
             });
-            if (this.configurationWatchUnregisterer == null) {
-                this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
-                    this.configurationWatchUnregisterer = scope.$watch<model.ControlsList>((scope: IPaneConfigureActionScope) => scope.currentAction.configurationControls, <any>angular.bind(this, this.onConfigurationChanged), true);
-                }, 500);
-            }
         }
 
         private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {

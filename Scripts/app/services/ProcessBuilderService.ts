@@ -205,7 +205,6 @@ module dockyard.services {
             if they were or were not changed. 
         */
         public saveCurrent(currentState: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState> {
-
             var deferred = this.$q.defer<model.ProcessBuilderState>(),
                 newState = new model.ProcessBuilderState()
 

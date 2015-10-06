@@ -83,14 +83,17 @@ module dockyard.directives.paneWorkflowDesigner {
         public criteriaId: number;
         public action: model.ActionDTO;
         public actionListType: model.ActionListType;
+        public doNotRaiseSelectedEvent: boolean;
 
         constructor(criteriaId: number,
             action: model.ActionDTO,
-            actionListType: model.ActionListType) {
+            actionListType: model.ActionListType,
+            doNotRaiseSelectedEvent?: boolean) {
 
             this.criteriaId = criteriaId;
             this.action = action;
             this.actionListType = actionListType;
+            this.doNotRaiseSelectedEvent = doNotRaiseSelectedEvent;
         }
     }
 
