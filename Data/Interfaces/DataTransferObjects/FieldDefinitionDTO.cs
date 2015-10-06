@@ -158,7 +158,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string Value { get; set; }
         
         [JsonProperty("fields")]
-        public IList<ControlsDefinitionDTO> Fields { get; }
+        public IList<ControlsDefinitionDTO> Fields { get; set; }
     }
 
     public class FilterPaneField
