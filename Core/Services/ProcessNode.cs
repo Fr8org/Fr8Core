@@ -18,7 +18,7 @@ namespace Core.Services
     {
         private readonly ICriteria _criteria;
         private readonly IActionList _actionList;
-        private IProcessNodeTemplateRepository _processNodeTemplateRepository;
+        //private IProcessNodeTemplateRepository _processNodeTemplateRepository;
         public ProcessNode()
         {
             _criteria = ObjectFactory.GetInstance<ICriteria>();

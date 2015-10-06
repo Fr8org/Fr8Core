@@ -18,9 +18,9 @@ namespace DockyardTest.Services
 	public class ProcessNodeTests : BaseTest
 	{
 		private IProcessNode _processNode;
-        private DockyardAccount _userService;
-		private string _testUserId = "testuser";
-		private string _xmlPayloadFullPath;
+        //private DockyardAccount _userService;
+		//private string _testUserId = "testuser";
+		//private string _xmlPayloadFullPath;
 
 		[SetUp]
 		public override void SetUp()
@@ -43,10 +43,10 @@ namespace DockyardTest.Services
 
             //setup mock Criteria
             var mockCriteria = new Mock<ICriteria>();
-            string criteria = "fake criteria";
-            int processId = 0;
-            string envelopeId = "fake envelopeID";
-            var envelopeDataList = FixtureData.TestEnvelopeDataList1();
+            //string criteria = "fake criteria";
+            //int processId = 0;
+            //string envelopeId = "fake envelopeID";
+            //var envelopeDataList = FixtureData.TestEnvelopeDataList1();
             mockCriteria
                 .Setup(c => c.Evaluate(It.IsAny<string>(), It.IsAny<int>(), (List<EnvelopeDataDTO>)It.IsAny<object>()))
                 .Returns(true);

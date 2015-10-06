@@ -15,9 +15,9 @@ namespace DockyardTest.Services
     [Category("ActionService")]
     public class DatabaseIntegrityTests : BaseTest
     {
-        private IAction _action;
-        private IUnitOfWork _uow;
-        private FixtureData _fixtureData;
+        //private IAction _action;
+        //private IUnitOfWork _uow;
+        //private FixtureData _fixtureData;
         private readonly IEnumerable<ActivityTemplateDO> _pr1Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "Read", Version = "1.0" } };
         private readonly IEnumerable<ActivityTemplateDO> _pr2Activities = new List<ActivityTemplateDO>() { new ActivityTemplateDO() { Name = "SQL Write", Version = "1.0" }, new ActivityTemplateDO() { Name = "SQL Read", Version = "1.0" } };
 
