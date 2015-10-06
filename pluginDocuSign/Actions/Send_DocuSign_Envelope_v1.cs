@@ -100,10 +100,12 @@ namespace pluginDocuSign.Actions
 
             if (!curActionDTO.CrateStorage.CrateDTO.Any(c => c.ManifestId == (int)MT.StandardDesignTimeFields))
             {
-			var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
-			// and one to hold the available templates, which need to be requested from docusign
-            var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-			curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+                var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
+                // and one to hold the available templates, which need to be requested from docusign
+                var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+                curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+                return await Task.FromResult<ActionDTO>(curActionDTO);
+            }
             return await Task.FromResult<ActionDTO>(curActionDTO);
 		}
 
