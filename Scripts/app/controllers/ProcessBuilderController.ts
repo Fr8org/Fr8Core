@@ -147,7 +147,7 @@ module dockyard.controllers {
                     templateUrl: 'AngularTemplate/PaneSelectAction',
                     controller: 'SelectActionController',
                     windowClass: 'select-action-modal'
-                }).result.then(function (activityTemplate: model.ActivityTemplate) {
+                }).result.then((activityTemplate: model.ActivityTemplate) => {
                     // Generate next Id.
                     var id = this.LocalIdentityGenerator.getNextId();                
 
