@@ -20,22 +20,23 @@ namespace pluginSlack.Controllers
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
-            
-            var template = new ActivityTemplateDO
-            {
-                Name = "Publish_To_Slack",
-                Category = ActivityCategory.fr8_Forwarder,
-                Version = "1"
-            };
 
             var plugin = new PluginDO
             {
                 Endpoint = "localhost:39504",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginSlack"
+                Name = "pluginSlack",
+                RequiresAuthentication = false,
+                Version = "1"
             };
-            
-            template.Plugin = plugin;
+
+            var template = new ActivityTemplateDO
+            {
+                Name = "Publish_To_Slack",
+                Category = ActivityCategory.fr8_Forwarder,
+                Plugin = plugin,
+                Version = "1"
+            };
 
             result.Add(template);
 
