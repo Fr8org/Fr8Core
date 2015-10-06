@@ -37,6 +37,14 @@ namespace pluginDocuSign.Actions
 
 		public object Configure(ActionDTO curActionDTO)
 		{
+            if (IsEmptyAuthToken(curActionDTO))
+            {
+                AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
+                return curActionDTO;
+            }
+
+            RemoveAuthenticationCrate(curActionDTO);
+
 			return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo));
 		}
 
@@ -151,7 +159,7 @@ namespace pluginDocuSign.Actions
 				}
 			};
 
-			var fieldsDTO = new List<FieldDefinitionDTO>()
+			var fieldsDTO = new List<ControlsDefinitionDTO>()
 			{
 				fieldSelectDocusignTemplateDTO,
 			};

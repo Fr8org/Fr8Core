@@ -17,7 +17,7 @@ module dockyard.controllers {
         inactivedtOptionsBuilder: any;
         inactivedtColumnBuilder: any;   
         isFr: boolean;
-        OpenFrlines();
+        Openfr8Lines();
         OpenSettings();
     }
 
@@ -71,8 +71,8 @@ module dockyard.controllers {
             this._processTemplates = ProcessTemplateService.query();
             $scope.dtOptionsBuilder = this.GetDataTableOptionsFromTemplates(0);   
             $scope.dtColumnBuilder = this.GetDataTableColumns();   
-            this._processTemplatesAc = ProcessTemplateService.getactive({ id: null, status: 1 });   
-            this._processTemplatesIn = ProcessTemplateService.getactive({ id: null, status: 2 });
+            this._processTemplatesAc = ProcessTemplateService.getbystatus({ id: null, status: 2 });   
+            this._processTemplatesIn = ProcessTemplateService.getbystatus({ id: null, status: 1 });
            $scope.activedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(2);
            $scope.activedtColumnBuilder = this.GetDataTableColumns(); 
            $scope.inactivedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(1);
@@ -81,7 +81,7 @@ module dockyard.controllers {
             $scope.dtInstance = {};
             $scope.GoToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.GoToProcessTemplatePage);
             $scope.DeleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.DeleteProcessTemplate);
-            $scope.OpenFrlines = function () {
+            $scope.Openfr8Lines = function () {
                                 $scope.isFr=true;
                             }
             

@@ -18,7 +18,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorageDTO CrateStorageDTO()
         {
-            var fieldDTO = new FieldDefinitionDTO(
+            var fieldDTO = new ControlsDefinitionDTO(
                 name: "connection_string", required: true, value: "", fieldLabel: "SQL Connection String");
             CrateStorageDTO curCrateStorage = new CrateStorageDTO();
             ICrate crate = ObjectFactory.GetInstance<ICrate>();
@@ -26,9 +26,9 @@ namespace UtilitiesTesting.Fixtures
             return curCrateStorage;
         }
 
-        public static FieldDefinitionDTO TestConnectionString1()
+        public static ControlsDefinitionDTO TestConnectionString1()
         {
-            return new FieldDefinitionDTO
+            return new ControlsDefinitionDTO
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
@@ -50,7 +50,7 @@ namespace UtilitiesTesting.Fixtures
             return curConfigurationStore;
         }
 
-        public static FieldDefinitionDTO TestConnectionStringFieldDefinition()
+        public static ControlsDefinitionDTO TestConnectionStringFieldDefinition()
         {
             return new TextBlockFieldDTO()
             {

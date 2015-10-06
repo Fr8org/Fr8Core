@@ -28,14 +28,14 @@ namespace Data.Interfaces.ManifestSchemas
 
     public class StandardConfigurationControlsMS : ManifestSchema
     {
-        public List<FieldDefinitionDTO> Controls { get; set; }
+        public List<ControlsDefinitionDTO> Controls { get; set; }
 
         public StandardConfigurationControlsMS()
 			  :base(MT.StandardConfigurationControls)
         {
-            Controls = new List<FieldDefinitionDTO>();
+            Controls = new List<ControlsDefinitionDTO>();
         }
-		 public FieldDefinitionDTO FindByName(string name)
+		 public ControlsDefinitionDTO FindByName(string name)
 		  {
 			  return Controls.SingleOrDefault(x => x.Name == name);
 		  }
