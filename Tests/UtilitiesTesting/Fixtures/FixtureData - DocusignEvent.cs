@@ -14,7 +14,9 @@ namespace UtilitiesTesting.Fixtures
             return new DocuSignEventDO
             {
                    EnvelopeId    = "36",
-                   ExternalEventType = 1
+                   ExternalEventType = 1,
+                   RecipientId = "TestRecipientId"
+                   
             };
         }
 

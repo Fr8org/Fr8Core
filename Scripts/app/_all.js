@@ -31,7 +31,6 @@
 /// <reference path="filters/processtemplatestate.ts" />
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 /// <reference path="directives/paneconfigureaction/configurationfield.ts" />
-/// <reference path="directives/paneselectaction/paneselectaction.ts" />
 /// <reference path="directives/paneworkflowdesigner/ipaneworkflowdesignerscope.ts" />
 /// <reference path="directives/paneworkflowdesigner/messages.ts" />
 /// <reference path="directives/paneworkflowdesigner/paneworkflowdesigner.ts" />

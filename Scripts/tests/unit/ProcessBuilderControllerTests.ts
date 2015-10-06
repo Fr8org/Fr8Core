@@ -12,8 +12,8 @@ module dockyard.tests.controller {
 
         app.run(['$httpBackend', ($httpBackend) => {
                 //we need this because stateProvider loads on test startup and routes us to default state 
-                //which is processes and has template URL with /AngularTemplate/ProcessTemplateList
-                $httpBackend.expectGET('/AngularTemplate/ProcessTemplateList').respond(200, '<div></div>');
+                //which is myaccount and has template URL with /AngularTemplate/MyAccountPage
+                $httpBackend.expectGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
             }
         ]);
 

@@ -83,7 +83,7 @@ module dockyard.controllers {
 
             this._scope.addAction = () => {
                 this.addAction();
-            }
+        }
 
             this._scope.selectAction = (action: model.ActionDTO) => {
                 if (!this._scope.current.action || this._scope.current.action.id !== action.id)
@@ -101,7 +101,9 @@ module dockyard.controllers {
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
-                (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));            
+                (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
+                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -125,7 +127,7 @@ module dockyard.controllers {
                 for (var curActionList of curProcessNodeTemplate.actionLists) {
                     for (var curAction of curActionList.actions) {
                         this._scope.actions.push(curAction);
-                    }
+        }
                 }
             }
         }
@@ -156,7 +158,7 @@ module dockyard.controllers {
                         .createControlListFromCrateStorage(action.crateStorage);
                 }
             }
-                
+
         private addAction() {
             console.log('Add action');
             var processNodeTemplateId: number,
@@ -172,15 +174,15 @@ module dockyard.controllers {
                     controller: 'SelectActionController',
                     windowClass: 'select-action-modal'
                 }).result.then(function (activityTemplate: model.ActivityTemplate) {
-                    // Generate next Id.
-                    var id = self.LocalIdentityGenerator.getNextId();                
+                // Generate next Id.
+                var id = self.LocalIdentityGenerator.getNextId();                
 
-                    // Create new action object.
-                    var action = new model.ActionDTO(null, id, true, self._scope.immediateActionListVM.id);
+                // Create new action object.
+                var action = new model.ActionDTO(null, id, true, self._scope.immediateActionListVM.id);
                     action.name = activityTemplate.name;
 
-                    // Add action to Workflow Designer.
-                    self._scope.current.action = action.toActionVM();
+                // Add action to Workflow Designer.
+                self._scope.current.action = action.toActionVM();
                     self._scope.current.action.activityTemplateId = activityTemplate.id;
                     self._scope.actions.push(action);
 
@@ -272,7 +274,7 @@ module dockyard.controllers {
                 .then((result: model.ProcessBuilderState) => {
                 // Notity interested parties of action update and update $scope
                 this.handleActionUpdate(result.action);
-                
+
             });
         }
 
@@ -290,6 +292,25 @@ module dockyard.controllers {
                 pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionRemoved],
                 new pwd.ActionRemovedEventArgs(eventArgs.id, eventArgs.isTempId)
                 );
+        }
+
+        private PaneConfigureAction_InternalAuthentication(eventArgs: pca.InternalAuthenticationArgs) {
+            var self = this;
+
+            var modalScope = <any>this.$rootScope.$new(true);
+            modalScope.activityTemplateId = eventArgs.activityTemplateId;
+
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'AngularTemplate/InternalAuthentication',
+                controller: 'InternalAuthenticationController',
+                scope: modalScope
+            })
+            .result
+            .then(function () {
+                var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
+               // self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+            });
         }
     }
 

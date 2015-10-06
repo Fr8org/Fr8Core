@@ -182,3 +182,7 @@
 .query-builder-table select.form-control {
     padding-left: 4px;
 }
+
+form.internal-authenticate-form {
+    padding: 10px;
+}

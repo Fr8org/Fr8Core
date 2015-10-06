@@ -33,6 +33,7 @@ namespace pluginAzureSqlServer.Controllers
                 Endpoint = "localhost:46281",
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginAzureSqlServer",
+                RequiresAuthentication = false,
                 Version = "1"
             };
             

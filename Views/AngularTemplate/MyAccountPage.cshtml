@@ -1,0 +1,112 @@
+﻿<!-- BEGIN PAGE BREADCRUMB -->
+<ul class="page-breadcrumb breadcrumb hide">
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+
+<div ng-controller="ProcessTemplateListController" class="margin-top-10" id="nav-tables">
+    <div class="row" ng-init="Openfr8Lines()">
+
+
+
+        <div class="col-md-2 col-sm-2 remove-padding">
+            <div class="left-pills">
+                <ul>
+                    <li class="active" ng-click="Openfr8Lines()"><a data-toggle="pill">Myfr8lines</a></li>
+                    <li ng-click="OpenSettings()"><a data-toggle="pill">Settings</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-10 col-sm-10 remove-left-padding">
+            <div class="tab-content" id="inner-tab-content">
+                <div id="Myfr8lines" ng-show="isFr">
+                    <h3>Myfr8lines</h3>
+                    <div class="note note-success note-bordered" ng-show="$root.lastResult === 'success'">
+                        <h3>Success!<span class="close" data-close="note"></span></h3>
+                        <p>
+                            Operation has completed successfuly.
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-sm-12">
+
+                            <div class="portlet light ">
+                                <div class="portlet-title">
+                                    <div class="caption caption-md">
+                                        <i class="icon-bar-chart font-green-haze hide"></i>
+                                        <span class="caption-subject font-green-haze bold uppercase">ACTIVE fr8lines</span>
+                                        <span class="caption-helper hide">weekly stats...</span>
+                                    </div>
+                                    <div class="actions">
+                                        <a href="#processes/add" class="btn green">Add New</a>
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div ng-show="ptvms.length == 0">You have no processes yet.</div>
+                                    <div class="table-scrollable table-scrollable-borderless">
+                                        <table datatable="" dt-options="activedtOptionsBuilder" dt-instance="dtInstanceac" dt-columns="activedtColumnBuilder" class="row-border hover table table-hover table-light table-linkrows table-process-templates"></table>
+                                    </div>
+                                </div>
+                                <br />
+                                <hr />
+                                <div class="portlet-title">
+                                    <div class="caption caption-md">
+                                        <i class="icon-bar-chart font-green-haze hide"></i>
+                                        <span class="caption-subject font-green-haze bold uppercase">INACTIVE fr8lines</span>
+                                        <span class="caption-helper hide">weekly stats...</span>
+                                    </div>
+                                    <div class="actions">
+                                        @*<a href="#processes/add" class="btn green">Add New</a>*@
+                                    </div>
+                                </div>
+                                <div class="portlet-body">
+                                    <div ng-show="ptvms.length == 0">You have no processes yet.</div>
+                                    <div class="table-scrollable table-scrollable-borderless">
+                                        <table datatable="" dt-options="inactivedtOptionsBuilder" dt-instance="dtInstancein" dt-columns="inactivedtColumnBuilder" class="row-border hover table table-hover table-light table-linkrows table-process-templates"></table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <script type="text/ng-template" id="modalDeleteConfirmation">
+                        <div class="modal-header">
+                            <h3 class="modal-title">Delete Confirmation</h3>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure that you wish to delete this Process Template?
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" ng-click="ok()">OK</button>
+                            <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                        </div>
+                    </script>
+                </div>
+                <div id="Setting" ng-show="!isFr">
+                    <h3>Settings</h3>
+                    <p>Account ID : @User.Identity.Name</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="etc-space"></div>
+<!-- END MAIN CONTENT -->
+
+<script>
+    $(document).ready(function () {
+        $(".left-pills li").click(function () {
+            $(".left-pills li").removeClass("active");
+            // $(".tab").addClass("active"); // instead of this do the below
+            $(this).addClass("active");
+        });
+    });
+</script>

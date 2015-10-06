@@ -4,10 +4,19 @@ module dockyard.directives.paneConfigureAction {
 
     export enum MessageType {
         PaneConfigureAction_ActionUpdated,
-        PaneConfigureAction_ActionRemoved
+        PaneConfigureAction_ActionRemoved,
+        PaneConfigureAction_InternalAuthentication
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
+
+    export class InternalAuthenticationArgs {
+        public activityTemplateId: number;
+
+        constructor(activityTemplateId: number) {
+            this.activityTemplateId = activityTemplateId;
+        }
+    }
 
     export class RenderEventArgs {
         public action: interfaces.IActionDTO
@@ -177,7 +186,7 @@ module dockyard.directives.paneConfigureAction {
             this.$timeout(() => {
                 if (this._$scope.currentAction.activityTemplateId > 0) {
                     this.loadConfiguration();
-                }
+                }            
             }, 100);
 
         }
@@ -188,8 +197,31 @@ module dockyard.directives.paneConfigureAction {
             // Block pane and show pane-level 'loading' spinner
             this._$scope.processing = true;
             var activityTemplateName = this._$scope.currentAction.activityTemplateName; // preserve activity name
-            
+
             this.ActionService.configure(this._$scope.currentAction).$promise.then((res: any) => {
+                // Check if authentication is required.
+                if (this.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
+                    var authCrate = this.crateHelper
+                        .findByManifestType(res.crateStorage, 'Standard Authentication');
+
+                    var authMS = angular.fromJson(authCrate.contents);
+
+                    // Dockyard auth mode.
+                    if (authMS.Mode == 1) {
+                        this._$scope.$emit(
+                            MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
+                            new InternalAuthenticationArgs(res.activityTemplateId)
+                        );
+                    }
+
+                    // External auth mode.
+                    else {
+                        alert('TODO: External auth');
+                    }
+
+                    this._$scope.processing = false;
+                    return;
+                }
 
                 // Unblock pane
                 this._$scope.processing = false;

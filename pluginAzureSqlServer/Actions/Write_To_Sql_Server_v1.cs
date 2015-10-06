@@ -29,9 +29,9 @@ namespace pluginAzureSqlServer.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
+            return await ProcessConfigurationRequest(curActionDTO, EvaluateReceivedRequest);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
@@ -67,32 +67,34 @@ namespace pluginAzureSqlServer.Actions
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             if (curActionDTO.CrateStorage == null)
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
+
             var crateControls = CreateControlsCrate();
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+
             return curActionDTO;
         }
 
         private CrateDTO CreateControlsCrate() { 
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new TextBlockFieldDTO()
+            var control = new ControlsDefinitionDTO(ControlsDefinitionDTO.TEXTBOX_FIELD)
             {
-                    Label = "SQL Connection String",
-                    Name = "connection_string",
-                    Required = true,
-                    Events = new List<FieldEvent>() {new FieldEvent("onChange", "requestConfig")}
+                Label = "SQL Connection String",
+                Name = "connection_string",
+                Required = true,
+                Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") }
             };
             return PackControlsCrate(control);
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
             //In all followup calls, update data fields of the configuration store          
             List<String> contentsList = GetFieldMappings(curActionDTO);
@@ -123,6 +125,7 @@ namespace pluginAzureSqlServer.Actions
                 curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
                 _action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
+
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
             curActionDTO.CrateStorage = curCrateStorageDTO;
             return curActionDTO;
@@ -139,11 +142,11 @@ namespace pluginAzureSqlServer.Actions
             return "Deactivated";
         }
 
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
-            var curCommandArgs = PrepareSQLWrite(curActionDataPackage.ActionDTO, processPayload);
+            var curCommandArgs = PrepareSQLWrite(actionDto, processPayload);
 
             var dbService = new DbService();
             dbService.WriteCommand(curCommandArgs);

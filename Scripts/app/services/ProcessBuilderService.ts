@@ -5,7 +5,8 @@
 */
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
-        getFull: (id: Object) => interfaces.IProcessTemplateVM
+        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
+        getFull: (id: Object) => interfaces.IProcessTemplateVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -51,9 +52,16 @@ module dockyard.services {
     /*
         ProcessTemplateDTO CRUD service.
     */
+
+
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
         <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' },
             {
+                'getbystatus': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/api/processTemplate/getactive'
+                } ,
                 'getFull': {
                     method: 'GET',
                     isArray: false,
@@ -62,7 +70,7 @@ module dockyard.services {
                         id: '@id'
                     }
                 }
-            })
+                })
     ]);
 
     /*

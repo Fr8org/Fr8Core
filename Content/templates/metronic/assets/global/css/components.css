@@ -13822,3 +13822,97 @@ Transparent Button
   background: transparent;
   color: #888;
 }
+
+/*Mohit css start here*/
+
+#nav-tables.margin-top-10 {
+  background: #fbfbfb none repeat scroll 0 0;
+  border: 1px solid #ddd;
+  float: left;
+  margin-bottom: 30px;
+  width: 100%;
+}
+#inner-tab-content table.dataTable.no-footer {
+  background: #f7f7f7 none repeat scroll 0 0;
+}
+.left-pills > ul {
+  list-style-type: none;
+  margin: 0;
+  padding-left: 0;
+}
+.left-pills li {
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 0;
+  padding: 10px 15px;
+}
+.left-pills li:last-child{
+    border-bottom: none;
+}
+.left-pills li a {
+  color: #353535;
+  font-size: 13px;
+}
+.left-pills li:hover{
+    background: #26a69a;
+    cursor: pointer;
+}
+.left-pills li.active{
+    background: #26a69a;
+    cursor: pointer;
+}
+.left-pills li.active a{
+    color: #fff;
+}
+.left-pills li:hover a{
+    color: #fff;
+    text-decoration: none;
+}
+#Myfr8lines > h3 {
+  margin-top: 0;
+}
+.left-pills {
+  padding: 0;
+}
+#inner-tab-content .portlet.light {
+  background-color: #fbfbfb;
+  padding: 12px 20px 15px 0;
+}
+#inner-tab-content.tab-content {
+  border-left: 1px solid #ddd;
+  padding: 20px 0 20px 20px;
+  min-height: 680px;
+}
+.col-md-10.col-sm-10.remove-left-padding {
+  padding-left: 0;
+}
+.col-md-2.col-sm-2.remove-padding {
+  padding-right: 0;
+}
+#Setting > h3 {
+  margin-top: 0;
+}
+.etc-space {
+  float: left;
+  height: 70px;
+  width: 100%;
+}
+#single-button.btn.btn-primary.dropdown-toggle {
+  background-image: url("../../../../../img/select-info.png") !important;
+  background-position: 100% center;
+  background-repeat: no-repeat;
+  font-size: 13px;
+  min-height: 39px;
+  padding: 10px 54px 10px 10px;
+  text-align: left;
+  min-width: 300px;
+  background-color: #3379b5 !important;
+}
+.btn-group.dropdown {
+  margin-top: 10px;
+}
+#single-button.btn.btn-primary.dropdown-toggle:hover, #single-button.btn.btn-primary.dropdown-toggle:focus{
+    background-color: #3379b5 !important; 
+}
+.btn-group.dropdown .dropdown-menu{
+     width: 300px;
+}

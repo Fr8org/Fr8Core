@@ -19,5 +19,8 @@ namespace Core.Interfaces
 
         public const int STANDARD_EVENT_SUBSCRIPTIONS_ID = 8;
         public const string STANDARD_EVENT_SUBSCRIPTIONS_NAME = "Standard Event Subscriptions";
+
+        public const int STANDARD_AUTHENTICATION_ID = 12;
+        public const string STANDARD_AUTHENTICATION_NAME = "Standard Authentication";
     }
 }

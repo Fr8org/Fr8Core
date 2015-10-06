@@ -73,12 +73,17 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     // Redirect any unmatched url
-    $urlRouterProvider.otherwise("/processes");
+    $urlRouterProvider.otherwise("/myaccount");
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push('spinnerHttpInterceptor');
 
     $stateProvider
+        .state('myaccount', {
+            url: "/myaccount",
+            templateUrl: "/AngularTemplate/MyAccountPage",
+            data: { pageTitle: 'My Account', pageSubTitle: '' }
+        })
     // Process Template list
         .state('processTemplates', {
             url: "/processes",
