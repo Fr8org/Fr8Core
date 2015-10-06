@@ -35,5 +35,8 @@ namespace Data.Constants
 
 		[Display(Name = "Standard Routing Directive")]
 		StandardRoutingDirective = 11,
+
+        [Display(Name = "Standard Authentication")]
+        StandardAuthentication = 12
 	}
 }

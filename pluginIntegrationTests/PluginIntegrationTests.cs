@@ -34,7 +34,10 @@ namespace pluginIntegrationTests
         private IDisposable _azureSqlServerServer;
 
         private DockyardAccountDO _testUserAccount;
+        private ProcessTemplateDO _processTemplateDO;
+        private ProcessNodeTemplateDO _processNodeTemplateDO;
         private ActionListDO _actionList;
+        private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
         private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
         private ActivityTemplateDO _writeToSqlServerActivityTemplate;
@@ -56,7 +59,14 @@ namespace pluginIntegrationTests
 
             _testUserAccount = FixtureData.TestUser1();
 
+            _processTemplateDO = FixtureData.ProcessTemplate_PluginIntegration();
+            _processTemplateDO.DockyardAccount = _testUserAccount;
+
+            _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
+            _processNodeTemplateDO.ProcessTemplate = _processTemplateDO;
+
             _actionList = FixtureData.TestActionList_ImmediateActions();
+            _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -69,6 +79,11 @@ namespace pluginIntegrationTests
 
 			_sendDocuSignEnvelopeActivityTemplate =
 				FixtureData.TestActivityTemplateDO_SendDocuSignEnvelope();
+            _sendDocuSignEnvelopeActivityTemplate.Plugin = _waitForDocuSignEventActivityTemplate.Plugin;
+
+            _authToken = FixtureData.AuthToken_PluginIntegration();
+            _authToken.Plugin = _waitForDocuSignEventActivityTemplate.Plugin;
+            _authToken.UserDO = _testUserAccount;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -78,6 +93,7 @@ namespace pluginIntegrationTests
                 uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
 				uow.ActivityTemplateRepository.Add(_sendDocuSignEnvelopeActivityTemplate);
                 uow.UserRepository.Add(_testUserAccount);
+                uow.AuthorizationTokenRepository.Add(_authToken);
 
                 uow.SaveChanges();
             }
@@ -110,6 +126,13 @@ namespace pluginIntegrationTests
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var authToken = uow.AuthorizationTokenRepository.GetQuery()
+                    .SingleOrDefault(x => x.Id == _authToken.Id);
+                if (authToken != null)
+                {
+                    uow.AuthorizationTokenRepository.Remove(authToken);
+                }
+
                 var curUser = uow.UserRepository.GetQuery()
                     .SingleOrDefault(x => x.Id == _testUserAccount.Id);
                 if (curUser != null)
@@ -362,6 +385,7 @@ namespace pluginIntegrationTests
         public async Task PluginIntegration_WaitForDocuSign_ConfigureInitial()
         {
             var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+
             await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
 

@@ -112,9 +112,12 @@ namespace UtilitiesTesting.Fixtures
 
                 ProcessNodeTemplateDO processNodeTemplateDO = new ProcessNodeTemplateDO()
                 {
-                    ProcessTemplate = processTemplateDO
+                    ProcessTemplate = processTemplateDO,
+                    StartingProcessNodeTemplate = true
                 };
                 uow.ProcessNodeTemplateRepository.Add(processNodeTemplateDO);
+                processTemplateDO.ProcessNodeTemplates = new List<ProcessNodeTemplateDO> {processNodeTemplateDO};
+                processTemplateDO.StartingProcessNodeTemplate = processNodeTemplateDO;
 
 
                 var actionListDo = new ActionListDO()

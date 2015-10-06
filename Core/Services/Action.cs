@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -246,7 +248,8 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
+                "Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
@@ -279,6 +282,60 @@ namespace Core.Services
                 if (!string.IsNullOrEmpty(curToken))
                     return curToken;
                 return _plugin.Authorize();
+            }
+        }
+
+        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin,
+            string username, string password)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var credentialsDTO = new CredentialsDTO()
+            {
+                Username = username,
+                Password = password
+            };
+
+            var response = await restClient.PostAsync<CredentialsDTO>(
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate"),
+                credentialsDTO
+            );
+
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                if (authToken == null)
+                {
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        Token = authTokenDTO.Token,
+                        ExternalAccountId = authTokenDTO.ExternalAccountId,
+                        Plugin = curPlugin,
+                        UserDO = curAccount,
+                        ExpiresAt = DateTime.Today.AddMonths(1)
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.Token = authTokenDTO.Token;
+                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                }
+
+                uow.SaveChanges();
             }
         }
 
@@ -376,16 +433,70 @@ namespace Core.Services
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
         }
 
+        /// <summary>
+        /// Prepare AuthToken for ActionDTO request message.
+        /// </summary>
+        private void PrepareAuthToken(ActionDTO actionDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Fetch ActivityTemplate.
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(actionDTO.ActivityTemplateId);
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("Could not find ActivityTemplate.");
+                }
+
+                // Fetch Action.
+                var action = uow.ActionRepository.GetByKey(actionDTO.Id);
+                if (action == null)
+                {
+                    throw new ApplicationException("Could not find Action.");
+                }
+
+                // Try to find AuthToken if plugin requires authentication.
+                if (activityTemplate.Plugin.RequiresAuthentication)
+                {
+                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
+                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
+                    var dockyardAccount = actionList.ProcessNodeTemplate
+                        .ProcessTemplate.DockyardAccount;
+                    if (dockyardAccount == null)
+                    {
+                        throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
+                    }
+
+                    var accountId = dockyardAccount.Id;
+
+                    // Try to find AuthToken for specified plugin and account.
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                            && x.UserDO.Id == accountId);
+
+                    // If AuthToken is not empty, fill AuthToken property for ActionDTO.
+                    if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
+                    {
+                        actionDTO.AuthToken = new AuthTokenDTO()
+                        {
+                            Token = authToken.Token
+                        };
+                    }
+                }
+            }
+        }
+
         private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
             
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
-
             dto.ProcessId = processId;
+            PrepareAuthToken(dto);
 
-            return ObjectFactory.GetInstance<IPluginTransmitter>().CallActionAsync<TResult>(actionName, dto);
+            return ObjectFactory.GetInstance<IPluginTransmitter>()
+                .CallActionAsync<TResult>(actionName, dto);
         }
     }
 }

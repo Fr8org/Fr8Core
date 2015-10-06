@@ -66,9 +66,11 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow); 
-            AddPlugins(uow);                     
+            // commented out by yakov.gnusin as of DO-1064
+            // AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            AddAuthorizationTokens(uow);
+            // commented out by yakov.gnusin as of DO-1064
+            // AddAuthorizationTokens(uow);
             AddProcessDOForTestingApi(uow);
         }
 

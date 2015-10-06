@@ -38,6 +38,50 @@ namespace PluginBase.BaseClasses
             _action = ObjectFactory.GetInstance<IAction>();
         }
 
+        protected bool IsEmptyAuthToken(ActionDTO actionDTO)
+        {
+            if (actionDTO == null
+                || actionDTO.AuthToken == null
+                || string.IsNullOrEmpty(actionDTO.AuthToken.Token))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        {
+            if (actionDTO.CrateStorage != null
+                && actionDTO.CrateStorage.CrateDTO != null)
+            {
+                var authCrates = actionDTO.CrateStorage.CrateDTO
+                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+                    .ToList();
+
+                foreach (var authCrate in authCrates)
+                {
+                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                }
+            }
+        }
+
+        protected void AppendDockyardAuthenticationCrate(
+            ActionDTO actionDTO, AuthenticationMode mode, string url = null)
+        {
+            if (actionDTO.CrateStorage == null)
+            {
+                actionDTO.CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                };
+            }
+
+            actionDTO.CrateStorage.CrateDTO.Add(
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode, url)
+            );
+        }
+
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
@@ -152,7 +196,7 @@ namespace PluginBase.BaseClasses
             };
         }
 
-        protected CrateDTO PackControlsCrate(params FieldDefinitionDTO[] controlsList)
+        protected CrateDTO PackControlsCrate(params ControlsDefinitionDTO[] controlsList)
         {
             var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);

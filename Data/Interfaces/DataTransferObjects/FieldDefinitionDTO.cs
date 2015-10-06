@@ -7,14 +7,14 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-	public class CheckBoxFieldDefinitionDTO : FieldDefinitionDTO
+	public class CheckBoxFieldDefinitionDTO : ControlsDefinitionDTO
 	{
 		public CheckBoxFieldDefinitionDTO()
 		{
 			Type = "checkboxField";
 		}
 	}
-    public class DropdownListFieldDefinitionDTO : FieldDefinitionDTO
+    public class DropdownListFieldDefinitionDTO : ControlsDefinitionDTO
     {
 		 [JsonProperty("listItems")]
 		 public List<ListItem> ListItems { get; set; }
@@ -26,7 +26,7 @@ namespace Data.Interfaces.DataTransferObjects
 		 }
     }
 
-    public class RadioButtonGroupFieldDefinitionDTO : FieldDefinitionDTO
+    public class RadioButtonGroupFieldDefinitionDTO : ControlsDefinitionDTO
     {
         [JsonProperty("groupName")]
         public string GroupName { get; set; }
@@ -41,7 +41,7 @@ namespace Data.Interfaces.DataTransferObjects
 		  }
     }
 
-    public class FilterPaneFieldDefinitionDTO : FieldDefinitionDTO
+    public class FilterPaneFieldDefinitionDTO : ControlsDefinitionDTO
     {
         [JsonProperty("fields")]
         public List<FilterPaneField> Fields { get; set;}
@@ -53,16 +53,16 @@ namespace Data.Interfaces.DataTransferObjects
     }
 	 // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
 	 // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
-    public class FieldDefinitionDTO
+    public class ControlsDefinitionDTO
     {
-        public FieldDefinitionDTO() { }
+        public ControlsDefinitionDTO() { }
 
-		  public FieldDefinitionDTO(string type) 
+		  public ControlsDefinitionDTO(string type) 
 		  {
 			  Type = type;
 		  }
 
-        public FieldDefinitionDTO(string name, bool required, string value, string fieldLabel)
+        public ControlsDefinitionDTO(string name, bool required, string value, string fieldLabel)
         {
             Type = TEXTBOX_FIELD;
             Name = name;
@@ -71,7 +71,7 @@ namespace Data.Interfaces.DataTransferObjects
             Label = fieldLabel;
         }
 
-        public FieldDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
+        public ControlsDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
         {
             Type = type;
             Name = name;
