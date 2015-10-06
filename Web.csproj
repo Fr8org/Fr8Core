@@ -746,6 +746,7 @@
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
     <Content Include="Scripts\tests\integration\ProcessControllerTests.js" />
+    <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <None Include="Views\Home\docusign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -759,6 +760,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountListController.ts" />

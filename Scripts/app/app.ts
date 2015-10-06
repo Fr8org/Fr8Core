@@ -10,7 +10,8 @@ var app = angular.module("app", [
     'ui.bootstrap',
     "ngMockE2E",
     "datatables",
-    "ngFileUpload"
+    "ngFileUpload",
+    "textAngular"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */

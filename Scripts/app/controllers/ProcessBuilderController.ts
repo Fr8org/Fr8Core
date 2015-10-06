@@ -17,6 +17,9 @@ module dockyard.controllers {
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
         //curNodeIsTempId: boolean;
         current: model.ProcessBuilderState;
+
+        //demo
+        textAreaField: model.TextAreaField;
     }
 
     //Setup aliases
@@ -79,6 +82,10 @@ module dockyard.controllers {
             this.setupMessageProcessing();
             this.loadProcessTemplate();
             var self = this;
+
+            var textAreaField = new model.TextAreaField();
+            textAreaField.value = '<h1>testt</h1>';
+            this._scope.textAreaField = textAreaField;
         }
 
         /*
