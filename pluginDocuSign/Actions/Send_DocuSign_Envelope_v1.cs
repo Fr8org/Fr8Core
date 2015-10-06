@@ -81,31 +81,44 @@ namespace pluginDocuSign.Actions
 			return ConfigurationRequestType.Followup;
 		}
 
-		protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
-		{
+        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
+        {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
             var template = new DocuSignTemplate();
             template.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-			if (curActionDTO.CrateStorage == null)
-			{
-				curActionDTO.CrateStorage = new CrateStorageDTO();
-			}
+            if (curCrates == null || curCrates.Count == 0)
+                return curActionDTO;
+            var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
+            // Try to find Configuration_Controls
+            var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
+            if (stdCfgControlMS == null)
+                return curActionDTO;
+            var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
+            if (dropdownControlDTO == null)
+                return curActionDTO;
 
-            // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
-			// Two crates are created
-			// One to hold the ui controls
+            // Get DocuSign Template Id
+            var docusignTemplateId = dropdownControlDTO.Value;
+            // Get Template
+            var docuSignTemplateDTO = template.GetTemplateById(docusignTemplateId);
+            var docuSignUserFields = template.GetUserFields(docuSignTemplateDTO);
+            //	when we're in design mode, there are no values
+            // we just want the names of the fields
+            List<FieldDTO> userDefinedFields = new List<FieldDTO>();
+            docuSignUserFields.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = null, Value = x }));
+            //  we're in design mode, there are no values 
+            List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" } };
+            var crateUserDefinedDTO = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray());
+            var crateStandardDTO = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateStandardFields", standartFields.ToArray());
 
-            if (!curActionDTO.CrateStorage.CrateDTO.Any(c => c.ManifestId == (int)MT.StandardDesignTimeFields))
-            {
-			var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
-			// and one to hold the available templates, which need to be requested from docusign
-            var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-			curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+            curActionDTO.CrateStorage = AssembleCrateStorage(crateUserDefinedDTO, crateStandardDTO);
+
             return await Task.FromResult<ActionDTO>(curActionDTO);
-		}
+        }
 
 		protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
 		{
