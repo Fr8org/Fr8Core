@@ -92,6 +92,8 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionAdding is emitted, select action modal should be opened", () => {
             var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.immediateActionListVM = <interfaces.IActionListVM>new model.ActionListDTO();
+            _$scope.immediateActionListVM.id = 1;
             _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
             resolvePromises();
             expect(_$modalMock.open).toHaveBeenCalled();
