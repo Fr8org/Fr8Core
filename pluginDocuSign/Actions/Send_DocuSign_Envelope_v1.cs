@@ -94,8 +94,12 @@ namespace pluginDocuSign.Actions
 				curActionDTO.CrateStorage = new CrateStorageDTO();
 			}
 
+            // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
 			// Two crates are created
 			// One to hold the ui controls
+
+            if (!curActionDTO.CrateStorage.CrateDTO.Any(c => c.ManifestId == (int)MT.StandardDesignTimeFields))
+            {
 			var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
 			// and one to hold the available templates, which need to be requested from docusign
             var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
@@ -159,9 +163,42 @@ namespace pluginDocuSign.Actions
 				}
 			};
 
+            var radioButtonGroup = new RadioButtonGroupFieldDefinitionDTO()
+            {
+                Label = "Test RadioButtons",
+                GroupName = "Group1",
+                Name = "Group1",
+                Radios = new List<RadioButton>()
+                {
+                    new RadioButton()
+                    {
+                        Selected = true,
+                        Value ="Test 1"
+                    },
+                    new RadioButton()
+                    {
+                        Selected = false,
+                        Value ="Test 2"
+                    },
+                    new RadioButton()
+                    {
+                        Selected = false,
+                        Value ="Test 3"
+                    }
+                }
+            };
+
+            radioButtonGroup.Radios[0].Fields.Add(new TextFieldDefinitionDTO()
+            {
+                Label = "Test field",
+                Name = "Test field"
+            });
+
+
 			var fieldsDTO = new List<ControlsDefinitionDTO>()
 			{
 				fieldSelectDocusignTemplateDTO,
+                radioButtonGroup
 			};
 			var controls = new StandardConfigurationControlsMS()
 			{

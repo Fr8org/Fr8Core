@@ -7,7 +7,12 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-	public class CheckBoxFieldDefinitionDTO : ControlsDefinitionDTO
+    public interface ISupportsNestedFields
+    {
+        IList<ControlsDefinitionDTO> Fields { get; }
+    }
+
+    public class CheckBoxFieldDefinitionDTO : ControlsDefinitionDTO
 	{
 		public CheckBoxFieldDefinitionDTO()
 		{
@@ -37,8 +42,16 @@ namespace Data.Interfaces.DataTransferObjects
 		 public RadioButtonGroupFieldDefinitionDTO()
 		  {
 			  Radios = new List<RadioButton>();
-			  Type = "radioGroup";
+			  Type = "radioButtonGroup";
 		  }
+    }
+
+    public class TextFieldDefinitionDTO : ControlsDefinitionDTO
+    {
+        public TextFieldDefinitionDTO()
+        {
+            Type = TEXTBOX_FIELD;
+        }
     }
 
     public class FilterPaneFieldDefinitionDTO : ControlsDefinitionDTO
@@ -131,13 +144,21 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class RadioButton
+    public class RadioButton : ISupportsNestedFields
     {
+        public RadioButton()
+        {
+            Fields = new List<ControlsDefinitionDTO>();
+        }
+
         [JsonProperty("selected")]
         public bool Selected { get; set; }
 
         [JsonProperty("value")]
         public string Value { get; set; }
+        
+        [JsonProperty("fields")]
+        public IList<ControlsDefinitionDTO> Fields { get; set; }
     }
 
     public class FilterPaneField
