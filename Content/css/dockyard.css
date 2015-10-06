@@ -89,6 +89,20 @@
 
 /* Process Builder */
 
+.process-builder-container {
+    overflow-y: auto;
+    white-space: nowrap;
+}
+
+.action-arrow {
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/4/45/Right-facing-Arrow-icon.jpg');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    margin-top: 120px;
+    width: 50px;
+}
+
 .action {
     border: 2px solid black;
     display: inline-block;
