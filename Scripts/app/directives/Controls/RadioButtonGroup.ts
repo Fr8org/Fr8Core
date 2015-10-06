@@ -42,14 +42,14 @@ module dockyard.directives.radioButtonGroup {
         }
 
         private ChangeSelection(radio: model.RadioField) {
-            for (var i = 0; i < this._$scope.field.radios.length; i++) {
-                if (this._$scope.field.radios[i] === radio) {
-                    this._$scope.field.radios[i].selected = true;
+            var radios = this._$scope.field.radios
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i] === radio) {
+                    radios[i].selected = true;
                 } else {
-                    this._$scope.field.radios[i].selected = false;
+                    radios[i].selected = false;
                 }
             }
-
         }
 
         //The factory function returns Directive object as per Angular requirements

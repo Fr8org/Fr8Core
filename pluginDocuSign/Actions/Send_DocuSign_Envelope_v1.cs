@@ -86,12 +86,17 @@ namespace pluginDocuSign.Actions
 				curActionDTO.CrateStorage = new CrateStorageDTO();
 			}
 
-			// Two crates are created
-			// One to hold the ui controls
-			var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
-			// and one to hold the available templates, which need to be requested from docusign
-            var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
-			curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+            // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
+            // Two crates are created
+            // One to hold the ui controls
+
+            if (!curActionDTO.CrateStorage.CrateDTO.Any(c => c.ManifestId == (int)MT.StandardDesignTimeFields))
+            {
+                var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
+                // and one to hold the available templates, which need to be requested from docusign
+                var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
+                curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
+            }
 			return curActionDTO;
 		}
 
