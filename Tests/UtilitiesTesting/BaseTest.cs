@@ -11,9 +11,6 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Web.App_Start;
-using pluginDocuSign.Infrastructure.AutoMapper;
-using pluginDocuSign.Infrastructure.StructureMap;
-using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace UtilitiesTesting
 {
@@ -27,9 +24,6 @@ namespace UtilitiesTesting
             MockedDBContext.WipeMockedDatabase();
             AutoMapperBootStrapper.ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-
-            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
-            PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
