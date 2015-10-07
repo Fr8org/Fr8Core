@@ -7,22 +7,22 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using pluginAzureSqlServer.Infrastructure;
-using pluginAzureSqlServer.Services;
-using PluginBase.Infrastructure;
+using terminal_AzureSqlServer.Infrastructure;
+using terminal_AzureSqlServer.Services;
+using terminal_base.Infrastructure;
 using StructureMap;
-using PluginBase;
-using PluginBase.BaseClasses;
+using terminal_base;
+using terminal_base.BaseClasses;
 using Core.Interfaces;
 using Core.Services;
 using Core.StructureMap;
 using Data.States.Templates;
 using Data.Interfaces.ManifestSchemas;
 
-namespace pluginAzureSqlServer.Actions
+namespace terminal_AzureSqlServer.Actions
 {
 
-    public class Write_To_Sql_Server_v1 : BasePluginAction
+    public class Write_To_Sql_Server_v1 : BaseTerminalAction
     {
 
         //================================================================================
@@ -175,7 +175,7 @@ namespace pluginAzureSqlServer.Actions
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
             if (curActionDTO.CrateStorage.CrateDTO.Count == 0)
             {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             var curConnectionStringFieldList =
@@ -183,13 +183,13 @@ namespace pluginAzureSqlServer.Actions
 
             if (curConnectionStringFieldList == null)
             {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             var connStringField = curConnectionStringFieldList.Controls.First();
             if (connStringField == null || String.IsNullOrEmpty(connStringField.Value))
             {
-                throw new PluginCodedException(PluginErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();

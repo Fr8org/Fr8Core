@@ -1,9 +1,8 @@
 ﻿using System.Web.Http;
-using pluginDocuSign.Services;
-using StructureMap;
-using pluginDocuSign.Interfaces;
+using terminal_DocuSign.Interfaces;
+using terminal_DocuSign.Services;
 
-namespace pluginDocuSign.Controllers
+namespace terminal_DocuSign.Controllers
 {
     public class EventController : ApiController
     {

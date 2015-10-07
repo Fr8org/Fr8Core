@@ -48,7 +48,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionTemplate = new ActivityTemplateDO
             {
                 Id = 1,
-                Name = "plugin_azure_sql_server",
+                Name = "terminal_azure_sql_server",
                 Plugin = PluginThree(),
                 Version = "1"
             };
@@ -61,7 +61,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionTemplate = new ActivityTemplateDTO
             {
                 Id = 1,
-                Name = "plugin_azure_sql_server",
+                Name = "terminal_azure_sql_server",
                 Version = "1",
                 PluginID = 1
             };

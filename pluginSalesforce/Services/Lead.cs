@@ -1,25 +1,21 @@
 ﻿using Data.Interfaces.DataTransferObjects;
-using pluginSalesforce.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Configuration;
-using StructureMap;
-using Utilities.Logging;
 using Salesforce.Force;
+using StructureMap;
+using System;
 using System.Threading.Tasks;
+using terminal_Salesforce.Infrastructure;
+using Utilities.Logging;
 
-namespace pluginSalesforce.Services
+namespace terminal_Salesforce.Services
 {
     public class Lead : ILead
     {
-        ForceClient forceClient;
+        ForceClient _forceClient;
         IConfiguration _salesforceAccount = ObjectFactory.GetInstance<IConfiguration>();
 
         public Lead()
         {
-            forceClient = _salesforceAccount.GetForceClient();
+            _forceClient = _salesforceAccount.GetForceClient();
         }
 
         public bool CreateLead(ActionDTO currentDTO)
@@ -45,7 +41,7 @@ namespace pluginSalesforce.Services
             lead.LastName = "LastName";
             lead.Company = "Logiticks";
             lead.Title = "Title -1";
-            var newLeadId = await forceClient.CreateAsync("Lead", lead);
+            var newLeadId = await _forceClient.CreateAsync("Lead", lead);
         }
     }
 }

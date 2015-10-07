@@ -291,17 +291,17 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginAzureSqlServer\pluginAzureSqlServer.csproj">
+    <ProjectReference Include="..\..\pluginAzureSqlServer\terminal_AzureSqlServer.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
-      <Name>pluginAzureSqlServer</Name>
+      <Name>terminal_AzureSqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginBase\PluginBase.csproj">
+    <ProjectReference Include="..\..\pluginBase\terminal_base.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>PluginBase</Name>
+      <Name>terminal_base</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\pluginDockyardCore\pluginDockyardCore.csproj">
+    <ProjectReference Include="..\..\pluginDockyardCore\terminal_fr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>pluginDockyardCore</Name>
+      <Name>terminal_fr8Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Web.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

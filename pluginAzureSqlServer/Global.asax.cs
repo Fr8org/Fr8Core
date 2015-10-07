@@ -4,7 +4,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Web.Http;
 
-namespace pluginAzureSqlServer
+namespace terminal_AzureSqlServer
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

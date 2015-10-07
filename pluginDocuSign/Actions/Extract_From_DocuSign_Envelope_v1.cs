@@ -1,27 +1,20 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
+﻿using Core.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Data.Interfaces.DataTransferObjects;
-using PluginBase.BaseClasses;
-using Newtonsoft.Json;
-using Core.Interfaces;
-using StructureMap;
-using System.Web.Http;
-using System.Web.Http.Results;
-using PluginBase;
-using Data.Interfaces;
-using Data.Interfaces.ManifestSchemas;
 using System.Threading.Tasks;
-using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Interfaces;
-using pluginDocuSign.Services;
+using terminal_base;
+using terminal_base.BaseClasses;
+using terminal_base.Infrastructure;
+using terminal_DocuSign.DataTransferObjects;
+using terminal_DocuSign.Services;
 
-namespace pluginDocuSign.Actions
+namespace terminal_DocuSign.Actions
 {
-    public class Extract_From_DocuSign_Envelope_v1 : BasePluginAction
+    public class Extract_From_DocuSign_Envelope_v1 : BaseTerminalAction
     {
         // TODO: remove this as of DO-1064
         // IDocuSignEnvelope _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
@@ -68,7 +61,7 @@ namespace pluginDocuSign.Actions
             string envelopeId = GetEnvelopeId(processPayload);
             if (envelopeId == null)
             {
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
             }
 
             var payload = CreateActionPayload(actionDto, envelopeId);

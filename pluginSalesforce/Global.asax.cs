@@ -1,7 +1,7 @@
 ﻿using Data.Infrastructure.AutoMapper;
 using System.Web.Http;
 
-namespace pluginSalesforce
+namespace terminal_Salesforce
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

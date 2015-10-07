@@ -1,25 +1,19 @@
-﻿using System;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
-using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
-using PluginBase.BaseClasses;
-using System.Collections.Generic;
+﻿using Data.Entities;
 using Data.States;
-namespace pluginSalesforce.Controllers
+using System.Collections.Generic;
+using System.Web.Http;
+namespace terminal_Salesforce.Controllers
 {
-     [RoutePrefix("plugins")]
-    public class PluginController : ApiController
+    [RoutePrefix("terminals")]
+    public class TerminalController : ApiController
     {
         [HttpGet]
         [Route("discover")]
         public IHttpActionResult Get()
         {
-            var plugin = new PluginDO()
+            var terminal = new PluginDO()
             {
-                Name = "pluginSalesforce",
+                Name = "terminal_Salesforce",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = "localhost:51234",
                 Version = "1"
@@ -29,7 +23,7 @@ namespace pluginSalesforce.Controllers
             {
                 Version = "1",
                 Name = "Create_Lead",
-                Plugin = plugin,
+                Plugin = terminal,
                 Category = ActivityCategory.fr8_Forwarder
             };
 

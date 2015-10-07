@@ -1,6 +1,6 @@
 ﻿using DocuSign.Integrations.Client;
 
-namespace pluginTests.Fixtures
+namespace terminalTests.Fixtures
 {
 	public partial class PluginFixtureData
 	{

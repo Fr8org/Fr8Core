@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using Microsoft.Owin;
-using Newtonsoft.Json;
+﻿using Microsoft.Owin;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
-using pluginSalesforce;
+using System.Threading.Tasks;
+using terminal_base.BaseClasses;
 
-[assembly: OwinStartup(typeof(pluginSalesforce.Startup))]
+[assembly: OwinStartup(typeof(terminal_Salesforce.Startup))]
 
-namespace pluginSalesforce
+namespace terminal_Salesforce
 {
     public class Startup
     {
         public void Configuration(IAppBuilder app)
         {            
-            PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);
+            TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.LIVE);
 
             Task.Run(() =>
             {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_salesforce");
+                BaseTerminalController curController = new BaseTerminalController();
+                curController.AfterStartup("terminal_salesforce");
             });
         }
     }

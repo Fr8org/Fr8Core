@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Microsoft.Owin;
-using Newtonsoft.Json;
+﻿using Microsoft.Owin;
 using Owin;
-using PluginBase;
-using PluginBase.BaseClasses;
 using System.Threading.Tasks;
+using terminal_base.BaseClasses;
 
-[assembly: OwinStartup(typeof(pluginSlack.Startup))]
+[assembly: OwinStartup(typeof(terminal_Slack.Startup))]
 
-namespace pluginSlack
+namespace terminal_Slack
 {
     public class Startup
     {
@@ -19,8 +13,8 @@ namespace pluginSlack
         {
             Task.Run(() =>
             {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_slack");
+                BaseTerminalController curController = new BaseTerminalController();
+                curController.AfterStartup("terminal_slack");
             });
         }
     }

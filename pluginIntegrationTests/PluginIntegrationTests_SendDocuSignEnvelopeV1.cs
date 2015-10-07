@@ -11,7 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using pluginAzureSqlServer;
+using terminal_AzureSqlServer;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
@@ -19,15 +19,15 @@ using Data.Constants;
 using Utilities;
 using System.Threading.Tasks;
 
-namespace pluginIntegrationTests
+namespace terminalIntegrationTests
 {
-	public partial class PluginIntegrationTests : BaseTest
+	public partial class TerminalIntegrationTests : BaseTest
 	{
 		/// <summary>
 		/// Test Send_DocuSign_Envelope_v1 initial configuration.
 		/// </summary>
 		[Test]
-		public async Task PluginIntegration_SendDocuSignEnvelope_ConfigureInitial()
+		public async Task TerminalIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
 			var curActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
 			await SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
@@ -36,7 +36,7 @@ namespace pluginIntegrationTests
 		/// Test Send_DocuSign_Envelope_v1 follow-up configuration.
 		/// </summary>
 		[Test]
-		public async Task PluginIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
+		public async Task TerminalIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
 			var savedActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);

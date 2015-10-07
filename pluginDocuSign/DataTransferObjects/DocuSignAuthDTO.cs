@@ -1,4 +1,4 @@
-﻿namespace pluginDocuSign.DataTransferObjects
+﻿namespace terminal_DocuSign.DataTransferObjects
 {
     public class DocuSignAuthDTO
     {

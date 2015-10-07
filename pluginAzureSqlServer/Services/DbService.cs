@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using pluginAzureSqlServer.Infrastructure;
+using terminal_AzureSqlServer.Infrastructure;
 using Utilities.Logging;
 
-namespace pluginAzureSqlServer.Services
+namespace terminal_AzureSqlServer.Services
 {
     public class DbService : IDbService
     {
@@ -16,7 +16,7 @@ namespace pluginAzureSqlServer.Services
         {
             // Get corresponding provider.
             var dbProvider = GetDbProvider(args.ProviderName);
-            // Check that plugin knows how to work wih specified provider name.
+            // Check that terminal knows how to work wih specified provider name.
             if (dbProvider == null)
             {
                 var message = string.Format("No DbProvider found for \"{0}\"", args.ProviderName);
