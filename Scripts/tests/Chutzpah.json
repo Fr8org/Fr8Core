@@ -39,6 +39,15 @@
         "Path": "../../bower_components/ng-file-upload/ng-file-upload-all.min.js"
     },
     {
+        "Path": "../../bower_components/textAngular/dist/textAngular-rangy.min.js"
+    },
+    {
+        "Path": "../../bower_components/textAngular/dist/textAngular-sanitize.min.js"
+    },
+    {
+        "Path": "../../bower_components/textAngular/dist/textAngular.min.js"
+    },
+    {
       "Path": "../app/app.js"
     },   
     {
