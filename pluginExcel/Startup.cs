@@ -15,11 +15,11 @@ using PluginBase;
 using PluginBase.BaseClasses;
 using StructureMap;
 
-[assembly: OwinStartup(typeof(pluginExcel.Startup))]
+[assembly: OwinStartup("PluginExcelConfiguration", typeof(pluginExcel.StartupPluginExcel))]
 
 namespace pluginExcel
 {
-    public class Startup : BaseConfiguration
+    public class StartupPluginExcel : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {

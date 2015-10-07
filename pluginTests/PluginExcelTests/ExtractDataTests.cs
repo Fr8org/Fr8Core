@@ -17,6 +17,9 @@ using pluginExcel.Actions;
 using Core.Interfaces;
 using Newtonsoft.Json;
 using pluginExcel.Infrastructure;
+using Moq;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace pluginTests.PluginExcelTests
 {
@@ -46,6 +49,92 @@ namespace pluginTests.PluginExcelTests
         public void Cleanup()
         {
             
+        }
+
+        [Test]
+        public void ConfigEvaluatorInitialResponse_Test()
+        {
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+                },
+            };
+
+            var result =  new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+            
+            Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Initial);
+        }
+
+        [Test]
+        [ExpectedException]
+        public void ConfigEvaluatorFollowupResponseThrowsException_Test()
+        {
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+                },
+            };
+            StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
+            {
+                Controls = new List<FieldDefinitionDTO>()
+                {
+                    new FieldDefinitionDTO("select_file", true, "1", "select file"),
+                    new FieldDefinitionDTO("select_file", true, "2", "select file"),
+                },
+            };
+            curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
+            {
+                Contents = JsonConvert.SerializeObject(confControlsMS),
+                ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            });
+            //Mock<ICrate> crateMock = new Mock<ICrate>();
+            //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
+
+            //ActionDO actionDO = new FixtureData(uow).TestAction3();
+            //var controller = new ActionController(crateMock.Object);
+
+
+            var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+
+            Assert.AreNotEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
+        }
+
+        [Test]
+        public void ConfigEvaluatorFollowupResponse_Test()
+        {
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+                },
+            };
+            StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
+            {
+                Controls = new List<FieldDefinitionDTO>()
+                {
+                    new FieldDefinitionDTO("select_file", true, "1", "select file"),
+                },
+            };
+            curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
+                {
+                    Contents = JsonConvert.SerializeObject(confControlsMS),
+                    ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+                });
+            //Mock<ICrate> crateMock = new Mock<ICrate>();
+            //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
+            
+            //ActionDO actionDO = new FixtureData(uow).TestAction3();
+            //var controller = new ActionController(crateMock.Object);
+
+
+            var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+
+            Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
         }
 
         [Test]

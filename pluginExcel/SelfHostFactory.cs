@@ -13,7 +13,7 @@ namespace pluginExcel
         {
             public void Configuration(IAppBuilder app)
             {
-                var startup = new Startup();
+                var startup = new StartupPluginExcel();
                 startup.Configuration(app, selfHost: true);
             }
         }

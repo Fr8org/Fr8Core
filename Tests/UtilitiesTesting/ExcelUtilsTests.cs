@@ -276,7 +276,7 @@ namespace UtilitiesTesting
 				catch { }
 			}
 		}
-        [Ignore] // Ignoring tis test for now as it fails on the build server complaining that it can not reach the excel file's path
+        [Test, Ignore] // Ignoring tis test for now as it fails on the build server complaining that it can not reach the excel file's path
         public void GetColumnHeadersTest()
         {
             string pathToExcel = @"..\..\Tools\FileTools\TestFiles\SampleFile1.xlsx";
@@ -294,7 +294,7 @@ namespace UtilitiesTesting
             {
             }
         }
-        [Ignore] // Ignoring tis test for now as it fails on the build server complaining that it can not reach the excel file's path
+        [Test, Ignore] // Ignoring tis test for now as it fails on the build server complaining that it can not reach the excel file's path
         public void GetRowsTest()
         {
             string pathToExcel = @"..\..\Tools\FileTools\TestFiles\SampleFile1.xlsx";

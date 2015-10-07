@@ -57,6 +57,8 @@ namespace PluginBase.BaseClasses
 
         public virtual ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
+            // this method should be implemented by the child classes; hence virtual but since it 
+            // has to implement IHttpControllerTypeResolver therefore the access is public
             throw new NotImplementedException();
         }
     }
