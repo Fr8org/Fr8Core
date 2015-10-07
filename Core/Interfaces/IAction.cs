@@ -28,7 +28,8 @@ namespace Core.Interfaces
 		StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
         ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
-        Task Authenticate(DockyardAccountDO user, PluginDO plugin, string username, string password);
+        Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);
+        Task AuthenticateExternal(DockyardAccountDO user, PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
     }
 }

@@ -24,7 +24,7 @@ namespace pluginSlack.Controllers
                 Endpoint = "localhost:39504",
                 PluginStatus = PluginStatus.Active,
                 Name = "pluginSlack",
-                RequiresAuthentication = false,
+                RequiresAuthentication = true,
                 Version = "1"
             };
 

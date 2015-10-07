@@ -285,7 +285,7 @@ namespace Core.Services
             }
         }
 
-        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin,
+        public async Task AuthenticateInternal(DockyardAccountDO account, PluginDO plugin,
             string username, string password)
         {
             if (!plugin.RequiresAuthentication)
@@ -302,7 +302,7 @@ namespace Core.Services
             };
 
             var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate"),
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_internal"),
                 credentialsDTO
             );
 
@@ -339,9 +339,53 @@ namespace Core.Services
             }
         }
 
+        public async Task AuthenticateExternal(
+            DockyardAccountDO account,
+            PluginDO plugin,
+            ExternalAuthenticationDTO externalAuthDTO)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_external"),
+                externalAuthDTO
+            );
+
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.UserDO.Id == account.Id
+                        && x.Plugin.Id == plugin.Id
+                        && x.ExternalStateToken == authTokenDTO.ExternalStateToken);
+
+                if (authToken == null)
+                {
+                    throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
+                }
+
+                authToken.Token = authTokenDTO.Token;
+                authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                authToken.ExternalStateToken = null;
+
+                uow.SaveChanges();
+            }
+        }
+
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
             DockyardAccountDO user, PluginDO plugin)
         {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var response = await restClient.PostAsync(

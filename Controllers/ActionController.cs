@@ -85,7 +85,6 @@ namespace Web.Controllers
             return Ok(new { Url = externalAuthUrlDTO.Url });
         }
 
-
         [HttpPost]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
@@ -115,7 +114,7 @@ namespace Web.Controllers
                 }
             }
 
-            await _action.Authenticate(
+            await _action.AuthenticateInternal(
                 account,
                 plugin,
                 credentials.Username,

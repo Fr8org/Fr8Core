@@ -70,7 +70,7 @@ module dockyard.controllers {
             private ActivityTemplateService: services.IActivityTemplateService,
             private $filter: ng.IFilterService,
             private $modal,
-            private $window
+            private $window: ng.IWindowService
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -402,11 +402,27 @@ module dockyard.controllers {
         private PaneConfigureAction_ExternalAuthentication(
             eventArgs: pca.ExternalAuthenticationArgs) {
 
+            var self = this;
+
             this.$http
                 .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
                 .then(function (res) {
-                    console.log(res);
-                    debugger;
+                    var url = (<any>res.data).url;
+
+                    var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+
+                    // TODO: fix that later (DO-1211).
+                    // var isClosedHandler = function () {
+                    //     if (childWindow.closed) {
+                    //         var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
+                    //         self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                    //     }
+                    //     else {
+                    //         setTimeout(isClosedHandler, 500);
+                    //     }
+                    // };
+                    // 
+                    // setTimeout(isClosedHandler, 500);
                 });
         }
 
