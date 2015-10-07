@@ -35,14 +35,15 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionListDO TestActionList_ImmediateActions()
-        {
-            return new ActionListDO()
-            {
-                ActionListType = ActionListType.Immediate,
-                Name = "ImmediateActions"
-            };
-        }
+        // DO-1214
+//        public static ActionListDO TestActionList_ImmediateActions()
+//        {
+//            return new ActionListDO()
+//            {
+//                ActionListType = ActionListType.Immediate,
+//                Name = "ImmediateActions"
+//            };
+//        }
 
         public static PluginDO TestPlugin_DocuSign()
         {

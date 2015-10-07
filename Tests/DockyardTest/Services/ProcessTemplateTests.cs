@@ -62,7 +62,7 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingProcessNodeTemplate);
                 Assert.AreEqual(result.ProcessNodeTemplates.Count, 1);
-                Assert.AreEqual(result.StartingProcessNodeTemplate.ActionLists.Count, 2);
+                Assert.AreEqual(result.StartingProcessNodeTemplate.Activities.Count, 2);
             }
         }
 
@@ -101,7 +101,7 @@ namespace DockyardTest.Services
 
 
             Assert.AreEqual(result, "success");
-            var activities = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.ActionLists).SelectMany(s => s.Activities);
+            var activities = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
             foreach (ActionDO curActionDO in activities)
             {
                 Assert.AreEqual(curActionDO.ActionState, ActionState.Active);

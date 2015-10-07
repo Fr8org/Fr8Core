@@ -25,6 +25,7 @@ using pluginDocuSign.Infrastructure.AutoMapper;
 
 namespace pluginIntegrationTests
 {
+    // Has to repair tests (DO-1214)
     [TestFixture]
 	public partial class PluginIntegrationTests : BaseTest
     {
@@ -36,7 +37,6 @@ namespace pluginIntegrationTests
         private DockyardAccountDO _testUserAccount;
         private ProcessTemplateDO _processTemplateDO;
         private ProcessNodeTemplateDO _processNodeTemplateDO;
-        private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
         private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
@@ -65,8 +65,8 @@ namespace pluginIntegrationTests
             _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
             _processNodeTemplateDO.ProcessTemplate = _processTemplateDO;
 
-            _actionList = FixtureData.TestActionList_ImmediateActions();
-            _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
+//            _actionList = FixtureData.TestActionList_ImmediateActions();
+//            _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -87,7 +87,7 @@ namespace pluginIntegrationTests
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(_actionList);
+                //uow.ActivityRepository.Add(_actionList);
                 uow.ActivityTemplateRepository.Add(_waitForDocuSignEventActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_filterUsingRunTimeDataActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
@@ -168,12 +168,12 @@ namespace pluginIntegrationTests
 					uow.ActivityTemplateRepository.Remove(sendDocuSignEnvelopeActivityTemplate);
 				}
 
-                var actionList = uow.ActivityRepository
-                    .GetByKey(_actionList.Id);
-                if (actionList != null)
-                {
-                    uow.ActivityRepository.Remove(actionList);
-                }
+//                var actionList = uow.ActivityRepository
+//                    .GetByKey(_actionList.Id);
+//                if (actionList != null)
+//                {
+//                    uow.ActivityRepository.Remove(actionList);
+//                }
 
                 uow.SaveChanges();
             }
@@ -184,11 +184,11 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_actionList.Activities == null)
-            {
-                _actionList.Activities = new List<ActivityDO>();
-                _actionList.Activities.Add(curActionDO);
-            }
+//            if (_actionList.Activities == null)
+//            {
+//                _actionList.Activities = new List<ActivityDO>();
+//                _actionList.Activities.Add(curActionDO);
+//            }
 
             if (activityTemplate != null)
             {
@@ -196,8 +196,8 @@ namespace pluginIntegrationTests
                 curActionDO.ActivityTemplateId = activityTemplate.Id;
             }
 
-            curActionDO.ParentActivity = _actionList;
-            curActionDO.ParentActivityId = _actionList.Id;
+//            curActionDO.ParentActivity = _actionList;
+//            curActionDO.ParentActivityId = _actionList.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 

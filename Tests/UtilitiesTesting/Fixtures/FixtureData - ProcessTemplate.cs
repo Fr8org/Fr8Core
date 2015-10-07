@@ -184,7 +184,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = i,
                     Name = string.Format("curProcessNodeTemplateDO-{0}", i),
                     ProcessTemplate = curProcessTemplateDO,
-                    ActionLists = FixtureData.TestActionList1(),
+                    Activities = FixtureData.TestActionList1(),
                 };
                 curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
             }
@@ -210,7 +210,7 @@ namespace UtilitiesTesting.Fixtures
                     Id = i,
                     Name = string.Format("curProcessNodeTemplateDO-{0}", i),
                     ProcessTemplate = curProcessTemplateDO,
-                    ActionLists = FixtureData.TestActionListParentActivityID12()
+                    Activities = FixtureData.TestActionListParentActivityID12()
                 };
                 curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
             }
@@ -266,7 +266,7 @@ namespace UtilitiesTesting.Fixtures
 
             var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
             
-            curProcessNodeTemplateDO.ActionLists.Add(curImmediateActionList);
+            curProcessNodeTemplateDO.Activities.Add(curImmediateActionList);
 
             return curProcessTemplateDO;
         }

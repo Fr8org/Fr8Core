@@ -28,21 +28,14 @@ namespace Data.Infrastructure.AutoMapper
 
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
-                .Include(x => x.ActionLists)
+                .Include(x => x.Actions)
                 .Where(x => x.ParentTemplateId == processTemplate.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((ProcessNodeTemplateDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
-                    pntDTO.ActionLists = x.ActionLists.Select(y =>
-                    {
-                        var actionList = Mapper.Map<FullActionListDTO>(y);
-                        actionList.Actions = y.Activities.OfType<ActionDO>()
-                                .Select(z => Mapper.Map<ActionDTO>(z))
-                                .ToList();
-                        return actionList;
-                    }).ToList();
+                    pntDTO.Actions = x.Actions.OfType<ActionDO>().Select(Mapper.Map<ActionDTO>).ToList();
                     return pntDTO;
                 }).ToList();
 

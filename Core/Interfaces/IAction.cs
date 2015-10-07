@@ -26,7 +26,6 @@ namespace Core.Interfaces
         Task<ActionDTO> Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
 		StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
-        ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
         Task Authenticate(DockyardAccountDO user,
             PluginDO plugin, string username, string password);

@@ -160,8 +160,8 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = UpdateCurrentActivity(id, uow);
-                if (curAction == null)
+                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
                     curAction = new ActivityDO { Id = id };
                     uow.ActivityRepository.Attach(curAction);
@@ -178,24 +178,24 @@ namespace Core.Services
         /// <param name="curActionId">Action Id</param>
         /// <param name="uow">Unit of Work</param>
         /// <returns>Returns the current action (if found) or null if not.</returns>
-        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
-        {
-            // Find an ActionList for which the action is set as CurrentActivity
-            // Also, get the whole list of actions for this Action List 
-            var curActionList = uow.ActionListRepository.GetQuery().Where(al => al.CurrentActivityID == curActionId).Include(al => al.Activities).SingleOrDefault();
-            if (curActionList == null) return null;
-
-            // Get current Action
-            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
-            if (curAction == null) return null; // Well, who knows...
-
-            // Get ordered list of next Activities 
-            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-            
-            curActionList.CurrentActivity = activities.FirstOrDefault();
-
-            return curAction;
-        }
+//        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
+//        {
+//            // Find an ActionList for which the action is set as CurrentActivity
+//            // Also, get the whole list of actions for this Action List 
+//            var curActionList = uow.ActionRepository.GetQuery().Where(al => al.Id == curActionId).Include(al => al.Activities).SingleOrDefault();
+//            if (curActionList == null) return null;
+//
+//            // Get current Action
+//            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
+//            if (curAction == null) return null; // Well, who knows...
+//
+//            // Get ordered list of next Activities 
+//            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+//            
+//            curActionList.CurrentActivity = activities.FirstOrDefault();
+//
+//            return curAction;
+//        }
 
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
         {
@@ -349,12 +349,7 @@ namespace Core.Services
             if (curActionDO.ParentActivity != null
                 && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
-
-                return curActionListDO
-                    .Process
-                    .ProcessTemplate
-                    .DockyardAccount;
+                return curActionDO.ProcessNodeTemplate.ProcessTemplate.DockyardAccount;
             }
 
             return null;
@@ -458,10 +453,10 @@ namespace Core.Services
                 // Try to find AuthToken if plugin requires authentication.
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
-                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
-                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
-                    var dockyardAccount = actionList.ProcessNodeTemplate
-                        .ProcessTemplate.DockyardAccount;
+                    // Try to get owner's account for Action -> ProcessTemplate.
+                    var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(action.ProcessNodeTemplateID);
+                    var dockyardAccount = processNodeTemplate.ProcessTemplate.DockyardAccount;
+                    
                     if (dockyardAccount == null)
                     {
                         throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");

@@ -14,7 +14,7 @@ namespace Data.Entities
         public ProcessNodeTemplateDO()
         {
             this.Criteria = new List<CriteriaDO>();
-            this.ActionLists = new List<ActionListDO>();
+            this.Actions = new List<ActionDO>();
             this.ProcessNode = new List<ProcessNodeDO>();
         }
 
@@ -22,7 +22,7 @@ namespace Data.Entities
         {
             this.StartingProcessNodeTemplate = true;
             this.Criteria = new List<CriteriaDO>();
-            this.ActionLists = new List<ActionListDO>();
+            this.Actions = new List<ActionDO>();
             this.ProcessNode = new List<ProcessNodeDO>();
         }
 
@@ -47,7 +47,7 @@ namespace Data.Entities
 
         public virtual List<CriteriaDO> Criteria { get; set; }
 
-        public virtual List<ActionListDO> ActionLists { get; set; }
+        public virtual List<ActionDO> Actions { get; set; }
 
         public virtual List<ProcessNodeDO> ProcessNode { get; set; }
 

@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using Core.Interfaces;
 using Core.Managers;
+using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -21,13 +22,11 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
-        private readonly IActionList _actionList;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
-            _actionList = ObjectFactory.GetInstance<IActionList>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
         }
 
@@ -156,13 +155,16 @@ namespace Web.Controllers
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
+            // DO-1214. Dirty hack with ids I've made not change client's process builder logic
+            submittedActionDO.ProcessNodeTemplateID = curActionDTO.ActionListId;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
                
                 if (curActionDTO.IsTempId)
                 {
-                    _actionList.AddAction(resultActionDO, "last");
+                    ObjectFactory.GetInstance<IProcessNodeTemplate>().AddAction(uow, resultActionDO); // append action to the ProcessNodeTemplate
                 }
 
                 var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);

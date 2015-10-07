@@ -215,11 +215,9 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
-    <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
@@ -248,7 +246,6 @@
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
-    <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
@@ -354,6 +351,14 @@
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510071215280_RemoveActionList.cs" />
+    <Compile Include="Migrations\201510071215280_RemoveActionList.Designer.cs">
+      <DependentUpon>201510071215280_RemoveActionList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510071622502_ProcessNodeTemplatePropsNamingChange.cs" />
+    <Compile Include="Migrations\201510071622502_ProcessNodeTemplatePropsNamingChange.Designer.cs">
+      <DependentUpon>201510071622502_ProcessNodeTemplatePropsNamingChange.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -405,7 +410,6 @@
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
-    <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
@@ -442,8 +446,6 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
-    <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
-    <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
     <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
@@ -638,6 +640,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.resx">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510071215280_RemoveActionList.resx">
+      <DependentUpon>201510071215280_RemoveActionList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510071622502_ProcessNodeTemplatePropsNamingChange.resx">
+      <DependentUpon>201510071622502_ProcessNodeTemplatePropsNamingChange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -13,6 +13,8 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using System;
 using System.Data.Entity;
+using Microsoft.Ajax.Utilities;
+using WebGrease.Css.Extensions;
 
 namespace Web.Controllers
 {
@@ -51,21 +53,32 @@ namespace Web.Controllers
         {
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
-                .Include(x => x.ActionLists)
+                .Include(x => x.Actions)
                 .Where(x => x.ParentTemplateId == curProcessTemplateDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((ProcessNodeTemplateDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
-                    pntDTO.ActionLists = x.ActionLists.Select(y =>
+
+                    pntDTO.Actions = x.Actions.Select(Mapper.Map<ActionDTO>).ToList();
+                    
+                    //black voodoo magic to alow client works as if  actionlists are still present.
+                    foreach (var action in pntDTO.Actions)
                     {
-                        var actionList = Mapper.Map<FullActionListDTO>(y);
-                        actionList.Actions = y.Activities.OfType<ActionDO>()
-                                .Select(z => Mapper.Map<ActionDTO>(z))
-                                .ToList();
-                        return actionList;
-                    }).ToList();
+                        action.ActionListId = pntDTO.Id;
+                    }
+
+                    // DO-1214. Emulate existance of one action list
+                    pntDTO.ActionLists = new[]
+                    {
+                        new
+                        {
+                            ActionListType = 1,
+                            Actions = pntDTO.Actions,
+                            Id = pntDTO.Id // send ProcessNodeTemaplate Id. We removed ActionListDO and now we need ProcessNodeTemaplate Id to edit actions.
+                        }
+                    };
                     return pntDTO;
                 }).ToList();
 

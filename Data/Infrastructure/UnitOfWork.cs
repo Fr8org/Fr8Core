@@ -414,14 +414,6 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionListRepository _actionListRepository;
-	  public ActionListRepository ActionListRepository
-        {
-            get
-            {
-                return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
-            }
-        }
 	  private ActivityRepository _activityRepository;
 	  public ActivityRepository ActivityRepository
 	  {

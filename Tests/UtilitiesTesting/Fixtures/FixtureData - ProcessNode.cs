@@ -34,7 +34,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.Id = 51;
             processNode.ParentProcessId = 49;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO1();
-            processNode.ProcessNodeTemplate.ActionLists.Add(TestActionList5());
+            processNode.ProcessNodeTemplate.Activities.Add(TestActionList5());
 
             return processNode;
         }
@@ -45,7 +45,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.Id = 51;
             processNode.ParentProcessId = 49;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO2();
-            processNode.ProcessNodeTemplate.ActionLists.Add(TestActionList5());
+            processNode.ProcessNodeTemplate.Activities.Add(TestActionList5());
 
             return processNode;
         }
@@ -58,7 +58,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.ParentProcessId = 49;
             processNode.ProcessNodeTemplateId = 50;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO3();
-            processNode.ProcessNodeTemplate.ActionLists.Add(TestActionList6());
+            processNode.ProcessNodeTemplate.Activities.Add(TestActionList6());
 
             return processNode;
         }

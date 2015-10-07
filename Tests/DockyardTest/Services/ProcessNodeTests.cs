@@ -76,70 +76,72 @@ namespace DockyardTest.Services
 
             Assert.AreEqual("false", nextTransitionKey);
         }
+        
+        // DO-1214
+//        [Test]
+//        [Ignore("Requires update after v2 changes.")]
+//        public void Execute_CriteriaEvaluatesToTrue_ReturnTrue()
+//        {
+//            //setup mock Criteria
+//            var mockCriteria = new Mock<ICriteria>();
+//            var envelopeDataList = FixtureData.TestEnvelopeDataList1();
+//            mockCriteria
+//                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
+//                .Returns(true);
+//            ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
+//            //setup mock IActionList
+//            var actionListMock = new Mock<IActionList>();
+//            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
+//            ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
+//            _processNode = ObjectFactory.GetInstance<IProcessNode>();
+//
+//            var processNodeDO = FixtureData.TestProcessNode4();
+//            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
+//            var processTemplate = FixtureData.TestProcessTemplate2();
+//
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                uow.ProcessTemplateRepository.Add(processTemplate);
+//                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
+//                uow.SaveChanges();
+//            }
+//
+//            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
+//
+//            Assert.AreEqual("true", nextTransitionKey);
+//        }
 
-        [Test]
-        [Ignore("Requires update after v2 changes.")]
-        public void Execute_CriteriaEvaluatesToTrue_ReturnTrue()
-        {
-            //setup mock Criteria
-            var mockCriteria = new Mock<ICriteria>();
-            var envelopeDataList = FixtureData.TestEnvelopeDataList1();
-            mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
-                .Returns(true);
-            ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
-            //setup mock IActionList
-            var actionListMock = new Mock<IActionList>();
-            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
-            ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
-            _processNode = ObjectFactory.GetInstance<IProcessNode>();
-
-            var processNodeDO = FixtureData.TestProcessNode4();
-            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
-            var processTemplate = FixtureData.TestProcessTemplate2();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ProcessTemplateRepository.Add(processTemplate);
-                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
-                uow.SaveChanges();
-            }
-
-            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
-
-            Assert.AreEqual("true", nextTransitionKey);
-        }
-
-        [Test]
-        [Ignore("Requires update after v2 changes.")]
-        public void Execute_VerifyProcessCalled_ActionListTypeIsImmediate()
-        {
-            //setup mock Criteria
-            var mockCriteria = new Mock<ICriteria>();
-            var envelopeDataList = FixtureData.TestEnvelopeDataList1();
-            mockCriteria
-                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
-                .Returns(true);
-            ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
-            //setup mock IActionList
-            var actionListMock = new Mock<IActionList>();
-            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
-            ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
-            _processNode = ObjectFactory.GetInstance<IProcessNode>();
-
-            var processNodeDO = FixtureData.TestProcessNode4();
-            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
-            var processTemplate = FixtureData.TestProcessTemplate2();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ProcessTemplateRepository.Add(processTemplate);
-                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
-                uow.SaveChanges();
-
-            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
-
-            actionListMock.Verify(v => v.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>()));
-            }
-        }
+        // DO-1214
+//        [Test]
+//        [Ignore("Requires update after v2 changes.")]
+//        public void Execute_VerifyProcessCalled_ActionListTypeIsImmediate()
+//        {
+//            //setup mock Criteria
+//            var mockCriteria = new Mock<ICriteria>();
+//            var envelopeDataList = FixtureData.TestEnvelopeDataList1();
+//            mockCriteria
+//                .Setup(c => c.Evaluate(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
+//                .Returns(true);
+//            ObjectFactory.Configure(cfg => cfg.For<ICriteria>().Use(mockCriteria.Object));
+//            //setup mock IActionList
+//            var actionListMock = new Mock<IActionList>();
+//            actionListMock.Setup(s => s.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>())).Callback<ActionListDO>(p => { p.ActionListState = ActionListState.Completed; });
+//            ObjectFactory.Configure(cfg => cfg.For<IActionList>().Use(actionListMock.Object));
+//            _processNode = ObjectFactory.GetInstance<IProcessNode>();
+//
+//            var processNodeDO = FixtureData.TestProcessNode4();
+//            var docusignEventDO = FixtureData.TestEnvelopeDataList1();
+//            var processTemplate = FixtureData.TestProcessTemplate2();
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                uow.ProcessTemplateRepository.Add(processTemplate);
+//                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
+//                uow.SaveChanges();
+//
+//            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);
+//
+//            actionListMock.Verify(v => v.Process((ActionListDO)It.IsAny<object>(), It.IsAny<ProcessDO>(), It.IsAny<IUnitOfWork>()));
+//            }
+//        }
 	}
 }

@@ -17,12 +17,10 @@ namespace Core.Services
     public class ProcessNode : IProcessNode
     {
         private readonly ICriteria _criteria;
-        private readonly IActionList _actionList;
         //private IProcessNodeTemplateRepository _processNodeTemplateRepository;
         public ProcessNode()
         {
             _criteria = ObjectFactory.GetInstance<ICriteria>();
-            _actionList = ObjectFactory.GetInstance<IActionList>();
         }
 
         /// <summary>
@@ -68,7 +66,8 @@ namespace Core.Services
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            string nextTransitionKey;
+            // Commented by Vladimir Borisov. In DO-1214 we have to remove ActionLists.
+            /*string nextTransitionKey;
             var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
@@ -78,7 +77,7 @@ namespace Core.Services
                     var curProcessNodeTemplate =
                         uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
 
-                    List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
+                    List<ActionListDO> actionListSet = curProcessNodeTemplate.Actions.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional Actions, and will need attention
                     foreach (var actionList in actionListSet)
                     {
                         _curActionList.Process(actionList, curProcessNode.ParentProcess, uow);
@@ -91,7 +90,9 @@ namespace Core.Services
             {
                 nextTransitionKey = "false";
             }
-            return nextTransitionKey;
+            return nextTransitionKey;*/
+            
+            return "true";
         }
 
         /// <summary>

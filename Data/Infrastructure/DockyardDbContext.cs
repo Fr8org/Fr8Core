@@ -264,7 +264,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<ProcessTemplateDO>().ToTable("ProcessTemplates");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
-            modelBuilder.Entity<ActionListDO>().ToTable("ActionLists");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
@@ -313,7 +312,7 @@ namespace Data.Infrastructure
 
             /*modelBuilder.Entity<ActivityDO>()
                 .HasOptional(x => x.ParentActivity)
-                .WithMany(x=>x.Activities)
+                .WithMany(x=>x.Actions)
                 .HasForeignKey(x => x.ParentActivityId)
                 .WillCascadeOnDelete(true);*/
             
@@ -328,12 +327,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
 
-
             modelBuilder.Entity<ProcessNodeTemplateDO>()
-                .HasMany<ActionListDO>(c => c.ActionLists)
-                .WithOptional(x => x.ProcessNodeTemplate)
-                .WillCascadeOnDelete(true);
-
+               .HasMany<ActionDO>(c => c.Actions)
+               .WithOptional(x => x.ProcessNodeTemplate)
+               .WillCascadeOnDelete(true);
+            
 
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Plugin)

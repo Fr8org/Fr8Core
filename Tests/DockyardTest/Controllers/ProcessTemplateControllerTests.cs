@@ -296,8 +296,8 @@ namespace DockyardTest.Controllers
             Assert.AreEqual(curProcessTemplateDO.Name, curProcessTemplateDTO.Name);
             Assert.AreEqual(curProcessTemplateDO.Description, curProcessTemplateDTO.Description);
             Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates.Count, 2);
-            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates[0].ActionLists.Count, 1);
-            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates[0].ActionLists[0].Activities.Count, 1);
+            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates[0].Activities.Count, 1);
+            Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates[0].Activities[0].Activities.Count, 1);
 
         }
 

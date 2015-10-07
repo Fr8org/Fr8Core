@@ -242,7 +242,6 @@
     <Compile Include="Services\CrateServiceTests.cs" />
     <Compile Include="Services\DockyardAccountTest.cs" />
     <Compile Include="Services\ActionDTO.cs" />
-    <Compile Include="Services\ActionListServiceTests.cs" />
     <Compile Include="Services\ActionServiceTests.cs" />
     <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\DockyardEventTests.cs" />

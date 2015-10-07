@@ -25,7 +25,6 @@ namespace DockyardTest.Services
         private IActivity _activity;
         //private Mock<IAction> _actionMock;
         private ProcessNodeTemplateDO _curProcessNodeTemplate;
-        private ActionListDO _curActionList;
         [SetUp]
         public override void SetUp()
         {
@@ -87,26 +86,7 @@ namespace DockyardTest.Services
 
             }
         }
-
-
-        private void InitializeActionList()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Add a template
-                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
-                uow.SaveChanges();
-
-                _curActionList = FixtureData.TestActionList();
-                _curActionList.ActionListType = ActionListType.Immediate;
-                _curActionList.CurrentActivity = null;
-                _curActionList.ProcessNodeTemplateID = _curProcessNodeTemplate.Id;
-
-                uow.ActionListRepository.Add(_curActionList);
-                uow.SaveChanges();
-            }
-        }
+        
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]

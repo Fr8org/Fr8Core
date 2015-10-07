@@ -50,11 +50,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.PluginID, opts => opts.ResolveUsing(x => x.PluginID))
                 .ForMember(x => x.Plugin, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null));
-
-            Mapper.CreateMap<ActionListDO, ActionListDTO>()
-                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
-                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
-                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
+//
+//            Mapper.CreateMap<ActionListDO, ActionListDTO>()
+//                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+//                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
+//                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
 
@@ -72,7 +72,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<ProcessTemplateDOFullConverter>();
 
             Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDTO>();
-            Mapper.CreateMap<ActionListDO, FullActionListDTO>();
+          //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
 
             //Mapper.CreateMap<Account, DocuSignAccount>();

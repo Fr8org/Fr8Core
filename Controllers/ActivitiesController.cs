@@ -95,7 +95,7 @@ namespace Web.Controllers
                 var curDockyardAccount = uow.UserRepository.GetByKey(userId);
 
                 var activityTemplateCategories = new List<List<ActivityTemplateDTO>>();
-                foreach (var activity in _activity.GetAvailableActivities(curDockyardAccount))
+                foreach (var activity in _activity.GetAvailableActivities(uow, curDockyardAccount))
                 {
                     var activityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(activity);
 

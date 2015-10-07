@@ -192,37 +192,38 @@ namespace DockyardTest.Services
             _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
         }
 
-        [Test, Ignore("Process Execute has new implementation that uses CurrentActivity and NextActivity")]
-        public void Execute_MatchedNodeTransition_ProcessNodeNull()
-        {
-            //mock processnode
-            var processNodeMock = new Mock<IProcessNode>();
-            processNodeMock
-                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
-                .Returns("true");
-            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
-            //setup the next transition node during lookup key
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
-                uow.ActionListRepository.Add(FixtureData.TestActionList6());
-                uow.SaveChanges();
-
-                uow.ProcessRepository.Add(FixtureData.TestProcess1());
-                uow.SaveChanges();
-                uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());
-                uow.SaveChanges();
-            }
-            _processService = ObjectFactory.GetInstance<IProcess>();
-
-            docusignEventDO = FixtureData.TestDocuSignEvent1();
-            var processNodeDO = FixtureData.TestProcessNode3();
-
-
-            _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
-
-            Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
-        }
+        // DO-1214
+//        [Test, Ignore("Process Execute has new implementation that uses CurrentActivity and NextActivity")]
+//        public void Execute_MatchedNodeTransition_ProcessNodeNull()
+//        {
+//            //mock processnode
+//            var processNodeMock = new Mock<IProcessNode>();
+//            processNodeMock
+//                .Setup(c => c.Execute(It.IsAny<List<EnvelopeDataDTO>>(), It.IsAny<ProcessNodeDO>()))
+//                .Returns("true");
+//            ObjectFactory.Configure(cfg => cfg.For<IProcessNode>().Use(processNodeMock.Object));
+//            //setup the next transition node during lookup key
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
+//                uow.ActionListRepository.Add(FixtureData.TestActionList6());
+//                uow.SaveChanges();
+//
+//                uow.ProcessRepository.Add(FixtureData.TestProcess1());
+//                uow.SaveChanges();
+//                uow.ProcessNodeRepository.Add(FixtureData.TestProcessNode4());
+//                uow.SaveChanges();
+//            }
+//            _processService = ObjectFactory.GetInstance<IProcess>();
+//
+//            docusignEventDO = FixtureData.TestDocuSignEvent1();
+//            var processNodeDO = FixtureData.TestProcessNode3();
+//
+//
+//            _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
+//
+//            Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
+//        }
 
         [Test]
         public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()

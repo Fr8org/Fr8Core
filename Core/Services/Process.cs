@@ -16,9 +16,17 @@ namespace Core.Services
 {
     public class Process : IProcess
     {
+        /**********************************************************************************/
+        // Declarations
+        /**********************************************************************************/
+
         private readonly IProcessNode _processNode;
         private readonly IActivity _activity;
         private readonly IProcessTemplate _processTemplate;
+
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
 
         public Process()
         {
@@ -26,7 +34,8 @@ namespace Core.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
-
+        
+        /**********************************************************************************/
         /// <summary>
         /// New Process object
         /// </summary>
@@ -36,6 +45,7 @@ namespace Core.Services
         public ProcessDO Create(int processTemplateId, CrateDTO curEvent)
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
@@ -45,10 +55,9 @@ namespace Core.Services
 
                 curProcessDO.Name = curProcessTemplate.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO>() { curEvent });
+                curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO> {curEvent});
 
-                curProcessDO.CurrentActivity = _processTemplate
-                    .GetInitialActivity(uow, curProcessTemplate);
+                curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
@@ -63,16 +72,17 @@ namespace Core.Services
             }
             return curProcessDO;
         }
-
-
-
-
+        
+        /**********************************************************************************/
 
         public async void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEvent);
+
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
+            {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -82,6 +92,8 @@ namespace Core.Services
                 await Execute(curProcessDO);
             }
         }
+
+        /**********************************************************************************/
 
         public async Task Execute(ProcessDO curProcessDO)
         {
@@ -104,6 +116,8 @@ namespace Core.Services
                 throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
             }
         }
+
+        /**********************************************************************************/
 
         private void UpdateNextActivity(ProcessDO curProcessDO)
         {
@@ -128,6 +142,8 @@ namespace Core.Services
             SetProcessNextActivity(curProcessDO);
         }
 
+        /**********************************************************************************/
+
         public void SetProcessNextActivity(ProcessDO curProcessDO)
         {
             if(curProcessDO == null)
@@ -151,6 +167,8 @@ namespace Core.Services
                 curProcessDO.NextActivity = null;//set NexActivity to null since the currentActivity is null
             }
         }
+
+        /**********************************************************************************/
 
     }
 }

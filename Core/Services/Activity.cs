@@ -2,41 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Core.Interfaces;
-using Core.Managers.APIManagers.Transmitters.Plugin;
-using Core.Managers.APIManagers.Transmitters.Restful;
-
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using StructureMap;
-using Utilities.Serializers.Json;
-using System.Data.Entity;
 
 namespace Core.Services
 {
 	public class Activity : IActivity
 	{
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
+
 		public Activity()
 		{
 		}
 
-
+        /**********************************************************************************/
         //This builds a list of an activity and all of its descendants, over multiple levels
-	    public List<ActivityDO> GetActivityTree(ActivityDO curActivity)
+	    public List<ActivityDO> GetActivityTree(IUnitOfWork uow, ActivityDO curActivity)
 	    {
 	        var curList = new List<ActivityDO>();
 	        curList.Add(curActivity);
-	        var childActivities = GetChildren(curActivity);
+            var childActivities = GetChildren(uow, curActivity);
 	        foreach (var child in childActivities)
 	        {
-	           curList.AddRange(GetActivityTree(child));
+	           curList.AddRange(GetActivityTree(uow, child));
 	        }
 	        return curList;
 	    }
+
+        /**********************************************************************************/
 
         public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
 		{
@@ -61,7 +58,7 @@ namespace Core.Services
 				foreach (var upstreamSibling in upstreamSiblings)
 				{
                     //1) first add the upstream siblings
-				    upstreamActivities.AddRange(GetActivityTree(upstreamSibling));
+				    upstreamActivities.AddRange(GetActivityTree(uow, upstreamSibling));
 				}
 
                 //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
@@ -77,6 +74,7 @@ namespace Core.Services
             return upstreamActivities; //should never actually get here, but the compiler insists
 		}
 
+        /**********************************************************************************/
 
 	    public List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivity)
 	    {
@@ -99,7 +97,7 @@ namespace Core.Services
 	        foreach (var downstreamSibling in downstreamSiblings)
 	        {
 	            //1) first add the downstream siblings and their descendants
-	            downstreamList.AddRange(GetActivityTree(downstreamSibling));
+	            downstreamList.AddRange(GetActivityTree(uow, downstreamSibling));
 	        }
 
 	        //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
@@ -113,43 +111,40 @@ namespace Core.Services
 	        return downstreamList;
 	    }
 
-	    private IEnumerable<ActivityDO> GetChildren(ActivityDO currActivity)
-		{
-		    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-		    {
-                // Get all activities which parent is currActivity and order their by Ordering. The order is important!
-                var orderedActivities = uow.ActivityRepository.GetAll()
-                .Where(x => x.ParentActivityId == currActivity.Id)
-                .OrderBy(z => z.Ordering);
-                return orderedActivities;
-            }
-		   
-		}
+        /**********************************************************************************/
+
+	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
+	    {
+	        // Get all activities which parent is currActivity and order their by Ordering. The order is important!
+	        var orderedActivities = uow.ActivityRepository.GetAll()
+	            .Where(x => x.ParentActivityId == currActivity.Id)
+	            .OrderBy(z => z.Ordering);
+	        return orderedActivities;
+	    }
+
+	    /**********************************************************************************/
 
         public async Task Process(int curActivityId, ProcessDO processDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curProcessDO = uow.ProcessRepository.GetByKey(processDO.Id);
-
                 var curActivityDO = uow.ActivityRepository.GetByKey(curActivityId);
 
                 if (curActivityDO == null)
-                    throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
-
-                if (curActivityDO is ActionListDO)
                 {
-                    IActionList _actionList = ObjectFactory.GetInstance<IActionList>();
-                    _actionList.Process((ActionListDO)curActivityDO, curProcessDO, uow);
+                    throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
                 }
-                else if (curActivityDO is ActionDO)
+
+                if (curActivityDO is ActionDO)
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
-                    await _action.PrepareToExecute((ActionDO)curActivityDO, curProcessDO, uow);
+                    await _action.PrepareToExecute((ActionDO) curActivityDO, curProcessDO, uow);
                 }
             }
         }
 
+        /**********************************************************************************/
 
         public IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO)
         {
@@ -174,14 +169,11 @@ namespace Core.Services
             return activityLists;
         }
 
-        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount)
-        {
-            List<ActivityTemplateDO> curActivityTemplates;
+        /**********************************************************************************/
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
-            }
+        public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
+        {
+            var curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2
@@ -194,5 +186,7 @@ namespace Core.Services
 
             return curActivityTemplates;
         }
+
+	    /**********************************************************************************/
     }
 }
