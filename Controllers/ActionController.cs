@@ -82,7 +82,7 @@ namespace Web.Controllers
             }
 
             var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
-            return Ok(externalAuthUrlDTO.Url);
+            return Ok(new { Url = externalAuthUrlDTO.Url });
         }
 
 

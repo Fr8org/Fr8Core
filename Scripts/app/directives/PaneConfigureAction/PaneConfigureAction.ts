@@ -92,8 +92,7 @@ module dockyard.directives.paneConfigureAction {
             private ActionService: services.IActionService,
             private crateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
-            private $timeout: ng.ITimeoutService,
-            private $window: ng.IWindowService
+            private $timeout: ng.ITimeoutService
         ) {
 
             PaneConfigureAction.prototype.link = (
@@ -281,15 +280,16 @@ module dockyard.directives.paneConfigureAction {
                 ActionService,
                 crateHelper: services.CrateHelper,
                 $filter: ng.IFilterService,
-                $timeout: ng.ITimeoutService,
-                $window: ng.IWindowService
+                $timeout: ng.ITimeoutService
             ) => {
 
                 return new PaneConfigureAction($rootScope, ActionService,
-                    crateHelper, $filter, $timeout, $window);
+                    crateHelper, $filter, $timeout);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout', '$window'];
+            directive['$inject'] = ['$rootScope', 'ActionService',
+                'CrateHelper', '$filter', '$timeout'];
+
             return directive;
         }
     }

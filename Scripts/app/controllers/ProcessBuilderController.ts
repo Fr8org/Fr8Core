@@ -47,7 +47,8 @@ module dockyard.controllers {
             'CrateHelper',
             'ActivityTemplateService',
             '$filter',
-            '$modal'
+            '$modal',
+            '$window'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -68,7 +69,8 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService,
             private $filter: ng.IFilterService,
-            private $modal
+            private $modal,
+            private $window
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;

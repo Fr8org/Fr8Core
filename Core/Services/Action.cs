@@ -342,34 +342,25 @@ namespace Core.Services
         public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
             DockyardAccountDO user, PluginDO plugin)
         {
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var response = await restClient.PostAsync(
+                new Uri("http://" + plugin.Endpoint + "/actions/auth_url")
+            );
+
+            var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
-                if (curPlugin == null)
-                {
-                    throw new ApplicationException("Could not find ActivityTemplate specified.");
-                }
-
-                var curAccount = uow.UserRepository.GetByKey(user.Id);
-                if (curAccount == null)
-                {
-                    throw new ApplicationException("Could not find Account specified.");
-                }
-
-                var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-
-                var response = await restClient.PostAsync(
-                    new Uri("http://" + curPlugin.Endpoint + "/actions/auth_url")
-                );
-
-                var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
-
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.Plugin.Id == curPlugin.Id
-                        && x.UserDO.Id == curAccount.Id);
+                    .FindOne(x => x.Plugin.Id == plugin.Id
+                        && x.UserDO.Id == user.Id);
 
                 if (authToken == null)
                 {
+                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                    var curAccount = uow.UserRepository.GetByKey(user.Id);
+
                     authToken = new AuthorizationTokenDO()
                     {
                         UserDO = curAccount,
@@ -388,9 +379,9 @@ namespace Core.Services
                 }
 
                 uow.SaveChanges();
-
-                return externalAuthUrlDTO;
             }
+
+            return externalAuthUrlDTO;
         }
 
         /// <summary>

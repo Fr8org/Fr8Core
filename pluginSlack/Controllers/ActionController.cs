@@ -47,7 +47,7 @@ namespace pluginSlack.Controllers
 
         [HttpPost]
         [Route("auth_url")]
-        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl()
+        public ExternalAuthUrlDTO GetExternalAuthUrl()
         {
             var externalStateToken = Guid.NewGuid().ToString();
             var url = CreateAuthUrl(externalStateToken);

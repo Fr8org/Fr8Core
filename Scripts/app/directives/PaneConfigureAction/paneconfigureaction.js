@@ -79,14 +79,13 @@ var dockyard;
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var PaneConfigureAction = (function () {
-                function PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout, $window) {
+                function PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout) {
                     var _this = this;
                     this.$rootScope = $rootScope;
                     this.ActionService = ActionService;
                     this.crateHelper = crateHelper;
                     this.$filter = $filter;
                     this.$timeout = $timeout;
-                    this.$window = $window;
                     this.templateUrl = '/AngularTemplate/PaneConfigureAction';
                     this.scope = {
                         currentAction: '='
@@ -225,10 +224,11 @@ var dockyard;
                 };
                 //The factory function returns Directive object as per Angular requirements
                 PaneConfigureAction.Factory = function () {
-                    var directive = function ($rootScope, ActionService, crateHelper, $filter, $timeout, $window) {
-                        return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout, $window);
+                    var directive = function ($rootScope, ActionService, crateHelper, $filter, $timeout) {
+                        return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout);
                     };
-                    directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout', '$window'];
+                    directive['$inject'] = ['$rootScope', 'ActionService',
+                        'CrateHelper', '$filter', '$timeout'];
                     return directive;
                 };
                 return PaneConfigureAction;
