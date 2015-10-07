@@ -92,6 +92,8 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionAdding is emitted, select action modal should be opened", () => {
             var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.immediateActionListVM = <interfaces.IActionListVM>new model.ActionListDTO();
+            _$scope.immediateActionListVM.id = 1;
             _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
             resolvePromises();
             expect(_$modalMock.open).toHaveBeenCalled();
@@ -99,13 +101,17 @@ module dockyard.tests.controller {
 
         it("When PaneWorkflowDesigner_ActionAdding is emitted, PaneWorkflowDesigner_AddAction should be received", () => {
             var event = new pwd.ActionAddingEventArgs(1, 1);
+            _$scope.immediateActionListVM = <interfaces.IActionListVM>new model.ActionListDTO();
+            _$scope.immediateActionListVM.id = 1;
             _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
             resolvePromises();
             expect(_$scope.$broadcast).toHaveBeenCalledWith(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction], jasmine.any(Object));
         });
 
-        it("When PaneWorkflowDesigner_ActionAdding is emitted, newly created ActionDesignDTO should have correct values", () => {
-            var event = new pwd.ActionAddingEventArgs(1, 1);
+        it("When PaneWorkflowDesigner_ActionAdding is emitted, newly created ActionDTO should have correct values", () => {
+            var event = new pwd.ActionAddingEventArgs(1, 9);
+            _$scope.immediateActionListVM = <interfaces.IActionListVM>new model.ActionListDTO();
+            _$scope.immediateActionListVM.id = 9;
             _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
             resolvePromises();
             var createdActionDesignDTO = _$scope.current.action;

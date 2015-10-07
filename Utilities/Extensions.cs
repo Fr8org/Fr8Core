@@ -287,7 +287,7 @@ namespace Utilities
                                             .ToArray());
                     }
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     //TODO:: Log failed type reflections
                 }
             }
@@ -317,7 +317,7 @@ namespace Utilities
                                        .ToArray());
                     }
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     //TODO:: Log failed type reflections
                 }
             }
@@ -339,7 +339,7 @@ namespace Utilities
                     tlist.AddRange(a.GetTypes().Where(t => t.GetCustomAttributes(typeof(TAttr), inherit).Length > 0 && !excludeTypes.Contains(t))
                                     .ToList());
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     //TODO:: Log failed type reflections
                 }
             }
