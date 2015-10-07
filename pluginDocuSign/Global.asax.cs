@@ -1,12 +1,12 @@
 ﻿using System.Web.Http;
 using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
-using terminal_DocuSign.Infrastructure.AutoMapper;
-using terminal_DocuSign.Infrastructure.StructureMap;
+using pluginDocuSign.Infrastructure.AutoMapper;
+using pluginDocuSign.Infrastructure.StructureMap;
 
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
 
-namespace terminal_DocuSign
+namespace pluginDocuSign
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
@@ -14,10 +14,10 @@ namespace terminal_DocuSign
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 				DataAutoMapperBootStrapper.ConfigureAutoMapper();
-				TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+				PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE);
-				TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+				PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 
-namespace terminal_AzureSqlServer.Infrastructure
+namespace pluginAzureSqlServer.Infrastructure
 {
     public interface IDbProvider
     {

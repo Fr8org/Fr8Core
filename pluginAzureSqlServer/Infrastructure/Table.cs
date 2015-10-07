@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace terminal_AzureSqlServer.Infrastructure
+namespace pluginAzureSqlServer.Infrastructure
 {
     public class Table
     {

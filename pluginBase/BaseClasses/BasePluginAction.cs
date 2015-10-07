@@ -8,20 +8,20 @@ using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using terminal_base.Infrastructure;
+using PluginBase.Infrastructure;
 using StructureMap;
 using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
 using Newtonsoft.Json;
 
-namespace terminal_base.BaseClasses
+namespace PluginBase.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest
     public delegate ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO);
 
-    public class BaseTerminalAction
+    public class BasePluginAction
     {
         public enum GetCrateDirection
         {
@@ -32,7 +32,7 @@ namespace terminal_base.BaseClasses
         protected IAction _action;
         protected ICrate _crate;
 
-        public BaseTerminalAction()
+        public BasePluginAction()
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();

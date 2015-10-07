@@ -1,12 +1,13 @@
-﻿using Data.Entities;
-using Data.States;
+﻿using System;
 using System.Collections.Generic;
-using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http;
+using Data.Entities;
+using Data.States;
 
-namespace terminal_Slack.Controllers
+namespace pluginSlack.Controllers
 {
-    [RoutePrefix("terminals")]
+    [RoutePrefix("plugins")]
     public class PluginController : ApiController
     {
         /// <summary>
@@ -16,7 +17,7 @@ namespace terminal_Slack.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(List<ActivityTemplateDO>))]
-        public IHttpActionResult DiscoverTerminals()
+        public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
             
@@ -27,14 +28,14 @@ namespace terminal_Slack.Controllers
                 Version = "1"
             };
 
-            var terminal = new PluginDO
+            var plugin = new PluginDO
             {
                 Endpoint = "localhost:39504",
                 PluginStatus = PluginStatus.Active,
-                Name = "terminal_Slack"
+                Name = "pluginSlack"
             };
-
-            template.Plugin = terminal;
+            
+            template.Plugin = plugin;
 
             result.Add(template);
 

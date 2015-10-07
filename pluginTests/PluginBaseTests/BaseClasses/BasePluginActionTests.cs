@@ -6,10 +6,10 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using terminal_AzureSqlServer.Actions;
-using terminal_base.BaseClasses;
-using terminal_base.Infrastructure;
-using terminalTests.Fixtures;
+using pluginAzureSqlServer.Actions;
+using PluginBase.BaseClasses;
+using PluginBase.Infrastructure;
+using pluginTests.Fixtures;
 using StructureMap;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalTests.TerminalBaseTests.Controllers
+namespace pluginTests.PluginBaseTests.Controllers
 {
 
     [TestFixture]
@@ -28,14 +28,14 @@ namespace terminalTests.TerminalBaseTests.Controllers
     public class BasePluginActionTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalAction _basePluginAction;
+        BasePluginAction _basePluginAction;
 
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginAction = new BaseTerminalAction();
+            _basePluginAction = new BasePluginAction();
             _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
         }
 
@@ -58,7 +58,7 @@ namespace terminalTests.TerminalBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = await (Task<ActionDTO>) ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDTO>) ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -76,7 +76,7 @@ namespace terminalTests.TerminalBaseTests.Controllers
             object[] parameters = new object[] { curActionDTO, curConfigurationEvaluator };
 
             //Act
-            var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BaseTerminalAction), "ProcessConfigurationRequest", parameters);
+            var result = await (Task<ActionDTO>)ClassMethod.Invoke(typeof(BasePluginAction), "ProcessConfigurationRequest", parameters);
 
             //Assert
             Assert.AreEqual(curActionDTO.CrateStorage.CrateDTO.Count, result.CrateStorage.CrateDTO.Count);
@@ -92,7 +92,7 @@ namespace terminalTests.TerminalBaseTests.Controllers
 
             ;
             //Act
-            var result = (CrateDTO)ClassMethod.Invoke(typeof(BaseTerminalAction), "PackControlsCrate", parameters);
+            var result = (CrateDTO)ClassMethod.Invoke(typeof(BasePluginAction), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
@@ -122,7 +122,7 @@ namespace terminalTests.TerminalBaseTests.Controllers
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _basePluginAction.GetDesignTimeFields(
-                    curAction.Id, BaseTerminalAction.GetCrateDirection.Upstream);
+                    curAction.Id, BasePluginAction.GetCrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(16, result.Fields.Count);
             }
@@ -139,7 +139,7 @@ namespace terminalTests.TerminalBaseTests.Controllers
                 ActionDO curAction = FixtureData.TestAction57();
 
                 var result = await _basePluginAction.GetDesignTimeFields(
-                    curAction.Id, BaseTerminalAction.GetCrateDirection.Downstream);
+                    curAction.Id, BasePluginAction.GetCrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(18, result.Fields.Count);
             }

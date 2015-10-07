@@ -8,7 +8,7 @@ using System.Web.SessionState;
 using Core.StructureMap;
 using Data.Infrastructure.AutoMapper;
 
-namespace terminal_fr8Core
+namespace pluginDockyardCore
 {
     public class Global : System.Web.HttpApplication
     {

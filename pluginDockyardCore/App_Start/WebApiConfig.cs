@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
-using terminal_base;
-using TerminalBase.BaseClasses;
+using PluginBase;
+using PluginUtilities.BaseClasses;
 
-namespace terminal_fr8Core
+namespace pluginDockyardCore
 {
     public static class WebApiConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
+            BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "terminal_fr8CoreServer",
-                routeTemplate: "terminal_fr8Core/{controller}/{id}"
+                name: "PluginDockyardCoreServer",
+                routeTemplate: "pluginDockyardCore/{controller}/{id}"
             );
         }
     }

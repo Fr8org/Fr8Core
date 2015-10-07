@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace terminal_base {
-    public class TerminalCodedException : Exception {
+namespace PluginBase {
+    public class PluginCodedException : Exception {
         public HttpStatusCode StatusCode { get; private set; }
-        public TerminalErrorCode ErrorCode { get; private set; }
+        public PluginErrorCode ErrorCode { get; private set; }
         private string Details { get; set; }
 
         public override string Message {
@@ -18,7 +18,7 @@ namespace terminal_base {
             }
         }
 
-        public TerminalCodedException(TerminalErrorCode errorCode, string details = null) : base(errorCode.GetEnumDescription()) {
+        public PluginCodedException(PluginErrorCode errorCode, string details = null) : base(errorCode.GetEnumDescription()) {
             ErrorCode = errorCode;
             StatusCode = HttpStatusCode.InternalServerError;
             Details = details;

@@ -1,9 +1,9 @@
 ﻿using DocuSign.Integrations.Client;
-using terminal_DocuSign.Infrastructure;
-using terminal_DocuSign.Services;
+using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Services;
 using System;
 
-namespace terminalTests.Fixtures
+namespace pluginTests.Fixtures
 {
 	public partial class PluginFixtureData
     {

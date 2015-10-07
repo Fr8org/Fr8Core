@@ -1,13 +1,16 @@
-﻿using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using terminal_DocuSign.Infrastructure;
-using terminal_DocuSign.Interfaces;
+using Newtonsoft.Json.Linq;
+using Data.Infrastructure;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Utilities.Serializers.Json;
+using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Interfaces;
 
-namespace terminal_DocuSign.Services
+namespace pluginDocuSign.Services
 {
     public class DocuSignEnvelope : DocuSign.Integrations.Client.Envelope, IDocuSignEnvelope
     {
@@ -78,7 +81,7 @@ namespace terminal_DocuSign.Services
         }
 
         // TODO: This implementation of the interface method is no different than what is already implemented in the other overload. Hence commenting out here and in the interface definition.
-        // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the terminal project and the Data project  and interface expects it to be in Data.Wrappers 
+        // If not deleted, this will cause grief as DocuSingEnvelope (object in parameter) is defined in both the plugin project and the Data project  and interface expects it to be in Data.Wrappers 
         // namespace, where it will not belong. 
         //public List<EnvelopeDataDTO> GetEnvelopeData(DocuSignEnvelope envelope)
         //{

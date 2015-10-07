@@ -5,27 +5,27 @@ using Core.Services;
 using Data.Entities;
 using Data.States;
 
-namespace terminal_fr8Core.Controllers
+namespace pluginDockyardCore.Controllers
 {
-    [RoutePrefix("terminals")]
-    public class TerminalController : ApiController
+    [RoutePrefix("plugins")]
+    public class PluginController : ApiController
     {
         /// <summary>
-        /// Terminal discovery infrastructure.
-        /// Action returns list of supported actions by terminal.
+        /// Plugin discovery infrastructure.
+        /// Action returns list of supported actions by plugin.
         /// </summary>
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(List<ActivityTemplateDO>))]
-        public IHttpActionResult DiscoverTerminals()
+        public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
             
-            var terminal = new PluginDO
+            var plugin = new PluginDO
             {
                 Endpoint = "localhost:50705",
                 PluginStatus = PluginStatus.Active,
-                Name = "terminal_fr8Core",
+                Name = "pluginDockyardCore",
                 RequiresAuthentication = false,
                 Version = "1"
             };
@@ -34,7 +34,7 @@ namespace terminal_fr8Core.Controllers
             {
                 Name = "FilterUsingRunTimeData",
                 Category = ActivityCategory.fr8_Processor,
-                Plugin = terminal,
+                Plugin = plugin,
                 Version = "1"
             });
 
@@ -42,7 +42,7 @@ namespace terminal_fr8Core.Controllers
             {
                 Name = "MapFields",
                 Category = ActivityCategory.fr8_Processor,
-                Plugin = terminal,
+                Plugin = plugin,
                 Version = "1"
             });
 

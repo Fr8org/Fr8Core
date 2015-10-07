@@ -1,7 +1,8 @@
 ﻿using DocuSign.Integrations.Client;
+using Newtonsoft.Json.Linq;
 using System.Configuration;
 
-namespace terminal_DocuSign.Infrastructure
+namespace pluginDocuSign.Infrastructure
 {
     public class DocuSignAccount : Account
     {

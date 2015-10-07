@@ -11,13 +11,13 @@ using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using terminal_base;
-using terminal_base.BaseClasses;
+using PluginBase;
+using PluginBase.BaseClasses;
 using StructureMap;
 
-[assembly: OwinStartup(typeof(terminal_AzureSqlServer.Startup))]
+[assembly: OwinStartup(typeof(pluginAzureSqlServer.Startup))]
 
-namespace terminal_AzureSqlServer
+namespace pluginAzureSqlServer
 {
     public class Startup
     {
@@ -35,7 +35,7 @@ namespace terminal_AzureSqlServer
                 ObjectFactory.Initialize();
                 ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
             }
-            ObjectFactory.Configure(TerminalAzureSqlServerStructureMapRegistries.LiveConfiguration);
+            ObjectFactory.Configure(PluginAzureSqlServerStructureMapRegistries.LiveConfiguration);
 
             RoutesConfig.Register(configuration);
             if (selfHost)
@@ -43,7 +43,7 @@ namespace terminal_AzureSqlServer
                 // Web API routes
                 configuration.Services.Replace(
                     typeof(IHttpControllerTypeResolver),
-                    new TerminalControllerTypeResolver()
+                    new PluginControllerTypeResolver()
                 );
             }
 
@@ -63,20 +63,20 @@ namespace terminal_AzureSqlServer
             {
                 Task.Run(() =>
                 {
-                    BaseTerminalController curController = new BaseTerminalController();
-                    curController.AfterStartup("terminal_azure_sql_server");
+                    BasePluginController curController = new BasePluginController();
+                    curController.AfterStartup("plugin_azure_sql_server");
                 });
             }
         }
 
-        public class TerminalControllerTypeResolver : IHttpControllerTypeResolver
+        public class PluginControllerTypeResolver : IHttpControllerTypeResolver
         {
             public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
             {
                 return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-                    typeof(Controllers.TerminalController)
+                    typeof(Controllers.PluginController)
                 };
             }
         }

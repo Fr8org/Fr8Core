@@ -1,22 +1,23 @@
-﻿using Core.Interfaces;
-using Core.Managers;
-using Core.Utilities;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using Newtonsoft.Json;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using terminal_DocuSign.Infrastructure;
+using Core.Managers;
+using Core.Utilities;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Data.States;
+using Newtonsoft.Json;
+using pluginDocuSign.Infrastructure;
+using StructureMap;
+using Core.Interfaces;
 
-namespace terminal_DocuSign.Services
+namespace pluginDocuSign.Services
 {
-	public class Event : terminal_DocuSign.Interfaces.IEvent
+	public class Event : pluginDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
         private readonly ICrate _crate;

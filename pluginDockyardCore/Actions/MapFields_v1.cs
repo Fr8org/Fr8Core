@@ -12,13 +12,13 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminal_base.BaseClasses;
-using terminal_base.Infrastructure;
+using PluginBase.BaseClasses;
+using PluginBase.Infrastructure;
 using Utilities;
 
-namespace terminal_fr8Core.Actions
+namespace pluginDockyardCore.Actions
 {
-    public class MapFields_v1 : BaseTerminalAction
+    public class MapFields_v1 : BasePluginAction
     {
         /// <summary>
         /// Action processing infrastructure.
@@ -128,8 +128,8 @@ namespace terminal_fr8Core.Actions
             }
 
             //Pack the merged fields into 2 new crates that can be used to populate the dropdowns in the MapFields UI
-            CrateDTO downstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Downstream Terminal-Provided Fields", curDownstreamFields);
-            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
+            CrateDTO downstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Downstream Plugin-Provided Fields", curDownstreamFields);
+            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
 
             var curConfigurationControlsCrate = CreateStandardConfigurationControls();
 
@@ -164,11 +164,11 @@ namespace terminal_fr8Core.Actions
 
             // Check nullability of Upstream and Downstream crates.
             var upStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
-                x => x.Label == "Upstream Terminal-Provided Fields"
+                x => x.Label == "Upstream Plugin-Provided Fields"
                     && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
 
             var downStreamFieldsCrate = curAction.CrateStorage.CrateDTO.FirstOrDefault(
-                x => x.Label == "Downstream Terminal-Provided Fields"
+                x => x.Label == "Downstream Plugin-Provided Fields"
                     && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
 
             if (upStreamFieldsCrate == null

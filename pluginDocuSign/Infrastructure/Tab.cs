@@ -1,8 +1,10 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using DocuSign.Integrations.Client;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace terminal_DocuSign.Infrastructure
+using DocuSign.Integrations.Client;
+
+using Data.Interfaces.DataTransferObjects;
+
+namespace pluginDocuSign.Infrastructure
 {
     public interface ITab
     {

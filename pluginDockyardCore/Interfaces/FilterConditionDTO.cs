@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace terminal_fr8Core.Interfaces
+namespace pluginDockyardCore.Interfaces
 {
     /// <summary>
     /// Single FilterPane condition.
