@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using terminal_base.BaseClasses;
-using Data.Interfaces.DataTransferObjects;
-using Core.Interfaces;
+﻿using Data.Interfaces.DataTransferObjects;
 using StructureMap;
-using pluginSalesforce.Infrastructure;
+using terminal_base.BaseClasses;
+using terminal_Salesforce.Infrastructure;
 
-namespace pluginSalesforce.Actions
+namespace terminal_Salesforce.Actions
 {
     public class Create_Lead_v1 : BaseTerminalAction
     {
@@ -16,7 +11,7 @@ namespace pluginSalesforce.Actions
 
         public ActionDTO CreateLead(ActionDTO curActionDTO)
         {
-            bool result=_salesforce.CreateLead(curActionDTO);
+            bool result = _salesforce.CreateLead(curActionDTO);
             return curActionDTO;
         }
     }

@@ -44,7 +44,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginIntegrationTests", "p
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginTests", "pluginTests\pluginTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSalesforce", "pluginSalesforce\pluginSalesforce.csproj", "{85CB0215-96DF-4C38-A022-1BE6C952813B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminal_Salesforce", "pluginSalesforce\terminal_Salesforce.csproj", "{85CB0215-96DF-4C38-A022-1BE6C952813B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

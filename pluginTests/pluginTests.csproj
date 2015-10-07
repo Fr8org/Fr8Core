@@ -172,9 +172,9 @@
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminal_DocuSign</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginSalesforce\pluginSalesforce.csproj">
+    <ProjectReference Include="..\pluginSalesforce\terminal_Salesforce.csproj">
       <Project>{85cb0215-96df-4c38-a022-1be6c952813b}</Project>
-      <Name>pluginSalesforce</Name>
+      <Name>terminal_Salesforce</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>
