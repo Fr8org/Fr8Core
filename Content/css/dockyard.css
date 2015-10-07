@@ -108,16 +108,17 @@
     box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px,
                 rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px,
                 rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
+    cursor: pointer;
     display: inline-block;
     height: 300px;
     margin: 10px;
+    padding: 5px;
     vertical-align: top;
-    width: 230px;
+    width: 330px;
 }
 
-.action:hover,
-.action.selected {
-    border-color: red;
+.action.selected {    
+    cursor: default;
 }
 
 .action-name {
@@ -134,8 +135,7 @@
     opacity: 1;
 }
 
-.action .pane-configure-action {
-    
+.action .pane-configure-action {    
     height: 250px;
     display: block;
     width: 100%;
@@ -176,14 +176,9 @@
 }
 
 /* Query Builder */
-.query-builder.disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
 .query-builder-table {
     margin-left: 27px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     width: calc(100% - 25px);
 }
 
@@ -192,12 +187,28 @@
     padding-left: 0;
 }
 
+.query-builder-table tbody,
+.query-builder-table thead {
+    display: block;
+}
+
+.query-builder-table tbody {
+    max-height: 125px;
+    overflow-y: auto;
+}
+
 .query-builder-add-button {
     margin-left: 27px;
 }
 
-.query-builder-table select.form-control {
-    padding-left: 4px;
+.query-builder-table .form-control {
+    padding: 0;
+    height: 25px;
+}
+
+.query-builder-delete-button {
+    cursor: pointer;
+    margin-top: 4px;
 }
 
 form.internal-authenticate-form {
