@@ -101,6 +101,8 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
                 (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExternalAuthentication],
+                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_ExternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
@@ -393,6 +395,17 @@ module dockyard.controllers {
                 var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
                 self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
             });
+        }
+
+        private PaneConfigureAction_ExternalAuthentication(
+            eventArgs: pca.ExternalAuthenticationArgs) {
+
+            this.$http
+                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .then(function (res) {
+                    console.log(res);
+                    debugger;
+                });
         }
 
         private HideActionPanes() {

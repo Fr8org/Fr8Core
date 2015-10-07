@@ -52,6 +52,40 @@ namespace Web.Controllers
         }
 
 
+        [HttpGet]
+        [Route("auth_url")]
+        public async Task<IHttpActionResult> GetExternalAuthUrl(
+            [FromUri(Name = "id")] int activityTemplateId)
+        {
+            DockyardAccountDO account;
+            PluginDO plugin;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(activityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+                var accountId = User.Identity.GetUserId();
+                account = uow.UserRepository.FindOne(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ApplicationException("User was not found.");
+                }
+            }
+
+            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
+            return Ok(externalAuthUrlDTO.Url);
+        }
+
+
         [HttpPost]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)

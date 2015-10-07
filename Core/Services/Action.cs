@@ -339,6 +339,60 @@ namespace Core.Services
             }
         }
 
+        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
+            DockyardAccountDO user, PluginDO plugin)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                if (curPlugin == null)
+                {
+                    throw new ApplicationException("Could not find ActivityTemplate specified.");
+                }
+
+                var curAccount = uow.UserRepository.GetByKey(user.Id);
+                if (curAccount == null)
+                {
+                    throw new ApplicationException("Could not find Account specified.");
+                }
+
+                var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+                var response = await restClient.PostAsync(
+                    new Uri("http://" + curPlugin.Endpoint + "/actions/auth_url")
+                );
+
+                var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
+
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.Plugin.Id == curPlugin.Id
+                        && x.UserDO.Id == curAccount.Id);
+
+                if (authToken == null)
+                {
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        UserDO = curAccount,
+                        Plugin = curPlugin,
+                        ExpiresAt = DateTime.Today.AddMonths(1),
+                        ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.ExternalAccountId = null;
+                    authToken.Token = null;
+                    authToken.ExternalStateToken = externalAuthUrlDTO.ExternalStateToken;
+                }
+
+                uow.SaveChanges();
+
+                return externalAuthUrlDTO;
+            }
+        }
+
         /// <summary>
         /// Retrieve account
         /// </summary>

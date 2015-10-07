@@ -222,6 +222,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
