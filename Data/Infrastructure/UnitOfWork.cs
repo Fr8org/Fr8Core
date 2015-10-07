@@ -537,7 +537,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _multiTenantObjectRepository ?? (_multiTenantObjectRepository = new MultiTenantObjectRepository(this));
+                return _multiTenantObjectRepository ?? (_multiTenantObjectRepository = new MultiTenantObjectRepository());
             }
         }
 
