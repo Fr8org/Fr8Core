@@ -1,7 +1,7 @@
 ﻿using Data.Infrastructure.AutoMapper;
 using System.Web.Http;
 
-namespace pluginSlack
+namespace terminal_Slack
 {
     public class WebApiApplication : System.Web.HttpApplication
     {

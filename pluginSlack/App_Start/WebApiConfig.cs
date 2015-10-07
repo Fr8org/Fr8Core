@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using Core.StructureMap;
-using terminal_base;
+﻿using System.Web.Http;
 using TerminalBase.BaseClasses;
-using StructureMap;
 
-namespace pluginSlack
+namespace terminal_Slack
 {
     public static class WebApiConfig
     {
@@ -16,8 +10,8 @@ namespace pluginSlack
             BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "PluginSlack",
-                routeTemplate: "plugin_slack/{controller}/{id}"                
+                name: "TerminalSlack",
+                routeTemplate: "terminal_slack/{controller}/{id}"                
             );
         }
     }

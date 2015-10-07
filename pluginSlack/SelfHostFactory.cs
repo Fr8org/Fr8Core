@@ -1,9 +1,9 @@
-﻿using System;
-using System.Web.Http;
-using Microsoft.Owin.Hosting;
+﻿using Microsoft.Owin.Hosting;
 using Owin;
+using System;
+using System.Web.Http;
 
-namespace pluginSlack
+namespace terminal_Slack
 {
     public class SelfHostFactory
     {
@@ -17,8 +17,8 @@ namespace pluginSlack
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "PluginSlack",
-                    routeTemplate: "plugin_slack/{controller}/{id}",
+                    name: "TerminalSlack",
+                    routeTemplate: "terminal_slack/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 
