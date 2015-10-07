@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using System.Collections.Generic;
 
-namespace pluginDocuSign.Infrastructure
+namespace terminal_DocuSign.Infrastructure
 {
     public interface ISigner
     {

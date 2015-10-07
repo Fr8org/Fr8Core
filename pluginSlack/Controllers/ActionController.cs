@@ -1,24 +1,22 @@
-﻿using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using Data.Entities;
-using PluginBase.BaseClasses;
-using System;
-using pluginSlack.Actions;
+﻿using Data.Interfaces.DataTransferObjects;
 using StructureMap;
+using System.Web.Http;
+using terminal_base.BaseClasses;
+using terminal_Slack.Actions;
 
-namespace pluginSlack.Controllers
+namespace terminal_Slack.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginSlack";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private const string _curTerminal = "terrminal_Slack";
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]
         public CrateStorageDTO Configure(ActionDTO curActionDataPackage)
         {
-            var response = (CrateStorageDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDataPackage);
+            var response = (CrateStorageDTO)_baseTerminalController.HandleDockyardRequest(_curTerminal, "Configure", curActionDataPackage);
             if (response == null)
                 response = new CrateStorageDTO();
             return response;

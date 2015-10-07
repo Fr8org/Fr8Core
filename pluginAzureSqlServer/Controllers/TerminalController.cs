@@ -5,19 +5,19 @@ using System.Web.Http;
 using Data.Entities;
 using Data.States;
 
-namespace pluginAzureSqlServer.Controllers
+namespace terminal_AzureSqlServer.Controllers
 {
-    [RoutePrefix("plugins")]
-    public class PluginController : ApiController
+    [RoutePrefix("terminals")]
+    public class TerminalController : ApiController
     {
         /// <summary>
-        /// Plugin discovery infrastructure.
-        /// Action returns list of supported actions by plugin.
+        /// Terminal discovery infrastructure.
+        /// Action returns list of supported actions by terminal.
         /// </summary>
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(List<ActivityTemplateDO>))]
-        public IHttpActionResult DiscoverPlugins()
+        public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDO>();
             
@@ -28,16 +28,16 @@ namespace pluginAzureSqlServer.Controllers
                 Version = "1"
             };
 
-            var plugin = new PluginDO
+            var terminal = new PluginDO
             {
                 Endpoint = "localhost:46281",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginAzureSqlServer",
+                Name = "terminal_AzureSqlServer",
                 RequiresAuthentication = false,
                 Version = "1"
             };
             
-            template.Plugin = plugin;
+            template.Plugin = terminal;
 
             result.Add(template);
 

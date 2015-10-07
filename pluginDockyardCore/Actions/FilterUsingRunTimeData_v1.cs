@@ -14,13 +14,13 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
 using Data.States.Templates;
-using PluginBase.BaseClasses;
-using PluginBase.Infrastructure;
-using pluginDockyardCore.Interfaces;
+using terminal_base.BaseClasses;
+using terminal_base.Infrastructure;
+using terminal_fr8Core.Interfaces;
 
-namespace pluginDockyardCore.Actions
+namespace terminal_fr8Core.Actions
 {
-    public class FilterUsingRunTimeData_v1 : BasePluginAction
+    public class FilterUsingRunTimeData_v1 : BaseTerminalAction
     {
 
         public FilterUsingRunTimeData_v1()

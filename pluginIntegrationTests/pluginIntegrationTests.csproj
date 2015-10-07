@@ -151,17 +151,17 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginAzureSqlServer\pluginAzureSqlServer.csproj">
+    <ProjectReference Include="..\pluginAzureSqlServer\terminal_AzureSqlServer.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
-      <Name>pluginAzureSqlServer</Name>
+      <Name>terminal_AzureSqlServer</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginDockyardCore\pluginDockyardCore.csproj">
+    <ProjectReference Include="..\pluginDockyardCore\terminal_fr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
-      <Name>pluginDockyardCore</Name>
+      <Name>terminal_fr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginDocuSign\pluginDocuSign.csproj">
+    <ProjectReference Include="..\pluginDocuSign\terminal_DocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
-      <Name>pluginDocuSign</Name>
+      <Name>terminal_DocuSign</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>

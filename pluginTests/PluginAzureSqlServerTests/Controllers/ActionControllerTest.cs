@@ -2,10 +2,10 @@
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
-using pluginAzureSqlServer.Controllers;
+using terminal_AzureSqlServer.Controllers;
 using UtilitiesTesting;
 
-namespace pluginTests.PluginAzureSqlServerTests.Controllers
+namespace terminalTests.PluginAzureSqlServerTests.Controllers
 {
     [TestFixture]
     public class ActionControllerTest : BaseTest

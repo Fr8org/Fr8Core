@@ -1,27 +1,22 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
+﻿using Core.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using DocuSign.Integrations.Client;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using StructureMap;
-using Newtonsoft.Json;
-using Core.Interfaces;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using PluginBase;
-using PluginBase.BaseClasses;
-using DocuSign.Integrations.Client;
-using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Interfaces;
-using pluginDocuSign.Infrastructure;
-using pluginDocuSign.Services;
+using terminal_base;
+using terminal_base.BaseClasses;
+using terminal_base.Infrastructure;
+using terminal_DocuSign.DataTransferObjects;
+using terminal_DocuSign.Infrastructure;
+using terminal_DocuSign.Services;
 
-namespace pluginDocuSign.Actions
+namespace terminal_DocuSign.Actions
 {
-    public class Wait_For_DocuSign_Event_v1 : BasePluginAction
+    public class Wait_For_DocuSign_Event_v1 : BaseTerminalAction
     {
         // TODO: remove this as of DO-1064.
         // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -107,7 +102,7 @@ namespace pluginDocuSign.Actions
 
             // Make sure that it exists
             if (String.IsNullOrEmpty(envelopeId))
-                throw new PluginCodedException(PluginErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "EnvelopeId");
 
             //Create a field
             var fields = new List<FieldDTO>()

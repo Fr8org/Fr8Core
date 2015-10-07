@@ -1,27 +1,20 @@
-using System;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
 using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
-using PluginBase.BaseClasses;
-using System.Collections.Generic;
-using Core.Services;
 using Data.States;
+using System.Collections.Generic;
+using System.Web.Http;
 
-namespace pluginDocuSign.Controllers
-{    
-    [RoutePrefix("plugins")]
-    public class PluginController : ApiController
+namespace terminal_DocuSign.Controllers
+{
+    [RoutePrefix("terminals")]
+    public class TerminalController : ApiController
     {
         [HttpGet]
         [Route("discover")]
         public IHttpActionResult Get()
         {
-            var plugin = new PluginDO()
+            var terminal = new PluginDO()
             {
-                Name = "pluginDocuSign",
+                Name = "terminal_DocuSign",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = "localhost:53234",
                 RequiresAuthentication = true,
@@ -33,7 +26,7 @@ namespace pluginDocuSign.Controllers
                 Version = "1",
                 Name = "Wait_For_DocuSign_Event",
                 Category = ActivityCategory.fr8_Monitor,
-                Plugin = plugin
+                Plugin = terminal
             };
 
 			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -41,7 +34,7 @@ namespace pluginDocuSign.Controllers
 				Version = "1",
 				Name = "Send_DocuSign_Envelope",
                 Category = ActivityCategory.fr8_Forwarder,
-				Plugin = plugin
+				Plugin = terminal
 			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -49,7 +42,7 @@ namespace pluginDocuSign.Controllers
                 Version = "1",
                 Name = "Extract_From_DocuSign_Envelope",
                 Category = ActivityCategory.fr8_Receiver,
-                Plugin = plugin
+                Plugin = terminal
             };
 
             var actionList = new List<ActivityTemplateDO>()

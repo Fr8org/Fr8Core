@@ -2,9 +2,9 @@
 using Owin;
 using Core.StructureMap;
 
-[assembly: OwinStartup(typeof(pluginDockyardCore.Startup))]
+[assembly: OwinStartup(typeof(terminal_fr8Core.Startup))]
 
-namespace pluginDockyardCore
+namespace terminal_fr8Core
 {
     public class Startup
     {

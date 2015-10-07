@@ -1,8 +1,8 @@
-﻿using System;
-using DocuSign.Integrations.Client;
+﻿using DocuSign.Integrations.Client;
 using Microsoft.WindowsAzure;
+using System;
 
-namespace pluginDocuSign.Infrastructure
+namespace terminal_DocuSign.Infrastructure
 {
     public class DocuSignPackager
     {

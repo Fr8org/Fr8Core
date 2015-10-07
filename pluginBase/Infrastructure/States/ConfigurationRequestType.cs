@@ -1,4 +1,4 @@
-﻿namespace PluginBase.Infrastructure
+﻿namespace terminal_base.Infrastructure
 {
     public enum ConfigurationRequestType
     {

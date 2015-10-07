@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using DocuSign.Integrations.Client;
 using Data.Interfaces.DataTransferObjects;
+using DocuSign.Integrations.Client;
+using System.Collections.Generic;
 
-namespace pluginDocuSign.Interfaces
+namespace terminal_DocuSign.Interfaces
 {
     public interface IDocuSignEnvelope
     {

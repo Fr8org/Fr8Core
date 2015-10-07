@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace pluginDocuSign.DataTransferObjects
+﻿
+namespace terminal_DocuSign.DataTransferObjects
 {
 	public class RecipientDTO
 	{

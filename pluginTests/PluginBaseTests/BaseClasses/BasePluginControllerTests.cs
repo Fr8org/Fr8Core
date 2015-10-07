@@ -1,26 +1,26 @@
 ﻿﻿using System;
 using UtilitiesTesting;
 using NUnit.Framework;
-using PluginBase.BaseClasses;
+using terminal_base.BaseClasses;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 
-namespace pluginTests.PluginBaseTests.Controllers
+namespace terminalTests.TerminalBaseTests.Controllers
 {
     [TestFixture]
-    [Category("BasePluginController")]
-    public class BasePluginControllerTests : BaseTest
+    [Category("BaseTerminalController")]
+    public class BaseTerminalControllerTests : BaseTest
     {
         IDisposable _coreServer;
-        BasePluginController _basePluginController;
+        BaseTerminalController _baseTerminalController;
 
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginController = new BasePluginController();
+            _baseTerminalController = new BaseTerminalController();
             _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
         }
 
@@ -37,13 +37,13 @@ namespace pluginTests.PluginBaseTests.Controllers
         [Test]
         public async void HandleDockyardRequest_PluginTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
-            string curPlugin = "pluginAzureSqlServer";
+            string curTerminal = "terminal_AzureSqlServer";
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
-            ActionDTO actionDTO = await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
+            ActionDTO actionDTO = await (Task<ActionDTO>) _baseTerminalController
+                .HandleDockyardRequest(curTerminal, curActionPath, curActionDTO);
 
             Assert.AreEqual("Standard Configuration Controls", actionDTO.CrateStorage.CrateDTO[0].ManifestType);
         }

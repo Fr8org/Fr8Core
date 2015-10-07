@@ -1,18 +1,12 @@
-﻿using System;
-using System.Web.Http;
-using Core.Interfaces;
+﻿using Core.Interfaces;
 using Core.Services;
-using Microsoft.Owin.Hosting;
-using Owin;
-using StructureMap.Configuration.DSL;
-using pluginSalesforce.Infrastructure;
 using StructureMap;
-using pluginSalesforce.Services;
-using Core.StructureMap;
+using StructureMap.Configuration.DSL;
+using terminal_Salesforce.Infrastructure;
 
-namespace pluginSalesforce
+namespace terminal_Salesforce
 {
-    public class PluginSalesforceStructureMapBootstrapper
+    public class TerminalSalesforceStructureMapBootstrapper
     {
          public enum DependencyType
          {
@@ -40,8 +34,8 @@ namespace pluginSalesforce
                  For<IAction>().Use<Core.Services.Action>();
                  For<ICrate>().Use<Crate>();
                  For<IPlugin>().Use<Plugin>();
-                 For<ILead>().Use<pluginSalesforce.Services.Lead>();
-                 For<IConfiguration>().Use<pluginSalesforce.Services.Configuration>();                
+                 For<ILead>().Use<terminal_Salesforce.Services.Lead>();
+                 For<IConfiguration>().Use<terminal_Salesforce.Services.Configuration>();                
              }
          }
     }

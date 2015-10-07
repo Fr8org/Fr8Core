@@ -1,25 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+﻿using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using PluginBase.Infrastructure;
-using StructureMap;
-using PluginBase;
-using PluginBase.BaseClasses;
-using Core.Interfaces;
+using System;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Net;
-using System.Collections.Specialized;
 using System.Text;
+using terminal_base.BaseClasses;
 
-namespace pluginSlack.Actions
+namespace terminal_Slack.Actions
 {
 
-    public class Publish_To_Slack_v1 : BasePluginAction
+    public class Publish_To_Slack_v1 : BaseTerminalAction
     {
 
    

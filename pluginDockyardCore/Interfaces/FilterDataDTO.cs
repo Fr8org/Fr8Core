@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace pluginDockyardCore.Interfaces
+namespace terminal_fr8Core.Interfaces
 {
     /// <summary>
     /// Filter execution type.

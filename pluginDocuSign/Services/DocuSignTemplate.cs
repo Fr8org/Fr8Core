@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
-using Newtonsoft.Json;
-using Utilities;
-using Data.Interfaces;
-using pluginDocuSign.Interfaces;
-using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Infrastructure;
-using System.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using terminal_DocuSign.DataTransferObjects;
+using terminal_DocuSign.Infrastructure;
+using terminal_DocuSign.Interfaces;
 
-namespace pluginDocuSign.Services
+namespace terminal_DocuSign.Services
 {
 	public class DocuSignTemplate : Template, IDocuSignTemplate
 	{
