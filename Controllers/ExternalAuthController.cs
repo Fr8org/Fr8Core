@@ -31,19 +31,15 @@ namespace Web.Controllers
             }
 
             var requestQueryString = Request.Url.Query;
-            DockyardAccountDO account;
+            if (!string.IsNullOrEmpty(requestQueryString) && requestQueryString[0] == '?')
+            {
+                requestQueryString = requestQueryString.Substring(1);
+            }
+
             PluginDO plugin;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var accountId = User.Identity.GetUserId();
-
-                account = uow.UserRepository.GetByKey(accountId);
-                if (account == null)
-                {
-                    throw new ApplicationException("Could not fetch current user.");
-                }
-
                 plugin = uow.PluginRepository
                     .FindOne(x => x.Name == pluginName && x.Version == pluginVersion);
                 if (plugin == null)
@@ -57,7 +53,7 @@ namespace Web.Controllers
                 RequestQueryString = requestQueryString
             };
 
-            await _action.AuthenticateExternal(account, plugin, externalAuthenticationDTO);
+            await _action.AuthenticateExternal(plugin, externalAuthenticationDTO);
 
             return View();
         }

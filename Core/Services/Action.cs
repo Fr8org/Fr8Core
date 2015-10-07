@@ -340,7 +340,6 @@ namespace Core.Services
         }
 
         public async Task AuthenticateExternal(
-            DockyardAccountDO account,
             PluginDO plugin,
             ExternalAuthenticationDTO externalAuthDTO)
         {
@@ -361,9 +360,7 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .FindOne(x => x.UserDO.Id == account.Id
-                        && x.Plugin.Id == plugin.Id
-                        && x.ExternalStateToken == authTokenDTO.ExternalStateToken);
+                    .FindOne(x => x.ExternalStateToken == authTokenDTO.ExternalStateToken);
 
                 if (authToken == null)
                 {

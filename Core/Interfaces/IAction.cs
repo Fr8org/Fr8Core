@@ -30,6 +30,6 @@ namespace Core.Interfaces
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
         Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);
-        Task AuthenticateExternal(DockyardAccountDO user, PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
+        Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
     }
 }
