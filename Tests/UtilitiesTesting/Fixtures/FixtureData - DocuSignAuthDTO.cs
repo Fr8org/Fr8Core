@@ -11,7 +11,7 @@ namespace UtilitiesTesting.Fixtures
     {
         public static DocuSignAuthDTO TestDocuSignAuthDTO1()
         {
-             return new DocuSignAuthDTO() { Email = "alex@edelstein.org", ApiPassword = "foobar" };
+            return new DocuSignAuthDTO() { Email = "64684b41-bdfd-4121-8f81-c825a6a03582", ApiPassword = "H1e0D79tpJ3a/7klfhPkPxNMcOo=" };
         }
     }
 }

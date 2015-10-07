@@ -1,16 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UtilitiesTesting;
+﻿using UtilitiesTesting;
 using pluginDocuSign.Actions;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using Core.Interfaces;
-using Data.States;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 
 namespace pluginTests.pluginDocuSign.Actions
 {
-    [TestClass]
+    [TestFixture]
+    [Category("Wait_For_DocuSign_Event_v1")]
     public class Wait_For_DocuSign_Event_v1Tests : BaseTest
     {
 
@@ -22,7 +22,7 @@ namespace pluginTests.pluginDocuSign.Actions
             _wait_For_DocuSign_Event_v1 = new Wait_For_DocuSign_Event_v1();
         }
 
-        [TestMethod,Ignore]
+        [Test]
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
             //Arrange
@@ -41,7 +41,7 @@ namespace pluginTests.pluginDocuSign.Actions
 
         }
 
-        [TestMethod]
+        [Test]
         public void Configure_ConfigurationRequestTypeIsFollowup_ShouldUpdateStorage()
         {
             //Arrange
@@ -57,7 +57,7 @@ namespace pluginTests.pluginDocuSign.Actions
 
         }
 
-        [TestMethod]
+        [Test]
         public void Configure_ConfigurationRequestTypeIsFollowup_ShouldUpdateEventSubscription()
         {
             //Arrange
@@ -72,7 +72,7 @@ namespace pluginTests.pluginDocuSign.Actions
 
         }
 
-        [TestMethod]
+        [Test]
         public void GetEnvelopeId_ParameterAsPayloadDTO_ReturnsEnvelopeInformation()
         {
             //Arrange

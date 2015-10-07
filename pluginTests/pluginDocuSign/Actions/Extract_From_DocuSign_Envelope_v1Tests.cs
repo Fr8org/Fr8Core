@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using UtilitiesTesting;
+﻿using UtilitiesTesting;
 using pluginDocuSign.Actions;
 using Data.Interfaces.DataTransferObjects;
 using Core.Interfaces;
@@ -11,20 +9,17 @@ using Data.Entities;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Moq;
-using Moq.Protected;
-using PluginBase.BaseClasses;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Linq;
+using NUnit.Framework;
 
 namespace pluginTests.pluginDocuSign.Actions
 {
-    [TestClass]
+    [TestFixture]
+    [Category("Extract_From_DocuSign_Envelope_v1")]
     public class Extract_From_DocuSign_Envelope_v1Tests : BaseTest
     {
         Extract_From_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
-      
 
         public Extract_From_DocuSign_Envelope_v1Tests()
         {
@@ -33,7 +28,8 @@ namespace pluginTests.pluginDocuSign.Actions
            
         }
 
-        [TestMethod, Ignore]
+
+        [Test]
         public async Task Configure_ConfigurationRequestTypeIsInitial_ShouldCrateStorage()
         {
 
@@ -46,7 +42,7 @@ namespace pluginTests.pluginDocuSign.Actions
                 ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
                 curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(FixtureData.TestDocuSignAuthDTO1()) };
 
-                Extract_From_DocuSign_Envelope_v1_For_Testing curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_For_Testing();
+                Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
 
                 //Act
                 var result = await curExtract_From_DocuSign_Envelope_v1_For_Testing.Configure(curActionDTO);
@@ -60,7 +56,7 @@ namespace pluginTests.pluginDocuSign.Actions
             }
         }
 
-        [TestMethod]
+        [Test]
         public void GetEnvelopeId_ParameterAsPayloadDTO_ReturnsEnvelopeInformation()
         {
             //Arrange
@@ -76,7 +72,7 @@ namespace pluginTests.pluginDocuSign.Actions
         }
 
 
-        [TestMethod]
+        [Test]
         public void GetFields_ActionDTOAsParameter_ReturnsFieldsInformation()
         {
             //Arrange
@@ -94,7 +90,7 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Condition", result[3].Key);
         }
 
-        [TestMethod, Ignore]
+        [Test]
         public void CreateActionPayload_ReturnsFieldsValue()
         {
             //Arrange
@@ -111,12 +107,12 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Marthambles", result[3].Value);
 
         }
+    
     }
-
-    public class Extract_From_DocuSign_Envelope_v1_For_Testing : Extract_From_DocuSign_Envelope_v1
+    public class Extract_From_DocuSign_Envelope_v1_Proxy : Extract_From_DocuSign_Envelope_v1
     {
         private readonly IActivity _activity;
-        public Extract_From_DocuSign_Envelope_v1_For_Testing()
+        public Extract_From_DocuSign_Envelope_v1_Proxy()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
         }
