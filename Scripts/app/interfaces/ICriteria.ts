@@ -23,6 +23,11 @@ module dockyard.interfaces {
         activityTemplate: model.ActivityTemplate;
     }
 
+    export interface IActivityCategoryDTO {
+        name: string;
+        activities: Array<IActivityTemplateVM>
+    }
+
     export interface ICondition {
         field: string;
         operator: string;

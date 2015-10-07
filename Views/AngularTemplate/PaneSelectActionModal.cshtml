@@ -1,0 +1,16 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Select an Action</h3>
+</div>
+<div class="modal-body">
+    <div class="select-action-category" ng-repeat="activityCategory in activityCategories">
+        <h4>{{activityCategory[0].category}}</h4>
+        <div class="select-action-list">
+            <div class="select-action-row" ng-repeat="activityType in activityCategory" ng-click="activityTypeSelected(activityType)">
+                {{activityType.name | actionNameFormatter}}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+</div>

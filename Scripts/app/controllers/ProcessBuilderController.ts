@@ -104,6 +104,10 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
+            this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
+                (event: ng.IAngularEvent, eventArgs: psa.ActivityTypeSelectedEventArgs) => this.PaneSelectAction_ActivityTypeSelected(eventArgs));
+
+            //TODO: is this necessary??
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
             // TODO: do we need this any more?
@@ -182,6 +186,11 @@ module dockyard.controllers {
 
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
             promise.then((result: model.ProcessBuilderState) => {
+                
+                //we should just raise an event for this
+                self._scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAddRequest],new psa.ActionAddRequestEventArgs());
+
+                /*
                 // Generate next Id.
                 var id = self.LocalIdentityGenerator.getNextId();                
 
@@ -209,7 +218,33 @@ module dockyard.controllers {
                     self._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
                     self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);                    
                 });
+                */
             });
+        }
+
+        private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
+
+            var selectedActivityTemplate = eventArgs.activityTemplate;
+            // Generate next Id.
+            var id = this.LocalIdentityGenerator.getNextId();                
+
+            // Create new action object.
+            var action = new model.ActionDTO(null, id, true, this._scope.immediateActionListVM.id);
+            action.name = 'New Action #' + Math.abs(id).toString();
+
+            // Add action to Workflow Designer.
+            this._scope.current.action = action.toActionVM();
+            this._scope.$broadcast(
+                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
+                new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), model.ActionListType.Immediate)
+                );
+
+            this._scope.current.action.activityTemplateId = selectedActivityTemplate.id;
+            this._scope.current.action.activityTemplate = selectedActivityTemplate;
+            var pcaEventArgs = new pca.RenderEventArgs(this._scope.current.action);
+            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(this._scope.current.action.id, selectedActivityTemplate.id);
+            this._scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);    
         }
 
         /*
