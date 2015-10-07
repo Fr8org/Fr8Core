@@ -159,9 +159,9 @@
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminal_fr8Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginDocuSign\pluginDocuSign.csproj">
+    <ProjectReference Include="..\pluginDocuSign\terminal_DocuSign.csproj">
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
-      <Name>pluginDocuSign</Name>
+      <Name>terminal_DocuSign</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>

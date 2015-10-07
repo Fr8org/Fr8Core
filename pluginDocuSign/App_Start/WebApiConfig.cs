@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using Core.StructureMap;
-using terminal_base;
-using pluginDocuSign.Infrastructure;
+﻿using System.Web.Http;
 using TerminalBase.BaseClasses;
-using StructureMap;
 
-namespace pluginDocuSign
+namespace terminal_DocuSign
 {
     public static class WebApiConfig
     {

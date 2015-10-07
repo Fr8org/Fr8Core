@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Data.Interfaces.DataTransferObjects;
+using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using Data.Entities;
-using Data.States;
 using terminal_base.BaseClasses;
 
 namespace terminal_AzureSqlServer.Controllers

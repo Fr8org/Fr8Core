@@ -4,8 +4,8 @@ using DocuSign.Integrations.Client;
 using Newtonsoft.Json;
 using Account = DocuSign.Integrations.Client.Account;
 using terminalTests.pluginDocuSign.Interfaces;
-using pluginDocuSign.Infrastructure;
-using pluginDocuSign.Services;
+using terminal_DocuSign.Infrastructure;
+using terminal_DocuSign.Services;
 
 namespace terminalTests.pluginDocuSign
 {

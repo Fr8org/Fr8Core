@@ -17,7 +17,7 @@ namespace terminal_AzureSqlServer.Controllers
         [HttpGet]
         [Route("discover")]
         [ResponseType(typeof(List<ActivityTemplateDO>))]
-        public IHttpActionResult DiscoverPlugins()
+        public IHttpActionResult DiscoverTerminals()
         {
             var result = new List<ActivityTemplateDO>();
             
@@ -28,16 +28,16 @@ namespace terminal_AzureSqlServer.Controllers
                 Version = "1"
             };
 
-            var plugin = new PluginDO
+            var terminal = new PluginDO
             {
                 Endpoint = "localhost:46281",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginAzureSqlServer",
+                Name = "terminal_AzureSqlServer",
                 RequiresAuthentication = false,
                 Version = "1"
             };
             
-            template.Plugin = plugin;
+            template.Plugin = terminal;
 
             result.Add(template);
 

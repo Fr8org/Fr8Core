@@ -1,26 +1,20 @@
-﻿using System;
+﻿using Data.Constants;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using Newtonsoft.Json;
-using StructureMap;
-using Core.Interfaces;
-using Data.Constants;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using terminal_base;
 using terminal_base.BaseClasses;
 using terminal_base.Infrastructure;
+using terminal_DocuSign.DataTransferObjects;
+using terminal_DocuSign.Infrastructure;
+using terminal_DocuSign.Interfaces;
+using terminal_DocuSign.Services;
 using Utilities;
-using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Infrastructure;
-using pluginDocuSign.Interfaces;
-using pluginDocuSign.Services;
 
-namespace pluginDocuSign.Actions
+namespace terminal_DocuSign.Actions
 {
 	public class Send_DocuSign_Envelope_v1 : BaseTerminalAction
 	{

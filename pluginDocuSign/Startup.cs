@@ -9,9 +9,9 @@ using Owin;
 using terminal_base;
 using terminal_base.BaseClasses;
 
-[assembly: OwinStartup(typeof(pluginDocuSign.Startup))]
+[assembly: OwinStartup(typeof(terminal_DocuSign.Startup))]
 
-namespace pluginDocuSign
+namespace terminal_DocuSign
 {
     public class Startup
     {

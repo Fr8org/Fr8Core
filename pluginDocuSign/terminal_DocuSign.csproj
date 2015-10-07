@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pluginDocuSign</RootNamespace>
-    <AssemblyName>pluginDocuSign</AssemblyName>
+    <RootNamespace>terminal_DocuSign</RootNamespace>
+    <AssemblyName>terminal_DocuSign</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -178,10 +178,10 @@
     <Compile Include="Actions\Wait_For_DocuSign_Event_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
-    <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
+    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />
     <Compile Include="DocuSignUtils.cs" />
@@ -201,7 +201,7 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IDocuSignTemplate.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
-    <Compile Include="Infrastructure\PluginDocuSignMapBootstrapper.cs" />
+    <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

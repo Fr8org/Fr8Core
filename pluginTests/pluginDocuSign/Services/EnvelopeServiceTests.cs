@@ -10,9 +10,9 @@ using Utilities;
 
 using Data.Interfaces.DataTransferObjects;
 using terminalTests.pluginDocuSign.Interfaces;
-using pluginDocuSign.Services;
+using terminal_DocuSign.Services;
 using terminalTests.Fixtures;
-using pluginDocuSign.Interfaces;
+using terminal_DocuSign.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

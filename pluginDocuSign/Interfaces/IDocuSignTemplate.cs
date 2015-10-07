@@ -1,15 +1,9 @@
-﻿using System;
+﻿using Data.Entities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using DocuSign.Integrations.Client;
-using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Services;
+using terminal_DocuSign.DataTransferObjects;
+using terminal_DocuSign.Services;
 
-namespace pluginDocuSign.Interfaces
+namespace terminal_DocuSign.Interfaces
 {
 	public interface IDocuSignTemplate
 	{

@@ -1,49 +1,44 @@
-﻿using System;
+﻿using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Xml.Linq;
-using AutoMapper;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using terminal_base.BaseClasses;
-using pluginDocuSign.DataTransferObjects;
+using terminal_DocuSign.DataTransferObjects;
 
 
-namespace pluginDocuSign.Controllers
+namespace terminal_DocuSign.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginDocuSign";
-        private BaseTerminalController _basePluginController = new BaseTerminalController();
+        private const string _curTerminal = "terminal_DocuSign";
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>) _baseTerminalController
+                .HandleDockyardRequest(_curTerminal, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
+            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(_curTerminal, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDTO);
+            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(_curTerminal, "Deactivate", curActionDTO);
         }
 
         [HttpPost]
@@ -101,8 +96,8 @@ namespace pluginDocuSign.Controllers
         [Route("execute")]
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Execute", actionDto);
+            return await (Task<PayloadDTO>)_baseTerminalController.HandleDockyardRequest(
+                _curTerminal, "Execute", actionDto);
         }
     }
 }
