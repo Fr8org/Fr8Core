@@ -114,13 +114,15 @@ namespace terminal_base.BaseClasses
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO;
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
         protected virtual async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO;
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId,

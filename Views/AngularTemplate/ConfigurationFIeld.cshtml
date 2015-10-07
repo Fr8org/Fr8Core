@@ -8,8 +8,8 @@
     *@
     <div class='col-sm-offset-1' ng-if='field.type == "checkboxField"'>
         <div class='checkbox checkbox-primary'>
-            <input type='checkbox' ng-model='field.selected' ng-click="onFieldChange($event)" data-field-name='{{::field.name}}' id='pca__chk__{{field.name}}' name='pca__chk__{{field.name}}'>
-            <label for='pca__chk__{{field.name}}'>{{field.label}}</label>
+            <input type='checkbox' ng-model='field.selected' ng-click="onFieldChange($event)" data-field-name='{{::field.name}}' id='pca__chk__{{::field.name}}' name='pca__chk__{{::field.name}}'>
+            <label for='pca__chk__{{::field.name}}'>{{::field.label}}</label>
         </div>
     </div>
 
@@ -17,15 +17,15 @@
         Textbox template
     *@
     <div ng-if='field.type == "textField"'>
-        <label class='control-label'>{{field.label}}</label>
-        <input type='text' ng-model='field.value' ng-blur="onFieldChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__chk__{{field.name}}' class='form-control form-control-focus' name='pca__chk__{{field.name}}'>
+        <label class='control-label'>{{::field.label}}</label>
+        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }" ng-blur="onFieldChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}' class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}'>
     </div>
 
     @*
         Filepicker template
     *@
     <div ng-if='field.type == "filePicker"'>
-        <label class='control-label'>{{field.label}}</label>
+        <label class='control-label'>{{::field.label}}</label>
         <file-picker field='field'></file-picker>
     </div>  
     
@@ -33,15 +33,15 @@
         RadioButtonGroup template
     *@
     <div ng-if='field.type == "radioButtonGroup"'>
-        <label class='control-label'>{{field.label}}</label>
-        <radio-button-group field='field'></radio-button-group>
+        <label class='control-label'>{{::field.label}}</label>
+        <radio-button-group field='field' current-action='currentAction'></radio-button-group>
     </div>  
     
     @*
         DownDownList template
     *@
     <div ng-if='field.type == "dropdownlistField"'>
-        <label class='control-label'>{{field.label}}</label>
+        <label class='control-label'>{{::field.label}}</label>
         <drop-down-list-box field='field' change='onFieldChange'></drop-down-list-box>
     </div>  
     
@@ -49,7 +49,7 @@
         TextBlock template
     *@
     <div ng-if='field.type == "textBlockField"'>
-        <label class='control-label'>{{field.label}}</label>
+        <label class='control-label'>{{::field.label}}</label>
         <text-block field='field'></text-block>
     </div> 
 
@@ -64,7 +64,7 @@
         MappingPane template
     *@
     <div ng-if='field.type == "mappingPane"'>
-        <label class='control-label'>{{field.label}}</label>
+        <label class='control-label'>{{::field.label}}</label>
         <mapping-pane current-action='currentAction' field='field'></mapping-pane>
     </div>
 

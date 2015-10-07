@@ -24,7 +24,7 @@ namespace DockyardTest.Services
 	[Category("CriteriaService")]
 	public class CriteriaServiceTests : BaseTest
 	{
-		private ICriteria _criteria;
+		//private ICriteria _criteria;
 
         //TODO These tests may still be useful, but this work is no longer done by the Criteria Service, which will
         //TODO soon be removed. This work is now done in the pluginCoreDockyard Filter action
