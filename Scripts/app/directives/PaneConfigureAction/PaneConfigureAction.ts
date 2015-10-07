@@ -103,8 +103,7 @@ module dockyard.directives.paneConfigureAction {
         }
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
-            if (!newValue || !newValue.fields || newValue.fields.length == 0) return;
-
+            if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
             this.crateHelper.mergeControlListCrate(
                 scope.currentAction.configurationControls,
                 scope.currentAction.crateStorage
@@ -167,7 +166,11 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender() {
             if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
-
+            
+            // Avoid unnecessary Save while 
+            if (this.configurationWatchUnregisterer) {
+                this.configurationWatchUnregisterer();
+            }
             //for now ignore actions which were not saved in the database
             if (this._$scope.currentAction.isTempId) return;
 
@@ -186,9 +189,8 @@ module dockyard.directives.paneConfigureAction {
             this.$timeout(() => {
                 if (this._$scope.currentAction.activityTemplateId > 0) {
                     this.loadConfiguration();
-                }            
-            }, 100);
-
+                }
+            }, 300);
         }
 
         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
@@ -197,6 +199,10 @@ module dockyard.directives.paneConfigureAction {
             // Block pane and show pane-level 'loading' spinner
             this._$scope.processing = true;
             var activityTemplateName = this._$scope.currentAction.activityTemplateName; // preserve activity name
+
+            if (this.configurationWatchUnregisterer) {
+                this.configurationWatchUnregisterer();
+            }
 
             this.ActionService.configure(this._$scope.currentAction).$promise.then((res: any) => {
                 // Check if authentication is required.
@@ -229,19 +235,19 @@ module dockyard.directives.paneConfigureAction {
                 // Assign name to res rather than currentAction to prevent 
                 // $watches from unnecessarily triggering
                 res.activityTemplateName = activityTemplateName; 
-
                 this._$scope.currentAction = res;
                 (<any>this._$scope.currentAction).configurationControls =
-                    this.crateHelper.createControlListFromCrateStorage(this._$scope.currentAction.crateStorage);
-            });
+                this.crateHelper.createControlListFromCrateStorage(this._$scope.currentAction.crateStorage);
 
-            if (this.configurationWatchUnregisterer == null) {
                 this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
-                    this.configurationWatchUnregisterer = this._$scope.$watch<model.ControlsList>((scope: IPaneConfigureActionScope) => scope.currentAction.configurationControls, <any>angular.bind(this, this.onConfigurationChanged), true);
-                }, 500);
-            }
+                    this.configurationWatchUnregisterer = this._$scope.$watch<model.ControlsList>(
+                        (scope: IPaneConfigureActionScope) => this._$scope.currentAction.configurationControls,
+                        <any>angular.bind(this, this.onConfigurationChanged),
+                        true);
+                }, 1000);
+            });
         }
-
+        
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
             var directive = (

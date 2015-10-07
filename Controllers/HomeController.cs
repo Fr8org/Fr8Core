@@ -189,7 +189,7 @@ namespace Web.Controllers
                 }
                 result = "success";
             }
-            catch (ValidationException ex)
+            catch (ValidationException)
             {
                 result = "You need to provide a valid Email Address.";
             }

@@ -40,6 +40,7 @@ module dockyard.controllers {
             '$state',
             'ActionService',
             'ProcessTemplateService',
+            '$timeout',
             'ProcessBuilderService',
             'CrateHelper',
             '$filter',
@@ -52,6 +53,7 @@ module dockyard.controllers {
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
             private ProcessTemplateService: services.IProcessTemplateService,
+            private $timeout: ng.ITimeoutService,
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
@@ -62,11 +64,11 @@ module dockyard.controllers {
             this.$scope.actions = [];
 
             this.setupMessageProcessing();
-            this.loadProcessTemplate();
+            $timeout(() => this.loadProcessTemplate(), 500, true);
 
             this.$scope.addAction = () => {
                 this.addAction();
-            }
+        }
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -106,7 +108,7 @@ module dockyard.controllers {
                 for (var curActionList of curProcessNodeTemplate.actionLists) {
                     for (var curAction of curActionList.actions) {
                         this.$scope.actions.push(curAction);
-                    }
+        }
                 }
             }
         }
@@ -126,17 +128,17 @@ module dockyard.controllers {
             //self.$scope.current.action.id = result.action.id;
             //self.$scope.current.action.isTempId = false;
 
-            //Notify workflow designer of action update
+                //Notify workflow designer of action update
             this.$scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
-                new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
-                );
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionNameUpdated],
+                    new pwd.ActionNameUpdatedEventArgs(action.id, action.name)
+                    );
 
-            if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
-                action.configurationControls = this.CrateHelper
-                    .createControlListFromCrateStorage(action.crateStorage);
+                if (this.CrateHelper.hasControlListCrate(action.crateStorage)) {
+                    action.configurationControls = this.CrateHelper
+                        .createControlListFromCrateStorage(action.crateStorage);
+                }
             }
-        }
 
         private addAction() {
             console.log('Add action');
@@ -148,14 +150,14 @@ module dockyard.controllers {
                     controller: 'SelectActionController',
                     windowClass: 'select-action-modal'
                 }).result.then((activityTemplate: model.ActivityTemplate) => {
-                    // Generate next Id.
+                // Generate next Id.
                     var id = this.LocalIdentityGenerator.getNextId();                
 
-                    // Create new action object.
+                // Create new action object.
                     var action = new model.ActionDTO(null, id, true, this.$scope.immediateActionListVM.id);
                     action.name = activityTemplate.name;
 
-                    // Add action to Workflow Designer.
+                // Add action to Workflow Designer.
                     this.$scope.current.action = action.toActionVM();
                     this.$scope.current.action.activityTemplateId = activityTemplate.id;
                     this.$scope.actions.push(action);
@@ -206,7 +208,7 @@ module dockyard.controllers {
                     // the one returned from the above saveCurrent operation.
                     canBypassActionLoading = idChangedFromTempToPermanent || !actionChanged
                 }
-
+                
                 if (actionId < 1) {
                     throw Error('Action has not been persisted. Process Builder cannot proceed ' +
                         'to action type selection for an unpersisted action.');

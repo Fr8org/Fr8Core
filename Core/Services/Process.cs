@@ -8,13 +8,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using StructureMap;
-using Newtonsoft.Json;
-using Core.Helper;
-using System.Linq;
+
 using Data.Interfaces.DataTransferObjects;
-using Data.States.Templates;
-using DocuSign.Integrations.Client;
-using Utilities;
+
 
 namespace Core.Services
 {
@@ -111,6 +107,9 @@ namespace Core.Services
 
         private void UpdateNextActivity(ProcessDO curProcessDO)
         {
+            if (curProcessDO == null)
+                throw new ArgumentNullException("ProcessDO is null");
+
             if (curProcessDO.NextActivity != null)
             {
                 curProcessDO.CurrentActivity = curProcessDO.NextActivity;
