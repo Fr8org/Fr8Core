@@ -22,6 +22,11 @@ namespace Data.Entities
 
         public String ExternalAccountId { get; set; }
 
+        /// <summary>
+        /// State-token parameter, that is sent to exteral auth service,
+        /// and returned back when auth is completed.
+        /// </summary>
+        public String ExternalStateToken { get; set; }
 
         [ForeignKey("UserDO")]
         public String UserID { get; set; }

@@ -354,6 +354,10 @@
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs" />
+    <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.Designer.cs">
+      <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -638,6 +642,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.resx">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.resx">
+      <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

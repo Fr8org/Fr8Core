@@ -83,7 +83,8 @@ module dockyard.directives.paneConfigureAction {
             private ActionService: services.IActionService,
             private crateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
-            private $timeout: ng.ITimeoutService
+            private $timeout: ng.ITimeoutService,
+            private $window: ng.IWindowService
         ) {
 
             PaneConfigureAction.prototype.link = (
@@ -229,7 +230,7 @@ module dockyard.directives.paneConfigureAction {
 
                     // External auth mode.
                     else {
-                        alert('TODO: External auth');
+                        self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
                     }
 
                     scope.processing = false;
@@ -267,13 +268,15 @@ module dockyard.directives.paneConfigureAction {
                 ActionService,
                 crateHelper: services.CrateHelper,
                 $filter: ng.IFilterService,
-                $timeout: ng.ITimeoutService
+                $timeout: ng.ITimeoutService,
+                $window: ng.IWindowService
             ) => {
 
-                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout);
+                return new PaneConfigureAction($rootScope, ActionService,
+                    crateHelper, $filter, $timeout, $window);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout'];
+            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout', '$window'];
             return directive;
         }
     }
