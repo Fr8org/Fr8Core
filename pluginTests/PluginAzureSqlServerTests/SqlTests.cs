@@ -4,13 +4,13 @@ using System.Diagnostics;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces;
 using NUnit.Framework;
-using terminal_AzureSqlServer;
+using pluginAzureSqlServer;
 using StructureMap;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalTests.PluginAzureSqlServerTests
+namespace pluginTests.PluginAzureSqlServerTests
 {
     [TestFixture]
     public class SqlTests : BaseTest

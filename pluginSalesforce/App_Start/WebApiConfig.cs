@@ -1,6 +1,11 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
+using Core.StructureMap;
+using StructureMap;
 
-namespace terminal_Salesforce
+namespace pluginSalesforce
 {
     public static class WebApiConfig
     {
@@ -10,8 +15,8 @@ namespace terminal_Salesforce
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
-                name: "TerminalSalesforce",
-                routeTemplate: "terminal_salesforce/{controller}/{id}"
+                name: "pluginSalesforce",
+                routeTemplate: "plugin_salesforce/{controller}/{id}"
             );         
         }
     }

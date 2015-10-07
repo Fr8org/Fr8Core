@@ -1,10 +1,10 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace terminal_base.Infrastructure
+namespace PluginBase.Infrastructure
 {
     /// <summary>
-    /// JSON utility class, to help parse JSON data in terminals.
+    /// JSON utility class, to help parse JSON data in plugins.
     /// </summary>
     public static class JsonParser
     {

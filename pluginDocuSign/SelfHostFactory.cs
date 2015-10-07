@@ -5,7 +5,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace terminal_DocuSign
+namespace pluginDocuSign
 {
     public class SelfHostFactory
     {
@@ -16,7 +16,7 @@ namespace terminal_DocuSign
                 return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
-                    typeof(Controllers.TerminalController)
+                    typeof(Controllers.PluginController)
                 };
             }
         }
@@ -31,8 +31,8 @@ namespace terminal_DocuSign
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "TerminalDocuSign",
-                    routeTemplate: "terminal_docusign/{controller}/{id}",
+                    name: "PluginDocuSign",
+                    routeTemplate: "plugin_docusign/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 

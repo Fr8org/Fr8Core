@@ -11,7 +11,7 @@ using Core.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using Utilities;
-using terminal_base;
+using PluginBase;
 
 namespace Web
 {
@@ -37,8 +37,8 @@ namespace Web
             // if debugging enabled send back the details of exception as well
             if (HttpContext.Current.IsDebuggingEnabled)
             {
-                if (ex is TerminalCodedException) {
-                    var pluginEx = (TerminalCodedException)ex;
+                if (ex is PluginCodedException) {
+                    var pluginEx = (PluginCodedException)ex;
                     var pluginError = JsonConvert.SerializeObject(new { errorCode = pluginEx.ErrorCode, message = pluginEx.ErrorCode.GetEnumDescription() });
                     context.Response.Content = new StringContent(pluginError, Encoding.UTF8, "application/json");
                     return;

@@ -1,20 +1,27 @@
-using Data.Entities;
-using Data.States;
-using System.Collections.Generic;
+using System;
 using System.Web.Http;
+using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
+using Data.Entities;
+using Newtonsoft.Json;
+using System.Reflection;
+using PluginBase.BaseClasses;
+using System.Collections.Generic;
+using Core.Services;
+using Data.States;
 
-namespace terminal_DocuSign.Controllers
-{
-    [RoutePrefix("terminals")]
-    public class TerminalController : ApiController
+namespace pluginDocuSign.Controllers
+{    
+    [RoutePrefix("plugins")]
+    public class PluginController : ApiController
     {
         [HttpGet]
         [Route("discover")]
         public IHttpActionResult Get()
         {
-            var terminal = new PluginDO()
+            var plugin = new PluginDO()
             {
-                Name = "terminal_DocuSign",
+                Name = "pluginDocuSign",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = "localhost:53234",
                 RequiresAuthentication = true,
@@ -26,7 +33,7 @@ namespace terminal_DocuSign.Controllers
                 Version = "1",
                 Name = "Wait_For_DocuSign_Event",
                 Category = ActivityCategory.fr8_Monitor,
-                Plugin = terminal
+                Plugin = plugin
             };
 
 			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -34,7 +41,7 @@ namespace terminal_DocuSign.Controllers
 				Version = "1",
 				Name = "Send_DocuSign_Envelope",
                 Category = ActivityCategory.fr8_Forwarder,
-				Plugin = terminal
+				Plugin = plugin
 			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
@@ -42,7 +49,7 @@ namespace terminal_DocuSign.Controllers
                 Version = "1",
                 Name = "Extract_From_DocuSign_Envelope",
                 Category = ActivityCategory.fr8_Receiver,
-                Plugin = terminal
+                Plugin = plugin
             };
 
             var actionList = new List<ActivityTemplateDO>()

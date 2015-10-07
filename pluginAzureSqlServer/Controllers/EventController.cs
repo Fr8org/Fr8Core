@@ -1,8 +1,8 @@
 ﻿using System.Web.Http;
-using terminal_AzureSqlServer.Services;
+using pluginAzureSqlServer.Services;
 using StructureMap;
 
-namespace terminal_AzureSqlServer.Controllers
+namespace pluginAzureSqlServer.Controllers
 {
     public class EventController : ApiController
     {

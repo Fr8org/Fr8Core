@@ -1,6 +1,6 @@
-﻿using terminal_AzureSqlServer.Infrastructure;
+﻿using pluginAzureSqlServer.Infrastructure;
 
-namespace terminal_AzureSqlServer.Services
+namespace pluginAzureSqlServer.Services
 {
     public interface IDbService
     {

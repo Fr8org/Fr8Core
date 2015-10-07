@@ -1,17 +1,24 @@
-﻿using System.Web.Http;
-using TerminalBase.BaseClasses;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Http;
+using Core.StructureMap;
+using PluginBase;
+using pluginDocuSign.Infrastructure;
+using PluginUtilities.BaseClasses;
+using StructureMap;
 
-namespace terminal_DocuSign
+namespace pluginDocuSign
 {
     public static class WebApiConfig
     {
         public static void Register(HttpConfiguration config)
         {
-            BaseTerminalWebApiConfig.Register(config);
+            BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "TerminalDocuSign",
-                routeTemplate: "terminal_docusign/{controller}/{id}"
+                name: "PluginDocuSign",
+                routeTemplate: "plugin_docusign/{controller}/{id}"
             );
         }
     }

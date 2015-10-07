@@ -1,20 +1,25 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using System;
 using System.Web.Http;
-using terminal_base.BaseClasses;
+using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
+using Data.Entities;
+using Newtonsoft.Json;
+using System.Reflection;
+using PluginBase.BaseClasses;
 
-namespace terminal_Salesforce.Controllers
+namespace pluginSalesforce.Controllers
 {
     [RoutePrefix("actions")]
     public class ActionController:ApiController
     {
-        private const string _curTerminal = "terminal_Salesforce";
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
+        private const string curPlugin = "pluginSalesforce";
+        private BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]
         [Route("create")]
         public ActionDTO Create(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(_curTerminal, "CreateLead", curActionDTO);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "CreateLead", curActionDTO);
         }
     }
 }

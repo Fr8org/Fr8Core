@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
-namespace terminal_AzureSqlServer.Infrastructure
+namespace pluginAzureSqlServer.Infrastructure
 {
     public class SqlClientDbProvider : IDbProvider
     {

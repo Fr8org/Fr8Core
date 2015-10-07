@@ -13,20 +13,20 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminal_AzureSqlServer;
+using pluginAzureSqlServer;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
-using terminal_DocuSign;
+using pluginDocuSign;
 
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
-using terminal_DocuSign.Infrastructure.StructureMap;
-using terminal_DocuSign.Infrastructure.AutoMapper;
+using pluginDocuSign.Infrastructure.StructureMap;
+using pluginDocuSign.Infrastructure.AutoMapper;
 
-namespace terminalIntegrationTests
+namespace pluginIntegrationTests
 {
     [TestFixture]
-	public partial class TerminalIntegrationTests : BaseTest
+	public partial class PluginIntegrationTests : BaseTest
     {
         private IDisposable _coreServer;
         private IDisposable _docuSignServer;
@@ -51,8 +51,8 @@ namespace terminalIntegrationTests
         public override void SetUp()
         {
             base.SetUp();
-			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
-			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.TEST);
+			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             // these are integration tests, we are using a real transmitter
             ObjectFactory.Configure(c => c.For<IPluginTransmitter>().Use<PluginTransmitter>());
@@ -101,13 +101,13 @@ namespace terminalIntegrationTests
             _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
-            _docuSignServer = terminal_DocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
+            _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
 
             var dockyardCoreServerUrl = "http://" + FixtureData.TestPlugin_Core_EndPoint + "/";
-            _dockyardCoreServer = terminal_fr8Core.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
+            _dockyardCoreServer = pluginDockyardCore.SelfHostFactory.CreateServer(dockyardCoreServerUrl);
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
-            _azureSqlServerServer = terminal_AzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+            _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
 
 
         }
@@ -455,7 +455,7 @@ namespace terminalIntegrationTests
         /// Test WriteToSqlServer follow-up configuration.
         /// </summary>
         [Test]
-        public async Task TerminalIntegration_WriteToSqlServer_ConfigureFollowUp()
+        public async Task PluginIntegration_WriteToSqlServer_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.
             var savedActionDTO = CreateEmptyAction(_writeToSqlServerActivityTemplate);

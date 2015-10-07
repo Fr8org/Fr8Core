@@ -1,34 +1,34 @@
 ﻿﻿using System;
 using UtilitiesTesting;
 using NUnit.Framework;
-using terminal_base.BaseClasses;
+using PluginBase.BaseClasses;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
-using terminal_Salesforce;
+using pluginSalesforce;
 
-namespace terminalTests.PluginSalesforceTests
+namespace pluginTests.PluginSalesforceTests
 {
     [TestFixture]
     public class SalesforceActionControllerTests : BaseTest
     {
-        BaseTerminalController _baseTerminalController;
+        BasePluginController _basePluginController;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _baseTerminalController = new BaseTerminalController();
-            TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.LIVE);            
+            _basePluginController = new BasePluginController();
+            PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);            
         }
 
         [Test]
         public void HandleDockyardRequest_PluginTypeIsSalesforce_CreateLead()
         {
-            string curPlugin = "terminal_Salesforce";
+            string curPlugin = "pluginSalesforce";
             string curActionPath = "CreateLead";
             ActionDTO curActionDTO = FixtureData.TestActionDTOForSalesforce();            
-            ActionDTO result = (ActionDTO)_baseTerminalController.HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
+            ActionDTO result = (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
             Assert.AreEqual(curActionDTO, result);
         }
     }

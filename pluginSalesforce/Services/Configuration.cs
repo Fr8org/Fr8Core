@@ -1,27 +1,31 @@
-﻿using Salesforce.Common;
+﻿using pluginSalesforce.Infrastructure;
+using Salesforce.Common;
 using Salesforce.Force;
+using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
-using terminal_Salesforce.Infrastructure;
+using System.Web;
 
-namespace terminal_Salesforce.Services
+namespace pluginSalesforce.Services
 {
     public class Configuration:IConfiguration
     {
        
-        public readonly string _salesforceUserName;
-        public readonly string _salesforcePassword;
-        public readonly string _salesforceConsumerKey;
-        public readonly string _salesforceConsumerSecret;
+        public readonly string salesforceUserName;
+        public readonly string salesforcePassword;
+        public readonly string salesforceConsumerKey;
+        public readonly string salesforceConsumerSecret;
         ForceClient forceClient = null;
         AuthenticationClient authclient;
 
         public Configuration()
         {
-           this._salesforceUserName = ConfigurationManager.AppSettings["SalesforceUserName"];
-           this._salesforcePassword = ConfigurationManager.AppSettings["SalesforcePassword"];
-           this._salesforceConsumerKey = ConfigurationManager.AppSettings["SalesforceConsumerKey"];
-           this._salesforceConsumerSecret = ConfigurationManager.AppSettings["SalesforceConsumerSecret"];
+           this.salesforceUserName = ConfigurationManager.AppSettings["SalesforceUserName"];
+           this.salesforcePassword = ConfigurationManager.AppSettings["SalesforcePassword"];
+           this.salesforceConsumerKey = ConfigurationManager.AppSettings["SalesforceConsumerKey"];
+           this.salesforceConsumerSecret = ConfigurationManager.AppSettings["SalesforceConsumerSecret"];
 
            authclient = new AuthenticationClient();
            var connectionTask= GetConnection();
@@ -36,7 +40,7 @@ namespace terminal_Salesforce.Services
 
         private async Task GetConnection()
         {
-            await authclient.UsernamePasswordAsync(_salesforceConsumerKey, _salesforceConsumerSecret, _salesforceUserName, _salesforcePassword);
+            await authclient.UsernamePasswordAsync(salesforceConsumerKey, salesforceConsumerSecret, salesforceUserName, salesforcePassword);
         }
         
         public ForceClient GetForceClient()

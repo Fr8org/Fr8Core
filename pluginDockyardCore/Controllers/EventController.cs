@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using StructureMap;
 
-namespace terminal_fr8Core.Controllers
+namespace pluginDockyardCore.Controllers
 {
     public class EventController : ApiController
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace terminal_AzureSqlServer.Services
+namespace pluginAzureSqlServer.Services
 {
     public class Event : IEvent
     {

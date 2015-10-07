@@ -1,10 +1,10 @@
 ﻿using Core.Services;
 using DocuSign.Integrations.Client;
-using terminal_DocuSign.Infrastructure;
-using terminal_DocuSign.Services;
+using pluginDocuSign.Infrastructure;
+using pluginDocuSign.Services;
 using Account = DocuSign.Integrations.Client.Account;
 
-namespace terminalTests.pluginDocuSign.Interfaces
+namespace pluginTests.pluginDocuSign.Interfaces
 {
     public interface IDocusignApiHelper
     {

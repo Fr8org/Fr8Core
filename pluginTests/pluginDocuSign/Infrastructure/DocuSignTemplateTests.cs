@@ -14,16 +14,16 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Migrations;
 using Newtonsoft.Json;
 using StructureMap;
-using terminalTests.pluginDocuSign.Interfaces;
-using terminal_DocuSign.Interfaces;
-using terminal_DocuSign.Services;
-using terminal_DocuSign;
-using terminal_DocuSign.Infrastructure.AutoMapper;
-using terminal_DocuSign.Infrastructure.StructureMap;
+using pluginTests.pluginDocuSign.Interfaces;
+using pluginDocuSign.Interfaces;
+using pluginDocuSign.Services;
+using pluginDocuSign;
+using pluginDocuSign.Infrastructure.AutoMapper;
+using pluginDocuSign.Infrastructure.StructureMap;
 
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
-using terminal_DocuSign.DataTransferObjects;
-using terminal_DocuSign.Infrastructure;
+using pluginDocuSign.DataTransferObjects;
+using pluginDocuSign.Infrastructure;
 
 namespace DockyardTest.DocuSign
 {
@@ -38,8 +38,8 @@ namespace DockyardTest.DocuSign
 		public override void SetUp()
 		{
 			base.SetUp();
-			TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
-			TerminalDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
+			PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+			PluginDocuSignMapBootstrapper.ConfigureDependencies(DependencyType.LIVE);
 
 			// _docusignTemplate = ObjectFactory.GetInstance<IDocuSignTemplate>();
             _docusignTemplate = new DocuSignTemplate();

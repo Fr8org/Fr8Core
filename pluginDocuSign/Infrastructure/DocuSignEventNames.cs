@@ -1,5 +1,9 @@
-﻿
-namespace terminal_DocuSign.Infrastructure
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace pluginDocuSign.Infrastructure
 {
     public class DocuSignEventNames
     {
