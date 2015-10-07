@@ -6,6 +6,7 @@ using Data.Entities;
 using Newtonsoft.Json;
 using System.Reflection;
 using PluginBase.BaseClasses;
+using System.Threading.Tasks;
 
 namespace pluginSendGrid.Controllers
 {
@@ -17,16 +18,16 @@ namespace pluginSendGrid.Controllers
 
         [HttpPost]
         [Route("configure")]
-        public ActionDTO Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
+            return await (Task<ActionDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("execute")]
-        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<ActionDTO> Execute(ActionDataPackageDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
+            return await (Task<ActionDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
         }
     }
 }

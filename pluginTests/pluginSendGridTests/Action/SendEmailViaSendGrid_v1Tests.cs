@@ -12,7 +12,6 @@ using System.Text;
 using System.Threading.Tasks;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using pluginTests.pluginSendGridTests.Action;
 using Utilities;
 
 namespace pluginTests.pluginSendGridTests

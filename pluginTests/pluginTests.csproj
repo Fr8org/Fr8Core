@@ -151,8 +151,8 @@
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="pluginDocuSign\Services\EnvelopeServiceTests.cs" />
     <Compile Include="PluginSalesforceTests\ActionControllerTests.cs" />
-    <Compile Include="pluginSendGridTests\Action\ITransport.cs" />
     <Compile Include="pluginSendGridTests\Action\SendEmailViaSendGrid_v1Tests.cs" />
+    <Compile Include="pluginSendGridTests\Controller\ActionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginAzureSqlServerTests\TestDbHelper.cs" />
   </ItemGroup>
