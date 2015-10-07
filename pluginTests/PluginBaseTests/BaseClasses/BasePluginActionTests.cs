@@ -6,7 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using pluginAzureSqlServer.Actions;
+using terminal_AzureSqlServer.Actions;
 using terminal_base.BaseClasses;
 using terminal_base.Infrastructure;
 using terminalTests.Fixtures;

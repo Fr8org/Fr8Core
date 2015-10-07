@@ -160,9 +160,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginAzureSqlServer\pluginAzureSqlServer.csproj">
+    <ProjectReference Include="..\pluginAzureSqlServer\terminal_AzureSqlServer.csproj">
       <Project>{D019B112-55A8-4661-AFF5-329F998D9E28}</Project>
-      <Name>pluginAzureSqlServer</Name>
+      <Name>terminal_AzureSqlServer</Name>
     </ProjectReference>
     <ProjectReference Include="..\pluginBase\terminal_base.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>

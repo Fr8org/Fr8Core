@@ -4,7 +4,7 @@ using System.Diagnostics;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces;
 using NUnit.Framework;
-using pluginAzureSqlServer;
+using terminal_AzureSqlServer;
 using StructureMap;
 using Utilities;
 using UtilitiesTesting;

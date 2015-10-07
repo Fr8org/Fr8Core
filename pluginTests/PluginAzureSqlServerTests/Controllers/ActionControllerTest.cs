@@ -2,7 +2,7 @@
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
-using pluginAzureSqlServer.Controllers;
+using terminal_AzureSqlServer.Controllers;
 using UtilitiesTesting;
 
 namespace terminalTests.PluginAzureSqlServerTests.Controllers

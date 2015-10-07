@@ -7,8 +7,8 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using pluginAzureSqlServer.Infrastructure;
-using pluginAzureSqlServer.Services;
+using terminal_AzureSqlServer.Infrastructure;
+using terminal_AzureSqlServer.Services;
 using terminal_base.Infrastructure;
 using StructureMap;
 using terminal_base;
@@ -19,7 +19,7 @@ using Core.StructureMap;
 using Data.States.Templates;
 using Data.Interfaces.ManifestSchemas;
 
-namespace pluginAzureSqlServer.Actions
+namespace terminal_AzureSqlServer.Actions
 {
 
     public class Write_To_Sql_Server_v1 : BaseTerminalAction

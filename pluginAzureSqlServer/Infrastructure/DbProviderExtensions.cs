@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
-namespace pluginAzureSqlServer.Infrastructure {
+namespace terminal_AzureSqlServer.Infrastructure {
     public static class DbProviderExtensions {
         public static object ConnectToSql(this IDbProvider provider, string connectionString, Func<IDbCommand, object> innerAction) {
             if (string.IsNullOrEmpty(connectionString)) {

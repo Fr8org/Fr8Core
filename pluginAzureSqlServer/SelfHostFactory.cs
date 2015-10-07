@@ -5,7 +5,7 @@ using System.Web.Http.Dispatcher;
 using Microsoft.Owin.Hosting;
 using Owin;
 
-namespace pluginAzureSqlServer
+namespace terminal_AzureSqlServer
 {
     public class SelfHostFactory
     {

@@ -9,18 +9,18 @@ using System.Threading.Tasks;
 namespace terminalTests.TerminalBaseTests.Controllers
 {
     [TestFixture]
-    [Category("BasePluginController")]
-    public class BasePluginControllerTests : BaseTest
+    [Category("BaseTerminalController")]
+    public class BaseTerminalControllerTests : BaseTest
     {
         IDisposable _coreServer;
-        BaseTerminalController _basePluginController;
+        BaseTerminalController _baseTerminalController;
 
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _basePluginController = new BaseTerminalController();
+            _baseTerminalController = new BaseTerminalController();
             _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
         }
 
@@ -37,13 +37,13 @@ namespace terminalTests.TerminalBaseTests.Controllers
         [Test]
         public async void HandleDockyardRequest_PluginTypeIsAzureSqlServer_ResponseInitialConfiguration()
         {
-            string curPlugin = "pluginAzureSqlServer";
+            string curTerminal = "terminal_AzureSqlServer";
             string curActionPath = "Configure";
 
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
 
-            ActionDTO actionDTO = await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, curActionPath, curActionDTO);
+            ActionDTO actionDTO = await (Task<ActionDTO>) _baseTerminalController
+                .HandleDockyardRequest(curTerminal, curActionPath, curActionDTO);
 
             Assert.AreEqual("Standard Configuration Controls", actionDTO.CrateStorage.CrateDTO[0].ManifestType);
         }

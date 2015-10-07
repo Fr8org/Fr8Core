@@ -7,42 +7,42 @@ using Data.Entities;
 using Data.States;
 using terminal_base.BaseClasses;
 
-namespace pluginAzureSqlServer.Controllers
+namespace terminal_AzureSqlServer.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curPlugin = "pluginAzureSqlServer";
-        private BaseTerminalController _basePluginController = new BaseTerminalController();
+        private const string curTerminal = "terminal_AzureSqlServer";
+        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _basePluginController
-                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
+            return await (Task<ActionDTO>) _baseTerminalController
+                .HandleDockyardRequest(curTerminal, "Configure", curActionDTO);           
         }
        
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDataPackage);
+            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(curTerminal, "Activate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDataPackage);
+            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(curTerminal, "Deactivate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("execute")]
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
-                curPlugin, "Execute", actionDto);
+            return await (Task<PayloadDTO>)_baseTerminalController.HandleDockyardRequest(
+                curTerminal, "Execute", actionDto);
         }
 
         //----------------------------------------------------------
@@ -56,7 +56,7 @@ namespace pluginAzureSqlServer.Controllers
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }
@@ -69,7 +69,7 @@ namespace pluginAzureSqlServer.Controllers
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
 
             //string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            //string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
+            //string curAssemblyName = string.Format("terminalAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
             ////extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
             ////instantiate the class corresponding to that action by:
             ////   a) Capitalizing each word
@@ -91,7 +91,7 @@ namespace pluginAzureSqlServer.Controllers
             //);
 
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }

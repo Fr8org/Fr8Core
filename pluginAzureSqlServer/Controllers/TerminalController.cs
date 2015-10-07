@@ -5,14 +5,14 @@ using System.Web.Http;
 using Data.Entities;
 using Data.States;
 
-namespace pluginAzureSqlServer.Controllers
+namespace terminal_AzureSqlServer.Controllers
 {
     [RoutePrefix("terminals")]
-    public class PluginController : ApiController
+    public class TerminalController : ApiController
     {
         /// <summary>
-        /// Plugin discovery infrastructure.
-        /// Action returns list of supported actions by plugin.
+        /// Terminal discovery infrastructure.
+        /// Action returns list of supported actions by terminal.
         /// </summary>
         [HttpGet]
         [Route("discover")]

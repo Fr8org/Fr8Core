@@ -13,6 +13,7 @@ var dockyard;
                     var _this = this;
                     this.templateUrl = '/AngularTemplate/RadioButtonGroup';
                     this.scope = {
+                        currentAction: '=',
                         field: '='
                     };
                     this.restrict = 'E';
@@ -26,12 +27,13 @@ var dockyard;
                     };
                 }
                 RadioButtonGroup.prototype.ChangeSelection = function (radio) {
-                    for (var i = 0; i < this._$scope.field.radios.length; i++) {
-                        if (this._$scope.field.radios[i] === radio) {
-                            this._$scope.field.radios[i].selected = true;
+                    var radios = this._$scope.field.radios;
+                    for (var i = 0; i < radios.length; i++) {
+                        if (radios[i] === radio) {
+                            radios[i].selected = true;
                         }
                         else {
-                            this._$scope.field.radios[i].selected = false;
+                            radios[i].selected = false;
                         }
                     }
                 };

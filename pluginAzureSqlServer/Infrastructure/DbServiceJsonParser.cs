@@ -9,7 +9,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using terminal_base.Infrastructure;
 
-namespace pluginAzureSqlServer.Infrastructure
+namespace terminal_AzureSqlServer.Infrastructure
 {
     public class DbServiceJsonParser
     {
