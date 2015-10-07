@@ -16,8 +16,8 @@ namespace pluginSlack.Actions
             {
                 AppendDockyardAuthenticationCrate(
                     curActionDTO,
-                    AuthenticationMode.ExternalMode,
-                    CreateAuthUrl());
+                    AuthenticationMode.ExternalMode);
+
                 return curActionDTO;
             }
 
@@ -37,17 +37,6 @@ namespace pluginSlack.Actions
             }
 
             return ConfigurationRequestType.Followup;
-        }
-
-        /// <summary>
-        /// Build external Slack OAuth url.
-        /// </summary>
-        private string CreateAuthUrl()
-        {
-            var template = ConfigurationManager.AppSettings["SlackOAuthUrl"];
-            var url = template.Replace("%STATE%", Guid.NewGuid().ToString());
-
-            return url;
         }
     }
 }

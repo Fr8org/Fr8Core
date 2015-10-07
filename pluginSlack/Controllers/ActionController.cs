@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading.Tasks;
 using System.Web.Http;
 using StructureMap;
@@ -42,6 +43,33 @@ namespace pluginSlack.Controllers
         public string Execute(ActionDTO curActionDataPackage)
         {
             return string.Empty;
+        }
+
+        [HttpPost]
+        [Route("auth_url")]
+        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl()
+        {
+            var externalStateToken = Guid.NewGuid().ToString();
+            var url = CreateAuthUrl(externalStateToken);
+
+            var externalAuthUrlDTO = new ExternalAuthUrlDTO()
+            {
+                ExternalStateToken = externalStateToken,
+                Url = url
+            };
+
+            return externalAuthUrlDTO;
+        }
+
+        /// <summary>
+        /// Build external Slack OAuth url.
+        /// </summary>
+        private string CreateAuthUrl(string externalStateToken)
+        {
+            var template = ConfigurationManager.AppSettings["SlackOAuthUrl"];
+            var url = template.Replace("%STATE%", externalStateToken);
+
+            return url;
         }
 
         // TODO: do we need this?

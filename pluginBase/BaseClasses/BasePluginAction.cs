@@ -67,7 +67,7 @@ namespace PluginBase.BaseClasses
         }
 
         protected void AppendDockyardAuthenticationCrate(
-            ActionDTO actionDTO, AuthenticationMode mode, string url = null)
+            ActionDTO actionDTO, AuthenticationMode mode)
         {
             if (actionDTO.CrateStorage == null)
             {
@@ -78,7 +78,7 @@ namespace PluginBase.BaseClasses
             }
 
             actionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode, url)
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
             );
         }
 
