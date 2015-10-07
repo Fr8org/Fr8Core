@@ -94,8 +94,8 @@ module dockyard.controllers {
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 this.$scope.current.processTemplate = curProcessTemplate;
-                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists
-                this.$scope.immediateActionListVM = this.$filter('filter')(actionLists, { actionListType: 1 }, true)[0]
+                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists;
+                this.$scope.immediateActionListVM = this.$filter('filter')(actionLists, { actionListType: 1 }, true)[0];
 
                 this.renderProcessTemplate(curProcessTemplate);
             });

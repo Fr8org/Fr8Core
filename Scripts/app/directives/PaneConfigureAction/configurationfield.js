@@ -65,6 +65,15 @@ var dockyard;
                 return ConfigurationField;
             })();
             app.directive('configurationField', ConfigurationField.Factory());
+            // A simple filter to format a string as a valid HTML identifier
+            // per http://www.w3.org/TR/html4/types.html#type-id 
+            app.filter('validId', function () {
+                return function (input) {
+                    if (input) {
+                        return input.replace(/^[^a-zA-Z]/, 'a').replace(/[^\w\d\-_\.:]/g, '-');
+                    }
+                };
+            });
         })(paneConfigureAction = directives.paneConfigureAction || (directives.paneConfigureAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));

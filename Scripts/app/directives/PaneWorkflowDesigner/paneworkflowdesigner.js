@@ -13,6 +13,8 @@ var dockyard;
                     console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
                     var actionObj = eventArgs.action;
                     scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
+                    if (eventArgs.doNotRaiseSelectedEvent)
+                        return;
                     scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, eventArgs.actionListType, 0));
                 };
                 var onActionRemoved = function (eventArgs, scope) {

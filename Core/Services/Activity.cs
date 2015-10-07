@@ -180,7 +180,7 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
             }
 
             //we're currently bypassing the subscription logic until we need it
