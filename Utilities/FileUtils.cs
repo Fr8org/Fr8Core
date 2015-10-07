@@ -11,7 +11,7 @@ namespace Utilities
     {
         public static IList<string> LoadFileHostList()
         {
-            var path = Server.ServerPhysicalPath + "DockyardPlugins.txt";
+            var path = Server.ServerPhysicalPath + "fr8terminals.txt";
 
             IList<string> urls = null;
             try
@@ -19,7 +19,7 @@ namespace Utilities
                 using (StreamReader sr = new StreamReader(path))
                 {
                     if (sr.Peek() < 0)
-                        throw new ApplicationException("DockyardPlugins.txt is empty.");
+                        throw new ApplicationException("fr8terminals.txt is empty.");
                     urls = new List<string>();
                     while (sr.Peek() >= 0)
                     {
