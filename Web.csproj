@@ -489,6 +489,7 @@
     <Content Include="Content\img\ProcessBuilder\criteria-node-bg.png" />
     <Content Include="Content\img\ProcessBuilder\right-arrow.png" />
     <Content Include="Content\img\ProcessBuilder\start-node-bg.png" />
+    <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
@@ -4166,9 +4167,9 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
-          <DevelopmentServerPort>30463</DevelopmentServerPort>
+          <DevelopmentServerPort>30643</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:30463/</IISUrl>
+          <IISUrl>http://localhost:30643/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

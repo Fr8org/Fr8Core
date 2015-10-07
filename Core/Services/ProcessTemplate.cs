@@ -34,7 +34,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null)
+        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
             if (userId == null)
                 throw new ApplicationException("UserId must not be null");
@@ -45,12 +45,15 @@ namespace Core.Services
 
                 if (isAdmin)
                 {
-                    return (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id)).ToList();
+                    queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
                 }
 
-                return (id == null
+                queryableRepo = (id == null
                     ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId)).ToList();
+                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
+                return (status == null
+                    ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
             }
         }
 
@@ -100,7 +103,7 @@ namespace Core.Services
                     {
                         TraverseActivity(actionList.Activities[i], activities.Add);
                     }
-                    activities.ForEach(x=>uow.ActivityRepository.Remove(x));
+                    activities.ForEach(x => uow.ActivityRepository.Remove(x));
                 }
             }
             uow.ProcessTemplateRepository.Remove(curProcessTemplate);
@@ -196,7 +199,7 @@ namespace Core.Services
         {
             // Get action list by process template first 
             var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-            
+
             if (currentProcessTemplate.Length == 0)
             {
                 return null;
@@ -335,21 +338,12 @@ namespace Core.Services
             }
         }
 
-        public ActivityDO GetInitialActivity(ProcessTemplateDO curProcessTemplate)
+        public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
         {
-            ActivityDO initialActivity = null;
             //at create time, find the lowest ordered activity in the immediate Action list and set that as the current activity.
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActionListDO curActionList = GetActionList(uow, curProcessTemplate.Id);
-
-
-                // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
-                return curActionList.Activities.OrderBy(a => a.Ordering).FirstOrDefault();
-            }
-
-
-
+            ActionListDO curActionList = GetActionList(uow, curProcessTemplate.Id);
+            // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+            return curActionList.Activities.OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
 

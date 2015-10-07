@@ -20,8 +20,8 @@ namespace DockyardTest.Integration
         [Category("IntegrationTests")]
         public void ITest_CanProcessHealthDemo()
         {
-            string email;
-            string id;
+            //string email;
+            //string id;
             // SETUP
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

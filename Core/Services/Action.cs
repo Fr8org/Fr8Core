@@ -24,7 +24,7 @@ namespace Core.Services
     public class Action : IAction
     {
         private ICrate _crate;
-        private Task curAction;
+        //private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
 
@@ -90,7 +90,7 @@ namespace Core.Services
                 return SaveOrUpdateAction(uow, submittedActionData);
             }
         }
-
+        
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -191,7 +191,7 @@ namespace Core.Services
 
             // Get ordered list of next Activities 
             var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-
+            
             curActionList.CurrentActivity = activities.FirstOrDefault();
 
             return curAction;
@@ -248,8 +248,9 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
-
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
+                "Execute", curActionDO, curProcessDO.Id);
+            
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
 
@@ -284,7 +285,8 @@ namespace Core.Services
             }
         }
 
-        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin, string username, string password)
+        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin,
+            string username, string password)
         {
             if (!plugin.RequiresAuthentication)
             {
@@ -319,6 +321,7 @@ namespace Core.Services
                     authToken = new AuthorizationTokenDO()
                     {
                         Token = authTokenDTO.Token,
+                        ExternalAccountId = authTokenDTO.ExternalAccountId,
                         Plugin = curPlugin,
                         UserDO = curAccount,
                         ExpiresAt = DateTime.Today.AddMonths(1)
@@ -329,6 +332,7 @@ namespace Core.Services
                 else
                 {
                     authToken.Token = authTokenDTO.Token;
+                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
                 }
 
                 uow.SaveChanges();
@@ -499,7 +503,7 @@ namespace Core.Services
         {
             if (actionName == null) throw new ArgumentNullException("actionName");
             if (curActionDO == null) throw new ArgumentNullException("curActionDO");
-
+            
             var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
             dto.ProcessId = processId;
             PrepareAuthToken(dto);

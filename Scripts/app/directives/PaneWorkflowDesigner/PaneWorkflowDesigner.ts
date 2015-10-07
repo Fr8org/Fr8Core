@@ -40,6 +40,8 @@ module dockyard.directives.paneWorkflowDesigner {
 
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
 
+            if (eventArgs.doNotRaiseSelectedEvent) return;
+
             scope.$emit(
                 MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
                 new ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, eventArgs.actionListType, 0)
