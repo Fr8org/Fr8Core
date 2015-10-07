@@ -13,9 +13,13 @@
                     $scope.actionCategories = resp.data;
                 });
 
-            $scope.actionTypeSelected = function (actionType) {
+            $scope.actionTypeSelected = actionType => {
                 $scope.$close(actionType);
-            }
+            };
+
+            $scope.cancel = () => {
+                $scope.$dismiss();
+            };
         }
     }
 

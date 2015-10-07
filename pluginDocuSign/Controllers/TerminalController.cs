@@ -25,7 +25,7 @@ namespace terminal_DocuSign.Controllers
             {
                 Version = "1",
                 Name = "Wait_For_DocuSign_Event",
-                Category = ActivityCategory.fr8_Receiver,
+                Category = ActivityCategory.fr8_Monitor,
                 Plugin = terminal
             };
 
