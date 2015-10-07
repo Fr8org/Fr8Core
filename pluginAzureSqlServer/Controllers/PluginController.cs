@@ -7,7 +7,7 @@ using Data.States;
 
 namespace pluginAzureSqlServer.Controllers
 {
-    [RoutePrefix("plugins")]
+    [RoutePrefix("terminals")]
     public class PluginController : ApiController
     {
         /// <summary>

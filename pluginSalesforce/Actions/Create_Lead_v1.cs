@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using terminalBase.BaseClasses;
+using terminal_base.BaseClasses;
 using Data.Interfaces.DataTransferObjects;
 using Core.Interfaces;
 using StructureMap;

@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using terminalBase.Infrastructure;
+using terminal_base.Infrastructure;
 using StructureMap;
 using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
 using Newtonsoft.Json;
 
-namespace terminalBase.BaseClasses
+namespace terminal_base.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest

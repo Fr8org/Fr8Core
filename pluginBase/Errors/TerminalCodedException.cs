@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace terminalBase {
+namespace terminal_base {
     public class TerminalCodedException : Exception {
         public HttpStatusCode StatusCode { get; private set; }
         public TerminalErrorCode ErrorCode { get; private set; }

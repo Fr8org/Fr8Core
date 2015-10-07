@@ -5,7 +5,7 @@ using System.Web.Http;
 using TerminalBase.Infrastructure;
 using System.Threading.Tasks;
 
-namespace terminalBase.BaseClasses
+namespace terminal_base.BaseClasses
 {
 
     //this is a quasi base class. We can't use inheritance directly because it's across project boundaries, but

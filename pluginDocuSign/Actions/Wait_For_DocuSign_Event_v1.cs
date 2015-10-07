@@ -1,5 +1,5 @@
 ﻿using Data.Entities;
-using terminalBase.Infrastructure;
+using terminal_base.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,8 @@ using Core.Interfaces;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminalBase;
-using terminalBase.BaseClasses;
+using terminal_base;
+using terminal_base.BaseClasses;
 using DocuSign.Integrations.Client;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Interfaces;

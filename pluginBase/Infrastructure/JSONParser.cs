@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace terminalBase.Infrastructure
+namespace terminal_base.Infrastructure
 {
     /// <summary>
     /// JSON utility class, to help parse JSON data in terminals.

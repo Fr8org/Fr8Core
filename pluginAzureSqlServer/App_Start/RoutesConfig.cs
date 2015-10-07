@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using pluginAzureSqlServer.Infrastructure;
-using terminalBase;
+using terminal_base;
 using TerminalBase.BaseClasses;
 using StructureMap;
 

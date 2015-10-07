@@ -31,8 +31,8 @@ namespace pluginDocuSign
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "PluginDocuSign",
-                    routeTemplate: "plugin_docusign/{controller}/{id}",
+                    name: "TerminalDocuSign",
+                    routeTemplate: "terminal_docusign/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 

@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pluginDockyardCore</RootNamespace>
-    <AssemblyName>pluginDockyardCore</AssemblyName>
+    <RootNamespace>terminal_fr8Core</RootNamespace>
+    <AssemblyName>terminal_fr8Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -147,7 +147,7 @@
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="Actions\FilterUsingRunTimeData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
-    <Compile Include="Controllers\PluginController.cs" />
+    <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -167,9 +167,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginBase\TerminalBase.csproj">
+    <ProjectReference Include="..\pluginBase\terminal_base.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
+      <Name>terminal_base</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

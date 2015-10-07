@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
-using terminalBase.BaseClasses;
+using terminal_base.BaseClasses;
 using System;
 using pluginSlack.Actions;
 using StructureMap;

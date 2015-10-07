@@ -6,11 +6,11 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web.Http.Filters;
-using terminalBase.BaseClasses;
+using terminal_base.BaseClasses;
 using StructureMap;
 using Utilities;
 
-namespace terminalBase
+namespace terminal_base
 {
     public class WebApiExceptionFilterAttribute : ExceptionFilterAttribute
     {

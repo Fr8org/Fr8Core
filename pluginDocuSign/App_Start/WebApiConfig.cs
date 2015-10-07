@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
-using terminalBase;
+using terminal_base;
 using pluginDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using StructureMap;
@@ -17,8 +17,8 @@ namespace pluginDocuSign
             BaseTerminalWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "PluginDocuSign",
-                routeTemplate: "plugin_docusign/{controller}/{id}"
+                name: "TerminalDocuSign",
+                routeTemplate: "terminal_docusign/{controller}/{id}"
             );
         }
     }

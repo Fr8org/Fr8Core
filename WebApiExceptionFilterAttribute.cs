@@ -11,7 +11,7 @@ using Core.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using Utilities;
-using terminalBase;
+using terminal_base;
 
 namespace Web
 {

@@ -5,14 +5,14 @@ using AutoMapper;
 using Data.Entities;
 using Newtonsoft.Json;
 using System.Reflection;
-using terminalBase.BaseClasses;
+using terminal_base.BaseClasses;
 using System.Collections.Generic;
 using Core.Services;
 using Data.States;
 
 namespace pluginDocuSign.Controllers
-{    
-    [RoutePrefix("plugins")]
+{
+    [RoutePrefix("terminals")]
     public class PluginController : ApiController
     {
         [HttpGet]

@@ -11,8 +11,8 @@ using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using terminalBase;
-using terminalBase.BaseClasses;
+using terminal_base;
+using terminal_base.BaseClasses;
 using StructureMap;
 
 [assembly: OwinStartup(typeof(pluginAzureSqlServer.Startup))]

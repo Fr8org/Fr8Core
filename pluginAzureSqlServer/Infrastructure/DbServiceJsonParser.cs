@@ -7,7 +7,7 @@ using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminalBase.Infrastructure;
+using terminal_base.Infrastructure;
 
 namespace pluginAzureSqlServer.Infrastructure
 {

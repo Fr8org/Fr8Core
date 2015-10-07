@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace terminalBase {
+namespace terminal_base {
     public enum TerminalErrorCode {
         [Description("The terminal was passed a request that required a connection string, and it was not found.")]
         SQL_SERVER_CONNECTION_STRING_MISSING = 10000,

@@ -5,7 +5,7 @@ using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
-using terminalBase.BaseClasses;
+using terminal_base.BaseClasses;
 
 namespace pluginAzureSqlServer.Controllers
 {    
