@@ -25,8 +25,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ActivityTemplateId, opts => opts.ResolveUsing(ad => ad.ActivityTemplateId))
                 .ForMember(a => a.CurrentView, opts => opts.ResolveUsing(ad => ad.currentView))
                 // commented out by yakov.gnusin, this breaks design-time process.
-                // .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
-                .ForMember(a => a.ActivityTemplate, opts => opts.Ignore());
+                .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));
+                //.ForMember(a => a.ActivityTemplate, opts => opts.Ignore());
 
             Mapper.CreateMap<ActionDTO, ActionDO>().ForMember(a => a.Id, opts => opts.ResolveUsing(ad => ad.Id))
                 .ForMember(a => a.Name, opts => opts.ResolveUsing(ad => ad.Name))
@@ -82,12 +82,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<JSONToStringConverter<CrateStorageDTO>>();
             Mapper.CreateMap<string, CrateStorageDTO>()
                 .ConvertUsing<StringToJSONConverter<CrateStorageDTO>>();
-
-            Mapper.CreateMap<FieldMappingSettingsDTO, string>()
-                .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
-            Mapper.CreateMap<string, FieldMappingSettingsDTO>()
-                .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
-
             Mapper.CreateMap<FileDO, FileDTO>();
 
         }

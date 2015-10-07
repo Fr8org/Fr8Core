@@ -23,9 +23,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var curControlsCrate = curActionDataPackage.ActionDTO
+            var curControlsCrate = actionDto
                 .CrateStorage
                 .CrateDTO
                 .FirstOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
@@ -47,7 +47,7 @@ namespace pluginDockyardCore.Actions
             var mappedFields = JsonConvert.DeserializeObject<List<FieldDTO>>(curMappingControl.Value);
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
 
-            var processPayload = await GetProcessPayload(curActionDataPackage.PayloadDTO.ProcessId);
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
 
             var actionPayloadCrates = new List<CrateDTO>()
             {
@@ -65,9 +65,9 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
-        public ActionDTO Configure(ActionDTO actionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO actionDTO)
         {
-            return ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
         }
 
         private void FillCrateConfigureList(IEnumerable<ActionDO> actions,
@@ -92,7 +92,7 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private CrateDTO CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new FieldDefinitionDTO("mappingPane")
+            var fieldFilterPane = new ControlsDefinitionDTO("mappingPane")
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",
@@ -105,15 +105,19 @@ namespace pluginDockyardCore.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
             CrateDTO getErrorMessageCrate = null; 
 
-            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+            var curUpstreamFields =
+                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                .Fields
+                .ToArray();
 
-            var curUpstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Upstream).Fields.ToArray();
-
-            var curDownstreamFields = GetDesignTimeFields(curActionDO, GetCrateDirection.Downstream).Fields.ToArray();
+            var curDownstreamFields =
+                (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Downstream))
+                .Fields
+                .ToArray();
 
             if (curUpstreamFields.Length == 0 || curDownstreamFields.Length == 0)
             {
@@ -143,7 +147,6 @@ namespace pluginDockyardCore.Actions
 
             curActionDTO.CrateStorage = AssembleCrateStorage(cratesToAssemble.ToArray());
             return curActionDTO;
-
         }
 
         /// <summary>
@@ -202,8 +205,8 @@ namespace pluginDockyardCore.Actions
         {
             if (CheckIsInitialConfiguration(curActionDO))
             {
-            return ConfigurationRequestType.Initial;
-        }
+                return ConfigurationRequestType.Initial;
+            }
             else
             {
                 return ConfigurationRequestType.Followup;
@@ -213,7 +216,7 @@ namespace pluginDockyardCore.Actions
         //Returning the crate with text field control 
         private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
         {
-            var fields = new List<FieldDefinitionDTO>() 
+            var fields = new List<ControlsDefinitionDTO>() 
             {
                 new TextBlockFieldDTO()
                 {

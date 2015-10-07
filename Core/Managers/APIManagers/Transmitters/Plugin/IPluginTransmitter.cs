@@ -11,10 +11,8 @@ namespace Core.Managers.APIManagers.Transmitters.Plugin
         /// Posts a DTO to plugin API
         /// </summary>
         /// <param name="actionType">Action type</param>
-        /// <param name="dto">DTO</param>
+        /// <param name="actionDTO">ActionDTO</param>
         /// <returns></returns>
-        Task<R> CallActionAsync<T, R>(string actionType, T dto);
-
-        PluginDO Plugin { get; set; }
+        Task<TResponse> CallActionAsync<TResponse>(string actionType, ActionDTO actionDTO);
     }
 }

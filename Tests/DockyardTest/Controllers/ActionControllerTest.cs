@@ -11,11 +11,9 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
-using Web.ViewModels;
 using Moq;
 using System;
 using Core.Interfaces;
-using System.Web.Http.Results;
 using AutoMapper;
 
 namespace DockyardTest.Controllers
@@ -283,12 +281,12 @@ namespace DockyardTest.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Mock<IAction> actionMock = new Mock<IAction>();
-                actionMock.Setup(a => a.GetById(It.IsAny<int>()));
+                actionMock.Setup(a => a.GetById(It.IsAny<IUnitOfWork>(), It.IsAny<int>()));
 
                 ActionDO actionDO = new FixtureData(uow).TestAction3();
                 var controller = new ActionController(actionMock.Object);
                 controller.Get(actionDO.Id);
-                actionMock.Verify(a => a.GetById(actionDO.Id));
+                actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), actionDO.Id));
             }
         }
 
@@ -340,7 +338,6 @@ namespace DockyardTest.Controllers
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
                 CrateStorage = new CrateStorageDTO(),
-                FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()

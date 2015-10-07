@@ -52,6 +52,7 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
+
         public static ActionDO TestAction1()
         {
             var actionTemplate = ActionTemplate();
@@ -94,7 +95,6 @@ namespace UtilitiesTesting.Fixtures
 
             return origActionDO;
         }
-
 
         public static ActionDO TestAction4()
         {
@@ -197,7 +197,6 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-
         public static ActionDO TestAction20()
         {
             var actionTemplate = ActionTemplate();
@@ -260,15 +259,27 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO IntegrationTestAction()
         {
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
             var actionTemplate = ActionTemplate();
+
+
+            var processTemplateDo = TestProcessTemplate2();
 
             var processDo = new ProcessDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessTemplateId = TestProcessTemplate2().Id,
-                ProcessState = 1
+                ProcessState = 1,
+                ProcessTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
+            };
+
+            var processNodeTemplateDo = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = "C",
+                ParentTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
             };
 
             var actionListDo = new ActionListDO()
@@ -276,7 +287,9 @@ namespace UtilitiesTesting.Fixtures
                 Process = processDo,
                 ProcessID = ProcessState.Unstarted,
                 Id = 1,
-                ActionListType = ActionListType.Immediate
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = processNodeTemplateDo.Id,
+                ProcessNodeTemplate = processNodeTemplateDo
             };
 
             var actionDo = new ActionDO()
@@ -294,6 +307,7 @@ namespace UtilitiesTesting.Fixtures
 
             return actionDo;
         }
+
         public static CrateDTO GetEnvelopeIdCrate(string curEnvelopeId = "11f41f43-57bd-4568-86f5-9ceabdaafc43")
         {
             var crateFields = new List<FieldDTO>()
@@ -335,12 +349,31 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestActionUnstarted()
         {
             var actionTemplate = ActionTemplate();
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+
+            var processTemplateDo = new ProcessTemplateDO()
+            {
+                Id = 1,
+                Name = "A",
+                Description = "B",
+                ProcessTemplateState = ProcessTemplateState.Active
+            };
+
             var processDo = new ProcessDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessState = 1
+                ProcessState = 1,
+                ProcessTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
+            };
+
+            var processNodeTemplateDo = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = "C",
+                ParentTemplateId = processTemplateDo.Id,
+                ProcessTemplate = processTemplateDo
             };
 
             var actionListDo = new ActionListDO()
@@ -348,7 +381,9 @@ namespace UtilitiesTesting.Fixtures
                 Process = processDo,
                 ProcessID = ProcessState.Unstarted,
                 Id = 1,
-                ActionListType = ActionListType.Immediate
+                ActionListType = ActionListType.Immediate,
+                ProcessNodeTemplateID = processNodeTemplateDo.Id,
+                ProcessNodeTemplate = processNodeTemplateDo
             };
 
             return new ActionDO
@@ -463,7 +498,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate
             };
 
-            var fields = new List<FieldDefinitionDTO>()
+            var fields = new List<ControlsDefinitionDTO>()
             {
                 fieldSelectDockusignTemplate
             };
@@ -477,7 +512,6 @@ namespace UtilitiesTesting.Fixtures
 
             return actionDo;
         }
-
 
         public static AuthorizationTokenDO TestActionAuthenticate2()
         {
@@ -499,8 +533,6 @@ namespace UtilitiesTesting.Fixtures
             return curAuthorizationTokenDO;
         }
 
-
-
         public static ActionDO TestAction57()
         {
             return new ActionDO()
@@ -510,9 +542,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 54
             };
 
-        }
-
-       
+        }       
 
         public static ActionDO TestActionTree()
         {
@@ -686,20 +716,75 @@ namespace UtilitiesTesting.Fixtures
             return curAction;
         }
 
-        public static ActionDO TestActionForProcess()
+        public static ActionDO TestActionStateActive()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state active",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.Active,
+            };
+        }
+
+        public static ActionDO TestActionStateDeactive()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state deactive",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.Deactive,
+            };
+        }
+
+        public static ActionDO TestActionStateError()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state error",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.Error,
+            };
+        }
+
+        public static ActionDO TestActionStateInProcess()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state in-process",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.InProcess,
+            };
+        }
+
+        public static ActionDO TestActionProcess()
         {
             var actionDo = new ActionDO
             {
                 Id = 1,
 
                 ActionState = ActionState.Unstarted,
-                Name = "testaction",
+                Name = "Action 1",
                 CrateStorage = "config settings",
                 ParentActivityId = 1,
                 ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
             };
             return actionDo;
         }
-
     }
 }

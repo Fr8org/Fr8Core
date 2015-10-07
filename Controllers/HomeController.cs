@@ -26,6 +26,13 @@ namespace Web.Controllers
             _email = ObjectFactory.GetInstance<Email>();
         }
 
+
+
+        public ActionResult DocuSign()
+        {
+            return View();
+        }
+
         public ActionResult Index(string emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -182,7 +189,7 @@ namespace Web.Controllers
                 }
                 result = "success";
             }
-            catch (ValidationException ex)
+            catch (ValidationException)
             {
                 result = "You need to provide a valid Email Address.";
             }

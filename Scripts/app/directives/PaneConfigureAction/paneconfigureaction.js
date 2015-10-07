@@ -19,6 +19,7 @@ var dockyard;
                 MessageType[MessageType["PaneConfigureAction_MapFieldsClicked"] = 3] = "PaneConfigureAction_MapFieldsClicked";
                 MessageType[MessageType["PaneConfigureAction_Cancelled"] = 4] = "PaneConfigureAction_Cancelled";
                 MessageType[MessageType["PaneConfigureAction_ActionRemoved"] = 5] = "PaneConfigureAction_ActionRemoved";
+                MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 6] = "PaneConfigureAction_InternalAuthentication";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -29,6 +30,13 @@ var dockyard;
                 return ActionUpdatedEventArgs;
             })(directives.ActionUpdatedEventArgsBase);
             paneConfigureAction.ActionUpdatedEventArgs = ActionUpdatedEventArgs;
+            var InternalAuthenticationArgs = (function () {
+                function InternalAuthenticationArgs(activityTemplateId) {
+                    this.activityTemplateId = activityTemplateId;
+                }
+                return InternalAuthenticationArgs;
+            })();
+            paneConfigureAction.InternalAuthenticationArgs = InternalAuthenticationArgs;
             var RenderEventArgs = (function () {
                 function RenderEventArgs(action) {
                     // Clone Action to prevent any issues due to possible mutation of source object
@@ -89,7 +97,7 @@ var dockyard;
                     };
                 }
                 PaneConfigureAction.prototype.onConfigurationChanged = function (newValue, oldValue, scope) {
-                    if (!newValue || !newValue.fields || newValue.fields.length == 0)
+                    if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0)
                         return;
                     this.crateHelper.mergeControlListCrate(scope.currentAction.configurationControls, scope.currentAction.crateStorage);
                     scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
@@ -135,8 +143,10 @@ var dockyard;
                 PaneConfigureAction.prototype.onRender = function (event, eventArgs) {
                     var _this = this;
                     var scope = event.currentScope;
-                    if (this.configurationWatchUnregisterer)
+                    // Avoid unnecessary Save while 
+                    if (this.configurationWatchUnregisterer) {
                         this.configurationWatchUnregisterer();
+                    }
                     //for now ignore actions which were not saved in the database
                     if (eventArgs.action.isTempId)
                         return;
@@ -159,17 +169,34 @@ var dockyard;
                         // Create a directive-local immutable copy of action so we can detect 
                         // a change of actionTemplateId in the currently selected action
                         _this._currentAction = angular.extend({}, scope.currentAction);
-                    }, 100);
+                    }, 300);
                 };
                 // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
                 // We parse its contents and put it into currentAction.configurationControls structure.
                 PaneConfigureAction.prototype.loadConfiguration = function (scope, action) {
-                    var _this = this;
                     // Block pane and show pane-level 'loading' spinner
                     scope.processing = true;
                     var self = this;
                     var activityTemplateName = scope.currentAction.activityTemplateName; // preserve activity name
+                    if (self.configurationWatchUnregisterer) {
+                        self.configurationWatchUnregisterer();
+                    }
                     this.ActionService.configure(action).$promise.then(function (res) {
+                        // Check if authentication is required.
+                        if (self.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
+                            var authCrate = self.crateHelper
+                                .findByManifestType(res.crateStorage, 'Standard Authentication');
+                            var authMS = angular.fromJson(authCrate.contents);
+                            // Dockyard auth mode.
+                            if (authMS.Mode == 1) {
+                                scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs(res.activityTemplateId));
+                            }
+                            else {
+                                alert('TODO: External auth');
+                            }
+                            scope.processing = false;
+                            return;
+                        }
                         // Unblock pane
                         scope.processing = false;
                         // Assign name to res rather than currentAction to prevent 
@@ -178,12 +205,10 @@ var dockyard;
                         scope.currentAction = res;
                         scope.currentAction.configurationControls =
                             self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
+                        self.$timeout(function () {
+                            self.configurationWatchUnregisterer = scope.$watch(function (scope) { return scope.currentAction.configurationControls; }, angular.bind(self, self.onConfigurationChanged), true);
+                        }, 1000);
                     });
-                    if (this.configurationWatchUnregisterer == null) {
-                        this.$timeout(function () {
-                            _this.configurationWatchUnregisterer = scope.$watch(function (scope) { return scope.currentAction.configurationControls; }, angular.bind(_this, _this.onConfigurationChanged), true);
-                        }, 500);
-                    }
                 };
                 PaneConfigureAction.prototype.onHide = function (event, eventArgs) {
                     event.currentScope.isVisible = false;

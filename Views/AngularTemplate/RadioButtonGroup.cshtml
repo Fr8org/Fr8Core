@@ -1,23 +1,13 @@
 ﻿@*RadioButtonGroup control main container*@
-<div style="margin-top: 30px;">
-    <span>Values for Demo -> {{field || json}}</span>
-    <br />
-    <br />
-    <h4>{{field.groupName}}</h4>
-    <br />
-    <br />
-    <pre>With Pure HTML</pre>
-    <div class="well well-lg">
-        <label ng-repeat="radio in field.radios" ng-click="ChangeSelection(radio)">
-            <input type="radio" name="pca__chk__{{field.groupName}}" ng-checked="radio.selected" ng-value="true" />
-            {{radio.value}}
-        </label>
-    </div>
-    <br />
-    <pre>With UI-Bootstrap</pre>
-    <div class="well well-lg">
-        <div class="btn-group">
-            <label ng-click="ChangeSelection(radio)" name="pca__chk__{{field.groupName}}" ng-repeat="radio in field.radios" class="btn btn-primary" ng-model="radio.selected" btn-radio="true">{{radio.value}}</label>
+<div ng-repeat="radio in field.radios">
+    <label for="pca__chk__{{field.groupName | validId }}__opt{{$index}}">
+        {{radio.value}}
+    </label>
+    <input type="radio"  ng-click="ChangeSelection(radio)" name="pca__chk__{{field.groupName}}" id="pca__chk__{{field.groupName | validId}}__opt{{$index}}" ng-checked="radio.selected" ng-value="true" />
+    @* Support nested fields *@
+    <div class="nested-fields">
+        <div ng-repeat="field in radio.fields">
+            <configuration-field current-action="currentAction" field="field" />
         </div>
     </div>
 </div>

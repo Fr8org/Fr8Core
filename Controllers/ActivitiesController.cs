@@ -30,38 +30,86 @@ namespace Web.Controllers
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var upstreamActivities = _activity.GetUpstreamActivities(actionDO);
+				var actionDO = uow.ActionRepository.GetByKey(id);
+				var upstreamActivities = _activity.GetUpstreamActivities(uow, actionDO);
 				return Ok(upstreamActivities);
 			}
 		}
-		[Route("downstream")]
+
+        [Route("downstream")]
 		[ResponseType(typeof(List<ActivityDO>))]
 		public IHttpActionResult GetDownstreamActivities(int id)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
-				var downstreamActivities = _activity.GetDownstreamActivities(actionDO);
+                var downstreamActivities = _activity.GetDownstreamActivities(uow, actionDO);
 				return Ok(downstreamActivities);
+			}
+		}
+
+        // TODO: after DO-1214 is completed, this method must be removed.
+		[Route("upstream_actions")]
+		[ResponseType(typeof(List<ActionDTO>))]
+		public IHttpActionResult GetUpstreamActions(int id)
+		{
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			{
+				var actionDO = uow.ActionRepository.GetByKey(id);
+				var upstreamActions = _activity
+                    .GetUpstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .ToList();
+
+				return Ok(upstreamActions);
+			}
+		}
+
+        // TODO: after DO-1214 is completed, this method must be removed.
+        [Route("downstream_actions")]
+		[ResponseType(typeof(List<ActionDTO>))]
+		public IHttpActionResult GetDownstreamActions(int id)
+		{
+			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+			{
+				ActionDO actionDO = uow.ActionRepository.GetByKey(id);
+				var downstreamActions = _activity
+                    .GetDownstreamActivities(uow, actionDO)
+                    .OfType<ActionDO>()
+                    .Select(x => Mapper.Map<ActionDTO>(x))
+                    .ToList();
+
+				return Ok(downstreamActions);
 			}
 		}
 
         [DockyardAuthorize]
         [Route("available")]
-        [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
+        [ResponseType(typeof(IEnumerable<IEnumerable<ActivityTemplateDTO>>))]
         public IHttpActionResult GetAvailableActivities()
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccount = uow.UserRepository.GetByKey(userId);
-                var availableActivities = _activity
-                    .GetAvailableActivities(curDockyardAccount)
-                    .Select(x => Mapper.Map<ActivityTemplateDTO>(x))
-                    .ToList();
 
-                return Ok(availableActivities);
+                var activityTemplateCategories = new List<List<ActivityTemplateDTO>>();
+                foreach (var activity in _activity.GetAvailableActivities(curDockyardAccount))
+                {
+                    var activityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(activity);
+
+                    var properCategory = activityTemplateCategories.FirstOrDefault(cat => cat[0].Category == activityTemplateDTO.Category);
+                    if (properCategory == null)
+                    {
+                        activityTemplateCategories.Add(new List<ActivityTemplateDTO> { Mapper.Map<ActivityTemplateDTO>(activityTemplateDTO) });
+                    }
+                    else
+                    {
+                        properCategory.Add( Mapper.Map<ActivityTemplateDTO>(activityTemplateDTO) );
+                    }
+                }
+                return Ok(activityTemplateCategories);
             }
         }
 	}
