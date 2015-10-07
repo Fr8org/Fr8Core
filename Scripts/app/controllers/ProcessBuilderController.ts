@@ -120,8 +120,8 @@ module dockyard.controllers {
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 self._scope.current.processTemplate = curProcessTemplate;
-                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists
-                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0]
+                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists;
+                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0];
 
                 self.renderProcessTemplate(curProcessTemplate);
             });
