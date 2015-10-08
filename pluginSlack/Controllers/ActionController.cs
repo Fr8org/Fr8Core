@@ -10,6 +10,8 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using PluginBase.BaseClasses;
 using pluginSlack.Actions;
+using pluginSlack.Interfaces;
+using pluginSlack.Services;
 
 namespace pluginSlack.Controllers
 {
@@ -17,7 +19,14 @@ namespace pluginSlack.Controllers
     public class ActionController : ApiController
     {
         private const string curPlugin = "pluginSlack";
-        private BasePluginController _basePluginController = new BasePluginController();
+        private readonly BasePluginController _basePluginController;
+        private readonly ISlackIntegration _slackIntegration;
+
+        public ActionController()
+        {
+            _basePluginController = new BasePluginController();
+            _slackIntegration = new SlackIntegration();
+        }
 
         [HttpPost]
         [Route("configure")]
@@ -53,7 +62,7 @@ namespace pluginSlack.Controllers
         public ExternalAuthUrlDTO GetExternalAuthUrl()
         {
             var externalStateToken = Guid.NewGuid().ToString();
-            var url = CreateAuthUrl(externalStateToken);
+            var url = _slackIntegration.CreateAuthUrl(externalStateToken);
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
@@ -79,8 +88,8 @@ namespace pluginSlack.Controllers
                 throw new ApplicationException("Code or State is empty.");
             }
 
-            var oauthToken = await FetchOAuthToken(code);
-            var userId = await FetchUserId(oauthToken);
+            var oauthToken = await _slackIntegration.GetOAuthToken(code);
+            var userId = await _slackIntegration.GetUserId(oauthToken);
 
             return new AuthTokenDTO()
             {
@@ -118,47 +127,6 @@ namespace pluginSlack.Controllers
                     state = nameValueTokens[1];
                 }
             }
-        }
-
-        private async Task<string> FetchOAuthToken(string code)
-        {
-            var template = ConfigurationManager.AppSettings["SlackOAuthAccessUrl"];
-            var url = template.Replace("%CODE%", code);
-
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                return jsonObj.Value<string>("access_token");
-            }
-        }
-
-        private async Task<string> FetchUserId(string oauthToken)
-        {
-            var template = ConfigurationManager.AppSettings["SlackAuthTestUrl"];
-            var url = template.Replace("%TOKEN%", oauthToken);
-
-            var httpClient = new HttpClient();
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObj = JsonConvert.DeserializeObject<JObject>(responseString);
-
-                return jsonObj.Value<string>("user_id");
-            }
-        }
-
-        /// <summary>
-        /// Build external Slack OAuth url.
-        /// </summary>
-        private string CreateAuthUrl(string externalStateToken)
-        {
-            var template = ConfigurationManager.AppSettings["SlackOAuthUrl"];
-            var url = template.Replace("%STATE%", externalStateToken);
-
-            return url;
         }
 
         // TODO: do we need this?
