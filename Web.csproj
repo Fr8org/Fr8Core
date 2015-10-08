@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -3963,7 +3963,7 @@
     <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RadioButtonGroup.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonOptionField.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />

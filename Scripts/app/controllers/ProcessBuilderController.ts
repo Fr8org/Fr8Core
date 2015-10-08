@@ -198,7 +198,7 @@ module dockyard.controllers {
 
                 this.$modal.open({
                     animation: true,
-                    templateUrl: 'AngularTemplate/PaneSelectAction',
+                    templateUrl: '/AngularTemplate/PaneSelectAction',
                     controller: 'PaneSelectActionController',
                     windowClass: 'select-action-modal'
                 }).result.then(function (data: model.ActivityTemplate) {
