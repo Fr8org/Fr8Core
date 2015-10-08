@@ -8,6 +8,7 @@ using StructureMap;
 using System;
 using System.Configuration;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace PluginUtilities.Infrastructure
@@ -22,7 +23,8 @@ namespace PluginUtilities.Infrastructure
 
         public BasePluginEvent()
         {
-             eventWebServerUrl = ConfigurationManager.AppSettings["EventWebServerUrl"] + "/dockyard_events";
+            //Regex used to fetch http://localhost:30643 
+            eventWebServerUrl = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
         }
