@@ -120,8 +120,8 @@ module dockyard.controllers {
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 self._scope.current.processTemplate = curProcessTemplate;
-                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists
-                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0]
+                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists;
+                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0];
 
                 self.renderProcessTemplate(curProcessTemplate);
             });
@@ -198,7 +198,7 @@ module dockyard.controllers {
 
                 this.$modal.open({
                     animation: true,
-                    templateUrl: 'AngularTemplate/PaneSelectAction',
+                    templateUrl: '/AngularTemplate/PaneSelectAction',
                     controller: 'PaneSelectActionController',
                     windowClass: 'select-action-modal'
                 }).result.then(function (data: model.ActivityTemplate) {
