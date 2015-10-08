@@ -542,7 +542,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 54
             };
 
-        }
+        }       
 
         public static ActionDO TestActionTree()
         {
@@ -556,7 +556,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Ordering = 1,
-                CrateStorage = crateStorage,
+                 CrateStorage=  crateStorage,
                 Activities = new List<ActivityDO>
                 {
                     new ActionDO
@@ -716,6 +716,62 @@ namespace UtilitiesTesting.Fixtures
             return curAction;
         }
 
+        public static ActionDO TestActionStateActive()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state active",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.Active,
+            };
+        }
+
+        public static ActionDO TestActionStateDeactive()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state deactive",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.Deactive,
+            };
+        }
+
+        public static ActionDO TestActionStateError()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state error",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.Error,
+            };
+        }
+
+        public static ActionDO TestActionStateInProcess()
+        {
+            var actionTemplate = FixtureData.TestActivityTemplateDO1();
+            return new ActionDO
+            {
+                Id = 2,
+                Name = "Action with state in-process",
+                Ordering = 2,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                ActionState = ActionState.InProcess,
+            };
+        }
+
         public static ActionDO ConfigureTestAction57()
         {
             var actionTemplate = ActionTemplate();
@@ -741,9 +797,9 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivity = actionListDo,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                                        Id = 57,
+                Id = 57,
                 Ordering = 2,
-                                        ParentActivityId = 54,
+                ParentActivityId = 54,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
                 CrateStorage = EnvelopeIdCrateJson()
@@ -922,60 +978,5 @@ namespace UtilitiesTesting.Fixtures
             return curAction;
         }
 
-        public static ActionDO TestActionStateActive()
-        {
-            var actionTemplate = FixtureData.TestActivityTemplateDO1();
-            return new ActionDO
-            {
-                Id = 2,
-                Name = "Action with state active",
-                Ordering = 2,
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-                ActionState = ActionState.Active,
-            };
-        }
-
-        public static ActionDO TestActionStateDeactive()
-        {
-            var actionTemplate = FixtureData.TestActivityTemplateDO1();
-            return new ActionDO
-            {
-                Id = 2,
-                Name = "Action with state deactive",
-                Ordering = 2,
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-                ActionState = ActionState.Deactive,
-            };
-        }
-
-        public static ActionDO TestActionStateError()
-        {
-            var actionTemplate = FixtureData.TestActivityTemplateDO1();
-            return new ActionDO
-            {
-                Id = 2,
-                Name = "Action with state error",
-                Ordering = 2,
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-                ActionState = ActionState.Error,
-            };
-        }
-
-        public static ActionDO TestActionStateInProcess()
-        {
-            var actionTemplate = FixtureData.TestActivityTemplateDO1();
-            return new ActionDO
-            {
-                Id = 2,
-                Name = "Action with state in-process",
-                Ordering = 2,
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-                ActionState = ActionState.InProcess,
-            };
-        }
     }
 }

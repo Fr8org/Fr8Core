@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Linq;
 using NUnit.Framework;
+using pluginTests.Fixtures;
 
 namespace pluginTests.pluginDocuSign.Actions
 {
@@ -25,7 +26,7 @@ namespace pluginTests.pluginDocuSign.Actions
         {
             base.SetUp();
             _extract_From_DocuSign_Envelope_v1 = new Extract_From_DocuSign_Envelope_v1();
-           
+
         }
 
 
@@ -40,7 +41,7 @@ namespace pluginTests.pluginDocuSign.Actions
                 uow.SaveChanges();
                 ActionDO curAction = FixtureData.ConfigureTestAction57();
                 ActionDTO curActionDTO = Mapper.Map<ActionDTO>(curAction);
-                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(FixtureData.TestDocuSignAuthDTO1()) };
+                curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
                 Extract_From_DocuSign_Envelope_v1_Proxy curExtract_From_DocuSign_Envelope_v1_For_Testing = new Extract_From_DocuSign_Envelope_v1_Proxy();
 
@@ -77,6 +78,7 @@ namespace pluginTests.pluginDocuSign.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
             object[] parameters = new object[] { curActionDTO };
 
             //Act
@@ -95,6 +97,7 @@ namespace pluginTests.pluginDocuSign.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.CreateStandardDesignTimeFields();
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
             var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "f02c3d55-f6ef-4b2b-b0a0-02bf64ca1e09");
@@ -107,7 +110,7 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Marthambles", result[3].Value);
 
         }
-    
+
     }
     public class Extract_From_DocuSign_Envelope_v1_Proxy : Extract_From_DocuSign_Envelope_v1
     {

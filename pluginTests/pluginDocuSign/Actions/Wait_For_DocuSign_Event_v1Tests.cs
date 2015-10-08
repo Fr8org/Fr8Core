@@ -5,6 +5,8 @@ using UtilitiesTesting.Fixtures;
 using Core.Interfaces;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using Newtonsoft.Json;
+using pluginTests.Fixtures;
 
 
 namespace pluginTests.pluginDocuSign.Actions
@@ -27,6 +29,7 @@ namespace pluginTests.pluginDocuSign.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO1();
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
             var result = await _wait_For_DocuSign_Event_v1.Configure(curActionDTO);
@@ -46,6 +49,7 @@ namespace pluginTests.pluginDocuSign.Actions
         {
             //Arrange
             ActionDTO curActionDTO = FixtureData.TestActionDTO2();
+            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
             var result = _wait_For_DocuSign_Event_v1.Configure(curActionDTO);

@@ -11,8 +11,10 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Web.App_Start;
+using pluginDocuSign.Infrastructure.StructureMap;
+using pluginDocuSign.Infrastructure.AutoMapper;
 
-namespace UtilitiesTesting
+namespace pluginTests
 {
     [TestFixture]
     public class BaseTest
@@ -25,6 +27,8 @@ namespace UtilitiesTesting
             AutoMapperBootStrapper.ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
+            PluginDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            PluginDocuSignMapBootstrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
         }

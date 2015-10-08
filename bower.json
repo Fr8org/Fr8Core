@@ -41,8 +41,7 @@
     "awesome-bootstrap-checkbox": "~0.3.4",
     "font-awesome": "~4.4.0",
     "spin.js": "~2.3.2",
-    "ng-file-upload": "~7.0.17",
-    "textAngular": "~1.4.6"
+    "ng-file-upload": "~7.0.17"
   },
   "resolutions": {
     "angular": "~1.4.3",

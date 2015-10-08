@@ -10,8 +10,7 @@ var app = angular.module("app", [
     'ui.bootstrap',
     "ngMockE2E",
     "datatables",
-    "ngFileUpload",
-    "textAngular"
+    "ngFileUpload"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -157,7 +156,7 @@ app.constant('spinnerHttpInterceptor', {
             delete (config.params.suppressSpinner);
         }
         else{
-            //Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+            Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
         }
         return config;
     },

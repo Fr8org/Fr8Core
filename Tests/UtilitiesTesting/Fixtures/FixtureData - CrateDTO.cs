@@ -1,16 +1,20 @@
 ﻿using Core.Interfaces;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Newtonsoft.Json;
+using StructureMap;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 using Data.Interfaces.ManifestSchemas;
-﻿using System.Linq;
-
 
 namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
+
+
         public static List<CrateDTO> TestCrateDTO1()
         {
             List<FieldDTO> fields = new List<FieldDTO>();
@@ -30,6 +34,7 @@ namespace UtilitiesTesting.Fixtures
             return new List<CrateDTO>() { curCrateDTO };
 
         }
+
         public static List<CrateDTO> TestCrateDTO2()
         {
             List<FieldDTO> fields = new List<FieldDTO>();
@@ -52,6 +57,7 @@ namespace UtilitiesTesting.Fixtures
             return new List<CrateDTO>() { curCrateDTO };
 
         }
+
 
         public static CrateDTO CreateStandardConfigurationControls()
         {
@@ -114,6 +120,7 @@ namespace UtilitiesTesting.Fixtures
 
             return controlsCrate;
         }
+
         private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls)
         {
             return Create(label,

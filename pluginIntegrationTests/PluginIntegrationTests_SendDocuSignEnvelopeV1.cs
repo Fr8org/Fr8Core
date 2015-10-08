@@ -67,7 +67,7 @@ namespace pluginIntegrationTests
 			Assert.NotNull(actionDTO);
 			Assert.NotNull(actionDTO.Content);
 			Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-			Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
+			Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
 			Assert.True((actionDTO.Content.CrateStorage.CrateDTO
 				 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == MT.StandardConfigurationControls.GetEnumDisplayName())));
 			Assert.True(actionDTO.Content.CrateStorage.CrateDTO
