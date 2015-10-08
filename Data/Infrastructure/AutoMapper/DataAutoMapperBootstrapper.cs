@@ -82,12 +82,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<JSONToStringConverter<CrateStorageDTO>>();
             Mapper.CreateMap<string, CrateStorageDTO>()
                 .ConvertUsing<StringToJSONConverter<CrateStorageDTO>>();
-
-            Mapper.CreateMap<FieldMappingSettingsDTO, string>()
-                .ConvertUsing<JSONToStringConverter<FieldMappingSettingsDTO>>();
-            Mapper.CreateMap<string, FieldMappingSettingsDTO>()
-                .ConvertUsing<StringToJSONConverter<FieldMappingSettingsDTO>>();
-
             Mapper.CreateMap<FileDO, FileDTO>();
 
         }

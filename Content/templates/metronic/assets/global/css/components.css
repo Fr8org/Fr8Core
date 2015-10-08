@@ -13880,6 +13880,7 @@ Transparent Button
 #inner-tab-content.tab-content {
   border-left: 1px solid #ddd;
   padding: 20px 0 20px 20px;
+  min-height: 680px;
 }
 .col-md-10.col-sm-10.remove-left-padding {
   padding-left: 0;
@@ -13894,4 +13895,24 @@ Transparent Button
   float: left;
   height: 70px;
   width: 100%;
+}
+#single-button.btn.btn-primary.dropdown-toggle {
+  background-image: url("../../../../../img/select-info.png") !important;
+  background-position: 100% center;
+  background-repeat: no-repeat;
+  font-size: 13px;
+  min-height: 39px;
+  padding: 10px 54px 10px 10px;
+  text-align: left;
+  min-width: 300px;
+  background-color: #3379b5 !important;
+}
+.btn-group.dropdown {
+  margin-top: 10px;
+}
+#single-button.btn.btn-primary.dropdown-toggle:hover, #single-button.btn.btn-primary.dropdown-toggle:focus{
+    background-color: #3379b5 !important; 
+}
+.btn-group.dropdown .dropdown-menu{
+     width: 300px;
 }

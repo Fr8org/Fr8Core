@@ -259,7 +259,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionDO IntegrationTestAction()
         {
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
             var actionTemplate = ActionTemplate();
 
 
@@ -349,7 +349,7 @@ namespace UtilitiesTesting.Fixtures
         public static ActionDO TestActionUnstarted()
         {
             var actionTemplate = ActionTemplate();
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
 
             var processTemplateDo = new ProcessTemplateDO()
             {
@@ -498,7 +498,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate
             };
 
-            var fields = new List<FieldDefinitionDTO>()
+            var fields = new List<ControlsDefinitionDTO>()
             {
                 fieldSelectDockusignTemplate
             };

@@ -77,13 +77,13 @@ namespace pluginAzureSqlServer.Actions
             var crateControls = CreateControlsCrate();
             curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 
-            return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private CrateDTO CreateControlsCrate() { 
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var control = new FieldDefinitionDTO(FieldDefinitionDTO.TEXTBOX_FIELD)
+            var control = new ControlsDefinitionDTO(ControlsDefinitionDTO.TEXTBOX_FIELD)
             {
                 Label = "SQL Connection String",
                 Name = "connection_string",
@@ -128,7 +128,7 @@ namespace pluginAzureSqlServer.Actions
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();
             curActionDTO.CrateStorage = curCrateStorageDTO;
-            return curActionDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         public object Activate(ActionDO curActionDO)
