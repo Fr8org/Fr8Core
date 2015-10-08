@@ -66,6 +66,10 @@
         public class: string;
     }
 
+    export class TextAreaField extends ConfigurationField {
+        public value: string;
+    }
+
     export class RoutingControlGroup extends ConfigurationField {
         sourceField: string;
         routes: Array<Route>
