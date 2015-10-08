@@ -1,5 +1,9 @@
-﻿
-namespace terminal_Salesforce.Infrastructure
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace pluginSalesforce.Infrastructure
 {
     public class LeadDTO
     {

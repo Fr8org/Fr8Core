@@ -1,4 +1,4 @@
-﻿namespace terminal_AzureSqlServer.Services
+﻿namespace pluginAzureSqlServer.Services
 {
     public interface IEvent
     {

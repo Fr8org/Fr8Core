@@ -2,7 +2,7 @@
 using Core.Interfaces;
 using StructureMap;
 
-namespace terminal_Slack.Controllers
+namespace pluginSlack.Controllers
 {
     public class EventController : ApiController
     {

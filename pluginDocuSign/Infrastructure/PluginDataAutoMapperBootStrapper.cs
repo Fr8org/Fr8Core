@@ -1,11 +1,17 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using AutoMapper;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using DocuSign.Integrations.Client;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using terminal_DocuSign.DataTransferObjects;
+using Utilities.AutoMapper;
+using pluginDocuSign.DataTransferObjects;
 
-namespace terminal_DocuSign.Infrastructure.AutoMapper
+namespace pluginDocuSign.Infrastructure.AutoMapper
 {
-	public class TerminalDataAutoMapperBootStrapper
+	public class PluginDataAutoMapperBootStrapper
 	{
 		public static void ConfigureAutoMapper()
 		{

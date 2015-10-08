@@ -1,12 +1,23 @@
-﻿using StructureMap;
+﻿using System;
+using System.Web.Http;
+using Microsoft.Owin.Hosting;
+using Owin;
 using StructureMap.Configuration.DSL;
-using terminal_DocuSign.Interfaces;
-using terminal_DocuSign.Services;
+using pluginDocuSign.Infrastructure;
+using Core.Interfaces;
+using Core.Services;
+using StructureMap;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using DocuSign.Integrations.Client;
+using pluginDocuSign.Interfaces;
+using pluginDocuSign.Services;
+
 using DependencyType = Core.StructureMap.StructureMapBootStrapper.DependencyType;
 
-namespace terminal_DocuSign.Infrastructure.StructureMap
+namespace pluginDocuSign.Infrastructure.StructureMap
 {
-	public class TerminalDocuSignMapBootstrapper
+	public class PluginDocuSignMapBootstrapper
 	{
 		public static void ConfigureDependencies(DependencyType type)
 		{

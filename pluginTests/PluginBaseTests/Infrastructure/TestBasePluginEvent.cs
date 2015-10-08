@@ -1,10 +1,10 @@
 ﻿using Core.Managers.APIManagers.Transmitters.Restful;
 using Moq;
-using TerminalBase.Infrastructure;
+using PluginUtilities.Infrastructure;
 
-namespace terminalTests.TerminalBaseTests.Infrastructure
+namespace pluginTests.PluginBaseTests.Infrastructure
 {
-    internal class TestBaseTerminalEvent : BaseTerminalEvent
+    internal class TestBasePluginEvent : BasePluginEvent
     {
         private IRestfulServiceClient _restfulServiceClient;
 

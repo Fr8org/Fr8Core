@@ -5,12 +5,12 @@ using Core.Services;
 using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap.Configuration.DSL;
-using terminal_AzureSqlServer.Infrastructure;
+using pluginAzureSqlServer.Infrastructure;
 using StructureMap;
 
-namespace terminal_AzureSqlServer
+namespace pluginAzureSqlServer
 {
-    public class TerminalAzureSqlServerStructureMapRegistries
+    public class PluginAzureSqlServerStructureMapRegistries
     {
         public class LiveMode : Registry
         {

@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -3963,7 +3963,7 @@
     <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RadioButtonGroup.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonOptionField.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
@@ -4119,9 +4119,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="pluginBase\terminal_base.csproj">
+    <ProjectReference Include="pluginBase\PluginBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>terminal_base</Name>
+      <Name>PluginBase</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

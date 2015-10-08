@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace terminal_AzureSqlServer.Infrastructure
+namespace pluginAzureSqlServer.Infrastructure
 {
     public class FieldValue
     {

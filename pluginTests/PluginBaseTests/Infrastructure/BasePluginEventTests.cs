@@ -10,29 +10,29 @@ using Moq;
 using NUnit.Framework;
 using UtilitiesTesting;
 
-namespace terminalTests.TerminalBaseTests.Infrastructure
+namespace pluginTests.PluginBaseTests.Infrastructure
 {
     [TestFixture]
-    [Category("BaseTerminalEvent")]
+    [Category("BasePluginEvent")]
     public class BasePluginEventTests : BaseTest
     {
-        private TestBaseTerminalEvent _baseTerminalEvent;
+        private TestBasePluginEvent _basePluginEvent;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _baseTerminalEvent = new TestBaseTerminalEvent();
+            _basePluginEvent = new TestBasePluginEvent();
         }
 
         [Test]
         public void SendPluginErrorIncident_ShouldPostLoggingData_ToFr8EventController()
         {
             //Act
-            _baseTerminalEvent.SendTerminalErrorIncident("something", "ex", "exception");
+            _basePluginEvent.SendPluginErrorIncident("something", "ex", "exception");
 
             //Assert
-            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_baseTerminalEvent.RestfulServiceClient);
+            Mock<IRestfulServiceClient> restClientMock = Mock.Get(_basePluginEvent.RestfulServiceClient);
 
             //verify that the post call is made to Fr8 Event Controller
             restClientMock.Verify(

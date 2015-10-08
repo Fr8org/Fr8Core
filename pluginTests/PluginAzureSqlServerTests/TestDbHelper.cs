@@ -3,7 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace terminalTests.PluginAzureSqlServerTests
+namespace pluginTests.PluginAzureSqlServerTests
 {
     public class TestDbHelper
     {

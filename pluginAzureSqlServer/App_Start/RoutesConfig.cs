@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
-using terminal_AzureSqlServer.Infrastructure;
-using terminal_base;
-using TerminalBase.BaseClasses;
+using pluginAzureSqlServer.Infrastructure;
+using PluginBase;
+using PluginUtilities.BaseClasses;
 using StructureMap;
 
-namespace terminal_AzureSqlServer
+namespace pluginAzureSqlServer
 {
     public static class RoutesConfig
     {
         public static void Register(HttpConfiguration config)
         {
            
-          BaseTerminalWebApiConfig.Register(config);
+          BasePluginWebApiConfig.Register(config);
 
             config.Routes.MapHttpRoute(
-                name: "TerminalAzureSqlServer",
-                routeTemplate: "terminal_azure_sql_server/{controller}/{id}"                
+                name: "PluginAzureSqlServer",
+                routeTemplate: "plugin_azure_sql_server/{controller}/{id}"                
             );
         }
     }

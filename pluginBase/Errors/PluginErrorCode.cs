@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace terminal_base {
-    public enum TerminalErrorCode {
-        [Description("The terminal was passed a request that required a connection string, and it was not found.")]
+namespace PluginBase {
+    public enum PluginErrorCode {
+        [Description("The plugin was passed a request that required a connection string, and it was not found.")]
         SQL_SERVER_CONNECTION_STRING_MISSING = 10000,
-        [Description("The terminal was unable to connect with the provided database connection string.")]
+        [Description("The plugin was unable to connect with the provided database connection string.")]
         SQL_SERVER_CONNECTION_FAILED,
         PAYLOAD_DATA_MISSING,
         PAYLOAD_DATA_INVALID

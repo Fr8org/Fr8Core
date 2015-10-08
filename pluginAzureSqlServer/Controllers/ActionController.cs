@@ -1,45 +1,48 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using terminal_base.BaseClasses;
+using Data.Interfaces.DataTransferObjects;
+using Data.Entities;
+using Data.States;
+using PluginBase.BaseClasses;
 
-namespace terminal_AzureSqlServer.Controllers
+namespace pluginAzureSqlServer.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
-        private const string curTerminal = "terminal_AzureSqlServer";
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
+        private const string curPlugin = "pluginAzureSqlServer";
+        private BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]
         [Route("configure")]
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>) _baseTerminalController
-                .HandleDockyardRequest(curTerminal, "Configure", curActionDTO);           
+            return await (Task<ActionDTO>) _basePluginController
+                .HandleDockyardRequest(curPlugin, "Configure", curActionDTO);           
         }
        
         [HttpPost]
         [Route("activate")]
         public ActionDTO Activate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(curTerminal, "Activate", curActionDataPackage);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("deactivate")]
         public ActionDTO Deactivate(ActionDTO curActionDataPackage)
         {
-            return (ActionDTO)_baseTerminalController.HandleDockyardRequest(curTerminal, "Deactivate", curActionDataPackage);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDataPackage);
         }
 
         [HttpPost]
         [Route("execute")]
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            return await (Task<PayloadDTO>)_baseTerminalController.HandleDockyardRequest(
-                curTerminal, "Execute", actionDto);
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
+                curPlugin, "Execute", actionDto);
         }
 
         //----------------------------------------------------------
@@ -53,7 +56,7 @@ namespace terminal_AzureSqlServer.Controllers
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }
@@ -66,7 +69,7 @@ namespace terminal_AzureSqlServer.Controllers
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
 
             //string[] curUriSplitArray = Url.Request.RequestUri.AbsoluteUri.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            //string curAssemblyName = string.Format("terminalAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
+            //string curAssemblyName = string.Format("pluginAzureSqlServer.Actions.{0}_v{1}", curUriSplitArray[curUriSplitArray.Length - 2], "1");
             ////extract the leading element of the path, which is the current Action and will be something like "write_to_sql_server"
             ////instantiate the class corresponding to that action by:
             ////   a) Capitalizing each word
@@ -88,7 +91,7 @@ namespace terminal_AzureSqlServer.Controllers
             //);
 
             return
-                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this terminal. For more" +
+                Ok("This end point has been deprecated. Please use the V2 mechanisms to POST to this plugin. For more" +
                    "info see https://maginot.atlassian.net/wiki/display/SH/V2+Plugin+Design");
 
         }

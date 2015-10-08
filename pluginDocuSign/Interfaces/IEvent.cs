@@ -1,4 +1,4 @@
-﻿namespace terminal_DocuSign.Interfaces
+﻿namespace pluginDocuSign.Interfaces
 {
     public interface IEvent
     {

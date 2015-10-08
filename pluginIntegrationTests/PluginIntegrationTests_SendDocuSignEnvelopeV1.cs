@@ -11,7 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using terminal_AzureSqlServer;
+using pluginAzureSqlServer;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
 using UtilitiesTesting;
@@ -19,15 +19,15 @@ using Data.Constants;
 using Utilities;
 using System.Threading.Tasks;
 
-namespace terminalIntegrationTests
+namespace pluginIntegrationTests
 {
-	public partial class TerminalIntegrationTests : BaseTest
+	public partial class PluginIntegrationTests : BaseTest
 	{
 		/// <summary>
 		/// Test Send_DocuSign_Envelope_v1 initial configuration.
 		/// </summary>
 		[Test]
-		public async Task TerminalIntegration_SendDocuSignEnvelope_ConfigureInitial()
+		public async Task PluginIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
 			var curActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
 			await SendDocuSignEnvelope_ConfigureInitial(curActionDTO);
@@ -36,7 +36,7 @@ namespace terminalIntegrationTests
 		/// Test Send_DocuSign_Envelope_v1 follow-up configuration.
 		/// </summary>
 		[Test]
-		public async Task TerminalIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
+		public async Task PluginIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
 			var savedActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
@@ -67,7 +67,7 @@ namespace terminalIntegrationTests
 			Assert.NotNull(actionDTO);
 			Assert.NotNull(actionDTO.Content);
 			Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-			Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
+			Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
 			Assert.True((actionDTO.Content.CrateStorage.CrateDTO
 				 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == MT.StandardConfigurationControls.GetEnumDisplayName())));
 			Assert.True(actionDTO.Content.CrateStorage.CrateDTO

@@ -1,11 +1,11 @@
-﻿using Microsoft.Owin.Hosting;
-using Owin;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Microsoft.Owin.Hosting;
+using Owin;
 
-namespace terminal_Salesforce
+namespace pluginSalesforce
 {
     public class SelfHostFactory
     {
@@ -28,8 +28,8 @@ namespace terminal_Salesforce
                 config.MapHttpAttributeRoutes();
 
                 config.Routes.MapHttpRoute(
-                    name: "TerminalSalesforce",
-                    routeTemplate: "terminal_salesforce/{controller}/{id}",
+                    name: "pluginSalesforce",
+                    routeTemplate: "plugin_salesforce/{controller}/{id}",
                     defaults: new { id = RouteParameter.Optional }
                 );
 

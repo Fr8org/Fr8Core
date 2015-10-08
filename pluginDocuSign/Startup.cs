@@ -6,12 +6,12 @@ using System.Web;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
-using terminal_base;
-using terminal_base.BaseClasses;
+using PluginBase;
+using PluginBase.BaseClasses;
 
-[assembly: OwinStartup(typeof(terminal_DocuSign.Startup))]
+[assembly: OwinStartup(typeof(pluginDocuSign.Startup))]
 
-namespace terminal_DocuSign
+namespace pluginDocuSign
 {
     public class Startup
     {
@@ -19,8 +19,8 @@ namespace terminal_DocuSign
         {
             Task.Run(() =>
             {
-                BaseTerminalController curController = new BaseTerminalController();
-                curController.AfterStartup("terminal_docusign");
+                BasePluginController curController = new BasePluginController();
+                curController.AfterStartup("plugin_docusign");
             });
         }
     }
