@@ -7,9 +7,9 @@ namespace Core.Interfaces
 {
 	public interface IActivity
 	{
-		List<ActivityDO> GetUpstreamActivities(ActivityDO curActivityDO);
-		List<ActivityDO> GetDownstreamActivities(ActivityDO curActivityDO);
-        void Process(int curActivityId, ProcessDO curProcessDO);
+		List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
+        List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO);
+        Task Process(int curActivityId, ProcessDO curProcessDO);
         IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO);
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount);
 	}

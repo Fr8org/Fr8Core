@@ -26,7 +26,7 @@
     opacity: 0.7;
     font-size: 16px;
     text-align: center;
-    padding: 15px; 
+    padding: 15px;
     margin: 0;
     position: absolute;
     top: 60%;
@@ -43,8 +43,8 @@
     z-index: 2;
     margin: 0;
     top: 0;
-    left:0;
-    padding:0;
+    left: 0;
+    padding: 0;
     pointer-events: none;
 }
 
@@ -54,38 +54,66 @@
 }
 
 /* Added for Showing Steps in Activity Pane*/
-.processActionStep
-{
+.processActionStep {
     background-image: URL("/Content/img/ProcessBuilder/circle.png");
-    display: inline-flex;;
+    display: inline-flex;
+    ;
     width: 80px;
     height: 50px;
     background-repeat: no-repeat;
     padding-left: 20px;
-    padding-top: 14px;    
+    padding-top: 14px;
     font-weight: 900;
     margin-left: 5px;
     margin-right: 5px;
 }
 
-.processActionStepSelected
-{
+.processActionStepSelected {
     background-image: URL("/Content/img/ProcessBuilder/circle-selected.png");
     display: inline-flex;
     width: 75px;
     height: 50px;
     background-repeat: no-repeat;
     padding-left: 20px;
-    padding-top: 14px;    
+    padding-top: 14px;
     font-weight: 900;
     margin-left: 5px;
     margin-right: 5px;
 }
 
-.processActionStepsRightArrow{
-        padding-left: 15px;    
+.processActionStepsRightArrow {
+    padding-left: 15px;
     margin-top: -15px;
 }
+
+/* Select Action */
+.select-action-modal .modal-dialog {
+    width: 1000px;
+}
+
+.select-action-category {
+    display: inline-block;
+    margin: 20px;
+    vertical-align: top;
+}
+
+.select-action-list {
+    border: 2px solid black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 200px;
+}
+
+.select-action-row {
+    cursor: default;
+    border-bottom: 1px solid black;
+    padding: 8px;
+}
+
+    .select-action-row:hover {
+        color: white;
+        background-color: black;
+    }
 
 /* Filter Pane */
 .filter-pane .radio:last-of-type {
@@ -104,10 +132,10 @@
     width: calc(100% - 25px);
 }
 
-.query-builder-table td:first-of-type,
-.query-builder-table th:first-of-type {
-    padding-left: 0;
-}
+    .query-builder-table td:first-of-type,
+    .query-builder-table th:first-of-type {
+        padding-left: 0;
+    }
 
 .query-builder-add-button {
     margin-left: 27px;
@@ -116,3 +144,20 @@
 .query-builder-table select.form-control {
     padding-left: 4px;
 }
+
+form.internal-authenticate-form {
+    padding: 10px;
+}
+
+/* Configure Action Pane */
+.nested-fields {
+    margin-left: 20px;
+}
+
+input[type=radio] + div.nested-fields {
+    display: none;
+} 
+
+input[type=radio]:checked + div.nested-fields {
+    display: block;
+} 

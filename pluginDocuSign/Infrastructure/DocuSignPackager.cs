@@ -17,9 +17,10 @@ namespace pluginDocuSign.Infrastructure
         public DocuSignAccount Login()
         {
            var curDocuSignAccount = new DocuSignAccount
-            {
+            {					
                 Email = CurrentEmail,
-                ApiPassword = CurrentApiPassword
+                ApiPassword = CurrentApiPassword,
+					 BaseUrl = RestSettings.Instance.WebServiceUrl,
             };
 
             if (curDocuSignAccount.Login())
@@ -29,6 +30,22 @@ namespace pluginDocuSign.Infrastructure
                 "Cannot log in to DocuSign. Please check the authentication information on web.config.");
         }
 
+        public DocuSignAccount Login(string email, string apiPassword)
+        {
+            var curDocuSignAccount = new DocuSignAccount
+            {
+                Email = email,
+                ApiPassword = apiPassword,
+                BaseUrl = RestSettings.Instance.WebServiceUrl,
+            };
+
+            if (curDocuSignAccount.Login())
+                return curDocuSignAccount;
+
+            throw new InvalidOperationException(
+                "Cannot log in to DocuSign. Please check the authentication information on web.config.");
+        }
+        
         private void ConfigureDocuSignIntegration()
         {
             RestSettings.Instance.DistributorCode = CloudConfigurationManager.GetSetting("DocuSignDistributorCode");

@@ -2,7 +2,6 @@
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
@@ -14,6 +13,17 @@ namespace UtilitiesTesting.Fixtures
     {
 
         public static ActivityDO TestActivity57()
+        {
+            return new ActivityDO
+            {
+                Id = 57,
+                Ordering = 2,
+                ParentActivityId = 54
+            };
+
+        }
+
+        public static ActivityDO TestActivityNotExists()
         {
             return new ActivityDO
             {

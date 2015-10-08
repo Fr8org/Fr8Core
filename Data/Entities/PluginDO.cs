@@ -25,6 +25,8 @@ namespace Data.Entities
         public int PluginStatus { get; set; }
         public _PluginStatusTemplate PluginStatusTemplate { get; set; }
 
+        public bool RequiresAuthentication { get; set; }
+
         //public string BaseEndPoint { get; set; }
 
         public string Endpoint { get; set; }

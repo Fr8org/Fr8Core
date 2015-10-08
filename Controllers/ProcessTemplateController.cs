@@ -81,6 +81,18 @@ namespace Web.Controllers
 
             return result;
         }
+        [Route("getactive")]
+        [HttpGet]
+        public IHttpActionResult GetByStatus(int? id = null, int? status = null)
+        {
+            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
+
+            if (curProcessTemplates.Any())
+            {               
+                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+            }
+            return Ok();
+        }
 
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
@@ -104,6 +116,7 @@ namespace Web.Controllers
             return Ok();
         }
 
+        
         public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -124,13 +137,15 @@ namespace Web.Controllers
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
+
                 //this will return 0 on create operation because of not saved changes
-                processTemplateDto.Id = _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
-                uow.SaveChanges();
-                //what a mess lets try this
-                curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
                 uow.SaveChanges();
                 processTemplateDto.Id = curProcessTemplateDO.Id;
+                //what a mess lets try this
+                /*curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                uow.SaveChanges();
+                processTemplateDto.Id = curProcessTemplateDO.Id;*/
                 return Ok(processTemplateDto);
             }
         }

@@ -7,46 +7,90 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class DropdownListFieldDefinitionDTO : FieldDefinitionDTO
+    public interface ISupportsNestedFields
     {
-       
+        IList<ControlsDefinitionDTO> Fields { get; }
     }
 
-    public class RadioButtonGroupFieldDefinitionDTO : FieldDefinitionDTO
+    public class CheckBoxFieldDefinitionDTO : ControlsDefinitionDTO
+	{
+		public CheckBoxFieldDefinitionDTO()
+		{
+			Type = "checkboxField";
+		}
+	}
+    public class DropdownListFieldDefinitionDTO : ControlsDefinitionDTO
+    {
+		 [JsonProperty("listItems")]
+		 public List<ListItem> ListItems { get; set; }
+
+		 public DropdownListFieldDefinitionDTO()
+		 {
+			 ListItems = new List<ListItem>();
+			 Type = "dropdownlistField";
+		 }
+    }
+
+    public class RadioButtonGroupFieldDefinitionDTO : ControlsDefinitionDTO
     {
         [JsonProperty("groupName")]
         public string GroupName { get; set; }
 
         [JsonProperty("radios")]
-        public List<RadioButton> Radios { get; set; }
+        public List<RadioButtonField> Radios { get; set; }
+
+		 public RadioButtonGroupFieldDefinitionDTO()
+		  {
+			  Radios = new List<RadioButtonField>();
+			  Type = "radioButtonGroup";
+		  }
     }
 
-    public class FilterPaneFieldDefinitionDTO : FieldDefinitionDTO
+    public class TextFieldDefinitionDTO : ControlsDefinitionDTO
+    {
+        public TextFieldDefinitionDTO()
+        {
+            Type = TEXTBOX_FIELD;
+        }
+    }
+
+    public class FilterPaneFieldDefinitionDTO : ControlsDefinitionDTO
     {
         [JsonProperty("fields")]
         public List<FilterPaneField> Fields { get; set;}
+		 
+		 public FilterPaneFieldDefinitionDTO()
+		  {
+			  Type = "filterPane";
+		  }
     }
-
-    public class FieldDefinitionDTO
+	 // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
+	 // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !
+    public class ControlsDefinitionDTO
     {
-        public FieldDefinitionDTO() { }
+        public ControlsDefinitionDTO() { }
 
-        public FieldDefinitionDTO(string name, bool required, string value, string fieldLabel)
+		  public ControlsDefinitionDTO(string type) 
+		  {
+			  Type = type;
+		  }
+
+        public ControlsDefinitionDTO(string name, bool required, string value, string fieldLabel)
         {
             Type = TEXTBOX_FIELD;
             Name = name;
             Required = required;
             Value = value;
-            FieldLabel = fieldLabel;
+            Label = fieldLabel;
         }
 
-        public FieldDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
+        public ControlsDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
         {
             Type = type;
             Name = name;
             Required = required;
             Value = value;
-            FieldLabel = fieldLabel;
+            Label = fieldLabel;
         }
 
         public const string CHECKBOX_FIELD = "checkboxField";
@@ -61,11 +105,11 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("value")]
         public string Value { get; set; }
 
-        [JsonProperty("fieldLabel")]
-        public string FieldLabel { get; set; }
+        [JsonProperty("label")]
+        public string Label { get; set; }
 
         [JsonProperty("type")]
-        public string Type { get; set; }
+        public string Type { get; protected set; }
 
         [JsonProperty("selected")]
         public bool Selected { get; set; }
@@ -100,13 +144,24 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class RadioButton
+    public class RadioButtonField : ISupportsNestedFields
     {
+        public RadioButtonField()
+        {
+            Fields = new List<ControlsDefinitionDTO>();
+        }
+
         [JsonProperty("selected")]
         public bool Selected { get; set; }
 
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
         [JsonProperty("value")]
         public string Value { get; set; }
+        
+        [JsonProperty("fields")]
+        public IList<ControlsDefinitionDTO> Fields { get; set; }
     }
 
     public class FilterPaneField
@@ -117,4 +172,15 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("name")]
         public string Name { get; set; }
     }
+	 public class ListItem
+	 {
+		 [JsonProperty("selected")]
+		 public bool Selected { get; set; }
+
+		 [JsonProperty("key")]
+		 public string Key { get; set; }
+
+		 [JsonProperty("value")]
+		 public string Value { get; set; }
+	 }
 }

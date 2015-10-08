@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Threading.Tasks;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
@@ -7,6 +8,7 @@ namespace Core.Interfaces
     {
         ProcessDO Create(int processTemplateId, CrateDTO curEvent);
         void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent);
-        void Execute(ProcessDO curProcessDO);
+        Task Execute(ProcessDO curProcessDO);
+        void SetProcessNextActivity(ProcessDO curProcessDO);
     }
 }

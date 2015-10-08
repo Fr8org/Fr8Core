@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Core.Interfaces;
@@ -11,21 +12,19 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Wrappers;
 using StructureMap;
 using System.Data.Entity;
+using Data.Constants;
 using Newtonsoft.Json;
-using System.Net;
-using System.Net.Http;
+using Data.Interfaces.ManifestSchemas;
+using Utilities;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        private IEnvelope _envelope;
-        private IAction _action;
-        private IDocuSignTemplate _docusignTemplate; //TODO: switch to wrappers
-        private Task curAction;
+        //private IAction _action;
+        //private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
 
@@ -44,12 +43,11 @@ namespace Core.Services
             }
         }
 
-        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
+        public ActionDO SaveOrUpdateAction(IUnitOfWork uow, ActionDO submittedActionData)
         {
             ActionDO existingActionDO = null;
             ActionDO curAction;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+
                 if (submittedActionData.ActivityTemplateId == 0)
                 {
                     submittedActionData.ActivityTemplateId = null;
@@ -84,7 +82,15 @@ namespace Core.Services
                 curAction.IsTempId = false;
                 return curAction;
             }
+
+        public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return SaveOrUpdateAction(uow, submittedActionData);
         }
+        }
+        
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
         {
             return curActionDO.CrateStorageDTO().CrateDTO;
@@ -94,50 +100,32 @@ namespace Core.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).Where(i => i.Id == id).Select(s => s).FirstOrDefault();
+                return GetById(uow, id);
             }
         }
 
-        public ActionDTO Configure(ActionDO curActionDO)
+        public ActionDO GetById(IUnitOfWork uow, int id)
         {
-            ActivityTemplateDO curActivityTemplate;
+            return uow.ActionRepository.GetQuery().Include(i => i.ActivityTemplate).FirstOrDefault(i => i.Id == id);
+        }
 
-            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
+        public async Task<ActionDTO> Configure(ActionDO curActionDO)
             {
-                //fetch this Action's ActivityTemplate
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    curActivityTemplate = uow.ActivityTemplateRepository.GetByKey(curActionDO.ActivityTemplateId);
-
-                    if (curActivityTemplate != null)
-                    {
-                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-
-                        //convert the ActivityTemplate to a DTO as well
-                        ActivityTemplateDTO curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplate);
-                        curActionDTO.ActivityTemplate = curActivityTemplateDTO;
-
-                        // prepare the current plugin URL
-                        // TODO: Add logic to use https:// for production
-
-                        string curPluginUrl = "http://" + curActivityTemplate.Plugin.Endpoint + "/actions/configure/";
-
-                        var restClient = PrepareRestfulClient();
-                        string actionDTOJSON;
+            ActionDTO tempActionDTO;
                         try
                         {
-                            actionDTOJSON =
-                                restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
                         }
+            catch (ArgumentException)
+            {
+                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                throw;
+            }
                         catch (Exception)
                         {
-                            EventManager.PluginConfigureFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDTO));
+                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
                             throw;
                         }
-
-                        //Converting Received ActionDTO in JSON Format to ActionDTO Object
-                        ActionDTO tempActionDTO = JsonConvert.DeserializeObject<ActionDTO>(actionDTOJSON);
 
                         //Plugin Configure Action Return ActionDTO
                         curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
@@ -149,16 +137,16 @@ namespace Core.Services
                         return tempActionDTO;
                     }
 
-                    else
+        public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
                     {
-                        throw new ArgumentNullException("ActivityTemplateDO");
-                    }
-                }
-            }
-            else
-            {
-                throw new ArgumentNullException("ActivityTemplateDO");
-            }
+            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
+            var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
+            if (confControls.Count() != 0 && confControls.Count() != 1)
+                throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
+            if (confControls.Count() == 0)
+                return null;
+            StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+            return standardCfgControlsMs;
         }
 
         public ActionDO MapFromDTO(ActionDTO curActionDTO)
@@ -198,22 +186,13 @@ namespace Core.Services
             if (curActionList == null) return null;
 
             // Get current Action
-            var curAction = curActionList.Activities.Where(a => a.Id == curActionId).SingleOrDefault();
+            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
             if (curAction == null) return null; // Well, who knows...
 
             // Get ordered list of next Activities 
             var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
 
-            //if no next activities, just nullify CurrentActivity 
-            if (activities.Count() == 0)
-            {
-                curActionList.CurrentActivity = null;
-            }
-            else
-            {
-                // if there is one, set it as CurrentActivity
-                curActionList.CurrentActivity = activities.ToList()[0];
-            }
+            curActionList.CurrentActivity = activities.FirstOrDefault();
 
             return curAction;
         }
@@ -228,7 +207,11 @@ namespace Core.Services
 
                     EventManager.ActionStarted(curAction);
 
-                    var jsonResult = await Execute(curAction, curProcessDO);
+                var payload = await Execute(curAction, curProcessDO);
+                if (payload != null)
+                {
+                    curProcessDO.CrateStorage = payload.CrateStorage;
+                }
 
                     //this JSON error check is broken because it triggers on standard success messages, which look like this:
                     //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
@@ -257,30 +240,22 @@ namespace Core.Services
             return curAction.ActionState.Value;
         }
 
-        public async Task<string> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
+        // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
+        public async Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO)
         {
             if (curActionDO == null)
+            {
                 throw new ArgumentNullException("curActionDO");
+            }
 
-            var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-            var curPayloadDTO = new PayloadDTO(curProcessDO.CrateStorage, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
+                "Execute", curActionDO, curProcessDO.Id);
 
-            //TODO: The plugin transmitter Post Async to get Payload DTO is depriciated. This logic has to be discussed and changed.
-            var curPluginClient = ObjectFactory.GetInstance<IPluginTransmitter>();
+            // Temporarily commented out by yakov.gnusin.
+            // EventManager.ActionDispatched(curActionDTO);
 
-            //TODO : Cut base Url from PluginDO.Endpoint
-
-
-            var uri = curActionDO.ActivityTemplate.Plugin.Endpoint.StartsWith("http") ? curActionDO.ActivityTemplate.Plugin.Endpoint : "http://" + curActionDO.ActivityTemplate.Plugin.Endpoint;
-            curPluginClient.BaseUri = new Uri(uri);
-
-            var jsonResult = await curPluginClient.PostActionAsync(curActionDO.Name, curActionDTO, curPayloadDTO);
-            EventManager.ActionDispatched(curActionDTO);
-
-            return jsonResult;
+            return payloadDTO;
         }
-
-
 
         /// <summary>
         /// Retrieve authorization token
@@ -307,6 +282,60 @@ namespace Core.Services
                 if (!string.IsNullOrEmpty(curToken))
                     return curToken;
                 return _plugin.Authorize();
+            }
+        }
+
+        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin,
+            string username, string password)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+        }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var credentialsDTO = new CredentialsDTO()
+            {
+                Username = username,
+                Password = password
+            };
+
+            var response = await restClient.PostAsync<CredentialsDTO>(
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate"),
+                credentialsDTO
+            );
+
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.UserDO.Id == account.Id && x.Plugin.Id == plugin.Id);
+
+                var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                var curAccount = uow.UserRepository.GetByKey(account.Id);
+
+                if (authToken == null)
+                {
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        Token = authTokenDTO.Token,
+                        ExternalAccountId = authTokenDTO.ExternalAccountId,
+                        Plugin = curPlugin,
+                        UserDO = curAccount,
+                        ExpiresAt = DateTime.Today.AddMonths(1)
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.Token = authTokenDTO.Token;
+                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                }
+
+                uow.SaveChanges();
             }
         }
 
@@ -359,59 +388,115 @@ namespace Core.Services
             return crateDTO;
         }
 
-
-        public string Activate(ActionDO curActionDO)
+        //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
+        public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
         {
-            return CallPluginAction(curActionDO, "activate");
+
+            var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
+            var curControlsCrate =
+                GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, curCrateStorage)
+                    .FirstOrDefault();
+
+            if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
+        {
+                throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
         }
 
-        public string Deactivate(ActionDO curActionDO)
-        {
-            return CallPluginAction(curActionDO, "deactivate");
+
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+
         }
 
-        private string CallPluginAction(ActionDO curActionDO, string actionName)
-        {
-            if (curActionDO != null && curActionDO.ActivityTemplateId != 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ActivityTemplateDO curActivityTemplate = curActionDO.ActivityTemplate;
-                    if (curActivityTemplate != null)
+
+        public async Task<ActionDTO> Activate(ActionDO curActionDO)
                     {
-                        //convert the Action to a DTO in preparation for serialization and POST to the plugin
-                        var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
-                        string curPluginUrl = string.Format("http://{0}/actions/{1}/", curActivityTemplate.Plugin.Endpoint, actionName);
-                        var restClient = PrepareRestfulClient();
-                        string result;
                         try
                         {
-                            result = restClient.PostAsync(new Uri(curPluginUrl, UriKind.Absolute), curActionDTO).Result;
+                var result = await CallPluginActionAsync<ActionDTO>("activate", curActionDO);
                             EventManager.ActionActivated(curActionDO);
+                return result;
+            }
+            catch (ArgumentException)
+            {
+                EventManager.PluginActionActivationFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                throw;
                         }
-                        catch (Exception)
+            catch
                         {
-                            EventManager.PluginActionActivationFailed(curPluginUrl, JsonConvert.SerializeObject(curActionDO));
+                EventManager.PluginActionActivationFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
                             throw;
                         }
-                        return result;
                     }
-                    else
+
+        public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
                     {
-                        throw new ArgumentNullException("ActivityTemplateDO");
+            return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
+                    }
+
+        /// <summary>
+        /// Prepare AuthToken for ActionDTO request message.
+        /// </summary>
+        private void PrepareAuthToken(ActionDTO actionDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // Fetch ActivityTemplate.
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(actionDTO.ActivityTemplateId);
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("Could not find ActivityTemplate.");
+                }
+
+                // Fetch Action.
+                var action = uow.ActionRepository.GetByKey(actionDTO.Id);
+                if (action == null)
+                {
+                    throw new ApplicationException("Could not find Action.");
+            }
+
+                // Try to find AuthToken if plugin requires authentication.
+                if (activityTemplate.Plugin.RequiresAuthentication)
+                {
+                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
+                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
+                    var dockyardAccount = actionList.ProcessNodeTemplate
+                        .ProcessTemplate.DockyardAccount;
+                    if (dockyardAccount == null)
+            {
+                        throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
+            }
+
+                    var accountId = dockyardAccount.Id;
+
+                    // Try to find AuthToken for specified plugin and account.
+                    var authToken = uow.AuthorizationTokenRepository
+                        .FindOne(x => x.Plugin.Id == activityTemplate.Plugin.Id
+                            && x.UserDO.Id == accountId);
+
+                    // If AuthToken is not empty, fill AuthToken property for ActionDTO.
+                    if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
+                    {
+                        actionDTO.AuthToken = new AuthTokenDTO()
+                        {
+                            Token = authToken.Token
+                        };
                     }
                 }
             }
-            else
-            {
-                throw new ArgumentNullException("curActionDO");
-            }
-
         }
 
-        protected virtual IRestfulServiceClient PrepareRestfulClient()
+        private Task<TResult> CallPluginActionAsync<TResult>(string actionName, ActionDO curActionDO, int processId = 0)
         {
-            return new RestfulServiceClient();
+            if (actionName == null) throw new ArgumentNullException("actionName");
+            if (curActionDO == null) throw new ArgumentNullException("curActionDO");
+            
+            var dto = Mapper.Map<ActionDO, ActionDTO>(curActionDO);
+            dto.ProcessId = processId;
+            PrepareAuthToken(dto);
+
+            return ObjectFactory.GetInstance<IPluginTransmitter>()
+                .CallActionAsync<TResult>(actionName, dto);
         }
     }
 }

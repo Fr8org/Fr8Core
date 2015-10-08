@@ -9,7 +9,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActionListDO TestActionListHealth1()
         {
-            string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
             var processDo = new ProcessDO
             {
                 Id = 1,
@@ -70,8 +70,6 @@ namespace UtilitiesTesting.Fixtures
             };
             return curActionListDO;
         }
-
-      
 
         public static ActionListDO TestActionListMedical()
         {
@@ -166,6 +164,7 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
         }
+
 		  /// <summary>
 		  /// Big tree from https://maginot.atlassian.net/wiki/display/SH/Getting+Upstream+and+Downstream+Activities+Lists
 		  /// </summary>
@@ -186,7 +185,7 @@ namespace UtilitiesTesting.Fixtures
 
 			  ActionListDO al_43 = new ActionListDO() { Id = 43, Ordering = 2, ActionListType = ActionListType.Immediate, Name = "al_43" };
 			  al_43.ParentActivity = al_1;
-			  ActionDO a_44 = new ActionDO() { Id = 44, Ordering = 1, ActivityTemplate = activityTempate, Name = "a_44"};
+            ActionDO a_44 = new ActionDO() { Id = 44, Ordering = 1, ActivityTemplate = activityTempate, Name = "a_44" };
 			  a_44.ParentActivity = al_43;
 			  al_43.Activities.Add(a_44);
 			  ActionDO a_46 = new ActionDO() { Id = 46, Ordering = 2, ActivityTemplate = activityTempate, Name = "a_46" };
@@ -251,6 +250,7 @@ namespace UtilitiesTesting.Fixtures
 			  actionLists.Add(al_61);
 			  return actionLists;
 		  }
+
           public static List<ActionListDO> TestActionList1()
           {
               List<ActionListDO> actionLists = new List<ActionListDO>();
@@ -262,7 +262,26 @@ namespace UtilitiesTesting.Fixtures
                   Plugin = FixtureData.PluginFive(),
                   Name = "Wait_For_DocuSign_Event"
               };
-              ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1",ParentActivityId = 1 };
+            ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1", ParentActivityId = 1 };
+              ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
+              al_1.Activities.Add(a_23);
+              a_23.ParentActivity = al_1;
+              actionLists.Add(al_1);
+              return actionLists;
+          }
+
+          public static List<ActionListDO> TestActionListParentActivityID12()
+          {
+              List<ActionListDO> actionLists = new List<ActionListDO>();
+
+              var activityTempate = new ActivityTemplateDO()
+              {
+                  Id = 1,
+                  Version = "1",
+                  Plugin = FixtureData.PluginFive(),
+                  Name = "Wait_For_DocuSign_Event"
+              };
+              ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1", ParentActivityId = 12 };
               ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
               al_1.Activities.Add(a_23);
               a_23.ParentActivity = al_1;

@@ -10,7 +10,8 @@ var app = angular.module("app", [
     'ui.bootstrap',
     "ngMockE2E",
     "datatables",
-    "ngFileUpload"
+    "ngFileUpload",
+    "textAngular"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -73,12 +74,17 @@ app.controller('FooterController', ['$scope', function ($scope) {
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
 
     // Redirect any unmatched url
-    $urlRouterProvider.otherwise("/processes");
+    $urlRouterProvider.otherwise("/myaccount");
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push('spinnerHttpInterceptor');
 
     $stateProvider
+        .state('myaccount', {
+            url: "/myaccount",
+            templateUrl: "/AngularTemplate/MyAccountPage",
+            data: { pageTitle: 'My Account', pageSubTitle: '' }
+        })
     // Process Template list
         .state('processTemplates', {
             url: "/processes",
@@ -150,8 +156,9 @@ app.constant('spinnerHttpInterceptor', {
             // We don't want this parameter to be sent to backend so remove it if found.
             delete (config.params.suppressSpinner);
         }
-        else
+        else{
             Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+        }
         return config;
     },
     response: function (config: ng.IRequestConfig) {

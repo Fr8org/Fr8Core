@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 ﻿using Core.Managers.APIManagers.Transmitters.Plugin;
 ﻿using Core.Services;
 ﻿using Data.Entities;
@@ -18,10 +18,10 @@ namespace DockyardTest.Integration
 
         [Test, Ignore("In Process service it is now expecting CurrentActivity to process.")]
         [Category("IntegrationTests")]
-        public async void ITest_CanProcessHealthDemo()
+        public void ITest_CanProcessHealthDemo()
         {
-            string email;
-            string id;
+            //string email;
+            //string id;
             // SETUP
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -38,7 +38,7 @@ namespace DockyardTest.Integration
                 uow.SaveChanges();
 
                 //create a process template linked to that account
-                var healthProcessTemplate = CreateProcessTemplate_healthdemo(uow, registeredAccount);
+             //   var healthProcessTemplate = CreateProcessTemplate_healthdemo(uow, registeredAccount);
                 uow.SaveChanges();
 
                 string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
@@ -57,52 +57,56 @@ namespace DockyardTest.Integration
 
         }
 
-        public ProcessTemplateDO CreateProcessTemplate_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
-        {
-            var jsonSerializer = new global::Utilities.Serializers.Json.JsonSerializer();
+        //commented out because it was breaking the build.
 
-            var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
-            healthProcessTemplate.DockyardAccount = registeredAccount;
-            uow.ProcessTemplateRepository.Add(healthProcessTemplate);
-            uow.SaveChanges();
+        //public ProcessTemplateDO CreateProcessTemplate_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
+        //{
+        //    var jsonSerializer = new global::Utilities.Serializers.Json.JsonSerializer();
 
-            //add processnode to process
-            var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
-            healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
-            uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
+        //    var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
+        //    healthProcessTemplate.DockyardAccount = registeredAccount;
+        //    uow.ProcessTemplateRepository.Add(healthProcessTemplate);
+        //    uow.SaveChanges();
+        //   healthProcessNodeTemplateDO.StartingProcessNodeTemplate = true;
+        //  healthProcessTemplate.ProcessNodeTemplates.Add(healthProcessNodeTemplateDO);
 
-            //specify that this process node is the starting process node of the template
-            healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+        //    //add processnode to process
+        //    var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
+        //    healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
+        //    uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
 
-            //add criteria to processnode
-            var healthCriteria = FixtureData.TestCriteriaHealthDemo();
-            healthCriteria.ProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
-            uow.CriteriaRepository.Add(healthCriteria);
+        //    //specify that this process node is the starting process node of the template
+        //    healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
 
-            //add actionlist to processnode
-            var healthActionList = FixtureData.TestActionListHealth1();
-            healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
-            uow.ActionListRepository.Add(healthActionList);
+        //    //add criteria to processnode
+        //    var healthCriteria = FixtureData.TestCriteriaHealthDemo();
+        //    healthCriteria.ProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+        //    uow.CriteriaRepository.Add(healthCriteria);
 
-           // var healthAction = FixtureData.TestActionHealth1();
-           // uow.ActionRepository.Add(healthAction);
+        //    //add actionlist to processnode
+        //    var healthActionList = FixtureData.TestActionListHealth1();
+        //    healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+        //    uow.ActionListRepository.Add(healthActionList);
 
-            //add write action to actionlist
-            var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
-            healthWriteAction.ParentActivityId = healthActionList.Id;
-            healthActionList.CurrentActivity = healthWriteAction;
+        //   // var healthAction = FixtureData.TestActionHealth1();
+        //   // uow.ActionRepository.Add(healthAction);
 
-            //add field mappings to write action
-            var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
-           //REPLACE healthWriteAction.FieldMappingSettings = jsonSerializer.Serialize(health_FieldMappings);
+        //    //add write action to actionlist
+        //    var healthWriteAction = FixtureData.TestActionWriteSqlServer1();
+        //    healthWriteAction.ParentActivityId = healthActionList.Id;
+        //    healthActionList.CurrentActivity = healthWriteAction;
 
-            //add configuration settings to write action
-            var configuration_settings = FixtureData.TestConfigurationSettings_healthdemo();
-            healthWriteAction.CrateStorage = JsonConvert.SerializeObject(configuration_settings);
-            uow.ActionRepository.Add(healthWriteAction);
+        //    //add field mappings to write action
+        //    var health_FieldMappings = FixtureData.TestFieldMappingSettingsDTO_Health();
+        //   //REPLACE healthWriteAction.FieldMappingSettings = jsonSerializer.Serialize(health_FieldMappings);
 
-            return healthProcessTemplate;
-        }
+        //    //add configuration settings to write action
+        //    var configuration_settings = FixtureData.TestConfigurationSettings_healthdemo();
+        //    healthWriteAction.CrateStorage = JsonConvert.SerializeObject(configuration_settings);
+        //    uow.ActionRepository.Add(healthWriteAction);
+
+        //    return healthProcessTemplate;
+        //}
     }
 }
 

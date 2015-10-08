@@ -1,6 +1,7 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
+using System.Threading.Tasks;
 
 namespace pluginTwilio.Actions
 {
@@ -10,44 +11,42 @@ namespace pluginTwilio.Actions
         // Functions
         /**********************************************************************************/
 
-        public ActionDTO Configure(ActionDTO curActionDto)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return ProcessConfigurationRequest(curActionDto, actionDo => ConfigurationRequestType.Initial);
+            return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
         }
 
         /**********************************************************************************/
 
-        public void Activate(ActionDTO curActionDto)
-        {
-        }
-
-        /**********************************************************************************/
-
-        public void Deactivate(ActionDTO curActionDto)
+        public void Activate(ActionDTO curActionDTO)
         {
         }
 
         /**********************************************************************************/
 
-        protected override ActionDTO InitialConfigurationResponse(ActionDTO curActionDto)
+        public void Deactivate(ActionDTO curActionDTO)
         {
-            var textBlock = new TextBlockFieldDTO
+        }
+
+        /**********************************************************************************/
+
+        protected override async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
+        {
+            var textBlock = new ControlsDefinitionDTO(ControlsDefinitionDTO.TEXTBOX_FIELD)
             {
-                FieldLabel = "Message to send",
+                Label = "Message to send",
                 Value = "This Action doesn't require any configuration.",
-                Type = "textBlockField",
-                cssClass = "well well-lg"
             };
 
             var crateControls = PackControlsCrate(textBlock);
 
-            curActionDto.CrateStorage.CrateDTO.Add(crateControls);
-            return curActionDto;
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         /**********************************************************************************/
 
-        public void Execute(ActionDataPackageDTO curActionDataPackageDto)
+        public void Execute(ActionDataPackageDTO curActionDataPackageDTO)
         {
         }
 

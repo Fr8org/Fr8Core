@@ -17,7 +17,7 @@ namespace Daemons
 {
     public class OutboundEmail : Daemon<OutboundEmail>
     {
-        private string logString;
+        //private string logString;
 
         public OutboundEmail()
         {
@@ -86,17 +86,17 @@ namespace Daemons
                 var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
 
                 //A Mailer is essentially an envelope: it's an email plus a bunch of handler and template information so we know where to dispatch the email
-                MailerRepository mailerRepository = unitOfWork.MailerRepository;
+                EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 var numSent = 0;
 
 
                 //each queued message is processed
-                foreach ( MailerDO curMailerDO in mailerRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
+                foreach ( EnvelopeDO curMailerDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
                     LogEvent("Sending an email with subject '" + curMailerDO.Email.Subject + "'");
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var mailer = subUow.MailerRepository.GetByKey(curMailerDO.Id);
+                        var mailer = subUow.EnvelopeRepository.GetByKey(curMailerDO.Id);
                         try
                         {
                             // we have to query EnvelopeDO one more time to have it loaded in subUow

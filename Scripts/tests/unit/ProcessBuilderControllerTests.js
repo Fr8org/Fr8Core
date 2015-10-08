@@ -8,18 +8,17 @@ var dockyard;
         (function (controller) {
             //Setup aliases
             var pwd = dockyard.directives.paneWorkflowDesigner;
-            var psa = dockyard.directives.paneSelectAction;
             describe("ProcessBuilder Framework message processing", function () {
                 beforeEach(module("app"));
                 app.run(['$httpBackend', function ($httpBackend) {
                         //we need this because stateProvider loads on test startup and routes us to default state 
-                        //which is processes and has template URL with /AngularTemplate/ProcessTemplateList
-                        $httpBackend.expectGET('/AngularTemplate/ProcessTemplateList').respond(200, '<div></div>');
+                        //which is myaccount and has template URL with /AngularTemplate/MyAccountPage
+                        $httpBackend.expectGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
                     }
                 ]);
-                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _processTemplateServiceMock, _actionListServiceMock, _processBuilderServiceMock, _$q, _$http, _urlPrefix, _crateHelper, _localIdentityGenerator, _$timeout, _$filter;
+                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _processTemplateServiceMock, _actionListServiceMock, _processBuilderServiceMock, _$q, _$http, _urlPrefix, _crateHelper, _localIdentityGenerator, _$timeout, _$filter, _$modalMock;
                 beforeEach(function () {
-                    inject(function ($controller, $rootScope, $q, $http, $timeout, $filter) {
+                    inject(function ($controller, $rootScope, $q, $http, $timeout, $filter, $httpBackend) {
                         _actionServiceMock = new tests.utils.ActionServiceMock($q);
                         _processTemplateServiceMock = new tests.utils.ProcessTemplateServiceMock($q);
                         _actionListServiceMock = new tests.utils.ActionListServiceMock($q);
@@ -39,6 +38,7 @@ var dockyard;
                             }
                         };
                         _$http = $http;
+                        _$modalMock = new tests.utils.$ModalMock($q);
                         _urlPrefix = '/api';
                         //Create a mock for CriteriaServiceWrapper
                         _controller = $controller("ProcessBuilderController", {
@@ -58,7 +58,8 @@ var dockyard;
                             ActionListService: _actionListServiceMock,
                             CrateHelper: _crateHelper,
                             ActivityTemplateService: null,
-                            $filter: _$filter
+                            $filter: _$filter,
+                            $modal: _$modalMock
                         });
                     });
                     spyOn(_$scope, "$broadcast");
@@ -67,19 +68,26 @@ var dockyard;
                 var resolvePromises = function () {
                     _$scope.$apply();
                 };
-                it("When PaneWorkflowDesigner_TemplateSelected is emitted, PaneSelectAction_Hide should be received", function () {
-                    _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_TemplateSelected], null);
+                it("When PaneWorkflowDesigner_ActionAdding is emitted, select action modal should be opened", function () {
+                    var event = new pwd.ActionAddingEventArgs(1, 1);
+                    _$scope.immediateActionListVM = new dockyard.model.ActionListDTO();
+                    _$scope.immediateActionListVM.id = 1;
+                    _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
                     resolvePromises();
-                    expect(_$scope.$broadcast).toHaveBeenCalledWith(psa.MessageType[psa.MessageType.PaneSelectAction_Hide]);
+                    expect(_$modalMock.open).toHaveBeenCalled();
                 });
                 it("When PaneWorkflowDesigner_ActionAdding is emitted, PaneWorkflowDesigner_AddAction should be received", function () {
                     var event = new pwd.ActionAddingEventArgs(1, 1);
+                    _$scope.immediateActionListVM = new dockyard.model.ActionListDTO();
+                    _$scope.immediateActionListVM.id = 1;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
                     resolvePromises();
                     expect(_$scope.$broadcast).toHaveBeenCalledWith(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction], jasmine.any(Object));
                 });
-                it("When PaneWorkflowDesigner_ActionAdding is emitted, newly created ActionDesignDTO should have correct values", function () {
-                    var event = new pwd.ActionAddingEventArgs(1, 1);
+                it("When PaneWorkflowDesigner_ActionAdding is emitted, newly created ActionDTO should have correct values", function () {
+                    var event = new pwd.ActionAddingEventArgs(1, 9);
+                    _$scope.immediateActionListVM = new dockyard.model.ActionListDTO();
+                    _$scope.immediateActionListVM.id = 9;
                     _$scope.$emit(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_ActionAdding], event);
                     resolvePromises();
                     var createdActionDesignDTO = _$scope.current.action;

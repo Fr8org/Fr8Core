@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Data.Wrappers;
 
 
 
@@ -19,7 +18,6 @@ using Data.Wrappers;
 //
 // NOTE 1: The DocuSign REST API accepts both JSON and XML formatted http requests.  These C# API walkthroughs
 // 	   demonstrate the use of XML format, whereas the other walkthroughs show examples in JSON format.
-using System; 
 using System.IO; 
 using System.Net;
 using System.Xml;
@@ -38,7 +36,7 @@ namespace DocusignTutorial.Controllers
             string password = appSettings["password"] ?? "Not Found"; 			 
             string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";			 
 			
-            string envelopeId = "***";			// valid envelopeId of an envelope in your account
+            //string envelopeId = "***";			// valid envelopeId of an envelope in your account
 			//---------------------------------------------------------------------------------------------------
 			
 			// additional variable declarations

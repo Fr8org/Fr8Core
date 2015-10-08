@@ -10,7 +10,6 @@ using Data.Interfaces;
 using Data.States;
 using Core.Managers;
 using Core.Services;
-using Data.Wrappers;
 using Web.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -24,12 +23,12 @@ namespace Web.Controllers
     /// </summary>
     public class KwasantEmailService : IIdentityMessageService
     {
-        public async Task SendAsync(IdentityMessage message)
+        public Task SendAsync(IdentityMessage message)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 String senderMailAddress =
-                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+                    ObjectFactory.GetInstance<IConfigRepository>().Get("EmailAddress_GeneralInfo");
 
                 EmailDO emailDO = new EmailDO();
                 emailDO.AddEmailRecipient(EmailParticipantType.To,
@@ -41,6 +40,7 @@ namespace Web.Controllers
 
                 //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
+                return Task.FromResult(0);
             }
         }
     }
@@ -345,4 +345,5 @@ Please register first.");
             return View(viewModel);
         }
     }
+
 }

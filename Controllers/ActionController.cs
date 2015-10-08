@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -42,46 +43,86 @@ namespace Web.Controllers
         [Route("configuration")]
         [Route("configure")]
         //[ResponseType(typeof(CrateStorageDTO))]
-        public IHttpActionResult Configure(ActionDTO curActionDesignDTO)
+        public async Task<IHttpActionResult> Configure(ActionDTO curActionDesignDTO)
         {
             curActionDesignDTO.CurrentView = null;
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDesignDTO);
-            ActionDTO actionDTO = _action.Configure(curActionDO);
-
+            ActionDTO actionDTO = await _action.Configure(curActionDO);
             return Ok(actionDTO);
         }
 
 
-        [Route("configure")]
-        [Route("process")]
-        [HttpGet]
-        public string HandleDockyardRequest(ActionDTO actionDTO)
+        [HttpPost]
+        [Route("authenticate")]
+        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
-            // Extract from current request URL.
-            var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
+            DockyardAccountDO account;
+            PluginDO plugin;
 
-            //Figure out which request is being made
-            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-                curActionDO.ActivityTemplate.Name,
-                curActionDO.ActivityTemplate.Version);
-            var calledType = Type.GetType(curAssemblyName);
-            var curMethodInfo = calledType
-                .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
-            var curObject = Activator.CreateInstance(calledType);
-            ActionDTO curActionDTO;
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-            }
-            catch 
-            {
-                throw new ApplicationException("PluginRequestError");
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(credentials.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+
+                var accountId = User.Identity.GetUserId();
+                account = uow.UserRepository.FindOne(x => x.Id == accountId);
+                
+                if (account == null)
+                {
+                    throw new ApplicationException("User was not found.");
+                }
             }
 
-            curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            return JsonConvert.SerializeObject(curActionDO);
+            await _action.Authenticate(
+                account,
+                plugin,
+                credentials.Username,
+                credentials.Password);
+
+            return Ok();
         }
+
+
+        // TODO: to be removed.
+        // commented out by yakov.gnusin as of DO-1064
+        // [Route("configure")]
+        // [Route("process")]
+        // [HttpGet]
+        // public string HandleDockyardRequest(ActionDTO actionDTO)
+        // {
+        //     // Extract from current request URL.
+        //     var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
+        //     var curActionDO = Mapper.Map<ActionDO>(actionDTO);
+        // 
+        //     //Figure out which request is being made
+        //     var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
+        //         curActionDO.ActivityTemplate.Name,
+        //         curActionDO.ActivityTemplate.Version);
+        //     var calledType = Type.GetType(curAssemblyName);
+        //     var curMethodInfo = calledType
+        //         .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
+        //     var curObject = Activator.CreateInstance(calledType);
+        //     ActionDTO curActionDTO;
+        //     try
+        //     {
+        //         curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
+        //     }
+        //     catch 
+        //     {
+        //         throw new ApplicationException("PluginRequestError");
+        //     }
+        // 
+        //     curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+        //     return JsonConvert.SerializeObject(curActionDO);
+        // }
 
         /// <summary>
         /// GET : Returns an action with the specified id
@@ -90,7 +131,10 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDTO>(_action.GetById(id));
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return Mapper.Map<ActionDTO>(_action.GetById(uow, id));
+            }
         }
 
         /// <summary>
@@ -111,14 +155,20 @@ namespace Web.Controllers
         public IHttpActionResult Save(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var resultActionDO = _action.SaveOrUpdateAction(submittedActionDO);
-            if (curActionDTO.IsTempId)
-            {
-                _actionList.AddAction(resultActionDO, "last");
-            }
 
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-            return Ok(resultActionDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+               
+                if (curActionDTO.IsTempId)
+                {
+                    _actionList.AddAction(resultActionDO, "last");
+                }
+
+                var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+                return Ok(resultActionDTO);
+            }
         }    
     }
 }

@@ -91,16 +91,16 @@ module dockyard.controllers {
             radioDemoField.fieldLabel = 'Demo Label';
             radioDemoField.groupName = 'Demo Group Name';
             radioDemoField.type = 'radioButtonGroup';
-            var demoRadio1 = new model.RadioField();
+            var demoRadio1 = new model.RadioButtonOptionField();
             demoRadio1.value = "Selection 1";
             demoRadio1.selected = false;
-            var demoRadio2 = new model.RadioField();
+            var demoRadio2 = new model.RadioButtonOptionField();
             demoRadio2.value = "Selection 2";
             demoRadio2.selected = false;
-            var demoRadio3 = new model.RadioField();
+            var demoRadio3 = new model.RadioButtonOptionField();
             demoRadio3.value = "Selection 3";
             demoRadio3.selected = true;
-            var radios = new Array<model.RadioField>();
+            var radios = new Array<model.RadioButtonOptionField>();
             radios.push(demoRadio1);
             radios.push(demoRadio2);
             radios.push(demoRadio3);
@@ -199,7 +199,7 @@ module dockyard.controllers {
                     id: 1,
                     isTempId: false,
                     actionListId: 0,
-                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", ""),
+                    activityTemplate: new model.ActivityTemplate(1, "Write to SQL", "1", "", ""),
                     activityTemplateId: 1
                 };
 

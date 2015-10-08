@@ -5,7 +5,8 @@
 */
 module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
-        getFull: (id: Object) => interfaces.IProcessTemplateVM
+        getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
+        getFull: (id: Object) => interfaces.IProcessTemplateVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -51,9 +52,16 @@ module dockyard.services {
     /*
         ProcessTemplateDTO CRUD service.
     */
+
+
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
-        <IProcessTemplateService> $resource('/api/processTemplate/:id', { id: '@id' },
+        <IProcessTemplateService>$resource('/api/processTemplate/:id', { id: '@id' },
             {
+                'getbystatus': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/api/processTemplate/getactive'
+                },
                 'getFull': {
                     method: 'GET',
                     isArray: false,
@@ -69,21 +77,21 @@ module dockyard.services {
         DocuSignTemplateDTO CRUD service.
     */
     app.factory('DocuSignTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTemplateService =>
-        <IDocuSignTemplateService> $resource('/api/docusigntemplate')
+        <IDocuSignTemplateService>$resource('/api/docusigntemplate')
     ]);
 
     /* 
         DocuSignExternalEventDTO CRUD service.
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
-        <IDocuSignTriggerService> $resource('/api/processtemplate/triggersettings')
+        <IDocuSignTriggerService>$resource('/api/processtemplate/triggersettings')
     ]);
 
     /* 
         ActionDTO CRUD service.
     */
     app.factory('ActionService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService> $resource('/actions/:id',
+        <IActionService>$resource('/actions/:id',
             {
                 id: '@id'
             },
@@ -129,7 +137,7 @@ module dockyard.services {
         that's why its name starts with underscores. 
     */
     app.factory('__CriteriaService', ['$resource', ($resource: ng.resource.IResourceService): __ICriteriaService =>
-        <__ICriteriaService> $resource('/api/criteria', null,
+        <__ICriteriaService>$resource('/api/criteria', null,
             {
                 'update': {
                     method: 'PUT'
@@ -148,7 +156,7 @@ module dockyard.services {
         ActionListDTO CRUD service.
     */
     app.factory('ActionListService', ['$resource', ($resource: ng.resource.IResourceService): IActionListService =>
-        <IActionListService> $resource('/api/actionList', null,
+        <IActionListService>$resource('/api/actionList', null,
             {
                 'byProcessNodeTemplate': {
                     method: 'GET',
@@ -163,7 +171,7 @@ module dockyard.services {
         that's why its name starts with underscores. 
     */
     app.factory('__ProcessNodeTemplateService', ['$resource', 'urlPrefix', ($resource: ng.resource.IResourceService): __IProcessNodeTemplateService =>
-        <__IProcessNodeTemplateService> $resource('/api/processnodetemplate', null,
+        <__IProcessNodeTemplateService>$resource('/api/processnodetemplate', null,
             {
                 'add': {
                     method: 'POST'
@@ -175,7 +183,7 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService> $resource('/api/activityTemplates/:id', { id: '@id' })
+        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' })
     ]);
 
     /*
@@ -187,7 +195,7 @@ module dockyard.services {
             private CriteriaServiceWrapper: ICriteriaServiceWrapper,
             private ActionService: IActionService,
             private crateHelper: CrateHelper
-            ) { }
+        ) { }
 
         /* 
             The function saves current entities if they are new or changed (dirty).
@@ -197,67 +205,66 @@ module dockyard.services {
             if they were or were not changed. 
         */
         public saveCurrent(currentState: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState> {
-
             var deferred = this.$q.defer<model.ProcessBuilderState>(),
                 newState = new model.ProcessBuilderState()
 
             // TODO: bypass save for unchanged entities
               
-            // Save processNodeTemplate if not null
-            if (currentState.processNodeTemplate) {
-                this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
-                    .then((result: interfaces.IProcessNodeTemplateVM) => {
-                        //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
-                        newState.processNodeTemplate = result;
+                // Save processNodeTemplate if not null
+                if (currentState.processNodeTemplate) {
+                    this.CriteriaServiceWrapper.addOrUpdate(currentState.processNodeTemplate).promise
+                        .then((result: interfaces.IProcessNodeTemplateVM) => {
+                            //new model.CriteriaDTO(result.criteria.id, false, result.criteria.id, model.CriteriaExecutionType.NoSet);
+                            newState.processNodeTemplate = result;
 
-                        this.crateHelper.mergeControlListCrate(
-                            currentState.action.configurationControls,
-                            currentState.action.crateStorage
-                        );
+                            this.crateHelper.mergeControlListCrate(
+                                currentState.action.configurationControls,
+                                currentState.action.crateStorage
+                            );
 
-                        // If an Action is selected, save it
-                        if (currentState.action) {
-                            return this.ActionService.save({ id: currentState.action.id },
-                                currentState.action, null, null);
-                        }
-                        else {
+                            // If an Action is selected, save it
+                            if (currentState.action) {
+                                return this.ActionService.save({ id: currentState.action.id },
+                                    currentState.action, null, null);
+                            }
+                            else {
+                                return deferred.resolve(newState);
+                            }
+                        })
+                        .then((result: interfaces.IActionVM) => {
+                            newState.action = result;
                             return deferred.resolve(newState);
-                        }
-                    })
-                    .then((result: interfaces.IActionVM) => {
-                        newState.action = result;
-                        return deferred.resolve(newState);
-                    })
-                    .catch((reason: any) => {
-                        return deferred.reject(reason);
-                    });
-            }
+                        })
+                        .catch((reason: any) => {
+                            return deferred.reject(reason);
+                        });
+                }
 
-            //Save Action only
-            else if (currentState.action) {
-                this.crateHelper.mergeControlListCrate(
-                    currentState.action.configurationControls,
-                    currentState.action.crateStorage
-                );
-                var promise = this.ActionService.save(
-                    { id: currentState.action.id },
-                    currentState.action,
-                    null,
-                    null).$promise;
-                promise
-                    .then((result: interfaces.IActionVM) => {
-                        newState.action = result;
-                        return deferred.resolve(newState);
-                    })
-                    .catch((reason: any) => {
-                        return deferred.reject(reason);
-                    });
-            }
-            else {
-                //Nothing to save
-                deferred.resolve(newState);
-            }
+                //Save Action only
+                else if (currentState.action) {
+                    this.crateHelper.mergeControlListCrate(
+                        currentState.action.configurationControls,
+                        currentState.action.crateStorage
+                    );
 
+                    var promise = this.ActionService.save(
+                        { id: currentState.action.id },
+                        currentState.action,
+                        null,
+                        null).$promise;
+                    promise
+                        .then((result: interfaces.IActionVM) => {
+                            newState.action = result;
+                            return deferred.resolve(newState);
+                        })
+                        .catch((reason: any) => {
+                            return deferred.reject(reason);
+                        });
+                }
+                else {
+                    //Nothing to save
+                    deferred.resolve(newState);
+                }
             return deferred.promise;
         }
     }
@@ -270,8 +277,8 @@ module dockyard.services {
         CriteriaServiceWrapper: ICriteriaServiceWrapper,
         ActionService: IActionService,
         crateHelper: CrateHelper) => {
-            return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
-        }
+        return new ProcessBuilderService($q, CriteriaServiceWrapper, ActionService, crateHelper);
+    }
     ]);
 
     /*
@@ -354,7 +361,7 @@ module dockyard.services {
                         false,
                         getPntDeferred.id,
                         getCriteriaDeferred.executionType
-                        );
+                    );
 
                     angular.forEach(getCriteriaDeferred.conditions, function (it: model.Condition) {
                         criteria.conditions.push(it);
@@ -415,5 +422,5 @@ module dockyard.services {
     app.factory('CriteriaServiceWrapper', ['__CriteriaService', '__ProcessNodeTemplateService', '$q',
         (CriteriaService, ProcessNodeTemplateService, $q) => {
             return new CriteriaServiceWrapper(CriteriaService, ProcessNodeTemplateService, $q)
-    }]);
+        }]);
 }

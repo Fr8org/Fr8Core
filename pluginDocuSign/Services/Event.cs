@@ -4,7 +4,6 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using Core.Interfaces;
 using Core.Managers;
 using Core.Utilities;
 using Data.Entities;
@@ -14,10 +13,11 @@ using Data.States;
 using Newtonsoft.Json;
 using pluginDocuSign.Infrastructure;
 using StructureMap;
+using Core.Interfaces;
 
 namespace pluginDocuSign.Services
 {
-    public class Event : IEvent
+	public class Event : pluginDocuSign.Interfaces.IEvent
     {
         private readonly EventReporter _alertReporter;
         private readonly ICrate _crate;

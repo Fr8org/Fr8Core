@@ -13,13 +13,16 @@ using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
 using StructureMap;
 using MT_Field = Data.Entities.MT_Field;
 using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<DockyardDbContext>
+    public sealed partial class MigrationConfiguration : DbMigrationsConfiguration<DockyardDbContext>
     {
         public MigrationConfiguration()
         {
@@ -63,9 +66,12 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow); 
-            AddPlugins(uow);                     
+            // commented out by yakov.gnusin as of DO-1064
+            // AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            AddAuthorizationTokens(uow);
+            // commented out by yakov.gnusin as of DO-1064
+            // AddAuthorizationTokens(uow);
+            AddProcessDOForTestingApi(uow);
         }
 
         //Method to let us seed into memory as well
@@ -75,6 +81,79 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
+
+        private static void AddProcessTemplate(IUnitOfWork uow)
+        {
+        }
+
+        private static CrateDTO GenerateInitialEventCrate()
+        {
+            var docusignEventPayload = new EventReportMS
+            {
+                EventNames = "DocuSign Envelope Sent",
+                ExternalAccountId = "docusign_developer@dockyard.company",
+            };
+
+            var payloadData = new CrateDTO
+            {
+                Id = "eec6e3b9-63b5-4f55-af49-b0d40dc8d5e2",
+                Label = "Payload Data",
+                ManifestId = 0,
+                CreateTime = DateTime.Now,
+                ManifestType = string.Empty,
+                Contents = JsonConvert.SerializeObject(new object[]{
+                new 
+                {
+                    Key="EnvelopeId",
+                    Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
+                },
+                new 
+                {
+                    Key="ExternalEventType",
+                    Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
+                },
+                new 
+                {
+                    Key="RecipientId",
+                    Value="279a1173-04cc-4902-8039-68b1992639e9"
+                }})
+            };
+
+            docusignEventPayload.EventPayload.Add(payloadData);
+
+            var eventPayload = new CrateDTO
+            {
+                Id = "eec6e3b9-63b5-4f55-af49-b0d40dc8d5e2",
+                Label = "Standard Event Report",
+                ManifestId = 7,
+                CreateTime = DateTime.Now,
+                ManifestType = "Standard Event Report",
+                Contents = JsonConvert.SerializeObject(docusignEventPayload)
+            };
+
+            return eventPayload;
+        }
+
+        private static void AddProcessDOForTestingApi(IUnitOfWork uow)
+        {
+            new ProcessTemplateBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new ProcessTemplateBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+                .AddCrate(GenerateInitialEventCrate())
+                .AddCrate(new CrateDTO
+                {
+                    Id = "671a5b28-1e80-4fbd-ac62-2f308893192f",
+                    Label = "DocuSign Envelope Payload Data",
+                    ManifestId = 5,
+                    CreateTime = DateTime.Now,
+                    ManifestType = "Standard Payload Data",
+                    Contents = JsonConvert.SerializeObject(new []
+                    {
+                        new {Key = "EnvelopeId", Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"}
+                    })
+                }).Store(uow);
+
+            uow.SaveChanges();
+        }
 
 
         private static void AddAuthorizationTokens(IUnitOfWork uow)
@@ -287,7 +366,7 @@ namespace Data.Migrations
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
-            
+
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);

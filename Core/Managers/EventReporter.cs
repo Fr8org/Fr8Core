@@ -14,6 +14,7 @@ using StructureMap;
 using Utilities;
 using Utilities.Logging;
 using Data.Interfaces.DataTransferObjects;
+using System.Linq;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
 
@@ -56,7 +57,9 @@ namespace Core.Managers
             EventManager.EventActionDispatched += LogEventActionDispatched;
             EventManager.PluginEventReported += LogPluginEvent;
             EventManager.PluginActionActivated  += PluginActionActivated;
+            EventManager.EventProcessRequestReceived += EventManagerOnEventProcessRequestReceived;
         }
+
 
         public void UnsubscribeFromAlerts()
         {
@@ -189,6 +192,22 @@ namespace Core.Managers
                 uow.SaveChanges();
             }
         }
+
+        private void EventManagerOnEventProcessRequestReceived(ProcessDO process)
+        {
+            var fact = new FactDO
+            {
+                CustomerId = process.DockyardAccountId,
+                Data = process.Id.ToStr(),
+                ObjectId = process.Id.ToStr(),
+                PrimaryCategory = "Process Access",
+                SecondaryCategory = "Process",
+                Activity = "Requested"
+            };
+
+            SaveAndLogFact(fact);
+        }
+
 
         //private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
         //{
@@ -695,14 +714,13 @@ namespace Core.Managers
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
+                processInExecution = uow.ProcessRepository.GetQuery().SingleOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
             }
 
             var fact = new FactDO
             {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
-                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
+                CustomerId = (processInExecution != null) ? processInExecution.DockyardAccountId : "unknown",
+                Data = (processInExecution != null) ? processInExecution.Id.ToStr() : "unknown",
                 ObjectId = curAction.Id.ToStr(),
                 PrimaryCategory = "Process Execution",
                 SecondaryCategory = "Action",

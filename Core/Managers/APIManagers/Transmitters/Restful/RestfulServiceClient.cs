@@ -57,8 +57,8 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
 
             try
             {
-                response = _innerClient.SendAsync(request).Result;
-                responseContent = response.Content.ReadAsStringAsync().Result;
+                response = await _innerClient.SendAsync(request);
+                responseContent = await response.Content.ReadAsStringAsync();
                 response.EnsureSuccessStatusCode();
             }
             catch (HttpRequestException ex)
