@@ -79,8 +79,8 @@ namespace pluginSlack.Services
 
                     result.Add(new FieldDTO()
                     {
-                        Key = channelId,
-                        Value = channelName
+                        Key = channelName,
+                        Value = channelId
                     });
                 }
 

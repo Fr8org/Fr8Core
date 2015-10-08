@@ -37,11 +37,11 @@ namespace Data.Interfaces.DataTransferObjects
         public string GroupName { get; set; }
 
         [JsonProperty("radios")]
-        public List<RadioButton> Radios { get; set; }
+        public List<RadioButtonField> Radios { get; set; }
 
 		 public RadioButtonGroupFieldDefinitionDTO()
 		  {
-			  Radios = new List<RadioButton>();
+			  Radios = new List<RadioButtonField>();
 			  Type = "radioButtonGroup";
 		  }
     }
@@ -144,15 +144,18 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
-    public class RadioButton : ISupportsNestedFields
+    public class RadioButtonField : ISupportsNestedFields
     {
-        public RadioButton()
+        public RadioButtonField()
         {
             Fields = new List<ControlsDefinitionDTO>();
         }
 
         [JsonProperty("selected")]
         public bool Selected { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
         [JsonProperty("value")]
         public string Value { get; set; }
