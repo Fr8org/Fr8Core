@@ -11,7 +11,7 @@ module dockyard.directives.radioButtonGroup {
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class RadioButtonGroup implements ng.IDirective {
         public link: (scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public template = '<div ng-repeat="radio in field.radios"><radio-button-option-field group-name="{{field.groupName}}" changeSelection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option-field></div>';
+        public template = '<div ng-repeat="radio in field.radios"><radio-button-option-field group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option-field></div>';
         public controller: ($scope: IRadioButtonGroupScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
@@ -43,7 +43,6 @@ module dockyard.directives.radioButtonGroup {
         }
 
         private changeSelection(radio: model.RadioButtonOptionField) {
-            console.log('change');
             var radios = this._$scope.field.radios
             for (var i = 0; i < radios.length; i++) {
                 if (radios[i] === radio) {
@@ -70,7 +69,6 @@ module dockyard.directives.radioButtonGroup {
 
     export interface IRadioButtonOptionFieldScope extends ng.IScope {
         field: model.RadioButtonOptionField;
-        optionClick: (radio: model.RadioButtonOptionField) => void;
         groupName: string,
         changeSelection: (radio: model.RadioButtonOptionField) => void;
     }
@@ -97,12 +95,13 @@ module dockyard.directives.radioButtonGroup {
                 element: ng.IAugmentedJQuery,
                 attrs: ng.IAttributes) => {
 
-                scope.optionClick = <(radio: model.RadioButtonOptionField) => void>angular.bind(this, this.optionClick);
-
                 if (angular.isArray(scope.field.fields) || scope.field.fields.length > 0) {
                     element.find('.nested-fields').append('<div ng-repeat="field in field.fields"><configuration-field current-action="currentAction" field="field" /></div>');
                 }
-                $compile(element.contents())(scope)
+
+                $compile('<div ng-repeat="field in field.fields"><configuration-field current-action="currentAction" field="field" /></div>')(scope, function (cloned, scope) {
+                    element.find('.nested-fields').append(cloned);
+                });
             };
 
             RadioButtonOptionField.prototype.controller = (
@@ -113,13 +112,6 @@ module dockyard.directives.radioButtonGroup {
                 this._$scope = $scope;
 
             };
-        }
-
-        private optionClick(option: model.RadioButtonOptionField) {
-            debugger;
-            if (this._$scope.changeSelection)
-                this._$scope.changeSelection(option);
-            console.log('clicked');
         }
 
         //The factory function returns Directive object as per Angular requirements
