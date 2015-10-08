@@ -157,7 +157,7 @@ app.constant('spinnerHttpInterceptor', {
             delete (config.params.suppressSpinner);
         }
         else{
-            //Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+            Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
         }
         return config;
     },
