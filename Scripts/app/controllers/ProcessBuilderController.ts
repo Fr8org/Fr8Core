@@ -79,7 +79,8 @@ module dockyard.controllers {
             this._scope.current = new model.ProcessBuilderState();
 
             this.setupMessageProcessing();
-            this.loadProcessTemplate();
+
+            $timeout(() => this.loadProcessTemplate(), 500, true);
             var self = this;
         }
 
@@ -123,8 +124,8 @@ module dockyard.controllers {
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
                 self._scope.current.processTemplate = curProcessTemplate;
-                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists
-                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0]
+                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists;
+                self._scope.immediateActionListVM = self.$filter('filter')(actionLists, { actionListType: 1 }, true)[0];
 
                 self.renderProcessTemplate(curProcessTemplate);
             });
@@ -139,7 +140,7 @@ module dockyard.controllers {
                     for (var curAction of curActionList.actions) {
                         this._scope.$broadcast(
                             pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                            new pwd.AddActionEventArgs(curAction.processNodeTemplateId, angular.extend({}, curAction), curActionList.actionListType) //TODO: set real action type
+                            new pwd.AddActionEventArgs(curAction.processNodeTemplateId, angular.extend({}, curAction), curActionList.actionListType, true) //TODO: set real action type
                         );
         }
                 }
@@ -233,7 +234,13 @@ module dockyard.controllers {
             // If a new action has just been added, it will be saved. 
             var promise = this.ProcessBuilderService.saveCurrent(this._scope.current);
 
+            // This will remove watch on currentAction to prevent Save during 
+            // inconsistent state of an Action which will lead to configuration data loss.
+            this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
+
             promise.then((result: model.ProcessBuilderState) => {
+
+
                 //Assume that Criteria is persisted so we always have a permanent id)
                 this._scope.current.criteria = new model.CriteriaDTO(
                     eventArgs.processNodeTemplateId,
@@ -304,7 +311,6 @@ module dockyard.controllers {
                     this._scope.current.action.id,
                     (this._scope.current.action.id > 0) ? false : true,
                     this._scope.current.action.actionListId);
-                this._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Hide]);
             }
             else {
 
