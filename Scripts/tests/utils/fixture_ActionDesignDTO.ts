@@ -32,6 +32,7 @@ module dockyard.tests.utils.fixtures {
                     "type": "checkboxField",
                     "name": "log_transactions",
                     "selected": false,
+                    "value": "",
                     "fieldLabel": "Log All Transactions?",
                     "events": []
                 },
@@ -39,6 +40,7 @@ module dockyard.tests.utils.fixtures {
                     "type": "checkboxField",
                     "name": "log_transactions1",
                     "selected": false,
+                    "value": "",
                     "fieldLabel": "Log Some Transactions?",
                     "events": []
                 },
@@ -46,6 +48,7 @@ module dockyard.tests.utils.fixtures {
                     "type": "checkboxField",
                     "name": "log_transactions2",
                     "selected": false,
+                    "value": "",
                     "fieldLabel": "Log No Transactions?",
                     "events": []
                 },
@@ -53,6 +56,7 @@ module dockyard.tests.utils.fixtures {
                     "type": "checkboxField",
                     "name": "log_transactions3",
                     "selected": false,
+                    "value": "",
                     "fieldLabel": "Log Failed Transactions?",
                     "events": []
                 }

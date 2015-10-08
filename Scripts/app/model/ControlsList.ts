@@ -3,11 +3,16 @@
         fields: Array<ConfigurationField>
     }
 
+    export interface ISupportsNestedFields {
+        fields: Array<ConfigurationField>;
+    }
+
     export class ConfigurationField {
         type: string;
         fieldLabel: string;
         name: string;
         events: Array<FieldEvent>;
+        value: string;
     }
 
     export class FieldEvent {
@@ -20,22 +25,21 @@
     }
 
     export class TextField extends ConfigurationField {
-        value: string;
         required: boolean;        
     }
 
     export class FileField extends ConfigurationField {
-        value: string;
+
     }
 
-    export class RadioField extends ConfigurationField {
-        value: string;
+    export class RadioButtonOptionField extends ConfigurationField implements ISupportsNestedFields {
         selected: boolean;
+        fields: Array<ConfigurationField>;
     }
 
     export class RadioButtonGroupField extends ConfigurationField {
         groupName: string;
-        radios: Array<RadioField>;
+        radios: Array<RadioButtonOptionField>;
     }
 
     export class FieldDTO {
@@ -54,7 +58,6 @@
 
     export class DropDownListBoxField extends ConfigurationField {
         listItems: Array<DropDownListItem>;
-        value: string;
         source: FieldSource;
     }
 

@@ -155,8 +155,9 @@ app.constant('spinnerHttpInterceptor', {
             // We don't want this parameter to be sent to backend so remove it if found.
             delete (config.params.suppressSpinner);
         }
-        else
+        else{
             Metronic.startPageLoading(<Metronic.PageLoadingOptions>{ animate: true });
+        }
         return config;
     },
     response: function (config: ng.IRequestConfig) {
