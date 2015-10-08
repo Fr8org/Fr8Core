@@ -259,7 +259,6 @@
     <Compile Include="Services\ProcessCreateTests.cs" />
     <Compile Include="Services\ProcessGetInitialActivityTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
-    <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>

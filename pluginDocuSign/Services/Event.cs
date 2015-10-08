@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using Core.Managers;
-using Core.Utilities;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
