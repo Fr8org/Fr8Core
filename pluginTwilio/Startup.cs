@@ -15,7 +15,7 @@ namespace pluginTwilio
             Task.Run(() =>
             {
                 BasePluginController curController = new BasePluginController();
-                curController.AfterStartup(Settings.PluginName);
+                curController.AfterStartup("pluginTwilio");
             });
         }
     }

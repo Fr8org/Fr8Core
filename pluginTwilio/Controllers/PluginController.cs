@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Web.Http;
 using Data.Entities;
 using Data.States;
-
+using System.Web.Http.Description;
 namespace pluginTwilio.Controllers
 {    
     [RoutePrefix("plugins")]
@@ -10,11 +10,12 @@ namespace pluginTwilio.Controllers
     {
         [HttpGet]
         [Route("discover")]
-        public IHttpActionResult Get()
+        [ResponseType(typeof(List<ActivityTemplateDO>))]
+        public IHttpActionResult DiscoverPlugins()
         {
             var plugin = new PluginDO()
             {
-                Name = Settings.PluginName,
+                Name = "pluginTwilio",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = "localhost:30699",
                 Version = "1"
@@ -33,7 +34,7 @@ namespace pluginTwilio.Controllers
                 sendViaTwilioTemplate
             };
 
-            return Ok(actionList);
+            return Json(actionList);   
         }
     }
 }

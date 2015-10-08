@@ -31,8 +31,6 @@ namespace pluginTwilio
                 // Web API routes
                 config.MapHttpAttributeRoutes();
 
-                Settings.ConfigureRoutes(config);
-
                 config.Services.Replace(typeof(IHttpControllerTypeResolver), new TwilioControllerTypeResolver());
 
                 app.UseWebApi(config);

@@ -1,40 +1,42 @@
 ﻿using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
+using System.Threading.Tasks;
 
 namespace pluginTwilio.Controllers
 {    
     [RoutePrefix("actions")]
     public class ActionController : ApiController
     {
+        private const string curPlugin = "pluginTwilio";
         private readonly BasePluginController _basePluginController = new BasePluginController();
 
         [HttpPost]
         [Route("configure")]
-        public ActionDTO Configure(ActionDTO curActionDto)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(Settings.PluginName, "Configure", curActionDto);
+            return await (Task<ActionDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Configure", curActionDTO);
         }
 
         [HttpPost]
         [Route("activate")]
-        public ActionDTO Activate(ActionDTO curActionDto)
+        public ActionDTO Activate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(Settings.PluginName, "Activate", curActionDto);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Activate", curActionDTO);
         }
 
         [HttpPost]
         [Route("deactivate")]
-        public ActionDTO Deactivate(ActionDTO curActionDto)
+        public ActionDTO Deactivate(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(Settings.PluginName, "Deactivate", curActionDto);
+            return (ActionDTO)_basePluginController.HandleDockyardRequest(curPlugin, "Deactivate", curActionDTO);
         }
         
         [HttpPost]
         [Route("execute")]
-        public ActionDTO Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
         {
-            return (ActionDTO)_basePluginController.HandleDockyardRequest(Settings.PluginName, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
         }
     }
 }

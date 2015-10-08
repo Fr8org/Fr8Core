@@ -8,7 +8,10 @@ namespace pluginTwilio
         public static void Register(HttpConfiguration config)
         {
             BasePluginWebApiConfig.Register(config);
-            Settings.ConfigureRoutes(config);
+            config.Routes.MapHttpRoute(
+               name: "PluginTwilio",
+               routeTemplate: "plugin_twilio/{controller}/{id}"
+           );
         }
     }
 }

@@ -206,7 +206,6 @@
     <Compile Include="Services\TwilioService.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Settings.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="PluginTwilioMapBootstrapper.cs" />
   </ItemGroup>
