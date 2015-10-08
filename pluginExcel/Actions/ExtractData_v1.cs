@@ -21,6 +21,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Configuration;
 using pluginExcel.Infrastructure;
+using Core.Exceptions;
 
 namespace pluginExcel.Actions
 {
@@ -42,11 +43,9 @@ namespace pluginExcel.Actions
             if (!tableDataMS.FirstRowHeaders)
                 throw new Exception("No headers found in the Standard Table Data Manifest.");
 
-            // Use Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
-            var payloadDataMS = TransformStandardTableDataToStandardPayloadData(tableDataMS);
-
+            // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
-            var payloadDataCrate = _crate.Create("Excel Data", JsonConvert.SerializeObject(payloadDataMS), CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+            var payloadDataCrate = _crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
             _action.AddCrate(curActionDO, payloadDataCrate);
 
             return Mapper.Map<ActionDTO>(curActionDO);
@@ -87,33 +86,6 @@ namespace pluginExcel.Actions
             return tableDataMS;
         }
 
-        private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(StandardTableDataMS tableDataMS)
-        {
-            var payloadDataMS = _crate.CreatePayloadDataCrate("ExcelTableRow");
-
-            // Rows containing column names
-            var columnHeadersRowDTO = tableDataMS.Table[0];
-
-            for (int i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
-            {
-                var tableRowDTO = tableDataMS.Table[i];
-                var fields = new List<FieldDTO>();
-                for (int j = 0; j < tableRowDTO.Row.Count; ++j)
-                {
-                    var tableCellDTO = tableRowDTO.Row[j];
-                    var listFieldDTO = new FieldDTO()
-                    {
-                        Key = columnHeadersRowDTO.Row[j].Cell.Value,
-                        Value = tableCellDTO.Cell.Value,
-                    };
-                    fields.Add(listFieldDTO);
-                }
-                payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
-            }
-
-            return payloadDataMS;
-        }
-
         //private async Task<FileDO> ProcessFile(string dockyardStorageUrl, string fileName)
         //{
         //    using (var client = new HttpClient())
@@ -138,7 +110,7 @@ namespace pluginExcel.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private CrateDTO CreateConfigurationControls()
+        private CrateDTO CreateConfigurationControlsCrate()
         {
             var fieldFilterPane = new ControlsDefinitionDTO("filePicker")
             {
@@ -167,13 +139,11 @@ namespace pluginExcel.Actions
                 {
                     ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-                    var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream)).Fields.ToArray();
-
-                    //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Select Excel File", curUpstreamFields);
+                    //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+                    CrateDTO upstreamFieldsCrate = await MergeUpstreamFields(curActionDO.Id, "Select Excel File");
 
                     //build a controls crate to render the pane
-                    CrateDTO configurationControlsCrate = CreateConfigurationControls();
+                    CrateDTO configurationControlsCrate = CreateConfigurationControlsCrate();
 
                     var crateStrorageDTO = AssembleCrateStorage(upstreamFieldsCrate, configurationControlsCrate);
                     curActionDTO.CrateStorage = crateStrorageDTO;
@@ -192,31 +162,7 @@ namespace pluginExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
-
-            if (curCrates.CrateDTO.Count == 0)
-                return ConfigurationRequestType.Initial;
-
-            //load configuration crates of manifest type Standard Control Crates
-            //look for a text field name select_file with a value
-            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-                curActionDTO.CrateStorage);
-            var filePaths = _crate.GetElementByKey(controlsCrates, key: "select_file", keyFieldName: "name")
-                .Select(e => (string)e["value"])
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-
-            //if there are more than 2 return file names, something is wrong
-            //if there are none or if there's one but it's value is "" the return initial else return followup
-            var objCount = filePaths.Length;
-            if (objCount > 1)
-                throw new ArgumentException("didn't expect to see more than one file names with the name select_file on this Action", "curActionDTO");
-            if (objCount == 0)
-                return ConfigurationRequestType.Initial;
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
+            return ReturnInitialUnlessExistsField(curActionDTO, "select_file", new ManifestSchema(Data.Constants.MT.StandardConfigurationControls));
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
@@ -224,13 +170,13 @@ namespace pluginExcel.Actions
         {
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
-                curActionDTO.CrateStorage);
-
-            var filePathsFromUserSelection = _crate.GetElementByKey(controlsCrates, key: "select_file", keyFieldName: "name")
+            var filePathsFromUserSelection = _action.FindKeysByCrateManifestType(curActionDO, new ManifestSchema(Data.Constants.MT.StandardConfigurationControls), "select_file")
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
+
+            if (filePathsFromUserSelection.Length > 1)
+                throw new AmbiguityException();
 
             var selectedFilePath = filePathsFromUserSelection[0];
 

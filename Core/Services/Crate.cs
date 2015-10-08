@@ -149,13 +149,43 @@ namespace Core.Services
             }
         }
 
-        public StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType)
+        public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataMS tableDataMS)
         {
-            return new StandardPayloadDataMS()
+            return Create(crateLabel,
+                            JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
+                            manifestType: CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+                            manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+        }
+
+        private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataMS tableDataMS)
+        {
+            var payloadDataMS = new StandardPayloadDataMS()
             {
                 PayloadObjects = new List<PayloadObjectDTO>(),
                 ObjectType = curObjectType,
             };
+
+            // Rows containing column names
+            var columnHeadersRowDTO = tableDataMS.Table[0];
+
+            for (int i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
+            {
+                var tableRowDTO = tableDataMS.Table[i];
+                var fields = new List<FieldDTO>();
+                for (int j = 0; j < tableRowDTO.Row.Count; ++j)
+                {
+                    var tableCellDTO = tableRowDTO.Row[j];
+                    var listFieldDTO = new FieldDTO()
+                    {
+                        Key = columnHeadersRowDTO.Row[j].Cell.Value,
+                        Value = tableCellDTO.Cell.Value,
+                    };
+                    fields.Add(listFieldDTO);
+                }
+                payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
+            }
+
+            return payloadDataMS;
         }
     }
 }

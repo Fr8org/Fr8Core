@@ -18,6 +18,7 @@ using Data.Constants;
 using Newtonsoft.Json;
 using Data.Interfaces.ManifestSchemas;
 using Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
@@ -532,6 +533,13 @@ namespace Core.Services
                 // Add the newly created crate for this label to action's crate storage
                 AddCrate(curActionDO, curCrateDTO);
             }
+        }
+
+        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key)
+        {
+           var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
+           var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");
+           return keys;
         }
     }
 }

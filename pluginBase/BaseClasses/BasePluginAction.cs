@@ -228,5 +228,43 @@ namespace PluginBase.BaseClasses
         {
            return await GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
         }
+
+        protected async Task<CrateDTO> MergeUpstreamFields(int curActionDOId, string label)
+        {
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, GetCrateDirection.Upstream)).Fields.ToArray();
+            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+
+            return upstreamFieldsCrate;
+        }
+
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, ManifestSchema curSchema)
+        {
+            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+
+            if (curCrates.CrateDTO.Count == 0)
+                return ConfigurationRequestType.Initial;
+
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            //load configuration crates of manifest type Standard Control Crates
+            //look for a text field name select_file with a value
+            ManifestSchema manifestSchema = new ManifestSchema(Data.Constants.MT.StandardConfigurationControls);
+
+            var keys = _action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+
+            //if there are more than 2 return keys, something is wrong
+            //if there are none or if there's one but it's value is "" the return initial else return followup
+            Validations.ValidateMax1(keys);
+
+            if (keys.Length == 0)
+                return ConfigurationRequestType.Initial;
+            else
+            {
+                return ConfigurationRequestType.Followup;
+            }
+        }
     }
 }

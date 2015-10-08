@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json.Linq;
 
 namespace Core.Interfaces
 {
@@ -33,5 +34,6 @@ namespace Core.Interfaces
             PluginDO plugin, string username, string password);
         void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
         void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
+        IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key);
     }
 }

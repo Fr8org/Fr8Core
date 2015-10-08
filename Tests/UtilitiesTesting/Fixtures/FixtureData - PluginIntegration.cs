@@ -82,10 +82,17 @@ namespace UtilitiesTesting.Fixtures
 
         public static PluginDO TestPlugin_ExtractData()
         {
+            var pluginDO = TestPlugin_Excel();
+            pluginDO.Endpoint = TestPlugin_ExtractData_EndPoint;
+
+            return pluginDO;
+        }
+
+        public static PluginDO TestPlugin_Excel()
+        {
             return new PluginDO
             {
                 Name = "pluginExcel",
-                Endpoint = TestPlugin_ExtractData_EndPoint,
                 PluginStatus = PluginStatus.Active,
                 Version = "1"
             };

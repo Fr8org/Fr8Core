@@ -20,6 +20,7 @@ using pluginExcel.Infrastructure;
 using Moq;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using Data.Repositories;
 
 namespace pluginTests.PluginExcelTests
 {
@@ -48,7 +49,7 @@ namespace pluginTests.PluginExcelTests
         [TearDown]
         public void Cleanup()
         {
-            
+
         }
 
         [Test]
@@ -62,8 +63,8 @@ namespace pluginTests.PluginExcelTests
                 },
             };
 
-            var result =  new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
-            
+            var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+
             Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Initial);
         }
 
@@ -127,7 +128,7 @@ namespace pluginTests.PluginExcelTests
                 });
             //Mock<ICrate> crateMock = new Mock<ICrate>();
             //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
-            
+
             //ActionDO actionDO = new FixtureData(uow).TestAction3();
             //var controller = new ActionController(crateMock.Object);
 
@@ -141,8 +142,8 @@ namespace pluginTests.PluginExcelTests
         public async void CallExtractData_Execute()
         {
             var bytesFromExcel = PluginFixtureData.TestExcelData();
-            var columnHeaders = PluginFixtureData.TestColumnHeaders();
-            var excelRows = PluginFixtureData.TestRows();
+            var columnHeaders = ExcelUtils.GetColumnHeaders(bytesFromExcel, "xlsx");
+            var excelRows = ExcelUtils.GetTabularData(bytesFromExcel, "xlsx");
             var tableDataMS = new StandardTableDataMS()
             {
                 FirstRowHeaders = true,
@@ -175,7 +176,6 @@ namespace pluginTests.PluginExcelTests
             Assert.AreEqual(payloadDataMS.PayloadObjects.Count, 3);
             Assert.AreEqual(payloadDataMS.PayloadObjects[0].PayloadObject[0].Key, "FirstName");
             Assert.AreEqual(payloadDataMS.PayloadObjects[0].PayloadObject[0].Value, "Alex");
-            
         }
     }
 }

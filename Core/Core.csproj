@@ -193,6 +193,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Interfaces\CrateManifests.cs" />
@@ -328,7 +329,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />
-    <Folder Include="Exceptions\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="UserAlerting\" />
   </ItemGroup>
