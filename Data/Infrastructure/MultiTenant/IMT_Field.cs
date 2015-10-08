@@ -1,14 +1,23 @@
-﻿using Data.Entities;
+﻿using System;
+using System.Data;
+using System.Data.Entity;
+using System.IO;
+using System.Linq;
 using Data.Interfaces;
-
+using Data.Entities;
+using Data.Interfaces.MultiTenantObjects;
+using System.Collections.Generic;
+using System.Reflection;
 namespace Data.Infrastructure.MultiTenant
 {
     public interface IMT_Field
     {
-        int? GetFieldColumnOffset(IUnitOfWork uow, string curMtFieldName, int curMtObjectId);
+        List<Data.Entities.MT_Field> CreateList(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, Data.Entities.MT_Object correspondingMTObject, Dictionary<Type, Data.Entities.MT_FieldType> typesDict);
 
-        int GenerateFieldColumnOffset(IUnitOfWork uow, int curMtObjectId);
+        //int? GetFieldColumnOffset(IUnitOfWork uow, string curMtFieldName, int curMtObjectId);
 
-        void Add(IUnitOfWork uow, Entities.MT_Field curMtField);
+        //int GenerateFieldColumnOffset(IUnitOfWork uow, int curMtObjectId);
+
+        //void Add(IUnitOfWork uow, Entities.MT_Field curMtField);
     }
 }

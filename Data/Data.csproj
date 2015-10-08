@@ -208,8 +208,14 @@
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Object.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
