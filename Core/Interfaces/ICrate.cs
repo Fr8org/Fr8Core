@@ -18,6 +18,7 @@ namespace Core.Interfaces
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls);
         CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
+        CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);
 
         void RemoveCrateByManifestId(IList<CrateDTO> crates, int manifestId);
         void RemoveCrateByManifestType(IList<CrateDTO> crates, string manifestType);

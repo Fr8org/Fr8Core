@@ -794,30 +794,6 @@ namespace Core.Managers
             Info,
             Error,
             Warning
-        }
-
-        /// <summary>
-        /// Called when unable to parse Lead Id and Account Id from Salesforce Notification Outbound Message
-        /// </summary>
-        /// <param name="message"></param>
-        public void ImproperSalesforceNotificationReceived(string message)
-        {
-            var currentIncident = new IncidentDO
-            {
-                ObjectId = "",
-                CustomerId = "",
-                Data = message,
-                PrimaryCategory = "Event",
-                SecondaryCategory = "External",
-                Activity = "Unparseble Notification"
-            };
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.IncidentRepository.Add(currentIncident);
-                uow.SaveChanges();
-            }
-            LogFactInformation(currentIncident, "ImproperSalesforceNotificationReceived", EventType.Warning);
-        }
+        }     
     }
 }

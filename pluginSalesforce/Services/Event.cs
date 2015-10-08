@@ -17,23 +17,24 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using Data.Interfaces.ManifestSchemas;
 using Core.StructureMap;
+using PluginBase.BaseClasses;
 
 namespace pluginSalesforce.Services
 {
     public class Event : pluginSalesforce.Infrastructure.IEvent
     {
-        private readonly EventReporter _alertReporter;
-        private readonly ICrate _crate;
-        private string eventWebServerUrl = string.Empty;
+       
+        private readonly ICrate _crate;        
+        private BasePluginController _basePluginController = new BasePluginController();
+       
 
         public Event()
         {
-            eventWebServerUrl = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        public void Process(string curExternalEventPayload)
+
+        public CrateDTO ProcessEvent(string curExternalEventPayload)
         {
             string leadId = string.Empty;
             string accountId = string.Empty;
@@ -44,72 +45,55 @@ namespace pluginSalesforce.Services
             {
                 EventNames = "Lead Created",
                 ProcessDOId = "",
-                EventPayload = CreatePayLoadData(leadId, accountId).ToList(),
-                ExternalAccountId = accountId
+                EventPayload = ExtractEventPayload(leadId,accountId).ToList(),
+                ExternalAccountId = accountId,
+                Source = "Salesforce"
             };
 
-            ////prepare the event report
             CrateDTO curEventReport = ObjectFactory.GetInstance<ICrate>()
                 .Create("Lead Created", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
 
-            new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), curEventReport);
+            return curEventReport;
         }
 
         public void Parse(string xmlPayload, out string leadId, out string accountId)
         {
-
             try
             {
+                var documentObject = SalesforceNotificationParser.GetEnvelopeInformation(xmlPayload);
                 leadId = string.Empty;
                 accountId = string.Empty;
-                if (!String.IsNullOrEmpty(xmlPayload))
-                {
-                    XmlDocument xmlPayloadDoc = new XmlDocument();
-                    xmlPayloadDoc.LoadXml(xmlPayload);
-                    XmlNodeList notification = xmlPayloadDoc.GetElementsByTagName("sObject");
-                    if (notification.Count != 0)
-                    {
-                        foreach (XmlNode node in notification[0].ChildNodes)
-                        {
-                            if (node.Name == "sf:Id")
-                            {
-                                leadId = node.InnerText;
-                            }
-                            else if (node.Name == "sf:OwnerId")
-                            {
-                                accountId = node.InnerText;
-                            }
-                        }
-                    }
+                if (documentObject.Body.Notifications.Notification.SObject!=null)
+                {                   
+                    leadId = documentObject.Body.Notifications.Notification.SObject.Id;
+                    accountId = documentObject.Body.Notifications.Notification.SObject.OwnerId;
                 }
                 else
                 {
-                    if (leadId == string.Empty && accountId == string.Empty)
-                    {
-                        throw new ArgumentException(xmlPayload);
-                    }
+                        throw new ArgumentException(String.Format("Cannot extract  Lead ID and Account ID from notification:, XML Payload\r\n{0}",xmlPayload));
                 }
             }
             catch (ArgumentException e)
             {
-                _alertReporter.ImproperSalesforceNotificationReceived(
-                    String.Format("Cannot extract  Lead ID and Account ID from notification:, XML Payload\r\n{0}", e.Message));
+                _basePluginController.ReportPluginError("pluginSalesforce", e);               
                 throw new ArgumentException();
             }
         }
 
-        private IEnumerable<CrateDTO> CreatePayLoadData(string leadId, string accountId)
+        private IEnumerable<CrateDTO> ExtractEventPayload(string leadId, string accountId)
         {
             IList<CrateDTO> curEventPayloadData = new List<CrateDTO>();
-
-            var crateFields = new List<FieldDTO>()
-                {
-                    new FieldDTO() {Key = "LeadID", Value = leadId},
-                    new FieldDTO() {Key = "AccountID", Value = accountId},                                   
-                };
-            curEventPayloadData.Add(_crate.Create("Payload Data", JsonConvert.SerializeObject(crateFields)));
-
+            var payLoadData = _crate.CreatePayloadDataCrate(CreateKeyValuePairList(leadId, accountId));
+            curEventPayloadData.Add(payLoadData);
             return curEventPayloadData;
+        }
+
+        private List<KeyValuePair<string,string>> CreateKeyValuePairList(string leadId,string accountId)
+        {
+            List<KeyValuePair<string, string>> returnList = new List<KeyValuePair<string, string>>();
+            returnList.Add(new KeyValuePair<string,string>("LeadID",leadId));
+            returnList.Add(new KeyValuePair<string,string>("AccountID",accountId));
+            return returnList;
         }
     }
 }

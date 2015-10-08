@@ -219,6 +219,8 @@
     <Compile Include="Infrastructure\ILead.cs" />
     <Compile Include="Infrastructure\IConfiguration.cs" />
     <Compile Include="Infrastructure\LeadDTO.cs" />
+    <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
+    <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

@@ -1,8 +1,13 @@
-﻿using Core.Managers.APIManagers.Transmitters.Restful;
+﻿using Core.Interfaces;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
+using StructureMap;
 using System;
 using System.Configuration;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace PluginUtilities.Infrastructure
@@ -12,8 +17,12 @@ namespace PluginUtilities.Infrastructure
         private readonly EventReportCrateFactory _eventReportCrateFactory;
         private readonly LoggingDataCrateFactory _loggingDataCrateFactory;
 
+        public delegate CrateDTO EventParser(string externalEventPayload);
+        private string eventWebServerUrl = string.Empty;
+
         public BasePluginEvent()
         {
+             eventWebServerUrl = ConfigurationManager.AppSettings["EventWebServerUrl"] + "/dockyard_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
         }
@@ -84,6 +93,17 @@ namespace PluginUtilities.Infrastructure
         {
             var restCall = new RestfulServiceClient();
             return restCall;
+        }
+
+        /// <summary>
+        /// Processsing the external event pay load received
+        /// </summary>
+        /// <param name="curExternalEventPayload">event pay load received</param>
+        /// <param name="parser">delegate method</param>
+        public async Task Process(string curExternalEventPayload,EventParser parser)
+        {
+            var eventReportCrateDTO = parser.Invoke(curExternalEventPayload);       
+            new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), eventReportCrateDTO);
         }
     }
 }

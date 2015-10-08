@@ -2,23 +2,28 @@
 using pluginDocuSign.Services;
 using StructureMap;
 using pluginDocuSign.Interfaces;
+using PluginUtilities.Infrastructure;
 
 namespace pluginDocuSign.Controllers
 {
     public class EventController : ApiController
     {
         private IEvent _event;
+        private BasePluginEvent _basePluginEvent;
 
         public EventController()
         {
             _event = new Event();
+            _basePluginEvent = new BasePluginEvent();
         }
 
         [HttpPost]
         [Route("events")]
         public async void ProcessIncomingNotification()
         {
-            _event.Process(await Request.Content.ReadAsStringAsync());
+            PluginUtilities.Infrastructure.BasePluginEvent.EventParser parser = new BasePluginEvent.EventParser(_event.ProcessEvent);
+            string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
+            await _basePluginEvent.Process(eventPayLoadContent, parser);
         }
     }
 }

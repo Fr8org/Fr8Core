@@ -158,7 +158,12 @@ namespace Data.Migrations
 
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
+            AddDocusignAuthToken(uow);
+            AddSalesforceAuthToken(uow);
+        }
 
+        private static void AddDocusignAuthToken(IUnitOfWork uow)
+        {
             // Check that plugin does not exist yet.
             var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
                 .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
@@ -179,8 +184,10 @@ namespace Data.Migrations
                 uow.SaveChanges();
 
             }
+        }
 
-
+        private static void AddSalesforceAuthToken(IUnitOfWork uow)
+        {
             var salesforceAuthToken = uow.AuthorizationTokenRepository.GetQuery()
              .Any(x => x.ExternalAccountId == "00561000000JECsAAO");
 
@@ -200,10 +207,6 @@ namespace Data.Migrations
                 uow.SaveChanges();
 
             }
-
-           
-
-
         }
 
 
@@ -467,10 +470,14 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
+            AddPlugin_DocuSign(uow);
+            AddPlugin_Salesforce(uow);
+        }
 
-
-     // Create test DockYard account for plugin subscription.
-           // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+        private static void AddPlugin_DocuSign(IUnitOfWork uow)
+        {
+            // Create test DockYard account for plugin subscription.
+            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             // Check that plugin does not exist yet.
             var pluginDocusign = uow.PluginRepository.GetQuery()
@@ -486,17 +493,19 @@ namespace Data.Migrations
                     PluginStatus = PluginStatus.Active,
                     Endpoint = "localhost:53234",
                     Version = "1",
-                    RequiresAuthentication =true
+                    RequiresAuthentication = true
                 };
 
                 uow.PluginRepository.Add(plugin);
-     
+
             }
             uow.SaveChanges();
+        }
 
-
+        private static void AddPlugin_Salesforce(IUnitOfWork uow)
+        {
             var pluginSalesforce = uow.PluginRepository.GetQuery()
-               .Any(x => x.Name == "pluginSalesforce");
+              .Any(x => x.Name == "pluginSalesforce");
 
             // Add new plugin and subscription to repository, if plugin doesn't exist.
             if (!pluginSalesforce)

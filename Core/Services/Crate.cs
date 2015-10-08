@@ -140,5 +140,15 @@ namespace Core.Services
                 }
             }
         }
+
+        public CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string,string>> curFields)
+        {            
+            List<FieldDTO> crateFields = new List<FieldDTO>();
+            foreach(var field in curFields)
+            {
+                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });             
+            }
+            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));            
+        }
     }
 }

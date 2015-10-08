@@ -1,4 +1,6 @@
-﻿using System.Xml;
+﻿using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using System.Xml;
 using System.Xml.Linq;
 namespace pluginSalesforce.Infrastructure
 {
@@ -7,6 +9,6 @@ namespace pluginSalesforce.Infrastructure
         /// <summary>
         /// Processes external event payload from the plugin
         /// </summary>
-        void Process(string curExternalEventPayload);
+        CrateDTO ProcessEvent(string curExternalEventPayload);
     }
 }

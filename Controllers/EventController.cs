@@ -118,26 +118,14 @@ namespace Web.Controllers
             //create a plugin event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
             
-            await
-                _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
+             var result =await _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
 
 
             //Check if responding to Salesforce
             if(pluginName=="pluginSalesforce")
             {
-                //We need to acknowledge the request from Salesforce
-                //Creating a SOAP response to acknowledge
-                string response = @"<?xml version=""1.0"" encoding=""UTF-8""?>
-                <soapenv:Envelope xmlns:soapenv=""http://schemas.xmlsoap.org/soap/envelope/"" 
-                xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
-                 <soapenv:Body>
-                  <notificationsResponse xmlns=""http://soap.sforce.com/2005/09/outbound"">
-                         <Ack>true</Ack>
-                      </notificationsResponse>
-                  </soapenv:Body>
-                </soapenv:Envelope>";
                 XmlDocument doc = new XmlDocument();
-                doc.LoadXml(response);
+                doc.LoadXml(result);
                 return Content(HttpStatusCode.OK, doc, Configuration.Formatters.XmlFormatter);
             }
 
