@@ -141,7 +141,7 @@ namespace pluginDocuSign.Actions
             curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
             curActionDTO.CrateStorage.CrateDTO.Add(curUpstreamFieldsCrate);
 
-            //Execute(curActionDTO); // For testing
+            Execute(curActionDTO); // For testing
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
