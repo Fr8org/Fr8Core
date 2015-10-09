@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Utilities;
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
+using Newtonsoft.Json.Converters;
 
 namespace Core.Services
 {
@@ -21,23 +22,22 @@ namespace Core.Services
 
         public CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0)
         {
-            var crateDTO = new CrateDTO() 
-            { 
-                Id = Guid.NewGuid().ToString(), 
-                Label = label, 
-                Contents = contents, 
-                ManifestType = manifestType, 
-                ManifestId = manifestId 
+            var crateDTO = new CrateDTO()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Label = label,
+                Contents = contents,
+                ManifestType = manifestType,
+                ManifestId = manifestId
             };
             return crateDTO;
         }
 
-        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode, string url = null)
+        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode)
         {
             var manifestSchema = new StandardAuthenticationMS()
             {
-                Mode = mode,
-                Url = url
+                Mode = mode
             };
 
             return Create(
@@ -48,16 +48,16 @@ namespace Core.Services
         }
 
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
-        {    
-            return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields.ToList()}),
-                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() { Fields = fields.ToList() }),
+                manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
-            return Create(label, 
+            return Create(label,
                 JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
                 manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
@@ -74,6 +74,11 @@ namespace Core.Services
         public T GetContents<T>(CrateDTO crate)
         {
             return JsonConvert.DeserializeObject<T>(crate.Contents);
+        }
+
+        public StandardConfigurationControlsMS GetStandardConfigurationControls(CrateDTO crate)
+        {
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(crate.Contents, new ControlDefinitionDTOConverter());
         }
 
         /// <summary>
@@ -140,5 +145,6 @@ namespace Core.Services
                 }
             }
         }
+
     }
 }

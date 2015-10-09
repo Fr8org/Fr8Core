@@ -5,7 +5,7 @@ module dockyard.directives.dropDownListBox {
     import pca = dockyard.directives.paneConfigureAction;
 
     export interface IDropDownListBoxScope extends ng.IScope {
-        field: model.DropDownListBoxField;
+        field: model.DropDownListControlDefinitionDTO;
         change: () => (fieldName: string) => void;
         selectedItem: model.DropDownListItem;
         SetSelectedItem: (item: model.DropDownListItem) => void;
@@ -40,33 +40,30 @@ module dockyard.directives.dropDownListBox {
                 $scope: IDropDownListBoxScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
-                this._$element = $element;
-                this._$scope = $scope;
-                this._$scope.selectedItem = null;
-                $scope.SetSelectedItem = <(radio: model.DropDownListItem) => void> angular.bind(this, this.SetSelectedItem);
-                this.FindAndSetSelectedItem();
+
+                $scope.selectedItem = null;
+                $scope.SetSelectedItem = function (item: model.DropDownListItem) {
+                    $scope.field.value = item.Value;
+                    $scope.selectedItem = item;
+
+                    // Invoike onChange event handler
+                    if ($scope.change != null && angular.isFunction($scope.change)) {
+                        $scope.change()($scope.field.name);
+                    }
+                };
+
+                var FindAndSetSelectedItem = function () {
+                    for (var i = 0; i < $scope.field.listItems.length; i++) {
+                        if ($scope.field.value == $scope.field.listItems[i].Value) {
+                            $scope.selectedItem = $scope.field.listItems[i];
+                            break;
+                        }
+                    }
+                };
+
+                FindAndSetSelectedItem();
                 $scope.defaultitem = null;
             };
-        }
-
-        private SetSelectedItem(item: model.DropDownListItem) {
-            this._$scope.field.value = item.Value;
-            this._$scope.selectedItem = item;
-
-            // Invoike onChange event handler
-                if (this._$scope.change != null && angular.isFunction(this._$scope.change)) {
-                    this._$scope.change()(this._$scope.field.name);
-                } 
-           
-        }
-
-        private FindAndSetSelectedItem() {
-            for (var i = 0; i < this._$scope.field.listItems.length; i++) {
-                if (this._$scope.field.value == this._$scope.field.listItems[i].Value) {
-                    this._$scope.selectedItem = this._$scope.field.listItems[i];
-                    break;
-                }
-            }
         }
 
         //The factory function returns Directive object as per Angular requirements

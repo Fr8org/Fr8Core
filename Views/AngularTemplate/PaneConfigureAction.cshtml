@@ -4,12 +4,12 @@
             </a>
         </div>*@
 <div class="pane-configure-action" block-if="processing === true">
-    <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-        <configuration-field current-action="currentAction" field="field" />
-    </div>
-    <div ng-if="currentAction.currentView">
-        <div ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-field current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+        <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
+            <configuration-control current-action="currentAction" field="field" />
+        </div>
+        <div ng-if="currentAction.currentView">
+            <div ng-repeat="field in currentAction.configurationControls.fields">
+                <configuration-control current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+            </div>
         </div>
     </div>
-</div>

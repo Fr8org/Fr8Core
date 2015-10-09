@@ -5,12 +5,21 @@ module dockyard.directives.paneConfigureAction {
     export enum MessageType {
         PaneConfigureAction_ActionUpdated,
         PaneConfigureAction_ActionRemoved,
-        PaneConfigureAction_InternalAuthentication
+        PaneConfigureAction_InternalAuthentication,
+        PaneConfigureAction_ExternalAuthentication
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
 
     export class InternalAuthenticationArgs {
+        public activityTemplateId: number;
+
+        constructor(activityTemplateId: number) {
+            this.activityTemplateId = activityTemplateId;
+        }
+    }
+
+    export class ExternalAuthenticationArgs {
         public activityTemplateId: number;
 
         constructor(activityTemplateId: number) {
@@ -44,7 +53,7 @@ module dockyard.directives.paneConfigureAction {
             this.isTempId = isTempId;
         }
     }
-    
+
     export interface IPaneConfigureActionScope extends ng.IScope {
         onActionChanged: (newValue: model.ActionDTO, oldValue: model.ActionDTO, scope: IPaneConfigureActionScope) => void;
         action: interfaces.IActionDTO;
@@ -56,7 +65,7 @@ module dockyard.directives.paneConfigureAction {
         mapFields: (scope: IPaneConfigureActionScope) => void;
         processing: boolean;
     }
-    
+
     export class CancelledEventArgs extends CancelledEventArgsBase { }
 
     //More detail on creating directives in TypeScript: 
@@ -97,12 +106,13 @@ module dockyard.directives.paneConfigureAction {
                 this._$scope = $scope;
 
                 this.onRender();
-                $scope.$on("onFieldChange", <any>angular.bind(this, this.onFieldChange));
+                $scope.$on("onChange", <any>angular.bind(this, this.onControlChange));
                 $scope.removeAction = <any>angular.bind(this, this.removeAction);
             };
         }
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
+
             if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
             this.crateHelper.mergeControlListCrate(
                 scope.currentAction.configurationControls,
@@ -128,8 +138,8 @@ module dockyard.directives.paneConfigureAction {
             this._$scope.currentAction = null;
             this._$scope.isVisible = false;
         };
-        
-        private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+
+        private onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
@@ -137,12 +147,12 @@ module dockyard.directives.paneConfigureAction {
 
 
             // Find the configuration field object for which the event has fired
-            fieldList = <Array<model.ConfigurationField>>this.$filter('filter')(fieldList, { name: fieldName }, true);
+            fieldList = <Array<model.ControlDefinitionDTO>>this.$filter('filter')(fieldList, { name: fieldName }, true);
             if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
             var field = fieldList[0];
 
             // Find the onChange event object
-            var eventHandlerList = <Array<model.FieldEvent>>this.$filter('filter')(field.events, { name: 'onChange' }, true);
+            var eventHandlerList = <Array<model.ControlEvent>>this.$filter('filter')(field.events, { name: 'onChange' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
 
@@ -166,7 +176,7 @@ module dockyard.directives.paneConfigureAction {
 
         private onRender() {
             if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
-            
+
             // Avoid unnecessary Save while 
             if (this.configurationWatchUnregisterer) {
                 this.configurationWatchUnregisterer();
@@ -189,7 +199,7 @@ module dockyard.directives.paneConfigureAction {
             this.$timeout(() => {
                 if (this._$scope.currentAction.activityTemplateId > 0) {
                     this.loadConfiguration();
-                }
+                }            
             }, 300);
         }
 
@@ -222,7 +232,11 @@ module dockyard.directives.paneConfigureAction {
 
                     // External auth mode.
                     else {
-                        alert('TODO: External auth');
+                        // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                        this._$scope.$emit(
+                            MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
+                            new ExternalAuthenticationArgs(res.activityTemplateId)
+                        );
                     }
 
                     this._$scope.processing = false;
@@ -234,7 +248,7 @@ module dockyard.directives.paneConfigureAction {
 
                 // Assign name to res rather than currentAction to prevent 
                 // $watches from unnecessarily triggering
-                res.activityTemplateName = activityTemplateName; 
+                res.activityTemplateName = activityTemplateName;
                 this._$scope.currentAction = res;
                 (<any>this._$scope.currentAction).configurationControls =
                 this.crateHelper.createControlListFromCrateStorage(this._$scope.currentAction.crateStorage);
@@ -247,7 +261,7 @@ module dockyard.directives.paneConfigureAction {
                 }, 1000);
             });
         }
-        
+
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
             var directive = (
@@ -258,10 +272,13 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService
             ) => {
 
-                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout);
+                return new PaneConfigureAction($rootScope, ActionService,
+                    crateHelper, $filter, $timeout);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout'];
+            directive['$inject'] = ['$rootScope', 'ActionService',
+                'CrateHelper', '$filter', '$timeout'];
+
             return directive;
         }
     }

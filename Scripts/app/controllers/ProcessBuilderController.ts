@@ -26,6 +26,7 @@ module dockyard.controllers {
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import pca = dockyard.directives.paneConfigureAction;
+    import psa = dockyard.directives.paneSelectAction;
 
     class ProcessBuilderController {
         // $inject annotation.
@@ -39,12 +40,14 @@ module dockyard.controllers {
             'LocalIdentityGenerator',
             '$state',
             'ActionService',
+            '$http',
             'ProcessTemplateService',
             '$timeout',
             'ProcessBuilderService',
             'CrateHelper',
             '$filter',
-            '$modal'
+            '$modal',
+            '$window'
         ];
 
         constructor(
@@ -52,12 +55,14 @@ module dockyard.controllers {
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState,
             private ActionService: services.IActionService,
+            private $http: ng.IHttpService,
             private ProcessTemplateService: services.IProcessTemplateService,
             private $timeout: ng.ITimeoutService,
             private ProcessBuilderService: services.IProcessBuilderService,
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
-            private $modal
+            private $modal,
+            private $window: ng.IWindowService
             ) {
             this.$scope.processTemplateId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
@@ -87,6 +92,18 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
                 (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExternalAuthentication],
+                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_ExternalAuthentication(eventArgs));
+
+            //Process Select Action Pane events
+            this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
+            // TODO: do we need this any more?
+            // this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionUpdated],
+            //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
+            //Handles Save Request From PaneSelectAction
+            this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
         }
 
         private loadProcessTemplate() {
@@ -249,6 +266,22 @@ module dockyard.controllers {
         }
 
         /*
+            Handles message 'SelectActionPane_ActionTypeSelected'
+        */
+        private PaneSelectAction_ActionTypeSelected(eventArgs: psa.ActionTypeSelectedEventArgs) {
+            var pcaEventArgs = new pca.RenderEventArgs(eventArgs.action);
+            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(eventArgs.action.id, eventArgs.action.activityTemplateId);
+            this.$scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
+        }
+
+        /*
+           Handles message 'SelectActionPane_InitiateSaveAction'
+       */
+        private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {
+            var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
+        }            
+
+        /*
             Handles message 'PaneConfigureAction_ActionRemoved'
         */
         private PaneConfigureAction_ActionRemoved(eventArgs: pca.ActionRemovedEventArgs) {
@@ -275,6 +308,33 @@ module dockyard.controllers {
                 var pcaEventArgs = new pca.RenderEventArgs(self.$scope.current.action);
                // self.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
             });
+        }
+
+        private PaneConfigureAction_ExternalAuthentication(
+            eventArgs: pca.ExternalAuthenticationArgs) {
+
+            var self = this;
+
+            this.$http
+                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .then(function (res) {
+                    var url = (<any>res.data).url;
+
+                    var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+
+                    // TODO: fix that later (DO-1211).
+                    // var isClosedHandler = function () {
+                    //     if (childWindow.closed) {
+                    //         var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
+                    //         self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                    //     }
+                    //     else {
+                    //         setTimeout(isClosedHandler, 500);
+                    //     }
+                    // };
+                    // 
+                    // setTimeout(isClosedHandler, 500);
+                });
         }
     }
 

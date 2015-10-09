@@ -16,11 +16,15 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>false</UseIISExpress>
-    <IISExpressSSLPort>44301</IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>
+    </IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>
+    </IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>
+    </IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -323,6 +327,7 @@
     <Compile Include="Controllers\DockyardEventController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\ActivitiesController.cs" />
+    <Compile Include="Controllers\ExternalAuthController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
@@ -746,6 +751,8 @@
     <Content Include="Scripts\lib\jpattern.js" />
     <Content Include="Scripts\tests\integration\PluginActionExecuteTest.js" />
     <Content Include="Scripts\tests\integration\ProcessControllerTests.js" />
+    <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
+    <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <None Include="Views\Home\docusign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -759,13 +766,15 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
@@ -3957,10 +3966,10 @@
     <Content Include="RunFrontEndTests - With Web Server.ps1" />
     <Content Include="RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
-    <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RadioButtonOptionField.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />

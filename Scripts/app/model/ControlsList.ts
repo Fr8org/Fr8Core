@@ -1,45 +1,45 @@
 ﻿module dockyard.model {
     export class ControlsList {
-        fields: Array<ConfigurationField>
+        fields: Array<ControlDefinitionDTO>
     }
 
     export interface ISupportsNestedFields {
-        fields: Array<ConfigurationField>;
+        controls: Array<ControlDefinitionDTO>;
     }
 
-    export class ConfigurationField {
+    export class ControlDefinitionDTO {
         type: string;
         fieldLabel: string;
         name: string;
-        events: Array<FieldEvent>;
+        events: Array<ControlEvent>;
         value: string;
     }
 
-    export class FieldEvent {
+    export class ControlEvent {
         name: string;
         handler: string;
     }
 
-    export class CheckboxField extends ConfigurationField {
+    export class CheckBoxControlDefinitionDTO extends ControlDefinitionDTO {
         checked: boolean;
     }
 
-    export class TextField extends ConfigurationField {
+    export class TextBoxControlDefinitionDTO extends ControlDefinitionDTO {
         required: boolean;        
     }
 
-    export class FileField extends ConfigurationField {
+    export class FileControlDefinitionDTO extends ControlDefinitionDTO {
 
     }
 
-    export class RadioButtonOptionField extends ConfigurationField implements ISupportsNestedFields {
+    export class RadioButtonOption extends ControlDefinitionDTO implements ISupportsNestedFields {
         selected: boolean;
-        fields: Array<ConfigurationField>;
+        controls: Array<ControlDefinitionDTO>;
     }
 
-    export class RadioButtonGroupField extends ConfigurationField {
+    export class RadioButtonGroupControlDefinitionDTO extends ControlDefinitionDTO {
         groupName: string;
-        radios: Array<RadioButtonOptionField>;
+        radios: Array<RadioButtonOption>;
     }
 
     export class FieldDTO {
@@ -56,22 +56,27 @@
         public label: string;
     }
 
-    export class DropDownListBoxField extends ConfigurationField {
+    export class DropDownListControlDefinitionDTO extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
     }
 
-    export class TextBlockField extends ConfigurationField {
-        public value: string;
+    export class TextBlockField extends ControlDefinitionDTO {
         public class: string;
     }
 
-    export class RoutingControlGroup extends ConfigurationField {
+    export class TextAreaControlDefinitionDTO extends ControlDefinitionDTO {
+    }
+
+    export class MappingPaneControlDefinitionDTO extends ControlDefinitionDTO {
+    }
+
+    export class RoutingControlGroup extends ControlDefinitionDTO {
         sourceField: string;
         routes: Array<Route>
     }
 
-    export class Route extends ConfigurationField {
+    export class Route extends ControlDefinitionDTO {
         measurementValue: string;
         selection: string;
         previousActionList: RouteActionList;
@@ -79,12 +84,12 @@
         availableProcessNode: string;
     }
 
-    export class RouteActionList extends ConfigurationField {
+    export class RouteActionList extends ControlDefinitionDTO {
         choices: Array<Choice>;
         selectionId: string;
     }
 
-    export class Choice extends ConfigurationField {
+    export class Choice extends ControlDefinitionDTO {
         Label: string;
         Id: string;
     }

@@ -166,12 +166,9 @@ namespace Web
                     alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
 
                 }
-
              }
-
                 
              alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
-         
         }
 
 
