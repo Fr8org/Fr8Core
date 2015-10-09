@@ -143,6 +143,8 @@
     <Compile Include="PluginBaseTests\BaseClasses\BasePluginControllerTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\BasePluginEventTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\TestBasePluginEvent.cs" />
+    <Compile Include="pluginDocuSign\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
+    <Compile Include="pluginDocuSign\Actions\Wait_For_DocuSign_Event_v1Tests.cs" />
     <Compile Include="pluginDocuSign\DocusignApiHelper.cs" />
     <Compile Include="pluginDocuSign\IDocusignApiHelper.cs" />
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="PluginSalesforceTests\ActionControllerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginAzureSqlServerTests\TestDbHelper.cs" />
+    <Compile Include="BaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj">

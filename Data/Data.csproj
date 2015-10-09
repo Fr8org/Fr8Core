@@ -228,6 +228,8 @@
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -360,7 +362,7 @@
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.cs" />
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
-    </Compile>
+	</Compile>
     <Compile Include="Migrations\201510052045282_UpdateMT_Data.cs" />
     <Compile Include="Migrations\201510052045282_UpdateMT_Data.Designer.cs">
       <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
@@ -372,6 +374,10 @@
     <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.cs" />
     <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.Designer.cs">
       <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
+	</Compile>
+    <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs" />
+    <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.Designer.cs">
+      <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
@@ -668,6 +674,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510062113219_AddFieldsToMTObject.resx">
       <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
+	</EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.resx">
+      <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

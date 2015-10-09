@@ -7,6 +7,7 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
     {
         Uri BaseUri { get; set; }
         Task<TResponse> GetAsync<TResponse>(Uri requestUri);
+        Task<string> PostAsync(Uri requestUri);
         Task<string> PostAsync<TContent>(Uri requestUri, TContent content);
         Task<TResponse> PostAsync<TContent, TResponse>(Uri requestUri, TContent content);
         Task<string> PutAsync<TContent>(Uri requestUri, TContent content);

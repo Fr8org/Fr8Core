@@ -58,10 +58,14 @@ namespace Core.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //find the corresponding DockyardAccount
-                DockyardAccountDO curDockyardAccount = 
-                    uow.AuthorizationTokenRepository.FindOne(
-                        at => at.ExternalAccountId == eventReportMS.ExternalAccountId)
-                        .UserDO;
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(at => at.ExternalAccountId == eventReportMS.ExternalAccountId);
+                if (authToken == null)
+                {
+                    return;
+                }
+
+                var curDockyardAccount = authToken.UserDO;
 
                 //find this Account's ProcessTemplates
                 var initialProcessTemplatesList = uow.ProcessTemplateRepository

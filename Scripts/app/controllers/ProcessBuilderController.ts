@@ -47,7 +47,8 @@ module dockyard.controllers {
             'CrateHelper',
             'ActivityTemplateService',
             '$filter',
-            '$modal'
+            '$modal',
+            '$window'
         ];
 
         private _scope: IProcessBuilderScope;
@@ -68,7 +69,8 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService,
             private $filter: ng.IFilterService,
-            private $modal
+            private $modal,
+            private $window: ng.IWindowService
             ) {
             this._scope = $scope;
             this._scope.processTemplateId = $state.params.id;
@@ -102,6 +104,8 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_InternalAuthentication],
                 (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_InternalAuthentication(eventArgs));
+            this._scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ExternalAuthentication],
+                (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_ExternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
             this._scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
@@ -399,6 +403,33 @@ module dockyard.controllers {
                 var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
                 self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
             });
+        }
+
+        private PaneConfigureAction_ExternalAuthentication(
+            eventArgs: pca.ExternalAuthenticationArgs) {
+
+            var self = this;
+
+            this.$http
+                .get('/actions/auth_url?id=' + eventArgs.activityTemplateId)
+                .then(function (res) {
+                    var url = (<any>res.data).url;
+
+                    var childWindow = self.$window.open(url, 'AuthWindow', 'width=400, height=500, location=no, status=no');
+
+                    // TODO: fix that later (DO-1211).
+                    // var isClosedHandler = function () {
+                    //     if (childWindow.closed) {
+                    //         var pcaEventArgs = new pca.RenderEventArgs(self._scope.current.action);
+                    //         self._scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);
+                    //     }
+                    //     else {
+                    //         setTimeout(isClosedHandler, 500);
+                    //     }
+                    // };
+                    // 
+                    // setTimeout(isClosedHandler, 500);
+                });
         }
 
         private HideActionPanes() {

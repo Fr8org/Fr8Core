@@ -14,7 +14,7 @@ namespace Core.Interfaces
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
-        CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode, string url = null);
+        CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls);
         CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
