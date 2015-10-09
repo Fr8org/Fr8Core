@@ -7,6 +7,6 @@ namespace pluginDocuSign.Interfaces
         /// <summary>
         /// Processes external event payload from the plugin
         /// </summary>
-        Task Process(string curExternalEventPayload);
+        Task<object> Process(string curExternalEventPayload);
     }
 }
