@@ -109,6 +109,14 @@ namespace Data.Interfaces.DataTransferObjects
         }
     }
 
+    public class FilePickerControlDefinisionDTO : ControlDefinitionDTO
+    {
+        public FilePickerControlDefinisionDTO()
+        {
+            Type = ControlTypes.FilePicker;
+        }
+    }
+
 
     // TODO It will be good to change setter property 'Type' to protected to disallow change the type. We have all needed classes(RadioButtonGroupFieldDefinitionDTO, DropdownListFieldDefinitionDTO and etc).
     // But Wait_For_DocuSign_Event_v1.FollowupConfigurationResponse() directly write to this property !

@@ -110,6 +110,25 @@ namespace UtilitiesTesting.Fixtures
                 Events = new List<ControlEvent>() {
                      new ControlEvent("onSelect", "requestConfig")
                 },
+                ListItems = new List<ListItem>()
+                {
+                    new ListItem()
+                    {
+                        Key = "Item key 1",
+                        Value = "Item value 1",
+                        Selected = true
+                    },
+                    new ListItem()
+                    {
+                        Key = "Item key 2",
+                        Value = "Item value 2"
+                    },
+                    new ListItem()
+                    {
+                        Key = "Item key 3",
+                        Value = "Item value 3"
+                    }
+                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available Templates",
@@ -162,11 +181,60 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
+            var textblockControl = new TextBlockControlDefinitionDTO()
+            {
+                Label = "Docu Sign Envelope",
+                Value = "This Action doesn't require any configuration.",
+                CssClass = "well well-lg"
+            };
+
+            var filepickerControl = new FilePickerControlDefinisionDTO()
+            {
+                Label = "Select a File"
+            };
+
+            var mapingPaneControl = new MappingPaneControlDefinitionDTO()
+            {
+                Label = "Mapping Pane"
+            };
+
+            var fieldFilterPane = new FilterPaneControlDefinitionDTO()
+            {
+                Label = "Execute Actions If:",
+                Name = "Selected_Filter",
+                Required = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Queryable Criteria",
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                }
+            };
+
+            var mappingPane = new MappingPaneControlDefinitionDTO()
+            {
+                Label = "Configure Mapping",
+                Name = "Selected_Mapping",
+                Required = true
+            };
+
+            var checkboxControl = new CheckBoxControlDefinitionDTO()
+            {
+                Label = "Envelope Sent",
+                Name = "Event_Envelope_Sent"
+            };
+
+
+
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
                 recipientSource,
-                textboxControl
+                textboxControl,
+                textblockControl,
+                filepickerControl,
+                fieldFilterPane,
+                mappingPane,
+                checkboxControl
             };
 
             return fieldsDTO;
