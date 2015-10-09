@@ -7,44 +7,39 @@ using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.MultiTenantObjects;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Data.Infrastructure.MultiTenant
 {
-    public class MT_Field 
+    public class MT_Field : IMT_Field
     {
-        public MT_Object GetOrCreateMT_Object(IUnitOfWork _uow, BaseMultiTenantObject curMTO, Type curDataType, Dictionary<Type, MT_FieldType> typesDict)
+        private MT_FieldType _mtFieldType;
+
+        public MT_Field()
         {
-            var correspondingMTObject = _uow.MTObjectRepository.FindOne(a => a.MT_OrganizationId == curMTO.fr8AccountId && a.Name == curMTO.Name);
-            if (correspondingMTObject == null)
-            {
-                correspondingMTObject = new MT_Object() { MT_OrganizationId = curMTO.fr8AccountId, Name = curMTO.Name };
-                var correspongdintDTOrganization = _uow.MTOrganizationRepository.GetByKey(curMTO.fr8AccountId);
-                correspondingMTObject.MT_Organization = correspongdintDTOrganization;
-                correspondingMTObject.MT_FieldType = GetOrCreateMT_FieldType(_uow, curDataType, typesDict);
-                _uow.MTObjectRepository.Add(correspondingMTObject);
-            }
-            return correspondingMTObject;
+            this._mtFieldType = new MT_FieldType();
         }
 
-        public MT_FieldType GetOrCreateMT_FieldType(IUnitOfWork _uow, Type type, Dictionary<Type, MT_FieldType> newTypesInContext)
+        public List<Data.Entities.MT_Field> CreateList(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, Data.Entities.MT_Object correspondingMTObject, Dictionary<Type, Data.Entities.MT_FieldType> typesDict)
         {
-            var correspondingMTFieldType = _uow.MTFieldTypeRepository.GetAll().Where(a => a.TypeName == type.FullName).FirstOrDefault();
-            // I haven't found a way to get an MTFieldType item from repository, if it wasn't saved yet, so I have a local Dictionary
-            if (correspondingMTFieldType == null)
+            var fieldsList = new List<Data.Entities.MT_Field>();
+            int i = 1;
+            foreach (var property in curDataProperties)
             {
-                if (newTypesInContext.ContainsKey(type))
-                    correspondingMTFieldType = newTypesInContext[type];
+                Data.Entities.MT_Field mtField = new Data.Entities.MT_Field();
+                mtField.FieldColumnOffset = i;
+                mtField.MT_ObjectId = correspondingMTObject.Id;
+                mtField.Name = property.Name;
+                mtField.MT_Object = correspondingMTObject;
+                //get or create FieldType
+                mtField.MT_FieldType = _mtFieldType.GetOrCreateMT_FieldType(_uow, property.PropertyType, typesDict);
+                fieldsList.Add(mtField);
+                _uow.MTFieldRepository.Add(mtField);
+                i++;
             }
-            if (correspondingMTFieldType == null)
-            {
-                correspondingMTFieldType = new MT_FieldType();
-                correspondingMTFieldType.AssemblyName = type.Assembly.FullName;
-                correspondingMTFieldType.TypeName = type.FullName;
-                _uow.MTFieldTypeRepository.Add(correspondingMTFieldType);
-                newTypesInContext[type] = correspondingMTFieldType;
-            }
-            return correspondingMTFieldType;
+            return fieldsList;
         }
+     
         //    public void Add(IUnitOfWork uow, Entities.MT_Field curMtField)
         //    {
         //        Entities.MT_Field existingMtField = GetField(uow, curMtField.Name, curMtField.MT_ObjectId);

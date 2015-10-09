@@ -13,52 +13,36 @@ namespace Data.Repositories
 {
     public class MultiTenantObjectRepository
     {
+        private Infrastructure.MultiTenant.MT_Field _mtField;
+        private Infrastructure.MultiTenant.MT_Data _mtData;
+        private Infrastructure.MultiTenant.MT_Object _mtObject;
+        private Infrastructure.MultiTenant.MT_FieldType _mtFieldType;
+
+        public MultiTenantObjectRepository()
+        {
+            this._mtField = new Infrastructure.MultiTenant.MT_Field();
+            this._mtData = new Infrastructure.MultiTenant.MT_Data();
+            this._mtObject = new Infrastructure.MultiTenant.MT_Object();
+        }
+
         public void Add(IUnitOfWork _uow, BaseMultiTenantObject curMTO)
         {
             var curDataType = curMTO.GetType();
             var curDataProperties = curDataType.GetProperties(System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).ToList();
             var typesDict = new Dictionary<Type, MT_FieldType>();
             //get or create MTObject
-            var fieldWorker = new Infrastructure.MultiTenant.MT_Field();
-            var correspondingMTObject = fieldWorker.GetOrCreateMT_Object(_uow, curMTO, curDataType, typesDict);
-
+            var correspondingMTObject = _mtObject.GetOrCreateMT_Object(_uow, curMTO, curDataType, typesDict);
             if (correspondingMTObject.Fields == null)
             {
-                correspondingMTObject.Fields = GetOrCreateMT_Fields(_uow, curDataProperties, correspondingMTObject, typesDict);
+                correspondingMTObject.Fields = _mtField.CreateList(_uow, curDataProperties, correspondingMTObject, typesDict);
             }
 
-            //create MTData and fill values
-            var data = new MT_Data();
-            data.Name = curMTO.Name;
-            data.CreatedAt = DateTime.Now;
-            data.UpdatedAt = DateTime.Now;
-            data.MT_Object = correspondingMTObject;
+            //create MTData, fill values, and add to repo
+            var data = _mtData.Create(curMTO, correspondingMTObject);
             MapObjectToMTData(curMTO, curDataProperties, data, correspondingMTObject);
             _uow.MTDataRepository.Add(data);
         }
 
-        private List<MT_Field> GetOrCreateMT_Fields(IUnitOfWork _uow, List<PropertyInfo> curDataProperties, MT_Object correspondingMTObject, Dictionary<Type, MT_FieldType> typesDict)
-        {
-            var fieldsList = new List<MT_Field>();
-            int i = 1;
-            foreach (var property in curDataProperties)
-            {
-                MT_Field mtField = new MT_Field();
-                mtField.FieldColumnOffset = i;
-                mtField.MT_ObjectId = correspondingMTObject.Id;
-                mtField.Name = property.Name;
-                mtField.MT_Object = correspondingMTObject;
-                //get or create FieldType
-                var fieldWorker = new Infrastructure.MultiTenant.MT_Field();
-                mtField.MT_FieldType = fieldWorker.GetOrCreateMT_FieldType(_uow, property.PropertyType, typesDict);
-                fieldsList.Add(mtField);
-                _uow.MTFieldRepository.Add(mtField);
-                i++;
-            }
-            return fieldsList;
-        }
-
-    
 
         public void Update(IUnitOfWork _uow, BaseMultiTenantObject curData)
         {
@@ -83,9 +67,7 @@ namespace Data.Repositories
             if (correspondingMT_Data == null || correspondingMT_Data.IsDeleted) return null;
 
             var correspondingMT_Object = _uow.MTObjectRepository.FindOne(a => a.Id == correspondingMT_Data.MT_ObjectId && a.Name == correspondingMT_Data.Name);
-            if (correspondingMT_Object == null) return null;
-
-            var correspondingMT_Fields = _uow.MTFieldRepository.GetQuery().Where(a => a.MT_ObjectId == correspondingMT_Object.Id);
+            if (correspondingMT_Object == null) throw new Exception("Could not find corresponding object metadata for this MT_Data Id");
 
             return MapMTDataToObject(correspondingMT_Data, correspondingMT_Object);
         }
