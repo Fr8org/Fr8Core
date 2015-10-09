@@ -18,7 +18,6 @@ namespace pluginSlack.Actions
     {
         private readonly ISlackIntegration _slackIntegration;
 
-
         public Monitor_Channel_v1()
         {
             _slackIntegration = new SlackIntegration();
@@ -26,13 +25,12 @@ namespace pluginSlack.Actions
 
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            var processPayload = await GetProcessPayload(actionDto.ProcessId);
-
             if (IsEmptyAuthToken(actionDto))
             {
                 throw new ApplicationException("No AuthToken provided.");
             }
 
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
             var payloadFields = ExtractPayloadFields(processPayload);
 
             var payloadChannelIdField = payloadFields.FirstOrDefault(x => x.Key == "channel_id");
@@ -42,7 +40,7 @@ namespace pluginSlack.Actions
             }
 
             var payloadChannelId = payloadChannelIdField.Value;
-            var actionChannelId = ExtractChannelId(actionDto);
+            var actionChannelId = ExtractControlFieldValue(actionDto, "Selected_Slack_Channel");
 
             if (payloadChannelId != actionChannelId)
             {
@@ -82,27 +80,6 @@ namespace pluginSlack.Actions
             var payloadFields = JsonConvert.DeserializeObject<List<FieldDTO>>(eventFieldsCrate.Contents);
 
             return payloadFields;
-        }
-
-        private string ExtractChannelId(ActionDTO curActionDto)
-        {
-            var controlsCrate = curActionDto.CrateStorage.CrateDTO
-                .FirstOrDefault(
-                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
-                    && x.Label == "Configuration_Controls");
-
-            if (controlsCrate == null)
-            {
-                throw new ApplicationException("No Configuration_Controls crate found.");
-            }
-
-            var controlsCrateMS = JsonConvert
-                .DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
-
-            var channelField = controlsCrateMS.Controls
-                .FirstOrDefault(x => x.Name == "Selected_Slack_Channel");
-
-            return channelField.Value;
         }
 
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)

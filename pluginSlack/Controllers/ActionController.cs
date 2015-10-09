@@ -52,9 +52,10 @@ namespace pluginSlack.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public string Execute(ActionDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
-            return string.Empty;
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(
+                curPlugin, "Execute", actionDto);
         }
 
         [HttpPost]

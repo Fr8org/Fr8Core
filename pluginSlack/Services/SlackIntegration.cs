@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using pluginSlack.Interfaces;
 
@@ -85,6 +87,35 @@ namespace pluginSlack.Services
                 }
 
                 return result;
+            }
+        }
+
+        public async Task<bool> PostMessageToChat(string oauthToken, string channelId, string message)
+        {
+            var url = ConfigurationManager.AppSettings["SlackChatPostMessageUrl"];
+
+            var httpClient = new HttpClient();
+            var content = new FormUrlEncodedContent(
+                new[] { 
+                    new KeyValuePair<string, string>("token", oauthToken),
+                    new KeyValuePair<string, string>("channel", channelId),
+                    new KeyValuePair<string, string>("text", message)
+                }
+            );
+
+            using (var response = await httpClient.PostAsync(url, content))
+            {
+                var responseString = await response.Content.ReadAsStringAsync();
+                var responseJson = JsonConvert.DeserializeObject<JObject>(responseString);
+
+                try
+                {
+                    return responseJson.Value<bool>("ok");
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
     }

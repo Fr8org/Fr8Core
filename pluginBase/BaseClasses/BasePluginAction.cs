@@ -206,6 +206,32 @@ namespace PluginBase.BaseClasses
             return controlsCrate;
         }
 
+        protected string ExtractControlFieldValue(ActionDTO curActionDto, string fieldName)
+        {
+            var controlsCrate = curActionDto.CrateStorage.CrateDTO
+                .FirstOrDefault(
+                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    && x.Label == "Configuration_Controls");
 
+            if (controlsCrate == null)
+            {
+                throw new ApplicationException("No Configuration_Controls crate found.");
+            }
+
+            var controlsCrateMS = JsonConvert
+                .DeserializeObject<StandardConfigurationControlsMS>(
+                    controlsCrate.Contents
+                );
+
+            var field = controlsCrateMS.Controls
+                .FirstOrDefault(x => x.Name == fieldName);
+
+            if (field == null)
+            {
+                return null;
+            }
+
+            return field.Value;
+        }
     }
 }

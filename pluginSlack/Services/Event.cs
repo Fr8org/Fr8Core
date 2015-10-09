@@ -31,7 +31,7 @@ namespace pluginAzureSqlServer.Services
 
             var payloadFields = ParseSlackPayloadData(externalEventPayload);
 
-            var slackToken = payloadFields.FirstOrDefault(x => x.Key == "token");
+            var slackToken = payloadFields.FirstOrDefault(x => x.Key == "user_id");
             if (slackToken == null || string.IsNullOrEmpty(slackToken.Value))
             {
                 return;

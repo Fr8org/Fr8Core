@@ -33,6 +33,63 @@ namespace pluginSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
+        public async Task<PayloadDTO> Execute(ActionDTO actionDto)
+        {
+            if (IsEmptyAuthToken(actionDto))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+
+            if (IsEmptyAuthToken(actionDto))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            var actionChannelId = ExtractControlFieldValue(actionDto, "Selected_Slack_Channel");
+            if (string.IsNullOrEmpty(actionChannelId))
+            {
+                throw new ApplicationException("No selected channelId found in action.");
+            }
+
+            var actionFieldName = ExtractControlFieldValue(actionDto, "Select_Message_Field");
+            if (string.IsNullOrEmpty(actionFieldName))
+            {
+                throw new ApplicationException("No selected field found in action.");
+            }
+
+            var payloadFields = ExtractPayloadFields(processPayload);
+
+            var payloadMessageField = payloadFields.FirstOrDefault(x => x.Key == actionFieldName);
+            if (payloadMessageField == null)
+            {
+                throw new ApplicationException("No specified field found in action.");
+            }
+
+            await _slackIntegration.PostMessageToChat(actionDto.AuthToken.Token,
+                actionChannelId, payloadMessageField.Value);
+
+            return processPayload;
+        }
+
+        private List<FieldDTO> ExtractPayloadFields(PayloadDTO processPayload)
+        {
+            var payloadDataCrates = processPayload.CrateStorageDTO()
+                .CrateDTO
+                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
+                .ToList();
+
+            var result = new List<FieldDTO>();
+            foreach (var payloadDataCrate in payloadDataCrates)
+            {
+                var crateData = JsonConvert.DeserializeObject<List<FieldDTO>>(payloadDataCrate.Contents);
+                result.AddRange(crateData);
+            }
+
+            return result;
+        }
+
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             if (IsEmptyAuthToken(curActionDTO))

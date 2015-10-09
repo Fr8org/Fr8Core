@@ -11,5 +11,6 @@ namespace pluginSlack.Interfaces
         Task<string> GetOAuthToken(string code);
         Task<string> GetUserId(string oauthToken);
         Task<List<FieldDTO>> GetChannelList(string oauthToken);
+        Task<bool> PostMessageToChat(string oauthToken, string channelId, string message);
     }
 }
