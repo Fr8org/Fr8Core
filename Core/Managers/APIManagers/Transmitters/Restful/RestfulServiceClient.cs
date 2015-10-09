@@ -100,6 +100,14 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
             }
         }
 
+        private async Task<HttpResponseMessage> PostInternalAsync(Uri requestUri)
+        {
+            using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri))
+            {
+                return await SendInternalAsync(request);
+            }
+        }
+
         private async Task<HttpResponseMessage> PostInternalAsync<TContent>(Uri requestUri, TContent content)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Post, requestUri) { Content = new ObjectContent(typeof(TContent), content, _formatter) })
@@ -138,6 +146,14 @@ namespace Core.Managers.APIManagers.Transmitters.Restful
             using (var response = await GetInternalAsync(requestUri))
             {
                 return await DeserializeResponseAsync<TResponse>(response);
+            }
+        }
+
+        public async Task<string> PostAsync(Uri requestUri)
+        {
+            using (var response = await PostInternalAsync(requestUri))
+            {
+                return await response.Content.ReadAsStringAsync();
             }
         }
 

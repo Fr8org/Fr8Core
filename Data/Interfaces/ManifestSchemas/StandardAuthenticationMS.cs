@@ -10,11 +10,6 @@ namespace Data.Interfaces.ManifestSchemas
         }
 
         public AuthenticationMode Mode { get; set; }
-
-        /// <summary>
-        /// URL for external authentication.
-        /// </summary>
-        public string Url { get; set; }
     }
 
     public enum AuthenticationMode
