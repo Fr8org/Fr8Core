@@ -96,7 +96,7 @@ module dockyard.directives.radioButtonGroup {
                 attrs: ng.IAttributes) => {
 
                 if (angular.isArray(scope.field.controls) || scope.field.controls.length > 0) {
-                    $compile('<div ng-repeat="control in field.controls"><configuration-field current-action="currentAction" field="control" /></div>')(scope, function (cloned, scope) {
+                    $compile('<div ng-repeat="control in field.controls"><configuration-control current-action="currentAction" field="control" /></div>')(scope, function (cloned, scope) {
                         element.find('.nested-controls').append(cloned);
                     });
                 }

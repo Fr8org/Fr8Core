@@ -20,34 +20,34 @@ module dockyard.directives.paneConfigureAction {
         public fieldName: string;
     }
 
-    export interface IConfigurationFieldScope extends ng.IScope {
+    export interface IConfigurationControlScope extends ng.IScope {
         field: model.ControlDefinitionDTO;
         onChange: (radio: model.ControlDefinitionDTO) => void;
     }
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
-    class ConfigurationField implements ng.IDirective {
-        public link: (scope: IConfigurationFieldScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
-        public controller: ($scope: IConfigurationFieldScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+    class ConfigurationControl implements ng.IDirective {
+        public link: (scope: IConfigurationControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
+        public controller: ($scope: IConfigurationControlScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public scope = {
             currentAction: '=',
             field: '='
         };
-        public templateUrl = '/AngularTemplate/ConfigurationField';
+        public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';
 
-        private _$scope: IConfigurationFieldScope;
+        private _$scope: IConfigurationControlScope;
 
         constructor() {
-            ConfigurationField.prototype.link = (
-                $scope: IConfigurationFieldScope,
+            ConfigurationControl.prototype.link = (
+                $scope: IConfigurationControlScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
             };
 
-            ConfigurationField.prototype.controller = (
-                $scope: IConfigurationFieldScope,
+            ConfigurationControl.prototype.controller = (
+                $scope: IConfigurationControlScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
 
@@ -60,7 +60,7 @@ module dockyard.directives.paneConfigureAction {
         //The factory function returns Directive object as per Angular requirements
         public static Factory() {
             var directive = () => {
-                return new ConfigurationField();
+                return new ConfigurationControl();
             };
 
             directive['$inject'] = [];
@@ -84,7 +84,7 @@ module dockyard.directives.paneConfigureAction {
         }
     }
 
-    app.directive('configurationField', ConfigurationField.Factory());
+    app.directive('configurationControl', ConfigurationControl.Factory());
 
     // A simple filter to format a string as a valid HTML identifier
     // per http://www.w3.org/TR/html4/types.html#type-id 

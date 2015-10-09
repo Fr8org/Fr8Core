@@ -12,11 +12,11 @@
     </div>
     <div class="portlet-body">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-field current-action="currentAction" field="field" />
+            <configuration-control current-action="currentAction" field="field" />
         </div>
         <div ng-if="currentAction.currentView">
             <div ng-repeat="field in currentAction.configurationControls.fields">
-                <configuration-field current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
+                <configuration-control current-action="currentAction" field="field" ng-if="field.fieldLabel==currentAction.currentView" />
             </div>
         </div>
     </div>
