@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class ControlsDefinitionDTOConverter : CustomCreationConverter<ControlDefinitionDTO>
+    public class ControlDefinitionDTOConverter : CustomCreationConverter<ControlDefinitionDTO>
     {
         public override ControlDefinitionDTO Create(Type objectType)
         {
