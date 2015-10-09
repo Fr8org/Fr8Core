@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Data.Interfaces.ManifestSchemas
+namespace Data.Interfaces.DataTransferObjects
 {
     public class ControlsDefinitionDTOConverter : CustomCreationConverter<ControlDefinitionDTO>
     {
