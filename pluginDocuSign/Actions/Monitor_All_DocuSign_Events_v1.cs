@@ -36,11 +36,11 @@ namespace pluginDocuSign.Actions
              * Discussed with Alexei and it is required to have empty Standard Configuration Control in the crate.
              * So we create a text block which informs the user that this particular aciton does not require any configuration.
              */
-            var textBlock = new TextBlockFieldDTO()
+            var textBlock = new TextBlockControlDefinitionDTO()
             {
                 Label = "Monitor All DocuSign events",
                 Value = "This Action doesn't require any configuration.",
-                cssClass = "well well-lg"
+                CssClass = "well well-lg"
             };
             var curControlsCrate = PackControlsCrate(textBlock);
 
@@ -105,6 +105,7 @@ namespace pluginDocuSign.Actions
 
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
+
             return null;
         }
     }
