@@ -112,12 +112,13 @@ module dockyard.directives.paneConfigureAction {
 
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
                 $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], <any>angular.bind(this, this.onHide));
-                $scope.$on("onFieldChange", <any>angular.bind(this, this.onFieldChange));
+                $scope.$on("onChange", <any>angular.bind(this, this.onControlChange));
                 $scope.removeAction = <any>angular.bind(this, this.removeAction);
             };
         }
 
         private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList, scope: IPaneConfigureActionScope) {
+
             if (!newValue || !newValue.fields || newValue.fields === oldValue.fields || newValue.fields.length == 0) return;
             this.crateHelper.mergeControlListCrate(
                 scope.currentAction.configurationControls,
@@ -144,7 +145,7 @@ module dockyard.directives.paneConfigureAction {
             this._$scope.isVisible = false;
         };
 
-        private onFieldChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
+        private onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
             var scope = <IPaneConfigureActionScope>event.currentScope;
             // Check if this event is defined for the current field
             var fieldName = eventArgs.fieldName;
@@ -152,12 +153,12 @@ module dockyard.directives.paneConfigureAction {
 
 
             // Find the configuration field object for which the event has fired
-            fieldList = <Array<model.ConfigurationField>>this.$filter('filter')(fieldList, { name: fieldName }, true);
+            fieldList = <Array<model.ControlDefinitionDTO>>this.$filter('filter')(fieldList, { name: fieldName }, true);
             if (fieldList.length == 0 || !fieldList[0].events || fieldList[0].events.length == 0) return;
             var field = fieldList[0];
 
             // Find the onChange event object
-            var eventHandlerList = <Array<model.FieldEvent>>this.$filter('filter')(field.events, { name: 'onChange' }, true);
+            var eventHandlerList = <Array<model.ControlEvent>>this.$filter('filter')(field.events, { name: 'onChange' }, true);
             if (eventHandlerList.length == 0) return;
             var fieldEvent = eventHandlerList[0];
 
