@@ -114,14 +114,14 @@ namespace Core.Services
         /**********************************************************************************/
 
 	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
-	    {
-	        // Get all activities which parent is currActivity and order their by Ordering. The order is important!
-	        var orderedActivities = uow.ActivityRepository.GetAll()
-	            .Where(x => x.ParentActivityId == currActivity.Id)
-	            .OrderBy(z => z.Ordering);
-	        return orderedActivities;
-	    }
-
+		{
+                // Get all activities which parent is currActivity and order their by Ordering. The order is important!
+                var orderedActivities = uow.ActivityRepository.GetAll()
+                .Where(x => x.ParentActivityId == currActivity.Id)
+                .OrderBy(z => z.Ordering);
+                return orderedActivities;
+            }
+		   
 	    /**********************************************************************************/
 
         public async Task Process(int curActivityId, ProcessDO processDO)
@@ -140,17 +140,17 @@ namespace Core.Services
                 {
                     IAction _action = ObjectFactory.GetInstance<IAction>();
                     await _action.PrepareToExecute((ActionDO) curActivityDO, curProcessDO, uow);
-                }
             }
         }
-        
+            }
+
         /**********************************************************************************/
 
         public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
         {
             List<ActivityTemplateDO> curActivityTemplates;
 
-           curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
         
 
             //we're currently bypassing the subscription logic until we need it

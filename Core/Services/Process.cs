@@ -34,7 +34,7 @@ namespace Core.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
-        
+
         /**********************************************************************************/
         /// <summary>
         /// New Process object
@@ -72,7 +72,7 @@ namespace Core.Services
             }
             return curProcessDO;
         }
-        
+
         /**********************************************************************************/
 
         public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
@@ -88,17 +88,17 @@ namespace Core.Services
             {
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
-                
+
                 try
                 {
-                    await Execute(curProcessDO);
+                await Execute(curProcessDO);
                     curProcessDO.ProcessState = ProcessState.Completed;
-                }
+            }
                 catch
                 {
                     curProcessDO.ProcessState = ProcessState.Failed;
                     throw;
-                }
+        }
                 finally
                 {
                     uow.SaveChanges();
@@ -141,7 +141,7 @@ namespace Core.Services
             }
 
             if (process.ProcessTemplate.ProcessNodeTemplates.Count > 1)
-            {
+                {
                 throw new Exception("ProcessTemplate has multiple ProcessNodeTemplates");
             }
 
@@ -150,7 +150,7 @@ namespace Core.Services
                                               .FirstOrDefault(x => x.Ordering > process.CurrentActivity.Ordering);
             return process.CurrentActivity;
         }
-        
+
         /**********************************************************************************/
 
     }

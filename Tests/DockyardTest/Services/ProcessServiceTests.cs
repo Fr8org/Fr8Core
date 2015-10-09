@@ -14,6 +14,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
 
+
 namespace DockyardTest.Services
 {
     [TestFixture]
@@ -309,7 +310,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void SetProcessNextActivity_ProcessDOCurrenctActivityIsNull_NextActivityIsNull()
+        public void SetProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull()
         {
             _processService = ObjectFactory.GetInstance<IProcess>();
             ProcessDO process = FixtureData.TestProcessCurrentActivityNULL();
@@ -347,6 +348,87 @@ namespace DockyardTest.Services
 
             Assert.IsNotNull(process.NextActivity);
             Assert.AreEqual(process.NextActivity.Id, FixtureData.TestAction8().Id);
+        }
+
+        [Test]
+        public void UpdateProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull() 
+        {
+            //Arrange
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+
+            //process with current activity being null
+            ProcessDO curProcess = FixtureData.TestProcessCurrentActivityNULL();
+            //and next activity being not null
+            curProcess.NextActivity = FixtureData.TestAction2();
+
+            var nextActivity = curProcess.NextActivity;
+            //Act
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
+
+            //Assert
+            Assert.IsNotNull(curProcess.CurrentActivity);
+            Assert.IsNull(curProcess.NextActivity);
+            Assert.AreEqual(nextActivity.Id, curProcess.CurrentActivity.Id);
+        }
+
+        [Test]
+        public void UpdateNextActivity_ActivityListIsNull_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
+        {
+            //Arrange
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+
+            //process with current activity being equal to the next activity
+            ProcessDO curProcess = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
+
+            //Act
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
+
+            //Assert
+            Assert.IsNull(curProcess.NextActivity);
+        }
+
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void UpdateNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { null });
+        }
+
+        [Test]
+        public void UpdateNextActivity_ProcessDOCurrentActivitySameAsFirstOfGetNextActivity_NextActivityIsNull()
+        {
+            var curTestActivity = FixtureData.TestAction8();
+            //mock object that returns predefined value of TestAction8
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
+                .Returns(new List<ActivityDO>() { curTestActivity });
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
+
+            //process with current activity being equal to the next activity
+            ProcessDO curProcess = FixtureData.TestProcessUpdateNextActivity();
+
+            //Act
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
+
+            //Assert
+            Assert.IsNull(curProcess.CurrentActivity);
+            Assert.IsNull(curProcess.NextActivity);
         }
     }
 }
