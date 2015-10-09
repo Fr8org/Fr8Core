@@ -76,6 +76,8 @@ namespace pluginDocuSign.Actions
                     break;
             }
 
+            // User's choosen recipient is in recipientAddress. Someone needs to implement actual submission of the envelope. 
+
             return null;
         }
 
