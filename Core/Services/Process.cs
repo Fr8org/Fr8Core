@@ -135,17 +135,20 @@ namespace Core.Services
         private ActivityDO MoveToTheNextActivity(ProcessDO process)
         {
             // we relay on the fact that processtemplate has only one process node template. In future it will be fixed.
-            if (process.ProcessTemplate.ProcessNodeTemplates.Count == 0)
+
+            var count = process.ProcessTemplate.ProcessNodeTemplates.Count();
+
+            if (count == 0)
             {
                 throw new Exception("ProcessTemplate has no ProcessNodeTemplates");
             }
 
-            if (process.ProcessTemplate.ProcessNodeTemplates.Count > 1)
+            if (count > 1)
             {
                 throw new Exception("ProcessTemplate has multiple ProcessNodeTemplates");
             }
 
-            process.CurrentActivity = process.ProcessTemplate.ProcessNodeTemplates[0].Actions
+            process.CurrentActivity = process.ProcessTemplate.ProcessNodeTemplates.First().Activities
                                               .OrderBy(x => x.Ordering)
                                               .FirstOrDefault(x => x.Ordering > process.CurrentActivity.Ordering);
             return process.CurrentActivity;

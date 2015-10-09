@@ -346,14 +346,32 @@ namespace Core.Services
         /// <returns></returns>
         public DockyardAccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null
-                && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                return curActionDO.ProcessNodeTemplate.ProcessTemplate.DockyardAccount;
+                var processTemplate = GetProcessTemplate(curActionDO);
+                return processTemplate != null ? processTemplate.DockyardAccount : null;
             }
 
             return null;
 
+        }
+
+
+        private ProcessTemplateDO GetProcessTemplate(ActionDO action)
+        {
+            var root = action.ParentActivity;
+
+            while (root != null)
+            {
+                if (root is ProcessTemplateDO)
+                {
+                    return (ProcessTemplateDO)root;
+                }
+
+                root = root.ParentActivity;
+            }
+
+            return null;
         }
 
         public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
@@ -454,8 +472,8 @@ namespace Core.Services
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
                     // Try to get owner's account for Action -> ProcessTemplate.
-                    var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(action.ProcessNodeTemplateID);
-                    var dockyardAccount = processNodeTemplate.ProcessTemplate.DockyardAccount;
+                    var processTemplate = GetProcessTemplate(action);
+                    var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
                     
                     if (dockyardAccount == null)
                     {

@@ -113,6 +113,38 @@ namespace Core.Services
 
         /**********************************************************************************/
 
+        public void Delete (IUnitOfWork uow, ActivityDO activity)
+        {
+            var activities = new List<ActivityDO>();
+
+            TraverseActivity(activity, activities.Add);
+
+            activities.ForEach(x =>
+            {
+                // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
+                if (x is ProcessNodeTemplateDO)
+                {
+                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.ProcessNodeTemplateId == x.Id).ToArray())
+                    {
+                        uow.CriteriaRepository.Remove(criteria);
+                    }
+                }
+
+                uow.ActivityRepository.Remove(x);
+            });
+        }
+
+        /**********************************************************************************/
+
+        private static void TraverseActivity(ActivityDO parent, Action<ActivityDO> visitAction)
+        {
+            visitAction(parent);
+            foreach (ActivityDO child in parent.Activities)
+                TraverseActivity(child, visitAction);
+        }
+        
+        /**********************************************************************************/
+
 	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
 		{
                 // Get all activities which parent is currActivity and order their by Ordering. The order is important!

@@ -1,20 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Microsoft.AspNet.Identity;
-using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
-using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using System;
-using System.Data.Entity;
-using Microsoft.Ajax.Utilities;
-using WebGrease.Css.Extensions;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace Web.Controllers
 {
@@ -22,18 +18,28 @@ namespace Web.Controllers
     [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
-        private readonly IProcessTemplate _processTemplate;
+        /**********************************************************************************/
+        // Declarations
+        /**********************************************************************************/
 
+        private readonly IProcessTemplate _processTemplate;
+        
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IProcessTemplate>())
         {
         }
+
+        /**********************************************************************************/
 
         public ProcessTemplateController(IProcessTemplate processTemplate)
         {
             _processTemplate = processTemplate;
         }
 
+        /**********************************************************************************/
         [Route("full/{id:int}")]
         [ResponseType(typeof(ProcessTemplateDTO))]
         [HttpGet]
@@ -48,20 +54,21 @@ namespace Web.Controllers
             };
         }
 
+        /**********************************************************************************/
         // Manual mapping method to resolve DO-1164.
         private ProcessTemplateDTO MapProcessTemplateToDTO(ProcessTemplateDO curProcessTemplateDO, IUnitOfWork uow)
         {
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
-                .Include(x => x.Actions)
-                .Where(x => x.ParentTemplateId == curProcessTemplateDO.Id)
+                .Include(x => x.Activities)
+                .Where(x => x.ParentActivityId == curProcessTemplateDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((ProcessNodeTemplateDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
 
-                    pntDTO.Actions = x.Actions.Select(Mapper.Map<ActionDTO>).ToList();
+                    pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
                     
                     //black voodoo magic to alow client works as if  actionlists are still present.
                     foreach (var action in pntDTO.Actions)
@@ -94,6 +101,8 @@ namespace Web.Controllers
 
             return result;
         }
+
+        /**********************************************************************************/
         [Route("getactive")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -107,6 +116,7 @@ namespace Web.Controllers
             return Ok();
         }
 
+        /**********************************************************************************/
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
@@ -129,6 +139,7 @@ namespace Web.Controllers
             return Ok();
         }
 
+        /**********************************************************************************/
         
         public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
@@ -163,6 +174,7 @@ namespace Web.Controllers
             }
         }
 
+        /**********************************************************************************/
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
@@ -171,6 +183,8 @@ namespace Web.Controllers
             //A stub until the functionaltiy is ready
             return Ok();
         }
+
+        /**********************************************************************************/
 
         public IHttpActionResult Delete(int id)
         {
@@ -183,22 +197,27 @@ namespace Web.Controllers
             }
         }
 
+        /**********************************************************************************/
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         public IHttpActionResult GetTriggerSettings()
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
+        /**********************************************************************************/
         [Route("activate")]
         public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Activate(curProcessTemplate));
         }
 
+        /**********************************************************************************/
         [Route("deactivate")]
         public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Deactivate(curProcessTemplate));
         }
+
+        /**********************************************************************************/
     }
 }

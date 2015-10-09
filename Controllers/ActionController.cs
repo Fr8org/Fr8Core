@@ -156,9 +156,7 @@ namespace Web.Controllers
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             // DO-1214. Dirty hack with ids I've made not change client's process builder logic
-            submittedActionDO.ProcessNodeTemplateID = curActionDTO.ActionListId;
-            submittedActionDO.ParentActivityId = null;
-            submittedActionDO.ParentActivity = null;
+            submittedActionDO.ParentActivityId = curActionDTO.ActionListId;
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

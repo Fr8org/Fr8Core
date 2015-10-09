@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using System.Data.Entity;
-using StructureMap;
-using System.Data;
 using Data.Interfaces.ManifestSchemas;
-using Google.GData.Spreadsheets;
-using Newtonsoft.Json;
+using Data.States;
+using StructureMap;
 
 namespace Core.Services
 {
@@ -27,8 +24,6 @@ namespace Core.Services
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
         private readonly ICrate _crate;
-
-        public object itemsToRemove { get; private set; }
 
         /**********************************************************************************/
         // Functions
@@ -51,7 +46,7 @@ namespace Core.Services
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(pt => pt.ProcessNodeTemplates);
+                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not ProcessTemplates
 
                 if (isAdmin)
                 {
@@ -76,8 +71,8 @@ namespace Core.Services
             {
                 ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
                 var processNodeTemplate = new ProcessNodeTemplateDO(true);
-                processNodeTemplate.ProcessTemplate = ptdo;
-                ptdo.ProcessNodeTemplates.Add(processNodeTemplate);
+                processNodeTemplate.ParentActivity = ptdo;
+                ptdo.Activities.Add(processNodeTemplate);
 
                 uow.ProcessTemplateRepository.Add(ptdo);
                 _processNodeTemplate.Create(uow, ptdo.StartingProcessNodeTemplate);
@@ -106,30 +101,8 @@ namespace Core.Services
                 throw new EntityNotFoundException<ProcessTemplateDO>(id);
             }
 
-            var activities = new List<ActivityDO>();
-
-            foreach (var nodeTemplate in curProcessTemplate.ProcessNodeTemplates)
-            {
-                foreach (var activity in nodeTemplate.Actions)
-                {
-                    TraverseActivity(activity, activities.Add);
-                }
-            }
-
-            activities.ForEach(x => uow.ActivityRepository.Remove(x));
-
-            uow.ProcessTemplateRepository.Remove(curProcessTemplate);
+            ObjectFactory.GetInstance<IActivity>().Delete(uow, curProcessTemplate);
         }
-
-        /**********************************************************************************/
-
-        private static void TraverseActivity(ActivityDO parent, Action<ActivityDO> visitAction)
-        {
-            visitAction(parent);
-            foreach (ActivityDO child in parent.Activities)
-                TraverseActivity(child, visitAction);
-        }
-
 
         /**********************************************************************************/
 
@@ -161,9 +134,9 @@ namespace Core.Services
 
                 firstNodeTemplate = false;
 
-                if (template.Actions != null)
+                if (template.Activities != null)
                 {
-                    foreach (var activityDo in template.Actions.OfType<TActivity>())
+                    foreach (var activityDo in template.Activities.OfType<TActivity>())
                     {
                         yield return activityDo;
                     }

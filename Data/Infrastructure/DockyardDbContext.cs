@@ -310,13 +310,12 @@ namespace Data.Infrastructure
                 .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
 
-            /*modelBuilder.Entity<ActivityDO>()
+            modelBuilder.Entity<ActivityDO>()
                 .HasOptional(x => x.ParentActivity)
-                .WithMany(x=>x.Actions)
+                .WithMany(x => x.Activities)
                 .HasForeignKey(x => x.ParentActivityId)
-                .WillCascadeOnDelete(true);*/
+                .WillCascadeOnDelete(false);
             
-
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
@@ -326,13 +325,12 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-
-            modelBuilder.Entity<ProcessNodeTemplateDO>()
-               .HasMany<ActionDO>(c => c.Actions)
-               .WithOptional(x => x.ProcessNodeTemplate)
-               .WillCascadeOnDelete(true);
             
-
+//            modelBuilder.Entity<ProcessNodeTemplateDO>()
+//               .HasMany<CriteriaDO>(c => c.Criteria)
+//               .WithOptional(x => x.ProcessNodeTemplate)
+//               .WillCascadeOnDelete(true);
+            
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Plugin)
              .WithMany()

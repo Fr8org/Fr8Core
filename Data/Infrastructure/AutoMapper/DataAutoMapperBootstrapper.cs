@@ -59,9 +59,9 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
 
             Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
-                .ForMember(x => x.ParentTemplateId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
+                .ForMember(x => x.ParentActivityId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
             Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
-                .ForMember(x => x.ProcessTemplateId, opts => opts.ResolveUsing(x => x.ParentTemplateId));
+                .ForMember(x => x.ProcessTemplateId, opts => opts.ResolveUsing(x => x.ParentActivityId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));

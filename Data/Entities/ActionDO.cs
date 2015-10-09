@@ -24,11 +24,8 @@ namespace Data.Entities
         [ForeignKey("ActivityTemplate")]
         public int? ActivityTemplateId { get; set; }
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
-        
-        [ForeignKey("ProcessNodeTemplate")]
-        [Column("ProcessNodeTemplateDO_Id")]
-        public int? ProcessNodeTemplateID { get; set; }
-        public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
+       
+       
 
         [NotMapped]
         public bool IsTempId { get; set; }

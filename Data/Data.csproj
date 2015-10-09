@@ -359,6 +359,22 @@
     <Compile Include="Migrations\201510071622502_ProcessNodeTemplatePropsNamingChange.Designer.cs">
       <DependentUpon>201510071622502_ProcessNodeTemplatePropsNamingChange.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510091326354_UnifiedNestingMigrationFixed.cs" />
+    <Compile Include="Migrations\201510091326354_UnifiedNestingMigrationFixed.Designer.cs">
+      <DependentUpon>201510091326354_UnifiedNestingMigrationFixed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510091505369_UnifiedNestingMigration_np.cs" />
+    <Compile Include="Migrations\201510091505369_UnifiedNestingMigration_np.Designer.cs">
+      <DependentUpon>201510091505369_UnifiedNestingMigration_np.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510091557472_UnifiedNestingMigration_removePNTfromActionDO.cs" />
+    <Compile Include="Migrations\201510091557472_UnifiedNestingMigration_removePNTfromActionDO.Designer.cs">
+      <DependentUpon>201510091557472_UnifiedNestingMigration_removePNTfromActionDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.cs" />
+    <Compile Include="Migrations\201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.Designer.cs">
+      <DependentUpon>201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -646,6 +662,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510071622502_ProcessNodeTemplatePropsNamingChange.resx">
       <DependentUpon>201510071622502_ProcessNodeTemplatePropsNamingChange.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510091326354_UnifiedNestingMigrationFixed.resx">
+      <DependentUpon>201510091326354_UnifiedNestingMigrationFixed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510091505369_UnifiedNestingMigration_np.resx">
+      <DependentUpon>201510091505369_UnifiedNestingMigration_np.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510091557472_UnifiedNestingMigration_removePNTfromActionDO.resx">
+      <DependentUpon>201510091557472_UnifiedNestingMigration_removePNTfromActionDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.resx">
+      <DependentUpon>201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

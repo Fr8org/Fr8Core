@@ -70,36 +70,43 @@ namespace Core.Services
             }
 
             // Remove all actions.
-            processNodeTemplate.Actions.ForEach(x => uow.ActivityRepository.Remove(x));
 
-            uow.SaveChanges();
             
-            // Remove Criteria.
-            uow.CriteriaRepository
-                .GetQuery()
-                .Where(x => x.ProcessNodeTemplateId == id)
-                .ToList()
-                .ForEach(x => uow.CriteriaRepository.Remove(x));
 
-            uow.SaveChanges();
+          //  processNodeTemplate.Activities.ForEach(x => uow.ActivityRepository.Remove(x));
+
+//            uow.SaveChanges();
+//            
+//            // Remove Criteria.
+//            uow.CriteriaRepository
+//                .GetQuery()
+//                .Where(x => x.ProcessNodeTemplateId == id)
+//                .ToList()
+//                .ForEach(x => uow.CriteriaRepository.Remove(x));
+//
+//            uow.SaveChanges();
 
             // Remove ProcessNodeTemplate.
-            uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
+            //uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
+
+
+            ObjectFactory.GetInstance<IActivity>().Delete(uow, processNodeTemplate);
+
             uow.SaveChanges();
         }
 
         public void AddAction(IUnitOfWork uow, ActionDO curActionDO)
         {
-            var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curActionDO.ProcessNodeTemplateID);
+            var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curActionDO.ParentActivityId);
 
             if (processNodeTemplate == null)
             {
-                throw new Exception(string.Format("Unable to find ProcessNodeTemplate by id = {0}", curActionDO.ProcessNodeTemplateID));
+                throw new Exception(string.Format("Unable to find ProcessNodeTemplate by id = {0}", curActionDO.ParentActivityId));
             }
 
-            curActionDO.Ordering = processNodeTemplate.Actions.Count > 0 ? processNodeTemplate.Actions.Max(x => x.Ordering) + 1 : 1;
+            curActionDO.Ordering = processNodeTemplate.Activities.Count > 0 ? processNodeTemplate.Activities.Max(x => x.Ordering) + 1 : 1;
 
-            processNodeTemplate.Actions.Add(curActionDO);
+            processNodeTemplate.Activities.Add(curActionDO);
 
             uow.SaveChanges();
         }
