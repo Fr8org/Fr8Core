@@ -9,12 +9,21 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_MapFieldsClicked,
         PaneConfigureAction_Cancelled,
         PaneConfigureAction_ActionRemoved,
-        PaneConfigureAction_InternalAuthentication
+        PaneConfigureAction_InternalAuthentication,
+        PaneConfigureAction_ExternalAuthentication
     }
 
     export class ActionUpdatedEventArgs extends ActionUpdatedEventArgsBase { }
 
     export class InternalAuthenticationArgs {
+        public activityTemplateId: number;
+
+        constructor(activityTemplateId: number) {
+            this.activityTemplateId = activityTemplateId;
+        }
+    }
+
+    export class ExternalAuthenticationArgs {
         public activityTemplateId: number;
 
         constructor(activityTemplateId: number) {
@@ -236,7 +245,11 @@ module dockyard.directives.paneConfigureAction {
 
                     // External auth mode.
                     else {
-                        alert('TODO: External auth');
+                        // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
+                        scope.$emit(
+                            MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
+                            new ExternalAuthenticationArgs(res.activityTemplateId)
+                        );
                     }
 
                     scope.processing = false;
@@ -277,10 +290,13 @@ module dockyard.directives.paneConfigureAction {
                 $timeout: ng.ITimeoutService
             ) => {
 
-                return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout);
+                return new PaneConfigureAction($rootScope, ActionService,
+                    crateHelper, $filter, $timeout);
             };
 
-            directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout'];
+            directive['$inject'] = ['$rootScope', 'ActionService',
+                'CrateHelper', '$filter', '$timeout'];
+
             return directive;
         }
     }
