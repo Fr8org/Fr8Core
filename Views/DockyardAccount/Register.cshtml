@@ -6,13 +6,11 @@
 <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
 <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
 
-<div class="portlet box blue-hoki">
-    <div class="portlet-title">
-        <div class="caption">
-            Create a new user
-        </div>
-    </div>
-    <div class="portlet-body form metronic-validation-section">
+@Html.Partial("~/Views/DockyardAccount/_HeaderPartial.cshtml")
+
+<div class="modal-dialog">
+    <div class="loginmodal-container">
+        <h1>Create a new user</h1><br>
 
         @using (Html.BeginForm("Register", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
         {
