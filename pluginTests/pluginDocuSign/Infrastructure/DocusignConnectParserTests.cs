@@ -16,7 +16,9 @@ namespace DockyardTest.DocuSign
         [SetUp]
         public override void SetUp()
         {
-            _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(Environment.CurrentDirectory);
+            var target = Path.Combine(Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName, "Tests");
+            _xmlPayloadFullPath = FixtureData.FindXmlPayloadFullPath(target);
+
             if (_xmlPayloadFullPath == string.Empty)
                 throw new Exception("XML payload file for testing DocuSign notification is not found.");
         }
