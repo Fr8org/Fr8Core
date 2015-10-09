@@ -134,11 +134,13 @@ namespace Web
 
         public async Task RegisterPluginActions()
         {
-            try
+            var alertReporter = ObjectFactory.GetInstance<EventReporter>();
+            
+            var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
+            int count = 0;
+            foreach (string url in activityTemplateHosts)
             {
-                var activityTemplateHosts = Utilities.FileUtils.LoadFileHostList();
-                int count = 0;
-                foreach (string url in activityTemplateHosts)
+                try
                 {
                     var uri = url.StartsWith("http") ? url : "http://" + url;
                     uri += "/plugins/discover";
@@ -150,23 +152,22 @@ namespace Web
                     //   # pluginDockyardCore.Controllers.PluginController#DiscoverPlugins()
                     //   # pluginDocuSign.Controllers.PluginController#DiscoverPlugins()
 
-                     
+
                     foreach (var curItem in activityTemplateList)
                     {
                         new ActivityTemplate().Register(curItem);
                         count++;
                     }
                 }
+                catch (Exception ex)
+                {
+                    alertReporter = ObjectFactory.GetInstance<EventReporter>();
+                    alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
 
-                var alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
-            }
-            catch (Exception ex)
-            {
-                EventReporter alertReporter = ObjectFactory.GetInstance<EventReporter>();
-                alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
-                //Logger.GetLogger().ErrorFormat("Error register plugins action template: {0} ", ex.Message);
-            }
+                }
+             }
+                
+             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
         }
 
         public bool CheckForActivityTemplate(string templateName)

@@ -30,8 +30,10 @@ namespace Core.Interfaces
 		StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
         ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
-        Task Authenticate(DockyardAccountDO user,
-            PluginDO plugin, string username, string password);
+        Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
+        Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);
+        Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
+        
         void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
         void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
         IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key);

@@ -19,25 +19,36 @@ namespace pluginSlack.Controllers
         [ResponseType(typeof(List<ActivityTemplateDO>))]
         public IHttpActionResult DiscoverPlugins()
         {
-            var result = new List<ActivityTemplateDO>();
-            
-            var template = new ActivityTemplateDO
-            {
-                Name = "Publish_To_Slack",
-                Category = ActivityCategory.fr8_Forwarder,
-                Version = "1"
-            };
-
             var plugin = new PluginDO
             {
                 Endpoint = "localhost:39504",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginSlack"
+                Name = "pluginSlack",
+                RequiresAuthentication = true,
+                Version = "1"
             };
-            
-            template.Plugin = plugin;
 
-            result.Add(template);
+            var monitorChannelAction = new ActivityTemplateDO
+            {
+                Name = "Monitor_Channel",
+                Category = ActivityCategory.fr8_Monitor,
+                Plugin = plugin,
+                Version = "1"
+            };
+
+            var publishToSlackAction = new ActivityTemplateDO
+            {
+                Name = "Publish_To_Slack",
+                Category = ActivityCategory.fr8_Forwarder,
+                Plugin = plugin,
+                Version = "1"
+            };
+
+            var result = new List<ActivityTemplateDO>()
+            {
+                monitorChannelAction,
+                publishToSlackAction
+            };
 
             return Json(result);    
         }
