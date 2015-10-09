@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Core.Managers;
 using Core.Utilities;
 using Data.Entities;
@@ -28,7 +29,7 @@ namespace pluginDocuSign.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        public void Process(string curExternalEventPayload)
+        public async Task Process(string curExternalEventPayload)
         {
             //parse the external event xml payload
             List<DocuSignEventDO> curExternalEvents;
@@ -50,7 +51,7 @@ namespace pluginDocuSign.Services
                 .Create("Standard Event Report", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
 
             string url = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
+            await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)

@@ -35,46 +35,46 @@ namespace Core.Services
 
         /**********************************************************************************/
 
-        public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
-		{
-			if (curActivityDO == null)
-				throw new ArgumentNullException("curActivityDO");
-            if (curActivityDO.ParentActivityId == null)
-                return new List<ActivityDO>();
+	    public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
+	    {
+	        if (curActivityDO == null)
+	            throw new ArgumentNullException("curActivityDO");
+	        if (curActivityDO.ParentActivityId == null)
+	            return new List<ActivityDO>();
 
-			List<ActivityDO> upstreamActivities = new List<ActivityDO>();
+	        List<ActivityDO> upstreamActivities = new List<ActivityDO>();
 
-                //start by getting the parent of the current action
-                var parentActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
+	        //start by getting the parent of the current action
+	        var parentActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
 
 
-				// find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
-				var upstreamSiblings =
-				    parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
-                        
-                //for each such sibling action, we want to add it to the list
-                //but some of those activities may be actionlists with childactivities of their own
-                //in that case we need to recurse
-				foreach (var upstreamSibling in upstreamSiblings)
-				{
-                    //1) first add the upstream siblings
-				    upstreamActivities.AddRange(GetActivityTree(uow, upstreamSibling));
-				}
+	        // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+	        var upstreamSiblings =
+	            parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
 
-                //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
-				if (parentActivity != null)
-				{
-                    //2) then add the parent activity...
-                    upstreamActivities.Add(parentActivity); 
-                    //3) then add the parent's upstream activities
-				    upstreamActivities.AddRange(GetUpstreamActivities(uow, parentActivity));
-				}
-				else return upstreamActivities;
-					    
-            return upstreamActivities; //should never actually get here, but the compiler insists
-		}
+	        //for each such sibling action, we want to add it to the list
+	        //but some of those activities may be actionlists with childactivities of their own
+	        //in that case we need to recurse
+	        foreach (var upstreamSibling in upstreamSiblings)
+	        {
+	            //1) first add the upstream siblings
+	            upstreamActivities.AddRange(GetActivityTree(uow, upstreamSibling));
+	        }
 
-        /**********************************************************************************/
+	        //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
+	        if (parentActivity != null)
+	        {
+	            //2) then add the parent activity...
+	            upstreamActivities.Add(parentActivity);
+	            //3) then add the parent's upstream activities
+	            upstreamActivities.AddRange(GetUpstreamActivities(uow, parentActivity));
+	        }
+	        else return upstreamActivities;
+
+	        return upstreamActivities; //should never actually get here, but the compiler insists
+	    }
+
+	    /**********************************************************************************/
 
 	    public List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivity)
 	    {

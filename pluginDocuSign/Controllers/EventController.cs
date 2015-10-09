@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using pluginDocuSign.Services;
 using StructureMap;
 using pluginDocuSign.Interfaces;
@@ -16,9 +17,9 @@ namespace pluginDocuSign.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async void ProcessIncomingNotification()
+        public async Task ProcessIncomingNotification()
         {
-            _event.Process(await Request.Content.ReadAsStringAsync());
+            await _event.Process(await Request.Content.ReadAsStringAsync());
         }
     }
 }

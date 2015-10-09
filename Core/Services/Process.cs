@@ -91,14 +91,14 @@ namespace Core.Services
 
                 try
                 {
-                await Execute(curProcessDO);
+                    await Execute(curProcessDO);
                     curProcessDO.ProcessState = ProcessState.Completed;
-            }
+                }
                 catch
                 {
                     curProcessDO.ProcessState = ProcessState.Failed;
                     throw;
-        }
+                }
                 finally
                 {
                     uow.SaveChanges();
@@ -141,7 +141,7 @@ namespace Core.Services
             }
 
             if (process.ProcessTemplate.ProcessNodeTemplates.Count > 1)
-                {
+            {
                 throw new Exception("ProcessTemplate has multiple ProcessNodeTemplates");
             }
 

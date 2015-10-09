@@ -116,10 +116,9 @@ namespace Web.Controllers
             //create a plugin event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
             
-            await
-                _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
+            var result = await _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
 
-            return Ok();
+            return Ok(result);
             
             
         }

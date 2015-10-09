@@ -32,7 +32,8 @@ namespace pluginSlack.Controllers
             {
                 Endpoint = "localhost:39504",
                 PluginStatus = PluginStatus.Active,
-                Name = "pluginSlack"
+                Name = "pluginSlack",
+                Version = "1"
             };
             
             template.Plugin = plugin;
