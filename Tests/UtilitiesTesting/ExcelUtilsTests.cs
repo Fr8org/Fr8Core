@@ -10,6 +10,10 @@ using Data.Repositories;
 using Data.Infrastructure;
 using Data.Interfaces;
 
+using Microsoft.WindowsAzure;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
+
 namespace UtilitiesTesting
 {
     [TestFixture]
@@ -284,7 +288,7 @@ namespace UtilitiesTesting
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IFileRepository fileRepository = new FileRepository(uow);
+                IFileRepository fileRepository = new MockedFileRepository(uow);
                 // https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx
                 var blobUrl = "https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx";
                 try
@@ -307,7 +311,7 @@ namespace UtilitiesTesting
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IFileRepository fileRepository = new FileRepository(uow);
+                IFileRepository fileRepository = new MockedFileRepository(uow);
                 // https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx
                 var blobUrl = "https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx";
                 try
@@ -326,6 +330,34 @@ namespace UtilitiesTesting
                 {
                 }
             }
+        }
+    }
+
+    public class MockedFileRepository : FileRepository
+    {
+        public MockedFileRepository(IUnitOfWork uow)
+            : base(uow)
+        {
+        }
+
+        protected override CloudBlobContainer GetDefaultBlobContainer()
+        {
+            const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";
+            const string defaultAzureStorageContainer = "DefaultAzureStorageContainer";
+
+            string containerName = "default-container-dev"; // CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
+            
+            //CloudStorageAccount storageAccount =
+            //    CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
+
+            CloudStorageAccount storageAccount =
+                CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=yardstore1;AccountKey=Or8iJLqkutxYCSKHiOo8iwSwyALCdFfR/RUTWSEZ9BPhLY4+L2QKVEean0bYSmVzCNSNSqBt2/zVA5HMgkwayg==");
+
+            CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
+
+            CloudBlobContainer container = blobClient.GetContainerReference(containerName);
+
+            return container;
         }
     }
 }
