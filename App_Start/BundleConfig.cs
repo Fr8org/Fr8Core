@@ -24,10 +24,6 @@ namespace Web.App_Start
                 "~/bower_components/bootstrap/js/bootstrap.min.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
-                "~/bower_components/jquery/dist/jquery.min.js"
-                ));
-
             bundles.Add(new ScriptBundle("~/bundles/js/colorbox").Include(
                 "~/bower_components/jquery-colorbox/jquery.colorbox.min.js"
                 ));
