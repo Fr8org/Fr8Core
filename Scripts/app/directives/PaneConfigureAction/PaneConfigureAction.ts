@@ -249,7 +249,7 @@ module dockyard.directives.paneConfigureAction {
                 // Assign name to res rather than currentAction to prevent 
                 // $watches from unnecessarily triggering
                 res.activityTemplateName = activityTemplateName;
-                this._$scope.currentAction = res;
+                this._$scope.currentAction.crateStorage = res.crateStorage;
                 (<any>this._$scope.currentAction).configurationControls =
                 this.crateHelper.createControlListFromCrateStorage(this._$scope.currentAction.crateStorage);
 
