@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
@@ -10,6 +12,10 @@ namespace Data.Entities
 
         [Required]
         public string Name { get; set; }
+
+        public IEnumerable<MT_Field> Fields { get; set; }
+
+        public MT_FieldType MT_FieldType { get; set; }
 
         [Required, ForeignKey("MT_Organization")]
         public int MT_OrganizationId { get; set; }
