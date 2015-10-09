@@ -47,7 +47,7 @@ namespace pluginDocuSign.Controllers
         }
 
         [HttpPost]
-        [Route("authenticate")]
+        [Route("authenticate_internal")]
         public async Task<AuthTokenDTO> Authenticate(CredentialsDTO curCredentials)
         {
             // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm

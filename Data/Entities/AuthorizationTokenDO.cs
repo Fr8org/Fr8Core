@@ -10,7 +10,14 @@ namespace Data.Entities
         public AuthorizationTokenDO()
         {
             Id = Guid.NewGuid();
-            Plugin = new PluginDO() { Name = "", Version = "1", PluginStatus = PluginStatus.Active };
+            
+            // Do not initialize navigation properties like this.
+            // It breaks entity update process.
+            // When record is retrieved from DB, new instance of dynamic proxy is created derived from AuthorizationTokenDO.
+            // If we manually set navigation property like this, EF will not be able to handle dynamic proxy navigation properties properly!.
+            // It is ok to initialize collections, though.
+            // Commented out by yakov.gnusin.
+            // Plugin = new PluginDO() { Name = "", Version = "1", PluginStatus = PluginStatus.Active };
         }
 
         public Guid Id { get; set; }
@@ -22,6 +29,11 @@ namespace Data.Entities
 
         public String ExternalAccountId { get; set; }
 
+        /// <summary>
+        /// State-token parameter, that is sent to exteral auth service,
+        /// and returned back when auth is completed.
+        /// </summary>
+        public String ExternalStateToken { get; set; }
 
         [ForeignKey("UserDO")]
         public String UserID { get; set; }

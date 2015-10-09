@@ -43,14 +43,21 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
             }
 
-            var valuesCrate = curPayloadDTO.CrateStorageDTO()
+            var valuesCrates = curPayloadDTO.CrateStorageDTO()
                 .CrateDTO
-                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
-                    && x.Label == "DocuSign Envelope Data")
-                .FirstOrDefault();
+                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
+                .ToList();
 
-            // Prepare envelope data.
-            var curValues = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
+            var curValues = new List<FieldDTO>();
+            foreach (var valuesCrate in valuesCrates)
+            {
+                var singleCrateValues = JsonConvert
+                    .DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
+
+                curValues.AddRange(singleCrateValues);
+            }
+
+            // Prepare envelope data.            
 
             // Evaluate criteria using Contents json body of found Crate.
             var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
