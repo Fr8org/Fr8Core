@@ -63,7 +63,7 @@ namespace pluginIntegrationTests
             _processTemplateDO.DockyardAccount = _testUserAccount;
 
             _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
-            _processNodeTemplateDO.ProcessTemplate = _processTemplateDO;
+            _processNodeTemplateDO.ParentActivity = _processTemplateDO;
 
 //            _actionList = FixtureData.TestActionList_ImmediateActions();
 //            _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
