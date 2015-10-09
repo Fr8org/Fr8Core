@@ -40,8 +40,6 @@
 /// <reference path="directives/paneconfigureaction/paneconfigureaction.ts" />
 /// <reference path="directives/paneconfigureaction/configurationcontrol.ts" />
 
-/// <reference path="directives/paneselectaction/paneselectaction.ts" />
-
 
 /// <reference path="directives/paneworkflowdesigner/ipaneworkflowdesignerscope.ts" />
 /// <reference path="directives/paneworkflowdesigner/messages.ts" />

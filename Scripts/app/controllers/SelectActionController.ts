@@ -1,6 +1,6 @@
 ﻿module dockyard.controllers {
 
-    export class PaneSelectActionController {
+    export class SelectActionController {
         actionTypes: Array<model.ActivityTemplate> = []
         public static $inject = [
             '$scope',
@@ -23,5 +23,5 @@
         }
     }
 
-    app.controller('PaneSelectActionController', PaneSelectActionController);
+    app.controller('SelectActionController', SelectActionController);
 }

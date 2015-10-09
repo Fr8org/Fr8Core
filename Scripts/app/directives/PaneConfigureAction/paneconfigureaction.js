@@ -19,8 +19,6 @@ var dockyard;
                 MessageType[MessageType["PaneConfigureAction_MapFieldsClicked"] = 3] = "PaneConfigureAction_MapFieldsClicked";
                 MessageType[MessageType["PaneConfigureAction_Cancelled"] = 4] = "PaneConfigureAction_Cancelled";
                 MessageType[MessageType["PaneConfigureAction_ActionRemoved"] = 5] = "PaneConfigureAction_ActionRemoved";
-                MessageType[MessageType["PaneConfigureAction_InternalAuthentication"] = 6] = "PaneConfigureAction_InternalAuthentication";
-                MessageType[MessageType["PaneConfigureAction_ExternalAuthentication"] = 7] = "PaneConfigureAction_ExternalAuthentication";
             })(paneConfigureAction.MessageType || (paneConfigureAction.MessageType = {}));
             var MessageType = paneConfigureAction.MessageType;
             var ActionUpdatedEventArgs = (function (_super) {
@@ -31,20 +29,6 @@ var dockyard;
                 return ActionUpdatedEventArgs;
             })(directives.ActionUpdatedEventArgsBase);
             paneConfigureAction.ActionUpdatedEventArgs = ActionUpdatedEventArgs;
-            var InternalAuthenticationArgs = (function () {
-                function InternalAuthenticationArgs(activityTemplateId) {
-                    this.activityTemplateId = activityTemplateId;
-                }
-                return InternalAuthenticationArgs;
-            })();
-            paneConfigureAction.InternalAuthenticationArgs = InternalAuthenticationArgs;
-            var ExternalAuthenticationArgs = (function () {
-                function ExternalAuthenticationArgs(activityTemplateId) {
-                    this.activityTemplateId = activityTemplateId;
-                }
-                return ExternalAuthenticationArgs;
-            })();
-            paneConfigureAction.ExternalAuthenticationArgs = ExternalAuthenticationArgs;
             var RenderEventArgs = (function () {
                 function RenderEventArgs(action) {
                     // Clone Action to prevent any issues due to possible mutation of source object
@@ -190,22 +174,6 @@ var dockyard;
                         self.configurationWatchUnregisterer();
                     }
                     this.ActionService.configure(action).$promise.then(function (res) {
-                        // Check if authentication is required.
-                        if (self.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
-                            var authCrate = self.crateHelper
-                                .findByManifestType(res.crateStorage, 'Standard Authentication');
-                            var authMS = angular.fromJson(authCrate.contents);
-                            // Dockyard auth mode.
-                            if (authMS.Mode == 1) {
-                                scope.$emit(MessageType[MessageType.PaneConfigureAction_InternalAuthentication], new InternalAuthenticationArgs(res.activityTemplateId));
-                            }
-                            else {
-                                // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                                scope.$emit(MessageType[MessageType.PaneConfigureAction_ExternalAuthentication], new ExternalAuthenticationArgs(res.activityTemplateId));
-                            }
-                            scope.processing = false;
-                            return;
-                        }
                         // Unblock pane
                         scope.processing = false;
                         // Assign name to res rather than currentAction to prevent 
@@ -229,8 +197,7 @@ var dockyard;
                     var directive = function ($rootScope, ActionService, crateHelper, $filter, $timeout) {
                         return new PaneConfigureAction($rootScope, ActionService, crateHelper, $filter, $timeout);
                     };
-                    directive['$inject'] = ['$rootScope', 'ActionService',
-                        'CrateHelper', '$filter', '$timeout'];
+                    directive['$inject'] = ['$rootScope', 'ActionService', 'CrateHelper', '$filter', '$timeout'];
                     return directive;
                 };
                 return PaneConfigureAction;

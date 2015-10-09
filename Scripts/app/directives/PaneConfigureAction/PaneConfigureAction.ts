@@ -4,10 +4,6 @@ module dockyard.directives.paneConfigureAction {
 
     export enum MessageType {
         PaneConfigureAction_ActionUpdated,
-        PaneConfigureAction_Render,
-        PaneConfigureAction_Hide,
-        PaneConfigureAction_MapFieldsClicked,
-        PaneConfigureAction_Cancelled,
         PaneConfigureAction_ActionRemoved,
         PaneConfigureAction_InternalAuthentication,
         PaneConfigureAction_ExternalAuthentication
@@ -84,7 +80,6 @@ module dockyard.directives.paneConfigureAction {
         public restrict = 'E';
         private _$element: ng.IAugmentedJQuery;
         private _$scope: IPaneConfigureActionScope;
-        private _currentAction: interfaces.IActionDTO = new model.ActionDTO(0, 0, false, 0);
         private configurationWatchUnregisterer: Function;
 
         constructor(
@@ -110,8 +105,7 @@ module dockyard.directives.paneConfigureAction {
                 this._$element = $element;
                 this._$scope = $scope;
 
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Render], <any>angular.bind(this, this.onRender));
-                $scope.$on(MessageType[MessageType.PaneConfigureAction_Hide], <any>angular.bind(this, this.onHide));
+                this.onRender();
                 $scope.$on("onChange", <any>angular.bind(this, this.onControlChange));
                 $scope.removeAction = <any>angular.bind(this, this.removeAction);
             };
@@ -172,7 +166,7 @@ module dockyard.directives.paneConfigureAction {
                 // Block the pane to prevent user from making more changes since pane controls may change
                 this.blockUI();
 
-                this.loadConfiguration(scope, scope.currentAction);
+                this.loadConfiguration();
             }
         }
 
@@ -180,17 +174,15 @@ module dockyard.directives.paneConfigureAction {
             //Metronic.blockUI({ target:  });
         }
 
-        private onRender(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            var scope = (<IPaneConfigureActionScope>event.currentScope);
+        private onRender() {
+            if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
 
             // Avoid unnecessary Save while 
             if (this.configurationWatchUnregisterer) {
                 this.configurationWatchUnregisterer();
             }
-
             //for now ignore actions which were not saved in the database
-            if (eventArgs.action.isTempId) return;
-            scope.isVisible = true;
+            if (this._$scope.currentAction.isTempId) return;
 
             // Get configuration settings template from the server if the current action does not 
             // contain those or user has selected another action template.
@@ -205,39 +197,34 @@ module dockyard.directives.paneConfigureAction {
             // to refresh after being assigned newly selected Action on ProcessBuilderController
             // and as a result it contained old action. 
             this.$timeout(() => {
-                if (scope.currentAction.activityTemplateId > 0) {
-                    this.loadConfiguration(scope, scope.currentAction);
+                if (this._$scope.currentAction.activityTemplateId > 0) {
+                    this.loadConfiguration();
                 }            
-
-                // Create a directive-local immutable copy of action so we can detect 
-                // a change of actionTemplateId in the currently selected action
-                this._currentAction = angular.extend({}, scope.currentAction);
             }, 300);
         }
 
         // Here we look for Crate with ManifestType == 'Standard Configuration Controls'.
         // We parse its contents and put it into currentAction.configurationControls structure.
-        private loadConfiguration(scope: IPaneConfigureActionScope, action: interfaces.IActionDTO) {
+        private loadConfiguration() {
             // Block pane and show pane-level 'loading' spinner
-            scope.processing = true;
-            var self = this;
-            var activityTemplateName = scope.currentAction.activityTemplateName; // preserve activity name
+            this._$scope.processing = true;
+            var activityTemplateName = this._$scope.currentAction.activityTemplateName; // preserve activity name
 
-            if (self.configurationWatchUnregisterer) {
-                self.configurationWatchUnregisterer();
+            if (this.configurationWatchUnregisterer) {
+                this.configurationWatchUnregisterer();
             }
 
-            this.ActionService.configure(action).$promise.then(function (res: any) {
+            this.ActionService.configure(this._$scope.currentAction).$promise.then((res: any) => {
                 // Check if authentication is required.
-                if (self.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
-                    var authCrate = self.crateHelper
+                if (this.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Standard Authentication')) {
+                    var authCrate = this.crateHelper
                         .findByManifestType(res.crateStorage, 'Standard Authentication');
 
                     var authMS = angular.fromJson(authCrate.contents);
 
                     // Dockyard auth mode.
                     if (authMS.Mode == 1) {
-                        scope.$emit(
+                        this._$scope.$emit(
                             MessageType[MessageType.PaneConfigureAction_InternalAuthentication],
                             new InternalAuthenticationArgs(res.activityTemplateId)
                         );
@@ -246,38 +233,33 @@ module dockyard.directives.paneConfigureAction {
                     // External auth mode.
                     else {
                         // self.$window.open(authMS.Url, '', 'width=400, height=500, location=no, status=no');
-                        scope.$emit(
+                        this._$scope.$emit(
                             MessageType[MessageType.PaneConfigureAction_ExternalAuthentication],
                             new ExternalAuthenticationArgs(res.activityTemplateId)
                         );
                     }
 
-                    scope.processing = false;
+                    this._$scope.processing = false;
                     return;
                 }
 
                 // Unblock pane
-                scope.processing = false;
+                this._$scope.processing = false;
 
                 // Assign name to res rather than currentAction to prevent 
                 // $watches from unnecessarily triggering
                 res.activityTemplateName = activityTemplateName;
-                scope.currentAction = res;
-                (<any>scope.currentAction).configurationControls =
-                self.crateHelper.createControlListFromCrateStorage(scope.currentAction.crateStorage);
+                this._$scope.currentAction = res;
+                (<any>this._$scope.currentAction).configurationControls =
+                this.crateHelper.createControlListFromCrateStorage(this._$scope.currentAction.crateStorage);
 
-                self.$timeout(() => { // let the control list create, we don't want false change notification during creation process
-                    self.configurationWatchUnregisterer = scope.$watch<model.ControlsList>(
-                        (scope: IPaneConfigureActionScope) => scope.currentAction.configurationControls,
-                        <any>angular.bind(self, self.onConfigurationChanged),
+                this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
+                    this.configurationWatchUnregisterer = this._$scope.$watch<model.ControlsList>(
+                        (scope: IPaneConfigureActionScope) => this._$scope.currentAction.configurationControls,
+                        <any>angular.bind(this, this.onConfigurationChanged),
                         true);
                 }, 1000);
             });
-        }
-
-        private onHide(event: ng.IAngularEvent, eventArgs: RenderEventArgs) {
-            (<IPaneConfigureActionScope>event.currentScope).isVisible = false;
-            if (this.configurationWatchUnregisterer) this.configurationWatchUnregisterer();
         }
 
         //The factory function returns Directive object as per Angular requirements

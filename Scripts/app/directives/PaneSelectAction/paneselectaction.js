@@ -23,7 +23,6 @@ var dockyard;
             var MessageType = paneSelectAction.MessageType;
             var ActionTypeSelectedEventArgs = (function () {
                 function ActionTypeSelectedEventArgs(action) {
-                    // Clone Action to prevent any issues due to possible mutation of source object
                     this.action = angular.extend({}, action);
                 }
                 return ActionTypeSelectedEventArgs;
@@ -69,4 +68,4 @@ var dockyard;
         })(paneSelectAction = directives.paneSelectAction || (directives.paneSelectAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));
-//# sourceMappingURL=paneselectaction.js.map
+//# sourceMappingURL=PaneSelectAction.js.map

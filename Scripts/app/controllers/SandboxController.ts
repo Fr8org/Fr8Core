@@ -29,7 +29,6 @@ module dockyard.controllers {
 
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
 
     class SandboxController {
