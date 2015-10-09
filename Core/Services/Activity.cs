@@ -143,37 +143,15 @@ namespace Core.Services
                 }
             }
         }
-
-        /**********************************************************************************/
-
-        public IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO)
-        {
-            IEnumerable<ActivityDO> activityLists = new List<ActivityDO>();
-
-            if (curActivityDO == null)
-                throw new ArgumentNullException("ActivityDO is null");
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // commented out by yakov.gnusin in scope of DO-1153.
-                // activityLists = this.GetChildren(curActivityDO);
-
-                // workaround for now.
-                activityLists = uow.ActivityRepository.GetQuery()
-                    .Where(x => x.ParentActivityId == curActivityDO.ParentActivityId)
-                    .Where(x => x.Ordering > curActivityDO.Ordering)
-                    .OrderBy(x => x.Ordering)
-                    .ToList();
-            }
-
-            return activityLists;
-        }
-
+        
         /**********************************************************************************/
 
         public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
         {
-            var curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+            List<ActivityTemplateDO> curActivityTemplates;
+
+           curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+        
 
             //we're currently bypassing the subscription logic until we need it
             //we're bypassing the pluginregistration logic here because it's going away in V2
@@ -187,6 +165,6 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
-	    /**********************************************************************************/
+        /**********************************************************************************/
     }
 }

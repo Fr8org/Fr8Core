@@ -714,7 +714,8 @@ namespace Core.Managers
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetQuery().SingleOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
+                //Vladimir. SingleOfDefault was changed FirstOrDefault. this will not correctly extract processId because several processes can have p.CurrentActivityId.Value == curAction.Id but a least it will not fail and log the action.
+                processInExecution = uow.ProcessRepository.GetQuery().FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id); 
             }
 
             var fact = new FactDO

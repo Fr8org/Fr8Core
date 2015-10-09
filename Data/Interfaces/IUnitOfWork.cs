@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Repositories;
+using StructureMap;
 
 namespace Data.Interfaces
 {

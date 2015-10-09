@@ -6,6 +6,7 @@ using System.Linq;
 using System.Transactions;
 using Data.Interfaces;
 using Data.Repositories;
+using StructureMap;
 
 namespace Data.Infrastructure
 {

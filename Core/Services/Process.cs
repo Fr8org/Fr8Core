@@ -75,7 +75,7 @@ namespace Core.Services
         
         /**********************************************************************************/
 
-        public async void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+        public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEvent);
 
@@ -88,8 +88,21 @@ namespace Core.Services
             {
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
-
-                await Execute(curProcessDO);
+                
+                try
+                {
+                    await Execute(curProcessDO);
+                    curProcessDO.ProcessState = ProcessState.Completed;
+                }
+                catch
+                {
+                    curProcessDO.ProcessState = ProcessState.Failed;
+                    throw;
+                }
+                finally
+                {
+                    uow.SaveChanges();
+                }
             }
         }
 
@@ -108,8 +121,8 @@ namespace Core.Services
                 do
                 {
                     await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
-                    UpdateNextActivity(curProcessDO);
-                } while (curProcessDO.CurrentActivity != null);
+                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+                } while (MoveToTheNextActivity(curProcessDO) != null);
             }
             else
             {
@@ -119,55 +132,25 @@ namespace Core.Services
 
         /**********************************************************************************/
 
-        private void UpdateNextActivity(ProcessDO curProcessDO)
+        private ActivityDO MoveToTheNextActivity(ProcessDO process)
         {
-            if (curProcessDO.NextActivity != null)
+            // we relay on the fact that processtemplate has only one process node template. In future it will be fixed.
+            if (process.ProcessTemplate.ProcessNodeTemplates.Count == 0)
             {
-                curProcessDO.CurrentActivity = curProcessDO.NextActivity;
-            }
-            else
-            {
-                //if ProcessDO.NextActivity is not set, 
-                //get the downstream activities of the current activity and set the next current activity based on those downstream as CurrentActivity
-                List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
-                if ((activityLists != null && activityLists.Count > 0) &&
-                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in GetNextActivities and possible infinite loop
-                {
-                    curProcessDO.CurrentActivity = activityLists[0];
-                }
-                else
-                    curProcessDO.CurrentActivity = null;
+                throw new Exception("ProcessTemplate has no ProcessNodeTemplates");
             }
 
-            SetProcessNextActivity(curProcessDO);
+            if (process.ProcessTemplate.ProcessNodeTemplates.Count > 1)
+            {
+                throw new Exception("ProcessTemplate has multiple ProcessNodeTemplates");
+            }
+
+            process.CurrentActivity = process.ProcessTemplate.ProcessNodeTemplates[0].Actions
+                                              .OrderBy(x => x.Ordering)
+                                              .FirstOrDefault(x => x.Ordering > process.CurrentActivity.Ordering);
+            return process.CurrentActivity;
         }
-
-        /**********************************************************************************/
-
-        public void SetProcessNextActivity(ProcessDO curProcessDO)
-        {
-            if(curProcessDO == null)
-                throw new ArgumentNullException("Paramter ProcessDO is null.");
-
-            if (curProcessDO.CurrentActivity != null)
-            {
-                List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
-                if ((activityLists != null && activityLists.Count > 0) &&
-                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in GetNextActivities and possible infinite loop
-                {
-                   curProcessDO.NextActivity = activityLists[0];
-                }
-                else
-                {
-                    curProcessDO.NextActivity = null;
-                }
-            }
-            else
-            {
-                curProcessDO.NextActivity = null;//set NexActivity to null since the currentActivity is null
-            }
-        }
-
+        
         /**********************************************************************************/
 
     }
