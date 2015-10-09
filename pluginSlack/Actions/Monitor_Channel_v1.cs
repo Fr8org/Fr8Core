@@ -154,7 +154,7 @@ namespace pluginSlack.Actions
 
         private CrateDTO CreateConfigurationCrate()
         {
-            var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectChannel = new DropdownListFieldDefinitionDTO()
             {
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
@@ -170,7 +170,7 @@ namespace pluginSlack.Actions
                 }
             };
 
-            return PackControlsCrate(fieldSelectDocusignTemplate);
+            return PackControlsCrate(fieldSelectChannel);
         }
 
         private CrateDTO CreateDesignTimeFieldsCrate()
@@ -185,7 +185,8 @@ namespace pluginSlack.Actions
                 new FieldDTO() { Key = "channel_id", Value = "channel_id" },
                 new FieldDTO() { Key = "channel_name", Value = "channel_name" },
                 new FieldDTO() { Key = "user_id", Value = "user_id" },
-                new FieldDTO() { Key = "user_name", Value = "user_name" }
+                new FieldDTO() { Key = "user_name", Value = "user_name" },
+                new FieldDTO() { Key = "text", Value = "text" }
             };
 
             var crate =
