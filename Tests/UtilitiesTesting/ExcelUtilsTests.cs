@@ -333,6 +333,9 @@ namespace UtilitiesTesting
         }
     }
 
+    /// <summary>
+    /// Had to write this class only for mocking out reading from CloudConfigurationManager as AppVeyor build mechanism is somehow failing to do so.
+    /// </summary>
     public class MockedFileRepository : FileRepository
     {
         public MockedFileRepository(IUnitOfWork uow)
