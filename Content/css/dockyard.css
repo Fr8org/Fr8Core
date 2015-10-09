@@ -154,10 +154,10 @@ form.internal-authenticate-form {
     margin-left: 20px;
 }
 
-input[type=radio] + div.nested-fields {
+input[type=radio] + div.nested-controls {
     display: none;
 } 
 
-input[type=radio]:checked + div.nested-fields {
+input[type=radio]:checked + div.nested-controls {
     display: block;
 } 

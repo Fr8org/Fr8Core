@@ -5,7 +5,7 @@ module dockyard.directives.dropDownListBox {
     import pca = dockyard.directives.paneConfigureAction;
 
     export interface IDropDownListBoxScope extends ng.IScope {
-        field: model.DropDownListBoxField;
+        field: model.DropDownListControlDefinitionDTO;
         change: () => (fieldName: string) => void;
         selectedItem: model.DropDownListItem;
         SetSelectedItem: (item: model.DropDownListItem) => void;

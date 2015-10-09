@@ -21,8 +21,8 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export interface IConfigurationFieldScope extends ng.IScope {
-        field: model.ConfigurationField;
-        onFieldChange: (radio: model.ConfigurationField) => void;
+        field: model.ControlDefinitionDTO;
+        onChange: (radio: model.ControlDefinitionDTO) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -52,7 +52,7 @@ module dockyard.directives.paneConfigureAction {
                 $attrs: ng.IAttributes) => {
 
                 this._$scope = $scope;
-                $scope.onFieldChange = <(radio: model.ConfigurationField) => void> angular.bind(this, this.onFieldChange);
+                $scope.onChange = <(radio: model.ControlDefinitionDTO) => void> angular.bind(this, this.onChange);
 
             };
         }
@@ -67,7 +67,7 @@ module dockyard.directives.paneConfigureAction {
             return directive;
         }
 
-        private onFieldChange(event: any) {
+        private onChange(event: any) {
             var fieldName: string;
 
             if (!!event.target === true) {
@@ -80,7 +80,7 @@ module dockyard.directives.paneConfigureAction {
                 fieldName = event;
             }
 
-            this._$scope.$emit("onFieldChange", new ChangeEventArgs(fieldName));
+            this._$scope.$emit("onChange", new ChangeEventArgs(fieldName));
         }
     }
 
