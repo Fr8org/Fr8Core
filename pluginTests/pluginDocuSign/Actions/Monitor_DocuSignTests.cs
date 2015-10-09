@@ -12,16 +12,15 @@ using pluginTests.Fixtures;
 namespace pluginTests.pluginDocuSign.Actions
 {
     [TestFixture]
-    [Category("Wait_For_DocuSign_Event_v1")]
-    public class Wait_For_DocuSign_Event_v1Tests : BaseTest
+    [Category("Monitor_DocuSignTests")]
+    public class Monitor_DocuSignTests : BaseTest
     {
+        Monitor_DocuSign _monitor_DocuSign;
 
-        Monitor_DocuSign _wait_For_DocuSign_Event_v1;
-
-        public Wait_For_DocuSign_Event_v1Tests()
+        public Monitor_DocuSignTests()
         {
             base.SetUp();
-            _wait_For_DocuSign_Event_v1 = new Monitor_DocuSign();
+            _monitor_DocuSign = new Monitor_DocuSign();
         }
 
         [Test]
@@ -32,33 +31,32 @@ namespace pluginTests.pluginDocuSign.Actions
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
-            var result = await _wait_For_DocuSign_Event_v1.Configure(curActionDTO);
+            var result = await _monitor_DocuSign.Configure(curActionDTO);
 
             //Assert
             Assert.IsNotNull(result.CrateStorage);
-            Assert.AreEqual(2, result.CrateStorage.CrateDTO.Count);
+            Assert.AreEqual(3, result.CrateStorage.CrateDTO.Count);
             Assert.AreEqual(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, result.CrateStorage.CrateDTO[0].ManifestType);
             Assert.AreEqual(CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, result.CrateStorage.CrateDTO[1].ManifestType);
 
-
-
+            //NOTE:DO-1236 states - initial configuration response should add the standard event subscription
+            Assert.AreEqual(CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, result.CrateStorage.CrateDTO[2].ManifestType);
         }
 
         [Test]
         public void Configure_ConfigurationRequestTypeIsFollowup_ShouldUpdateStorage()
         {
-            //Arrange
-            ActionDTO curActionDTO = FixtureData.TestActionDTO2();
-            curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
+            //NOTE: acc to DO-1236 - not required anymore
+            ////Arrange   
+            //ActionDTO curActionDTO = FixtureData.TestActionDTO2();
+            //curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
-            //Act
-            var result = _wait_For_DocuSign_Event_v1.Configure(curActionDTO);
+            ////Act
+            //var result = _monitor_DocuSign.Configure(curActionDTO);
 
-            //Assert
-            Assert.AreEqual(2, result.Result.CrateStorage.CrateDTO.Count);
-            Assert.AreEqual(CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, result.Result.CrateStorage.CrateDTO[1].ManifestType);
-
-
+            ////Assert
+            //Assert.AreEqual(2, result.Result.CrateStorage.CrateDTO.Count);
+            //Assert.AreEqual(CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME, result.Result.CrateStorage.CrateDTO[0].ManifestType);
         }
 
         [Test]
@@ -68,12 +66,11 @@ namespace pluginTests.pluginDocuSign.Actions
             ActionDTO curActionDTO = FixtureData.TestActionDTO3();
 
             //Act
-            var result = _wait_For_DocuSign_Event_v1.Configure(curActionDTO);
+            var result = _monitor_DocuSign.Configure(curActionDTO);
 
             //Assert
             Assert.AreEqual(result.Result.CrateStorage.CrateDTO.Count, result.Result.CrateStorage.CrateDTO.Count);
             Assert.AreEqual(result.Result.CrateStorage.CrateDTO[1].ManifestType, result.Result.CrateStorage.CrateDTO[1].ManifestType);
-
         }
 
         [Test]
@@ -88,7 +85,6 @@ namespace pluginTests.pluginDocuSign.Actions
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);
-
         }
 
     }
