@@ -1,8 +1,10 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Data.Interfaces.ManifestSchemas
 {
@@ -15,33 +17,57 @@ namespace Data.Interfaces.ManifestSchemas
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            Type controlType;
+            var curjObject = JObject.ReadFrom(reader);
+
             // Create a map of all properties in the field object
-            var propertyMap = createPropertyMap(reader);
-            string fieldTypeName = string.Empty;
-            Type fieldType;
+            string fieldTypeName =GetControlTypeName(curjObject);
 
-            // Find field type 
-            if (!propertyMap.ContainsKey("type"))
+            // Determine field .Net type depending on type value 
+            controlType = GetFieldType(fieldTypeName);
+
+            // Create type
+            if (controlType == null)
             {
-                fieldTypeName = propertyMap["type"];
-
-                // Determine field .Net type depending on type value 
-                fieldType = GetFieldType(fieldTypeName);
+                controlType = typeof(GenericControlDefinitionDTO);
             }
 
-            return null;
+            var control = Activator.CreateInstance(controlType);
+            if (control == null) control = new GenericControlDefinitionDTO();
+            serializer.Populate(curjObject.CreateReader(), control);
+
+            return control;
+        }
+
+        private string GetControlTypeName(JToken curjObject)
+        {
+            var typeProperty = curjObject.Children<JProperty>().Where(p => p.Name == "type").FirstOrDefault();
+            if (typeProperty == null)
+            {
+                return null;
+            }
+
+            return typeProperty.Value.Value<string>();
+
         }
 
         private Type GetFieldType(string fieldTypeName)
         {
-            return null;
+            try
+            {
+                return Type.GetType(string.Format("Data.Interfaces.DataTransferObjects.{0}ControlDefinitionDTO, Data", fieldTypeName));
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private Dictionary<string, string> createPropertyMap(JsonReader reader)
         {
             Dictionary<string, string> map = new Dictionary<string, string>();
             string propName = String.Empty, propValue = String.Empty;
-       
+
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.PropertyName)

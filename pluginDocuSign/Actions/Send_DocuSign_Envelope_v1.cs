@@ -57,22 +57,22 @@ namespace pluginDocuSign.Actions
         {
             CrateDTO confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
                 c => c.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
-            List<dynamic> fields = JsonConvert.DeserializeObject<List<dynamic>>(confCrate.Contents);
 
-            List<ControlDefinitionDTO> controls = _crate.GetContents<StandardConfigurationControlsMS>(confCrate).Controls;
-            var recipientSourceField = controls.SingleOrDefault(c => c.Name == "Recipient");
-            string recipientSourceValue = recipientSourceField.Value;
+            List<ControlDefinitionDTO> controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
+            var recipientSourceControl = controls.SingleOrDefault(c => c.Name == "Recipient") as RadioButtonGroupControlDefinitionDTO;
+            string recipientSourceValue = recipientSourceControl.Value;
             string recipientAddress = string.Empty;
 
             switch (recipientSourceValue)
             {
                 case "This specific value":
-                    var recipientAddressField = controls.SingleOrDefault(c => c.Name == "Address");
+                    var recipientAddressField = recipientSourceControl.Radios[0].Controls[0];
                     recipientAddress = recipientAddressField.Value;
                     break;
 
                 case "A value from an Upstream Crate":
-                    var recipientField = controls.SingleOrDefault(c => c.Name == "Select Upstream Crate").Value;
+                    var recipientField = recipientSourceControl.Radios[1].Controls[0];
+                    recipientAddress = recipientField.Value;
                     break;
             }
 
@@ -143,7 +143,7 @@ namespace pluginDocuSign.Actions
             curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
             curActionDTO.CrateStorage.CrateDTO.Add(curUpstreamFieldsCrate);
 
-            //Execute(curActionDTO); // For testing
+            // Execute(curActionDTO); // For testing
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }

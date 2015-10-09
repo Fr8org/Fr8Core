@@ -51,7 +51,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [Ignore]
         public void CanDeserealizeStandardConfigurationControls()
         {
             // Arrange
@@ -77,8 +76,8 @@ namespace DockyardTest.Services
             Assert.AreEqual(1, radiobuttonGroup.Radios[0].Controls.Count);
             Assert.AreEqual(1, radiobuttonGroup.Radios[1].Controls.Count);
 
-            Assert.AreEqual(typeof (TextBlockControlDefinitionDTO), radiobuttonGroup.Radios[0].Controls[0]);
-            Assert.AreEqual(typeof (DropDownListControlDefinitionDTO), radiobuttonGroup.Radios[1].Controls[0]);
+            Assert.AreEqual(typeof (TextBoxControlDefinitionDTO), radiobuttonGroup.Radios[0].Controls[0].GetType());
+            Assert.AreEqual(typeof (DropDownListControlDefinitionDTO), radiobuttonGroup.Radios[1].Controls[0].GetType());
         }
     }
 }
