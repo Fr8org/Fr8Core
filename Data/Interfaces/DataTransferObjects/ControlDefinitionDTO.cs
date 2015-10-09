@@ -121,27 +121,6 @@ namespace Data.Interfaces.DataTransferObjects
             Type = type;
         }
 
-        //public ControlsDefinitionDTO(string name, bool required, string value, string fieldLabel)
-        //{
-        //    Type = "textField";
-        //    Name = name;
-        //    Required = required;
-        //    Value = value;
-        //    Label = fieldLabel;
-        //}
-
-        //public ControlsDefinitionDTO(string type, string name, bool required, string value, string fieldLabel)
-        //{
-        //    Type = type;
-        //    Name = name;
-        //    Required = required;
-        //    Value = value;
-        //    Label = fieldLabel;
-        //}
-
-        //public const string CHECKBOX_FIELD = "checkboxField";
-        //public const string TEXTBOX_FIELD = "textField";
-
         [JsonProperty("name")]
         public string Name { get; set; }
 
