@@ -80,13 +80,13 @@ namespace DockyardTest.Services
             Assert.AreEqual(typeof (DropDownListControlDefinitionDTO), radiobuttonGroup.Radios[1].Controls[0].GetType());
         }
 
-        public void CanSerializeStandardConfigurationControls()
-        {
-            // Arrange
-            var _crate = ObjectFactory.GetInstance<ICrate>();
-            var controls = FixtureData.AllConfigurationControls();
-            var curCrateDTO = _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controls.ToArray());
-
-        }
+        //[Test]
+        //public void CanSerializeStandardConfigurationControls()
+        //{
+        //    // Arrange
+        //    var _crate = ObjectFactory.GetInstance<ICrate>();
+        //    var controls = FixtureData.AllConfigurationControls();
+        //    var curCrateDTO = _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", controls.ToArray());
+        //}
     }
 }
