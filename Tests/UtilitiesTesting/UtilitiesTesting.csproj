@@ -127,6 +127,7 @@
     <Compile Include="Fixtures\FixtureData - ActionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Activity.cs" />
     <Compile Include="Fixtures\FixtureData - ActivityTemplateDTO.cs" />
+    <Compile Include="Fixtures\FixtureData - MultiTenantObjectInstance.cs" />
     <Compile Include="Fixtures\FixtureData - PayloadDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Plugin.cs" />
     <Compile Include="Fixtures\FixtureData - PluginIntegration.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="Fixtures\FixtureData - Crate.cs" />
     <Compile Include="ClassMethod.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
+    <Compile Include="Fixtures\FixtureData-MTOobjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />
   </ItemGroup>
