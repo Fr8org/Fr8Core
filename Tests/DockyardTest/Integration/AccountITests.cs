@@ -11,6 +11,7 @@ using UtilitiesTesting.Fixtures;
 namespace DockyardTest.Integration
 {
     [TestFixture]
+    [Category("IntegrationTests")]
     public class AccountITests : BaseTest
     {
         [Test]
@@ -50,7 +51,7 @@ namespace DockyardTest.Integration
 		    var result = await account.ResetPasswordAsync(userId, code, "123456");
 
             // VERIFY
-		    Assert.AreEqual(id, userId);
+		    Assert.AreNotEqual(id, userId);
 		    Assert.IsTrue(result.Succeeded, string.Join(", ", result.Errors));
         }
     }

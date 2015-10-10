@@ -8,6 +8,7 @@ using UtilitiesTesting.Fixtures;
 namespace DockyardTest.Entities
 {
     [TestFixture]
+    [Category("Action")]
     public class ActionTests : BaseTest
     {
         [Test]

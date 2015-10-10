@@ -19,6 +19,7 @@ using AutoMapper;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
+    [Category("ActionController")]
     public class ActionControllerTest : BaseTest
     {
 
@@ -38,7 +39,6 @@ namespace DockyardTest.Controllers
 
 
         [Test,Ignore]
-        [Category("ActionController.Save")]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -62,7 +62,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test,Ignore]
-        [Category("ActionController.Save")]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
