@@ -102,7 +102,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
-                Name = "Monitor_DocuSign",
+                Name = "Wait_For_DocuSign_Event",
                 Version = "1",
                 Plugin = TestPlugin_DocuSign()
             };

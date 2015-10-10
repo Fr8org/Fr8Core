@@ -21,7 +21,7 @@ using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
-    public class Monitor_DocuSign_v1 : BasePluginAction
+    public class Monitor_DocuSign : BasePluginAction
     {
         // TODO: remove this as of DO-1064.
         // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();

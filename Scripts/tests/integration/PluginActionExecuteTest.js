@@ -70,11 +70,11 @@ describe("plugins execute actions tests", function () {
     // Specs
     /**********************************************************************************/
 
-    it("Docusign plugin can execute action Monitor_DocuSign_Event", function (done) {
+    it("Docusign plugin can execute action Wait_For_DocuSign_Event", function (done) {
 
         var actionDTO = {
             activityTemplate: {
-                Name: "Monitor_DocuSign_Event",
+                Name: "Wait_For_DocuSign_Event",
                 Version: "1"
             },
             ProcessId: testProcessId1
