@@ -476,14 +476,14 @@ namespace UtilitiesTesting.Fixtures
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
 
-            var fieldSelectDockusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDockusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
                 Value = templateId,
-                Events = new List<FieldEvent>() {
-                     new FieldEvent("onSelect", "requestConfiguration")
+                Events = new List<ControlEvent>() {
+                     new ControlEvent("onSelect", "requestConfiguration")
                 }
             };
 
@@ -498,7 +498,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate
             };
 
-            var fields = new List<ControlsDefinitionDTO>()
+            var fields = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDockusignTemplate
             };
@@ -771,5 +771,212 @@ namespace UtilitiesTesting.Fixtures
                 ActionState = ActionState.InProcess,
             };
         }
+
+        public static ActionDO ConfigureTestAction57()
+        {
+            var actionTemplate = ActionTemplate();
+
+            var processDo = new ProcessDO()
+            {
+                Id = 1,
+                CrateStorage = EnvelopeIdCrateJson(),
+                ProcessTemplateId = TestProcessTemplate2().Id,
+                ProcessState = 1
+            };
+
+            var actionListDo = new ActionListDO()
+            {
+                Process = processDo,
+                ProcessID = ProcessState.Unstarted,
+                Id = 54,
+                ActionListType = ActionListType.Immediate
+            };
+
+            var actionDo = new ActionDO()
+            {
+                ParentActivity = actionListDo,
+                ActionState = ActionState.Unstarted,
+                Name = "testaction",
+                Id = 57,
+                Ordering = 2,
+                ParentActivityId = 54,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = EnvelopeIdCrateJson()
+            };
+
+            return actionDo;
+        }
+
+        public static ActionDO ConfigureTestActionTree()
+        {
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+            crateStorageDTO.CrateDTO.Add(CreateStandardConfigurationControls());
+            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+
+
+            ActionDO curAction = new ActionDO()
+            {
+                Id = 1,
+                Ordering = 1,
+                CrateStorage = crateStorage,
+                Activities = new List<ActivityDO>
+                {
+                    new ActionDO
+                    {
+                        Id = 23,
+                        Ordering = 1,
+                        ParentActivityId = 1,
+                         CrateStorage=  crateStorage
+                    },
+                    new ActionDO
+                    {
+                        Id = 43,
+                        ParentActivityId = 1,
+                                        Ordering = 2,
+                         CrateStorage=  crateStorage,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 44,
+                                Ordering = 1,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                Id = 46,
+                                Ordering = 2,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 48,
+                                Ordering = 3,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage
+                            },
+
+                        }
+                    },
+                    new ActivityDO
+                    {
+                        Id = 52,
+                        Ordering = 3,
+                        ParentActivityId = 1,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 53,
+                                Ordering = 1,
+                                ParentActivityId = 52,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActivityDO
+                            {
+                                Id = 54,
+                                ParentActivityId = 52,
+                                Ordering = 2,
+
+                                Activities = new List<ActivityDO>
+                                {
+                                    new ActionDO
+                                    {
+                                        Id = 56,
+                                        ParentActivityId = 54,
+                                        Ordering = 1,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 57,
+                                        ParentActivityId = 54,
+                                        Ordering = 2
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 58,
+                                        ParentActivityId = 54,
+                                        Ordering = 3,
+                                CrateStorage=  crateStorage
+                                    },
+
+                                }
+                            },
+                            new ActionDO
+                            {
+                                Id = 55,
+                                ParentActivityId = 52,
+                                Ordering = 3,
+                                CrateStorage=  crateStorage
+                            },
+
+                        }
+                    },
+                    new ActionDO
+                    {
+                        Id = 59,
+                        Ordering = 4,
+                        ParentActivityId = 1,
+                         CrateStorage=  crateStorage,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 60,
+                                ParentActivityId = 59,
+                                Ordering = 1,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 61,
+                                ParentActivityId = 59,
+                                Ordering = 2,
+                                CrateStorage=  crateStorage,
+                                Activities = new List<ActivityDO>
+                                {
+                                    new ActionDO
+                                    {
+                                        Id = 63,
+                                        ParentActivityId = 61,
+                                        Ordering = 1,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 64,
+                                        ParentActivityId = 61,
+                                        Ordering = 2,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 65,
+                                        ParentActivityId = 61,
+                                        Ordering = 3,
+                                CrateStorage=  crateStorage
+                                    },
+                                }
+                            },
+
+                            new ActionDO
+                            {
+                                Id = 62,
+                                ParentActivityId = 59,
+                                Ordering = 3,
+                                CrateStorage=  crateStorage
+                            },
+                        },
+
+                    }
+                }
+            };
+            return curAction;
+        }
+
     }
 }

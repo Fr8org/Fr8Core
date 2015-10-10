@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Newtonsoft.Json;
 using Utilities;
 
@@ -38,7 +39,15 @@ namespace Data.Repositories
                 RedirectURL = url,
                 UserID = userID,
                 ExpiresAt = DateTime.Now.AddDays(10),
-                SegmentTrackingEventName = segmentEventName
+                SegmentTrackingEventName = segmentEventName,
+                Plugin = new PluginDO()
+                {
+                    Id = 0,
+                    Name = "",
+                    Endpoint = "",
+                    Version = "1",
+                    PluginStatus = PluginStatus.Active
+                }
             };
 
             if (segmentTrackingProperties != null)

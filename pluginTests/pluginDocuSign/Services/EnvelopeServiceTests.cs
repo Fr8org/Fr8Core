@@ -61,5 +61,14 @@ namespace pluginTests.pluginDocuSign.Services
 
 			Assert.IsNotNull(envelopeDatas);
 		}
+
+		[Test]
+		[Category("Envelope")]
+        public void Envelope_Can_DetermineFieldType()
+        {
+            var envelope = new DocuSignEnvelope();
+            Assert.AreEqual(ControlTypes.TextBox, envelope.GetFieldType("Text"));
+            Assert.AreEqual(ControlTypes.CheckBox, envelope.GetFieldType("Checkbox"));
+        } 
 	}
 }
