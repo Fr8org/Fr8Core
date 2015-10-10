@@ -46,6 +46,14 @@ namespace pluginDockyardCore.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDO
+            {
+                Name = "AddPayloadManually",
+                Category = ActivityCategory.fr8_Receiver,
+                Plugin = plugin,
+                Version = "1"
+            });
+
             return Json(result);    
         }
     }
