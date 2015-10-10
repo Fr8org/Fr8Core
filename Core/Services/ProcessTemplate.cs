@@ -296,7 +296,7 @@ namespace Core.Services
                             _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
 
                         bool hasEvents = subscriptionsList.Subscriptions
-                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()))
+                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
                             .Any();
 
                         if (subscriptionsList != null && hasEvents)

@@ -1,19 +1,22 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginTwilio.Services;
 using StructureMap;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using System.Linq;
+using Data.Interfaces.ManifestSchemas;
 namespace pluginTwilio.Actions
 {
     public class Send_Via_Twilio_v1 : BasePluginAction
     {
         protected ITwilioService _twilio;
 
-        public Send_Via_Twilio_v1 ()
+        public Send_Via_Twilio_v1()
 	    {
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
@@ -50,22 +53,22 @@ namespace pluginTwilio.Actions
         private CrateDTO CreateControlsCrate()
         {
 
-            ControlDefinitionDTO[] controls = 
+            TextBoxControlDefinitionDTO[] controls = 
             {
-                new ControlDefinitionDTO("textField")
+                new TextBoxControlDefinitionDTO()
                 {
                     Label = "SMS Number",
                     Name = "SMS_Number",
                     Required = true,
                 },
-               new ControlDefinitionDTO("textField")
+               new TextBoxControlDefinitionDTO()
                 {
                     Label = "SMS Body",
                     Name = "SMS_Body",
                     Required = true,
                 }
             };
-            return _crate.CreateStandardConfigurationControlsCrate("Send SMS", controls);
+            return PackControlsCrate(controls);
         }
 
         private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
@@ -107,12 +110,28 @@ namespace pluginTwilio.Actions
 
         public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
         {
-            if (IsEmptyAuthToken(curActionDTO))
-            {
-                throw new ApplicationException("No AuthToken provided.");
-            }
-
             var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault();
+            if (controlsCrate == null)
+                return null;
+        
+            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            if (standardControls == null)
+                return null;
+
+            var smsNumberFields = standardControls.FindByName("SMS_Number");
+            var smsBodyFields = standardControls.FindByName("SMS_Body");
+            
+            if((smsNumberFields == null && smsBodyFields == null) &&
+                (String.IsNullOrEmpty(smsNumberFields.Value)))
+            {
+                return null;
+            }
+            else
+            {
+                _twilio.SendSms(smsNumberFields.Value, smsBodyFields.Value);
+            }
 
             return processPayload;
         }

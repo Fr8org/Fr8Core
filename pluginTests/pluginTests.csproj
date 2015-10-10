@@ -153,6 +153,7 @@
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="pluginDocuSign\Services\EnvelopeServiceTests.cs" />
     <Compile Include="PluginSalesforceTests\ActionControllerTests.cs" />
+    <Compile Include="PluginTwilioTests\Actions\Send_Via_Twilio_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginAzureSqlServerTests\TestDbHelper.cs" />
     <Compile Include="BaseTest.cs" />
@@ -185,6 +186,10 @@
     <ProjectReference Include="..\pluginExcel\pluginExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>pluginExcel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pluginTwilio\pluginTwilio.csproj">
+      <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
+      <Name>pluginTwilio</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{b2c4526e-de57-495d-8599-d61abc54c21f}</Project>

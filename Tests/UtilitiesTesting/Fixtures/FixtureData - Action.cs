@@ -978,5 +978,21 @@ namespace UtilitiesTesting.Fixtures
             return curAction;
         }
 
+        public static ActionDTO ConfigureTwilioAction()
+        {
+            var actionTemplate = FixtureData.TwilioActionTemplateDTO();
+            
+            var actionDTO = new ActionDTO()
+            {
+                Name = "testaction",
+                Id = 57,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = new CrateStorageDTO()
+            };
+
+            return actionDTO;
+        }
+
     }
 }
