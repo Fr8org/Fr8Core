@@ -194,5 +194,28 @@ namespace Core.Services
 
             return curActivityTemplates;
         }
-    }
+
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
+	    {
+            //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            List<ActivityTemplateCategoryDTO> curActivityTemplates;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                    .GroupBy(t => t.Category)
+                    .OrderBy(c => c.Key)
+                    //lets load them all before memory processing
+                    .ToList()
+                    .Select(c => new ActivityTemplateCategoryDTO
+                    {
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
+                        Name = c.Key.ToString()
+                    })
+                    .ToList();
+            }
+
+            return curActivityTemplates;
+	    }
+	}
 }

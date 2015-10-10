@@ -122,11 +122,11 @@ module dockyard.directives.paneSelectAction {
                 this._$element = $element;
                 this._$scope = $scope;
 
-                $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAddRequest], <any>angular.bind(this, this.onActionAddRequest));
+                $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAdd], <any>angular.bind(this, this.onActionAdd));
             };
         }
 
-        private onActionAddRequest() {
+        private onActionAdd() {
             //we should list available actions to user and let him select one
             this.ActivityTemplateService.getAvailableActivities().$promise.then((categoryList: Array<interfaces.IActivityCategoryDTO>) => {
                 //we should open a modal to let user select one of our activities
