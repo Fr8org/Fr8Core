@@ -1,14 +1,5 @@
 ﻿<div>
-    <!--
-    <div ng-if="!isActionValid(currentAction)" class="criteria-warning bg-purple">
-        Please add or select an action in order to configure criteria
-    </div>
-    -->
-    <!--
-    <div ng-class="{'noclick-background': !isActionValid(currentAction) }">
-    -->
-    <div class="quiery-builder" ng-class="{disabled: isDisabled}">
-        <!--<table class="table" ng-class="{'grayed-out': !isActionValid(currentAction)}"> -->
+    <div ng-class="{'noclick-background': isDisabled}">
         <table class="table query-builder-table">
             <thead>
                 <tr>
@@ -20,14 +11,13 @@
             </thead>
             <tbody>
                 <tr ng-repeat="row in rows track by $index">
-                    <td>
-                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field" ng-disabled="isDisabled">
+                    <td width="125">
+                        <select class="form-control" ng-options="f.key as f.name for f in fields" ng-model="row.field">
                             <option value="">Select a Field</option>
                         </select>
                     </td>
-                    <td>
-                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator" ng-disabled="!row.field || isDisabled">
-                        </select>
+                    <td width="60">
+                        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="row.operator" ng-disabled="!row.field"></select>
                     </td>
                     <td>
                         <div>
@@ -36,23 +26,20 @@
                                    ng-required="true"
                                    ng-model="row.value"
                                    ng-change="valueChanged(row)"
-                                   ng-disabled="!row.field || isDisabled" />
+                                   ng-disabled="!row.field" />
                         </div>
                     </td>
                     <td>
-                        <a href title="Delete filter rule"
-                           class="btn btn-danger"
-                           ng-show="rows.length > 1"
-                           ng-click="removeRow($index)"
-                           ng-disabled="isDisabled">
-                            Delete
-                        </a>
+                        <img src="~/Content/img/ProcessBuilder/delete-icon.png" width="15" height="15"
+                             ng-show="rows.length > 1"
+                             ng-click="removeRow($index)"
+                             class="query-builder-delete-button" />
                     </td>
                 </tr>
             </tbody>
         </table>
         <div>
-            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()" ng-disabled="isDisabled">Add Row</a>
+            <a href class="btn btn-primary query-builder-add-button" ng-click="addRow()">Add Row</a>
         </div>
     </div>
 </div>

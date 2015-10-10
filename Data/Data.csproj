@@ -245,7 +245,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
@@ -254,7 +254,6 @@
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
@@ -263,6 +262,7 @@
     <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveMS.cs" />
@@ -362,7 +362,7 @@
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.cs" />
     <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
       <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
-	</Compile>
+    </Compile>
     <Compile Include="Migrations\201510052045282_UpdateMT_Data.cs" />
     <Compile Include="Migrations\201510052045282_UpdateMT_Data.Designer.cs">
       <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
@@ -374,10 +374,14 @@
     <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.cs" />
     <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.Designer.cs">
       <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
-	</Compile>
+    </Compile>
     <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs" />
     <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.Designer.cs">
       <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510091824077_MergeMigrationConflict.cs" />
+    <Compile Include="Migrations\201510091824077_MergeMigrationConflict.Designer.cs">
+      <DependentUpon>201510091824077_MergeMigrationConflict.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
@@ -674,9 +678,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510062113219_AddFieldsToMTObject.resx">
       <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
-	</EmbeddedResource>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.resx">
       <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510091824077_MergeMigrationConflict.resx">
+      <DependentUpon>201510091824077_MergeMigrationConflict.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

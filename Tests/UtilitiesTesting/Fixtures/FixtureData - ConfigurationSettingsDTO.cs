@@ -18,17 +18,20 @@ namespace UtilitiesTesting.Fixtures
 
         public static CrateStorageDTO CrateStorageDTO()
         {
-            var fieldDTO = new ControlsDefinitionDTO(
-                name: "connection_string", required: true, value: "", fieldLabel: "SQL Connection String");
+            var fieldDTO = new TextBoxControlDefinitionDTO();
+            fieldDTO.Name = "connection_string";
+            fieldDTO.Required = true;
+            fieldDTO.Label = "SQL Connection String";
+
             CrateStorageDTO curCrateStorage = new CrateStorageDTO();
             ICrate crate = ObjectFactory.GetInstance<ICrate>();
             curCrateStorage.CrateDTO.Add(crate.CreateStandardConfigurationControlsCrate("Configuration Data for WriteToAzureSqlServer", fieldDTO));
             return curCrateStorage;
         }
 
-        public static ControlsDefinitionDTO TestConnectionString1()
+        public static ControlDefinitionDTO TestConnectionString1()
         {
-            return new ControlsDefinitionDTO
+            return new TextBlockControlDefinitionDTO()
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health; User ID = alexeddodb@s79ifqsqga; Password = Thales89; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "
@@ -50,14 +53,14 @@ namespace UtilitiesTesting.Fixtures
             return curConfigurationStore;
         }
 
-        public static ControlsDefinitionDTO TestConnectionStringFieldDefinition()
+        public static ControlDefinitionDTO TestConnectionStringFieldDefinition()
         {
-            return new TextBlockFieldDTO()
+            return new TextBlockControlDefinitionDTO()
             {
                 Label = "SQL Connection String",
                 Name = "connection_string",
                 Required = true,
-                Events = new List<FieldEvent>() { new FieldEvent("onChange", "requestConfig") }
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
         }
 

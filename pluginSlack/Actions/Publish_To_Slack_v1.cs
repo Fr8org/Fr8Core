@@ -136,14 +136,14 @@ namespace pluginSlack.Actions
 
         private CrateDTO CreateConfigurationCrate()
         {
-            var fieldSelectChannel = new DropdownListFieldDefinitionDTO()
+            var fieldSelectChannel = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select Slack Channel",
                 Name = "Selected_Slack_Channel",
                 Required = true,
-                Events = new List<FieldEvent>()
+                Events = new List<ControlEvent>()
                 {
-                    new FieldEvent("onChange", "requestConfig")
+                    new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {
@@ -152,14 +152,14 @@ namespace pluginSlack.Actions
                 }
             };
 
-            var fieldSelectMessageField = new DropdownListFieldDefinitionDTO()
+            var fieldSelectMessageField = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select Message Field",
                 Name = "Select_Message_Field",
                 Required = true,
-                Events = new List<FieldEvent>()
+                Events = new List<ControlEvent>()
                 {
-                    new FieldEvent("onChange", "requestConfig")
+                    new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {

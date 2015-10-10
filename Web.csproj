@@ -17,14 +17,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -760,7 +756,7 @@
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\PaneSelectActionController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ProcessTemplateDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
@@ -776,7 +772,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationField.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
@@ -3969,10 +3965,10 @@
     <Content Include="RunFrontEndTests - With Web Server.ps1" />
     <Content Include="RunFrontEndTests.ps1" />
     <None Include="Properties\PublishProfiles\test.pubxml" />
-    <Content Include="Views\AngularTemplate\ConfigurationFIeld.cshtml" />
+    <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RadioButtonOptionField.cshtml" />
+    <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\TextBlock.cshtml" />
     <Content Include="Views\AngularTemplate\ProcessTemplateDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />

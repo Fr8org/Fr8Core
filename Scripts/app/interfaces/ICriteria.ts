@@ -20,7 +20,6 @@ module dockyard.interfaces {
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
-        activityTemplate: model.ActivityTemplate;
     }
 
     export interface ICondition {

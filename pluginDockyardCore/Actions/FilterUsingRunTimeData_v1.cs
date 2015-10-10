@@ -37,7 +37,7 @@ namespace pluginDockyardCore.Actions
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = _action.GetControlsManifest(curAction);
             
-            ControlsDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
+            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
             if (filterPaneControl == null)
             {
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
@@ -188,7 +188,7 @@ namespace pluginDockyardCore.Actions
 
         private CrateDTO CreateControlsCrate()
         {
-            var fieldFilterPane = new FilterPaneFieldDefinitionDTO()
+            var fieldFilterPane = new FilterPaneControlDefinitionDTO()
             {
                 Label = "Execute Actions If:",
                 Name = "Selected_Filter",

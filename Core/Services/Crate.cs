@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Utilities;
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
+using Newtonsoft.Json.Converters;
 
 namespace Core.Services
 {
@@ -49,12 +50,12 @@ namespace Core.Services
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
             return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields.ToList()}),
+                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() { Fields = fields.ToList() }),
                 manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
                 manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
             return Create(label, 
                 JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
@@ -81,6 +82,11 @@ namespace Core.Services
         public T GetContents<T>(CrateDTO crate)
         {
             return JsonConvert.DeserializeObject<T>(crate.Contents);
+        }
+
+        public StandardConfigurationControlsMS GetStandardConfigurationControls(CrateDTO crate)
+        {
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(crate.Contents, new ControlDefinitionDTOConverter());
         }
 
         /// <summary>
@@ -154,7 +160,7 @@ namespace Core.Services
                             JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
                             manifestType: CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
                             manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
-        }
+            }
 
         private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataMS tableDataMS)
         {
@@ -186,5 +192,6 @@ namespace Core.Services
 
             return payloadDataMS;
         }
+
     }
 }
