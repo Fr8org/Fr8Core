@@ -86,30 +86,15 @@ namespace Web.Controllers
 
         [DockyardAuthorize]
         [Route("available")]
-        [ResponseType(typeof(IEnumerable<IEnumerable<ActivityTemplateDTO>>))]
+        [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         public IHttpActionResult GetAvailableActivities()
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curDockyardAccount = uow.UserRepository.GetByKey(userId);
-
-                var activityTemplateCategories = new List<List<ActivityTemplateDTO>>();
-                foreach (var activity in _activity.GetAvailableActivities(curDockyardAccount))
-                {
-                    var activityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(activity);
-
-                    var properCategory = activityTemplateCategories.FirstOrDefault(cat => cat[0].Category == activityTemplateDTO.Category);
-                    if (properCategory == null)
-                    {
-                        activityTemplateCategories.Add(new List<ActivityTemplateDTO> { Mapper.Map<ActivityTemplateDTO>(activityTemplateDTO) });
-                    }
-                    else
-                    {
-                        properCategory.Add( Mapper.Map<ActivityTemplateDTO>(activityTemplateDTO) );
-                    }
-                }
-                return Ok(activityTemplateCategories);
+                var categoriesWithActivities = _activity.GetAvailableActivitiyGroups(curDockyardAccount);
+                return Ok(categoriesWithActivities);
             }
         }
 	}

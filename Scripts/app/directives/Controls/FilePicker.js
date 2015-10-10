@@ -6,6 +6,8 @@ var dockyard;
         var filePicker;
         (function (filePicker) {
             'use strict';
+            //More detail on creating directives in TypeScript: 
+            //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var FilePicker = (function () {
                 function FilePicker($modal, FileService) {
                     var _this = this;
@@ -17,6 +19,7 @@ var dockyard;
                     };
                     this.restrict = 'E';
                     FilePicker.prototype.link = function (scope, element, attrs) {
+                        //Link function goes here
                     };
                     FilePicker.prototype.controller = function ($scope, $element, $attrs) {
                         _this._$element = $element;
@@ -42,10 +45,14 @@ var dockyard;
                 };
                 FilePicker.prototype.Save = function () {
                     if (this._$scope.selectedFile === null) {
+                        //raise some kind of error to prevent continuing
                         alert('No file was selected!!!!!!');
                         return;
                     }
+                    //we should assign id of selected file to model value
+                    //this._$scope.field.value = this._fileDTO.id.toString();
                     alert('Selected FileDO ID -> ' + this._$scope.selectedFile.id.toString());
+                    //TODO add this file's id to CrateDO
                 };
                 FilePicker.prototype.OnExistingFileSelected = function (fileDTO) {
                     this._$scope.selectedFile = fileDTO;
@@ -67,6 +74,7 @@ var dockyard;
                     var onFilesLoaded = angular.bind(this, this.OnFilesLoaded);
                     this.FileService.listFiles().then(onFilesLoaded);
                 };
+                //The factory function returns Directive object as per Angular requirements
                 FilePicker.Factory = function () {
                     var directive = function ($modal, FileService) {
                         return new FilePicker($modal, FileService);
@@ -77,6 +85,9 @@ var dockyard;
                 return FilePicker;
             })();
             app.directive('filePicker', FilePicker.Factory());
+            /*
+                General data persistance methods for FileDirective.
+            */
             var FileService = (function () {
                 function FileService($http, $q, UploadService) {
                     this.$http = $http;
@@ -110,10 +121,18 @@ var dockyard;
                 };
                 return FileService;
             })();
+            /*
+                Register FileService with AngularJS. Upload dependency comes from ng-file-upload module
+            */
             app.factory('FileService', ['$http', '$q', 'Upload',
                 function ($http, $q, UploadService) {
                     return new FileService($http, $q, UploadService);
                 }]);
+            /*
+            A simple controller for Listing existing files dialog.
+            Note: here goes a simple (not really a TypeScript) way to define a controller.
+            Not as a class but as a lambda function.
+        */
             app.controller('FilePicker__FileSelectorModalController', ['$scope', '$modalInstance', 'files', function ($scope, $modalInstance, files) {
                     $scope.files = files;
                     $scope.selectFile = function (file) {

@@ -228,7 +228,7 @@ namespace pluginIntegrationTests
             return result.Content;
         }
 
-        private async Task<CrateStorageDTO> WaitForDocuSignEvent_ConfigureInitial(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> MonitorDocuSignEvent_ConfigureInitial(ActionDTO curActionDTO)
         {
             // Fill values as it would be on front-end.
             curActionDTO.ActivityTemplate = Mapper.Map<ActivityTemplateDTO>(_waitForDocuSignEventActivityTemplate);
@@ -245,7 +245,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
+            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
@@ -254,7 +254,7 @@ namespace pluginIntegrationTests
             return actionDTO.Content.CrateStorage;
         }
 
-        private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
+        private void MonitorDocuSignEvent_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
         {
             // Fetch Available Template crate and parse StandardDesignTimeFieldsMS.
             var availableTemplatesCrate = curCrateStorage.CrateDTO
@@ -278,7 +278,7 @@ namespace pluginIntegrationTests
             configurationControlsCrate.Contents = JsonConvert.SerializeObject(controlsMS);
         }
 
-        private async Task<CrateStorageDTO> WaitForDocuSignEvent_ConfigureFollowUp(ActionDTO curActionDTO)
+        private async Task<CrateStorageDTO> MonitorDocuSignEvent_ConfigureFollowUp(ActionDTO curActionDTO)
         {
             var curActionController = CreateActionController();
 
@@ -379,34 +379,34 @@ namespace pluginIntegrationTests
         }
 
         /// <summary>
-        /// Test WaitForDocuSignEvent initial configuration.
+        /// Test MonitorDocuSignEvent initial configuration.
         /// </summary>
         [Test]
-        public async Task PluginIntegration_WaitForDocuSign_ConfigureInitial()
+        public async Task PluginIntegration_MonitorDocuSign_ConfigureInitial()
         {
             var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
 
-            await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
+            await MonitorDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
 
         /// <summary>
-        /// Test WaitForDocuSignEvent follow-up configuration.
+        /// Test MonitorDocuSignEvent follow-up configuration.
         /// </summary>
         [Test]
-        public async Task PluginIntegration_WaitForDocuSign_ConfigureFollowUp()
+        public async Task PluginIntegration_MonitorDocuSign_ConfigureFollowUp()
         {
-            // Create blank WaitForDocuSignEventAction.
+            // Create blank MonitorDocuSignEventAction.
             var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
             
             // Call Configure Initial for WaitForDocuSignEvent action.
-            var initCrateStorageDTO = await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
+            var initCrateStorageDTO = await MonitorDocuSignEvent_ConfigureInitial(savedActionDTO);
             
             // Select first available DocuSign template.
-            WaitForDocuSignEvent_SelectFirstTemplate(initCrateStorageDTO);
+            MonitorDocuSignEvent_SelectFirstTemplate(initCrateStorageDTO);
             savedActionDTO.CrateStorage = initCrateStorageDTO;
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
-            await WaitForDocuSignEvent_ConfigureFollowUp(savedActionDTO);
+            await MonitorDocuSignEvent_ConfigureFollowUp(savedActionDTO);
         }
 
         /// <summary>
@@ -415,21 +415,21 @@ namespace pluginIntegrationTests
         [Test]
         public async Task PluginIntegration_FilterUsingRunTimeData_ConfigureInitial()
         {
-            // Create blank WaitForDocuSignEvent action.
-            var waitForDocuSignEventAction = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+            // Create blank MonitorDocuSignEvent action.
+            var monitorDocuSignEventAction = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
 
-            // Call Configure Initial for WaitForDocuSignEvent action.
-            var initWaitForDocuSignEventCS = await WaitForDocuSignEvent_ConfigureInitial(waitForDocuSignEventAction);
+            // Call Configure Initial for MonitorDocuSignEvent action.
+            var initWaitForDocuSignEventCS = await MonitorDocuSignEvent_ConfigureInitial(monitorDocuSignEventAction);
 
             // Select first available DocuSign template.
-            WaitForDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
-            waitForDocuSignEventAction.CrateStorage = initWaitForDocuSignEventCS;
+            MonitorDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
+            monitorDocuSignEventAction.CrateStorage = initWaitForDocuSignEventCS;
 
-            // Call Configure FollowUp for WaitForDocuSignEvent action.
-            await WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
+            // Call Configure FollowUp for MonitorDocuSignEvent action.
+            await MonitorDocuSignEvent_ConfigureFollowUp(monitorDocuSignEventAction);
 
-            // Save WaitForDocuSignEvent action.
-            SaveAction(waitForDocuSignEventAction);
+            // Save MonitorDocuSignEvent action.
+            SaveAction(monitorDocuSignEventAction);
 
             // Create blank FilterUsingRunTimeData action.
             var filterAction = CreateEmptyAction(_filterUsingRunTimeDataActivityTemplate);

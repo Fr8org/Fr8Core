@@ -10,7 +10,6 @@ var dockyard;
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var DropDownListBox = (function () {
                 function DropDownListBox() {
-                    var _this = this;
                     this.templateUrl = '/AngularTemplate/DropDownListBox';
                     this.scope = {
                         field: '=',
@@ -21,29 +20,27 @@ var dockyard;
                         //Link function goes here
                     };
                     DropDownListBox.prototype.controller = function ($scope, $element, $attrs) {
-                        _this._$element = $element;
-                        _this._$scope = $scope;
-                        _this._$scope.selectedItem = null;
-                        $scope.SetSelectedItem = angular.bind(_this, _this.SetSelectedItem);
-                        _this.FindAndSetSelectedItem();
+                        $scope.selectedItem = null;
+                        $scope.SetSelectedItem = function (item) {
+                            $scope.field.value = item.Value;
+                            $scope.selectedItem = item;
+                            // Invoike onChange event handler
+                            if ($scope.change != null && angular.isFunction($scope.change)) {
+                                $scope.change()($scope.field.name);
+                            }
+                        };
+                        var FindAndSetSelectedItem = function () {
+                            for (var i = 0; i < $scope.field.listItems.length; i++) {
+                                if ($scope.field.value == $scope.field.listItems[i].Value) {
+                                    $scope.selectedItem = $scope.field.listItems[i];
+                                    break;
+                                }
+                            }
+                        };
+                        FindAndSetSelectedItem();
+                        $scope.defaultitem = null;
                     };
                 }
-                DropDownListBox.prototype.SetSelectedItem = function (item) {
-                    this._$scope.field.value = item.Value;
-                    this._$scope.selectedItem = item;
-                    // Invoike onChange event handler
-                    if (this._$scope.change != null && angular.isFunction(this._$scope.change)) {
-                        this._$scope.change()(this._$scope.field.name);
-                    }
-                };
-                DropDownListBox.prototype.FindAndSetSelectedItem = function () {
-                    for (var i = 0; i < this._$scope.field.listItems.length; i++) {
-                        if (this._$scope.field.value == this._$scope.field.listItems[i].Value) {
-                            this._$scope.selectedItem = this._$scope.field.listItems[i];
-                            break;
-                        }
-                    }
-                };
                 //The factory function returns Directive object as per Angular requirements
                 DropDownListBox.Factory = function () {
                     var directive = function () {
