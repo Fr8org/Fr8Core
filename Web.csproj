@@ -778,6 +778,7 @@
     <TypeScriptCompile Include="Scripts\app\filters\ProcessTemplateState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ActivityCategoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateStorage.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FactDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FileDTO.ts" />
@@ -3959,7 +3960,7 @@
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="tsd.json" />
     <Content Include="Views\AngularTemplate\ProcessBuilder.cshtml" />
-    <Content Include="Views\AngularTemplate\PaneSelectAction.cshtml" />
+    <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Scripts\tests\Chutzpah.json" />
     <Content Include="RunFrontEndTests - With Web Server.ps1" />

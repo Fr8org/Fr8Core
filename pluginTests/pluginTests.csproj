@@ -147,9 +147,10 @@
     <Compile Include="PluginBaseTests\Infrastructure\BasePluginEventTests.cs" />
     <Compile Include="PluginBaseTests\Infrastructure\TestBasePluginEvent.cs" />
     <Compile Include="pluginDocuSign\Actions\Extract_From_DocuSign_Envelope_v1Tests.cs" />
-    <Compile Include="pluginDocuSign\Actions\Wait_For_DocuSign_Event_v1Tests.cs" />
+    <Compile Include="pluginDocuSign\Actions\Monitor_DocuSignTests.cs" />
     <Compile Include="pluginDocuSign\DocusignApiHelper.cs" />
     <Compile Include="pluginDocuSign\IDocusignApiHelper.cs" />
+    <Compile Include="pluginDocuSign\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="pluginDocuSign\Services\EnvelopeServiceTests.cs" />
     <Compile Include="PluginSalesforceTests\ActionControllerTests.cs" />

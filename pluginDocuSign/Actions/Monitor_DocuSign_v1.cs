@@ -21,7 +21,7 @@ using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Actions
 {
-    public class Wait_For_DocuSign_Event_v1 : BasePluginAction
+    public class Monitor_DocuSign_v1 : BasePluginAction
     {
         // TODO: remove this as of DO-1064.
         // IDocuSignTemplate _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
@@ -165,39 +165,21 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
-            if (!curActionDTO.CrateStorage.CrateDTO.Any(
-                c => c.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID 
-                && c.Label == "Configuration_Controls"))
-            {
-			var crateControls = CreateConfigurationCrate();
-			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-            }
-
+                var crateControls = CreateConfigurationCrate();
 			var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames(docuSignAuthDTO);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
 			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
-            return await Task.FromResult<ActionDTO>(curActionDTO);
-        }
-
-        protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
-        {
             var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
-            if (curCrates == null || curCrates.Count == 0)
-            {
-                return await Task.FromResult<ActionDTO>(curActionDTO);
-            }
-
-            // Extract DocuSign Template Id
+            //extract Docusign template Id
             var configurationFieldsCrate = curCrates.SingleOrDefault(c => c.Label == "Configuration_Controls");
-
             if (configurationFieldsCrate == null || String.IsNullOrEmpty(configurationFieldsCrate.Contents))
             {
                 return await Task.FromResult<ActionDTO>(curActionDTO);
             }
 
             var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
-
             if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
                 return await Task.FromResult<ActionDTO>(curActionDTO);
@@ -206,20 +188,14 @@ namespace pluginDocuSign.Actions
             // Remove previously added crate of "Standard Event Subscriptions" schema
             _crate.RemoveCrateByManifestType(
                 curActionDTO.CrateStorage.CrateDTO,
-                "Standard Event Subscriptions"
+                CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME
                 );
 
-          
             var crateConfiguration = new List<CrateDTO>();
 
             crateConfiguration.Add(
                 CreateEventSubscriptionCrate(configurationFields)
                 );
-
-            if (curActionDTO.CrateStorage == null)
-            {
-                curActionDTO.CrateStorage = new CrateStorageDTO();
-            }
 
             curActionDTO.CrateStorage.CrateDTO.AddRange(crateConfiguration);
 
