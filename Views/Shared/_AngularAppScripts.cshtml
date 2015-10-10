@@ -13,6 +13,10 @@
 <script src="/bower_components/angular-datatables/dist/angular-datatables.js"></script>
 <script src="/bower_components/ng-file-upload/ng-file-upload-all.min.js" type="text/javascript"></script>
 <script src="~/Scripts/lib/jquery.blockui.min.js"></script>
+
+<script src="/bower_components/textAngular/dist/textAngular-rangy.min.js"></script>
+<script src="/bower_components/textAngular/dist/textAngular-sanitize.min.js"></script>
+<script src="/bower_components/textAngular/dist/textAngular.min.js"></script>
 <!-- END CORE ANGULARJS PLUGINS -->
 <!-- BEGIN APP LEVEL ANGULARJS SCRIPTS -->
 <script src="~/Scripts/app/app.js" type="text/javascript"></script>
@@ -64,13 +68,13 @@
 <script src="~/Scripts/app/directives/PaneWorkflowDesigner/Messages.js"></script>
 <script src="~/Scripts/app/directives/PaneWorkflowDesigner/PaneWorkflowDesigner.js"></script>
 
-<!-- pane-select-action -->
-<script src="~/Scripts/app/directives/PaneSelectAction/PaneSelectAction.js"></script>
-
 <!-- pane-configure-action -->
 <script src="~/Scripts/app/directives/PaneConfigureAction/PaneConfigureAction.js"></script>
-<script src="~/Scripts/app/directives/PaneConfigureAction/ConfigurationField.js"></script>
+<script src="~/Scripts/app/directives/PaneConfigureAction/ConfigurationControl.js"></script>
 @*Missing file: <script src="~/Scripts/app/directives/PaneConfigureAction/RoutingControl.js"></script>*@
+
+<!-- pane-select-action -->
+<script src="~/Scripts/app/directives/PaneSelectAction/PaneSelectAction.js"></script>
 
 <!-- file-picker -->
 <script src="~/Scripts/app/directives/Controls/FilePicker.js"></script>
@@ -81,8 +85,11 @@
 <!-- drop-down-list-box -->
 <script src="~/Scripts/app/directives/Controls/DropDownListBox.js"></script>
 
-<!-- textblock-box -->
+<!-- textblock -->
 <script src="~/Scripts/app/directives/Controls/TextBlock.js"></script>
+
+<!-- textarea -->
+<script src="~/Scripts/app/directives/Controls/TextArea.js"></script>
 
 <!-- filter-pane -->
 <script src="~/Scripts/app/directives/Controls/FilterPane.js"></script>
@@ -90,6 +97,9 @@
 
 <!-- mapping-pane -->
 <script src="~/Scripts/app/directives/Controls/MappingPane.js"></script>
+
+<!-- ActionNameFormatter Filter -->
+<script src="~/Scripts/app/filters/ActionNameFormatter.js"></script>
 
 <!-- CONTROLLERS -->
 <script src="~/Scripts/app/controllers/ProcessBuilderController.js"></script>
@@ -103,7 +113,7 @@
 <script src="~/Scripts/app/controllers/ManageFileListController.js"></script>
 <script src="~/Scripts/app/controllers/AccountListController.js"></script>
 <script src="~/Scripts/app/controllers/AccountDetailsController.js"></script>
-<script src="~/Scripts/app/controllers/PaneSelectActionController.js"></script>
 <script src="~/Scripts/app/controllers/InternalAuthenticationController.js"></script>
+<script src="~/Scripts/app/controllers/SelectActionController.js"></script>
 
 

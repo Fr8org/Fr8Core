@@ -18,13 +18,14 @@ using Data.Constants;
 using Newtonsoft.Json;
 using Data.Interfaces.ManifestSchemas;
 using Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        private IAction _action;
-        private Task curAction;
+        private ICrate _crate;
+        //private Task curAction;
         private IPlugin _plugin;
         private readonly AuthorizationToken _authorizationToken;
 
@@ -32,7 +33,7 @@ namespace Core.Services
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-
+            _crate= ObjectFactory.GetInstance<ICrate>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -248,7 +249,8 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
+                "Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
             // EventManager.ActionDispatched(curActionDTO);
@@ -284,7 +286,8 @@ namespace Core.Services
             }
         }
 
-        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin, string username, string password)
+        public async Task AuthenticateInternal(DockyardAccountDO account, PluginDO plugin,
+            string username, string password)
         {
             if (!plugin.RequiresAuthentication)
             {
@@ -300,7 +303,7 @@ namespace Core.Services
             };
 
             var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate"),
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_internal"),
                 credentialsDTO
             );
 
@@ -319,6 +322,7 @@ namespace Core.Services
                     authToken = new AuthorizationTokenDO()
                     {
                         Token = authTokenDTO.Token,
+                        ExternalAccountId = authTokenDTO.ExternalAccountId,
                         Plugin = curPlugin,
                         UserDO = curAccount,
                         ExpiresAt = DateTime.Today.AddMonths(1)
@@ -329,10 +333,97 @@ namespace Core.Services
                 else
                 {
                     authToken.Token = authTokenDTO.Token;
+                    authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
                 }
 
                 uow.SaveChanges();
             }
+        }
+
+        public async Task AuthenticateExternal(
+            PluginDO plugin,
+            ExternalAuthenticationDTO externalAuthDTO)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_external"),
+                externalAuthDTO
+            );
+
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.ExternalStateToken == authTokenDTO.ExternalStateToken);
+
+                if (authToken == null)
+                {
+                    throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
+                }
+
+                authToken.Token = authTokenDTO.Token;
+                authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                authToken.ExternalStateToken = null;
+
+                uow.SaveChanges();
+            }
+        }
+
+        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
+            DockyardAccountDO user, PluginDO plugin)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var response = await restClient.PostAsync(
+                new Uri("http://" + plugin.Endpoint + "/actions/auth_url")
+            );
+
+            var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.Plugin.Id == plugin.Id
+                        && x.UserDO.Id == user.Id);
+
+                if (authToken == null)
+                {
+                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                    var curAccount = uow.UserRepository.GetByKey(user.Id);
+
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        UserDO = curAccount,
+                        Plugin = curPlugin,
+                        ExpiresAt = DateTime.Today.AddMonths(1),
+                        ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.ExternalAccountId = null;
+                    authToken.Token = null;
+                    authToken.ExternalStateToken = externalAuthUrlDTO.ExternalStateToken;
+                }
+
+                uow.SaveChanges();
+            }
+
+            return externalAuthUrlDTO;
         }
 
         /// <summary>
@@ -384,6 +475,20 @@ namespace Core.Services
             return crateDTO;
         }
 
+        public IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO)
+        {
+            if (String.IsNullOrEmpty(curLabel))
+                throw new ArgumentNullException("Parameter Label is empty");
+            if (curCrateStorageDTO == null)
+                throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
+
+            IEnumerable<CrateDTO> crateDTOList = null;
+
+            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
+
+            return crateDTOList;
+        }
+
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
         public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
         {
@@ -402,7 +507,6 @@ namespace Core.Services
             return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
 
         }
-
 
         public async Task<ActionDTO> Activate(ActionDO curActionDO)
         {
@@ -493,6 +597,35 @@ namespace Core.Services
 
             return ObjectFactory.GetInstance<IPluginTransmitter>()
                 .CallActionAsync<TResult>(actionName, dto);
+        }
+
+        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
+        }
+
+        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
+            {
+                AddCrate(curActionDO, curCrateDTO);
+            }
+            else
+            {
+                // Remove the existing crate for this label
+                _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
+
+                // Add the newly created crate for this label to action's crate storage
+                AddCrate(curActionDO, curCrateDTO);
+            }
+        }
+
+        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key)
+        {
+           var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
+           var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");
+           return keys;
         }
     }
 }

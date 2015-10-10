@@ -12,6 +12,11 @@ namespace Data.Entities
 {
     public class PluginDO : BaseDO, IPluginDO
     {
+        public PluginDO()
+        {
+
+        }
+
         [Key]
         public int Id { get; set; }
 

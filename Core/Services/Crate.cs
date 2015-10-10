@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Utilities;
 using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
+using Newtonsoft.Json.Converters;
 
 namespace Core.Services
 {
@@ -32,12 +33,11 @@ namespace Core.Services
             return crateDTO;
         }
 
-        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode, string url = null)
+        public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode)
         {
             var manifestSchema = new StandardAuthenticationMS()
             {
-                Mode = mode,
-                Url = url
+                Mode = mode
             };
 
             return Create(
@@ -50,12 +50,12 @@ namespace Core.Services
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
             return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() {Fields = fields.ToList()}),
+                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() { Fields = fields.ToList() }),
                 manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
                 manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
 
-        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params FieldDefinitionDTO[] controls)
+        public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
             return Create(label, 
                 JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
@@ -71,9 +71,22 @@ namespace Core.Services
                 manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
         }
 
+        public CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(new StandardTableDataMS() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
+                manifestType: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
+                manifestId: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID);
+        }
+
         public T GetContents<T>(CrateDTO crate)
         {
             return JsonConvert.DeserializeObject<T>(crate.Contents);
+        }
+
+        public StandardConfigurationControlsMS GetStandardConfigurationControls(CrateDTO crate)
+        {
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(crate.Contents, new ControlDefinitionDTOConverter());
         }
 
         /// <summary>
@@ -140,5 +153,45 @@ namespace Core.Services
                 }
             }
         }
+
+        public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataMS tableDataMS)
+        {
+            return Create(crateLabel,
+                            JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
+                            manifestType: CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+                            manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+            }
+
+        private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataMS tableDataMS)
+        {
+            var payloadDataMS = new StandardPayloadDataMS()
+            {
+                PayloadObjects = new List<PayloadObjectDTO>(),
+                ObjectType = curObjectType,
+            };
+
+            // Rows containing column names
+            var columnHeadersRowDTO = tableDataMS.Table[0];
+
+            for (int i = 1; i < tableDataMS.Table.Count; ++i) // Since first row is headers; hence i starts from 1
+            {
+                var tableRowDTO = tableDataMS.Table[i];
+                var fields = new List<FieldDTO>();
+                for (int j = 0; j < tableRowDTO.Row.Count; ++j)
+                {
+                    var tableCellDTO = tableRowDTO.Row[j];
+                    var listFieldDTO = new FieldDTO()
+                    {
+                        Key = columnHeadersRowDTO.Row[j].Cell.Value,
+                        Value = tableCellDTO.Cell.Value,
+                    };
+                    fields.Add(listFieldDTO);
+                }
+                payloadDataMS.PayloadObjects.Add(new PayloadObjectDTO() { PayloadObject = fields, });
+            }
+
+            return payloadDataMS;
+        }
+
     }
 }

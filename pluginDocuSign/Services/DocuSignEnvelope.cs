@@ -192,16 +192,16 @@ namespace pluginDocuSign.Services
             };
         }
 
-        private string GetFieldType(string name)
+        public string GetFieldType(string name)
         {
             switch (name)
             {
                 case "Checkbox":
-                    return FieldDefinitionDTO.CHECKBOX_FIELD;
+                    return  ControlTypes.CheckBox;
                 case "Text":
-                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                    return ControlTypes.TextBox;
                 default:
-                    return FieldDefinitionDTO.TEXTBOX_FIELD;
+                    return ControlTypes.TextBox;
             }
         }
     }

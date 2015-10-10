@@ -15,12 +15,12 @@ var dockyard;
                 controller: ['$scope', '$timeout', 'CrateHelper',
                     function ($scope, $timeout, crateHelper) {
                         $scope.operators = [
-                            { text: 'Greater than', value: 'gt' },
-                            { text: 'Greater than or equal', value: 'gte' },
-                            { text: 'Less than', value: 'lt' },
-                            { text: 'Less than or equal', value: 'lte' },
-                            { text: 'Equal', value: 'eq' },
-                            { text: 'Not equal', value: 'neq' }
+                            { text: '>', value: 'gt' },
+                            { text: '>=', value: 'gte' },
+                            { text: '<', value: 'lt' },
+                            { text: '<=', value: 'lte' },
+                            { text: '==', value: 'eq' },
+                            { text: '<>', value: 'neq' }
                         ];
                         $scope.defaultOperator = '';
                         $scope.$watch('currentAction', function (newValue) {

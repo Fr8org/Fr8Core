@@ -11,11 +11,9 @@ using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Web.Controllers;
-using Web.ViewModels;
 using Moq;
 using System;
 using Core.Interfaces;
-using System.Web.Http.Results;
 using AutoMapper;
 
 namespace DockyardTest.Controllers
@@ -340,7 +338,6 @@ namespace DockyardTest.Controllers
                 Name = "WriteToAzureSql",
                 ActionListId = 1,
                 CrateStorage = new CrateStorageDTO(),
-                FieldMappingSettings = new FieldMappingSettingsDTO(),
                 ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()

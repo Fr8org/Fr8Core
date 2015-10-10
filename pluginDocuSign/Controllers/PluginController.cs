@@ -31,8 +31,8 @@ namespace pluginDocuSign.Controllers
             var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
-                Name = "Wait_For_DocuSign_Event",
-                Category = ActivityCategory.fr8_Receiver,
+                Name = "Monitor_DocuSign_Event",
+                Category = ActivityCategory.fr8_Monitor,
                 Plugin = plugin
             };
 
@@ -52,11 +52,20 @@ namespace pluginDocuSign.Controllers
                 Plugin = plugin
             };
 
+            var monitorAllDocuSignEvents = new ActivityTemplateDO
+            {
+                Name = "Monitor_All_DocuSign_Events",
+                Version = "1",
+                Category = ActivityCategory.fr8_Forwarder,
+                Plugin = plugin
+            };
+
             var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
-                sendDocuSignEnvelopeActionTemplate
+                sendDocuSignEnvelopeActionTemplate,
+                monitorAllDocuSignEvents
             };
 
             return Ok(actionList);

@@ -180,7 +180,7 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().ToList();
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
             }
 
             //we're currently bypassing the subscription logic until we need it
@@ -194,5 +194,28 @@ namespace Core.Services
 
             return curActivityTemplates;
         }
-    }
+
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
+	    {
+            //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            List<ActivityTemplateCategoryDTO> curActivityTemplates;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                    .GroupBy(t => t.Category)
+                    .OrderBy(c => c.Key)
+                    //lets load them all before memory processing
+                    .ToList()
+                    .Select(c => new ActivityTemplateCategoryDTO
+                    {
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
+                        Name = c.Key.ToString()
+                    })
+                    .ToList();
+            }
+
+            return curActivityTemplates;
+	    }
+	}
 }

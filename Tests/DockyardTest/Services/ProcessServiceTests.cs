@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Interfaces;
-using Core.Managers;
 using Core.Services;
 using Data.Entities;
 using Data.Interfaces;
@@ -16,9 +14,6 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
 
-using File = System.IO.File;
-using Newtonsoft.Json;
-using System.Collections;
 
 namespace DockyardTest.Services
 {
@@ -51,45 +46,6 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        [ExpectedException(typeof(ArgumentException))]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessService_ThrowsIfXmlInvalid()
-        {
-            //_docuSignNotificationService.Process(_testUserId,
-            //    File.ReadAllText(xmlPayloadFullPath.Replace(".xml", "_invalid.xml")));
-        }
-
-        [Test]
-        [Ignore("Requires update after v2 changes.")]
-        public void ProcessService_NotificationReceivedAlertCreated()
-        {
-            //Arrange 
-            //create a test process
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var process = FixtureData.TestProcess1();
-                process.CrateStorage = FixtureData.EnvelopeIdCrateJson();
-                process.ProcessState = ProcessState.Executing;
-                uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate2());
-                uow.ProcessRepository.Add(process);
-                uow.SaveChanges();
-            }
-
-            //subscribe the events
-            new EventReporter().SubscribeToAlerts();
-
-            //Act
-            //_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
-
-            //Assert
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Received").SingleOrDefault();
-                Assert.IsNotNull(fact);
-            }
-        }
-
-        [Test]
         public void ProcessService_CanRetrieveValidProcesses()
         {
             //Arrange 
@@ -109,31 +65,6 @@ namespace DockyardTest.Services
 
             //Assert
             Assert.AreEqual(2, processList.Count());
-        }
-
-        [Test]
-        [Ignore("Seems like this test has no sense anymore due to the latest process changes")]
-        public void ProcessService_CanCreateProcessProcessingAlert()
-        {
-            //Arrange 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                foreach (var p in FixtureData.GetProcesses())
-                {
-                    uow.ProcessRepository.Add(p);
-                }
-                uow.SaveChanges();
-            }
-
-            //Act
-            //_docuSignNotificationService.Process(_testUserId, File.ReadAllText(xmlPayloadFullPath));
-
-            //Assert
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var fact = uow.FactRepository.GetAll().Where(f => f.Activity == "Processed");
-                Assert.AreEqual(2, fact.Count());
-            }
         }
 
         //get this working again once 1124 is merged
@@ -220,19 +151,27 @@ namespace DockyardTest.Services
 */
 
         [Test]
-        [Ignore("Too broad for a unit test")]
-        public void ProcessService_Can_ExecuteWithoutExceptions()
+        public void ProcessService_Can_LaunchWithoutExceptions()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var template = FixtureData.TestProcessTemplate1();
+                //Arrange
+                //Create a process template
+                var curProcessTemplate = FixtureData.TestProcessTemplateWithSubscribeEvent();
                 var curEvent = FixtureData.TestDocuSignEvent1();
 
+                //Create activity mock to process the actions
+                Mock<IActivity> activityMock = new Mock<IActivity>(MockBehavior.Default);
+                activityMock.Setup(a => a.Process(1, It.IsAny<ProcessDO>())).Returns(Task.Delay(2));
+                ObjectFactory.Container.Inject(typeof(IActivity), activityMock.Object);
 
-                uow.ProcessTemplateRepository.Add(template);
-                uow.SaveChanges();
+                //Act
+                _processService = new Process();
+                _processService.Launch(curProcessTemplate, FixtureData.DocuSignEventToCrate(curEvent));
 
-                _processService.Launch(template, FixtureData.DocuSignEventToCrate(curEvent));
+                //Assert
+                //since we have only one action in the template, the process should be called exactly once
+                activityMock.Verify(activity => activity.Process(1, It.IsAny<ProcessDO>()), Times.Exactly(1));
             }
         }
 
@@ -370,7 +309,7 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void SetProcessNextActivity_ProcessDOCurrenctActivityIsNull_NextActivityIsNull()
+        public void SetProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull()
         {
             _processService = ObjectFactory.GetInstance<IProcess>();
             ProcessDO process = FixtureData.TestProcessCurrentActivityNULL();
@@ -409,190 +348,86 @@ namespace DockyardTest.Services
             Assert.IsNotNull(process.NextActivity);
             Assert.AreEqual(process.NextActivity.Id, FixtureData.TestAction8().Id);
         }
-		  [Test]
-		  public async void Execute_CurrentActivitIsNull_ExpectedArgumentNullException()
-		  {
-			  var processDO = FixtureData.TestProcessCurrentActivityNULL();
 
-			  var exp = Assert.Throws<ArgumentNullException>(async() => await _processService.Execute(processDO));
-		  }
-		  [Test]
-		  public async void Execute_CurrentActivityStateIsActive_ExpectedException()
-		  {
-			  string crateStorage = GetCrateStorageAsString();
+        [Test]
+        public void UpdateProcessNextActivity_ProcessDOCurrentActivityIsNull_NextActivityIsNull() 
+        {
+            //Arrange
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
 
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = GetProcessDO();
-				  var currAction = FixtureData.TestAction4();
-				  currAction.ActionState = ActionState.Active;
-				  currAction.CrateStorage = crateStorage;
-				  var nextAction = FixtureData.TestAction5();
-				  nextAction.CrateStorage = crateStorage;
-				  nextAction.ActionState = ActionState.Unstarted;
-				  processDO.CurrentActivity = currAction;
-				  processDO.NextActivity = nextAction;
+            //process with current activity being null
+            ProcessDO curProcess = FixtureData.TestProcessCurrentActivityNULL();
+            //and next activity being not null
+            curProcess.NextActivity = FixtureData.TestAction2();
 
-				  uow.ProcessRepository.Add(processDO);
-				  uow.ActivityRepository.Add(currAction);
-				  uow.ActivityRepository.Add(nextAction);
+            var nextActivity = curProcess.NextActivity;
+            //Act
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
 
-				  uow.SaveChanges();
-			  }
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = uow.ProcessRepository.GetByKey(49);
-				  var ex = Assert.Throws<Exception>(async() => await _processService.Execute(processDO));
-				  Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
-			  }
-		  }
-		  [Test]
-		  public async void Execute_CurrentActivityStateIsDeactive_ExpectedException()
-		  {
-			  string crateStorage = GetCrateStorageAsString();
+            //Assert
+            Assert.IsNotNull(curProcess.CurrentActivity);
+            Assert.IsNull(curProcess.NextActivity);
+            Assert.AreEqual(nextActivity.Id, curProcess.CurrentActivity.Id);
+        }
 
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = GetProcessDO();
-				  var currAction = FixtureData.TestAction4();
-				  currAction.ActionState = ActionState.Deactive;
-				  currAction.CrateStorage = crateStorage;
-				  var nextAction = FixtureData.TestAction5();
-				  nextAction.CrateStorage = crateStorage;
-				  nextAction.ActionState = ActionState.Unstarted;
-				  processDO.CurrentActivity = currAction;
-				  processDO.NextActivity = nextAction;
+        [Test]
+        public void UpdateNextActivity_ActivityListIsNull_ProcessDONextActivitySameAsCurrentActivity_NextActivityIsNull()
+        {
+            //Arrange
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
 
-				  uow.ProcessRepository.Add(processDO);
-				  uow.ActivityRepository.Add(currAction);
-				  uow.ActivityRepository.Add(nextAction);
+            //process with current activity being equal to the next activity
+            ProcessDO curProcess = FixtureData.TestProcesswithCurrentActivityAndNextActivityTheSame();
 
-				  uow.SaveChanges();
-			  }
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = uow.ProcessRepository.GetByKey(49);
-				  var ex = Assert.Throws<Exception>(async () => await _processService.Execute(processDO));
-				  Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
-			  }
-		  }
-		  [Test]
-		  public async void Execute_CurrentActivityStateIsError_ExpectedException()
-		  {
-			  string crateStorage = GetCrateStorageAsString();
+            //Act
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
 
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = GetProcessDO();
-				  var currAction = FixtureData.TestAction4();
-				  currAction.ActionState = ActionState.Error;
-				  currAction.CrateStorage = crateStorage;
-				  var nextAction = FixtureData.TestAction5();
-				  nextAction.CrateStorage = crateStorage;
-				  nextAction.ActionState = ActionState.Unstarted;
-				  processDO.CurrentActivity = currAction;
-				  processDO.NextActivity = nextAction;
+            //Assert
+            Assert.IsNull(curProcess.NextActivity);
+        }
 
-				  uow.ProcessRepository.Add(processDO);
-				  uow.ActivityRepository.Add(currAction);
-				  uow.ActivityRepository.Add(nextAction);
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void UpdateNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
 
-				  uow.SaveChanges();
-			  }
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = uow.ProcessRepository.GetByKey(49);
-				  var ex = Assert.Throws<Exception>(async () => await _processService.Execute(processDO));
-				  Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
-			  }
-		  }
-		  [Test]
-		  public async void Execute_OneActivity_ShouldBeOk()
-		  {
-			  string crateStorage = GetCrateStorageAsString();
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { null });
+        }
 
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = GetProcessDO();
-				  var currAction = FixtureData.TestAction4();
-				  currAction.ActionState = ActionState.Unstarted;
-				  currAction.CrateStorage = crateStorage;
-				  var nextAction = FixtureData.TestAction5();
-				  nextAction.CrateStorage = crateStorage;
-				  nextAction.ActionState = ActionState.Unstarted;
-				  processDO.CurrentActivity = currAction;
-				  processDO.NextActivity = nextAction;
+        [Test]
+        public void UpdateNextActivity_ProcessDOCurrentActivitySameAsFirstOfGetNextActivity_NextActivityIsNull()
+        {
+            var curTestActivity = FixtureData.TestAction8();
+            //mock object that returns predefined value of TestAction8
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.GetNextActivities(It.IsAny<ActivityDO>()))
+                .Returns(new List<ActivityDO>() { curTestActivity });
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
 
-				  uow.ProcessRepository.Add(processDO);
-				  uow.ActivityRepository.Add(currAction);
-				  uow.ActivityRepository.Add(nextAction);
+            //Make use of PrivateObject class to reach the private method
+            var privateHelperProcessService = new Microsoft.VisualStudio.TestTools.UnitTesting.PrivateObject(_processService);
 
-				  uow.SaveChanges();
-			  }
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = uow.ProcessRepository.GetByKey(49);
-				  await _processService.Execute(processDO);
+            //process with current activity being equal to the next activity
+            ProcessDO curProcess = FixtureData.TestProcessUpdateNextActivity();
 
-				  Assert.IsNull(processDO.CurrentActivity);
-				  Assert.IsNull(processDO.NextActivity);
-			  }
-		  } 
-		 [Test]
-		  public async void Execute_ManyActivities_ShouldBeOk()
-		  {
-			  string crateStorage = GetCrateStorageAsString();
+            //Act
+            //Call private method to move next to current activity
+            privateHelperProcessService.Invoke("UpdateNextActivity", new ProcessDO[] { curProcess });
 
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = GetProcessDO();
-				  var currActivity = FixtureData.TestActionTree();
-				  SetActionStateUnstarted(currActivity);
-				  processDO.CurrentActivity = currActivity;
-				  uow.ProcessRepository.Add(processDO);
-				  uow.ActivityRepository.Add(currActivity);
-
-				  uow.SaveChanges();
-			  }
-			  using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-			  {
-				  var processDO = uow.ProcessRepository.GetByKey(49);
-				  await _processService.Execute(processDO);
-
-				  Assert.IsNull(processDO.CurrentActivity);
-				  Assert.IsNull(processDO.NextActivity);
-			  }
-		  }
-
-		 private static void SetActionStateUnstarted(ActivityDO currActivity)
-		 {
-			 if (currActivity == null)
-				 return;
-			 if (currActivity is ActionDO)
-				 (currActivity as ActionDO).ActionState = ActionState.Unstarted;
-			 if (currActivity.Activities != null)
-			 {
-				 foreach (var activity in currActivity.Activities)
-					 SetActionStateUnstarted(activity);
-			 }
-		 }
-		  private static ProcessDO GetProcessDO()
-		  {
-			  var processDO = new ProcessDO();
-			  processDO.Id = 49;
-			  processDO.ProcessTemplate = FixtureData.TestProcessTemplate2();
-			  processDO.ProcessTemplateId = processDO.ProcessTemplate.Id;
-			  processDO.ProcessState = 1;
-			  processDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
-			  return processDO;
-		  }
-		  private static string GetCrateStorageAsString()
-		  {
-			  List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
-			  CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-			  crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-			  string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-			  return crateStorage;
-		  }		
+            //Assert
+            Assert.IsNull(curProcess.CurrentActivity);
+            Assert.IsNull(curProcess.NextActivity);
+        }
     }
 }
