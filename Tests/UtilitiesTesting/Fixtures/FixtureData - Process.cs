@@ -163,5 +163,16 @@ namespace UtilitiesTesting.Fixtures
             process.NextActivity = null;
             return process;
         }
+
+        public static ProcessDO TestProcessExecute()
+        {
+            var processDO = new ProcessDO();
+            processDO.Id = 49;
+            processDO.ProcessTemplate = FixtureData.TestProcessTemplate2();
+            processDO.ProcessTemplateId = processDO.ProcessTemplate.Id;
+            processDO.ProcessState = 1;
+            processDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
+            return processDO;
+        }
 	}
 }
