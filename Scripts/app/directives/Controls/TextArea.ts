@@ -3,7 +3,7 @@ module dockyard.directives.textBlock {
     'use strict';
 
     export interface ITextAreaScope extends ng.IScope {
-        field: model.TextAreaField;
+        field: model.TextAreaControlDefinitionDTO;
         buttonSet: Array<Array<String>>;
     }
 

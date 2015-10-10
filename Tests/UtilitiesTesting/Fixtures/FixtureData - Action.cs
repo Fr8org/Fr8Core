@@ -476,14 +476,14 @@ namespace UtilitiesTesting.Fixtures
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
 
-            var fieldSelectDockusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDockusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
                 Value = templateId,
-                Events = new List<FieldEvent>() {
-                     new FieldEvent("onSelect", "requestConfiguration")
+                Events = new List<ControlEvent>() {
+                     new ControlEvent("onSelect", "requestConfiguration")
                 }
             };
 
@@ -498,7 +498,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate
             };
 
-            var fields = new List<ControlsDefinitionDTO>()
+            var fields = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDockusignTemplate
             };

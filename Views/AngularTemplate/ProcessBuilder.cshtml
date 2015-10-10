@@ -10,25 +10,16 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 <div ng-controller="ProcessBuilderController" class="margin-top-10">
-    <div class="row">
-        <div class="col-md-6 col-sm-6">
-            <!-- BEGIN PORTLET-->
-            <div class="portlet light ">
-                <h4 class="no-margin caption-subject font-green-haze bold uppercase">Define Process</h4>
-                <div class="portlet-body">
-                    <!-- PROCESS FORM -->
-                    <div class="tab-pane active" id="tab_1_1">
-                        <pane-workflow-designer width="700" height="600"></pane-workflow-designer>
-                    </div>
-                    <!-- END PROCESS FORM -->
+    <div class="process-builder-container">
+        <div class="action" ng-repeat-start="action in actions" ng-class="{ selected: action.id === current.action.id }" ng-click="selectAction(action)">
+            <p class="action-name">{{action.name}}</p>
+            <pane-configure-action ng-if="action.id === current.action.id" id="paneConfigureAction" current-action="action"></pane-configure-action>
                 </div>
+        <div class="action-arrow" ng-repeat-end>
+
             </div>
-            <!-- END PORTLET-->
-        </div>
-        <div class="col-md-6 col-sm-6">
-            <div class="col-sm-12">
-                <pane-configure-action id="paneConfigureAction" current-action="current.action"></pane-configure-action>
-            </div>
+        <div class="action action-to-add" ng-click="addAction()">
+            <p class="action-name">Click to add action</p>
         </div>
     </div>
     <!-- END MAIN CONTENT -->
