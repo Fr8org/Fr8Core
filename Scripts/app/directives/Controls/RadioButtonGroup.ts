@@ -19,8 +19,6 @@ module dockyard.directives.radioButtonGroup {
             changeSelection: '&'
         };
         public restrict = 'E';
-        private _$element: ng.IAugmentedJQuery;
-        private _$scope: IRadioButtonGroupScope;
 
         constructor() {
             RadioButtonGroup.prototype.link = (
@@ -35,23 +33,19 @@ module dockyard.directives.radioButtonGroup {
                 $scope: IRadioButtonGroupScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
-                this._$element = $element;
-                this._$scope = $scope;
-
-                $scope.changeSelection = <(radio: model.RadioButtonOption) => void>angular.bind(this, this.changeSelection);
-            };
-        }
-
-        private changeSelection(radio: model.RadioButtonOption) {
-            var radios = this._$scope.field.radios
-            for (var i = 0; i < radios.length; i++) {
-                if (radios[i] === radio) {
-                    radios[i].selected = true;
-                } else {
-                    radios[i].selected = false;
+                //<(radio: model.RadioButtonOption) => void>
+                $scope.changeSelection = (radio: model.RadioButtonOption) => {
+                    var radios = $scope.field.radios
+                    for (var i = 0; i < radios.length; i++) {
+                        if (radios[i] === radio) {
+                            radios[i].selected = true;
+                        } else {
+                            radios[i].selected = false;
+                        }
+                    }
+                    $scope.field.value = radio.value;
                 }
-            }
-            this._$scope.field.value = radio.value;
+            };
         }
 
         //The factory function returns Directive object as per Angular requirements

@@ -10,8 +10,8 @@
     *@
     <div class='col-sm-offset-1' ng-if='field.type == "@ControlTypes.CheckBox"'>
         <div class='checkbox checkbox-primary'>
-            <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}' id='pca__chk__{{::field.name}}' name='pca__chk__{{::field.name}}'>
-            <label for='pca__chk__{{::field.name}}'>{{::field.label}}</label>
+            <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}' id='pca__chk__{{::field.name}}{{::currentAction.id}}' name='pca__chk__{{::field.name}}{{::currentAction.id}}'>
+            <label for='pca__chk__{{::field.name}}{{::currentAction.id}}'>{{::field.label}}</label>
         </div>
     </div>
 
