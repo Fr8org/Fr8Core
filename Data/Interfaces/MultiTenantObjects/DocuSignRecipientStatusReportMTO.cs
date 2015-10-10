@@ -1,6 +1,6 @@
 ﻿namespace Data.Interfaces.MultiTenantObjects
 {
-    public class DocuSignRecipientStatusReportMTO : MultiTenantObject
+    public class DocuSignRecipientStatusReportMTO : BaseMultiTenantObject
     {
         public string Email { get; set; }
 

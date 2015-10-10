@@ -33,6 +33,17 @@ namespace Data.Interfaces.ManifestSchemas
         }
 
         public FieldDTO Cell;
-    }
 
+        public static TableCellDTO Create(string key, string value)
+        {
+            return new TableCellDTO()
+            {
+                Cell = new FieldDTO()
+                {
+                    Key = key,
+                    Value = value,
+                }
+            };
+        }
+    }
 }

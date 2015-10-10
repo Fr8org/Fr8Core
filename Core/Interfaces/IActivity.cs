@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Core.Interfaces
 {
@@ -12,5 +13,6 @@ namespace Core.Interfaces
         Task Process(int curActivityId, ProcessDO curProcessDO);
         IEnumerable<ActivityDO> GetNextActivities(ActivityDO curActivityDO);
         IEnumerable<ActivityTemplateDO> GetAvailableActivities(IDockyardAccountDO curAccount);
+        IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount);
 	}
 }

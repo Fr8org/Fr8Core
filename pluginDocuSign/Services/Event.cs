@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using Core.Managers;
-using Core.Utilities;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -39,7 +38,7 @@ namespace pluginDocuSign.Services
             var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
             var eventReportContent = new EventReportMS
             {
-                EventNames = "DocuSign Envelope " + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
+                EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ProcessDOId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email

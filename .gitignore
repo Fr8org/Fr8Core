@@ -121,6 +121,8 @@ AppPackages/
 
 # Ignore compilation results of TypeScript 
 Scripts/app/**/*.js
+Scripts/app/**/**/*.js
+Scripts/app/directives/**/*.js
 Scripts/tests/mocks/*.js
 Scripts/tests/unit/*.js
 Scripts/tests/utils/*.js

@@ -24,6 +24,9 @@ namespace Data.Entities
         [Required, ForeignKey("MT_Object")]
         public int MT_ObjectId { get; set; }
 
+        [Required]
+        public int fr8AccountId { get; set; }
+
         public MT_Object MT_Object { get; set; }
 
         public bool IsDeleted { get; set; }

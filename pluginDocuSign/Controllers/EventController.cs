@@ -1,7 +1,7 @@
 ﻿using System.Web.Http;
-using pluginDocuSign.Services;
 using StructureMap;
 using pluginDocuSign.Interfaces;
+using pluginDocuSign.Services;
 
 namespace pluginDocuSign.Controllers
 {

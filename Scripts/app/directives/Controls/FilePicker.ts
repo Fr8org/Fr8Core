@@ -6,7 +6,7 @@ module dockyard.directives.filePicker {
         OnFileSelect: ($file: any) => void;
         ListExistingFiles: () => void;
         Save: () => void;
-        field: model.FileField;
+        field: model.FileControlDefinitionDTO;
         selectedFile: interfaces.IFileDescriptionDTO;
     }
 

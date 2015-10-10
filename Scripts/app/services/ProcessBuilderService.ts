@@ -47,7 +47,9 @@ module dockyard.services {
         saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
     }
 
-    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> { }
+    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
+        getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
+    }
 
     /*
         ProcessTemplateDTO CRUD service.
@@ -183,7 +185,14 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' })
+        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' }, 
+        {
+            'getAvailableActivities': {
+                method: 'GET',
+                url: '/activities/available/',
+                isArray: true
+            }
+        })
     ]);
 
     /*
