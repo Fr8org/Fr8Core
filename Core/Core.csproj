@@ -302,7 +302,6 @@
     <Compile Include="Services\SMSMessage.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="Utilities\DocuSignConnectParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
@@ -331,6 +330,7 @@
     <Folder Include="Diagnostics\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />
     <Folder Include="UserAlerting\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
