@@ -37,8 +37,6 @@ module dockyard.directives.paneConfigureAction {
         public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';
 
-        private _$scope: IConfigurationControlScope;
-
         constructor() {
             ConfigurationControl.prototype.link = (
                 $scope: IConfigurationControlScope,
@@ -50,10 +48,22 @@ module dockyard.directives.paneConfigureAction {
                 $scope: IConfigurationControlScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes) => {
+                
+                $scope.onChange = (event: any) => {
+                    var fieldName: string;
 
-                this._$scope = $scope;
-                $scope.onChange = <(radio: model.ControlDefinitionDTO) => void> angular.bind(this, this.onChange);
+                    if (!!event.target === true) {
+                        // If called by DOM event (for standard fields), get field name
+                        // Get name of field that received the event
+                        fieldName = event.target.attributes.getNamedItem('data-field-name').value;
+                    }
+                    else {
+                        // If called by custom field, it is assumed that field name is suppied as the argument
+                        fieldName = event;
+                    }
 
+                    $scope.$emit("onChange", new ChangeEventArgs(fieldName));
+                };
             };
         }
 
@@ -65,22 +75,6 @@ module dockyard.directives.paneConfigureAction {
 
             directive['$inject'] = [];
             return directive;
-        }
-
-        private onChange(event: any) {
-            var fieldName: string;
-
-            if (!!event.target === true) {
-                // If called by DOM event (for standard fields), get field name
-                // Get name of field that received the event
-                fieldName = event.target.attributes.getNamedItem('data-field-name').value;
-            }
-            else {
-                // If called by custom field, it is assumed that field name is suppied as the argument
-                fieldName = event;
-            }
-
-            this._$scope.$emit("onChange", new ChangeEventArgs(fieldName));
         }
     }
 
