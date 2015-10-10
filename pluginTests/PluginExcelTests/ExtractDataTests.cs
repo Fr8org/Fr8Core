@@ -81,10 +81,10 @@ namespace pluginTests.PluginExcelTests
             };
             StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
             {
-                Controls = new List<ControlsDefinitionDTO>()
+                Controls = new List<ControlDefinitionDTO>()
                 {
-                    new ControlsDefinitionDTO("select_file", true, "1", "select file"),
-                    new ControlsDefinitionDTO("select_file", true, "2", "select file"),
+                    new ControlDefinitionDTO("select_file", true, "1", "select file"),
+                    new ControlDefinitionDTO("select_file", true, "2", "select file"),
                 },
             };
             curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
@@ -116,9 +116,9 @@ namespace pluginTests.PluginExcelTests
             };
             StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
             {
-                Controls = new List<ControlsDefinitionDTO>()
+                Controls = new List<ControlDefinitionDTO>()
                 {
-                    new ControlsDefinitionDTO("select_file", true, "1", "select file"),
+                    new ControlDefinitionDTO("select_file", true, "1", "select file"),
                 },
             };
             curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()

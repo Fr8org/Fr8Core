@@ -112,7 +112,7 @@ namespace pluginExcel.Actions
         /// </summary>
         private CrateDTO CreateConfigurationControlsCrate()
         {
-            var fieldFilterPane = new ControlsDefinitionDTO("filePicker")
+            var fieldFilterPane = new ControlDefinitionDTO("filePicker")
             {
                 Label = "Select Excel File",
                 Name = "select_file",
