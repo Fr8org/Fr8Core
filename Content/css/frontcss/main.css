@@ -317,12 +317,15 @@ header#site-header .navbar {
 
 /*Section Styles*/
 
+
 #welcome:hover {
 	cursor: pointer;
 }
 
 #welcome .inner-bg {
-	background-image: url('/Content/img/backgrounds/welocome-bg.jpg');
+	background-image: url('/Content/img/backgrounds/dockyard_main1600.jpg');
+    background-position: 0px 0px;
+
 }
 
 .landing-welcome-area {
@@ -337,10 +340,28 @@ header#site-header .navbar {
 }
 
 #logotext {
+    margin-top: 100px;
 	text-align: center;
 	font-size: 2.5rem;
-	color: #444d58;
+	color: #fff;
 	line-height: 2.5rem;
+    text-shadow:  0px 0px 10px black;
+
+
+}
+
+#logotext h1 {
+	text-align: center;
+	font-size: 8rem;
+	color: #fff;
+	line-height: 5rem;
+	margin: 0;
+	padding: 0 0 2.5rem;
+}
+
+#logotext p {
+    font-weight: bold;
+    font-size: 3rem;
 }
 
 #logotext h2 {
