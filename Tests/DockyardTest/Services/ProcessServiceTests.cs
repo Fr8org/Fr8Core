@@ -13,6 +13,7 @@ using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
+using Newtonsoft.Json;
 
 
 namespace DockyardTest.Services
@@ -394,7 +395,7 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void UpdateNextActivity_ProcessDOIsNull_ThorwArgumentNullException()
+        public void UpdateNextActivity_ProcessDOIsNull_ThrowArgumentNullException()
         {
             _processService = ObjectFactory.GetInstance<IProcess>();
             //Make use of PrivateObject class to reach the private method
@@ -429,5 +430,7 @@ namespace DockyardTest.Services
             Assert.IsNull(curProcess.CurrentActivity);
             Assert.IsNull(curProcess.NextActivity);
         }
+
+    
     }
 }
