@@ -15,12 +15,12 @@ namespace pluginTests.pluginDocuSign.Actions
     [Category("Monitor_DocuSignTests")]
     public class Monitor_DocuSignTests : BaseTest
     {
-        Monitor_DocuSign _monitor_DocuSign;
+        Monitor_DocuSign_v1 _monitor_DocuSign;
 
         public Monitor_DocuSignTests()
         {
             base.SetUp();
-            _monitor_DocuSign = new Monitor_DocuSign();
+            _monitor_DocuSign = new Monitor_DocuSign_v1();
         }
 
         [Test]
@@ -81,7 +81,7 @@ namespace pluginTests.pluginDocuSign.Actions
             object[] parameters = new object[] { curPayloadDTO };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign), "GetEnvelopeId", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_v1), "GetEnvelopeId", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);
