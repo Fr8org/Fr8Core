@@ -137,12 +137,12 @@
             controlListCrate.contents = angular.toJson({ Controls: controlList.fields });
         }
 
-        private populateListItemsFromDataSource(fields: Array<model.ConfigurationField>, crateStorage: model.CrateStorage) {
+        private populateListItemsFromDataSource(fields: Array<model.ControlDefinitionDTO>, crateStorage: model.CrateStorage) {
             //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             for (var i = 0; i < fields.length; i++) {
-                if (fields[i].type == 'dropdownlistField') {
-                    var dropdownListField = <model.DropDownListBoxField> fields[i];
+                if (fields[i].type == 'DropDownList') {
+                    var dropdownListField = <model.DropDownListControlDefinitionDTO> fields[i];
                     if (!dropdownListField.source) {
                         continue;
                     }
@@ -160,12 +160,12 @@
 
                 // Handle nested fields
                 let field: any = fields[i];
-                if (field.fields) {
-                    this.populateListItemsFromDataSource((<model.ISupportsNestedFields>field).fields, crateStorage);
+                if (field.controls) {
+                    this.populateListItemsFromDataSource((<model.ISupportsNestedFields>field).controls, crateStorage);
                 }
                 // If we encountered radiobuttonGroup, we need to check every individual option if it has any nested fields
                 if (field.radios) {
-                    this.populateListItemsFromDataSource((<model.RadioButtonGroupField>field).radios, crateStorage);
+                    this.populateListItemsFromDataSource((<model.RadioButtonGroupControlDefinitionDTO>field).radios, crateStorage);
                 }
             }
         }

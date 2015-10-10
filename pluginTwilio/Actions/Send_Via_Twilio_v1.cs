@@ -50,15 +50,15 @@ namespace pluginTwilio.Actions
         private CrateDTO CreateControlsCrate()
         {
 
-            ControlsDefinitionDTO[] controls = 
+            ControlDefinitionDTO[] controls = 
             {
-                new ControlsDefinitionDTO(ControlsDefinitionDTO.TEXTBOX_FIELD)
+                new ControlDefinitionDTO("textField")
                 {
                     Label = "SMS Number",
                     Name = "SMS_Number",
                     Required = true,
                 },
-               new ControlsDefinitionDTO(ControlsDefinitionDTO.TEXTBOX_FIELD)
+               new ControlDefinitionDTO("textField")
                 {
                     Label = "SMS Body",
                     Name = "SMS_Body",

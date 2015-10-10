@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClasses\BaseConfiguration.cs" />
     <Compile Include="BaseClasses\BasePluginAction.cs" />
     <Compile Include="BaseClasses\BasePluginController.cs" />
     <Compile Include="BaseClasses\BasePluginWebApiConfig.cs" />

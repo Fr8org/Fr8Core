@@ -57,22 +57,26 @@ namespace pluginDocuSign.Actions
         {
             CrateDTO confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
                 c => c.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
-            List<ControlsDefinitionDTO> controls = _crate.GetContents<StandardConfigurationControlsMS>(confCrate).Controls;
-            var recipientSourceField = controls.SingleOrDefault(c => c.Name == "Recipient");
-            string recipientSourceValue = recipientSourceField.Value;
+
+            List<ControlDefinitionDTO> controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
+            var recipientSourceControl = controls.SingleOrDefault(c => c.Name == "Recipient") as RadioButtonGroupControlDefinitionDTO;
+            string recipientSourceValue = recipientSourceControl.Value;
             string recipientAddress = string.Empty;
 
             switch (recipientSourceValue)
             {
                 case "This specific value":
-                    var recipientAddressField = controls.SingleOrDefault(c => c.Name == "Address");
+                    var recipientAddressField = recipientSourceControl.Radios[0].Controls[0];
                     recipientAddress = recipientAddressField.Value;
                     break;
 
                 case "A value from an Upstream Crate":
-                    var recipientField = controls.SingleOrDefault(c => c.Name == "Select Upstream Crate").Value;
+                    var recipientField = recipientSourceControl.Radios[1].Controls[0];
+                    recipientAddress = recipientField.Value;
                     break;
             }
+
+            // User's choosen recipient is in recipientAddress. Someone needs to implement actual submission of the envelope. 
 
             return null;
         }
@@ -141,7 +145,7 @@ namespace pluginDocuSign.Actions
             curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
             curActionDTO.CrateStorage.CrateDTO.Add(curUpstreamFieldsCrate);
 
-            Execute(curActionDTO); // For testing
+            // Execute(curActionDTO); // For testing
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
@@ -188,13 +192,13 @@ namespace pluginDocuSign.Actions
 
         private CrateDTO CreateDocusignTemplateConfigurationControls(ActionDTO curActionDTO)
         {
-            var fieldSelectDocusignTemplateDTO = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
                 Label = "target_docusign_template",
                 Name = "target_docusign_template",
                 Required = true,
-                Events = new List<FieldEvent>() {
-                     new FieldEvent("onSelect", "requestConfig")
+                Events = new List<ControlEvent>() {
+                     new ControlEvent("onSelect", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {
@@ -203,20 +207,20 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var recipientSource = new RadioButtonGroupFieldDefinitionDTO()
+            var recipientSource = new RadioButtonGroupControlDefinitionDTO()
             {
                 Label = "Recipient",
                 GroupName = "Recipient",
                 Name = "Recipient",
-                Radios = new List<RadioButtonField>()
+                Radios = new List<RadioButtonOption>()
                 {
-                    new RadioButtonField()
+                    new RadioButtonOption()
                     {
                         Selected = true,
                         Name = "specific",
                         Value ="This specific value"
                     },
-                    new RadioButtonField()
+                    new RadioButtonOption()
                     {
                         Selected = false,
                         Name = "crate",
@@ -225,13 +229,13 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            recipientSource.Radios[0].Fields.Add(new TextFieldDefinitionDTO()
+            recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
             {
                 Label = "",
                 Name = "Address"
             });
 
-            recipientSource.Radios[1].Fields.Add(new DropdownListFieldDefinitionDTO()
+            recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
             {
                 Label = "",
                 Name = "Select Upstream Crate",
@@ -242,7 +246,7 @@ namespace pluginDocuSign.Actions
                 }
             });
 
-            var fieldsDTO = new List<ControlsDefinitionDTO>()
+            var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
                 recipientSource

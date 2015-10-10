@@ -92,7 +92,7 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private CrateDTO CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new ControlsDefinitionDTO("mappingPane")
+            var fieldFilterPane = new MappingPaneControlDefinitionDTO()
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",
@@ -216,14 +216,13 @@ namespace pluginDockyardCore.Actions
         //Returning the crate with text field control 
         private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
         {
-            var fields = new List<ControlsDefinitionDTO>() 
+            var fields = new List<ControlDefinitionDTO>() 
             {
-                new TextBlockFieldDTO()
+                new TextBlockControlDefinitionDTO()
                 {
                     Label = fieldLabel,
                     Value = errorMessage,
-                    cssClass = "well well-lg"
-                    
+                    CssClass = "well well-lg"                    
                 }
             };
 

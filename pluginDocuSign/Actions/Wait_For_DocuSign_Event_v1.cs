@@ -33,7 +33,7 @@ namespace pluginDocuSign.Actions
             {
                 AppendDockyardAuthenticationCrate(curActionDTO, AuthenticationMode.InternalMode);
                 return curActionDTO;
-        }
+            }
 
             RemoveAuthenticationCrate(curActionDTO);
 
@@ -165,10 +165,16 @@ namespace pluginDocuSign.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
 
+            if (!curActionDTO.CrateStorage.CrateDTO.Any(
+                c => c.ManifestId == CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID 
+                && c.Label == "Configuration_Controls"))
+            {
 			var crateControls = CreateConfigurationCrate();
+			curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
+            }
+
 			var crateDesignTimeFields = CreateDesignFieldsCrate_TemplateNames(docuSignAuthDTO);
-				curActionDTO.CrateStorage.CrateDTO.Add(crateControls);
-				curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
+			curActionDTO.CrateStorage.CrateDTO.Add(crateDesignTimeFields);
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
@@ -203,7 +209,7 @@ namespace pluginDocuSign.Actions
                 "Standard Event Subscriptions"
                 );
 
-
+          
             var crateConfiguration = new List<CrateDTO>();
 
             crateConfiguration.Add(
@@ -244,14 +250,14 @@ namespace pluginDocuSign.Actions
 
         private CrateDTO CreateConfigurationCrate()
         {
-            var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
             {
 	            Label = "Select DocuSign Template",
 	            Name = "Selected_DocuSign_Template",
 	            Required = true,
-	            Events = new List<FieldEvent>()
+	            Events = new List<ControlEvent>()
                 {
-                    new FieldEvent("onChange", "requestConfig")
+                    new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {
@@ -260,25 +266,25 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var fieldEnvelopeSent = new CheckBoxFieldDefinitionDTO()
-                {
+            var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
+            {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
-				var fieldEnvelopeReceived = new CheckBoxFieldDefinitionDTO()
-                {
+				var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
+            {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
-				var fieldRecipientSigned = new CheckBoxFieldDefinitionDTO()
+				var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
                 {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
-				var fieldEventRecipientSent = new CheckBoxFieldDefinitionDTO()
+				var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
                 {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"

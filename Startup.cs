@@ -23,6 +23,7 @@ using Utilities.Logging;
 using Utilities.Serializers.Json;
 using Core.Services;
 using Core.Managers;
+using Microsoft.Owin.Hosting;
 
 [assembly: OwinStartup(typeof(Web.Startup))]
 
@@ -99,8 +100,6 @@ namespace Web
 
         }
 
-
-
         private static void ConfigureDaemons()
         {
             DaemonSettings daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
@@ -166,14 +165,10 @@ namespace Web
                     alertReporter.ActivityTemplatePluginRegistrationError(string.Format("Error register plugins action template: {0} ", ex.Message), ex.GetType().Name);
 
                 }
-
              }
-
                 
              alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
-         
         }
-
 
         public bool CheckForActivityTemplate(string templateName)
         {
@@ -199,5 +194,9 @@ namespace Web
             return found;
         }
 
+        public static IDisposable CreateServer(string url)
+        {
+            return WebApp.Start<Startup>(url: url);
+        }
     }
 }
