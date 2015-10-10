@@ -73,7 +73,7 @@ module dockyard.controllers {
 
             this.$scope.addAction = () => {
                 this.addAction();
-        }
+            }
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -166,52 +166,27 @@ module dockyard.controllers {
             var self = this;
             var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-                
                 //we should just raise an event for this
-                self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAddRequest],new psa.ActionAddRequestEventArgs());
-
-                /*
-                // Generate next Id.
-                    var id = this.LocalIdentityGenerator.getNextId();                
-
-                // Create new action object.
-                    var action = new model.ActionDTO(null, id, true, this.$scope.immediateActionListVM.id);
-                    action.name = activityTemplate.name;
-
-                // Add action to Workflow Designer.
-                    this.$scope.current.action = action.toActionVM();
-                    this.$scope.current.action.activityTemplateId = activityTemplate.id;
-                    this.$scope.actions.push(action);
-
-                    this.selectAction(action);
-                });
-                */
+                self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd],new psa.ActionAddEventArgs());
             });
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
 
-            var selectedActivityTemplate = eventArgs.activityTemplate;
+            var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();                
 
             // Create new action object.
             var action = new model.ActionDTO(null, id, true, this.$scope.immediateActionListVM.id);
-            action.name = 'New Action #' + Math.abs(id).toString();
+            action.name = activityTemplate.name;
 
             // Add action to Workflow Designer.
             this.$scope.current.action = action.toActionVM();
-            this.$scope.$broadcast(
-                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_AddAction],
-                new pwd.AddActionEventArgs(action.processNodeTemplateId, action.clone(), model.ActionListType.Immediate)
-                );
+            this.$scope.current.action.activityTemplateId = activityTemplate.id;
+            this.$scope.actions.push(action);
 
-            this.$scope.current.action.activityTemplateId = selectedActivityTemplate.id;
-            //this.$scope.current.action.activityTemplate = selectedActivityTemplate;
-            var pcaEventArgs = new pca.RenderEventArgs(this.$scope.current.action);
-            var pwdEventArs = new pwd.UpdateActivityTemplateIdEventArgs(this.$scope.current.action.id, selectedActivityTemplate.id);
-            this.$scope.$broadcast(pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_UpdateActivityTemplateId], pwdEventArs);
-            //this.$scope.$broadcast(pca.MessageType[pca.MessageType.PaneConfigureAction_Render], pcaEventArgs);    
+            this.selectAction(action);
         }
 
         /*

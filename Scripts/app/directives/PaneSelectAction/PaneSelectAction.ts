@@ -12,7 +12,7 @@ module dockyard.directives.paneSelectAction {
         PaneSelectAction_UpdateAction,
         PaneSelectAction_ActionTypeSelected,
         PaneSelectAction_InitiateSaveAction,
-        PaneSelectAction_ActionAddRequest,
+        PaneSelectAction_ActionAdd,
         PaneSelectAction_ActivityTypeSelected
     }
 
@@ -84,7 +84,7 @@ module dockyard.directives.paneSelectAction {
         }
     }
 
-    export class ActionAddRequestEventArgs {
+    export class ActionAddEventArgs {
         constructor() {
         }
     }
