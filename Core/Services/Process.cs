@@ -45,7 +45,13 @@ namespace Core.Services
 
                 curProcessDO.Name = curProcessTemplate.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO>() { curEvent });
+
+                var crates = new List<CrateDTO>();
+                if (curEvent != null)
+                {
+                    crates.Add(curEvent);
+                }
+                curProcessDO.UpdateCrateStorageDTO(crates);
 
                 curProcessDO.CurrentActivity = _processTemplate
                     .GetInitialActivity(uow, curProcessTemplate);
@@ -64,11 +70,7 @@ namespace Core.Services
             return curProcessDO;
         }
 
-
-
-
-
-        public async void Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+        public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
             var curProcessDO = Create(curProcessTemplate.Id, curEvent);
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
