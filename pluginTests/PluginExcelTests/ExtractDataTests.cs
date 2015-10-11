@@ -25,6 +25,7 @@ using Data.Repositories;
 namespace pluginTests.PluginExcelTests
 {
     [TestFixture]
+    [Category("pluginExcel")]
     public class ExtractDataTests : BaseTest
     {
         public const string ExcelTestServerUrl = "ExcelTestServerUrl";

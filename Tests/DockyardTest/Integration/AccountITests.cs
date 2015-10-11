@@ -11,6 +11,7 @@ using UtilitiesTesting.Fixtures;
 namespace DockyardTest.Integration
 {
     [TestFixture]
+    [Category("IntegrationTests")]
     public class AccountITests : BaseTest
     {
         [Test]

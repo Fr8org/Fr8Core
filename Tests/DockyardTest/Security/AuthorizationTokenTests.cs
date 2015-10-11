@@ -12,6 +12,7 @@ using Web.Controllers;
 namespace DockyardTest.Security
 {
     [TestFixture]
+    [Category("AuthToken")]
     public class AuthorizationTokenTests : BaseTest
     {
         [Test]

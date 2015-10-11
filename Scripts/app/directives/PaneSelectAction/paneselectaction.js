@@ -19,7 +19,7 @@ var dockyard;
                 MessageType[MessageType["PaneSelectAction_UpdateAction"] = 3] = "PaneSelectAction_UpdateAction";
                 MessageType[MessageType["PaneSelectAction_ActionTypeSelected"] = 4] = "PaneSelectAction_ActionTypeSelected";
                 MessageType[MessageType["PaneSelectAction_InitiateSaveAction"] = 5] = "PaneSelectAction_InitiateSaveAction";
-                MessageType[MessageType["PaneSelectAction_ActionAddRequest"] = 6] = "PaneSelectAction_ActionAddRequest";
+                MessageType[MessageType["PaneSelectAction_ActionAdd"] = 6] = "PaneSelectAction_ActionAdd";
                 MessageType[MessageType["PaneSelectAction_ActivityTypeSelected"] = 7] = "PaneSelectAction_ActivityTypeSelected";
             })(paneSelectAction.MessageType || (paneSelectAction.MessageType = {}));
             var MessageType = paneSelectAction.MessageType;
@@ -76,12 +76,12 @@ var dockyard;
                 return ActionRemovedEventArgs;
             })();
             paneSelectAction.ActionRemovedEventArgs = ActionRemovedEventArgs;
-            var ActionAddRequestEventArgs = (function () {
-                function ActionAddRequestEventArgs() {
+            var ActionAddEventArgs = (function () {
+                function ActionAddEventArgs() {
                 }
-                return ActionAddRequestEventArgs;
+                return ActionAddEventArgs;
             })();
-            paneSelectAction.ActionAddRequestEventArgs = ActionAddRequestEventArgs;
+            paneSelectAction.ActionAddEventArgs = ActionAddEventArgs;
             //More detail on creating directives in TypeScript: 
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var PaneSelectAction = (function () {
@@ -99,10 +99,10 @@ var dockyard;
                     PaneSelectAction.prototype.controller = function ($scope, $element, $attrs) {
                         _this._$element = $element;
                         _this._$scope = $scope;
-                        $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAddRequest], angular.bind(_this, _this.onActionAddRequest));
+                        $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAdd], angular.bind(_this, _this.onActionAdd));
                     };
                 }
-                PaneSelectAction.prototype.onActionAddRequest = function () {
+                PaneSelectAction.prototype.onActionAdd = function () {
                     var _this = this;
                     //we should list available actions to user and let him select one
                     this.ActivityTemplateService.getAvailableActivities().$promise.then(function (categoryList) {

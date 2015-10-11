@@ -8,7 +8,7 @@ using UtilitiesTesting;
 
 namespace DockyardTest.Daemons
 {
-    [TestFixture]
+    [TestFixture, Ignore]
     public class DaemonTests : BaseTest
     {
         public static void RunDaemonOnce<TDaemon>(TDaemon daemon)
