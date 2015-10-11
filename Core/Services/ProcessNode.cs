@@ -66,32 +66,32 @@ namespace Core.Services
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            // Commented by Vladimir Borisov. In DO-1214 we have to remove ActionLists.
-            /*string nextTransitionKey;
-            var result = _criteria.Evaluate(curEventData, curProcessNode);
-            if (result)
-            {
-                var _curActionList = ObjectFactory.GetInstance<IActionList>();
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var curProcessNodeTemplate =
-                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
-
-                    List<ActionListDO> actionListSet = curProcessNodeTemplate.Actions.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional Actions, and will need attention
-                    foreach (var actionList in actionListSet)
-                    {
-                        _curActionList.Process(actionList, curProcessNode.ParentProcess, uow);
-                    }
-                }
-
-                nextTransitionKey = "true";
-            }
-            else
-            {
-                nextTransitionKey = "false";
-            }
-            return nextTransitionKey;*/
-            
+           
+//           string nextTransitionKey;
+//
+//            var result = _criteria.Evaluate(curEventData, curProcessNode);
+//            if (result)
+//            {
+//               
+//                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//                {
+//                    var curProcessNodeTemplate =
+//                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+//
+//                    foreach (var actionList in curProcessNodeTemplate.Activities.OfType<ActionDO>())
+//                    {
+//                        _curActionList.Process(actionList, curProcessNode.ParentProcess, uow);
+//                    }
+//                }
+//
+//                nextTransitionKey = "true";
+//            }
+//            else
+//            {
+//                nextTransitionKey = "false";
+//            }
+//            return nextTransitionKey;*/
+//            
             return "true";
         }
 

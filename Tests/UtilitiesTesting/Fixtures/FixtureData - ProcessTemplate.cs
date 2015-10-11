@@ -145,7 +145,7 @@ namespace UtilitiesTesting.Fixtures
                 actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
 
                 uow.ActionRepository.Add(actionDo);
-                processTemplateDO.Activities.Add(actionDo);
+                processNodeTemplateDO.Activities.Add(actionDo);
 
                 uow.SaveChanges();
             }
@@ -228,31 +228,31 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-//        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplateAndActionList()
-//        {
-//            var curProcessTemplateDO = new ProcessTemplateDO
-//            {
-//                Id = 1,
-//                Description = "DO-1124 Proper  deletion of ProcessTemplate",
-//                Name = "TestProcessTemplateWithStartingProcessNodeTemplates",
-//                ProcessTemplateState = ProcessTemplateState.Active,
-//            };
-//
-//            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
-//            {
-//                Id = 1,
-//                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
-//                ParentActivity = curProcessTemplateDO,
-//                StartingProcessNodeTemplate = true
-//            };
-//            curProcessTemplateDO.Activities.Add(curProcessNodeTemplateDO);
-//
-//            var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
-//            
-//            curProcessNodeTemplateDO.Activities.Add(curImmediateActionList);
-//
-//            return curProcessTemplateDO;
-//        }
+        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplateAndActionList()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1124 Proper  deletion of ProcessTemplate",
+                Name = "TestProcessTemplateWithStartingProcessNodeTemplates",
+                ProcessTemplateState = ProcessTemplateState.Active,
+            };
+
+            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                ParentActivity = curProcessTemplateDO,
+                StartingProcessNodeTemplate = true
+            };
+            curProcessTemplateDO.Activities.Add(curProcessNodeTemplateDO);
+
+            var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
+            
+            curProcessNodeTemplateDO.Activities.AddRange(curImmediateActionList);
+
+            return curProcessTemplateDO;
+        }
 
 
         public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplates_ID0()

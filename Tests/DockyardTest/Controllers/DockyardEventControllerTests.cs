@@ -14,6 +14,7 @@ using Web.Controllers;
 using Web.ViewModels;
 using Moq;
 using System;
+using System.Threading.Tasks;
 using Core.Interfaces;
 using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
@@ -25,22 +26,22 @@ namespace DockyardTest.Controllers
     {
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void dockyard_events_NullCrateDTO_ThrowsException()
+        public async Task dockyard_events_NullCrateDTO_ThrowsException()
         {
             var dockyardEventController = new DockyardEventController();
 
-            dockyardEventController.ProcessDockyardEvents(null);
+             await dockyardEventController.ProcessDockyardEvents(null);
         }
 
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void dockyard_events_NotStandardEventReport_ThrowsException()
+        public async Task dockyard_events_NotStandardEventReport_ThrowsException()
         {
             var dockyardEventController = new DockyardEventController();
             CrateDTO crateDTO = new CrateDTO();
 
 
-            dockyardEventController.ProcessDockyardEvents(crateDTO);
+            await dockyardEventController.ProcessDockyardEvents(crateDTO);
         }
 
         //[Test]

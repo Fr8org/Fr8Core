@@ -419,15 +419,23 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplate = curProcessTemplateDO
             };
 
-           
 
+            var processNodeTemplate = new ProcessNodeTemplateDO(true)
+            {
+                ParentActivity = curProcessTemplateDO,
+                ParentActivityId = curProcessTemplateDO.Id,
+            };
 
             ActionDO curActionDO = new ActionDO();
-            curActionDO.Id = 1;
+            curActionDO.Id = 3;
+            curActionDO.ParentActivity = processNodeTemplate;
+            curActionDO.ParentActivityId = processNodeTemplate.Id;
             curActionDO.ActivityTemplateId = 1;
             curActionDO.ActivityTemplate = curActivityTemplateDO;
             curActionDO.ActionState = 1;
             curActionDO.Name = "testaction";
+
+            processNodeTemplate.Activities.Add(curActionDO);
 
             //  curActionDO.ConfigurationSettings = "config settings";
             //  curActionDO.ParentActionListId = 1;

@@ -32,6 +32,7 @@ namespace DockyardTest.Services
 		}
 
 		[Test]
+        [Ignore("DO-1214")]
 		public void ProcessNode_CanExecute()
 		{
             //create a ProcessNode
@@ -59,6 +60,7 @@ namespace DockyardTest.Services
 		}
 
         [Test]
+        [Ignore("DO-1214")]
         public void Execute_CriteriaEvaluatesToFalse_ReturnFalse()
         {
             //setup mock Criteria

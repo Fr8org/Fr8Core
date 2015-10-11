@@ -337,7 +337,14 @@ namespace UtilitiesTesting.Fixtures
            {
                 ParentActivityId = 1
            };
-             ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
+             ActionDO a_23 = new ActionDO()
+             {
+                 Id = 23, 
+                 ActivityTemplate = activityTempate, 
+                 ActivityTemplateId = activityTempate.Id,
+                 Name = "a_23", 
+                 CrateStorage = ""
+             };
              al_1.Activities.Add(a_23);
              
              actionLists.Add(al_1);
@@ -356,7 +363,14 @@ namespace UtilitiesTesting.Fixtures
                  Name = "Wait_For_DocuSign_Event"
              };
              ActionListDO al_1 = new ActionListDO() { ParentActivityId = 12 };
-             ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
+             ActionDO a_23 = new ActionDO()
+             {
+                 Id = 23, 
+                 ActivityTemplate = activityTempate,
+                 ActivityTemplateId = activityTempate.Id,
+                 Name = "a_23",
+                 CrateStorage = ""
+             };
              al_1.Activities.Add(a_23);
              
              actionLists.Add(al_1);

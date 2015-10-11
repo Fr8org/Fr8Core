@@ -88,29 +88,29 @@ namespace DockyardTest.Services
         }
         
 
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void GetNextActivities_ActivityDOIsNull_ThorwArgumentNullException()
-        {
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            _activity.GetNextActivities(null);
-        }
-
-        [Test]
-        public void GetNextActivities_ActivityDOActivityNullOrNotNull()
-        {          
-            var activity = FixtureData.TestActivityNotExists();
-          var result=_activity.GetNextActivities(activity).ToList();
-          if (result.Count > 0)
-          {
-              Assert.Greater(result[0].Ordering, activity.Ordering);
-          }
-          else
-          { 
-              Assert.IsEmpty(result);
-          }
-           
-        }
+//        [Test]
+//        [ExpectedException(typeof(ArgumentNullException))]
+//        public void GetNextActivities_ActivityDOIsNull_ThorwArgumentNullException()
+//        {
+//            _activity = ObjectFactory.GetInstance<IActivity>();
+//            _activity.GetNextActivities(null);
+//        }
+//
+//        [Test]
+//        public void GetNextActivities_ActivityDOActivityNullOrNotNull()
+//        {          
+//            var activity = FixtureData.TestActivityNotExists();
+//          var result=_activity.GetNextActivities(activity).ToList();
+//          if (result.Count > 0)
+//          {
+//              Assert.Greater(result[0].Ordering, activity.Ordering);
+//          }
+//          else
+//          { 
+//              Assert.IsEmpty(result);
+//          }
+//           
+//        }
 
     }
 }
