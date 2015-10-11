@@ -12,6 +12,11 @@ namespace Data.Entities
 {
     public class PluginDO : BaseDO, IPluginDO
     {
+        public PluginDO()
+        {
+
+        }
+
         [Key]
         public int Id { get; set; }
 
@@ -24,6 +29,8 @@ namespace Data.Entities
         [ForeignKey("PluginStatusTemplate")]
         public int PluginStatus { get; set; }
         public _PluginStatusTemplate PluginStatusTemplate { get; set; }
+
+        public bool RequiresAuthentication { get; set; }
 
         //public string BaseEndPoint { get; set; }
 

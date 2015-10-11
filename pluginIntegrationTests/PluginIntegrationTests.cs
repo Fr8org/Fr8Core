@@ -25,15 +25,20 @@ using pluginDocuSign.Infrastructure.AutoMapper;
 
 namespace pluginIntegrationTests
 {
-    [TestFixture]
+    [TestFixture,Ignore]
+    [Category("PluginIntegrationTests")]
 	public partial class PluginIntegrationTests : BaseTest
     {
+        private IDisposable _coreServer;
         private IDisposable _docuSignServer;
         private IDisposable _dockyardCoreServer;
         private IDisposable _azureSqlServerServer;
 
         private DockyardAccountDO _testUserAccount;
+        private ProcessTemplateDO _processTemplateDO;
+        private ProcessNodeTemplateDO _processNodeTemplateDO;
         private ActionListDO _actionList;
+        private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
         private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
         private ActivityTemplateDO _writeToSqlServerActivityTemplate;
@@ -55,7 +60,14 @@ namespace pluginIntegrationTests
 
             _testUserAccount = FixtureData.TestUser1();
 
+            _processTemplateDO = FixtureData.ProcessTemplate_PluginIntegration();
+            _processTemplateDO.DockyardAccount = _testUserAccount;
+
+            _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
+            _processNodeTemplateDO.ProcessTemplate = _processTemplateDO;
+
             _actionList = FixtureData.TestActionList_ImmediateActions();
+            _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -68,6 +80,11 @@ namespace pluginIntegrationTests
 
 			_sendDocuSignEnvelopeActivityTemplate =
 				FixtureData.TestActivityTemplateDO_SendDocuSignEnvelope();
+            _sendDocuSignEnvelopeActivityTemplate.Plugin = _waitForDocuSignEventActivityTemplate.Plugin;
+
+            _authToken = FixtureData.AuthToken_PluginIntegration();
+            _authToken.Plugin = _waitForDocuSignEventActivityTemplate.Plugin;
+            _authToken.UserDO = _testUserAccount;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -77,9 +94,12 @@ namespace pluginIntegrationTests
                 uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
 				uow.ActivityTemplateRepository.Add(_sendDocuSignEnvelopeActivityTemplate);
                 uow.UserRepository.Add(_testUserAccount);
+                uow.AuthorizationTokenRepository.Add(_authToken);
 
                 uow.SaveChanges();
             }
+
+            _coreServer = FixtureData.CreateCoreServer_ActivitiesController();
 
             var docuSignServerUrl = "http://" + FixtureData.TestPlugin_DocuSign_EndPoint + "/";
             _docuSignServer = pluginDocuSign.SelfHostFactory.CreateServer(docuSignServerUrl);
@@ -89,6 +109,8 @@ namespace pluginIntegrationTests
 
             var azureSqlServerServerUrl = "http://" + FixtureData.TestPlugin_AzureSqlServer_EndPoint + "/";
             _azureSqlServerServer = pluginAzureSqlServer.SelfHostFactory.CreateServer(azureSqlServerServerUrl);
+
+
         }
 
         /// <summary>
@@ -98,12 +120,20 @@ namespace pluginIntegrationTests
         [TearDown]
         public void TearDown()
         {
+            _coreServer.Dispose();
             _dockyardCoreServer.Dispose();
             _docuSignServer.Dispose();
             _azureSqlServerServer.Dispose();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var authToken = uow.AuthorizationTokenRepository.GetQuery()
+                    .SingleOrDefault(x => x.Id == _authToken.Id);
+                if (authToken != null)
+                {
+                    uow.AuthorizationTokenRepository.Remove(authToken);
+                }
+
                 var curUser = uow.UserRepository.GetQuery()
                     .SingleOrDefault(x => x.Id == _testUserAccount.Id);
                 if (curUser != null)
@@ -216,7 +246,7 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
+            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
@@ -356,6 +386,7 @@ namespace pluginIntegrationTests
         public async Task PluginIntegration_WaitForDocuSign_ConfigureInitial()
         {
             var savedActionDTO = CreateEmptyAction(_waitForDocuSignEventActivityTemplate);
+
             await WaitForDocuSignEvent_ConfigureInitial(savedActionDTO);
         }
 

@@ -24,24 +24,25 @@ namespace pluginDocuSign.Controllers
                 Name = "pluginDocuSign",
                 PluginStatus = PluginStatus.Active,
                 Endpoint = "localhost:53234",
+                RequiresAuthentication = true,
                 Version = "1"
             };
 
             var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
-                Name = "Wait_For_DocuSign_Event",
-                Category = ActivityCategory.fr8_Receiver,
+                Name = "Monitor_DocuSign",
+                Category = ActivityCategory.fr8_Monitor,
                 Plugin = plugin
             };
 
-				var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
-				{
-					Version = "1",
-					Name = "Send_DocuSign_Envelope",
-                    Category = ActivityCategory.fr8_Forwarder,
-					Plugin = plugin
-				};
+			var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDO()
+			{
+				Version = "1",
+				Name = "Send_DocuSign_Envelope",
+                Category = ActivityCategory.fr8_Forwarder,
+				Plugin = plugin
+			};
 
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDO()
             {
@@ -51,11 +52,20 @@ namespace pluginDocuSign.Controllers
                 Plugin = plugin
             };
 
+            var monitorAllDocuSignEvents = new ActivityTemplateDO
+            {
+                Name = "Monitor_All_DocuSign_Events",
+                Version = "1",
+                Category = ActivityCategory.fr8_Forwarder,
+                Plugin = plugin
+            };
+
             var actionList = new List<ActivityTemplateDO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
-                sendDocuSignEnvelopeActionTemplate
+                sendDocuSignEnvelopeActionTemplate,
+                monitorAllDocuSignEvents
             };
 
             return Ok(actionList);

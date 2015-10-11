@@ -14,8 +14,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public CrateStorageDTO CrateStorage { get; set; }
 
-        public FieldMappingSettingsDTO FieldMappingSettings { get; set; }
-
         public int? ActivityTemplateId { get; set; }
 
         [JsonProperty("activityTemplate")]
@@ -31,5 +29,9 @@ namespace Data.Interfaces.DataTransferObjects
         public string ActionVersion { get; set; }
 
         public string CurrentView { get; set; }
+
+        public int ProcessId { get; set; }
+
+        public AuthTokenDTO AuthToken { get; set; }
     }
 }

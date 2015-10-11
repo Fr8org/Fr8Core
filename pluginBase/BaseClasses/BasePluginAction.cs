@@ -31,98 +31,166 @@ namespace PluginBase.BaseClasses
 
         protected IAction _action;
         protected ICrate _crate;
-        //protected IActivity _activity;
 
         public BasePluginAction()
         {
             _crate = ObjectFactory.GetInstance<ICrate>();
             _action = ObjectFactory.GetInstance<IAction>();
-            //_activity = ObjectFactory.GetInstance<IActivity>();
+        }
+
+        protected bool IsEmptyAuthToken(ActionDTO actionDTO)
+        {
+            if (actionDTO == null
+                || actionDTO.AuthToken == null
+                || string.IsNullOrEmpty(actionDTO.AuthToken.Token))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        protected void RemoveAuthenticationCrate(ActionDTO actionDTO)
+        {
+            if (actionDTO.CrateStorage != null
+                && actionDTO.CrateStorage.CrateDTO != null)
+            {
+                var authCrates = actionDTO.CrateStorage.CrateDTO
+                    .Where(x => x.ManifestType == CrateManifests.STANDARD_AUTHENTICATION_NAME)
+                    .ToList();
+
+                foreach (var authCrate in authCrates)
+                {
+                    actionDTO.CrateStorage.CrateDTO.Remove(authCrate);
+                }
+            }
+        }
+
+        protected void AppendDockyardAuthenticationCrate(
+            ActionDTO actionDTO, AuthenticationMode mode)
+        {
+            if (actionDTO.CrateStorage == null)
+            {
+                actionDTO.CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new List<CrateDTO>()
+                };
+            }
+
+            actionDTO.CrateStorage.CrateDTO.Add(
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+            );
         }
 
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
-            var url = ConfigurationManager.AppSettings["ProcessWebServerUrl"]
+            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+                + "api/processes/"
                 + processId.ToString();
-            var response = await httpClient.GetAsync(url);
-            var content = await response.Content.ReadAsStringAsync();
 
-            return JsonConvert.DeserializeObject<PayloadDTO>(content);
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<PayloadDTO>(content);
+            }
         }
 
-        protected ActionDTO ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
+        protected async Task<ActionDTO> ProcessConfigurationRequest(ActionDTO curActionDTO, ConfigurationEvaluator configurationEvaluationResult)
         {
             if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Initial)
             {
-                return InitialConfigurationResponse(curActionDTO);
+                return await InitialConfigurationResponse(curActionDTO);
             }
 
             else if (configurationEvaluationResult(curActionDTO) == ConfigurationRequestType.Followup)
             {
-                return FollowupConfigurationResponse(curActionDTO);
+                return await FollowupConfigurationResponse(curActionDTO);
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
         }
 
-        //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual ActionDTO InitialConfigurationResponse(ActionDTO curActionDTO)
+        /// <summary>
+        /// Configure infrastructure.
+        /// </summary>
+        public virtual async Task<ActionDTO> Configure(ActionDTO actionDTO)
         {
-            return curActionDTO;
+            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+        }
+
+        /// <summary>
+        /// This method "evaluates" as to what configuration should be called. 
+        /// Every plugin action will have its own decision making; hence this method must be implemented in the relevant child class.
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <returns></returns>
+        public virtual ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        {
+            throw new NotImplementedException("ConfigurationEvaluator method not implemented in child class.");
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
-        protected virtual ActionDTO FollowupConfigurationResponse(ActionDTO curActionDTO)
+        protected virtual async Task<ActionDTO> InitialConfigurationResponse(ActionDTO curActionDTO)
         {
-            return curActionDTO;
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO,
-        //    string manifestType, GetCrateDirection direction)
-        //{
-        //    return GetCratesByDirection(actionDTO, x => x.ManifestType == manifestType, direction);
-        //}
-
-        //protected virtual CrateDTO GetCratesByDirection(ActionDTO actionDTO, Func<CrateDTO, bool>predicate, GetCrateDirection direction)
-        //{
-        //    var actionDO = Mapper.Map<ActionDO>(actionDTO);
-        //    return GetCratesByDirection(actionDO, predicate, direction);
-        //}
-
-        protected virtual List<CrateDTO> GetCratesByDirection(ActivityDO activityDO, string manifestType, GetCrateDirection direction)
+        //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
+        protected virtual async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            var curActivityService = ObjectFactory.GetInstance<IActivity>();
+            //Returns Task<ActivityDTO> using FromResult as the return type is known
+            return await Task.FromResult<ActionDTO>(curActionDTO);
+        }
 
-            var curUpstreamActivities = (direction == GetCrateDirection.Upstream)
-                ? curActivityService.GetUpstreamActivities(activityDO)
-                : curActivityService.GetDownstreamActivities(activityDO);
+        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId,
+            string manifestType, GetCrateDirection direction)
+        {
+            var httpClient = new HttpClient();
 
-            List<CrateDTO> upstreamCrates = new List<CrateDTO>();
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == GetCrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
 
-            //assemble all of the crates belonging to upstream activities
-            foreach (var curAction in curUpstreamActivities.OfType<ActionDO>())
+            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+                + "activities/"
+                + directionSuffix
+                + "?id=" + activityId.ToString();
+
+            using (var response = await httpClient.GetAsync(url))
             {
-                upstreamCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorageDTO()).ToList());            
-            }
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
 
-            return upstreamCrates;
+                var curCrates = new List<CrateDTO>();
+
+                foreach (var curAction in curActions)
+                {
+                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                }
+
+                return curCrates;
+            }
         }
 
-        public StandardDesignTimeFieldsMS GetDesignTimeFields(ActionDO curActionDO, GetCrateDirection direction)
+        public async Task<StandardDesignTimeFieldsMS> GetDesignTimeFields(
+            int activityId, GetCrateDirection direction)
         {
 
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
 
-            List<CrateDTO> curCrates = GetCratesByDirection(curActionDO, CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
+            List<CrateDTO> curCrates = await GetCratesByDirection(
+                activityId,
+                CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 direction);
 
             mergedFields.Fields.AddRange(MergeContentFields(curCrates).Fields);
 
             return mergedFields;
         }
-
 
         public StandardDesignTimeFieldsMS MergeContentFields(List<CrateDTO> curCrates)
         {
@@ -148,7 +216,7 @@ namespace PluginBase.BaseClasses
             };
         }
 
-        protected CrateDTO PackControlsCrate(params FieldDefinitionDTO[] controlsList)
+        protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);
@@ -156,6 +224,75 @@ namespace PluginBase.BaseClasses
             return controlsCrate;
         }
 
+        protected string ExtractControlFieldValue(ActionDTO curActionDto, string fieldName)
+        {
+            var controlsCrate = curActionDto.CrateStorage.CrateDTO
+                .FirstOrDefault(
+                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    && x.Label == "Configuration_Controls");
 
+            if (controlsCrate == null)
+            {
+                throw new ApplicationException("No Configuration_Controls crate found.");
+            }
+
+            var controlsCrateMS = JsonConvert
+                .DeserializeObject<StandardConfigurationControlsMS>(
+                    controlsCrate.Contents
+                );
+
+            var field = controlsCrateMS.Controls
+                .FirstOrDefault(x => x.Name == fieldName);
+
+            if (field == null)
+            {
+                return null;
+            }
+
+            return field.Value;
+        }
+
+        protected async virtual Task<List<CrateDTO>> GetUpstreamFileHandleCrates(int curActionId)
+        {
+            return await GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+        }
+
+        protected async Task<CrateDTO> MergeUpstreamFields(int curActionDOId, string label)
+        {
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, GetCrateDirection.Upstream)).Fields.ToArray();
+            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+
+            return upstreamFieldsCrate;
+        }
+
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, ManifestSchema curSchema)
+        {
+            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+
+            if (curCrates.CrateDTO.Count == 0)
+                return ConfigurationRequestType.Initial;
+
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            //load configuration crates of manifest type Standard Control Crates
+            //look for a text field name select_file with a value
+            ManifestSchema manifestSchema = new ManifestSchema(Data.Constants.MT.StandardConfigurationControls);
+
+            var keys = _action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+
+            //if there are more than 2 return keys, something is wrong
+            //if there are none or if there's one but it's value is "" the return initial else return followup
+            Validations.ValidateMax1(keys);
+
+            if (keys.Length == 0)
+                return ConfigurationRequestType.Initial;
+            else
+            {
+                return ConfigurationRequestType.Followup;
+            }
+        }
     }
 }

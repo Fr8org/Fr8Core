@@ -13,13 +13,16 @@ using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
 using StructureMap;
 using MT_Field = Data.Entities.MT_Field;
-using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
+//using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<DockyardDbContext>
+    public sealed partial class MigrationConfiguration : DbMigrationsConfiguration<DockyardDbContext>
     {
         public MigrationConfiguration()
         {
@@ -44,10 +47,10 @@ namespace Data.Migrations
 
 
             // Uncomment four following lines to debug Seed method (in case running from NuGet Package Manager Console).
-            // if (System.Diagnostics.Debugger.IsAttached == false)
-            // {
-            //     System.Diagnostics.Debugger.Launch();
-            // }
+            //if (System.Diagnostics.Debugger.IsAttached == false)
+            //{
+            //    System.Diagnostics.Debugger.Launch();
+            //}
 
             // If not running inside web application (i.e. running "Update-Database" in NuGet Package Manager Console),
             // then register IDBContext and IUnitOfWork in StructureMap DI.
@@ -63,9 +66,12 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow); 
-            AddPlugins(uow);                     
+            // commented out by yakov.gnusin as of DO-1064
+            // AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            AddAuthorizationTokens(uow);
+            // commented out by yakov.gnusin as of DO-1064
+            // AddAuthorizationTokens(uow);
+            AddProcessDOForTestingApi(uow);
         }
 
         //Method to let us seed into memory as well
@@ -75,7 +81,78 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
+        private static void AddProcessTemplate(IUnitOfWork uow)
+        {
+        }
 
+        private static CrateDTO GenerateInitialEventCrate()
+        {
+            var docusignEventPayload = new EventReportMS
+            {
+                EventNames = "DocuSign Envelope Sent",
+                ExternalAccountId = "docusign_developer@dockyard.company",
+            };
+
+            var payloadData = new CrateDTO
+            {
+                Id = "eec6e3b9-63b5-4f55-af49-b0d40dc8d5e2",
+                Label = "Payload Data",
+                ManifestId = 0,
+                CreateTime = DateTime.Now,
+                ManifestType = string.Empty,
+                Contents = JsonConvert.SerializeObject(new object[]{
+                new 
+                {
+                    Key="EnvelopeId",
+                    Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
+                },
+                new 
+                {
+                    Key="ExternalEventType",
+                    Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"
+                },
+                new 
+                {
+                    Key="RecipientId",
+                    Value="279a1173-04cc-4902-8039-68b1992639e9"
+                }})
+            };
+
+            docusignEventPayload.EventPayload.Add(payloadData);
+
+            var eventPayload = new CrateDTO
+            {
+                Id = "eec6e3b9-63b5-4f55-af49-b0d40dc8d5e2",
+                Label = "Standard Event Report",
+                ManifestId = 7,
+                CreateTime = DateTime.Now,
+                ManifestType = "Standard Event Report",
+                Contents = JsonConvert.SerializeObject(docusignEventPayload)
+            };
+
+            return eventPayload;
+        }
+
+        private static void AddProcessDOForTestingApi(IUnitOfWork uow)
+        {
+            new ProcessTemplateBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new ProcessTemplateBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+                .AddCrate(GenerateInitialEventCrate())
+                .AddCrate(new CrateDTO
+                {
+                    Id = "671a5b28-1e80-4fbd-ac62-2f308893192f",
+                    Label = "DocuSign Envelope Payload Data",
+                    ManifestId = 5,
+                    CreateTime = DateTime.Now,
+                    ManifestType = "Standard Payload Data",
+                    Contents = JsonConvert.SerializeObject(new[]
+                    {
+                        new {Key = "EnvelopeId", Value="38b8de65-d4c0-435d-ac1b-87d1b2dc5251"}
+                    })
+                }).Store(uow);
+
+            uow.SaveChanges();
+        }
 
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
@@ -106,7 +183,6 @@ namespace Data.Migrations
 
 
         }
-
 
     //This method will automatically seed any constants file
     //It looks for rows which implement IConstantRow<>
@@ -182,7 +258,6 @@ namespace Data.Migrations
                 genericSeedMethod.Invoke(null, new object[] { context, compiledExpression });
             }
         }
-
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
         // ReSharper disable UnusedMember.Local
@@ -287,7 +362,7 @@ namespace Data.Migrations
             CreateAdmin("y.gnusin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
-
+            CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -343,15 +418,12 @@ namespace Data.Migrations
             return user;
         }
 
-
-
         private void AddProfiles(IUnitOfWork uow)
         {
             var users = uow.UserRepository.GetAll().ToList();
             foreach (var user in users)
                 uow.UserRepository.AddDefaultProfile(user);
         }
-
 
         private void AddSubscription(IUnitOfWork uow, DockyardAccountDO curAccount, PluginDO curPlugin, int curAccessLevel)
         {
@@ -365,34 +437,36 @@ namespace Data.Migrations
             uow.SubscriptionRepository.Add(curSub);
         }
 
-
         private void AddPlugins(IUnitOfWork uow)
         {
-
-
      // Create test DockYard account for plugin subscription.
            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            uow.SaveChanges();
+        }
+
+        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint, string version)
+        {
             // Check that plugin does not exist yet.
-            var pluginDocusign = uow.PluginRepository.GetQuery()
-                .Any(x => x.Name == "pluginDocuSign");
+            var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
 
             // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!pluginDocusign)
+            if (!pluginExists)
             {
                 // Create plugin instance.
-                var plugin = new PluginDO()
+                var pluginDO = new PluginDO()
                 {
-                    Name = "pluginDocuSign",
+                    Name = pluginName,
                     PluginStatus = PluginStatus.Active,
-                    Endpoint = "localhost:53234",
-                    Version = "1"
+                    Endpoint = endPoint,
+                    Version = version,
                 };
 
-                uow.PluginRepository.Add(plugin);
+                uow.PluginRepository.Add(pluginDO);
      
             }
-            uow.SaveChanges();
         }
 
         private void AddActionTemplates(IUnitOfWork uow)
@@ -400,6 +474,7 @@ namespace Data.Migrations
             AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
             AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
             AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
             uow.SaveChanges();
         }
 
@@ -417,24 +492,23 @@ namespace Data.Migrations
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
             }       
 
-
         private void SeedMultiTenantTables(UnitOfWork uow)
         {
             
             AddMultiTenantOrganizations(uow);   
-            AddMultiTenantObjects(uow);
+            //    AddMultiTenantObjects(uow);
 
             //add field for DocuSignEnvelopeStatusReport Object in DocuSign organization
-            int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
-                "DocuSignEnvelopeStatusReport");
+            //int docuSignEnvelopeStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
+            //    "DocuSignEnvelopeStatusReport");
             
-            AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
+            //AddMultiTenantFields(uow, docuSignEnvelopeStatusReportObjectId, new DocuSignEnvelopeStatusReportMTO());
 
-            //add field for DocuSignRecipientStatusReportMTO Object in DocuSign organization
-            int docuSignRecipientStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
-                "DocuSignRecipientStatusReport");
+            ////add field for DocuSignRecipientStatusReportMTO Object in DocuSign organization
+            //int docuSignRecipientStatusReportObjectId = GetMultiTenantObjectID(uow, "DocuSign",
+            //    "DocuSignRecipientStatusReport");
 
-            AddMultiTenantFields(uow, docuSignRecipientStatusReportObjectId, new DocuSignRecipientStatusReportMTO());
+            //AddMultiTenantFields(uow, docuSignRecipientStatusReportObjectId, new DocuSignRecipientStatusReportMTO());
         }
 
         private void AddMultiTenantOrganizations(UnitOfWork uow)
@@ -452,65 +526,65 @@ namespace Data.Migrations
             var orgDocuSign = uow.MTOrganizationRepository.GetQuery().First(org => org.Name.Equals("DocuSign"));
 
             //add MT object for Dockyard
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DockyardEvent", MT_OrganizationId = orgDockyard.Id});
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DockyardIncident", MT_OrganizationId = orgDockyard.Id});
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DockyardEvent", MT_OrganizationId = orgDockyard.Id });
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DockyardIncident", MT_OrganizationId = orgDockyard.Id });
 
             //add MT object for DocuSign
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DocuSignEnvelopeStatusReport", MT_OrganizationId = orgDocuSign.Id});
-            uow.MTObjectRepository.Add(new MT_Object {Name = "DocuSignRecipientStatusReport", MT_OrganizationId = orgDocuSign.Id});
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DocuSignEnvelopeStatusReport", MT_OrganizationId = orgDocuSign.Id });
+            uow.MTObjectRepository.Add(new MT_Object { Name = "DocuSignRecipientStatusReport", MT_OrganizationId = orgDocuSign.Id });
 
             uow.SaveChanges();
         }
 
-        private int GetMultiTenantObjectID(IUnitOfWork uow, string curMtOrganizationName, string curMtObjectName)
-        {
-            return
-                uow.MTObjectRepository.FindOne(
-                    obj => obj.MT_Organization.Name.Equals(curMtOrganizationName) && obj.Name.Equals(curMtObjectName))
-                    .Id;
-        }
+        //private int GetMultiTenantObjectID(IUnitOfWork uow, string curMtOrganizationName, string curMtObjectName)
+        //{
+        //    return
+        //        uow.MTObjectRepository.FindOne(
+        //            obj => obj.MT_Organization.Name.Equals(curMtOrganizationName) && obj.Name.Equals(curMtObjectName))
+        //            .Id;
+        //}
 
-        private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, MultiTenantObject curMto)
-        {
-            var _mtField = new MT_FieldService();
+        //private void AddMultiTenantFields(IUnitOfWork uow, int curObjectId, BaseMultiTenantObject curMto)
+        //{
+        //    var _mtField = new MT_FieldService();
 
-            var typeMap = new Dictionary<Type, MT_FieldType>()
-            {
-                {typeof (string), MT_FieldType.String},
-                {typeof (int), MT_FieldType.Int},
-                {typeof (bool), MT_FieldType.Boolean}
-            };
+        //    var typeMap = new Dictionary<Type, MT_FieldType>()
+        //    {
+        //        {typeof (string), MT_FieldType.String},
+        //        {typeof (int), MT_FieldType.Int},
+        //        {typeof (bool), MT_FieldType.Boolean}
+        //    };
 
-            //get the current MTO fields
-            Type curMtoType = curMto.GetType();
-            var curMtoProperties = curMtoType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
+        //    //get the current MTO fields
+        //    Type curMtoType = curMto.GetType();
+        //    var curMtoProperties = curMtoType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
 
-            //for each field
-            foreach (PropertyInfo propertyInfo in curMtoProperties)
-            {
+        //    //for each field
+        //    foreach (PropertyInfo propertyInfo in curMtoProperties)
+        //    {
 
-                MT_Field curMtField = new MT_Field();
+        //        MT_Field curMtField = new MT_Field();
 
-                //set property name, type and Object ID
-                curMtField.Name = propertyInfo.Name;
-                curMtField.Type = typeMap[propertyInfo.PropertyType];
-                curMtField.MT_ObjectId = curObjectId;
+        //        //set property name, type and Object ID
+        //        curMtField.Name = propertyInfo.Name;
+        //        curMtField.Type = typeMap[propertyInfo.PropertyType];
+        //        curMtField.MT_ObjectId = curObjectId;
 
-                curMtField.FieldColumnOffset =
-                    _mtField.GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId) ??
-                    _mtField.GenerateFieldColumnOffset(uow, curMtField.MT_ObjectId);
+        //        curMtField.FieldColumnOffset =
+        //            _mtField.GetFieldColumnOffset(uow, curMtField.Name, curMtField.MT_ObjectId) ??
+        //            _mtField.GenerateFieldColumnOffset(uow, curMtField.MT_ObjectId);
 
-                if (curMtField.FieldColumnOffset > 50)
-                {
-                    throw new InvalidOperationException(
-                        "MTO fields are limited to only 50 Columns. Check your MTO to keep its number of Properties to be less than or equal to 50.");
-                }
+        //        if (curMtField.FieldColumnOffset > 50)
+        //        {
+        //            throw new InvalidOperationException(
+        //                "MTO fields are limited to only 50 Columns. Check your MTO to keep its number of Properties to be less than or equal to 50.");
+        //        }
 
-                _mtField.Add(uow, curMtField);
-            }
+        //        _mtField.Add(uow, curMtField);
+        //    }
 
-            uow.SaveChanges();
-        }
+        //    uow.SaveChanges();
+        //}
         
         //Getting random working time within next 3 days
         private static DateTimeOffset GetRandomEventStartTime()
@@ -529,7 +603,6 @@ namespace Data.Migrations
             }
             return newDate;
         }
-
 
     }
 }

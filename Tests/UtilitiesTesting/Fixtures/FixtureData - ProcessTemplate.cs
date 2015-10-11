@@ -112,9 +112,12 @@ namespace UtilitiesTesting.Fixtures
 
                 ProcessNodeTemplateDO processNodeTemplateDO = new ProcessNodeTemplateDO()
                 {
-                    ProcessTemplate = processTemplateDO
+                    ProcessTemplate = processTemplateDO,
+                    StartingProcessNodeTemplate = true
                 };
                 uow.ProcessNodeTemplateRepository.Add(processNodeTemplateDO);
+                processTemplateDO.ProcessNodeTemplates = new List<ProcessNodeTemplateDO> {processNodeTemplateDO};
+                processTemplateDO.StartingProcessNodeTemplate = processNodeTemplateDO;
 
 
                 var actionListDo = new ActionListDO()
@@ -189,7 +192,33 @@ namespace UtilitiesTesting.Fixtures
             return curProcessTemplateDO;
         }
 
-        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplates()
+        public static ProcessTemplateDO TestProcessTemplateNoMatchingParentActivity()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1040 Process Template Test",
+                Name = "Poress template",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            for (int i = 1; i <= 2; ++i)
+            {
+                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                {
+                    Id = i,
+                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    ProcessTemplate = curProcessTemplateDO,
+                    ActionLists = FixtureData.TestActionListParentActivityID12()
+                };
+                curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+            }
+
+            return curProcessTemplateDO;
+        }
+
+        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplate()
         {
             var curProcessTemplateDO = new ProcessTemplateDO
             {
@@ -209,9 +238,39 @@ namespace UtilitiesTesting.Fixtures
             };
             curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
 
+            //FixtureData.TestActionList1 .TestActionList_ImmediateActions();
+    
+            return curProcessTemplateDO;
+        }
+
+
+        public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplateAndActionList()
+        {
+            var curProcessTemplateDO = new ProcessTemplateDO
+            {
+                Id = 1,
+                Description = "DO-1124 Proper  deletion of ProcessTemplate",
+                Name = "TestProcessTemplateWithStartingProcessNodeTemplates",
+                ProcessTemplateState = ProcessTemplateState.Active,
+                ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+            };
+
+            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            {
+                Id = 1,
+                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                ProcessTemplate = curProcessTemplateDO,
+                StartingProcessNodeTemplate = true
+            };
+            curProcessTemplateDO.ProcessNodeTemplates.Add(curProcessNodeTemplateDO);
+
+            var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
+            
+            curProcessNodeTemplateDO.ActionLists.Add(curImmediateActionList);
 
             return curProcessTemplateDO;
         }
+
 
         public static ProcessTemplateDO TestProcessTemplateWithStartingProcessNodeTemplates_ID0()
             {

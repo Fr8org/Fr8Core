@@ -13,7 +13,7 @@ using UtilitiesTesting;
 
 namespace DockyardTest.Services
 {
-    [TestFixture]
+    [TestFixture,Ignore]
     [Category("SubscriptionService")]
     public class SubscriptionServiceTests : BaseTest
     {

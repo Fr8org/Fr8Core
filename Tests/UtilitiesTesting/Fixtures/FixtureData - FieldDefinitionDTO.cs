@@ -10,16 +10,16 @@ namespace UtilitiesTesting.Fixtures
 {
     partial class FixtureData
     {
-        public static FieldDefinitionDTO[] FieldDefinitionDTO1()
+        public static ControlDefinitionDTO[] FieldDefinitionDTO1()
         {
-            var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
-                Events = new List<FieldEvent>()
+                Events = new List<ControlEvent>()
                 {
-                    new FieldEvent("onChange", "requestConfig")
+                    new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {
@@ -28,31 +28,31 @@ namespace UtilitiesTesting.Fixtures
                 }
             };
 
-            var fieldEnvelopeSent = new FieldDefinitionDTO()
+            var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
-            var fieldEnvelopeReceived = new FieldDefinitionDTO()
+            var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
-            var fieldRecipientSigned = new FieldDefinitionDTO()
+            var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
-            var fieldEventRecipientSent = new FieldDefinitionDTO()
+            var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"
             };
 
-            return new FieldDefinitionDTO[] {
+            return new ControlDefinitionDTO[] {
                 fieldSelectDocusignTemplate,
                 fieldEnvelopeSent,
                 fieldEnvelopeReceived,

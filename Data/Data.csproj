@@ -136,8 +136,8 @@
       <HintPath>..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -208,8 +208,14 @@
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Object.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
@@ -220,8 +226,11 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -237,9 +246,8 @@
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldMappingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
@@ -247,14 +255,16 @@
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
     <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
+    <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveMS.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
@@ -350,12 +360,39 @@
     <Compile Include="Migrations\201510010808502_Merge20151001.Designer.cs">
       <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.cs" />
+    <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
+      <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510052045282_UpdateMT_Data.cs" />
+    <Compile Include="Migrations\201510052045282_UpdateMT_Data.Designer.cs">
+      <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510061434128_UpdateMTOtables.cs" />
+    <Compile Include="Migrations\201510061434128_UpdateMTOtables.Designer.cs">
+      <DependentUpon>201510061434128_UpdateMTOtables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.cs" />
+    <Compile Include="Migrations\201510062113219_AddFieldsToMTObject.Designer.cs">
+      <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs" />
+    <Compile Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.Designer.cs">
+      <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510091824077_MergeMigrationConflict.cs" />
+    <Compile Include="Migrations\201510091824077_MergeMigrationConflict.Designer.cs">
+      <DependentUpon>201510091824077_MergeMigrationConflict.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
     <Compile Include="Repositories\MTFieldRepository.cs" />
+    <Compile Include="Repositories\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MTObjectRepository.cs" />
     <Compile Include="Repositories\MTOrganizationRepository.cs" />
+    <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -630,6 +667,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510010808502_Merge20151001.resx">
       <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.resx">
+      <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510052045282_UpdateMT_Data.resx">
+      <DependentUpon>201510052045282_UpdateMT_Data.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510061434128_UpdateMTOtables.resx">
+      <DependentUpon>201510061434128_UpdateMTOtables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510062113219_AddFieldsToMTObject.resx">
+      <DependentUpon>201510062113219_AddFieldsToMTObject.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.resx">
+      <DependentUpon>201510070539426_AuthorizationTokenDO_ExternalStateToken_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510091824077_MergeMigrationConflict.resx">
+      <DependentUpon>201510091824077_MergeMigrationConflict.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -52,35 +52,75 @@ namespace Web.Controllers
         }
 
 
-        [Route("configure")]
-        [Route("process")]
         [HttpGet]
-        public string HandleDockyardRequest(ActionDTO actionDTO)
+        [Route("auth_url")]
+        public async Task<IHttpActionResult> GetExternalAuthUrl(
+            [FromUri(Name = "id")] int activityTemplateId)
         {
-            // Extract from current request URL.
-            var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
-            var curActionDO = Mapper.Map<ActionDO>(actionDTO);
+            DockyardAccountDO account;
+            PluginDO plugin;
 
-            //Figure out which request is being made
-            var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-                curActionDO.ActivityTemplate.Name,
-                curActionDO.ActivityTemplate.Version);
-            var calledType = Type.GetType(curAssemblyName);
-            var curMethodInfo = calledType
-                .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
-            var curObject = Activator.CreateInstance(calledType);
-            ActionDTO curActionDTO;
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-            }
-            catch 
-            {
-                throw new ApplicationException("PluginRequestError");
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(activityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+                var accountId = User.Identity.GetUserId();
+                account = uow.UserRepository.FindOne(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ApplicationException("User was not found.");
+                }
             }
 
-            curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            return JsonConvert.SerializeObject(curActionDO);
+            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
+            return Ok(new { Url = externalAuthUrlDTO.Url });
+        }
+
+        [HttpPost]
+        [Route("authenticate")]
+        public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
+        {
+            DockyardAccountDO account;
+            PluginDO plugin;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(credentials.ActivityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+
+                var accountId = User.Identity.GetUserId();
+                account = uow.UserRepository.FindOne(x => x.Id == accountId);
+                
+                if (account == null)
+                {
+                    throw new ApplicationException("User was not found.");
+                }
+            }
+
+            await _action.AuthenticateInternal(
+                account,
+                plugin,
+                credentials.Username,
+                credentials.Password);
+
+            return Ok();
         }
 
         /// <summary>
@@ -90,7 +130,10 @@ namespace Web.Controllers
         [Route("{id:int}")]
         public ActionDTO Get(int id)
         {
-            return Mapper.Map<ActionDTO>(_action.GetById(id));
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return Mapper.Map<ActionDTO>(_action.GetById(uow, id));
+            }
         }
 
         /// <summary>
@@ -111,14 +154,20 @@ namespace Web.Controllers
         public IHttpActionResult Save(ActionDTO curActionDTO)
         {
             ActionDO submittedActionDO = Mapper.Map<ActionDO>(curActionDTO);
-            var resultActionDO = _action.SaveOrUpdateAction(submittedActionDO);
-            if (curActionDTO.IsTempId)
-            {
-                _actionList.AddAction(resultActionDO, "last");
-            }
 
-            var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
-            return Ok(resultActionDTO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var resultActionDO = _action.SaveOrUpdateAction(uow, submittedActionDO);
+               
+                if (curActionDTO.IsTempId)
+                {
+                    _actionList.AddAction(resultActionDO, "last");
+                }
+
+                var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);
+
+                return Ok(resultActionDTO);
+            }
         }    
     }
 }

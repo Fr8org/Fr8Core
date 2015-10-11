@@ -15,13 +15,14 @@ using Web.ViewModels;
 using Moq;
 using System;
 using Core.Interfaces;
-using System.Web.Http.Results;
 using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 
 namespace DockyardTest.Controllers
 {
+   
     [TestFixture]
+    [Category("DockyardEventController")]
     public class DockyardEventControllerTests : BaseTest
     {
         [Test]

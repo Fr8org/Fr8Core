@@ -10,35 +10,14 @@ module dockyard.directives.paneWorkflowDesigner {
             console.log('PaneWorkflowDesigner::onRender', eventArgs);
         };
 
-        
-        var onProcessNodeTemplateAdded = function (eventArgs: AddCriteriaEventArgs, scope: IPaneWorkflowDesignerScope) {
-            console.log('PaneWorkflowDesigner::onCriteriaAdded', eventArgs);
-            scope.widget.addCriteria({
-                id: eventArgs.id,
-                isTempId: eventArgs.isTempId,
-                name: eventArgs.name
-            });
-
-            scope.$emit(
-                MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
-                new CriteriaSelectedEventArgs(eventArgs.id, eventArgs.isTempId)
-                );
-        };
-
-
-        var onProcessNodeTemplateRemoved = function (eventArgs: RemoveCriteriaEventArgs, scope: IPaneWorkflowDesignerScope) {
-            console.log('PaneWorkflowDesigner::onCriteriaRemoved', eventArgs);
-
-            scope.widget.removeCriteria(eventArgs.id, eventArgs.isTempId);
-        };
-        
-
         var onActionAdded = function (eventArgs: AddActionEventArgs, scope: IPaneWorkflowDesignerScope) {
             console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
             
             var actionObj = <any>eventArgs.action;
 
             scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
+
+            if (eventArgs.doNotRaiseSelectedEvent) return;
 
             scope.$emit(
                 MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
@@ -81,33 +60,6 @@ module dockyard.directives.paneWorkflowDesigner {
                 var widget = Core.create(ProcessBuilder.Widget,
                     element.children()[0], factory, attrs.width, attrs.height);
 
-                widget.on('startNode:click', function () {
-                    scope.$apply(function () {
-                        scope.$emit(
-                            MessageType[MessageType.PaneWorkflowDesigner_TemplateSelected],
-                            new TemplateSelectedEventArgs()
-                        );
-                    });
-                });
-
-                widget.on('addCriteriaNode:click', function () {
-                    scope.$apply(function () {
-                        scope.$emit(
-                            MessageType[MessageType.PaneWorkflowDesigner_ProcessNodeTemplateAdding],
-                            new CriteriaAddingEventArgs()
-                        );
-                    });
-                });
-
-                widget.on('criteriaNode:click', function (e, criteriaId, isTempId) {
-                    scope.$apply(function () {
-                        scope.$emit(
-                            MessageType[MessageType.PaneWorkflowDesigner_CriteriaSelected],
-                            new CriteriaSelectedEventArgs(criteriaId, isTempId)
-                        );
-                    });
-                });
-
                 widget.on('addActionNode:click', function (e, criteriaId, actionType) {
                     scope.$apply(function () {
                         scope.$emit(
@@ -131,12 +83,6 @@ module dockyard.directives.paneWorkflowDesigner {
                 // Event handlers.
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_Render],
                     (event: ng.IAngularEvent, eventArgs: RenderEventArgs) => onRender(eventArgs, scope));
-
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_AddCriteria],
-                    (event: ng.IAngularEvent, eventArgs: AddCriteriaEventArgs) => onProcessNodeTemplateAdded(eventArgs, scope));
-
-                scope.$on(MessageType[MessageType.PaneWorkflowDesigner_RemoveCriteria],
-                    (event: ng.IAngularEvent, eventArgs: RemoveCriteriaEventArgs) => onProcessNodeTemplateRemoved(eventArgs, scope));
 
                 scope.$on(MessageType[MessageType.PaneWorkflowDesigner_AddAction],
                     (event: ng.IAngularEvent, eventArgs: AddActionEventArgs) => onActionAdded(eventArgs, scope));
