@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using Data.Interfaces;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Assert = NUnit.Framework.Assert;
 
 namespace DockyardTest.Entities
 {
@@ -12,7 +14,7 @@ namespace DockyardTest.Entities
     public class ActionTests : BaseTest
     {
         [Test]
-        
+        [Priority(4)]
         public void Action_Add_CanCreateAction()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -46,7 +48,7 @@ namespace DockyardTest.Entities
             }
         }
 
-        [Test,Ignore]
+        [Test,NUnit.Framework.Ignore]
         [Category("ActionList")]
         public void ActionList_Add_CanCreateActionList()
         {
