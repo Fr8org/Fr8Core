@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+
 namespace Data.Migrations
 {
     using System;
@@ -5,6 +9,10 @@ namespace Data.Migrations
     
     public partial class UnifiedNestingMigrationFixed : DbMigration
     {
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
+
         public override void Up()
         {
             DropForeignKey("dbo.ProcessNodeTemplates", "ParentTemplateId", "dbo.ProcessTemplates");
@@ -33,10 +41,26 @@ namespace Data.Migrations
             DropColumn("dbo.ProcessTemplates", "ProcessNodeTemplateOrdering");
             DropColumn("dbo.ProcessTemplates", "LastUpdated");
             DropColumn("dbo.ProcessTemplates", "CreateDate");
+
+            var script = ReadSqlScript("201510091326354_UnifiedNestingMigrationFixed_up.sql");
+            
+            foreach (var stat in ParseScript(script))
+            {
+                Sql(stat);
+            }
         }
-        
+
+        /**********************************************************************************/
+
         public override void Down()
         {
+            var script = ReadSqlScript("201510091326354_UnifiedNestingMigrationFixed_down.sql");
+
+            foreach (var stat in ParseScript(script))
+            {
+                Sql(stat);
+            }
+
             AddColumn("dbo.ProcessTemplates", "CreateDate", c => c.DateTimeOffset(nullable: false, precision: 7));
             AddColumn("dbo.ProcessTemplates", "LastUpdated", c => c.DateTimeOffset(nullable: false, precision: 7));
             AddColumn("dbo.ProcessTemplates", "ProcessNodeTemplateOrdering", c => c.String());
@@ -63,6 +87,68 @@ namespace Data.Migrations
             AddForeignKey("dbo.Criteria", "ProcessNodeTemplateId", "dbo.ProcessNodeTemplates", "Id", cascadeDelete: true);
             AddForeignKey("dbo.Processes", "ProcessTemplateId", "dbo.ProcessTemplates", "Id", cascadeDelete: true);
             AddForeignKey("dbo.ProcessNodeTemplates", "ParentTemplateId", "dbo.ProcessTemplates", "Id", cascadeDelete: true);
+        }
+        
+        /**********************************************************************************/
+
+        private static string ReadSqlScript(string name)
+        {
+            var fileName = "Data.Migrations.SqlScripts." + name;
+            var currentAssembly = Assembly.GetExecutingAssembly();
+
+            using (var stream = currentAssembly.GetManifestResourceStream(fileName))
+            {
+                if (stream == null)
+                {
+                    throw new Exception(string.Format("SQL script {0} was not found in embeded resources for assembly {1}", fileName, currentAssembly.FullName));
+                }
+
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+        }
+
+        /**********************************************************************************/
+
+        private static IEnumerable<string> ParseScript(string name)
+        {
+            List<string> script = new List<string>();
+
+            using (var reader = new StringReader(name))
+            {
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    
+                    if (line == null || line == "GO")
+                    {
+                        if (script.Count > 0)
+                        {
+                            yield return string.Join("\n", script);
+                        }
+
+                        if (line == null)
+                        {
+                            break;
+                        }
+
+                        script.Clear();
+                        continue;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(line) 
+                        || line.StartsWith("--") 
+                        || line=="COMMIT" 
+                        || line.StartsWith("select Has_Perms_By_Name"))
+                    {
+                        continue;
+                    }
+
+                    script.Add(line);
+                }
+            }
         }
     }
 }

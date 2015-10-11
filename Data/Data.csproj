@@ -676,6 +676,10 @@
       <DependentUpon>201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\SqlScripts\201510091326354_UnifiedNestingMigrationFixed_down.sql" />
+    <EmbeddedResource Include="Migrations\SqlScripts\201510091326354_UnifiedNestingMigrationFixed_up.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
