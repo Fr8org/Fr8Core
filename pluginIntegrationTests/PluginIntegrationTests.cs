@@ -25,7 +25,7 @@ using pluginDocuSign.Infrastructure.AutoMapper;
 
 namespace pluginIntegrationTests
 {
-    [TestFixture]
+    [TestFixture,Ignore]
     [Category("PluginIntegrationTests")]
 	public partial class PluginIntegrationTests : BaseTest
     {
