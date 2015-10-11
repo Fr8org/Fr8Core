@@ -235,10 +235,6 @@ namespace pluginDockyardCore.Actions
             return curActionDTO;
         }
 
-        /// <summary>
-        /// ConfigurationEvaluator always returns Initial,
-        /// since Initial and FollowUp phases are the same for current action.
-        /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
             if (curActionDataPackageDTO.CrateStorage == null

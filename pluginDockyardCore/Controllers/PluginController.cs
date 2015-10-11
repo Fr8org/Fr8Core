@@ -49,7 +49,7 @@ namespace pluginDockyardCore.Controllers
             result.Add(new ActivityTemplateDO
             {
                 Name = "AddPayloadManually",
-                Category = ActivityCategory.fr8_Receiver,
+                Category = ActivityCategory.fr8_Processor,
                 Plugin = plugin,
                 Version = "1"
             });
