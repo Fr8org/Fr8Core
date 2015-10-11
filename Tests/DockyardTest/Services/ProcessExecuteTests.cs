@@ -17,7 +17,7 @@ namespace DockyardTest.Services
 {
     
     [TestFixture]
-
+    [Category("ProcessExecute")]
     public class ProcessExecuteTests: BaseTest
     {
         private IProcess _process;

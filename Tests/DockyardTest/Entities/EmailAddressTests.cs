@@ -10,7 +10,7 @@ using UtilitiesTesting;
 
 namespace DockyardTest.Entities
 {
-    [TestFixture]
+    [TestFixture,Ignore]
     public class EmailAddressTests : BaseTest
     {
         [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'Address' on 'EmailAddressDO' are not allowed. Duplicated value: 'rjrudman@gmail.com'")]
