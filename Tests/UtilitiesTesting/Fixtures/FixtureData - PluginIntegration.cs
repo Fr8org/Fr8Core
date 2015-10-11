@@ -9,6 +9,8 @@ namespace UtilitiesTesting.Fixtures
         public static string TestPlugin_DocuSign_EndPoint = "localhost:60001";
         public static string TestPlugin_Core_EndPoint = "localhost:60002";
         public static string TestPlugin_AzureSqlServer_EndPoint = "localhost:60003";
+        public static string TestPlugin_ExtractData_EndPoint = "localhost:60004";
+        public static string TestPlugin_FileServer_EndPoint = "localhost:60005";
 
         public static AuthorizationTokenDO AuthToken_PluginIntegration()
         {
@@ -82,11 +84,29 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static PluginDO TestPlugin_ExtractData()
+        {
+            var pluginDO = TestPlugin_Excel();
+            pluginDO.Endpoint = TestPlugin_ExtractData_EndPoint;
+
+            return pluginDO;
+        }
+
+        public static PluginDO TestPlugin_Excel()
+        {
+            return new PluginDO
+            {
+                Name = "pluginExcel",
+                PluginStatus = PluginStatus.Active,
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDO TestActivityTemplateDO_WaitForDocuSignEvent()
         {
             return new ActivityTemplateDO()
             {
-                Name = "Wait_For_DocuSign_Event",
+                Name = "Monitor_DocuSign",
                 Version = "1",
                 Plugin = TestPlugin_DocuSign()
             };
@@ -120,6 +140,17 @@ namespace UtilitiesTesting.Fixtures
 				  Plugin = TestPlugin_DocuSign()
 			  };
 		  }
+
+        public static ActivityTemplateDO TestActivityTemplateDO_ExtractData()
+        {
+            return new ActivityTemplateDO()
+            {
+                Name = "ExtractData",
+                Version = "1",
+                Plugin = TestPlugin_ExtractData()
+            };
+        }
+
         public static ActionDO TestAction_Blank()
         {
             return new ActionDO()

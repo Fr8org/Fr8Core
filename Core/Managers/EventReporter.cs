@@ -714,8 +714,8 @@ namespace Core.Managers
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Vladimir. SingleOfDefault was changed FirstOrDefault. this will not correctly extract processId because several processes can have p.CurrentActivityId.Value == curAction.Id but a least it will not fail and log the action.
-                processInExecution = uow.ProcessRepository.GetQuery().FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id); 
+                processInExecution = uow.ProcessRepository.GetQuery()
+                    .FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
             }
 
             var fact = new FactDO
@@ -752,7 +752,7 @@ namespace Core.Managers
 //            };
 //
 //            SaveAndLogFact(fact);
-        }
+            }
 
         private void LogPluginEvent(LoggingData eventData)
         {

@@ -21,7 +21,9 @@ using Data.Interfaces.ManifestSchemas;
 
 namespace DockyardTest.Controllers
 {
+   
     [TestFixture]
+    [Category("DockyardEventController")]
     public class DockyardEventControllerTests : BaseTest
     {
         [Test]

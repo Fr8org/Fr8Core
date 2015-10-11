@@ -1,17 +1,20 @@
 ﻿using System.Linq;
 using Data.Interfaces;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Assert = NUnit.Framework.Assert;
 
 namespace DockyardTest.Entities
 {
     [TestFixture]
+    [Category("Action")]
     public class ActionTests : BaseTest
     {
         [Test]
-        [Category("Action")]
+        [Priority(4)]
         public void Action_Add_CanCreateAction()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -13,6 +13,7 @@ using UtilitiesTesting.Fixtures;
 using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using Moq;
+using Newtonsoft.Json;
 
 
 namespace DockyardTest.Services
@@ -245,7 +246,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 await _processService.Execute(uow, processDO);
-            }
+        }
 
             Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
             Assert.IsNull(processDO.CurrentActivity);
@@ -302,9 +303,9 @@ namespace DockyardTest.Services
             _processService = ObjectFactory.GetInstance<IProcess>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+        {
                 await _processService.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
-            }
+        }
         }
 //
 //        [Test]

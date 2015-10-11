@@ -16,7 +16,7 @@ using System;
 namespace DockyardTest.Services
 {
     [TestFixture]
-    [Category("ProcessTemplateService")]
+    [Category("ProcessTemplate")]
     public class ProcessTemplateTests : BaseTest
     {
         private IProcessTemplate _processTemplateService;

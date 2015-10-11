@@ -78,162 +78,162 @@ namespace UtilitiesTesting.Fixtures
     partial class FixtureData
     {
 
-       public static ActionListDO TestActionListHealth1()
-       {
-           //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-           var processDo = new ProcessDO
-           {
-               Id = 1,
-               CrateStorage = EnvelopeIdCrateJson(),
-               ProcessState = 1,
-               Name = "test name",
-               ProcessTemplateId = TestProcessTemplateHealthDemo().Id
-           };
+        public static ActionListDO TestActionListHealth1()
+        {
+            //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
+            var processDo = new ProcessDO
+            {
+                Id = 1,
+                CrateStorage = EnvelopeIdCrateJson(),
+                ProcessState = 1,
+                Name = "test name",
+                ProcessTemplateId = TestProcessTemplateHealthDemo().Id
+            };
 //
-           return new ActionListDO
-           {
+            return new ActionListDO
+            {
 //               Id = 88,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate,
 //               ProcessNodeTemplateID = 50,
 //               CurrentActivity = TestActionHealth1(),
 //               Process = processDo
-           };
-       }
+            };
+        }
 //
-       public static ActionListDO TestActionList()
-       {
-           var curActionListDO = new ActionListDO
-           {
+        public static ActionListDO TestActionList()
+        {
+            var curActionListDO = new ActionListDO
+            {
 //               Id = 1,
 //               ProcessNodeTemplateID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
-           };
-           curActionListDO.Activities.Add(TestAction20());
-           curActionListDO.Activities.Add(TestAction21());
+            };
+            curActionListDO.Activities.Add(TestAction20());
+            curActionListDO.Activities.Add(TestAction21());
 //
-           return curActionListDO;
-       }
+            return curActionListDO;
+        }
 //
-       public static ActionListDO TestActionList2()
-       {
-           var curActionListDO = new ActionListDO
-           {
+        public static ActionListDO TestActionList2()
+        {
+            var curActionListDO = new ActionListDO
+            {
 //               Id = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
-           };
-           curActionListDO.Activities.Add(TestAction20());
-           curActionListDO.Activities.Add(TestAction21());
+            };
+            curActionListDO.Activities.Add(TestAction20());
+            curActionListDO.Activities.Add(TestAction21());
 //
-           return curActionListDO;
-       }
+            return curActionListDO;
+        }
 //
-       public static ActionListDO TestEmptyActionList()
-       {
-           var curActionListDO = new ActionListDO
-           {
+        public static ActionListDO TestEmptyActionList()
+        {
+            var curActionListDO = new ActionListDO
+            {
 //               Id = 4,
 //               ProcessNodeTemplateID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
-           };
-           return curActionListDO;
-       }
+            };
+            return curActionListDO;
+        }
 //
-       public static ActionListDO TestActionListMedical()
-       {
-           var curActionListDO = new ActionListDO
-           {
+        public static ActionListDO TestActionListMedical()
+        {
+            var curActionListDO = new ActionListDO
+            {
 //               Id = 4,
 //               ProcessNodeTemplateID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate,                    
-           };
-           return curActionListDO;
-       }
+            };
+            return curActionListDO;
+        }
 //
-       public static ActionListDO TestActionList3()
-       {
-           return new ActionListDO
-           {
+        public static ActionListDO TestActionList3()
+        {
+            return new ActionListDO
+            {
 //               Id = 2,
 //               CurrentActivity = TestAction21(),
 //               ActionListState = ActionListState.Inprocess
-           };
-       }
+            };
+        }
 //
-       public static ActionListDO TestActionList4()
-       {
-           return new ActionListDO
-           {
+        public static ActionListDO TestActionList4()
+        {
+            return new ActionListDO
+            {
 //               Id = 2,
 //               CurrentActivity = TestAction21(),
 //               ActionListState = ActionListState.Unstarted
-           };
-       }
+            };
+        }
 //
-       public static ActionListDO TestActionList5()
-       {
-           return new ActionListDO
-           {
+        public static ActionListDO TestActionList5()
+        {
+            return new ActionListDO
+            {
 //               Id = 2,
 //               ActionListType = ActionListType.Immediate,
 //               CurrentActivity = FixtureData.TestAction6(),
 //               ActionListState = ActionListState.Unstarted,
-               Activities = new System.Collections.Generic.List<ActivityDO>() 
-               { 
-                   FixtureData.TestAction22(),
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                { 
+                    FixtureData.TestAction22(),
                    FixtureData.TestAction7(),
                    FixtureData.TestAction8(null)             
-               }
-           };
-       }
+                }
+            };
+        }
 //
-       public static ActionListDO TestActionList6()
-       {
-           ProcessDO processDO = FixtureData.TestProcess1();
-           processDO.CrateStorage = "";
-           return new ActionListDO
-           {
+        public static ActionListDO TestActionList6()
+        {
+            ProcessDO processDO = FixtureData.TestProcess1();
+            processDO.CrateStorage = "";
+            return new ActionListDO
+            {
 //               Id = 2,
 //               ActionListType = ActionListType.Immediate,
 //               ActionListState = ActionListState.Unstarted,
 //               Process = processDO
-           };
-       }
+            };
+        }
 //
-      public static ActionListDO TestActionList7()
-       {
-           return new ActionListDO
-           {
+        public static ActionListDO TestActionList7()
+        {
+            return new ActionListDO
+            {
 //               Id = 2,
 //               CurrentActivity = FixtureData.TestAction6(),
 //               ActionListState = ActionListState.Unstarted,
-               Activities = new System.Collections.Generic.List<ActivityDO>() 
-               { 
-                   FixtureData.TestAction10(),
-                   FixtureData.TestAction7(),
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                { 
+                    FixtureData.TestAction10(),
+                    FixtureData.TestAction7(),
                    FixtureData.TestAction8(null)             
-               }
-           };
-       }
+                }
+            };
+        }
 //
       /* public static ActionListDO TestActionList8()
-       {
-           return new ActionListDO
-           {
+        {
+            return new ActionListDO
+            {
 //               Id = 2,
 //               CurrentActivity = FixtureData.TestAction6(),
 //               ActionListState = ActionListState.Unstarted,
-               Activities = new System.Collections.Generic.List<ActivityDO>() 
-               { 
-                   FixtureData.TestAction10(),
-                   FixtureData.TestAction7(),
-                   FixtureData.TestAction8()             
-               }
-           };
+                Activities = new System.Collections.Generic.List<ActivityDO>() 
+                { 
+                    FixtureData.TestAction10(),
+                    FixtureData.TestAction7(),
+                    FixtureData.TestAction8()             
+                }
+            };
        }*/
 //
 //		  /<summary>
@@ -323,16 +323,16 @@ namespace UtilitiesTesting.Fixtures
 //		  }
 //
         public static List<ActivityDO> TestActionList1()
-         {
-             List<ActionListDO> actionLists = new List<ActionListDO>();
+          {
+              List<ActionListDO> actionLists = new List<ActionListDO>();
 //
-             var activityTempate = new ActivityTemplateDO()
-             {
-                 Id = 1,
-                 Version = "1",
-                 Plugin = FixtureData.PluginFive(),
-                 Name = "Wait_For_DocuSign_Event"
-             };
+              var activityTempate = new ActivityTemplateDO()
+              {
+                  Id = 1,
+                  Version = "1",
+                  Plugin = FixtureData.PluginFive(),
+                  Name = "Monitor_DocuSign"
+              };
            ActionListDO al_1 = new ActionListDO()
            {
                 ParentActivityId = 1
@@ -345,23 +345,23 @@ namespace UtilitiesTesting.Fixtures
                  Name = "a_23", 
                  CrateStorage = ""
              };
-             al_1.Activities.Add(a_23);
+              al_1.Activities.Add(a_23);
              
-             actionLists.Add(al_1);
+              actionLists.Add(al_1);
              return new List<ActivityDO>() { a_23 };
-         }
+          }
 //
          public static List<ActivityDO> TestActionListParentActivityID12()
-         {
-             List<ActionListDO> actionLists = new List<ActionListDO>();
+          {
+              List<ActionListDO> actionLists = new List<ActionListDO>();
 //
-             var activityTempate = new ActivityTemplateDO()
-             {
-                 Id = 1,
-                 Version = "1",
-                 Plugin = FixtureData.PluginFive(),
-                 Name = "Wait_For_DocuSign_Event"
-             };
+              var activityTempate = new ActivityTemplateDO()
+              {
+                  Id = 1,
+                  Version = "1",
+                  Plugin = FixtureData.PluginFive(),
+                  Name = "Monitor_DocuSign"
+              };
              ActionListDO al_1 = new ActionListDO() { ParentActivityId = 12 };
              ActionDO a_23 = new ActionDO()
              {
@@ -371,10 +371,10 @@ namespace UtilitiesTesting.Fixtures
                  Name = "a_23",
                  CrateStorage = ""
              };
-             al_1.Activities.Add(a_23);
+              al_1.Activities.Add(a_23);
              
-             actionLists.Add(al_1);
+              actionLists.Add(al_1);
              return new List<ActivityDO>() { a_23 };
-         }
+          }
     }
 }

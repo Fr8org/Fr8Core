@@ -484,6 +484,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private MTFieldTypeRepository _mtFieldTypeRepository;
+
+        public IMTFieldTypeRepository MTFieldTypeRepository
+        {
+            get
+            {
+                return _mtFieldTypeRepository ?? (_mtFieldTypeRepository = new MTFieldTypeRepository(this));
+            }
+        }
+
         private MTObjectRepository _mtObjectdRepository;
 
         public IMTObjectRepository MTObjectRepository
@@ -511,6 +521,16 @@ namespace Data.Infrastructure
             get
             {
                 return _mtDataRepository ?? (_mtDataRepository = new MTDataRepository(this));
+            }
+        }
+
+        private MultiTenantObjectRepository _multiTenantObjectRepository;
+
+        public MultiTenantObjectRepository MultiTenantObjectRepository
+        {
+            get
+            {
+                return _multiTenantObjectRepository ?? (_multiTenantObjectRepository = new MultiTenantObjectRepository());
             }
         }
 

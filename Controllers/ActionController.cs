@@ -51,6 +51,39 @@ namespace Web.Controllers
         }
 
 
+        [HttpGet]
+        [Route("auth_url")]
+        public async Task<IHttpActionResult> GetExternalAuthUrl(
+            [FromUri(Name = "id")] int activityTemplateId)
+        {
+            DockyardAccountDO account;
+            PluginDO plugin;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = uow.ActivityTemplateRepository
+                    .GetByKey(activityTemplateId);
+
+                if (activityTemplate == null)
+                {
+                    throw new ApplicationException("ActivityTemplate was not found.");
+                }
+
+                plugin = activityTemplate.Plugin;
+
+                var accountId = User.Identity.GetUserId();
+                account = uow.UserRepository.FindOne(x => x.Id == accountId);
+
+                if (account == null)
+                {
+                    throw new ApplicationException("User was not found.");
+                }
+            }
+
+            var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
+            return Ok(new { Url = externalAuthUrlDTO.Url });
+        }
+
         [HttpPost]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
@@ -80,7 +113,7 @@ namespace Web.Controllers
                 }
             }
 
-            await _action.Authenticate(
+            await _action.AuthenticateInternal(
                 account,
                 plugin,
                 credentials.Username,
@@ -88,40 +121,6 @@ namespace Web.Controllers
 
             return Ok();
         }
-
-
-        // TODO: to be removed.
-        // commented out by yakov.gnusin as of DO-1064
-        // [Route("configure")]
-        // [Route("process")]
-        // [HttpGet]
-        // public string HandleDockyardRequest(ActionDTO actionDTO)
-        // {
-        //     // Extract from current request URL.
-        //     var curActionPath = ActionContext.Request.RequestUri.LocalPath.Substring("/actions/".Length);
-        //     var curActionDO = Mapper.Map<ActionDO>(actionDTO);
-        // 
-        //     //Figure out which request is being made
-        //     var curAssemblyName = string.Format("CoreActions.{0}_v{1}",
-        //         curActionDO.ActivityTemplate.Name,
-        //         curActionDO.ActivityTemplate.Version);
-        //     var calledType = Type.GetType(curAssemblyName);
-        //     var curMethodInfo = calledType
-        //         .GetMethod(curActionPath, BindingFlags.Default | BindingFlags.IgnoreCase);
-        //     var curObject = Activator.CreateInstance(calledType);
-        //     ActionDTO curActionDTO;
-        //     try
-        //     {
-        //         curActionDTO = (ActionDTO)curMethodInfo.Invoke(curObject, new Object[] { curActionDO });
-        //     }
-        //     catch 
-        //     {
-        //         throw new ApplicationException("PluginRequestError");
-        //     }
-        // 
-        //     curActionDO = Mapper.Map<ActionDO>(curActionDTO);
-        //     return JsonConvert.SerializeObject(curActionDO);
-        // }
 
         /// <summary>
         /// GET : Returns an action with the specified id

@@ -152,11 +152,11 @@ namespace pluginDocuSign.Actions
                 curActionDTO.AuthToken.Token);
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var textBlock = new TextBlockFieldDTO()
+            var textBlock = new TextBlockControlDefinitionDTO()
             {
                 Label = "Docu Sign Envelope",
                 Value = "This Action doesn't require any configuration.",
-                cssClass = "well well-lg"
+                CssClass = "well well-lg"
             };
 
             var crateControls = PackControlsCrate(textBlock);

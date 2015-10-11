@@ -86,6 +86,56 @@
     margin-top: -15px;
 }
 
+/* Process Builder */
+
+.process-builder-container {
+    overflow-y: auto;
+    white-space: nowrap;
+}
+
+.action-arrow {
+    background-image: url('https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_arrow_forward_48px-512.png');
+    background-size: contain;
+    display: inline-block;
+    height: 50px;
+    margin-top: 120px;
+    width: 50px;
+}
+
+.action {
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 3px 0px,
+                rgba(0, 0, 0, 0.137255) 0px 1px 1px 0px,
+                rgba(0, 0, 0, 0.117647) 0px 2px 1px -1px;
+    display: inline-block;
+    height: 300px;
+    margin: 10px;
+    padding: 5px;
+    vertical-align: top;
+    width: 330px;
+}
+
+.action-name {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.action-to-add {
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.action-to-add:hover {
+    border-color: black;
+    opacity: 1;
+}
+
+.action .pane-configure-action {    
+    height: 250px;
+    display: block;
+    width: 100%;
+}
+
 /* Select Action */
 .select-action-modal .modal-dialog {
     width: 1000px;
@@ -121,14 +171,9 @@
 }
 
 /* Query Builder */
-.query-builder.disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
 .query-builder-table {
     margin-left: 27px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
     width: calc(100% - 25px);
 }
 
@@ -137,12 +182,28 @@
         padding-left: 0;
     }
 
+.query-builder-table tbody,
+.query-builder-table thead {
+    display: block;
+}
+
+.query-builder-table tbody {
+    max-height: 125px;
+    overflow-y: auto;
+}
+
 .query-builder-add-button {
     margin-left: 27px;
 }
 
-.query-builder-table select.form-control {
-    padding-left: 4px;
+.query-builder-table .form-control {
+    padding: 0;
+    height: 25px;
+}
+
+.query-builder-delete-button {
+    cursor: pointer;
+    margin-top: 4px;
 }
 
 form.internal-authenticate-form {
@@ -150,14 +211,14 @@ form.internal-authenticate-form {
 }
 
 /* Configure Action Pane */
-.nested-fields {
+.nested-controls {
     margin-left: 20px;
 }
 
-input[type=radio] + div.nested-fields {
+input[type=radio] + div.nested-controls {
     display: none;
 } 
 
-input[type=radio]:checked + div.nested-fields {
+input[type=radio]:checked + div.nested-controls {
     display: block;
 } 

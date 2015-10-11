@@ -22,7 +22,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("CriteriaController.GetByProcessNodeTemplateId")]
         public void CriteriaController_GetByProcessNodeTemplateId()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

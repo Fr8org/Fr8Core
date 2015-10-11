@@ -48,7 +48,7 @@ namespace Data.Interfaces
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-		ActivityRepository ActivityRepository { get; }
+		  ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
         IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
@@ -60,9 +60,13 @@ namespace Data.Interfaces
 
         IMTObjectRepository MTObjectRepository { get; }
 
-        IMTOrganizationRepository MTOrganizationRepository  { get; }
+        IMTOrganizationRepository MTOrganizationRepository { get; }
+
+        IMTFieldTypeRepository MTFieldTypeRepository { get; }
 
         IMTDataRepository MTDataRepository { get; }
+
+        MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }

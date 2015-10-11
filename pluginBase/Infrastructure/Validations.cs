@@ -17,5 +17,14 @@ namespace PluginBase.Infrastructure
             }
             return true;
         }
+
+        public static bool ValidateMax1(string[] curList)
+        {
+            var objCount = curList.Length;
+            if (objCount > 1)
+                throw new Exception("The list contains more than one items.");
+            
+            return true;
+        }
     }
 }

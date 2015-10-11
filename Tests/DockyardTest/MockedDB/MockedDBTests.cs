@@ -10,10 +10,12 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using RestSharp.Serializers;
 
 namespace DockyardTest.MockedDB
 {
     [TestFixture]
+    [Category("MockedDB")]
     public class MockedDBTests : BaseTest
     {
         //This test is to ensure our mocking properly distinguishes between saved and local DbSets (to mimic EF behaviour)
@@ -195,6 +197,7 @@ namespace DockyardTest.MockedDB
             //        uow.SaveChanges();
             //    }
             //}
+
         }
     }
 

@@ -14,7 +14,7 @@ namespace DockyardTest.Models
     public class CustomerTests : BaseTest
     {
         [Test]
-        [Category("Customer")]
+        [Category("User")]
         public void Customer_Add_CanCreateUser()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

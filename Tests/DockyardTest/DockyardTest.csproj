@@ -229,6 +229,7 @@
     <Compile Include="Entities\EnvelopeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Infrastructure\DatabaseTests.cs" />
+    <Compile Include="Infrastructure\MultiTenantTests.cs" />
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
@@ -255,10 +256,7 @@
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\ProcessExecuteTests.cs" />
-    <Compile Include="Services\ProcessCreateTests.cs" />
-    <Compile Include="Services\ProcessGetInitialActivityTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
-    <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>

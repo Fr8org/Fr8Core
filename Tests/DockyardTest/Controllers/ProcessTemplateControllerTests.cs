@@ -19,7 +19,7 @@ using Web.Controllers;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
-    [Category("Controllers.Api.ProcessTemplateService")]
+    [Category("ProcessTemplateControllerTests")]
     public class ProcessTemplateControllerTests : BaseTest
     {
         private DockyardAccountDO _testUserAccount;

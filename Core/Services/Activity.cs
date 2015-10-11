@@ -35,44 +35,44 @@ namespace Core.Services
 
         /**********************************************************************************/
 
-	    public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
-	    {
-	        if (curActivityDO == null)
-	            throw new ArgumentNullException("curActivityDO");
-	        if (curActivityDO.ParentActivityId == null)
-	            return new List<ActivityDO>();
+        public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
+		{
+			if (curActivityDO == null)
+				throw new ArgumentNullException("curActivityDO");
+            if (curActivityDO.ParentActivityId == null)
+                return new List<ActivityDO>();
 
-	        List<ActivityDO> upstreamActivities = new List<ActivityDO>();
+			List<ActivityDO> upstreamActivities = new List<ActivityDO>();
 
-	        //start by getting the parent of the current action
-	        var parentActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
+                //start by getting the parent of the current action
+                var parentActivity = uow.ActivityRepository.GetByKey(curActivityDO.ParentActivityId);
 
 
-	        // find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
-	        var upstreamSiblings =
-	            parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
-
-	        //for each such sibling action, we want to add it to the list
-	        //but some of those activities may be actionlists with childactivities of their own
-	        //in that case we need to recurse
-	        foreach (var upstreamSibling in upstreamSiblings)
-	        {
-	            //1) first add the upstream siblings
+				// find all sibling actions that have a lower Ordering. These are the ones that are "above" this action in the list
+				var upstreamSiblings =
+				    parentActivity.Activities.Where(a => a.Ordering < curActivityDO.Ordering);
+                        
+                //for each such sibling action, we want to add it to the list
+                //but some of those activities may be actionlists with childactivities of their own
+                //in that case we need to recurse
+				foreach (var upstreamSibling in upstreamSiblings)
+				{
+                    //1) first add the upstream siblings
 	            upstreamActivities.AddRange(GetActivityTree(uow, upstreamSibling));
-	        }
+				}
 
-	        //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
-	        if (parentActivity != null)
-	        {
-	            //2) then add the parent activity...
-	            upstreamActivities.Add(parentActivity);
-	            //3) then add the parent's upstream activities
-	            upstreamActivities.AddRange(GetUpstreamActivities(uow, parentActivity));
-	        }
-	        else return upstreamActivities;
-
-	        return upstreamActivities; //should never actually get here, but the compiler insists
-	    }
+                //now we need to recurse up to the parent of the current activity, and repeat until we reach the root of the tree
+				if (parentActivity != null)
+				{
+                    //2) then add the parent activity...
+                    upstreamActivities.Add(parentActivity); 
+                    //3) then add the parent's upstream activities
+				    upstreamActivities.AddRange(GetUpstreamActivities(uow, parentActivity));
+				}
+				else return upstreamActivities;
+					    
+            return upstreamActivities; //should never actually get here, but the compiler insists
+		}
 
 	    /**********************************************************************************/
 
@@ -114,26 +114,26 @@ namespace Core.Services
         /**********************************************************************************/
 
         public ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root)
-	    {
+		{
 	        return GetNextActivity(currentActivity, true, root);
 	    }
 
 	    /**********************************************************************************/
 
         private ActivityDO GetNextActivity(ActivityDO currentActivity, bool depthFirst, ActivityDO root)
-        {
+		    {
             // Move to the first child if current activity has nested ones
             if (depthFirst && currentActivity.Activities.Count != 0)
             {
                 return currentActivity.Activities.OrderBy(x => x.Ordering).FirstOrDefault();
             }
-
+		   
             // Move to the next activity of the current activity's parent
             if (currentActivity.ParentActivity == null)
             {
                 // We are at the root of activity tree. Next activity can be only among children.
                 return null;
-            }
+		}
 
             var prev = currentActivity;
             var nextCandidate = currentActivity.ParentActivity.Activities
@@ -149,10 +149,10 @@ namespace Core.Services
                 */
 
             if (nextCandidate == null)
-            {
+        {
                 // Someone doesn't want us to go higher this node
                 if (prev == root)
-                {
+            {
                     return null;
                 }
                 nextCandidate = GetNextActivity(prev.ParentActivity, false, root); 
@@ -177,14 +177,14 @@ namespace Core.Services
                 if (x is ProcessNodeTemplateDO)
                 {
                     foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.ProcessNodeTemplateId == x.Id).ToArray())
-                    {
+                {
                         uow.CriteriaRepository.Remove(criteria);
-                    }
+                }
                 }
 
                 uow.ActivityRepository.Remove(x);
             });
-        }
+            }
 
         /**********************************************************************************/
 
@@ -194,18 +194,18 @@ namespace Core.Services
             foreach (ActivityDO child in parent.Activities)
                 TraverseActivity(child, visitAction);
         }
-        
+
         /**********************************************************************************/
 
 	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
-		{
+        {
                 // Get all activities which parent is currActivity and order their by Ordering. The order is important!
                 var orderedActivities = uow.ActivityRepository.GetAll()
                 .Where(x => x.ParentActivityId == currActivity.Id)
                 .OrderBy(z => z.Ordering);
                 return orderedActivities;
             }
-		   
+
 	    /**********************************************************************************/
 
         public async Task Process(int curActivityId, ProcessDO processDO)
@@ -218,7 +218,7 @@ namespace Core.Services
                 if (curActivityDO == null)
                 {
                     throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
-                }
+            }
 
                 if (curActivityDO is ActionDO)
                 {
@@ -226,7 +226,7 @@ namespace Core.Services
                     await _action.PrepareToExecute((ActionDO) curActivityDO, curProcessDO, uow);
             }
         }
-            }
+        }
 
         /**********************************************************************************/
 
@@ -234,7 +234,7 @@ namespace Core.Services
         {
             List<ActivityTemplateDO> curActivityTemplates;
 
-            curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll().OrderBy(t => t.Category).ToList();
         
 
             //we're currently bypassing the subscription logic until we need it
@@ -248,6 +248,31 @@ namespace Core.Services
 
             return curActivityTemplates;
         }
+
+        /**********************************************************************************/
+
+	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
+	    {
+            //TODO make this function use curAccount !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            List<ActivityTemplateCategoryDTO> curActivityTemplates;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curActivityTemplates = uow.ActivityTemplateRepository.GetAll()
+                    .GroupBy(t => t.Category)
+                    .OrderBy(c => c.Key)
+                    //lets load them all before memory processing
+                    .ToList()
+                    .Select(c => new ActivityTemplateCategoryDTO
+                    {
+                        Activities = c.Select(Mapper.Map<ActivityTemplateDTO>),
+                        Name = c.Key.ToString()
+                    })
+                    .ToList();
+            }
+
+            return curActivityTemplates;
+	    }
 
         /**********************************************************************************/
     }
