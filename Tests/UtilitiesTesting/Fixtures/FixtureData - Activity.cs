@@ -181,15 +181,23 @@ namespace UtilitiesTesting.Fixtures
                     }
                 }
             };
-            
+
+            FixParentActivityReferences(tree);
+
+            return tree;
+
+        }
+
+        private static void FixParentActivityReferences(ActivityDO root)
+        {
             var activitiesIndex = new Dictionary<int, ActivityDO>();
 
-            TraverseActivityTree(tree, activitiesIndex);
+            TraverseActivityTree(root, activitiesIndex);
 
             foreach (var activityDo in activitiesIndex.Values)
             {
                 ActivityDO temp = null;
-                
+
                 if (activityDo.ParentActivityId != null)
                 {
                     activitiesIndex.TryGetValue(activityDo.ParentActivityId.Value, out temp);
@@ -197,9 +205,6 @@ namespace UtilitiesTesting.Fixtures
 
                 activityDo.ParentActivity = temp;
             }
-
-            return tree;
-
         }
 
         private static void TraverseActivityTree(ActivityDO root, Dictionary<int, ActivityDO> allActivities)

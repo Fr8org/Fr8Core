@@ -947,6 +947,9 @@ namespace UtilitiesTesting.Fixtures
                     }
                 }
             };
+
+            FixParentActivityReferences(curAction);
+
             return curAction;
         }
         public static ActionDO TestActionTreeWithActionTemplates()
@@ -1037,6 +1040,8 @@ CrateStorage=  crateStorage,
                     }
                 }
             };
+
+            FixParentActivityReferences(curAction);
             return curAction;
         }
     }

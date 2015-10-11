@@ -405,6 +405,10 @@
     <Compile Include="Migrations\201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.Designer.cs">
       <DependentUpon>201510091612252_UnifiedNestingMigration_CriteriaCascadedDelete.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510112318579_MergeConflict.cs" />
+    <Compile Include="Migrations\201510112318579_MergeConflict.Designer.cs">
+      <DependentUpon>201510112318579_MergeConflict.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -724,6 +728,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201510112318579_MergeConflict.resx">
+      <DependentUpon>201510112318579_MergeConflict.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\SqlScripts\201510091326354_UnifiedNestingMigrationFixed_down.sql" />
     <EmbeddedResource Include="Migrations\SqlScripts\201510091326354_UnifiedNestingMigrationFixed_up.sql" />
   </ItemGroup>
