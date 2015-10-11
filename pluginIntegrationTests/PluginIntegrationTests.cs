@@ -26,6 +26,7 @@ using pluginDocuSign.Infrastructure.AutoMapper;
 namespace pluginIntegrationTests
 {
     [TestFixture]
+    [Category("PluginIntegrationTests")]
 	public partial class PluginIntegrationTests : BaseTest
     {
         private IDisposable _coreServer;
