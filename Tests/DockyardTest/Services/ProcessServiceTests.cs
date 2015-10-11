@@ -79,7 +79,7 @@ namespace DockyardTest.Services
                 uow.ProcessTemplateRepository.Add(processTemplate);
                 uow.SaveChanges();
 
-                var process = _processService.Create(processTemplate.Id, FixtureData.GetEnvelopeIdCrate());
+                var process = _processService.Create(uow, processTemplate.Id, FixtureData.GetEnvelopeIdCrate());
                 Assert.IsNotNull(process);
                 Assert.IsTrue(process.Id > 0);
             }
@@ -190,7 +190,10 @@ namespace DockyardTest.Services
 
             _processService = ObjectFactory.GetInstance<IProcess>();
 
-            _processService.Execute(FixtureData.TestProcesswithCurrentActivityAndNextActivity());
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _processService.Execute(uow, FixtureData.TestProcesswithCurrentActivityAndNextActivity());
+            }
         }
 
         // DO-1214
@@ -226,27 +229,28 @@ namespace DockyardTest.Services
 //            Assert.Pass();//just set to pass because processNodeDo parameter will be set to null(where caller object is unaware) and reaching this line is success
 //        }
 
-//        [Test]
-//        public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
-//        {
-//            var _activity = new Mock<IActivity>();
-//            _activity
-//                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
-//                .Returns(Task.Delay(100))
-//                .Verifiable();
-//            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
-//            _processService = ObjectFactory.GetInstance<IProcess>();
-//            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
-//            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
-//            ActivityDO originalNextActivity = processDO.NextActivity;
-//
-//            await _processService.Execute(processDO);
-//
-//            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
-//            Assert.AreNotEqual(originalNextActivity, processDO.NextActivity);
-//            Assert.IsNull(processDO.CurrentActivity);
-//            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
-//        }
+        [Test]
+        public async void Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
+        {
+            var _activity = new Mock<IActivity>();
+            _activity
+                .Setup(c => c.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()))
+                .Returns(Task.Delay(100))
+                .Verifiable();
+            ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(_activity.Object));
+            _processService = ObjectFactory.GetInstance<IProcess>();
+            ProcessDO processDO = FixtureData.TestProcesswithCurrentActivityAndNextActivity();
+            ActivityDO originalCurrentActivity = processDO.CurrentActivity;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _processService.Execute(uow, processDO);
+            }
+
+            Assert.AreNotEqual(originalCurrentActivity, processDO.CurrentActivity);
+            Assert.IsNull(processDO.CurrentActivity);
+            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
+        }
 
 //        [Test]
 //        public async void Execute_ProcessUntil3rdActivities_ProcessAllActivities()
@@ -291,14 +295,17 @@ namespace DockyardTest.Services
 //            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
 //        }
 //
-//        [Test]
-//        [ExpectedException(typeof(ArgumentNullException))]
-//        public async void Execute_SetCurrentActivityNull_ThrowsException()
-//        {
-//            _processService = ObjectFactory.GetInstance<IProcess>();
-//
-//            await _processService.Execute(FixtureData.TestProcessCurrentActivityNULL());
-//        }
+        [Test]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public async void Execute_SetCurrentActivityNull_ThrowsException()
+        {
+            _processService = ObjectFactory.GetInstance<IProcess>();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _processService.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
+            }
+        }
 //
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]

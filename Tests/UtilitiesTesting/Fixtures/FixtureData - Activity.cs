@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using System.Collections.Generic;
 using System;
+using System.Runtime.InteropServices;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -36,7 +37,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ActivityDO TestActivityTree()
         {
-            return new ActivityDO
+            var tree = new ActivityDO
             {
                 Id = 1,
                 Ordering = 1,
@@ -180,9 +181,36 @@ namespace UtilitiesTesting.Fixtures
                     }
                 }
             };
+            
+            var activitiesIndex = new Dictionary<int, ActivityDO>();
+
+            TraverseActivityTree(tree, activitiesIndex);
+
+            foreach (var activityDo in activitiesIndex.Values)
+            {
+                ActivityDO temp = null;
+                
+                if (activityDo.ParentActivityId != null)
+                {
+                    activitiesIndex.TryGetValue(activityDo.ParentActivityId.Value, out temp);
+                }
+
+                activityDo.ParentActivity = temp;
+            }
+
+            return tree;
+
         }
 
+        private static void TraverseActivityTree(ActivityDO root, Dictionary<int, ActivityDO> allActivities)
+        {
+            allActivities.Add(root.Id, root);
 
+            foreach (var activityDo in root.Activities)
+            {
+                TraverseActivityTree(activityDo, allActivities);
+            }
+        }
 
     }
 }

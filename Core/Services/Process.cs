@@ -36,40 +36,39 @@ namespace Core.Services
         }
 
         /**********************************************************************************/
+
         /// <summary>
         /// New Process object
         /// </summary>
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ProcessDO Create(int processTemplateId, CrateDTO curEvent)
+        public ProcessDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent)
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-                if (curProcessTemplate == null)
-                    throw new ArgumentNullException("processTemplateId");
-                curProcessDO.ProcessTemplate = curProcessTemplate;
+            var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
+            if (curProcessTemplate == null)
+                throw new ArgumentNullException("processTemplateId");
+            curProcessDO.ProcessTemplate = curProcessTemplate;
 
-                curProcessDO.Name = curProcessTemplate.Name;
-                curProcessDO.ProcessState = ProcessState.Unstarted;
-                curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO> {curEvent});
+            curProcessDO.Name = curProcessTemplate.Name;
+            curProcessDO.ProcessState = ProcessState.Unstarted;
+            curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO> {curEvent});
 
-                curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
+            curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
 
-                uow.ProcessRepository.Add(curProcessDO);
-                uow.SaveChanges();
+            uow.ProcessRepository.Add(curProcessDO);
+            uow.SaveChanges();
 
-                //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
-                
-                var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
-                curProcessDO.ProcessNodes.Add(curProcessNode);
+            //then create process node
+            var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
 
-                uow.SaveChanges();
-            }
+            var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
+            curProcessDO.ProcessNodes.Add(curProcessNode);
+
+            uow.SaveChanges();
+
             return curProcessDO;
         }
 
@@ -77,21 +76,21 @@ namespace Core.Services
 
         public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
-            var curProcessDO = Create(curProcessTemplate.Id, curEvent);
-
-            if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
-            {
-                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-            }
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curProcessDO = Create(uow, curProcessTemplate.Id, curEvent);
+
+                if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
+                {
+                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+                }
+
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
                 try
                 {
-                    await Execute(curProcessDO);
+                    await Execute(uow, curProcessDO);
                     curProcessDO.ProcessState = ProcessState.Completed;
                 }
                 catch
@@ -108,7 +107,7 @@ namespace Core.Services
 
         /**********************************************************************************/
 
-        public async Task Execute(ProcessDO curProcessDO)
+        public async Task Execute(IUnitOfWork uow, ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
@@ -122,7 +121,7 @@ namespace Core.Services
                 {
                     await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
                     // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
-                } while (MoveToTheNextActivity(curProcessDO) != null);
+                } while (MoveToTheNextActivity(uow, curProcessDO) != null);
             }
             else
             {
@@ -132,28 +131,23 @@ namespace Core.Services
 
         /**********************************************************************************/
 
-        private ActivityDO MoveToTheNextActivity(ProcessDO process)
+        private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ProcessDO curProcessDo)
         {
-            // we relay on the fact that processtemplate has only one process node template. In future it will be fixed.
+            var next =  ObjectFactory.GetInstance<IActivity>().GetNextActivity(curProcessDo.CurrentActivity, null);
 
-            var count = process.ProcessTemplate.ProcessNodeTemplates.Count();
-
-            if (count == 0)
+            // very simple check for cycles
+            if (next != null && next == curProcessDo.CurrentActivity)
             {
-                throw new Exception("ProcessTemplate has no ProcessNodeTemplates");
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curProcessDo.CurrentActivity.Id));
             }
 
-            if (count > 1)
-            {
-                throw new Exception("ProcessTemplate has multiple ProcessNodeTemplates");
-            }
-
-            process.CurrentActivity = process.ProcessTemplate.ProcessNodeTemplates.First().Activities
-                                              .OrderBy(x => x.Ordering)
-                                              .FirstOrDefault(x => x.Ordering > process.CurrentActivity.Ordering);
-            return process.CurrentActivity;
+            curProcessDo.CurrentActivity = next;
+            
+            uow.SaveChanges();
+            
+            return next;
         }
-
+        
         /**********************************************************************************/
 
     }

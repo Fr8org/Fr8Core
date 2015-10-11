@@ -113,6 +113,56 @@ namespace Core.Services
 
         /**********************************************************************************/
 
+        public ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root)
+	    {
+	        return GetNextActivity(currentActivity, true, root);
+	    }
+
+	    /**********************************************************************************/
+
+        private ActivityDO GetNextActivity(ActivityDO currentActivity, bool depthFirst, ActivityDO root)
+        {
+            // Move to the first child if current activity has nested ones
+            if (depthFirst && currentActivity.Activities.Count != 0)
+            {
+                return currentActivity.Activities.OrderBy(x => x.Ordering).FirstOrDefault();
+            }
+
+            // Move to the next activity of the current activity's parent
+            if (currentActivity.ParentActivity == null)
+            {
+                // We are at the root of activity tree. Next activity can be only among children.
+                return null;
+            }
+
+            var prev = currentActivity;
+            var nextCandidate = currentActivity.ParentActivity.Activities
+                .OrderBy(x => x.Ordering)
+                .FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+            
+            /* No more activities in the current branch
+                *          a
+                *       b     c 
+                *     d   E  f  g  
+                * 
+                * We are at E. Get next activity as if current activity is b. (move to c)
+                */
+
+            if (nextCandidate == null)
+            {
+                // Someone doesn't want us to go higher this node
+                if (prev == root)
+                {
+                    return null;
+                }
+                nextCandidate = GetNextActivity(prev.ParentActivity, false, root); 
+            }
+
+            return nextCandidate;
+        }
+
+        /**********************************************************************************/
+
         public void Delete (IUnitOfWork uow, ActivityDO activity)
         {
             var activities = new List<ActivityDO>();
@@ -122,6 +172,8 @@ namespace Core.Services
             activities.ForEach(x =>
             {
                 // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
+                // But we have to support correct deletion of any activity types and any level of hierarchy
+                // May be other services should register some kind of callback to get notifed when activity is being deleted.
                 if (x is ProcessNodeTemplateDO)
                 {
                     foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.ProcessNodeTemplateId == x.Id).ToArray())

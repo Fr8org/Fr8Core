@@ -36,7 +36,10 @@ namespace DockyardTest.Services
         {
             //Get ProcessDO entity from static partial class FixtureData for already prepared data
             //The CurrentActivity value is already set to null and pass it immediately to service
-            await _process.Execute(FixtureData.TestProcessCurrentActivityNULL());
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await _process.Execute(uow, FixtureData.TestProcessCurrentActivityNULL());
+            }
         }
     }
 

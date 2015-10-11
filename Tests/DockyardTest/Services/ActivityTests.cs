@@ -33,9 +33,51 @@ namespace DockyardTest.Services
 
         }
 
+        [Test]
+        public void Activity_CheckGetNextActivities()
+        {
+            // If allis working right than iterative execution of GetNextActivity would return 
+            // the sequence of activities equals to the sequence of activity tree depth-first traversal with 
+            // children visited according to their ordering
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var root = FixtureData.TestActivityTree();
+                uow.ActivityRepository.Add(root);
+                uow.SaveChanges();
+
+                ActivityDO curActivity = root;
+                List<ActivityDO> seqToTest = new List<ActivityDO>();
+                List<ActivityDO> refSeq = new List<ActivityDO>();
+
+                TraverseActivities(root, refSeq);
+
+                do
+                {
+                    seqToTest.Add(curActivity);
+                    curActivity = _activity.GetNextActivity(curActivity, null);
+                } while (curActivity != null);
+
+                Assert.AreEqual(refSeq.Count, seqToTest.Count);
+
+                for (int i = 0; i < refSeq.Count; i ++)
+                {
+                    Assert.AreEqual(refSeq[i], seqToTest[i]);
+                }
+            }
+        }
+
+        private void TraverseActivities(ActivityDO root, List<ActivityDO> seq)
+        {
+            seq.Add(root);
+
+            foreach (var activityDo in root.Activities.OrderBy(x=>x.Ordering))
+            {
+                TraverseActivities(activityDo, seq);
+            }
+        }
 
         [Test]
-        
         public void Activity_CanGetUpstreamActivities()
         {
             //load tree

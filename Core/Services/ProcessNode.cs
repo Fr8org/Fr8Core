@@ -7,7 +7,6 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Repositories;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
@@ -16,13 +15,22 @@ namespace Core.Services
 {
     public class ProcessNode : IProcessNode
     {
+        /**********************************************************************************/
+        // Declarations
+        /**********************************************************************************/
+
         private readonly ICriteria _criteria;
-        //private IProcessNodeTemplateRepository _processNodeTemplateRepository;
+
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
+
         public ProcessNode()
         {
             _criteria = ObjectFactory.GetInstance<ICriteria>();
         }
 
+        /**********************************************************************************/
         /// <summary>
         /// Creates ProcessNode Object
         /// </summary>
@@ -45,6 +53,7 @@ namespace Core.Services
             return processNode;
         }
 
+        /**********************************************************************************/
         /// <summary>
         /// Replaces the part of the TransitionKey's sourcePNode by the value of the targetPNode
         /// </summary>
@@ -64,37 +73,40 @@ namespace Core.Services
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
+        /**********************************************************************************/
+
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-           
-//           string nextTransitionKey;
-//
-//            var result = _criteria.Evaluate(curEventData, curProcessNode);
-//            if (result)
-//            {
-//               
-//                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//                {
-//                    var curProcessNodeTemplate =
-//                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
-//
-//                    foreach (var actionList in curProcessNodeTemplate.Activities.OfType<ActionDO>())
-//                    {
-//                        _curActionList.Process(actionList, curProcessNode.ParentProcess, uow);
-//                    }
-//                }
-//
-//                nextTransitionKey = "true";
-//            }
-//            else
-//            {
-//                nextTransitionKey = "false";
-//            }
-//            return nextTransitionKey;*/
-//            
-            return "true";
+           string nextTransitionKey;
+
+            var result = _criteria.Evaluate(curEventData, curProcessNode);
+            if (result)
+            {
+                var activityService = ObjectFactory.GetInstance<IActivity>();
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+                    ActivityDO currentAction = curProcessNodeTemplate;
+
+                    do
+                    {
+                        activityService.Process(currentAction.Id, curProcessNode.ParentProcess);
+                        currentAction = activityService.GetNextActivity(currentAction, curProcessNodeTemplate);
+                    } while (currentAction != null);
+                }
+
+                nextTransitionKey = "true";
+            }
+            else
+            {
+                nextTransitionKey = "false";
+            }
+
+            return nextTransitionKey;
         }
 
+        /**********************************************************************************/
         /// <summary>
         /// There will and should only be one key with false. if there's more than one, throw an exception.	
         /// </summary>
@@ -104,5 +116,7 @@ namespace Core.Services
             var count = keys.Count(key => key.TransitionKey.Equals("false", StringComparison.OrdinalIgnoreCase));
             return count == 1;
         }
+
+        /**********************************************************************************/
     }
 }

@@ -32,8 +32,7 @@ namespace DockyardTest.Services
 		}
 
 		[Test]
-        [Ignore("DO-1214")]
-		public void ProcessNode_CanExecute()
+        public void ProcessNode_CanExecute()
 		{
             //create a ProcessNode
             //add a mock for Criteria service that, when called with Evaluate method, returns true
@@ -60,7 +59,6 @@ namespace DockyardTest.Services
 		}
 
         [Test]
-        [Ignore("DO-1214")]
         public void Execute_CriteriaEvaluatesToFalse_ReturnFalse()
         {
             //setup mock Criteria
