@@ -14,6 +14,41 @@ namespace pluginDockyardCore.Actions
 {
     public class AddPayloadManually_v1 : BasePluginAction
     {
+        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        {
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
+            var controlsCrate = curActionDTO.CrateStorage.CrateDTO
+                .SingleOrDefault(x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            if (controlsCrate == null)
+            {
+                throw new ApplicationException("Could not find ControlsConfiguration crate.");
+            }
+
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+
+            var fieldListControl = controlsMS.Controls
+                .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
+
+            if (fieldListControl == null)
+            {
+                throw new ApplicationException("Could not find FieldListControl.");
+            }
+
+            var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+
+            var cratePayload = _crate.Create(
+                "Manual Payload Data",
+                JsonConvert.SerializeObject(userDefinedPayload),
+                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
+                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
+                );
+
+            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
+
+            return processPayload;
+        }
+
         public async Task<ActionDTO> Configure(ActionDTO curActionDataPackageDTO)
         {
             return await ProcessConfigurationRequest(curActionDataPackageDTO, ConfigurationEvaluator);
