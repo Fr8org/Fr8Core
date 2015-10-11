@@ -12,7 +12,7 @@ namespace DockyardTest.Entities
     public class ActionTests : BaseTest
     {
         [Test]
-        [Category("Action")]
+        
         public void Action_Add_CanCreateAction()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
