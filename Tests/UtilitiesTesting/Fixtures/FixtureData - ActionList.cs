@@ -260,7 +260,7 @@ namespace UtilitiesTesting.Fixtures
                   Id = 1,
                   Version = "1",
                   Plugin = FixtureData.PluginFive(),
-                  Name = "Monitor_DocuSign"
+                  Name = "Monitor_DocuSign_Event"
               };
             ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1", ParentActivityId = 1 };
               ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
@@ -279,7 +279,7 @@ namespace UtilitiesTesting.Fixtures
                   Id = 1,
                   Version = "1",
                   Plugin = FixtureData.PluginFive(),
-                  Name = "Monitor_DocuSign"
+                  Name = "Monitor_DocuSign_Event"
               };
               ActionListDO al_1 = new ActionListDO() { Id = 1, Ordering = 1, ActionListType = ActionListType.Immediate, Name = "al_1", ParentActivityId = 12 };
               ActionDO a_23 = new ActionDO() { Id = 23, ActivityTemplate = activityTempate, Name = "a_23", CrateStorage = "" };
