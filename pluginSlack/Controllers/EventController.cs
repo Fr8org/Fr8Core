@@ -1,16 +1,24 @@
 ﻿using System.Web.Http;
-using Core.Interfaces;
 using StructureMap;
+using pluginAzureSqlServer.Interfaces;
+using pluginAzureSqlServer.Services;
 
 namespace pluginSlack.Controllers
 {
     public class EventController : ApiController
     {
+        private IEvent _event;
+
+        public EventController()
+        {
+            _event = new Event();
+        }
+
         [HttpPost]
         [Route("events")]
-        public void ProcessIncomingNotification()
+        public async void ProcessIncomingNotification()
         {
-            //implement the processing logic for slack plugin external events
+            _event.Process(await Request.Content.ReadAsStringAsync());
         }
     }
 }

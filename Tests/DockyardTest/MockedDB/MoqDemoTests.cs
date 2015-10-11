@@ -12,6 +12,7 @@ using UtilitiesTesting;
 namespace DockyardTest.MockedDB
 {
 	[ TestFixture ]
+    [Category("MockedDB")]
 	public class MoqDemoTests: BaseTest
 	{
 		[ Test ]

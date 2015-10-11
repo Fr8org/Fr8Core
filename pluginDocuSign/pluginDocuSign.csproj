@@ -86,8 +86,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -175,12 +175,13 @@
   <ItemGroup>
     <Compile Include="Actions\Extract_From_DocuSign_Envelope_v1.cs" />
     <Compile Include="Actions\Send_DocuSign_Envelope_v1.cs" />
-    <Compile Include="Actions\Wait_For_DocuSign_Event_v1.cs" />
+    <Compile Include="Actions\Monitor_DocuSign_v1.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\PluginController.cs" />
     <Compile Include="Controllers\ActionController.cs" />
     <Compile Include="DataTransferObjects\DocuSignAuthDTO.cs" />
+    <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
     <Compile Include="Infrastructure\PluginDataAutoMapperBootStrapper.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientsDTO.cs" />

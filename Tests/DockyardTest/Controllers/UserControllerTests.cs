@@ -19,6 +19,7 @@ using System.Web.Http.Results;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
+    [Category("UserController")]
     public class UserControllerTests : ApiControllerTestBase
     {
         private DockyardAccountDO _testAccount1;

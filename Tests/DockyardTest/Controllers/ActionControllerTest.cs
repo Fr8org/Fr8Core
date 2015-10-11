@@ -19,6 +19,7 @@ using AutoMapper;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
+    [Category("ActionController")]
     public class ActionControllerTest : BaseTest
     {
 
@@ -38,7 +39,6 @@ namespace DockyardTest.Controllers
 
 
         [Test,Ignore]
-        [Category("ActionController.Save")]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -62,7 +62,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test,Ignore]
-        [Category("ActionController.Save")]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -91,7 +90,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Save")]
+
         public void ActionController_Save_WithActionExists_ExistingActionShouldBeUpdated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -120,7 +119,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        [Category("ActionController.GetConfigurationSettings")]
+
         public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -134,7 +133,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore]
-        [Category("ActionController.GetConfigurationSettings")]
+
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionController_NULL_ActionTemplate()
         {
@@ -144,7 +143,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Configure")]
+
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
@@ -183,7 +182,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Configure")]
+
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
@@ -218,7 +217,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Configure")]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
@@ -259,7 +257,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController")]
+
         public void ActionController_Delete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -275,7 +273,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController")]
+
         public void ActionController_Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -362,7 +360,7 @@ namespace DockyardTest.Controllers
      
 
         [Test, Ignore]
-        [Category("ActionController")]
+
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionController();
@@ -377,7 +375,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        [Category("ActionController")]
+
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
@@ -393,7 +391,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        [Category("ActionController")]
+
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {

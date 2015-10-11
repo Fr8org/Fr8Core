@@ -12,10 +12,10 @@ using Web.Controllers;
 namespace DockyardTest.Entities
 {
     [TestFixture]
+    [Category("ProcessTemplate")]
     public class ProcessTemplateTests : BaseTest
     {
         [Test]
-        [Category("ProcessTemplate")]
         public void ProcessTemplate_ShouldBeAssignedStartingProcessNodeTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -38,7 +38,6 @@ namespace DockyardTest.Entities
         }
 
         [Test]
-        [Category("ProcessTemplate")]
         public void GetStandardEventSubscribers_ReturnsProcessTemplates()
         {
             FixtureData.TestProcessTemplateWithSubscribeEvent();
@@ -53,7 +52,6 @@ namespace DockyardTest.Entities
         }
 
         [Test]
-        [Category("ProcessTemplate")]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_UserIDEmpty_ThrowsException()
         {
@@ -63,7 +61,6 @@ namespace DockyardTest.Entities
         }
 
         [Test]
-        [Category("ProcessTemplate")]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_EventReportMSNULL_ThrowsException()
         {

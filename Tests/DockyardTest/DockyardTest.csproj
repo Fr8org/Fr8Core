@@ -100,9 +100,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.core, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnitTestAdapter.2.0.0\lib\nunit.core.dll</HintPath>
@@ -229,6 +229,7 @@
     <Compile Include="Entities\EnvelopeTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Infrastructure\DatabaseTests.cs" />
+    <Compile Include="Infrastructure\MultiTenantTests.cs" />
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
@@ -256,10 +257,7 @@
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\ProcessExecuteTests.cs" />
-    <Compile Include="Services\ProcessCreateTests.cs" />
-    <Compile Include="Services\ProcessGetInitialActivityTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
-    <Compile Include="Utilities\DocusignConnectParserTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
