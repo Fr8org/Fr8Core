@@ -557,6 +557,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 Ordering = 1,
                  CrateStorage=  crateStorage,
+                 
                 Activities = new List<ActivityDO>
                 {
                     new ActionDO
@@ -977,6 +978,95 @@ namespace UtilitiesTesting.Fixtures
             };
             return curAction;
         }
+        public static ActionDO TestActionTreeWithActionTemplates()
+        {
+            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+            var curActionTemplate = FixtureData.ActionTemplate();
 
+            ActionDO curAction = new ActionDO()
+            {
+                Id = 1,
+                Ordering = 1,
+                CrateStorage = crateStorage,
+                ActivityTemplate = curActionTemplate,
+                Activities = new List<ActivityDO>
+                {
+                    new ActionDO
+                    {
+                        Id = 23,
+                        Ordering = 1,
+                        ParentActivityId = 1,
+                        CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                    },
+                    new ActionDO
+                    {
+                        Id = 43,
+                        ParentActivityId = 1,
+                        Ordering = 2,
+                        CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 44,
+                                Ordering = 1,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            },
+                            new ActionDO
+                            {
+                                Id = 46,
+                                Ordering = 2,
+                                ParentActivityId = 43,
+                               CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            }
+                        }
+                    },
+                    new ActivityDO
+                    {
+                        Id = 52,
+                        Ordering = 3,
+                        ParentActivityId = 1,
+
+
+                    },
+                    new ActionDO
+                    {
+                        Id = 59,
+                        Ordering = 4,
+                        ParentActivityId = 1,
+CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 60,
+                                ParentActivityId = 59,
+                                Ordering = 1,
+CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            },
+                            new ActionDO
+                            {
+                                Id = 62,
+                                ParentActivityId = 59,
+                                Ordering = 3,
+CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            }
+                        }
+                    }
+                }
+            };
+            return curAction;
+        }
     }
 }

@@ -5,10 +5,10 @@ using NUnit.Framework;
 namespace UtilitiesTesting.Validations
 {
     [TestFixture]
+    [Category("Validations")]
     public class ValidationsTest : BaseTest
     {
         [Test]
-        [Category("PluginUtilities.Infrastructure.Validations.ValidateDTO")]
         public void Validations_ValidateDTOWithValidString()
         {
             const string availableActions = "{'type_name':'write to azure sql server','version':4.3}";
@@ -18,7 +18,6 @@ namespace UtilitiesTesting.Validations
         }
 
         [Test]
-        [Category("PluginUtilities.Infrastructure.Validations.ValidateDTO")]
         [ExpectedException(typeof(ArgumentException))]
         public void Validations_ValidateDTOWithInvalidString()
         {

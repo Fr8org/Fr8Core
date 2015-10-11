@@ -10,7 +10,6 @@ var dockyard;
             //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
             var RadioButtonGroup = (function () {
                 function RadioButtonGroup() {
-                    var _this = this;
                     this.template = '<div ng-repeat="radio in field.radios"><radio-button-option group-name="{{field.groupName}}" change-selection="changeSelection(radio)" currentAction="currentAction" field="radio"></radio-button-option></div>';
                     this.scope = {
                         currentAction: '=',
@@ -22,23 +21,21 @@ var dockyard;
                         //Link function goes here
                     };
                     RadioButtonGroup.prototype.controller = function ($scope, $element, $attrs) {
-                        _this._$element = $element;
-                        _this._$scope = $scope;
-                        $scope.changeSelection = angular.bind(_this, _this.changeSelection);
+                        //<(radio: model.RadioButtonOption) => void>
+                        $scope.changeSelection = function (radio) {
+                            var radios = $scope.field.radios;
+                            for (var i = 0; i < radios.length; i++) {
+                                if (radios[i] === radio) {
+                                    radios[i].selected = true;
+                                }
+                                else {
+                                    radios[i].selected = false;
+                                }
+                            }
+                            $scope.field.value = radio.value;
+                        };
                     };
                 }
-                RadioButtonGroup.prototype.changeSelection = function (radio) {
-                    var radios = this._$scope.field.radios;
-                    for (var i = 0; i < radios.length; i++) {
-                        if (radios[i] === radio) {
-                            radios[i].selected = true;
-                        }
-                        else {
-                            radios[i].selected = false;
-                        }
-                    }
-                    this._$scope.field.value = radio.value;
-                };
                 //The factory function returns Directive object as per Angular requirements
                 RadioButtonGroup.Factory = function () {
                     var directive = function () {

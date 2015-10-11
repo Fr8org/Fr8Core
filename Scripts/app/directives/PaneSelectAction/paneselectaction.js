@@ -19,6 +19,8 @@ var dockyard;
                 MessageType[MessageType["PaneSelectAction_UpdateAction"] = 3] = "PaneSelectAction_UpdateAction";
                 MessageType[MessageType["PaneSelectAction_ActionTypeSelected"] = 4] = "PaneSelectAction_ActionTypeSelected";
                 MessageType[MessageType["PaneSelectAction_InitiateSaveAction"] = 5] = "PaneSelectAction_InitiateSaveAction";
+                MessageType[MessageType["PaneSelectAction_ActionAdd"] = 6] = "PaneSelectAction_ActionAdd";
+                MessageType[MessageType["PaneSelectAction_ActivityTypeSelected"] = 7] = "PaneSelectAction_ActivityTypeSelected";
             })(paneSelectAction.MessageType || (paneSelectAction.MessageType = {}));
             var MessageType = paneSelectAction.MessageType;
             var ActionTypeSelectedEventArgs = (function () {
@@ -29,6 +31,14 @@ var dockyard;
                 return ActionTypeSelectedEventArgs;
             })();
             paneSelectAction.ActionTypeSelectedEventArgs = ActionTypeSelectedEventArgs;
+            var ActivityTypeSelectedEventArgs = (function () {
+                function ActivityTypeSelectedEventArgs(activityTemplate) {
+                    // Clone Action to prevent any issues due to possible mutation of source object
+                    this.activityTemplate = angular.extend({}, activityTemplate);
+                }
+                return ActivityTypeSelectedEventArgs;
+            })();
+            paneSelectAction.ActivityTypeSelectedEventArgs = ActivityTypeSelectedEventArgs;
             var ActionUpdatedEventArgs = (function (_super) {
                 __extends(ActionUpdatedEventArgs, _super);
                 function ActionUpdatedEventArgs(criteriaId, actionId, isTempId, actionName) {
@@ -66,6 +76,73 @@ var dockyard;
                 return ActionRemovedEventArgs;
             })();
             paneSelectAction.ActionRemovedEventArgs = ActionRemovedEventArgs;
+            var ActionAddEventArgs = (function () {
+                function ActionAddEventArgs() {
+                }
+                return ActionAddEventArgs;
+            })();
+            paneSelectAction.ActionAddEventArgs = ActionAddEventArgs;
+            //More detail on creating directives in TypeScript: 
+            //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
+            var PaneSelectAction = (function () {
+                function PaneSelectAction($modal, ActivityTemplateService) {
+                    var _this = this;
+                    this.$modal = $modal;
+                    this.ActivityTemplateService = ActivityTemplateService;
+                    this.scope = {
+                        field: '='
+                    };
+                    this.restrict = 'E';
+                    PaneSelectAction.prototype.link = function (scope, element, attrs) {
+                        //Link function goes here
+                    };
+                    PaneSelectAction.prototype.controller = function ($scope, $element, $attrs) {
+                        _this._$element = $element;
+                        _this._$scope = $scope;
+                        $scope.$on(MessageType[MessageType.PaneSelectAction_ActionAdd], angular.bind(_this, _this.onActionAdd));
+                    };
+                }
+                PaneSelectAction.prototype.onActionAdd = function () {
+                    var _this = this;
+                    //we should list available actions to user and let him select one
+                    this.ActivityTemplateService.getAvailableActivities().$promise.then(function (categoryList) {
+                        //we should open a modal to let user select one of our activities
+                        _this.$modal.open({
+                            animation: true,
+                            templateUrl: 'AngularTemplate/PaneSelectActionModal',
+                            //this is a simple modal controller, so i didn't have an urge to seperate this
+                            //but resolve is used to make future seperation easier
+                            controller: ['$modalInstance', '$scope', 'activityCategories', function ($modalInstance, $modalScope, activityCategories) {
+                                    $modalScope.activityCategories = activityCategories;
+                                    $modalScope.activityTypeSelected = function (activityType) {
+                                        $modalInstance.close(activityType);
+                                    };
+                                    $modalScope.cancel = function () {
+                                        $modalInstance.dismiss();
+                                    };
+                                }],
+                            resolve: {
+                                'activityCategories': function () { return categoryList; }
+                            },
+                            windowClass: 'select-action-modal'
+                        }).result.then(function (selectedActivity) {
+                            //now we should emit an activity type selected event
+                            var eventArgs = new ActivityTypeSelectedEventArgs(selectedActivity);
+                            _this._$scope.$emit(MessageType[MessageType.PaneSelectAction_ActivityTypeSelected], eventArgs);
+                        });
+                    });
+                };
+                //The factory function returns Directive object as per Angular requirements
+                PaneSelectAction.Factory = function () {
+                    var directive = function ($modal, ActivityTemplateService) {
+                        return new PaneSelectAction($modal, ActivityTemplateService);
+                    };
+                    directive['$inject'] = ['$modal', 'ActivityTemplateService'];
+                    return directive;
+                };
+                return PaneSelectAction;
+            })();
+            app.directive('paneSelectAction', PaneSelectAction.Factory());
         })(paneSelectAction = directives.paneSelectAction || (directives.paneSelectAction = {}));
     })(directives = dockyard.directives || (dockyard.directives = {}));
 })(dockyard || (dockyard = {}));

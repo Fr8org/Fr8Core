@@ -28,6 +28,7 @@ using pluginDocuSign.Infrastructure;
 namespace DockyardTest.DocuSign
 {
 	[TestFixture]
+    [Category("DocuSignTemplate")]
 	public class DocuSignTemplateTests : BaseTest
 	{
 		private readonly string TEMPLATE_WITH_ROLES_ID = "9a318240-3bee-475c-9721-370d1c22cec4"; 

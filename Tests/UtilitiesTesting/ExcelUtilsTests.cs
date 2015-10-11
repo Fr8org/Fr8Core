@@ -16,7 +16,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace UtilitiesTesting
 {
-    [TestFixture]
+    [TestFixture,Ignore]
     [Category("ExcelUtils")]
     public class ExcelUtilsTests : BaseTest
     {

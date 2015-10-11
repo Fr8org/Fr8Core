@@ -2,11 +2,11 @@
     <h3 class="modal-title">Select an Action</h3>
 </div>
 <div class="modal-body">
-    <div class="select-action-category" ng-repeat="actionCategory in actionCategories">
-        <h4>{{actionCategory[0].category}}</h4>
+    <div class="select-action-category" ng-repeat="category in activityCategories">
+        <h4>{{category.name}}</h4>
         <div class="select-action-list">
-            <div class="select-action-row" ng-repeat="actionType in actionCategory" ng-click="actionTypeSelected(actionType)">
-                {{actionType.name | actionNameFormatter}}
+            <div class="select-action-row" ng-repeat="activity in category.activities" ng-click="activityTypeSelected(activity)">
+                {{activity.name | actionNameFormatter}}
             </div>
         </div>
     </div>

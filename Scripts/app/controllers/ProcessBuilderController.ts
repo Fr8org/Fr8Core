@@ -73,7 +73,7 @@ module dockyard.controllers {
 
             this.$scope.addAction = () => {
                 this.addAction();
-        }
+            }
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -96,6 +96,10 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, eventArgs: pca.InternalAuthenticationArgs) => this.PaneConfigureAction_ExternalAuthentication(eventArgs));
 
             //Process Select Action Pane events
+            this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActivityTypeSelected],
+                (event: ng.IAngularEvent, eventArgs: psa.ActivityTypeSelectedEventArgs) => this.PaneSelectAction_ActivityTypeSelected(eventArgs));
+
+            //TODO: is this necessary??
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_ActionTypeSelected],
                 (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_ActionTypeSelected(eventArgs));
             // TODO: do we need this any more?
@@ -159,31 +163,36 @@ module dockyard.controllers {
 
         private addAction() {
             console.log('Add action');
+            var self = this;
             var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
             promise.then((result: model.ProcessBuilderState) => {
-                this.$modal.open({
-                    animation: true,
-                    templateUrl: 'AngularTemplate/PaneSelectAction',
-                    controller: 'SelectActionController',
-                    windowClass: 'select-action-modal'
-                }).result.then((activityTemplate: model.ActivityTemplate) => {
-                // Generate next Id.
-                    var id = this.LocalIdentityGenerator.getNextId();                
-
-                // Create new action object.
-                    var action = new model.ActionDTO(null, id, true, this.$scope.immediateActionListVM.id);
-                    action.name = activityTemplate.name;
-
-                // Add action to Workflow Designer.
-                    this.$scope.current.action = action.toActionVM();
-                    this.$scope.current.action.activityTemplateId = activityTemplate.id;
-                    this.$scope.actions.push(action);
-
-                    this.selectAction(action);
-                });
+                //we should just raise an event for this
+                self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd],new psa.ActionAddEventArgs());
             });
         }
 
+        private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
+
+            var activityTemplate = eventArgs.activityTemplate;
+            // Generate next Id.
+            var id = this.LocalIdentityGenerator.getNextId();                
+
+            // Create new action object.
+            var action = new model.ActionDTO(null, id, true, this.$scope.immediateActionListVM.id);
+            action.name = activityTemplate.name;
+
+            // Add action to Workflow Designer.
+            this.$scope.current.action = action.toActionVM();
+            this.$scope.current.action.activityTemplateId = activityTemplate.id;
+            this.$scope.actions.push(action);
+
+            this.selectAction(action);
+        }
+
+        /*
+            Handles message 'WorkflowDesignerPane_ActionSelected'. 
+            This message is sent when user is selecting an existing action or after addng a new action. 
+        */
         private selectAction(action: model.ActionDTO) {
             console.log("Action selected: " + action.id);
             var originalId,
@@ -279,7 +288,7 @@ module dockyard.controllers {
        */
         private PaneSelectAction_InitiateSaveAction(eventArgs: psa.ActionTypeSelectedEventArgs) {
             var promise = this.ProcessBuilderService.saveCurrent(this.$scope.current);
-        }            
+        }
 
         /*
             Handles message 'PaneConfigureAction_ActionRemoved'
