@@ -12,7 +12,7 @@ using pluginTests.Fixtures;
 namespace pluginTests.pluginDocuSign.Actions
 {
     [TestFixture]
-    [Category("Monitor_DocuSignTests")]
+    [Category("pluginDocuSign")]
     public class Monitor_DocuSignTests : BaseTest
     {
         Monitor_DocuSign_v1 _monitor_DocuSign;
