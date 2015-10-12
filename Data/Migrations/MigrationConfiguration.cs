@@ -462,17 +462,12 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-            AddPlugin_DocuSign(uow);
-            AddPlugin_Salesforce(uow);
-        }
-
-        private static void AddPlugin_DocuSign(IUnitOfWork uow)
-        {
-     // Create test DockYard account for plugin subscription.
-           // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+            // Create test DockYard account for plugin subscription.
+            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
             AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
             uow.SaveChanges();
         }
 
@@ -489,38 +484,15 @@ namespace Data.Migrations
                 {
                     Name = pluginName,
                     PluginStatus = PluginStatus.Active,
-                    Endpoint = "localhost:53234",
-                    Version = "1",
-                    RequiresAuthentication = true
-                };
-
-                uow.PluginRepository.Add(plugin);
-
-            }
-            uow.SaveChanges();
-        }
-
-        private static void AddPlugin_Salesforce(IUnitOfWork uow)
-        {
-            var pluginSalesforce = uow.PluginRepository.GetQuery()
-              .Any(x => x.Name == "pluginSalesforce");
-
-            // Add new plugin and subscription to repository, if plugin doesn't exist.
-            if (!pluginSalesforce)
-            {
-                // Create plugin instance.
-                var plugin = new PluginDO()
-                {
-                    Name = "pluginSalesforce",
-                    PluginStatus = PluginStatus.Active,
-                    Endpoint = "localhost:51234",
-                    Version = "1"
+                    Endpoint = endPoint,
+                    Version = version,
                 };
 
                 uow.PluginRepository.Add(pluginDO);
-     
+
             }
         }
+        
 
         private void AddActionTemplates(IUnitOfWork uow)
         {
