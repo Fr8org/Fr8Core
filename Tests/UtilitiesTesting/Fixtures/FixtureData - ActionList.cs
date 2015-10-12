@@ -376,5 +376,12 @@ namespace UtilitiesTesting.Fixtures
               actionLists.Add(al_1);
              return new List<ActivityDO>() { a_23 };
           }
+
+        // Commented out by Vladimir. There is no ActionLists now. Empty action list has no sense after DO-1214
+//        public static ActionListDO TestActionListProcess()
+//          {
+//           ActionListDO al = new ActionListDO() { Id = 52, Ordering = 3, ActionListType = ActionListType.Immediate, Name = "al" };
+//           return al;
+//          }
     }
 }

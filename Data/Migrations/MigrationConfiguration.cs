@@ -378,6 +378,7 @@ namespace Data.Migrations
             CreateDockyardAccount("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
             CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", unitOfWork);
             CreateDockyardAccount("fileupload@dockyard.company", "test123", unitOfWork);
+            CreateDockyardAccount("sacre", "printf", unitOfWork);
         }
 
         /// <summary>

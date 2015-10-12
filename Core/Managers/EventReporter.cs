@@ -732,26 +732,25 @@ namespace Core.Managers
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?
-        private void LogEventActionDispatched(ActionDTO curAction)
+        private void LogEventActionDispatched(ActionDO curAction, int processId)
         {
-//            ProcessDO processInExecution;
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                int? processId = uow.ActionListRepository.GetByKey(curAction.ActionListId).ProcessID;
-//                processInExecution = uow.ProcessRepository.GetByKey(processId);
-//            }
-//
-//            var fact = new FactDO
-//            {
-//                CustomerId = processInExecution.DockyardAccountId,
-//                Data = processInExecution.Id.ToStr(),
-//                ObjectId = curAction.Id.ToStr(),
-//                PrimaryCategory = "Process Execution",
-//                SecondaryCategory = "Action",
-//                Activity = "Dispatched"
-//            };
-//
-//            SaveAndLogFact(fact);
+            ProcessDO processInExecution;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                processInExecution = uow.ProcessRepository.GetByKey(processId);
+            }
+
+            var fact = new FactDO
+            {
+                CustomerId = processInExecution.DockyardAccountId,
+                Data = processInExecution.Id.ToStr(),
+                ObjectId = curAction.Id.ToStr(),
+                PrimaryCategory = "Process Execution",
+                SecondaryCategory = "Action",
+                Activity = "Dispatched"
+            };
+
+            SaveAndLogFact(fact);
             }
 
         private void LogPluginEvent(LoggingData eventData)
