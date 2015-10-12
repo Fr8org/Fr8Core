@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginExcel", "pluginExcel\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\UtilitiesTesting\UtilitiesTesting.csproj", "{6B855C3F-07A9-4787-9FDE-29FA567C43E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSalesforceTest", "pluginTests\pluginSalesforceTest\pluginSalesforceTest.csproj", "{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		alexlocal|Any CPU = alexlocal|Any CPU
@@ -217,6 +219,18 @@ Global
 		{6B855C3F-07A9-4787-9FDE-29FA567C43E2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B855C3F-07A9-4787-9FDE-29FA567C43E2}.Release|x86.ActiveCfg = Release|Any CPU
 		{6B855C3F-07A9-4787-9FDE-29FA567C43E2}.Release|x86.Build.0 = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.alexlocal|x86.Build.0 = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Debug|x86.Build.0 = Debug|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|x86.ActiveCfg = Release|Any CPU
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -233,5 +247,6 @@ Global
 		{85CB0215-96DF-4C38-A022-1BE6C952813B} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{57373D06-6B82-4EC6-AF62-ED25FE170C61} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{6B855C3F-07A9-4787-9FDE-29FA567C43E2} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 	EndGlobalSection
 EndGlobal
