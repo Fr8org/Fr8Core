@@ -1,6 +1,7 @@
 ﻿using DocuSign.Integrations.Client;
 using Newtonsoft.Json.Linq;
 using System.Configuration;
+using fr8.Microsoft.Azure;
 
 namespace pluginDocuSign.Infrastructure
 {
@@ -13,8 +14,8 @@ namespace pluginDocuSign.Infrastructure
             _docuSignConnect = new DocuSignConnect();
             _docuSignPackager = new DocuSignPackager
             {
-                CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
-                CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
+                CurrentEmail = CloudConfigurationManager.GetSetting("DocuSignLoginEmail"),
+                CurrentApiPassword = CloudConfigurationManager.GetSetting("DocuSignLoginPassword")
             };
             _docuSignConnect.Login = _docuSignPackager.Login();
         }

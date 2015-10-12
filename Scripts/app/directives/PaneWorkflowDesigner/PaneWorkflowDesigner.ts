@@ -15,14 +15,14 @@ module dockyard.directives.paneWorkflowDesigner {
             
             var actionObj = <any>eventArgs.action;
 
-            scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
+            scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, 1);
 
             if (eventArgs.doNotRaiseSelectedEvent) return;
 
             scope.$emit(
                 MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                new ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, eventArgs.actionListType, 0)
-                );
+                new ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, 0)
+            );
         };
 
 
@@ -64,7 +64,7 @@ module dockyard.directives.paneWorkflowDesigner {
                     scope.$apply(function () {
                         scope.$emit(
                             MessageType[MessageType.PaneWorkflowDesigner_ActionAdding],
-                            new ActionAddingEventArgs(criteriaId, <model.ActionListType>actionType)
+                            new ActionAddingEventArgs(criteriaId)
                         );
                     });
                 });
@@ -73,7 +73,7 @@ module dockyard.directives.paneWorkflowDesigner {
                     scope.$apply(function () {
                         scope.$emit(
                             MessageType[MessageType.PaneWorkflowDesigner_ActionSelected],
-                            new ActionSelectedEventArgs(criteriaId, actionId, <model.ActionListType>actionType, activityTemplateId)
+                            new ActionSelectedEventArgs(criteriaId, actionId, activityTemplateId)
                         );
                     });
                 });

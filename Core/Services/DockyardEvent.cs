@@ -46,9 +46,9 @@ namespace Core.Services
         //    }
         //}
 
-        public void ProcessInboundEvents(CrateDTO curCrateStandardEventReport)
+        public async Task ProcessInboundEvents(CrateDTO curCrateStandardEventReport)
         {
-            EventReportMS eventReportMS = _crate.GetContents<EventReportMS>(curCrateStandardEventReport);
+            EventReportCM eventReportMS = _crate.GetContents<EventReportCM>(curCrateStandardEventReport);
 
 
             if (eventReportMS.EventPayload == null)
@@ -77,31 +77,33 @@ namespace Core.Services
 
 
 
-                LaunchProcesses(subscribingProcessTemplates, curCrateStandardEventReport);
+                await LaunchProcesses(subscribingProcessTemplates, curCrateStandardEventReport);
             
             }
         }
 
-        public void LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport)
+        public Task LaunchProcesses(List<ProcessTemplateDO> curProcessTemplates, CrateDTO curEventReport)
         {
+            var processes = new List<Task>();
+
             foreach (var curProcessTemplate in curProcessTemplates)
             {
                 //4. When there's a match, it means that it's time to launch a new Process based on this ProcessTemplate, 
                 //so make the existing call to ProcessTemplate#LaunchProcess.
-                LaunchProcess(curProcessTemplate, curEventReport);
+                processes.Add(LaunchProcess(curProcessTemplate, curEventReport));
             }
+            
+            return Task.WhenAll(processes);
         }
 
-        public void LaunchProcess(ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
+        public async Task LaunchProcess(ProcessTemplateDO curProcessTemplate, CrateDTO curEventData)
         {
             if (curProcessTemplate == null)
                 throw new EntityNotFoundException(curProcessTemplate);
 
             if (curProcessTemplate.ProcessTemplateState != ProcessTemplateState.Inactive)
             {
-                _process.Launch(curProcessTemplate, curEventData);
-
-
+                await _process.Launch(curProcessTemplate, curEventData);
             }
         }
     }

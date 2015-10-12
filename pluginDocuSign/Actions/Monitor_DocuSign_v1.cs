@@ -139,7 +139,7 @@ namespace pluginDocuSign.Actions
                 return null;
             }
 
-            var eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(eventReportCrate.Contents);
+            var eventReportMS = JsonConvert.DeserializeObject<EventReportCM>(eventReportCrate.Contents);
             var crate = eventReportMS.EventPayload.SingleOrDefault();
             if (crate == null)
             {
@@ -179,7 +179,7 @@ namespace pluginDocuSign.Actions
                 return await Task.FromResult<ActionDTO>(curActionDTO);
             }
 
-            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(configurationFieldsCrate.Contents);
+            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(configurationFieldsCrate.Contents);
             if (configurationFields == null || !configurationFields.Controls.Any(c => c.Name == "Selected_DocuSign_Template"))
             {
                 return await Task.FromResult<ActionDTO>(curActionDTO);
@@ -203,7 +203,7 @@ namespace pluginDocuSign.Actions
         }
 
         private CrateDTO CreateEventSubscriptionCrate(
-            StandardConfigurationControlsMS configurationFields)
+            StandardConfigurationControlsCM configurationFields)
         {
             var subscriptions = new List<string>();
 

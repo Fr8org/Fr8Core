@@ -153,7 +153,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestAction8()
+        public static ActionDO TestAction8(ActivityDO parentActivity)
         {
             var actionTemplate = ActionTemplate();
             return new ActionDO
@@ -163,7 +163,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
-                ParentActivity = FixtureData.TestActionList6(),
+                ParentActivity = parentActivity,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -278,23 +278,14 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "C",
-                ParentTemplateId = processTemplateDo.Id,
-                ProcessTemplate = processTemplateDo
+                ParentActivityId = processTemplateDo.Id,
+                ParentActivity = processTemplateDo
             };
-
-            var actionListDo = new ActionListDO()
-            {
-                Process = processDo,
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplateID = processNodeTemplateDo.Id,
-                ProcessNodeTemplate = processNodeTemplateDo
-            };
+            
 
             var actionDo = new ActionDO()
             {
-                ParentActivity = actionListDo,
+                ParentActivity = processNodeTemplateDo,
                 ParentActivityId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
@@ -372,26 +363,17 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "C",
-                ParentTemplateId = processTemplateDo.Id,
-                ProcessTemplate = processTemplateDo
+                ParentActivityId = processTemplateDo.Id,
+                ParentActivity = processTemplateDo
             };
 
-            var actionListDo = new ActionListDO()
-            {
-                Process = processDo,
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplateID = processNodeTemplateDo.Id,
-                ProcessNodeTemplate = processNodeTemplateDo
-            };
 
             return new ActionDO
             {
                 Id = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentActivity = actionListDo,
+                ParentActivity = processTemplateDo,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -437,25 +419,23 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplate = curProcessTemplateDO
             };
 
-            var curActionListDO = new ActionListDO()
+
+            var processNodeTemplate = new ProcessNodeTemplateDO(true)
             {
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate,
-                Process = curProcessDO,
+                ParentActivity = curProcessTemplateDO,
+                ParentActivityId = curProcessTemplateDO.Id,
             };
 
-
-
-
             ActionDO curActionDO = new ActionDO();
-            curActionDO.Id = 1;
+            curActionDO.Id = 3;
+            curActionDO.ParentActivity = processNodeTemplate;
+            curActionDO.ParentActivityId = processNodeTemplate.Id;
             curActionDO.ActivityTemplateId = 1;
             curActionDO.ActivityTemplate = curActivityTemplateDO;
             curActionDO.ActionState = 1;
             curActionDO.Name = "testaction";
-            curActionDO.ParentActivityId = 1;
-            curActionDO.ParentActivity = curActionListDO;
+
+            processNodeTemplate.Activities.Add(curActionDO);
 
             //  curActionDO.ConfigurationSettings = "config settings";
             //  curActionDO.ParentActionListId = 1;
@@ -784,18 +764,9 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplateId = TestProcessTemplate2().Id,
                 ProcessState = 1
             };
-
-            var actionListDo = new ActionListDO()
-            {
-                Process = processDo,
-                ProcessID = ProcessState.Unstarted,
-                Id = 54,
-                ActionListType = ActionListType.Immediate
-            };
-
+           
             var actionDo = new ActionDO()
             {
-                ParentActivity = actionListDo,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 Id = 57,
@@ -976,6 +947,9 @@ namespace UtilitiesTesting.Fixtures
                     }
                 }
             };
+
+            FixParentActivityReferences(curAction);
+
             return curAction;
         }
         public static ActionDO TestActionTreeWithActionTemplates()
@@ -1066,7 +1040,24 @@ CrateStorage=  crateStorage,
                     }
                 }
             };
+
+            FixParentActivityReferences(curAction);
             return curAction;
+        }
+
+        public static ActionDO TestActionProcess()
+        {
+            var actionDo = new ActionDO
+            {
+                Id = 1,
+
+                ActionState = ActionState.Unstarted,
+                Name = "Action 1",
+                CrateStorage = "config settings",
+                ParentActivityId = 1,
+                ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
+            };
+            return actionDo;
         }
     }
 }

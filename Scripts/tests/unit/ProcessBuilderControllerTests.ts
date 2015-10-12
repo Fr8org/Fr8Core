@@ -23,7 +23,6 @@ module dockyard.tests.controller {
             _$state: ng.ui.IState,
             _actionServiceMock: utils.ActionServiceMock,
             _processTemplateServiceMock: utils.ProcessTemplateServiceMock,
-            _actionListServiceMock: utils.ActionListServiceMock,
             _processBuilderServiceMock: utils.ProcessBuilderServiceMock,
             _$q: ng.IQService,
             _$http: ng.IHttpService,
@@ -39,7 +38,6 @@ module dockyard.tests.controller {
             inject(($controller, $rootScope, $q, $http, $timeout, $filter, $httpBackend) => {
                 _actionServiceMock = new utils.ActionServiceMock($q);
                 _processTemplateServiceMock = new utils.ProcessTemplateServiceMock($q);
-                _actionListServiceMock = new utils.ActionListServiceMock($q);
                 _processBuilderServiceMock = new utils.ProcessBuilderServiceMock($q);
                 _crateHelper = new services.CrateHelper();
                 _localIdentityGenerator = new services.LocalIdentityGenerator();
@@ -74,7 +72,6 @@ module dockyard.tests.controller {
                         $timeout: _$timeout,
                         CriteriaServiceWrapper: null,
                         ProcessBuilderService: _processBuilderServiceMock,
-                        ActionListService: _actionListServiceMock,
                         CrateHelper: _crateHelper,
                         ActivityTemplateService: null,
                         $filter: _$filter,

@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using pluginSlack.Interfaces;
+using fr8.Microsoft.Azure;
 
 namespace pluginSlack.Services
 {
@@ -18,7 +19,7 @@ namespace pluginSlack.Services
         /// </summary>
         public string CreateAuthUrl(string externalStateToken)
         {
-            var template = ConfigurationManager.AppSettings["SlackOAuthUrl"];
+            var template = CloudConfigurationManager.GetSetting("SlackOAuthUrl");
             var url = template.Replace("%STATE%", externalStateToken);
 
             return url;
@@ -26,7 +27,7 @@ namespace pluginSlack.Services
 
         public async Task<string> GetOAuthToken(string code)
         {
-            var template = ConfigurationManager.AppSettings["SlackOAuthAccessUrl"];
+            var template = CloudConfigurationManager.GetSetting("SlackOAuthAccessUrl");
             var url = template.Replace("%CODE%", code);
 
             var httpClient = new HttpClient();
@@ -41,7 +42,7 @@ namespace pluginSlack.Services
 
         private string PrepareTokenUrl(string urlKey, string oauthToken)
         {
-            var template = ConfigurationManager.AppSettings[urlKey];
+            var template = CloudConfigurationManager.GetSetting(urlKey);
             var url = template.Replace("%TOKEN%", oauthToken);
 
             return url;
@@ -92,7 +93,7 @@ namespace pluginSlack.Services
 
         public async Task<bool> PostMessageToChat(string oauthToken, string channelId, string message)
         {
-            var url = ConfigurationManager.AppSettings["SlackChatPostMessageUrl"];
+            var url = CloudConfigurationManager.GetSetting("SlackChatPostMessageUrl");
 
             var httpClient = new HttpClient();
             var content = new FormUrlEncodedContent(

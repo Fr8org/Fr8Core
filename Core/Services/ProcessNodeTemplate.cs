@@ -33,23 +33,6 @@ namespace Core.Services
             };
             uow.CriteriaRepository.Add(criteria);
             
-            // Saving immediate action list entity in repository.
-            var immediateActionList = new ActionListDO()
-            {
-                Name = "Immediate",
-                ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplate = processNodeTemplate
-            };
-            uow.ActionListRepository.Add(immediateActionList);
-            
-            // Saving scheduled action list entity in repository.
-            var scheduledActionList = new ActionListDO()
-            {
-                Name = "Scheduled",
-                ActionListType = ActionListType.Scheduled,
-                ProcessNodeTemplate = processNodeTemplate
-            };
-            uow.ActionListRepository.Add(scheduledActionList);
             //we don't want to save changes here, to enable upstream transactions
         }
 
@@ -87,36 +70,44 @@ namespace Core.Services
             }
 
             // Remove all actions.
-            uow.ActionRepository
-                .GetQuery()
-                // .Where(x => x.ParentActivity.ProcessNodeTemplate.Id == id)
-                .Where(x => uow.ActionListRepository.GetQuery()
-                    .Any(y => y.Id == x.ParentActivityId && y.ProcessNodeTemplate.Id == id))
-                .ToList()
-                .ForEach(x => uow.ActionRepository.Remove(x));
 
-            uow.SaveChanges();
+            
 
-            // Remove all action-lists.
-            uow.ActionListRepository
-                .GetQuery()
-                .Where(x => x.ProcessNodeTemplateID == id)
-                .ToList()
-                .ForEach(x => uow.ActionListRepository.Remove(x));
+          //  processNodeTemplate.Activities.ForEach(x => uow.ActivityRepository.Remove(x));
 
-            uow.SaveChanges();
-
-            // Remove Criteria.
-            uow.CriteriaRepository
-                .GetQuery()
-                .Where(x => x.ProcessNodeTemplateId == id)
-                .ToList()
-                .ForEach(x => uow.CriteriaRepository.Remove(x));
-
-            uow.SaveChanges();
+//            uow.SaveChanges();
+//            
+//            // Remove Criteria.
+//            uow.CriteriaRepository
+//                .GetQuery()
+//                .Where(x => x.ProcessNodeTemplateId == id)
+//                .ToList()
+//                .ForEach(x => uow.CriteriaRepository.Remove(x));
+//
+//            uow.SaveChanges();
 
             // Remove ProcessNodeTemplate.
-            uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
+            //uow.ProcessNodeTemplateRepository.Remove(processNodeTemplate);
+
+
+            ObjectFactory.GetInstance<IActivity>().Delete(uow, processNodeTemplate);
+
+            uow.SaveChanges();
+        }
+
+        public void AddAction(IUnitOfWork uow, ActionDO curActionDO)
+        {
+            var processNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curActionDO.ParentActivityId);
+
+            if (processNodeTemplate == null)
+            {
+                throw new Exception(string.Format("Unable to find ProcessNodeTemplate by id = {0}", curActionDO.ParentActivityId));
+            }
+
+            curActionDO.Ordering = processNodeTemplate.Activities.Count > 0 ? processNodeTemplate.Activities.Max(x => x.Ordering) + 1 : 1;
+
+            processNodeTemplate.Activities.Add(curActionDO);
+
             uow.SaveChanges();
         }
     }

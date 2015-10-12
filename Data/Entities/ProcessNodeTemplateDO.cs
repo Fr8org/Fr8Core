@@ -9,35 +9,24 @@ using Data.Validations;
 using FluentValidation;
 namespace Data.Entities
 {
-    public class ProcessNodeTemplateDO : BaseDO
+    public class ProcessNodeTemplateDO : ActivityDO
     {
         public ProcessNodeTemplateDO()
         {
-            this.Criteria = new List<CriteriaDO>();
-            this.ActionLists = new List<ActionListDO>();
-            this.ProcessNode = new List<ProcessNodeDO>();
+           // this.Criteria = new List<CriteriaDO>();
+           // this.ProcessNode = new List<ProcessNodeDO>();
         }
 
         public ProcessNodeTemplateDO(bool startingProcessNodeTemplate)
         {
             this.StartingProcessNodeTemplate = true;
-            this.Criteria = new List<CriteriaDO>();
-            this.ActionLists = new List<ActionListDO>();
-            this.ProcessNode = new List<ProcessNodeDO>();
+           // this.Criteria = new List<CriteriaDO>();
+           // this.ProcessNode = new List<ProcessNodeDO>();
         }
-
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
 
         public string Name { get; set; }
 
-        [ForeignKey("ProcessTemplate")]
-        public int ParentTemplateId { get; set; }
-
         public bool StartingProcessNodeTemplate { get; set; } 
-
-        public virtual ProcessTemplateDO ProcessTemplate { get; set; }
 
         /// <summary>
         /// this is a JSON structure that is a array of key-value pairs that represent possible transitions. Example:
@@ -47,14 +36,19 @@ namespace Data.Entities
 
         public virtual List<CriteriaDO> Criteria { get; set; }
 
-        public virtual List<ActionListDO> ActionLists { get; set; }
-
         public virtual List<ProcessNodeDO> ProcessNode { get; set; }
+
+        [NotMapped]
+        public ProcessTemplateDO ProcessTemplate
+        {
+            get { return (ProcessTemplateDO) ParentActivity; }
+        }
 
         public override string ToString()
         {
             return this.Name;
         }
+
         public override void BeforeSave()
         {
             base.BeforeSave();

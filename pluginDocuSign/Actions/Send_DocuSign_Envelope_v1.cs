@@ -24,15 +24,15 @@ namespace pluginDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064.
+ 
         // IDocuSignTemplate _template;
-        // IDocuSignEnvelope _docusignEnvelope;
+        private IDocuSignEnvelope _docusignEnvelope;
 
         public Send_DocuSign_Envelope_v1()
         {
-            // TODO: remove this as of DO-1064.
+ 
             // _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-            // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+            _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
         }
 
         public object Configure(ActionDTO curActionDTO)
@@ -77,7 +77,8 @@ namespace pluginDocuSign.Actions
             }
 
             // User's choosen recipient is in recipientAddress. Someone needs to implement actual submission of the envelope. 
-
+            //_docusignEnvelope.SendUsingTemplate(templateId, recipientAddress);
+            ;
             return null;
         }
 
@@ -251,7 +252,7 @@ namespace pluginDocuSign.Actions
                 fieldSelectDocusignTemplateDTO,
                 recipientSource
             };
-            var controls = new StandardConfigurationControlsMS()
+            var controls = new StandardConfigurationControlsCM()
             {
                 Controls = fieldsDTO
             };
@@ -262,7 +263,7 @@ namespace pluginDocuSign.Actions
         {
             var templatesDTO = template.GetTemplates(null);
             var fieldsDTO = templatesDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
-            var controls = new StandardDesignTimeFieldsMS()
+            var controls = new StandardDesignTimeFieldsCM()
             {
                 Fields = fieldsDTO,
             };

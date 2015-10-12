@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Microsoft.AspNet.Identity;
-using Newtonsoft.Json;
-using StructureMap;
 using Core.Interfaces;
-using Core.Managers;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using Data.States;
+using StructureMap;
 
 namespace Web.Controllers
 {
@@ -31,7 +24,7 @@ namespace Web.Controllers
 
         [HttpPost]
         [Route("dockyard_events")]
-        public IHttpActionResult ProcessDockyardEvents(CrateDTO curCrateStandardEventReport)
+        public async Task<IHttpActionResult> ProcessDockyardEvents(CrateDTO curCrateStandardEventReport)
         {
             //check if its not null
             if (curCrateStandardEventReport == null)
@@ -41,7 +34,8 @@ namespace Web.Controllers
                 throw new ArgumentNullException("CrateDTO passed is not a Standard Event Report.");
             if (String.IsNullOrEmpty(curCrateStandardEventReport.Contents))
                 throw new ArgumentNullException("CrateDTO Content is empty.");
-            _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
+             
+            await _dockyardEvent.ProcessInboundEvents(curCrateStandardEventReport);
            
 
             return Ok();

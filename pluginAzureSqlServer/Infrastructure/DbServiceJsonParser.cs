@@ -44,7 +44,7 @@ namespace pluginAzureSqlServer.Infrastructure
                 throw new ApplicationException("No controls crate found.");
             }
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
             var connectionStringControl = controlsMS.Controls
                 .FirstOrDefault(x => x.Name == "connection_string");
 

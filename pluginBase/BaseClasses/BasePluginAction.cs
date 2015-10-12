@@ -14,6 +14,7 @@ using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
 using Newtonsoft.Json;
+using fr8.Microsoft.Azure;
 
 namespace PluginBase.BaseClasses
 {
@@ -85,7 +86,7 @@ namespace PluginBase.BaseClasses
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
-            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/processes/"
                 + processId.ToString();
 
@@ -154,7 +155,7 @@ namespace PluginBase.BaseClasses
                 ? "upstream_actions/"
                 : "downstream_actions/";
 
-            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "activities/"
                 + directionSuffix
                 + "?id=" + activityId.ToString();
@@ -175,12 +176,12 @@ namespace PluginBase.BaseClasses
             }
         }
 
-        public async Task<StandardDesignTimeFieldsMS> GetDesignTimeFields(
+        public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(
             int activityId, GetCrateDirection direction)
         {
 
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
-            StandardDesignTimeFieldsMS mergedFields = new StandardDesignTimeFieldsMS();
+            StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
             List<CrateDTO> curCrates = await GetCratesByDirection(
                 activityId,
@@ -192,14 +193,14 @@ namespace PluginBase.BaseClasses
             return mergedFields;
         }
 
-        public StandardDesignTimeFieldsMS MergeContentFields(List<CrateDTO> curCrates)
+        public StandardDesignTimeFieldsCM MergeContentFields(List<CrateDTO> curCrates)
         {
-            StandardDesignTimeFieldsMS tempMS = new StandardDesignTimeFieldsMS();
+            StandardDesignTimeFieldsCM tempMS = new StandardDesignTimeFieldsCM();
             foreach (var curCrate in curCrates)
             {
                 //extract the fields
-                StandardDesignTimeFieldsMS curStandardDesignTimeFieldsCrate =
-                    JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(curCrate.Contents);
+                StandardDesignTimeFieldsCM curStandardDesignTimeFieldsCrate =
+                    JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(curCrate.Contents);
 
                 //add them to the pile
                 tempMS.Fields.AddRange(curStandardDesignTimeFieldsCrate.Fields);
@@ -237,7 +238,7 @@ namespace PluginBase.BaseClasses
             }
 
             var controlsCrateMS = JsonConvert
-                .DeserializeObject<StandardConfigurationControlsMS>(
+                .DeserializeObject<StandardConfigurationControlsCM>(
                     controlsCrate.Contents
                 );
 
@@ -265,7 +266,7 @@ namespace PluginBase.BaseClasses
             return upstreamFieldsCrate;
         }
 
-        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, ManifestSchema curSchema)
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, Manifest curSchema)
         {
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
 
@@ -276,7 +277,7 @@ namespace PluginBase.BaseClasses
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name select_file with a value
-            ManifestSchema manifestSchema = new ManifestSchema(Data.Constants.MT.StandardConfigurationControls);
+            Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
 
             var keys = _action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
                 .Select(e => (string)e["value"])

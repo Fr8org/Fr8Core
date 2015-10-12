@@ -145,7 +145,7 @@ namespace pluginTests.PluginExcelTests
             var bytesFromExcel = PluginFixtureData.TestExcelData();
             var columnHeaders = ExcelUtils.GetColumnHeaders(bytesFromExcel, "xlsx");
             var excelRows = ExcelUtils.GetTabularData(bytesFromExcel, "xlsx");
-            var tableDataMS = new StandardTableDataMS()
+            var tableDataMS = new StandardTableDataCM()
             {
                 FirstRowHeaders = true,
                 Table = ExcelUtils.CreateTableCellPayloadObjects(excelRows, columnHeaders),
@@ -169,7 +169,7 @@ namespace pluginTests.PluginExcelTests
 
             var result = await new ExtractData_v1().Execute(curActionDTO);
             var payloadCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
-            var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataMS>(payloadCrates.First().Contents);
+            var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 
             Assert.IsNotNull(result.CrateStorage);
             Assert.IsNotNull(payloadCrates);
