@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
         getFull: (id: Object) => interfaces.IProcessTemplateVM;
+        execute: (id: {id: number}) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -68,6 +69,14 @@ module dockyard.services {
                     method: 'GET',
                     isArray: false,
                     url: '/api/processTemplate/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                },
+                'execute': {
+                    method: 'POST',
+                    isArray: false,
+                    url: '/api/processes/launch?processTemplateId=:id',
                     params: {
                         id: '@id'
                     }
