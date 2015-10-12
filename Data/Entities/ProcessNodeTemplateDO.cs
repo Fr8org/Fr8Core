@@ -25,9 +25,9 @@ namespace Data.Entities
         }
 
         public string Name { get; set; }
-        
+
         public bool StartingProcessNodeTemplate { get; set; } 
-        
+
         /// <summary>
         /// this is a JSON structure that is a array of key-value pairs that represent possible transitions. Example:
         ///[{'TransitionKey':'true','ProcessNodeId':'234kljdf'},{'TransitionKey':'false','ProcessNodeId':'dfgkjfg'}]. In this case the values are Id's of other ProcessNodes.

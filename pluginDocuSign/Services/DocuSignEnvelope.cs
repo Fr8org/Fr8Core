@@ -6,9 +6,12 @@ using Newtonsoft.Json.Linq;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using DocuSign.Integrations.Client;
 using Utilities.Serializers.Json;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
+using Signer = pluginDocuSign.Infrastructure.Signer;
+using Tab = pluginDocuSign.Infrastructure.Tab;
 
 namespace pluginDocuSign.Services
 {
@@ -204,5 +207,16 @@ namespace pluginDocuSign.Services
                     return ControlTypes.TextBox;
             }
         }
+
+        public void SendUsingTemplate(string templateId, string recipientAddress)
+        {
+            var curEnv = new Envelope();
+            var templateList = new List<string> {templateId};
+            curEnv.AddTemplates(templateList);
+            curEnv.Create();
+
+        }
+
+
     }
 }

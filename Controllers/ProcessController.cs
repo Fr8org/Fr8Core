@@ -6,11 +6,13 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Core.Services;
 using StructureMap;
+using Core.Interfaces;
+using Core.Services;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -21,6 +23,14 @@ namespace Web.Controllers
     [RoutePrefix("api/processes")]
     public class ProcessController : ApiController
     {
+        private readonly IProcess _process;
+
+
+        public ProcessController()
+        {
+            _process = ObjectFactory.GetInstance<IProcess>();
+        }
+
         [HttpGet]
         [Route("{id:int}")]
         public IHttpActionResult Get(int id)
@@ -45,6 +55,19 @@ namespace Web.Controllers
                 var processIds = uow.ProcessRepository.GetQuery().Where(x=>x.Name == name).Select(x=>x.Id).ToArray();
                 
                 return Json(processIds);
+            }
+        }
+
+        [Route("launch")]
+        [HttpPost]
+        public async Task<IHttpActionResult> Launch(int processTemplateId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var processTemplateDO = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
+                await _process.Launch(processTemplateDO, null);
+
+                return Ok();
             }
         }
 
