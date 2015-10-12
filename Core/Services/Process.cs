@@ -16,17 +16,16 @@ namespace Core.Services
 {
     public class Process : IProcess
     {
-        /**********************************************************************************/
+        
         // Declarations
-        /**********************************************************************************/
+        
 
         private readonly IProcessNode _processNode;
         private readonly IActivity _activity;
         private readonly IProcessTemplate _processTemplate;
 
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
+        
+        
 
         public Process()
         {
@@ -35,7 +34,7 @@ namespace Core.Services
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
-        /**********************************************************************************/
+        
 
         /// <summary>
         /// New Process object
@@ -47,32 +46,38 @@ namespace Core.Services
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
 
-            var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-            if (curProcessTemplate == null)
-                throw new ArgumentNullException("processTemplateId");
-            curProcessDO.ProcessTemplate = curProcessTemplate;
+                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
+                if (curProcessTemplate == null)
+                    throw new ArgumentNullException("processTemplateId");
+                curProcessDO.ProcessTemplate = curProcessTemplate;
 
-            curProcessDO.Name = curProcessTemplate.Name;
-            curProcessDO.ProcessState = ProcessState.Unstarted;
-            curProcessDO.UpdateCrateStorageDTO(new List<CrateDTO> {curEvent});
+                curProcessDO.Name = curProcessTemplate.Name;
+                curProcessDO.ProcessState = ProcessState.Unstarted;
+
+                var crates = new List<CrateDTO>();
+                if (curEvent != null)
+                {
+                    crates.Add(curEvent);
+                }
+                curProcessDO.UpdateCrateStorageDTO(crates);
 
             curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
 
-            uow.ProcessRepository.Add(curProcessDO);
-            uow.SaveChanges();
+                uow.ProcessRepository.Add(curProcessDO);
+                uow.SaveChanges();
 
-            //then create process node
-            var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
-
+                //then create process node
+                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
+                
             var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
-            curProcessDO.ProcessNodes.Add(curProcessNode);
+                curProcessDO.ProcessNodes.Add(curProcessNode);
 
-            uow.SaveChanges();
+                uow.SaveChanges();
 
             return curProcessDO;
         }
 
-        /**********************************************************************************/
+        
 
         public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
@@ -80,9 +85,9 @@ namespace Core.Services
             {
                 var curProcessDO = Create(uow, curProcessTemplate.Id, curEvent);
 
-                if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
+            if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 {
-                    throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
                 }
 
                 curProcessDO.ProcessState = ProcessState.Executing;
@@ -92,12 +97,12 @@ namespace Core.Services
                 {
                     await Execute(uow, curProcessDO);
                     curProcessDO.ProcessState = ProcessState.Completed;
-                }
+            }
                 catch
                 {
                     curProcessDO.ProcessState = ProcessState.Failed;
                     throw;
-                }
+        }
                 finally
                 {
                     uow.SaveChanges();
@@ -105,7 +110,7 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         public async Task Execute(IUnitOfWork uow, ProcessDO curProcessDO)
         {
@@ -129,7 +134,7 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ProcessDO curProcessDo)
         {
@@ -137,18 +142,18 @@ namespace Core.Services
 
             // very simple check for cycles
             if (next != null && next == curProcessDo.CurrentActivity)
-            {
+                {
                 throw new Exception(string.Format("Cycle detected. Current activty is {0}", curProcessDo.CurrentActivity.Id));
             }
 
             curProcessDo.CurrentActivity = next;
-            
+
             uow.SaveChanges();
-            
+
             return next;
         }
+
         
-        /**********************************************************************************/
 
     }
 }

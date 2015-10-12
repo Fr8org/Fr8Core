@@ -79,5 +79,13 @@
         </div>
     </div>
 
+    @*
+        Field List control template
+    *@
+    <div ng-if='field.type == "@ControlTypes.FieldList"'>
+        <label class="conrol-label">{{::field.label}}</label>
+        <field-list field="field" change="onChange"></field-list>
+    </div>
+
     @* Add more configuration field templates below *@
 </div>

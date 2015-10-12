@@ -15,22 +15,21 @@ namespace Core.Services
 {
     public class ProcessNode : IProcessNode
     {
-        /**********************************************************************************/
+        
         // Declarations
-        /**********************************************************************************/
+        
 
         private readonly ICriteria _criteria;
 
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
+        
+        
 
         public ProcessNode()
         {
             _criteria = ObjectFactory.GetInstance<ICriteria>();
         }
 
-        /**********************************************************************************/
+        
         /// <summary>
         /// Creates ProcessNode Object
         /// </summary>
@@ -53,7 +52,7 @@ namespace Core.Services
             return processNode;
         }
 
-        /**********************************************************************************/
+        
         /// <summary>
         /// Replaces the part of the TransitionKey's sourcePNode by the value of the targetPNode
         /// </summary>
@@ -73,7 +72,7 @@ namespace Core.Services
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
-        /**********************************************************************************/
+        
 
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
@@ -106,7 +105,7 @@ namespace Core.Services
             return nextTransitionKey;
         }
 
-        /**********************************************************************************/
+        
         /// <summary>
         /// There will and should only be one key with false. if there's more than one, throw an exception.	
         /// </summary>
@@ -117,6 +116,6 @@ namespace Core.Services
             return count == 1;
         }
 
-        /**********************************************************************************/
+        
     }
 }

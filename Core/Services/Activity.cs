@@ -13,15 +13,14 @@ namespace Core.Services
 {
 	public class Activity : IActivity
 	{
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
+        
+        
 
 		public Activity()
 		{
 		}
 
-        /**********************************************************************************/
+        
         //This builds a list of an activity and all of its descendants, over multiple levels
 	    public List<ActivityDO> GetActivityTree(IUnitOfWork uow, ActivityDO curActivity)
 	    {
@@ -35,7 +34,7 @@ namespace Core.Services
 	        return curList;
 	    }
 
-        /**********************************************************************************/
+        
 
         public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
 		{
@@ -76,7 +75,7 @@ namespace Core.Services
             return upstreamActivities; //should never actually get here, but the compiler insists
 		}
 
-	    /**********************************************************************************/
+	    
 
 	    public List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivity)
 	    {
@@ -113,14 +112,14 @@ namespace Core.Services
 	        return downstreamList;
 	    }
 
-        /**********************************************************************************/
+        
 
         public ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root)
 		{
 	        return GetNextActivity(currentActivity, true, root);
 	    }
 
-	    /**********************************************************************************/
+	    
 
         private ActivityDO GetNextActivity(ActivityDO currentActivity, bool depthFirst, ActivityDO root)
 		    {
@@ -163,7 +162,7 @@ namespace Core.Services
             return nextCandidate;
         }
 
-        /**********************************************************************************/
+        
 
         public void Delete (IUnitOfWork uow, ActivityDO activity)
         {
@@ -188,7 +187,7 @@ namespace Core.Services
             });
             }
 
-        /**********************************************************************************/
+        
 
         private static void TraverseActivity(ActivityDO parent, Action<ActivityDO> visitAction)
         {
@@ -197,7 +196,7 @@ namespace Core.Services
                 TraverseActivity(child, visitAction);
         }
 
-        /**********************************************************************************/
+        
 
 	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
         {
@@ -208,7 +207,7 @@ namespace Core.Services
                 return orderedActivities;
             }
 
-	    /**********************************************************************************/
+	    
 
         public async Task Process(int curActivityId, ProcessDO processDO)
         {
@@ -230,7 +229,7 @@ namespace Core.Services
         }
         }
 
-        /**********************************************************************************/
+        
 
         public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
         {
@@ -251,7 +250,7 @@ namespace Core.Services
             return curActivityTemplates;
         }
 
-        /**********************************************************************************/
+        
 
 	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
 	    {
@@ -276,6 +275,6 @@ namespace Core.Services
             return curActivityTemplates;
 	    }
 
-        /**********************************************************************************/
+        
     }
 }

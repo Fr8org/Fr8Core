@@ -118,7 +118,7 @@ namespace UtilitiesTesting.Fixtures
                 processTemplateDO.Activities = new List<ActivityDO> {processNodeTemplateDO};
                 processTemplateDO.StartingProcessNodeTemplate = processNodeTemplateDO;
 
-                
+
                 var actionDo = new ActionDO()
                 {
                     ParentActivity = processTemplateDO,

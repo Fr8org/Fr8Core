@@ -9,9 +9,8 @@ namespace Data.Migrations
     
     public partial class UnifiedNestingMigrationFixed : DbMigration
     {
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
+        
+        
 
         public override void Up()
         {
@@ -50,7 +49,7 @@ namespace Data.Migrations
             }
         }
 
-        /**********************************************************************************/
+        
 
         public override void Down()
         {
@@ -89,7 +88,7 @@ namespace Data.Migrations
             AddForeignKey("dbo.ProcessNodeTemplates", "ParentTemplateId", "dbo.ProcessTemplates", "Id", cascadeDelete: true);
         }
         
-        /**********************************************************************************/
+        
 
         private static string ReadSqlScript(string name)
         {
@@ -110,7 +109,7 @@ namespace Data.Migrations
             }
         }
 
-        /**********************************************************************************/
+        
 
         private static IEnumerable<string> ParseScript(string name)
         {

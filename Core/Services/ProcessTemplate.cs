@@ -16,18 +16,16 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        /**********************************************************************************/
-        // Declarations
-        /**********************************************************************************/
+        
+        
         // private readonly IProcess _process;
         private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
         private readonly ICrate _crate;
 
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
+        
+        
 
         public ProcessTemplate()
         {
@@ -37,7 +35,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        /**********************************************************************************/
+        
 
         public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
@@ -62,7 +60,7 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         public void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
         {
@@ -90,7 +88,7 @@ namespace Core.Services
             // return ptdo.Id;
         }
 
-        /**********************************************************************************/
+        
 
         public void Delete(IUnitOfWork uow, int id)
         {
@@ -104,7 +102,7 @@ namespace Core.Services
             ObjectFactory.GetInstance<IActivity>().Delete(uow, curProcessTemplate);
         }
 
-        /**********************************************************************************/
+        
 
         public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
         {
@@ -119,7 +117,7 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(ProcessTemplateDO curProcessTemplate, bool allowOnlyOneNoteTemplate = true)
         {
@@ -144,7 +142,7 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
         {
@@ -172,7 +170,7 @@ namespace Core.Services
             return result;
         }
 
-        /**********************************************************************************/
+        
 
         public string Deactivate(ProcessTemplateDO curProcessTemplate)
         {
@@ -195,7 +193,7 @@ namespace Core.Services
             return result;
         }
 
-        /**********************************************************************************/
+        
         // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N Activities.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
@@ -226,7 +224,7 @@ namespace Core.Services
 //
 //        }
 
-        /**********************************************************************************/
+        
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -245,7 +243,7 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
         {
@@ -266,7 +264,7 @@ namespace Core.Services
 
         }
 
-        /**********************************************************************************/
+        
 
         public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
             EventReportMS curEventReport)
@@ -305,7 +303,7 @@ namespace Core.Services
 
         }
 
-        /**********************************************************************************/
+        
 
         public ActivityDO GetFirstActivity(int curProcessTemplateId)
         {
@@ -315,14 +313,14 @@ namespace Core.Services
             }
         }
 
-        /**********************************************************************************/
+        
 
         public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
         {
             return EnumerateActivities<ActivityDO>(curProcessTemplate).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
-        /**********************************************************************************/
+        
 
 
         /// <summary>

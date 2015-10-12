@@ -18,28 +18,21 @@ namespace Web.Controllers
     [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
-        /**********************************************************************************/
-        // Declarations
-        /**********************************************************************************/
-
         private readonly IProcessTemplate _processTemplate;
         
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IProcessTemplate>())
         {
         }
 
-        /**********************************************************************************/
+        
 
         public ProcessTemplateController(IProcessTemplate processTemplate)
         {
             _processTemplate = processTemplate;
         }
 
-        /**********************************************************************************/
+        
         [Route("full/{id:int}")]
         [ResponseType(typeof(ProcessTemplateDTO))]
         [HttpGet]
@@ -54,7 +47,7 @@ namespace Web.Controllers
             };
         }
 
-        /**********************************************************************************/
+        
         // Manual mapping method to resolve DO-1164.
         private ProcessTemplateDTO MapProcessTemplateToDTO(ProcessTemplateDO curProcessTemplateDO, IUnitOfWork uow)
         {
@@ -102,7 +95,7 @@ namespace Web.Controllers
             return result;
         }
 
-        /**********************************************************************************/
+        
         [Route("getactive")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -116,7 +109,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        /**********************************************************************************/
+        
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
@@ -139,7 +132,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        /**********************************************************************************/
+        
         
         public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
@@ -174,7 +167,7 @@ namespace Web.Controllers
             }
         }
 
-        /**********************************************************************************/
+        
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
@@ -184,7 +177,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        /**********************************************************************************/
+        
 
         public IHttpActionResult Delete(int id)
         {
@@ -197,27 +190,27 @@ namespace Web.Controllers
             }
         }
 
-        /**********************************************************************************/
+        
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         public IHttpActionResult GetTriggerSettings()
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
-        /**********************************************************************************/
+        
         [Route("activate")]
         public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Activate(curProcessTemplate));
         }
 
-        /**********************************************************************************/
+        
         [Route("deactivate")]
         public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Deactivate(curProcessTemplate));
         }
 
-        /**********************************************************************************/
+        
     }
 }
