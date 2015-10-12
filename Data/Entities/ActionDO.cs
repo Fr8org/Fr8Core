@@ -24,6 +24,8 @@ namespace Data.Entities
         [ForeignKey("ActivityTemplate")]
         public int? ActivityTemplateId { get; set; }
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
+       
+       
 
         [NotMapped]
         public bool IsTempId { get; set; }

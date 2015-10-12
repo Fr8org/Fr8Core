@@ -128,7 +128,7 @@ namespace Data.Infrastructure
         public delegate void EventActionStartedHandler(ActionDO action);
         public static event EventActionStartedHandler EventActionStarted;
 
-        public delegate void EventActionDispatchedHandler(ActionDTO curAction);
+        public delegate void EventActionDispatchedHandler(ActionDO curAction, int processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
         public delegate void PluginEventHandler(LoggingData eventData);
@@ -390,10 +390,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(action);
         }
 
-        public static void ActionDispatched(ActionDTO curAction)
+        public static void ActionDispatched(ActionDO curAction, int processId)
         {
             var handler = EventActionDispatched;
-            if (handler != null) handler(curAction);
+            if (handler != null) handler(curAction, processId);
         }
 
         public static void ReportPluginEvent(LoggingData eventData)

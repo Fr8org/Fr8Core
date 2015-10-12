@@ -19,8 +19,8 @@ namespace Core.Interfaces
         string Activate(ProcessTemplateDO curProcessTemplate);
         string Deactivate(ProcessTemplateDO curProcessTemplate);
         IEnumerable<ActionDO> GetActions(int id);
-	    ActionListDO GetActionList(IUnitOfWork uow, int id);
-        List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
-	        EventReportMS curEventReport);
+	    ProcessTemplateDO GetProcessTemplate(ActionDO action);
+	  //  ActionListDO GetActionList(IUnitOfWork uow, int id);
+        List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates, EventReportMS curEventReport);
 	}
 }

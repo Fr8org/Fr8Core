@@ -87,8 +87,7 @@ namespace pluginDocuSign.Actions
 
         public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDTO, string curEnvelopeId)
         {
-            var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
 
             var docusignEnvelope = new DocuSignEnvelope(
                 docuSignAuthDTO.Email,
@@ -97,7 +96,7 @@ namespace pluginDocuSign.Actions
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
             var fields = GetFields(curActionDTO);
 
-            if (fields.Count == 0)
+            if (fields == null || fields.Count == 0)
             {
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDTO.Id);
             }

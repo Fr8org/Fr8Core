@@ -13,18 +13,7 @@ namespace Data.Interfaces.DataTransferObjects
         /// </summary>
         public IEnumerable<FullProcessNodeTemplateDTO> ProcessNodeTemplates { get; set; }
     }
-
-    /// <summary>
-    /// ActionList DTO that contains full graph of Action objects.
-    /// </summary>
-    public class FullActionListDTO : ActionListDTO
-    {
-        /// <summary>
-        /// List of Action DTOs.
-        /// </summary>
-        public List<ActionDTO> Actions { get; set; }
-    }
-
+    
     /// <summary>
     /// ProcessNodeTemplate DTO that contains full graph of other DTO objects.
     /// </summary>
@@ -33,6 +22,9 @@ namespace Data.Interfaces.DataTransferObjects
         /// <summary>
         /// List of ActionList DTOs.
         /// </summary>
-        public List<FullActionListDTO> ActionLists { get; set; }
+        public List<ActionDTO> Actions { get; set; }
+        
+        // Stub for UI logic to work correctly
+        public object ActionLists { get; set; }
     }
 }

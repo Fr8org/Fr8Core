@@ -49,7 +49,7 @@ namespace Data.Repositories
             DBSet.Add(entity);
         }
 
-        public void Remove(TEntity entity)
+        public virtual void Remove(TEntity entity)
         {
             DBSet.Remove(entity);
         }

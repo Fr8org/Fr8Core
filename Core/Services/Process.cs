@@ -16,9 +16,16 @@ namespace Core.Services
 {
     public class Process : IProcess
     {
+        
+        // Declarations
+        
+
         private readonly IProcessNode _processNode;
         private readonly IActivity _activity;
         private readonly IProcessTemplate _processTemplate;
+
+        
+        
 
         public Process()
         {
@@ -27,17 +34,18 @@ namespace Core.Services
             _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
+        
+
         /// <summary>
         /// New Process object
         /// </summary>
         /// <param name="processTemplateId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ProcessDO Create(int processTemplateId, CrateDTO curEvent)
+        public ProcessDO Create(IUnitOfWork uow, int processTemplateId, CrateDTO curEvent)
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+
                 var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
                 if (curProcessTemplate == null)
                     throw new ArgumentNullException("processTemplateId");
@@ -53,8 +61,7 @@ namespace Core.Services
                 }
                 curProcessDO.UpdateCrateStorageDTO(crates);
 
-                curProcessDO.CurrentActivity = _processTemplate
-                    .GetInitialActivity(uow, curProcessTemplate);
+            curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
@@ -62,30 +69,50 @@ namespace Core.Services
                 //then create process node
                 var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
                 
-                var curProcessNode = _processNode.Create(uow,curProcessDO.Id, processNodeTemplateId,"process node");
+            var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
 
                 uow.SaveChanges();
-            }
+
             return curProcessDO;
         }
 
+        
+
         public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
         {
-            var curProcessDO = Create(curProcessTemplate.Id, curEvent);
-            if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
-                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curProcessDO = Create(uow, curProcessTemplate.Id, curEvent);
+
+            if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
+                {
+                throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
+                }
+
                 curProcessDO.ProcessState = ProcessState.Executing;
                 uow.SaveChanges();
 
-                await Execute(curProcessDO);
+                try
+                {
+                    await Execute(uow, curProcessDO);
+                    curProcessDO.ProcessState = ProcessState.Completed;
+            }
+                catch
+                {
+                    curProcessDO.ProcessState = ProcessState.Failed;
+                    throw;
+        }
+                finally
+                {
+                    uow.SaveChanges();
+                }
             }
         }
 
-        public async Task Execute(ProcessDO curProcessDO)
+        
+
+        public async Task Execute(IUnitOfWork uow, ProcessDO curProcessDO)
         {
             if (curProcessDO == null)
                 throw new ArgumentNullException("ProcessDO is null");
@@ -98,8 +125,8 @@ namespace Core.Services
                 do
                 {
                     await _activity.Process(curProcessDO.CurrentActivity.Id, curProcessDO);
-                    UpdateNextActivity(curProcessDO);
-                } while (curProcessDO.CurrentActivity != null);
+                    // ReSharper disable once LoopVariableIsNeverChangedInsideLoop
+                } while (MoveToTheNextActivity(uow, curProcessDO) != null);
             }
             else
             {
@@ -107,55 +134,26 @@ namespace Core.Services
             }
         }
 
-        private void UpdateNextActivity(ProcessDO curProcessDO)
+        
+
+        private ActivityDO MoveToTheNextActivity(IUnitOfWork uow, ProcessDO curProcessDo)
         {
-            if (curProcessDO == null)
-                throw new ArgumentNullException("ProcessDO is null");
+            var next =  ObjectFactory.GetInstance<IActivity>().GetNextActivity(curProcessDo.CurrentActivity, null);
 
-            if (curProcessDO.NextActivity != null)
-            {
-                curProcessDO.CurrentActivity = curProcessDO.NextActivity;
-            }
-            else
-            {
-                //if ProcessDO.NextActivity is not set, 
-                //get the downstream activities of the current activity and set the next current activity based on those downstream as CurrentActivity
-                List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
-                if ((activityLists != null && activityLists.Count > 0) &&
-                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in GetNextActivities and possible infinite loop
+            // very simple check for cycles
+            if (next != null && next == curProcessDo.CurrentActivity)
                 {
-                    curProcessDO.CurrentActivity = activityLists[0];
-                }
-                else
-                    curProcessDO.CurrentActivity = null;
+                throw new Exception(string.Format("Cycle detected. Current activty is {0}", curProcessDo.CurrentActivity.Id));
             }
 
-            SetProcessNextActivity(curProcessDO);
+            curProcessDo.CurrentActivity = next;
+
+            uow.SaveChanges();
+
+            return next;
         }
 
-        public void SetProcessNextActivity(ProcessDO curProcessDO)
-        {
-            if(curProcessDO == null)
-                throw new ArgumentNullException("Paramter ProcessDO is null.");
-
-            if (curProcessDO.CurrentActivity != null)
-            {
-                List<ActivityDO> activityLists = _activity.GetNextActivities(curProcessDO.CurrentActivity).ToList();
-                if ((activityLists != null && activityLists.Count > 0) &&
-                    curProcessDO.CurrentActivity.Id != activityLists[0].Id)//Needs to check if CurrentActivity is the same as the NextActivity which is a possible bug in GetNextActivities and possible infinite loop
-                {
-                   curProcessDO.NextActivity = activityLists[0];
-                }
-                else
-                {
-                    curProcessDO.NextActivity = null;
-                }
-            }
-            else
-            {
-                curProcessDO.NextActivity = null;//set NexActivity to null since the currentActivity is null
-            }
-        }
+        
 
     }
 }

@@ -28,7 +28,6 @@ namespace Core.Interfaces
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
         IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
 		StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
-        ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow);
         StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
         Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);

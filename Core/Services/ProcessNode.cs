@@ -7,7 +7,6 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Repositories;
 using Data.States;
 using Newtonsoft.Json;
 using StructureMap;
@@ -16,15 +15,21 @@ namespace Core.Services
 {
     public class ProcessNode : IProcessNode
     {
+        
+        // Declarations
+        
+
         private readonly ICriteria _criteria;
-        private readonly IActionList _actionList;
-        //private IProcessNodeTemplateRepository _processNodeTemplateRepository;
+
+        
+        
+
         public ProcessNode()
         {
             _criteria = ObjectFactory.GetInstance<ICriteria>();
-            _actionList = ObjectFactory.GetInstance<IActionList>();
         }
 
+        
         /// <summary>
         /// Creates ProcessNode Object
         /// </summary>
@@ -47,6 +52,7 @@ namespace Core.Services
             return processNode;
         }
 
+        
         /// <summary>
         /// Replaces the part of the TransitionKey's sourcePNode by the value of the targetPNode
         /// </summary>
@@ -66,23 +72,27 @@ namespace Core.Services
             sourcePNode.ProcessNodeTemplate.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
+        
+
         public string Execute(List<EnvelopeDataDTO> curEventData, ProcessNodeDO curProcessNode)
         {
-            string nextTransitionKey;
+           string nextTransitionKey;
+
             var result = _criteria.Evaluate(curEventData, curProcessNode);
             if (result)
             {
-                var _curActionList = ObjectFactory.GetInstance<IActionList>();
+                var activityService = ObjectFactory.GetInstance<IActivity>();
+
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var curProcessNodeTemplate =
-                        uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+                    var curProcessNodeTemplate = uow.ProcessNodeTemplateRepository.GetByKey(curProcessNode.ProcessNodeTemplateId);
+                    ActivityDO currentAction = curProcessNodeTemplate;
 
-                    List<ActionListDO> actionListSet = curProcessNodeTemplate.ActionLists.Where(t => t.ActionListType == ActionListType.Immediate).ToList(); //this will break when we add additional ActionLists, and will need attention
-                    foreach (var actionList in actionListSet)
+                    do
                     {
-                        _curActionList.Process(actionList, curProcessNode.ParentProcess, uow);
-                    }
+                        activityService.Process(currentAction.Id, curProcessNode.ParentProcess);
+                        currentAction = activityService.GetNextActivity(currentAction, curProcessNodeTemplate);
+                    } while (currentAction != null);
                 }
 
                 nextTransitionKey = "true";
@@ -91,9 +101,11 @@ namespace Core.Services
             {
                 nextTransitionKey = "false";
             }
+
             return nextTransitionKey;
         }
 
+        
         /// <summary>
         /// There will and should only be one key with false. if there's more than one, throw an exception.	
         /// </summary>
@@ -103,5 +115,7 @@ namespace Core.Services
             var count = keys.Count(key => key.TransitionKey.Equals("false", StringComparison.OrdinalIgnoreCase));
             return count == 1;
         }
+
+        
     }
 }

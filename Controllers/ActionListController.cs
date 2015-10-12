@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
 using AutoMapper;
 using StructureMap;
 using Core.Interfaces;
@@ -16,45 +17,49 @@ namespace Web.Controllers
     [RoutePrefix("api/actionList")]
 	public class ActionListController: ApiController
 	{
-        private readonly IActionList _actionList;
-
-        public ActionListController()
-		{
-            _actionList = new ActionList();
-		}
-
         /// <summary>
         /// Retrieve ActionList by specifying ProcessNodeTemplate.Id and ActionListType.
         /// </summary>
         /// <param name="id">ProcessNodeTemplate.Id</param>
         /// <param name="actionListType">ActionListType</param>
         /// <returns></returns>
-        [ResponseType(typeof(ActionListDTO))]
+        //[ResponseType(typeof(ActionListDTO))]
         [Route("byProcessNodeTemplate")]
         [HttpGet]
         public IHttpActionResult GetByProcessNodeTemplateId(int id, int actionListType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionList = uow.ActionListRepository.GetQuery()
-                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id && x.ActionListType == actionListType);
-
-                return Ok(Mapper.Map<ActionListDTO>(curActionList));
-            }
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                var curActionList = uow..GetQuery()
+//                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id && x.ActionListType == actionListType);
+//
+//                return Ok(Mapper.Map<ActionListDTO>(curActionList));
+//            }
+            return NotFound();
         }
 
-		public IEnumerable<ActionListDO> GetAll()
+		/*public IEnumerable<ActionListDO> GetAll()
 		{
             return _actionList.GetAll();
+		}*/
+
+        public IHttpActionResult GetAll()
+		{
+            return NotFound();
 		}
 
-        public ActionListDO Get(int id)
+//        public ActionListDO Get(int id)
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                return _actionList.GetByKey(uow,id);
+//            }
+//            
+//        }
+
+        public IHttpActionResult Get(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return _actionList.GetByKey(uow,id);
-            }
-            
+            return NotFound();
         }
 	}
 }
