@@ -11,15 +11,12 @@
 <!-- BEGIN MAIN CONTENT -->
 
 <div ng-controller="ProcessTemplateListController" class="margin-top-10" id="nav-tables">
-    <div class="row" ng-init="Openfr8Lines()">
-
-
-
+    <div class="row" ng-init="isFr = true;">
         <div class="col-md-2 col-sm-2 remove-padding">
             <div class="left-pills">
                 <ul>
-                    <li class="active" ng-click="Openfr8Lines()"><a data-toggle="pill">Myfr8lines</a></li>
-                    <li ng-click="OpenSettings()"><a data-toggle="pill">Settings</a></li>
+                    <li class="active" ng-click="isFr = true;"><a data-toggle="pill">Myfr8lines</a></li>
+                    <li ng-click="isFr = false;"><a data-toggle="pill">Settings</a></li>
                 </ul>
             </div>
         </div>
@@ -28,12 +25,6 @@
             <div class="tab-content" id="inner-tab-content">
                 <div id="Myfr8lines" ng-show="isFr">
                     <h3>Myfr8lines</h3>
-                    <div class="note note-success note-bordered" ng-show="$root.lastResult === 'success'">
-                        <h3>Success!<span class="close" data-close="note"></span></h3>
-                        <p>
-                            Operation has completed successfuly.
-                        </p>
-                    </div>
                     <div class="row">
                         <div class="col-md-12 col-sm-12">
 
@@ -51,7 +42,33 @@
                                 <div class="portlet-body">
                                     <div ng-show="ptvms.length == 0">You have no processes yet.</div>
                                     <div class="table-scrollable table-scrollable-borderless">
-                                        <table datatable="" dt-options="activedtOptionsBuilder" dt-instance="dtInstanceac" dt-columns="activedtColumnBuilder" class="row-border hover table table-hover table-light table-linkrows table-process-templates"></table>
+                                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Description</th>
+                                                    <th>Status</th>
+                                                    <th style="text-align:right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="processTemplate in activeProcessTemplates">
+                                                    <td>{{ processTemplate.name }}</td>
+                                                    <td>{{ processTemplate.description }}</td>
+                                                    <td>
+                                                        <span ng-if="processTemplate.ProcessTemplateState == 1" class="bold font-green-haze">Inactive</span>
+                                                        <span ng-if="processTemplate.ProcessTemplateState != 1" class="bold font-green-haze">Active</span>
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
+                                                            <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
+                                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Execute</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                                 <br />
@@ -63,13 +80,38 @@
                                         <span class="caption-helper hide">weekly stats...</span>
                                     </div>
                                     <div class="actions">
-                                        @*<a href="#processes/add" class="btn green">Add New</a>*@
                                     </div>
                                 </div>
                                 <div class="portlet-body">
                                     <div ng-show="ptvms.length == 0">You have no processes yet.</div>
                                     <div class="table-scrollable table-scrollable-borderless">
-                                        <table datatable="" dt-options="inactivedtOptionsBuilder" dt-instance="dtInstancein" dt-columns="inactivedtColumnBuilder" class="row-border hover table table-hover table-light table-linkrows table-process-templates"></table>
+                                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                                            <thead>
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Description</th>
+                                                    <th>Status</th>
+                                                    <th style="text-align:right">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="processTemplate in inActiveProcessTemplates">
+                                                    <td>{{ processTemplate.name }}</td>
+                                                    <td>{{ processTemplate.description }}</td>
+                                                    <td>
+                                                        <span ng-if="processTemplate.ProcessTemplateState == 1" class="bold font-green-haze">Inactive</span>
+                                                        <span ng-if="processTemplate.ProcessTemplateState != 1" class="bold font-green-haze">Active</span>
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <button type="button" class="btn btn-sm red" ng-click="deleteProcessTemplate(processTemplate.id);">Delete</button>
+                                                            <button type="button" class="btn btn-sm green" ng-click="goToProcessTemplatePage(processTemplate.id);">Edit</button>
+                                                            <button type="button" class="btn btn-sm btn-primary" ng-click="executeProcessTemplate(processTemplate.id);">Execute</button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
