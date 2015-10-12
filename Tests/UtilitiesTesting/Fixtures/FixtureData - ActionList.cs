@@ -376,5 +376,11 @@ namespace UtilitiesTesting.Fixtures
               actionLists.Add(al_1);
              return new List<ActivityDO>() { a_23 };
           }
+
+        public static ActionListDO TestActionListProcess()
+          {
+           ActionListDO al = new ActionListDO() { Id = 52, Ordering = 3, ActionListType = ActionListType.Immediate, Name = "al" };
+           return al;
+          }
     }
 }
