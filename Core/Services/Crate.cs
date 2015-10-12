@@ -160,7 +160,17 @@ namespace Core.Services
                             JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
                             manifestType: CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
                             manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
+        }
+
+        public CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string,string>> curFields)
+        {            
+            List<FieldDTO> crateFields = new List<FieldDTO>();
+            foreach(var field in curFields)
+            {
+                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });             
             }
+            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));            
+        }
 
         private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataMS tableDataMS)
         {

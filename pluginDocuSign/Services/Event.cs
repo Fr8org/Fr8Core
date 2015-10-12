@@ -106,18 +106,22 @@ namespace pluginDocuSign.Services
 
             foreach (var curEvent in curEvents)
             {
-                var crateFields = new List<FieldDTO>()
-                {
-                    new FieldDTO() {Key = "EnvelopeId", Value = curEvent.EnvelopeId},
-                    new FieldDTO() {Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString()},
-                    new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId}
-                   
-                };
-
-                curEventPayloadData.Add(_crate.Create("Payload Data", JsonConvert.SerializeObject(crateFields)));
+               var payloadCrate= _crate.CreatePayloadDataCrate(CreateKeyValuePairList(curEvent));
+               curEventPayloadData.Add(payloadCrate);
             }
-
+                   
             return curEventPayloadData;
         }
+
+        private List<KeyValuePair<string,string>> CreateKeyValuePairList(DocuSignEventDO curEvent)
+        {
+            List<KeyValuePair<string, string>> returnList = new List<KeyValuePair<string, string>>();
+            returnList.Add(new KeyValuePair<string,string>("EnvelopeId",curEvent.EnvelopeId));
+            returnList.Add(new KeyValuePair<string,string>("ExternalEventType",curEvent.ExternalEventType.ToString()));
+            returnList.Add(new KeyValuePair<string,string>("RecipientId",curEvent.RecipientId));
+            return returnList;
+            }
+
+
     }
 }

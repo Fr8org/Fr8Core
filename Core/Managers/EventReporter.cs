@@ -796,6 +796,6 @@ namespace Core.Managers
             Info,
             Error,
             Warning
-        }
+        }     
     }
 }

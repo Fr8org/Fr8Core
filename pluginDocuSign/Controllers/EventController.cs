@@ -2,16 +2,19 @@
 using System.Web.Http;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
+using PluginUtilities.Infrastructure;
 
 namespace pluginDocuSign.Controllers
 {
     public class EventController : ApiController
     {
         private IEvent _event;
+        private BasePluginEvent _basePluginEvent;
 
         public EventController()
         {
             _event = new Event();
+            _basePluginEvent = new BasePluginEvent();
         }
 
         [HttpPost]
