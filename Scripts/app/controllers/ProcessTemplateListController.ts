@@ -7,6 +7,7 @@ module dockyard.controllers {
     'use strict';
 
     export interface IProcessTemplateListScope extends ng.IScope {
+        ExecuteProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;
         GoToProcessTemplatePage: (processTemplate: interfaces.IProcessTemplateVM) => void;
         DeleteProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;
         dtOptionsBuilder: any;
@@ -36,6 +37,7 @@ module dockyard.controllers {
             '$modal',
             '$compile',
             '$q',
+            '$http',
             'DTOptionsBuilder',
             'DTColumnBuilder',
             '$state'
@@ -51,6 +53,7 @@ module dockyard.controllers {
             private $modal,
             private $compile: ng.ICompileService,
             private $q: ng.IQService,
+            private $http: ng.IHttpService,
             private DTOptionsBuilder,
             private DTColumnBuilder,
             private $state) {
@@ -73,12 +76,13 @@ module dockyard.controllers {
             $scope.dtColumnBuilder = this.GetDataTableColumns();   
             this._processTemplatesAc = ProcessTemplateService.getbystatus({ id: null, status: 2 });   
             this._processTemplatesIn = ProcessTemplateService.getbystatus({ id: null, status: 1 });
-           $scope.activedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(2);
-           $scope.activedtColumnBuilder = this.GetDataTableColumns(); 
-           $scope.inactivedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(1);
-           $scope.inactivedtColumnBuilder = this.GetDataTableColumns(); 
+            $scope.activedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(2);
+            $scope.activedtColumnBuilder = this.GetDataTableColumns(); 
+            $scope.inactivedtOptionsBuilder = this.GetDataTableOptionsFromTemplates(1);
+            $scope.inactivedtColumnBuilder = this.GetDataTableColumns(); 
             //hold a reference to data-tables instance to be able to refresh table later
             $scope.dtInstance = {};
+            $scope.ExecuteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.ExecuteProcessTemplate);
             $scope.GoToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.GoToProcessTemplatePage);
             $scope.DeleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.DeleteProcessTemplate);
             $scope.Openfr8Lines = function () {
@@ -162,11 +166,22 @@ module dockyard.controllers {
                     .withTitle('Actions')
                     .notSortable()
                     .renderWith(function (data: interfaces.IProcessTemplateVM, type, full, meta) {
+
+                    var executeButton = '<button type="button" class="btn btn-sm btn-primary" ng-click="ExecuteProcessTemplate(' + data.id + ', $event);">Execute</button>';
                     var deleteButton = '<button type="button" class="btn btn-sm red" ng-click="DeleteProcessTemplate(' + data.id +', $event);">Delete</button>';
                     var editButton = '<button type="button" class="btn btn-sm green" ng-click="GoToProcessTemplatePage(' + data.id +', $event);">Edit</button>';
-                    return deleteButton+editButton;
+
+                    return deleteButton + editButton + executeButton;
                     })
             ];            
+        }
+
+        private ExecuteProcessTemplate(processTemplateId, $event) {
+            var launchUrl = '/api/processes/launch?processTemplateId=' + processTemplateId;
+            this.$http.post(launchUrl, {});
+
+            $event.preventDefault();
+            $event.stopPropagation();
         }
 
         private GoToProcessTemplatePage(processTemplateId, $event) {
@@ -174,7 +189,7 @@ module dockyard.controllers {
             $event.stopPropagation();
             
             this.$state.go('processBuilder', { id: processTemplateId });
-            }
+        }
 
         private DeleteProcessTemplate(processTemplateId, $event) {
             $event.preventDefault();

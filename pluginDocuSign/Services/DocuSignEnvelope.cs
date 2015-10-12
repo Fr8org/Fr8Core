@@ -6,9 +6,13 @@ using Newtonsoft.Json.Linq;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using DocuSign.Integrations.Client;
 using Utilities.Serializers.Json;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
+using Signer = pluginDocuSign.Infrastructure.Signer;
+using Tab = pluginDocuSign.Infrastructure.Tab;
+using fr8.Microsoft.Azure;
 
 namespace pluginDocuSign.Services
 {
@@ -35,8 +39,8 @@ namespace pluginDocuSign.Services
 
             _docuSignPackager = new DocuSignPackager
             {
-                CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
-                CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
+                CurrentEmail = CloudConfigurationManager.GetSetting("DocuSignLoginEmail"),
+                CurrentApiPassword = CloudConfigurationManager.GetSetting("DocuSignLoginPassword")
             };
 
             _email = null;
@@ -204,5 +208,16 @@ namespace pluginDocuSign.Services
                     return ControlTypes.TextBox;
             }
         }
+
+        public void SendUsingTemplate(string templateId, string recipientAddress)
+        {
+            var curEnv = new Envelope();
+            var templateList = new List<string> {templateId};
+            curEnv.AddTemplates(templateList);
+            curEnv.Create();
+
+        }
+
+
     }
 }

@@ -33,7 +33,8 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
-            CreateEmptyActionList();
+            // DO-1214
+            //CreateEmptyActionList();
             CreateActionTemplate();
         }
 
@@ -291,30 +292,31 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates one empty action list
         /// </summary>
-        private void CreateEmptyActionList()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // 
-                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(curProcessTemplate);
-                uow.SaveChanges();
-                //Add a processnodetemplate to processtemplate 
-                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
-
-                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
-                uow.SaveChanges();
-                
-                var actionList = FixtureData.TestEmptyActionList();
-                actionList.Id = 1;
-                actionList.ActionListType = 1;
-                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
-
-                uow.ActionListRepository.Add(actionList);
-                uow.SaveChanges();
-            }
-        }
+        // DO-1214
+//        private void CreateEmptyActionList()
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                // 
+//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
+//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                uow.SaveChanges();
+//                //Add a processnodetemplate to processtemplate 
+//                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+//                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+//
+//                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+//                uow.SaveChanges();
+//                
+//                var actionList = FixtureData.TestEmptyActionList();
+//                actionList.Id = 1;
+//                actionList.ActionListType = 1;
+//                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
+//
+//                uow.ActionListRepository.Add(actionList);
+//                uow.SaveChanges();
+//            }
+//        }
 
         private void CreateActionTemplate()
         {

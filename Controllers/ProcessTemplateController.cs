@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
-using Microsoft.AspNet.Identity;
-using StructureMap;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
-using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using System;
-using System.Data.Entity;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace Web.Controllers
 {
@@ -21,17 +19,20 @@ namespace Web.Controllers
     public class ProcessTemplateController : ApiController
     {
         private readonly IProcessTemplate _processTemplate;
-
+        
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IProcessTemplate>())
         {
         }
+
+        
 
         public ProcessTemplateController(IProcessTemplate processTemplate)
         {
             _processTemplate = processTemplate;
         }
 
+        
         [Route("full/{id:int}")]
         [ResponseType(typeof(ProcessTemplateDTO))]
         [HttpGet]
@@ -46,26 +47,38 @@ namespace Web.Controllers
             };
         }
 
+        
         // Manual mapping method to resolve DO-1164.
         private ProcessTemplateDTO MapProcessTemplateToDTO(ProcessTemplateDO curProcessTemplateDO, IUnitOfWork uow)
         {
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
-                .Include(x => x.ActionLists)
-                .Where(x => x.ParentTemplateId == curProcessTemplateDO.Id)
+                .Include(x => x.Activities)
+                .Where(x => x.ParentActivityId == curProcessTemplateDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((ProcessNodeTemplateDO x) =>
                 {
                     var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
-                    pntDTO.ActionLists = x.ActionLists.Select(y =>
+
+                    pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
+                    
+                    //black voodoo magic to alow client works as if  actionlists are still present.
+                    foreach (var action in pntDTO.Actions)
                     {
-                        var actionList = Mapper.Map<FullActionListDTO>(y);
-                        actionList.Actions = y.Activities.OfType<ActionDO>()
-                                .Select(z => Mapper.Map<ActionDTO>(z))
-                                .ToList();
-                        return actionList;
-                    }).ToList();
+                        action.ActionListId = pntDTO.Id;
+                    }
+
+                    // DO-1214. Emulate existance of one action list
+                    pntDTO.ActionLists = new[]
+                    {
+                        new
+                        {
+                            ActionListType = 1,
+                            Actions = pntDTO.Actions,
+                            Id = pntDTO.Id // send ProcessNodeTemaplate Id. We removed ActionListDO and now we need ProcessNodeTemaplate Id to edit actions.
+                        }
+                    };
                     return pntDTO;
                 }).ToList();
 
@@ -81,6 +94,8 @@ namespace Web.Controllers
 
             return result;
         }
+
+        
         [Route("getactive")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -94,6 +109,7 @@ namespace Web.Controllers
             return Ok();
         }
 
+        
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
@@ -116,6 +132,7 @@ namespace Web.Controllers
             return Ok();
         }
 
+        
         
         public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
@@ -150,6 +167,7 @@ namespace Web.Controllers
             }
         }
 
+        
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
@@ -158,6 +176,8 @@ namespace Web.Controllers
             //A stub until the functionaltiy is ready
             return Ok();
         }
+
+        
 
         public IHttpActionResult Delete(int id)
         {
@@ -170,22 +190,27 @@ namespace Web.Controllers
             }
         }
 
+        
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         public IHttpActionResult GetTriggerSettings()
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
+        
         [Route("activate")]
         public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Activate(curProcessTemplate));
         }
 
+        
         [Route("deactivate")]
         public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Deactivate(curProcessTemplate));
         }
+
+        
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Repositories;
+using StructureMap;
 
 namespace Data.Interfaces
 {
@@ -47,8 +48,7 @@ namespace Data.Interfaces
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-        ActionListRepository ActionListRepository { get; }
-        ActivityRepository ActivityRepository { get; }
+		  ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
         IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
@@ -71,7 +71,7 @@ namespace Data.Interfaces
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
 
-        /// <summary>
+	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

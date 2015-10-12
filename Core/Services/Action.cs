@@ -27,6 +27,7 @@ namespace Core.Services
         private ICrate _crate;
         //private Task curAction;
         private IPlugin _plugin;
+        //private IProcessTemplate _processTemplate;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
@@ -34,6 +35,7 @@ namespace Core.Services
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _crate= ObjectFactory.GetInstance<ICrate>();
+          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -49,47 +51,47 @@ namespace Core.Services
             ActionDO existingActionDO = null;
             ActionDO curAction;
 
-                if (submittedActionData.ActivityTemplateId == 0)
-                {
-                    submittedActionData.ActivityTemplateId = null;
-                }
-
-                if (submittedActionData.Id > 0)
-                {
-                    existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
-                }
-
-                if (submittedActionData.IsTempId)
-                {
-                    submittedActionData.Id = 0;
-                }
-
-                if (existingActionDO != null)
-                {
-                    existingActionDO.ParentActivity = submittedActionData.ParentActivity;
-                    existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
-                    existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
-                    existingActionDO.Name = submittedActionData.Name;
-                    existingActionDO.CrateStorage = submittedActionData.CrateStorage;
-                    curAction = existingActionDO;
-                }
-                else
-                {
-                    uow.ActionRepository.Add(submittedActionData);
-                    curAction = submittedActionData;
-                }
-
-                uow.SaveChanges();
-                curAction.IsTempId = false;
-                return curAction;
+            if (submittedActionData.ActivityTemplateId == 0)
+            {
+                submittedActionData.ActivityTemplateId = null;
             }
+
+            if (submittedActionData.Id > 0)
+            {
+                existingActionDO = uow.ActionRepository.GetByKey(submittedActionData.Id);
+            }
+
+            if (submittedActionData.IsTempId)
+            {
+                submittedActionData.Id = 0;
+            }
+
+            if (existingActionDO != null)
+            {
+                existingActionDO.ParentActivity = submittedActionData.ParentActivity;
+                existingActionDO.ParentActivityId = submittedActionData.ParentActivityId;
+                existingActionDO.ActivityTemplateId = submittedActionData.ActivityTemplateId;
+                existingActionDO.Name = submittedActionData.Name;
+                existingActionDO.CrateStorage = submittedActionData.CrateStorage;
+                curAction = existingActionDO;
+            }
+            else
+            {
+                uow.ActionRepository.Add(submittedActionData);
+                curAction = submittedActionData;
+            }
+
+            uow.SaveChanges();
+            curAction.IsTempId = false;
+            return curAction;
+        }
 
         public ActionDO SaveOrUpdateAction(ActionDO submittedActionData)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return SaveOrUpdateAction(uow, submittedActionData);
-        }
+            }
         }
         
         public List<CrateDTO> GetCrates(ActionDO curActionDO)
@@ -111,35 +113,35 @@ namespace Core.Services
         }
 
         public async Task<ActionDTO> Configure(ActionDO curActionDO)
-            {
+        {
             ActionDTO tempActionDTO;
-                        try
-                        {
+            try
+            {
                 tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
-                        }
+            }
             catch (ArgumentException)
             {
                 EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
                 throw;
             }
-                        catch (Exception)
-                        {
+            catch (Exception)
+            {
                 EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
-                            throw;
-                        }
+                throw;
+            }
 
-                        //Plugin Configure Action Return ActionDTO
-                        curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
+            //Plugin Configure Action Return ActionDTO
+            curActionDO = Mapper.Map<ActionDO>(tempActionDTO);
 
-                        //save the received action as quickly as possible
-                        SaveOrUpdateAction(curActionDO);
+            //save the received action as quickly as possible
+            SaveOrUpdateAction(curActionDO);
 
-                        //Returning ActionDTO
-                        return tempActionDTO;
-                    }
+            //Returning ActionDTO
+            return tempActionDTO;
+        }
 
         public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
-                    {
+        {
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
             if (confControls.Count() != 0 && confControls.Count() != 1)
@@ -161,8 +163,8 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = UpdateCurrentActivity(id, uow);
-                if (curAction == null)
+                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
                     curAction = new ActivityDO { Id = id };
                     uow.ActivityRepository.Attach(curAction);
@@ -179,34 +181,34 @@ namespace Core.Services
         /// <param name="curActionId">Action Id</param>
         /// <param name="uow">Unit of Work</param>
         /// <returns>Returns the current action (if found) or null if not.</returns>
-        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
-        {
-            // Find an ActionList for which the action is set as CurrentActivity
-            // Also, get the whole list of actions for this Action List 
-            var curActionList = uow.ActionListRepository.GetQuery().Where(al => al.CurrentActivityID == curActionId).Include(al => al.Activities).SingleOrDefault();
-            if (curActionList == null) return null;
-
-            // Get current Action
-            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
-            if (curAction == null) return null; // Well, who knows...
-
-            // Get ordered list of next Activities 
-            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-
-            curActionList.CurrentActivity = activities.FirstOrDefault();
-
-            return curAction;
-        }
-
+//        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
+//        {
+//            // Find an ActionList for which the action is set as CurrentActivity
+//            // Also, get the whole list of actions for this Action List 
+//            var curActionList = uow.ActionRepository.GetQuery().Where(al => al.Id == curActionId).Include(al => al.Activities).SingleOrDefault();
+//            if (curActionList == null) return null;
+//
+//            // Get current Action
+//            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
+//            if (curAction == null) return null; // Well, who knows...
+//
+//            // Get ordered list of next Activities 
+//            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+//            
+//            curActionList.CurrentActivity = activities.FirstOrDefault();
+//
+//            return curAction;
+//        }
+            
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        {
+            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
+            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
             {
-                //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-                if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
-                {
-                    curAction.ActionState = ActionState.InProcess;
-                    uow.SaveChanges();
+                curAction.ActionState = ActionState.InProcess;
+                uow.SaveChanges();
 
-                    EventManager.ActionStarted(curAction);
+                EventManager.ActionStarted(curAction);
 
                 var payload = await Execute(curAction, curProcessDO);
                 if (payload != null)
@@ -214,30 +216,30 @@ namespace Core.Services
                     curProcessDO.CrateStorage = payload.CrateStorage;
                 }
 
-                    //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                    //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
+                //this JSON error check is broken because it triggers on standard success messages, which look like this:
+                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
 
 
-                    //check if the returned JSON is Error
-                    //  if (jsonResult.ToLower().Contains("error"))
-                    // {
-                    //     curAction.ActionState = ActionState.Error;
-                    //  }
-                    //   else
-                    //   {
-                    curAction.ActionState = ActionState.Active;
-                    //   }
+                //check if the returned JSON is Error
+                //  if (jsonResult.ToLower().Contains("error"))
+                // {
+                //     curAction.ActionState = ActionState.Error;
+                //  }
+                //   else
+                //   {
+                curAction.ActionState = ActionState.Active;
+                //   }
 
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
-                }
-                else
-                {
-                    curAction.ActionState = ActionState.Error;
-                    uow.ActionRepository.Attach(curAction);
-                    uow.SaveChanges();
-                    throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-                }
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+            }
+            else
+            {
+                curAction.ActionState = ActionState.Error;
+                uow.ActionRepository.Attach(curAction);
+                uow.SaveChanges();
+                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
+            }
             return curAction.ActionState.Value;
         }
 
@@ -249,11 +251,10 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
-                "Execute", curActionDO, curProcessDO.Id);
-
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
+            
             // Temporarily commented out by yakov.gnusin.
-            // EventManager.ActionDispatched(curActionDTO);
+            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
 
             return payloadDTO;
         }
@@ -292,7 +293,7 @@ namespace Core.Services
             if (!plugin.RequiresAuthentication)
             {
                 throw new ApplicationException("Plugin does not require authentication.");
-        }
+            }
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
@@ -433,15 +434,13 @@ namespace Core.Services
         /// <returns></returns>
         public DockyardAccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null
-                && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
-
-                return curActionListDO
-                    .Process
-                    .ProcessTemplate
-                    .DockyardAccount;
+                // Can't follow guideline to init services inside constructor. 
+                // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                // Initialization of services in constructor will cause stack overflow
+                var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(curActionDO);
+                return processTemplate != null ? processTemplate.DockyardAccount : null;
             }
 
             return null;
@@ -499,9 +498,9 @@ namespace Core.Services
                     .FirstOrDefault();
 
             if (curControlsCrate == null || string.IsNullOrEmpty(curControlsCrate.Contents))
-        {
+            {
                 throw new ApplicationException(string.Format("No crate found with Label == \"Configuration_Controls\" and ManifestType == \"{0}\"", CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME));
-        }
+            }
 
 
             return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
@@ -509,29 +508,29 @@ namespace Core.Services
         }
 
         public async Task<ActionDTO> Activate(ActionDO curActionDO)
-                    {
-                        try
-                        {
+        {
+            try
+            {
                 var result = await CallPluginActionAsync<ActionDTO>("activate", curActionDO);
-                            EventManager.ActionActivated(curActionDO);
+                EventManager.ActionActivated(curActionDO);
                 return result;
             }
             catch (ArgumentException)
             {
                 EventManager.PluginActionActivationFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
                 throw;
-                        }
+            }
             catch
-                        {
+            {
                 EventManager.PluginActionActivationFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
-                            throw;
-                        }
-                    }
+                throw;
+            }
+        }
 
         public async Task<ActionDTO> Deactivate(ActionDO curActionDO)
-                    {
+        {
             return await CallPluginActionAsync<ActionDTO>("deactivate", curActionDO);
-                    }
+        }
 
         /// <summary>
         /// Prepare AuthToken for ActionDTO request message.
@@ -553,19 +552,22 @@ namespace Core.Services
                 if (action == null)
                 {
                     throw new ApplicationException("Could not find Action.");
-            }
+                }
 
                 // Try to find AuthToken if plugin requires authentication.
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
-                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
-                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
-                    var dockyardAccount = actionList.ProcessNodeTemplate
-                        .ProcessTemplate.DockyardAccount;
+                    // Try to get owner's account for Action -> ProcessTemplate.
+                    // Can't follow guideline to init services inside constructor. 
+                    // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                    // Initialization of services in constructor will cause stack overflow
+                    var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(action);
+                    var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
+                    
                     if (dockyardAccount == null)
-            {
+                    {
                         throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
-            }
+                    }
 
                     var accountId = dockyardAccount.Id;
 

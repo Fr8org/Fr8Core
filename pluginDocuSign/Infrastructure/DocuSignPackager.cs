@@ -1,6 +1,6 @@
 ﻿using System;
 using DocuSign.Integrations.Client;
-using Microsoft.WindowsAzure;
+using fr8.Microsoft.Azure;
 
 namespace pluginDocuSign.Infrastructure
 {

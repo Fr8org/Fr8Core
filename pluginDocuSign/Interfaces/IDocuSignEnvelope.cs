@@ -58,5 +58,7 @@ namespace pluginDocuSign.Interfaces
         /// It returns empty list of envelope data if tab and signers not found.
         /// </returns>
         IEnumerable<EnvelopeDataDTO> GetEnvelopeDataByTemplate(string templateId);
+
+        void SendUsingTemplate(string templateId, string recipientAddress);
     }
 }

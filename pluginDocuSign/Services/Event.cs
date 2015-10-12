@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Core.Managers;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -13,6 +14,7 @@ using Newtonsoft.Json;
 using pluginDocuSign.Infrastructure;
 using StructureMap;
 using Core.Interfaces;
+using fr8.Microsoft.Azure;
 
 namespace pluginDocuSign.Services
 {
@@ -27,7 +29,7 @@ namespace pluginDocuSign.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        public void Process(string curExternalEventPayload)
+        public async Task<object> Process(string curExternalEventPayload)
         {
             //parse the external event xml payload
             List<DocuSignEventDO> curExternalEvents;
@@ -48,8 +50,31 @@ namespace pluginDocuSign.Services
             CrateDTO curEventReport = ObjectFactory.GetInstance<ICrate>()
                 .Create("Standard Event Report", JsonConvert.SerializeObject(eventReportContent), "Standard Event Report", 7);
 
-            string url = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
-            new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
+            string url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            var response = await new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                try
+                {
+                    return JsonConvert.DeserializeObject(content);
+                }
+                catch 
+                {
+                    return new
+                    {
+                        title = "Unexpected error while serving your request",
+                        exception = new
+                        {
+                            Message = "Unexpected response from hub"
+                        }
+                    };
+                }
+            }
+
+            return content;
         }
 
         private void Parse(string xmlPayload, out List<DocuSignEventDO> curEvents, out string curEnvelopeId)
@@ -81,18 +106,22 @@ namespace pluginDocuSign.Services
 
             foreach (var curEvent in curEvents)
             {
-                var crateFields = new List<FieldDTO>()
-                {
-                    new FieldDTO() {Key = "EnvelopeId", Value = curEvent.EnvelopeId},
-                    new FieldDTO() {Key = "ExternalEventType", Value = curEvent.ExternalEventType.ToString()},
-                    new FieldDTO() {Key = "RecipientId", Value = curEvent.RecipientId}
-                   
-                };
-
-                curEventPayloadData.Add(_crate.Create("Payload Data", JsonConvert.SerializeObject(crateFields)));
+               var payloadCrate= _crate.CreatePayloadDataCrate(CreateKeyValuePairList(curEvent));
+               curEventPayloadData.Add(payloadCrate);
             }
-
+                   
             return curEventPayloadData;
         }
+
+        private List<KeyValuePair<string,string>> CreateKeyValuePairList(DocuSignEventDO curEvent)
+        {
+            List<KeyValuePair<string, string>> returnList = new List<KeyValuePair<string, string>>();
+            returnList.Add(new KeyValuePair<string,string>("EnvelopeId",curEvent.EnvelopeId));
+            returnList.Add(new KeyValuePair<string,string>("ExternalEventType",curEvent.ExternalEventType.ToString()));
+            returnList.Add(new KeyValuePair<string,string>("RecipientId",curEvent.RecipientId));
+            return returnList;
+            }
+
+
     }
 }

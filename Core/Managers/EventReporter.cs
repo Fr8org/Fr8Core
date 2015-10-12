@@ -731,12 +731,12 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActionDispatched(ActionDTO curAction)
+        // Commented by Vladimir. DO-1214. If one action can have only one Process?
+        private void LogEventActionDispatched(ActionDO curAction, int processId)
         {
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ActionListId).ProcessID;
                 processInExecution = uow.ProcessRepository.GetByKey(processId);
             }
 
@@ -768,26 +768,27 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
+        // Commented by Vladimir. DO-1214. If one action can have only one Process?
         private void PluginActionActivated(ActionDO curAction)
         {
-            ProcessDO processInExecution;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
-            }
-
-            var fact = new FactDO
-            {
-                CustomerId = processInExecution != null ? processInExecution.DockyardAccountId : "unknown",
-                Data = processInExecution != null ? processInExecution.Id.ToStr() : "unknown",
-                ObjectId = curAction.Id.ToStr(),
-                PrimaryCategory = "Action",
-                SecondaryCategory = "Activation",
-                Activity = "Completed"
-            };
-
-            SaveAndLogFact(fact);
+//            ProcessDO processInExecution;
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
+//                processInExecution = uow.ProcessRepository.GetByKey(processId);
+//            }
+//
+//            var fact = new FactDO
+//            {
+//                CustomerId = processInExecution.DockyardAccountId,
+//                Data = processInExecution.Id.ToStr(),
+//                ObjectId = curAction.Id.ToStr(),
+//                PrimaryCategory = "Action",
+//                SecondaryCategory = "Activation",
+//                Activity = "Completed"
+//            };
+//
+//            SaveAndLogFact(fact);
         }
 
         public enum EventType
