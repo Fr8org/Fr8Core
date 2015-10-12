@@ -1,4 +1,4 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using System.Threading.Tasks;
 namespace pluginDocuSign.Interfaces
 {
     public interface IEvent
@@ -6,6 +6,6 @@ namespace pluginDocuSign.Interfaces
         /// <summary>
         /// Processes external event payload from the plugin
         /// </summary>
-        CrateDTO ProcessEvent(string curExternalEventPayload);
+        Task<object> Process(string curExternalEventPayload);
     }
 }

@@ -468,6 +468,7 @@ namespace Data.Migrations
 
             AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
             AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
             uow.SaveChanges();
         }
 

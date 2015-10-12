@@ -21,9 +21,7 @@ namespace pluginDocuSign.Controllers
         [Route("events")]
         public async Task<object> ProcessIncomingNotification()
         {
-            PluginUtilities.Infrastructure.BasePluginEvent.EventParser parser = new BasePluginEvent.EventParser(_event.ProcessEvent);
-            string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;
-            await _basePluginEvent.Process(eventPayLoadContent, parser);
+            return await _event.Process(await Request.Content.ReadAsStringAsync());
         }
     }
 }
