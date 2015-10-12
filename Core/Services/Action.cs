@@ -27,7 +27,7 @@ namespace Core.Services
         private ICrate _crate;
         //private Task curAction;
         private IPlugin _plugin;
-        private IProcessTemplate _processTemplate;
+        //private IProcessTemplate _processTemplate;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
@@ -35,7 +35,7 @@ namespace Core.Services
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _crate= ObjectFactory.GetInstance<ICrate>();
-            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -436,7 +436,10 @@ namespace Core.Services
         {
             if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                var processTemplate = _processTemplate.GetProcessTemplate(curActionDO);
+                // Can't follow guideline to init services inside constructor. 
+                // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                // Initialization of services in constructor will cause stack overflow
+                var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(curActionDO);
                 return processTemplate != null ? processTemplate.DockyardAccount : null;
             }
 
@@ -555,7 +558,10 @@ namespace Core.Services
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
                     // Try to get owner's account for Action -> ProcessTemplate.
-                    var processTemplate = _processTemplate.GetProcessTemplate(action);
+                    // Can't follow guideline to init services inside constructor. 
+                    // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                    // Initialization of services in constructor will cause stack overflow
+                    var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(action);
                     var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
                     
                     if (dockyardAccount == null)
