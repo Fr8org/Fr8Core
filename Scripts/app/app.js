@@ -114,11 +114,6 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             url: '/accounts/{id}',
             templateUrl: '/AngularTemplate/AccountDetails',
             data: { pageTitle: 'Account Details', pageSubTitle: '' }
-        })
-            .state('generalsearch', {
-            url: '/generalsearch',
-            templateUrl: '/AngularTemplate/GeneralSearchPage',
-            data: { pageTitle: 'General Search', pageSubTitle: '' }
         });
     }]);
 /* Init global settings and run the app */
