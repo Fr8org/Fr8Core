@@ -8,6 +8,8 @@ module dockyard.interfaces {
 
     export interface IReportIncidentVM extends ng.resource.IResource<model.IncidentDTO>, model.IncidentDTO { }
 
+    export interface IGeneralSearchVM extends ng.resource.IResource<model.GeneralSearchDTO>, model.GeneralSearchDTO { }
+
     export interface ISubscribedDocuSignTemplates {
         processTemplateId?: number;
         id: number;

@@ -21,6 +21,14 @@ module dockyard.controllers {
 
         addAction(): void;
         selectAction(action): void;
+        dtOptionsBuilder: any;
+        dtColumnDefs: any;
+        objecttyperecords: any;
+        objtype: any;
+        getobjecttype(type);
+        getobjectidrows(id, operator, value);
+        getobjectdaterows(id, operator, value);
+        getsearchresult();
     }
 
     //Setup aliases
@@ -47,10 +55,14 @@ module dockyard.controllers {
             'CrateHelper',
             '$filter',
             '$modal',
-            '$window'
+            '$window',
+            'GeneralSearchService',
+            'DTOptionsBuilder',
+            'DTColumnDefBuilder'
         ];
 
         constructor(
+            private $rootScope: interfaces.IAppRootScope,
             private $scope: IProcessBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
             private $state: ng.ui.IState,
@@ -62,14 +74,17 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private $modal,
-            private $window: ng.IWindowService
+            private $window: ng.IWindowService,
+            private GeneralSearchService: services.IGeneralSearchService,
+            private DTOptionsBuilder,
+            private DTColumnDefBuilder
             ) {
             this.$scope.processTemplateId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
             this.$scope.actions = [];
 
-            this.setupMessageProcessing();
-            $timeout(() => this.loadProcessTemplate(), 500, true);
+            //this.setupMessageProcessing();
+            //$timeout(() => this.loadProcessTemplate(), 500, true);
 
             this.$scope.addAction = () => {
                 this.addAction();
@@ -78,6 +93,43 @@ module dockyard.controllers {
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
                     this.selectAction(action);
+            }
+            this.$scope.getobjecttype = function (objtype) {
+                $rootScope.obtype = objtype;
+            }
+
+            this.$scope.getobjectidrows = function (id, operator, value) {
+
+                if (id) {
+                    $rootScope.obidfield = id;
+                }
+                if (operator) {
+
+                    $rootScope.obidoperator = operator;
+
+                }
+                if (value) {
+                    $rootScope.obidvalue = value;
+
+                }
+            }
+
+            this.$scope.getobjectdaterows = function (createddate, operator, value) {
+
+                if (createddate) {
+                    $rootScope.obdatefield = createddate;
+                }
+                if (operator) {
+                    $rootScope.obdateoperator = operator;
+                }
+                if (value) {
+                    $rootScope.obdatevalue = value;
+                }
+            }
+
+
+            this.$scope.getsearchresult = function () {
+                $scope.objecttyperecords = GeneralSearchService.generalSearch({ objtype: $rootScope.obtype, id: $rootScope.obidfield, idoperator: $rootScope.obidoperator, idvalue: $rootScope.obidvalue, createddate: $rootScope.obdatefield, dateoperator: $rootScope.obdateoperator, datevalue: $rootScope.obdatevalue });
             }
         }
 
@@ -107,9 +159,24 @@ module dockyard.controllers {
             //     (event: ng.IAngularEvent, eventArgs: psa.ActionUpdatedEventArgs) => this.PaneSelectAction_ActionUpdated(eventArgs));
             //Handles Save Request From PaneSelectAction
             this.$scope.$on(psa.MessageType[psa.MessageType.PaneSelectAction_InitiateSaveAction],
-                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: psa.ActionTypeSelectedEventArgs) => this.PaneSelectAction_InitiateSaveAction(eventArgs));                    
+           
         }
+      
+        
 
+      private getColumnDefs() {
+        return [
+            this.DTColumnDefBuilder.newColumnDef(2)
+                .renderWith(function (data, type, full, meta) {
+                    if (data != null || data != undefined) {
+                        var dateValue = new Date(data);
+                        var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
+                        return date;
+                    }
+                })
+        ];
+    }   
         private loadProcessTemplate() {
             var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
 
