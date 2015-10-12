@@ -17,14 +17,10 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort>
-    </IISExpressSSLPort>
-    <IISExpressAnonymousAuthentication>
-    </IISExpressAnonymousAuthentication>
-    <IISExpressWindowsAuthentication>
-    </IISExpressWindowsAuthentication>
-    <IISExpressUseClassicPipelineMode>
-    </IISExpressUseClassicPipelineMode>
+    <IISExpressSSLPort>44301</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
     <UseGlobalApplicationHostFile />
     <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
@@ -753,6 +749,9 @@
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
+    <Content Include="Views\AngularTemplate\GeneralSearch.cshtml" />
+    <Content Include="Views\AngularTemplate\GeneralSearchPage.cshtml" />
+    <Content Include="Views\AngularTemplate\GeneralSearchWidget.cshtml" />
     <None Include="Views\Home\docusign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -765,6 +764,7 @@
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\GeneralSearch.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
@@ -774,6 +774,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\GeneralSearchWidget.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
@@ -793,6 +794,7 @@
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\GeneralSearchDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />

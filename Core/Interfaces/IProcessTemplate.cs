@@ -9,6 +9,7 @@ namespace Core.Interfaces
 	public interface IProcessTemplate
 	{
 		IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null,int?status=null);
+        IList<GeneralSearchDO> GetSearchResultsForUser(string objtype = "", string id = "", string oprator = "", string idvalue = "", string createddate = "", string dateoperator = "", string datevalue = "");
 		void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool withTemplate);
 		void Delete(IUnitOfWork uow, int id);
 	    ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate);
