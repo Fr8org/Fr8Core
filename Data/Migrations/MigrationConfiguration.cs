@@ -200,7 +200,7 @@ namespace Data.Migrations
                 token.Plugin = salesforcePlugin;
                 token.PluginID = salesforcePlugin.Id;
                 token.ExpiresAt = DateTime.Now.AddDays(10);
-           
+
                 uow.AuthorizationTokenRepository.Add(token);
                 uow.SaveChanges();
 
@@ -463,8 +463,8 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-     // Create test DockYard account for plugin subscription.
-           // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+            // Create test DockYard account for plugin subscription.
+            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
             AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
             AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
@@ -493,6 +493,7 @@ namespace Data.Migrations
      
             }
         }
+
 
         private void AddActionTemplates(IUnitOfWork uow)
         {
