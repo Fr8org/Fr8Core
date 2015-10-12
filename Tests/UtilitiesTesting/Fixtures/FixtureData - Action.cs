@@ -1068,5 +1068,20 @@ CrateStorage=  crateStorage,
             };
             return curAction;
         }
+
+        public static ActionDO TestActionProcess()
+        {
+            var actionDo = new ActionDO
+            {
+                Id = 1,
+
+                ActionState = ActionState.Unstarted,
+                Name = "Action 1",
+                CrateStorage = "config settings",
+                ParentActivityId = 1,
+                ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
+            };
+            return actionDo;
+        }
     }
 }

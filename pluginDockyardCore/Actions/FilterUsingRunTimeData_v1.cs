@@ -57,7 +57,7 @@ namespace pluginDockyardCore.Actions
                 curValues.AddRange(singleCrateValues);
             }
 
-            // Prepare envelope data.            
+            // Prepare envelope data.
 
             // Evaluate criteria using Contents json body of found Crate.
             var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
