@@ -19,6 +19,9 @@ namespace Web
             HttpConfiguration config1 = GlobalConfiguration.Configuration;
             config.Formatters.JsonFormatter.SerializerSettings.Formatting =
                 Newtonsoft.Json.Formatting.Indented;
+
+            //Added XML Serializer - used for Salesforce Outbound Message Response
+            config.Formatters.XmlFormatter.UseXmlSerializer = true;
 		}
 	}
 }

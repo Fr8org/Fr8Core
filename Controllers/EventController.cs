@@ -11,6 +11,8 @@ using Data.Crates.Helpers;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
+using System.Xml;
+using System.Net;
 
 namespace Web.Controllers
 {
@@ -117,8 +119,18 @@ namespace Web.Controllers
             //create a plugin event for event notification received
             EventManager.ReportExternalEventReceived(Request.Content.ReadAsStringAsync().Result);
             
-            await _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
+             var result =await _event.RequestParsingFromPlugins(Request, pluginName, pluginVersion);
 
+
+            //Check if responding to Salesforce
+            if(pluginName=="pluginSalesforce")
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.LoadXml(result);
+                return Content(HttpStatusCode.OK, doc, Configuration.Formatters.XmlFormatter);
+            }
+            
+            
             return Ok();
         }
 

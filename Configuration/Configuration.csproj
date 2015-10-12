@@ -37,7 +37,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AzureApplicationSettings.cs" />
+    <Compile Include="CloudConfigurationManager.cs" />
     <Compile Include="DaemonSettings.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

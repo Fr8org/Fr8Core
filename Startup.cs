@@ -6,7 +6,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
-using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
 
@@ -83,12 +82,12 @@ namespace Web
 
 
 
-            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
+            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
             // it is not true that there is at least one commConfig that has the Main alert number
             {
                 CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
                 curCommConfig.CommunicationType = CommunicationType.Sms;
-                curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
+                curCommConfig.ToAddress = fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
                 communicationConfigurationRepo.Add(curCommConfig);
                 uow.SaveChanges();
             }
