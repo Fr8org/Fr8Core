@@ -1,0 +1,30 @@
+﻿<div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="col-md-5">Field</th>
+                <th class="col-md-5">Value</th>
+                <th class="col-md-2"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="row in rows track by $index">
+                <td>
+                    <input type="text" class="form-control" ng-model="row.field" ng-blur="update($event)" />
+                </td>
+                <td>
+                    <input type="text" class="form-control" ng-model="row.value" ng-blur="update($event)" />
+                </td>
+                <td>
+                    <a href ng-click="removeRow($index)" class="field-list-remove-button">
+                        <img src="~/Content/img/ProcessBuilder/delete-icon.png"
+                             class="table-delete-button" />
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <a href class="btn btn-primary field-list-add-button" ng-click="addRow()">Add Row</a>
+    </div>
+</div>
