@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-
 namespace pluginDocuSign.Interfaces
 {
     public interface IEvent

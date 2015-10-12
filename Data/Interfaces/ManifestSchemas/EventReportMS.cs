@@ -10,6 +10,8 @@ namespace Data.Interfaces.ManifestSchemas
         public string ExternalAccountId { get; set; }
         public List<CrateDTO> EventPayload { get; set; }
 
+        public string Source { get; set; }
+
         public EventReportMS()
         {
             EventPayload = new List<CrateDTO>();
