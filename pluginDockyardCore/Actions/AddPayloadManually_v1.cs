@@ -25,7 +25,7 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");
             }
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
 
             var fieldListControl = controlsMS.Controls
                 .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
@@ -74,7 +74,7 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("Could not find ControlsConfiguration crate.");
             }
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
 
             var fieldListControl = controlsMS.Controls
                 .SingleOrDefault(x => x.Type == ControlTypes.FieldList);

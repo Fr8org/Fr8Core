@@ -47,10 +47,6 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
-    export interface IGeneralSearchService extends ng.resource.IResourceClass<interfaces.IGeneralSearchVM> {
-
-        generalSearch: (id: { objtype: string; id: string, idoperator: string, idvalue: string, createddate: string, dateoperator: string, datevalue: string }) => interfaces.IGeneralSearchVM;
-    }
     /*
         ProcessTemplateDTO CRUD service.
     */
@@ -87,18 +83,6 @@ module dockyard.services {
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService>$resource('/api/processtemplate/triggersettings')
-    ]);
-
-    app.factory('GeneralSearchService', ['$resource', ($resource: ng.resource.IResourceService): IGeneralSearchService =>
-        <IGeneralSearchService> $resource('/api/processTemplate/:id', { id: '@id' },
-            {
-                'generalSearch': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/processTemplate/generalSearch'
-                }
-
-            })
     ]);
 
     /* 

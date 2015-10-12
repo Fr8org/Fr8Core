@@ -281,14 +281,14 @@ namespace pluginIntegrationTests
             var availableTemplatesCrate = curCrateStorage.CrateDTO
                 .Single(x => x.Label == "Available Templates" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
 
-            var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(
+            var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(
                 availableTemplatesCrate.Contents);
 
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CrateDTO
                 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
@@ -369,7 +369,7 @@ namespace pluginIntegrationTests
             var configurationControlsCrate = curCrateStorage.CrateDTO
                 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,

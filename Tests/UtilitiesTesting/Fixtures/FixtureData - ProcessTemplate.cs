@@ -134,7 +134,7 @@ namespace UtilitiesTesting.Fixtures
                 ICrate crate = ObjectFactory.GetInstance<ICrate>();
 
                 var serializer = new JsonSerializer();
-                EventSubscriptionMS eventSubscriptionMS = new EventSubscriptionMS();
+                EventSubscriptionCM eventSubscriptionMS = new EventSubscriptionCM();
                 eventSubscriptionMS.Subscriptions = new List<string>();
                 eventSubscriptionMS.Subscriptions.Add("DocuSign Envelope Sent");
                 eventSubscriptionMS.Subscriptions.Add("Write to SQL AZure");

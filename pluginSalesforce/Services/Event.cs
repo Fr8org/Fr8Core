@@ -41,7 +41,7 @@ namespace pluginSalesforce.Services
             Parse(curExternalEventPayload, out leadId, out accountId);
 
             //prepare the content from the external event payload            
-            var eventReportContent = new EventReportMS
+            var eventReportContent = new EventReportCM
             {
                 EventNames = "Lead Created",
                 ProcessDOId = "",
