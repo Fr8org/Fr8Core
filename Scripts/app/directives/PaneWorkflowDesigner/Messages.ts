@@ -71,28 +71,23 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class ActionAddingEventArgs {
         public processNodeTemplateId: number;
-        public actionListType: model.ActionListType;
 
-        constructor(processNodeTemplateId: number, actionListType: model.ActionListType) {
+        constructor(processNodeTemplateId: number) {
             this.processNodeTemplateId = processNodeTemplateId;
-            this.actionListType = actionListType;
         }
     }
 
     export class AddActionEventArgs {
         public criteriaId: number;
         public action: model.ActionDTO;
-        public actionListType: model.ActionListType;
         public doNotRaiseSelectedEvent: boolean;
 
         constructor(criteriaId: number,
             action: model.ActionDTO,
-            actionListType: model.ActionListType,
             doNotRaiseSelectedEvent?: boolean) {
 
             this.criteriaId = criteriaId;
             this.action = action;
-            this.actionListType = actionListType;
             this.doNotRaiseSelectedEvent = doNotRaiseSelectedEvent;
         }
     }
@@ -100,18 +95,15 @@ module dockyard.directives.paneWorkflowDesigner {
     export class ActionSelectedEventArgs {
         public processNodeTemplateId: number;
         public actionId: number;
-        public actionListId: number;
         public activityTemplateId: number;
 
         constructor(
             processNodeTemplateId: number,
             actionId: number,
-            actionListId: number,
             activityTemplateId: number) {
 
             this.processNodeTemplateId = processNodeTemplateId;
             this.actionId = actionId;
-            this.actionListId = actionListId;
             this.activityTemplateId = activityTemplateId;
         }
     }

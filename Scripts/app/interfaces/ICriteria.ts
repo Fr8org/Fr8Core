@@ -14,8 +14,7 @@ module dockyard.interfaces {
     export interface IActionDTO {
         id: number,
         isTempId: boolean, 
-        processNodeTemplateId: number,
-        actionListId: number,
+        parentActivityId: number,
         name: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;

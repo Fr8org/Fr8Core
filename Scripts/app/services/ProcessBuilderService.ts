@@ -29,10 +29,6 @@ module dockyard.services {
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
 
-    export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
-        byProcessNodeTemplate: (id: { id: number; actionListType: number; }) => interfaces.IActionListVM;
-    }
-
     export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -150,19 +146,6 @@ module dockyard.services {
                 'byProcessNodeTemplate': {
                     method: 'GET',
                     url: '/api/criteria/byProcessNodeTemplate'
-                }
-            })
-    ]);
-
-    /* 
-        ActionListDTO CRUD service.
-    */
-    app.factory('ActionListService', ['$resource', ($resource: ng.resource.IResourceService): IActionListService =>
-        <IActionListService>$resource('/api/actionList', null,
-            {
-                'byProcessNodeTemplate': {
-                    method: 'GET',
-                    url: '/api/actionList/byProcessNodeTemplate/'
                 }
             })
     ]);

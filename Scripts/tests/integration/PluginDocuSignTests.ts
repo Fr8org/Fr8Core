@@ -75,7 +75,7 @@ module dockyard.tests.controller {
                     name: "test action type",
                     configurationControls: utils.fixtures.ActionDesignDTO.configurationControls,
                     crateStorage: null,
-                    processNodeTemplateId: 1,
+                    parentActivityId: 1,
                     activityTemplateId: 1,
                     isTempId: false,
                     id: 0,
