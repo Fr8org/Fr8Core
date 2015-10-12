@@ -12,11 +12,8 @@ module dockyard.controllers {
         deleteProcessTemplate: (processTemplate: interfaces.IProcessTemplateVM) => void;
         dtOptionsBuilder: any;
         dtColumnDefs: any;
-        /*
         activeProcessTemplates: Array<interfaces.IProcessTemplateVM>;
         inActiveProcessTemplates: Array<interfaces.IProcessTemplateVM>;
-        */
-        processTemplates: Array<interfaces.IProcessTemplateVM>;
     }
 
     /*
@@ -50,14 +47,10 @@ module dockyard.controllers {
             });
 
             //Load Process Templates view model
-           
-            $scope.processTemplates = ProcessTemplateService.query();
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);   
             $scope.dtColumnDefs = this.getColumnDefs(); 
-            /*
             $scope.activeProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 2 });   
             $scope.inActiveProcessTemplates = ProcessTemplateService.getbystatus({ id: null, status: 1 });
-            */
             $scope.executeProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.executeProcessTemplate);
             $scope.goToProcessTemplatePage = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.goToProcessTemplatePage);
             $scope.deleteProcessTemplate = <(processTemplate: interfaces.IProcessTemplateVM) => void> angular.bind(this, this.deleteProcessTemplate);
