@@ -27,6 +27,7 @@ namespace Core.Services
         private ICrate _crate;
         //private Task curAction;
         private IPlugin _plugin;
+        private IProcessTemplate _processTemplate;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
@@ -34,6 +35,7 @@ namespace Core.Services
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _crate= ObjectFactory.GetInstance<ICrate>();
+            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -249,11 +251,10 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
-                "Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
-            // EventManager.ActionDispatched(curActionDTO);
+            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
 
             return payloadDTO;
         }
@@ -435,32 +436,14 @@ namespace Core.Services
         {
             if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                var processTemplate = GetProcessTemplate(curActionDO);
+                var processTemplate = _processTemplate.GetProcessTemplate(curActionDO);
                 return processTemplate != null ? processTemplate.DockyardAccount : null;
             }
 
             return null;
 
         }
-
-
-        private ProcessTemplateDO GetProcessTemplate(ActionDO action)
-        {
-            var root = action.ParentActivity;
-
-            while (root != null)
-            {
-                if (root is ProcessTemplateDO)
-                {
-                    return (ProcessTemplateDO)root;
-                }
-
-                root = root.ParentActivity;
-            }
-
-            return null;
-        }
-
+        
         public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
         {
             if (curCrateDTOLists == null)
@@ -572,7 +555,7 @@ namespace Core.Services
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
                     // Try to get owner's account for Action -> ProcessTemplate.
-                    var processTemplate = GetProcessTemplate(action);
+                    var processTemplate = _processTemplate.GetProcessTemplate(action);
                     var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
                     
                     if (dockyardAccount == null)

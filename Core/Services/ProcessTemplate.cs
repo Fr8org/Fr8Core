@@ -22,6 +22,7 @@ namespace Core.Services
         private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
+        private readonly IActivity _activity;
         private readonly ICrate _crate;
 
         
@@ -32,6 +33,7 @@ namespace Core.Services
             _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             _action = ObjectFactory.GetInstance<IAction>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
@@ -99,7 +101,7 @@ namespace Core.Services
                 throw new EntityNotFoundException<ProcessTemplateDO>(id);
             }
 
-            ObjectFactory.GetInstance<IActivity>().Delete(uow, curProcessTemplate);
+            _activity.Delete(uow, curProcessTemplate);
         }
 
         
@@ -320,7 +322,22 @@ namespace Core.Services
             return EnumerateActivities<ActivityDO>(curProcessTemplate).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
-        
+        public ProcessTemplateDO GetProcessTemplate(ActionDO action)
+        {
+            var root = action.ParentActivity;
+
+            while (root != null)
+            {
+                if (root is ProcessTemplateDO)
+                {
+                    return (ProcessTemplateDO)root;
+                }
+
+                root = root.ParentActivity;
+            }
+
+            return null;
+        }
 
 
         /// <summary>
