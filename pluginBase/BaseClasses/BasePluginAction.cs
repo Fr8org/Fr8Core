@@ -297,7 +297,7 @@ namespace PluginBase.BaseClasses
 
         }
 
-        protected CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
+        protected CrateDTO PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
         {
             ControlDefinitionDTO[] controls =  
             {

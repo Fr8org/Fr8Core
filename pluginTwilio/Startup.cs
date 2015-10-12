@@ -8,15 +8,11 @@ using PluginBase.BaseClasses;
 
 namespace pluginTwilio
 {
-    public class Startup
+    public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
-            Task.Run(() =>
-            {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("pluginTwilio");
-            });
+            StartHosting("plugin_twilio");
         }
     }
 }

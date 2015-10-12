@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using Data.Interfaces.ManifestSchemas;
+using Core.Interfaces;
+using Data.Infrastructure;
 namespace pluginTwilio.Actions
 {
     public class Send_Via_Twilio_v1 : BasePluginAction
@@ -21,7 +23,7 @@ namespace pluginTwilio.Actions
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
 	    }
 
-        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
+        public override async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             return await ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationRequestType.Initial);
         }
@@ -44,31 +46,61 @@ namespace pluginTwilio.Actions
             {
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
-            curActionDTO.CrateStorage.CrateDTO.Add(CreateControlsCrate());
-            //commeted first for the avialble datafields for the dropdownlist to wait for the Nested Controls to be implemented
-            //curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
+            curActionDTO.CrateStorage.CrateDTO.Add(PackCrate_ConfigurationControls());
+            curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private CrateDTO CreateControlsCrate()
+        private CrateDTO PackCrate_ConfigurationControls()
         {
-
-            TextBoxControlDefinitionDTO[] controls = 
+            TextBoxControlDefinitionDTO smsNumberTextbox = new TextBoxControlDefinitionDTO()
             {
-                new TextBoxControlDefinitionDTO()
+                Label = "SMS Number",
+                Name = "SMS_Number",
+                Required = true
+            };
+            RadioButtonOption specificNumberOption = new RadioButtonOption()
+            {
+                Selected = true,
+                Name = "SMSNumberOption",
+                Controls = new List<ControlDefinitionDTO>() { smsNumberTextbox }
+            };
+
+
+            //get data for combobox for upstream data
+            var fieldSMSNumberLists = new DropDownListControlDefinitionDTO()
+            {
+                Label = "a value from Upstream Crate:",
+                Name = "upstream_crate",
+                Source = new FieldSourceDTO
                 {
-                    Label = "SMS Number",
-                    Name = "SMS_Number",
-                    Required = true,
-                },
-               new TextBoxControlDefinitionDTO()
-                {
-                    Label = "SMS Body",
-                    Name = "SMS_Body",
-                    Required = true,
+                    Label = "Available SMS Number",
+                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                 }
             };
-            return PackControlsCrate(controls);
+
+            RadioButtonOption upstreamOption = new RadioButtonOption()
+            {
+                Selected = false,
+                Name = "SMSNumberOption",
+                Controls = new List<ControlDefinitionDTO>() { fieldSMSNumberLists }
+            };
+
+            RadioButtonGroupControlDefinitionDTO radioGroup = new RadioButtonGroupControlDefinitionDTO()
+            {
+                GroupName = "SMSNumber_Group",
+                Label = "For the SMS Number use:",
+                Radios = new List<RadioButtonOption>() { specificNumberOption, upstreamOption }
+            };
+
+            TextBoxControlDefinitionDTO smsBody = new TextBoxControlDefinitionDTO()
+            {
+                Label = "SMS Body",
+                Name = "SMS_Body",
+                Required = true
+            };
+
+            return PackControlsCrate(radioGroup, smsBody);
         }
 
         private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
@@ -79,7 +111,7 @@ namespace pluginTwilio.Actions
 
             if (curUpstreamFields.Length == 0)
             {
-                crateDTO = GetTextBoxControlForDisplayingError("Error_NoUpstreamLists",
+                crateDTO = PackCrate_ErrorTextBox("Error_NoUpstreamLists",
                          "No Upstream fr8 Lists Were Found.");
                 curActionDTO.CurrentView = "Error_NoUpstreamLists";
             }
@@ -130,7 +162,15 @@ namespace pluginTwilio.Actions
             }
             else
             {
-                _twilio.SendSms(smsNumberFields.Value, smsBodyFields.Value);
+                try
+                {
+                    _twilio.SendSms(smsNumberFields.Value, smsBodyFields.Value);
+                    EventManager.TwilioSMSSent(smsNumberFields.Value, smsBodyFields.Value);
+                }
+                catch (Exception ex)
+                {
+                    EventManager.TwilioSMSSendFailure(smsNumberFields.Value, smsBodyFields.Value, ex.Message);
+                }
             }
 
             return processPayload;

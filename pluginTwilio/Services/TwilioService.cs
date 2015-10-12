@@ -55,14 +55,7 @@ namespace pluginTwilio.Services
      
             if (result.RestException != null)
             {
-                if (result.RestException.MoreInfo == "https://www.twilio.com/docs/errors/21606" && Debugger.IsAttached)
-                {
-                    //swallow the twilio exception that gets thrown when you use the test account, so it doesn't clutter up the logs
-                }
-                else
-                {
-                    throw new Exception(result.RestException.Message);
-                }
+               throw new Exception(result.RestException.Message);
             }
         }
 
@@ -81,7 +74,7 @@ namespace pluginTwilio.Services
             catch (Exception ex)
             {
                 _serviceManager.LogFail(ex, "Failed to send an sms.");
-                throw;
+                throw new Exception(ex.Message);
             }
         }
 
