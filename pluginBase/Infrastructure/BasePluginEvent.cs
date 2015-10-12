@@ -4,6 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Configuration;
 using System.Threading.Tasks;
+using fr8.Microsoft.Azure;
 
 namespace PluginUtilities.Infrastructure
 {
@@ -28,7 +29,7 @@ namespace PluginUtilities.Infrastructure
             //make Post call
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
-            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
             {
                 ObjectId = pluginName,
@@ -57,7 +58,7 @@ namespace PluginUtilities.Infrastructure
             //prepare the REST client to make the POST to fr8's Event Controller
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
-            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
 
             //create event logging data with required information
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData

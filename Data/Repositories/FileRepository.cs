@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Data.Entities;
 using Data.Interfaces;
-
+using fr8.Microsoft.Azure;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -49,10 +49,10 @@ namespace Data.Repositories
             const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";
             const string defaultAzureStorageContainer = "DefaultAzureStorageContainer";
 
-            string containerName = fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
+            string containerName = CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
 
             CloudStorageAccount storageAccount =
-                CloudStorageAccount.Parse(fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
+                CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
 
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             

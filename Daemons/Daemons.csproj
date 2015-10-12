@@ -58,6 +58,7 @@
       <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -66,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daemon.cs" />
+    <Compile Include="DaemonSettings.cs" />
     <Compile Include="DiagnosticsTest.cs" />
     <Compile Include="EventExposers\SendGridPackagerEventHandler.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />

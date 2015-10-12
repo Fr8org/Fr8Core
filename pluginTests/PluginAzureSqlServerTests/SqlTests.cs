@@ -9,6 +9,7 @@ using StructureMap;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using fr8.Microsoft.Azure;
 
 namespace pluginTests.PluginAzureSqlServerTests
 {
@@ -51,7 +52,7 @@ namespace pluginTests.PluginAzureSqlServerTests
                 }
             }
 
-            var url = ConfigurationManager.AppSettings[TestServerUrlKey];
+            var url = CloudConfigurationManager.GetSetting(TestServerUrlKey);
             _server = SelfHostFactory.CreateServer(url);
         }
 
@@ -80,7 +81,7 @@ namespace pluginTests.PluginAzureSqlServerTests
         [Test, Ignore] //this needs to be adjusted to work with the mockdb
         public void CallCommandWrite()
         {
-            var baseUrl = ConfigurationManager.AppSettings[TestServerUrlKey];
+            var baseUrl = CloudConfigurationManager.GetSetting(TestServerUrlKey);
 
             // Sending http request.
             var restCall = ObjectFactory.GetInstance<IRestfulServiceClient>();

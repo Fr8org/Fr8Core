@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.DataTransferObjects;
 using Moq;
 using NUnit.Framework;
-using UtilitiesTesting;
+using fr8.Microsoft.Azure;
 
 namespace pluginTests.PluginBaseTests.Infrastructure
 {
@@ -36,7 +31,7 @@ namespace pluginTests.PluginBaseTests.Infrastructure
 
             //verify that the post call is made to Fr8 Event Controller
             restClientMock.Verify(
-                client => client.PostAsync(new Uri(ConfigurationManager.AppSettings["EventWebServerUrl"], UriKind.Absolute), 
+                client => client.PostAsync(new Uri(CloudConfigurationManager.GetSetting("EventWebServerUrl"), UriKind.Absolute), 
                     It.IsAny<CrateDTO>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();

@@ -10,6 +10,7 @@ using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using pluginAzureSqlServer.Interfaces;
+using fr8.Microsoft.Azure;
 
 namespace pluginAzureSqlServer.Services
 {
@@ -51,7 +52,7 @@ namespace pluginAzureSqlServer.Services
                 "Standard Event Report",
                 7);
             
-            var url = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
+            var url = Regex.Match(CloudConfigurationManager.GetSetting("EventWebServerUrl"), @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             new HttpClient().PostAsJsonAsync(new Uri(url, UriKind.Absolute), curEventReport);
         }
 
