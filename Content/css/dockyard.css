@@ -116,8 +116,27 @@
 }
 
 .action-name {
-    margin-top: 10px;
+    
     text-align: center;
+
+}
+
+.action-menu {
+    top: 3px;
+    position: absolute;
+    right: 3px;
+    color: #666;
+}
+.action-menu:hover {
+    color: #666;
+}
+.action-header {
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid;
+    margin-bottom: 10px;
+    text-align: center;
+    position: relative;
 }
 
 .action-to-add {

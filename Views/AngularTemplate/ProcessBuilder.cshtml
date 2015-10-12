@@ -12,7 +12,22 @@
 <div ng-controller="ProcessBuilderController" class="margin-top-10">
     <div class="process-builder-container">
         <div class="action" ng-repeat-start="action in actions">
-            <p class="action-name">{{action.name}}</p>
+            <div class="action-header" dropdown>
+                <p class="action-name">{{action.name}}
+                    
+                </p>
+                <a class="action-menu" dropdown-toggle>
+                    <i class="fa fa-gear"></i>
+                </a>
+                <ul class="dropdown-menu pull-right" role="menu">
+                    <li role="menuitem"><a href="#">Do Something</a></li>
+                    <li role="menuitem"><a href="#">Make this action fly</a></li>
+                    <li role="menuitem"><a href="#">Reorder</a></li>
+                    <li class="divider"></li>
+                    <li role="menuitem"><a ng-click="deleteAction(action);"><i class="fa fa-trash-o"></i> Delete</a></li>
+                </ul>
+            </div>
+            
             <pane-configure-action id="paneConfigureAction" current-action="action"></pane-configure-action>
         </div>
         <div class="action-arrow" ng-repeat-end></div>

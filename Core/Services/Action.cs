@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web.UI;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
@@ -29,12 +30,15 @@ namespace Core.Services
         private IPlugin _plugin;
         //private IProcessTemplate _processTemplate;
         private readonly AuthorizationToken _authorizationToken;
+        
+        private readonly IActivity _activity;
 
         public Action()
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _crate= ObjectFactory.GetInstance<ICrate>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
           //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
@@ -160,14 +164,36 @@ namespace Core.Services
 
         public void Delete(int id)
         {
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
-                if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
+                if (curAction == null)
                 {
-                    curAction = new ActivityDO { Id = id };
-                    uow.ActivityRepository.Attach(curAction);
+                    throw new InvalidOperationException("Unknown action with id: "+ id);
+                }
+                var downStreamActivities = _activity.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
+                //we should clear values of configuration controls
+
+                foreach (var downStreamActivity in downStreamActivities)
+                {
+                    var crateStorage = downStreamActivity.CrateStorageDTO();
+                    foreach (var crate in crateStorage.CrateDTO)
+                    {
+                        if (crate.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)
+                        {
+                            var configurationControls = _crate.GetStandardConfigurationControls(crate);
+                            foreach (var controlDefinitionDTO in configurationControls.Controls)
+                            {
+                                controlDefinitionDTO.Value = "";
+                            }
+
+                            _crate.UpdateStandardConfigurationControls(crate, configurationControls);
+                        }
+                    }
+                    downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
                 }
                 uow.ActivityRepository.Remove(curAction);
                 uow.SaveChanges();

@@ -21,6 +21,7 @@ module dockyard.controllers {
         actions: Array<model.ActionDTO>
 
         addAction(): void;
+        deleteAction: (action: model.ActionDTO) => void;
         selectAction(action): void;
     }
 
@@ -75,6 +76,8 @@ module dockyard.controllers {
             this.$scope.addAction = () => {
                 this.addAction();
             }
+
+            $scope.deleteAction = <() => void> angular.bind(this, this.deleteAction);
 
             this.$scope.selectAction = (action: model.ActionDTO) => {
                 if (!this.$scope.current.action || this.$scope.current.action.id !== action.id)
@@ -168,6 +171,13 @@ module dockyard.controllers {
                 //we should just raise an event for this
                 self.$scope.$broadcast(psa.MessageType[psa.MessageType.PaneSelectAction_ActionAdd],new psa.ActionAddEventArgs());
             });
+        }
+
+        private deleteAction(action: model.ActionDTO) {
+            //TODO -> should we generate an event for delete event?
+
+            //TODO -> ask user if he/she is sure
+            this.ActionService.deleteById({ id: action.id });
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {

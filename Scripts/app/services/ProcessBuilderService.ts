@@ -12,6 +12,8 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActionDTO) => ng.resource.IResource<interfaces.IControlsListVM>;
         getByProcessTemplate: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
+        //TODO make resource class do this operation
+        deleteById: (id: {id: number}) => void;
         //getFieldDataSources: (params: Object, data: interfaces.IActionVM) => interfaces.IDataSourceListVM;
     }
 
@@ -122,6 +124,9 @@ module dockyard.services {
                     method: 'GET',
                     url: '/actions/bypt',
                     isArray: true
+                },
+                'deleteById': {
+                    method: 'DELETE'
                 },
                 'params': {
                     id: 'id'
