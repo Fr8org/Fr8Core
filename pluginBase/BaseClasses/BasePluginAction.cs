@@ -14,6 +14,7 @@ using AutoMapper;
 using Data.Interfaces.ManifestSchemas;
 using Data.States.Templates;
 using Newtonsoft.Json;
+using fr8.Microsoft.Azure;
 
 namespace PluginBase.BaseClasses
 {
@@ -85,7 +86,7 @@ namespace PluginBase.BaseClasses
         protected async Task<PayloadDTO> GetProcessPayload(int processId)
         {
             var httpClient = new HttpClient();
-            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/processes/"
                 + processId.ToString();
 
@@ -154,7 +155,7 @@ namespace PluginBase.BaseClasses
                 ? "upstream_actions/"
                 : "downstream_actions/";
 
-            var url = ConfigurationManager.AppSettings["CoreWebServerUrl"]
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "activities/"
                 + directionSuffix
                 + "?id=" + activityId.ToString();

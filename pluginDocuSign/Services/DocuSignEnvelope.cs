@@ -12,6 +12,7 @@ using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using Signer = pluginDocuSign.Infrastructure.Signer;
 using Tab = pluginDocuSign.Infrastructure.Tab;
+using fr8.Microsoft.Azure;
 
 namespace pluginDocuSign.Services
 {
@@ -38,8 +39,8 @@ namespace pluginDocuSign.Services
 
             _docuSignPackager = new DocuSignPackager
             {
-                CurrentEmail = ConfigurationManager.AppSettings["DocuSignLoginEmail"],
-                CurrentApiPassword = ConfigurationManager.AppSettings["DocuSignLoginPassword"]
+                CurrentEmail = CloudConfigurationManager.GetSetting("DocuSignLoginEmail"),
+                CurrentApiPassword = CloudConfigurationManager.GetSetting("DocuSignLoginPassword")
             };
 
             _email = null;

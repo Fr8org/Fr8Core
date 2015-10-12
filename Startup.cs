@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Owin;
 using Owin;
 using StructureMap;
-
+using fr8.Microsoft.Azure;
 using Configuration;
 using Daemons;
 using Data.Entities;
@@ -32,7 +32,7 @@ namespace Web
     {
         public async void Configuration(IAppBuilder app)
         {
-            ConfigureDaemons();
+            //ConfigureDaemons();
             ConfigureAuth(app);
 
             await RegisterPluginActions();
@@ -87,7 +87,7 @@ namespace Web
             {
                 CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
                 curCommConfig.CommunicationType = CommunicationType.Sms;
-                curCommConfig.ToAddress = fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
+                curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
                 communicationConfigurationRepo.Add(curCommConfig);
                 uow.SaveChanges();
             }
@@ -99,37 +99,39 @@ namespace Web
 
         }
 
-        private static void ConfigureDaemons()
-        {
-            DaemonSettings daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
-            if (daemonConfig != null)
-            {
-                if (daemonConfig.Enabled)
-                {
-                    foreach (DaemonConfig daemon in daemonConfig.Daemons)
-                    {
-                        try
-                        {
-                            if (daemon.Enabled)
-                            {
-                                Type type = Type.GetType(daemon.InitClass, true);
-                                Daemon obj = Activator.CreateInstance(type) as Daemon;
-                                if (obj == null)
-                                    throw new ArgumentException(
-                                        string.Format(
-                                            "A daemon must implement IDaemon. Type '{0}' does not implement the interface.",
-                                            type.Name));
-                                obj.Start();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Logger.GetLogger().Error("Error initializing daemon '" + daemon.Name + "'.", e);
-                        }
-                    }
-                }
-            }
-        }
+        // @alexavrutin here: Daemon-related code needs to be reworked, the code below is no more actual. 
+
+        //private static void ConfigureDaemons()
+        //{
+        //    DaemonSettings daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
+        //    if (daemonConfig != null)
+        //    {
+        //        if (daemonConfig.Enabled)
+        //        {
+        //            foreach (DaemonConfig daemon in daemonConfig.Daemons)
+        //            {
+        //                try
+        //                {
+        //                    if (daemon.Enabled)
+        //                    {
+        //                        Type type = Type.GetType(daemon.InitClass, true);
+        //                        Daemon obj = Activator.CreateInstance(type) as Daemon;
+        //                        if (obj == null)
+        //                            throw new ArgumentException(
+        //                                string.Format(
+        //                                    "A daemon must implement IDaemon. Type '{0}' does not implement the interface.",
+        //                                    type.Name));
+        //                        obj.Start();
+        //                    }
+        //                }
+        //                catch (Exception e)
+        //                {
+        //                    Logger.GetLogger().Error("Error initializing daemon '" + daemon.Name + "'.", e);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         public async Task RegisterPluginActions()
         {

@@ -7,6 +7,7 @@ using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using fr8.Microsoft.Azure;
 
 namespace pluginSalesforce.Services
 {
@@ -22,10 +23,10 @@ namespace pluginSalesforce.Services
 
         public Configuration()
         {
-           this.salesforceUserName = ConfigurationManager.AppSettings["SalesforceUserName"];
-           this.salesforcePassword = ConfigurationManager.AppSettings["SalesforcePassword"];
-           this.salesforceConsumerKey = ConfigurationManager.AppSettings["SalesforceConsumerKey"];
-           this.salesforceConsumerSecret = ConfigurationManager.AppSettings["SalesforceConsumerSecret"];
+           this.salesforceUserName = CloudConfigurationManager.GetSetting("SalesforceUserName");
+           this.salesforcePassword = CloudConfigurationManager.GetSetting("SalesforcePassword");
+           this.salesforceConsumerKey = CloudConfigurationManager.GetSetting("SalesforceConsumerKey");
+           this.salesforceConsumerSecret = CloudConfigurationManager.GetSetting("SalesforceConsumerSecret");
 
            authclient = new AuthenticationClient();
            var connectionTask= GetConnection();
