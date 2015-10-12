@@ -308,6 +308,10 @@
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
+      <Name>UtilitiesTesting</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Actions\" />

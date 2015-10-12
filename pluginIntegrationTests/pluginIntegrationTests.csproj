@@ -171,6 +171,10 @@
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>pluginExcel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
+      <Name>UtilitiesTesting</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

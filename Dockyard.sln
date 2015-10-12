@@ -46,7 +46,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSalesforce", "pluginS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginExcel", "pluginExcel\pluginExcel.csproj", "{57373D06-6B82-4EC6-AF62-ED25FE170C61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTest", "Tests\UtilitiesTest\UtilitiesTest.csproj", "{6B855C3F-07A9-4787-9FDE-29FA567C43E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\UtilitiesTesting\UtilitiesTesting.csproj", "{6B855C3F-07A9-4787-9FDE-29FA567C43E2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
