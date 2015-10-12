@@ -1,7 +1,7 @@
-﻿using System.Web.Http;
-using pluginDocuSign.Services;
-using StructureMap;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using pluginDocuSign.Interfaces;
+using pluginDocuSign.Services;
 using PluginUtilities.Infrastructure;
 
 namespace pluginDocuSign.Controllers
@@ -19,7 +19,7 @@ namespace pluginDocuSign.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async void ProcessIncomingNotification()
+        public async Task<object> ProcessIncomingNotification()
         {
             PluginUtilities.Infrastructure.BasePluginEvent.EventParser parser = new BasePluginEvent.EventParser(_event.ProcessEvent);
             string eventPayLoadContent = Request.Content.ReadAsStringAsync().Result;

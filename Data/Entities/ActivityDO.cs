@@ -17,16 +17,17 @@ namespace Data.Entities
         [ForeignKey("ParentActivity")]
         public int? ParentActivityId { get; set; }
         
-        public virtual ActivityDO ParentActivity 
-           { get; set; }
-
+        public virtual ActivityDO ParentActivity { get; set; }
 
         [InverseProperty("ParentActivity")]
-        public virtual List<ActivityDO> Activities { get; set; }
+        public virtual IList<ActivityDO> Activities { get; set; }
 
         public int Ordering { get; set; }
 
 
-        //public virtual List<ActivityDO> ChildActivities { get; set; }
+        public ActivityDO()
+        {
+            Activities = new List<ActivityDO>();
+        }
     }
 }

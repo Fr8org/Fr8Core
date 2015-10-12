@@ -22,7 +22,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("CriteriaController.GetByProcessNodeTemplateId")]
         public void CriteriaController_GetByProcessNodeTemplateId()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -55,7 +54,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();
                 //Add a processnodetemplate to processtemplate 
                 _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                _curProcessNodeTemplate.ParentTemplateId = processTemplate.Id;
+                _curProcessNodeTemplate.ParentActivityId = processTemplate.Id;
                 uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
                 uow.SaveChanges();
 

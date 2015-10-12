@@ -87,8 +87,7 @@ namespace pluginDocuSign.Actions
 
         public IList<FieldDTO> CreateActionPayload(ActionDTO curActionDTO, string curEnvelopeId)
         {
-            var docuSignAuthDTO = JsonConvert
-                .DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
 
             var docusignEnvelope = new DocuSignEnvelope(
                 docuSignAuthDTO.Email,
@@ -97,7 +96,7 @@ namespace pluginDocuSign.Actions
             var curEnvelopeData = docusignEnvelope.GetEnvelopeData(curEnvelopeId);
             var fields = GetFields(curActionDTO);
 
-            if (fields.Count == 0)
+            if (fields == null || fields.Count == 0)
             {
                 throw new InvalidOperationException("Field mappings are empty on ActionDO with id " + curActionDTO.Id);
             }
@@ -153,11 +152,11 @@ namespace pluginDocuSign.Actions
                 curActionDTO.AuthToken.Token);
 
             // "[{ type: 'textField', name: 'connection_string', required: true, value: '', fieldLabel: 'SQL Connection String' }]"
-            var textBlock = new TextBlockFieldDTO()
+            var textBlock = new TextBlockControlDefinitionDTO()
             {
                 Label = "Docu Sign Envelope",
                 Value = "This Action doesn't require any configuration.",
-                cssClass = "well well-lg"
+                CssClass = "well well-lg"
             };
 
             var crateControls = PackControlsCrate(textBlock);

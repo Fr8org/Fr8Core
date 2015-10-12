@@ -47,7 +47,9 @@ namespace pluginIntegrationTests
 			// Select first available DocuSign template.
 			SendDocuSignEnvelope_SelectFirstTemplate(initCrateStorageDTO);
 			savedActionDTO.CrateStorage = initCrateStorageDTO;
-			
+
+            FixActionNavProps(savedActionDTO.Id);
+
 			// Call Configure FollowUp for SendDocuSignEnvelope action.
 			await SendDocuSignEnvelope_ConfigureFollowUp(savedActionDTO);
 

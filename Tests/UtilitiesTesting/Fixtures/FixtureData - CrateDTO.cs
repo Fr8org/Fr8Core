@@ -62,14 +62,14 @@ namespace UtilitiesTesting.Fixtures
         public static CrateDTO CreateStandardConfigurationControls()
         {
             string templateId = "58521204-58af-4e65-8a77-4f4b51fef626";
-            var fieldSelectDocusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDocusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
-                Events = new List<FieldEvent>()
+                Events = new List<ControlEvent>()
                 {
-                    new FieldEvent("onChange", "requestConfig")
+                    new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {
@@ -79,25 +79,25 @@ namespace UtilitiesTesting.Fixtures
                 Value = templateId
             };
 
-            var fieldEnvelopeSent = new CheckBoxFieldDefinitionDTO()
+            var fieldEnvelopeSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Sent",
                 Name = "Event_Envelope_Sent"
             };
 
-            var fieldEnvelopeReceived = new CheckBoxFieldDefinitionDTO()
+            var fieldEnvelopeReceived = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Envelope Received",
                 Name = "Event_Envelope_Received"
             };
 
-            var fieldRecipientSigned = new CheckBoxFieldDefinitionDTO()
+            var fieldRecipientSigned = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Signed",
                 Name = "Event_Recipient_Signed"
             };
 
-            var fieldEventRecipientSent = new CheckBoxFieldDefinitionDTO()
+            var fieldEventRecipientSent = new CheckBoxControlDefinitionDTO()
             {
                 Label = "Recipient Sent",
                 Name = "Event_Recipient_Sent"
@@ -113,7 +113,7 @@ namespace UtilitiesTesting.Fixtures
 
         #region Private Methods
 
-        private static CrateDTO PackControlsCrate(params ControlsDefinitionDTO[] controlsList)
+        private static CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);
@@ -121,7 +121,7 @@ namespace UtilitiesTesting.Fixtures
             return controlsCrate;
         }
 
-        private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlsDefinitionDTO[] controls)
+        private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
             return Create(label,
                 JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),

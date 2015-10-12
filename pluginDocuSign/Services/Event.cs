@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Core.Managers;
-using Core.Utilities;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
@@ -39,7 +39,7 @@ namespace pluginDocuSign.Services
             var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
             var eventReportContent = new EventReportMS
             {
-                EventNames = "DocuSign Envelope " + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
+                EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ProcessDOId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
                 ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
@@ -84,7 +84,7 @@ namespace pluginDocuSign.Services
                var payloadCrate= _crate.CreatePayloadDataCrate(CreateKeyValuePairList(curEvent));
                curEventPayloadData.Add(payloadCrate);
             }
-
+                   
             return curEventPayloadData;
         }
 
@@ -95,7 +95,7 @@ namespace pluginDocuSign.Services
             returnList.Add(new KeyValuePair<string,string>("ExternalEventType",curEvent.ExternalEventType.ToString()));
             returnList.Add(new KeyValuePair<string,string>("RecipientId",curEvent.RecipientId));
             return returnList;
-        }
+            }
 
 
     }

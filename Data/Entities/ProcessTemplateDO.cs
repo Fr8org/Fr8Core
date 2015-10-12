@@ -4,28 +4,26 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
 using System.Linq;
 using System;
+using System.Collections;
+using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 
 namespace Data.Entities
 {
-    public class ProcessTemplateDO : BaseDO
+    public class ProcessTemplateDO : ActivityDO
     {
         public ProcessTemplateDO()
         {
             
-            ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
+            //ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
             /*var startingProcessNodeTemplate = new ProcessNodeTemplateDO();
             startingProcessNodeTemplate.StartingProcessNodeTemplate = true;
             ProcessNodeTemplates.Add(startingProcessNodeTemplate);*/
         }
-
-
-        [Key]
-        public int Id { get; set; }
-
+       
+     
         [Required]
         public string Name { get; set; }
-
-        public string ProcessNodeTemplateOrdering { get; set; }
 
         public string Description { get; set; }
 
@@ -39,7 +37,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingProcessNodeTemplate = ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
+                var startingProcessNodeTemplate = Activities.OfType<ProcessNodeTemplateDO>().SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
                 if (null != startingProcessNodeTemplate)
                     return startingProcessNodeTemplate.Id;
                 else
@@ -66,7 +64,7 @@ namespace Data.Entities
                 {
                     ProcessNodeTemplates.ToList().ForEach(pnt => pnt.StartingProcessNodeTemplate = false);
                     value.StartingProcessNodeTemplate = true;
-                    ProcessNodeTemplates.Add(value);
+                    Activities.Add(value);
                 }
             }
         }
@@ -82,7 +80,79 @@ namespace Data.Entities
         [InverseProperty("ProcessTemplate")]
         public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
 
-        [InverseProperty("ProcessTemplate")]
-        public virtual IList<ProcessNodeTemplateDO> ProcessNodeTemplates { get; set; }
+        [NotMapped]
+        public IEnumerable<ProcessNodeTemplateDO> ProcessNodeTemplates
+        {
+            get
+            {
+                return Activities.OfType<ProcessNodeTemplateDO>();
+            }
+        }
+        
+        private class SmartNavigationalPropertyCollectionProxy<TBase, TDerived> : ICollection<TDerived>
+            where TDerived : TBase
+        {
+            private readonly ICollection<TBase> _baseCollection;
+
+            public int Count
+            {
+                get
+                {
+                    return _baseCollection.OfType<TDerived>().Count();
+                }
+            }
+
+            public bool IsReadOnly
+            {
+                get { return false; }
+            }
+
+            public SmartNavigationalPropertyCollectionProxy(ICollection<TBase> baseCollection)
+            {
+                _baseCollection = baseCollection;
+            }
+
+            public IEnumerator<TDerived> GetEnumerator()
+            {
+                return _baseCollection.OfType<TDerived>().GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            public void Add(TDerived item)
+            {
+                _baseCollection.Add(item);
+            }
+
+            public void Clear()
+            {
+                throw new NotSupportedException();
+            }
+
+            public bool Contains(TDerived item)
+            {
+                return _baseCollection.Contains(item);
+            }
+
+            public void CopyTo(TDerived[] array, int arrayIndex)
+            {
+                foreach (var derived in _baseCollection.OfType<TDerived>())
+                {
+                    array[arrayIndex] = derived;
+                    arrayIndex++;
+                }
+            }
+
+            public bool Remove(TDerived item)
+            {
+                return _baseCollection.Remove(item);
+            }
+        }
     }
+
+
+    
 }

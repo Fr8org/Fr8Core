@@ -35,7 +35,6 @@ namespace Core.Services
         }
 
         public async Task<string> RequestParsingFromPlugins(HttpRequestMessage request, string pluginName, string pluginVersion)
-
         {
             //get required plugin URL by plugin name and its version
             string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
@@ -52,6 +51,17 @@ namespace Core.Services
             }
 
             return "ok";
+        }
+
+        public async Task<string> RequestParsingFromPluginsDebug(HttpRequestMessage request, string pluginName, string pluginVersion)
+        {
+            //get required plugin URL by plugin name and its version
+            string curPluginUrl = _plugin.ParsePluginUrlFor(pluginName, pluginVersion, "events");
+
+
+            //make POST with request content
+            var result = await new HttpClient().PostAsync(new Uri(curPluginUrl, UriKind.Absolute), request.Content);
+            return  await result.Content.ReadAsStringAsync();
         }
     }
 }

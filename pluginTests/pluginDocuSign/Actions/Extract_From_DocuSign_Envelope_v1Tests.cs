@@ -17,7 +17,7 @@ using pluginTests.Fixtures;
 namespace pluginTests.pluginDocuSign.Actions
 {
     [TestFixture]
-    [Category("Extract_From_DocuSign_Envelope_v1")]
+    [Category("pluginDocuSign")]
     public class Extract_From_DocuSign_Envelope_v1Tests : BaseTest
     {
         Extract_From_DocuSign_Envelope_v1 _extract_From_DocuSign_Envelope_v1;
@@ -92,7 +92,9 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Condition", result[3].Key);
         }
 
-        [Test]
+        // TODO: @yakov.gnusin ignored this test. Looks like it cannot find envelope with specified EnvelopeId.
+        // This test probably should be improved to programmatically create envelope first.
+        [Test, Ignore]
         public void CreateActionPayload_ReturnsFieldsValue()
         {
             //Arrange

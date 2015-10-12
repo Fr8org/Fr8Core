@@ -67,7 +67,7 @@ namespace PluginBase.BaseClasses
         }
 
         protected void AppendDockyardAuthenticationCrate(
-            ActionDTO actionDTO, AuthenticationMode mode, string url = null)
+            ActionDTO actionDTO, AuthenticationMode mode)
         {
             if (actionDTO.CrateStorage == null)
             {
@@ -78,7 +78,7 @@ namespace PluginBase.BaseClasses
             }
 
             actionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode, url)
+                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
             );
         }
 
@@ -109,6 +109,25 @@ namespace PluginBase.BaseClasses
             }
 
             throw new InvalidDataException("Action's Configuration Store does not contain connection_string field.");
+        }
+
+        /// <summary>
+        /// Configure infrastructure.
+        /// </summary>
+        public virtual async Task<ActionDTO> Configure(ActionDTO actionDTO)
+        {
+            return await ProcessConfigurationRequest(actionDTO, ConfigurationEvaluator);
+        }
+
+        /// <summary>
+        /// This method "evaluates" as to what configuration should be called. 
+        /// Every plugin action will have its own decision making; hence this method must be implemented in the relevant child class.
+        /// </summary>
+        /// <param name="curActionDTO"></param>
+        /// <returns></returns>
+        public virtual ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
+        {
+            throw new NotImplementedException("ConfigurationEvaluator method not implemented in child class.");
         }
 
         //if the Action doesn't provide a specific method to override this, we just return the existing CrateStorage, unchanged
@@ -173,7 +192,6 @@ namespace PluginBase.BaseClasses
             return mergedFields;
         }
 
-
         public StandardDesignTimeFieldsMS MergeContentFields(List<CrateDTO> curCrates)
         {
             StandardDesignTimeFieldsMS tempMS = new StandardDesignTimeFieldsMS();
@@ -198,7 +216,7 @@ namespace PluginBase.BaseClasses
             };
         }
 
-        protected CrateDTO PackControlsCrate(params ControlsDefinitionDTO[] controlsList)
+        protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);
@@ -206,6 +224,75 @@ namespace PluginBase.BaseClasses
             return controlsCrate;
         }
 
+        protected string ExtractControlFieldValue(ActionDTO curActionDto, string fieldName)
+        {
+            var controlsCrate = curActionDto.CrateStorage.CrateDTO
+                .FirstOrDefault(
+                    x => x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+                    && x.Label == "Configuration_Controls");
 
+            if (controlsCrate == null)
+            {
+                throw new ApplicationException("No Configuration_Controls crate found.");
+            }
+
+            var controlsCrateMS = JsonConvert
+                .DeserializeObject<StandardConfigurationControlsMS>(
+                    controlsCrate.Contents
+                );
+
+            var field = controlsCrateMS.Controls
+                .FirstOrDefault(x => x.Name == fieldName);
+
+            if (field == null)
+            {
+                return null;
+            }
+
+            return field.Value;
+        }
+
+        protected async virtual Task<List<CrateDTO>> GetUpstreamFileHandleCrates(int curActionId)
+        {
+            return await GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+        }
+
+        protected async Task<CrateDTO> MergeUpstreamFields(int curActionDOId, string label)
+        {
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, GetCrateDirection.Upstream)).Fields.ToArray();
+            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+
+            return upstreamFieldsCrate;
+        }
+
+        protected ConfigurationRequestType ReturnInitialUnlessExistsField(ActionDTO curActionDTO, string fieldName, ManifestSchema curSchema)
+        {
+            CrateStorageDTO curCrates = curActionDTO.CrateStorage;
+
+            if (curCrates.CrateDTO.Count == 0)
+                return ConfigurationRequestType.Initial;
+
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
+
+            //load configuration crates of manifest type Standard Control Crates
+            //look for a text field name select_file with a value
+            ManifestSchema manifestSchema = new ManifestSchema(Data.Constants.MT.StandardConfigurationControls);
+
+            var keys = _action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+                .Select(e => (string)e["value"])
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+
+            //if there are more than 2 return keys, something is wrong
+            //if there are none or if there's one but it's value is "" the return initial else return followup
+            Validations.ValidateMax1(keys);
+
+            if (keys.Length == 0)
+                return ConfigurationRequestType.Initial;
+            else
+            {
+                return ConfigurationRequestType.Followup;
+            }
+        }
     }
 }

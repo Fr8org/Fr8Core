@@ -19,6 +19,7 @@ using AutoMapper;
 namespace DockyardTest.Controllers
 {
     [TestFixture]
+    [Category("ActionController")]
     public class ActionControllerTest : BaseTest
     {
 
@@ -32,13 +33,13 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
-            CreateEmptyActionList();
+            // DO-1214
+            //CreateEmptyActionList();
             CreateActionTemplate();
         }
 
 
         [Test,Ignore]
-        [Category("ActionController.Save")]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -62,7 +63,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test,Ignore]
-        [Category("ActionController.Save")]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -91,7 +91,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Save")]
+
         public void ActionController_Save_WithActionExists_ExistingActionShouldBeUpdated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -120,7 +120,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        [Category("ActionController.GetConfigurationSettings")]
+
         public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -134,7 +134,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore]
-        [Category("ActionController.GetConfigurationSettings")]
+
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public void ActionController_NULL_ActionTemplate()
         {
@@ -144,7 +144,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Configure")]
+
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
@@ -183,7 +183,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Configure")]
+
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
@@ -218,7 +218,6 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("ActionController.Configure")]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public async void ActionController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
@@ -259,7 +258,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController")]
+
         public void ActionController_Delete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -275,7 +274,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        [Category("Controllers.ActionController")]
+
         public void ActionController_Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -293,30 +292,31 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates one empty action list
         /// </summary>
-        private void CreateEmptyActionList()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // 
-                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(curProcessTemplate);
-                uow.SaveChanges();
-                //Add a processnodetemplate to processtemplate 
-                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
-
-                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
-                uow.SaveChanges();
-                
-                var actionList = FixtureData.TestEmptyActionList();
-                actionList.Id = 1;
-                actionList.ActionListType = 1;
-                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
-
-                uow.ActionListRepository.Add(actionList);
-                uow.SaveChanges();
-            }
-        }
+        // DO-1214
+//        private void CreateEmptyActionList()
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                // 
+//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
+//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                uow.SaveChanges();
+//                //Add a processnodetemplate to processtemplate 
+//                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+//                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+//
+//                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+//                uow.SaveChanges();
+//                
+//                var actionList = FixtureData.TestEmptyActionList();
+//                actionList.Id = 1;
+//                actionList.ActionListType = 1;
+//                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
+//
+//                uow.ActionListRepository.Add(actionList);
+//                uow.SaveChanges();
+//            }
+//        }
 
         private void CreateActionTemplate()
         {
@@ -362,7 +362,7 @@ namespace DockyardTest.Controllers
      
 
         [Test, Ignore]
-        [Category("ActionController")]
+
         public async void ActionController_GetConfigurationSettings_ValidActionDesignDTO()
         {
             var controller = new ActionController();
@@ -377,7 +377,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        [Category("ActionController")]
+
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
@@ -393,7 +393,7 @@ namespace DockyardTest.Controllers
         }
 
         [Test, Ignore("Vas Ignored as part of V2 Changes")]
-        [Category("ActionController")]
+
         [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
