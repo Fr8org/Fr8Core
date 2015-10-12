@@ -25,7 +25,7 @@ using Core.Exceptions;
 
 namespace pluginExcel.Actions
 {
-    public class ExtractData_v1 : BasePluginAction
+    public class Extract_Data_v1 : BasePluginAction
     {
         /// <summary>
         /// Action processing infrastructure.
