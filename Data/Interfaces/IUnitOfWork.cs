@@ -48,7 +48,7 @@ namespace Data.Interfaces
         ActionRepository ActionRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
         ActionListRepository ActionListRepository { get; }
-		  ActivityRepository ActivityRepository { get; }
+        ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
         IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
@@ -60,14 +60,18 @@ namespace Data.Interfaces
 
         IMTObjectRepository MTObjectRepository { get; }
 
-        IMTOrganizationRepository MTOrganizationRepository  { get; }
+        IMTOrganizationRepository MTOrganizationRepository { get; }
+
+        IMTFieldTypeRepository MTFieldTypeRepository { get; }
 
         IMTDataRepository MTDataRepository { get; }
+
+        MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
 
-	    /// <summary>
+        /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();

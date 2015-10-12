@@ -9,7 +9,6 @@
         configurationControls: model.ControlsList;
         activityTemplateId: number;
         activityTemplateName: string;
-        activityTemplate: model.ActivityTemplate;
         currentView: string;
 
         constructor(
@@ -33,8 +32,7 @@
                 actionListId: this.actionListId,
                 name: this.name,
                 crateStorage: this.crateStorage,
-                configurationControls: this.configurationControls,
-                activityTemplate: this.activityTemplate
+                configurationControls: this.configurationControls
             };
         }
 
@@ -59,7 +57,6 @@
             result.isTempId = dataObject.isTempId;
             result.name = dataObject.name;
             result.processNodeTemplateId = dataObject.processNodeTemplateId;
-            result.activityTemplate = dataObject.activityTemplate;
             return result;
         }
     }

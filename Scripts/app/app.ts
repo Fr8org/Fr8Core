@@ -10,7 +10,8 @@ var app = angular.module("app", [
     'ui.bootstrap',
     "ngMockE2E",
     "datatables",
-    "ngFileUpload"
+    "ngFileUpload",
+    "textAngular"
 ]);
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
@@ -102,7 +103,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('processBuilder', {
             url: "/processes/{id}/builder",
             templateUrl: "/AngularTemplate/ProcessBuilder",
-            data: { noTitle: true },
+            data: { noTitle: true, noContainer: true },
         })
 
         .state('showIncidents', {

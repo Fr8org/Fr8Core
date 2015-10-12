@@ -16,12 +16,12 @@ namespace pluginTests.pluginDocuSign.Actions
     public class Wait_For_DocuSign_Event_v1Tests : BaseTest
     {
 
-        Wait_For_DocuSign_Event_v1 _wait_For_DocuSign_Event_v1;
+        Monitor_DocuSign _wait_For_DocuSign_Event_v1;
 
         public Wait_For_DocuSign_Event_v1Tests()
         {
             base.SetUp();
-            _wait_For_DocuSign_Event_v1 = new Wait_For_DocuSign_Event_v1();
+            _wait_For_DocuSign_Event_v1 = new Monitor_DocuSign();
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace pluginTests.pluginDocuSign.Actions
             object[] parameters = new object[] { curPayloadDTO };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Wait_For_DocuSign_Event_v1), "GetEnvelopeId", parameters);
+            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign), "GetEnvelopeId", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

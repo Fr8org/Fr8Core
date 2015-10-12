@@ -13,15 +13,11 @@ using PluginBase.BaseClasses;
 
 namespace pluginDocuSign
 {
-    public class Startup
+    public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
-            Task.Run(() =>
-            {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_docusign");
-            });
+            StartHosting("plugin_docusign");
         }
     }
 }
