@@ -14,12 +14,11 @@ var dockyard;
                         $httpBackend.expectGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
                     }
                 ]);
-                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _processTemplateServiceMock, _actionListServiceMock, _processBuilderServiceMock, _$q, _$http, _urlPrefix, _crateHelper, _localIdentityGenerator, _$timeout, _$filter, _$modalMock;
+                var _$controllerService, _$scope, _controller, _$state, _actionServiceMock, _processTemplateServiceMock, _processBuilderServiceMock, _$q, _$http, _urlPrefix, _crateHelper, _localIdentityGenerator, _$timeout, _$filter, _$modalMock;
                 beforeEach(function () {
                     inject(function ($controller, $rootScope, $q, $http, $timeout, $filter, $httpBackend) {
                         _actionServiceMock = new tests.utils.ActionServiceMock($q);
                         _processTemplateServiceMock = new tests.utils.ProcessTemplateServiceMock($q);
-                        _actionListServiceMock = new tests.utils.ActionListServiceMock($q);
                         _processBuilderServiceMock = new tests.utils.ProcessBuilderServiceMock($q);
                         _crateHelper = new dockyard.services.CrateHelper();
                         _localIdentityGenerator = new dockyard.services.LocalIdentityGenerator();
@@ -53,7 +52,6 @@ var dockyard;
                             $timeout: _$timeout,
                             CriteriaServiceWrapper: null,
                             ProcessBuilderService: _processBuilderServiceMock,
-                            ActionListService: _actionListServiceMock,
                             CrateHelper: _crateHelper,
                             ActivityTemplateService: null,
                             $filter: _$filter,

@@ -1,0 +1,46 @@
+﻿
+<form>
+    
+    <div class="form-group" ng-controller="ProcessBuilderController">
+        <general-search current-action='currentAction' field='field'></general-search>
+
+        <div>
+            <a href class="btn btn-primary query-builder-add-button" ng-disabled="isDisabled" ng-click="getsearchresult()">Search</a>
+        </div>
+        <br />
+        <br />
+        <div class="row" >
+            <div class="col-md-12 col-sm-12">
+                <div class="portlet light ">
+                    <div class="portlet-title">
+                        <div class="caption caption-md">
+                            <i class="icon-bar-chart font-green-haze hide"></i>
+                            <span class="caption-subject font-green-haze bold uppercase">All Object Type</span>
+                        </div>
+                    </div>
+                    <div class="portlet-body">
+                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-process-templates">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Name</th>
+                                    <th>Created Date</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="typerecord in objecttyperecords">
+                                    <td>{{ typerecord.id}}</td>
+                                    <td>{{ typerecord.name}}</td>
+                                    <td>{{ typerecord.createdDate}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+     
+    
+    </div>
+</form>

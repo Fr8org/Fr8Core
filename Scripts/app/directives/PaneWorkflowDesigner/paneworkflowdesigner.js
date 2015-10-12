@@ -12,10 +12,10 @@ var dockyard;
                 var onActionAdded = function (eventArgs, scope) {
                     console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
                     var actionObj = eventArgs.action;
-                    scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
+                    scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, 1);
                     if (eventArgs.doNotRaiseSelectedEvent)
                         return;
-                    scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, eventArgs.actionListType, 0));
+                    scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, 0));
                 };
                 var onActionRemoved = function (eventArgs, scope) {
                     console.log('PaneWorkflowDesigner::onActionRemove', eventArgs);
@@ -45,12 +45,12 @@ var dockyard;
                         var widget = Core.create(ProcessBuilder.Widget, element.children()[0], factory, attrs.width, attrs.height);
                         widget.on('addActionNode:click', function (e, criteriaId, actionType) {
                             scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionAdding], new paneWorkflowDesigner.ActionAddingEventArgs(criteriaId, actionType));
+                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionAdding], new paneWorkflowDesigner.ActionAddingEventArgs(criteriaId));
                             });
                         });
                         widget.on('actionNode:click', function (e, criteriaId, actionId, actionType, activityTemplateId) {
                             scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(criteriaId, actionId, actionType, activityTemplateId));
+                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(criteriaId, actionId, activityTemplateId));
                             });
                         });
                         scope.widget = widget;

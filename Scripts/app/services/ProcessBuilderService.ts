@@ -29,10 +29,6 @@ module dockyard.services {
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
 
-    export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
-        byProcessNodeTemplate: (id: { id: number; actionListType: number; }) => interfaces.IActionListVM;
-    }
-
     export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -51,6 +47,10 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
+    export interface IGeneralSearchService extends ng.resource.IResourceClass<interfaces.IGeneralSearchVM> {
+
+        generalSearch: (id: { objtype: string; id: string, idoperator: string, idvalue: string, createddate: string, dateoperator: string, datevalue: string }) => interfaces.IGeneralSearchVM;
+    }
     /*
         ProcessTemplateDTO CRUD service.
     */
@@ -87,6 +87,18 @@ module dockyard.services {
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService>$resource('/api/processtemplate/triggersettings')
+    ]);
+
+    app.factory('GeneralSearchService', ['$resource', ($resource: ng.resource.IResourceService): IGeneralSearchService =>
+        <IGeneralSearchService> $resource('/api/processTemplate/:id', { id: '@id' },
+            {
+                'generalSearch': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/api/processTemplate/generalSearch'
+                }
+
+            })
     ]);
 
     /* 
@@ -150,19 +162,6 @@ module dockyard.services {
                 'byProcessNodeTemplate': {
                     method: 'GET',
                     url: '/api/criteria/byProcessNodeTemplate'
-                }
-            })
-    ]);
-
-    /* 
-        ActionListDTO CRUD service.
-    */
-    app.factory('ActionListService', ['$resource', ($resource: ng.resource.IResourceService): IActionListService =>
-        <IActionListService>$resource('/api/actionList', null,
-            {
-                'byProcessNodeTemplate': {
-                    method: 'GET',
-                    url: '/api/actionList/byProcessNodeTemplate/'
                 }
             })
     ]);

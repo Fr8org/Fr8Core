@@ -23,8 +23,5 @@ namespace Data.Interfaces.DataTransferObjects
         /// List of ActionList DTOs.
         /// </summary>
         public List<ActionDTO> Actions { get; set; }
-        
-        // Stub for UI logic to work correctly
-        public object ActionLists { get; set; }
     }
 }

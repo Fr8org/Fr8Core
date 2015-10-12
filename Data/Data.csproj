@@ -195,6 +195,7 @@
     <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
+    <Compile Include="Entities\GeneralSearchDO.cs" />
     <Compile Include="Entities\MT_Data.cs" />
     <Compile Include="Entities\MT_Field.cs" />
     <Compile Include="Entities\MT_Object.cs" />

@@ -25,7 +25,7 @@ namespace Core.Services
         private readonly IActivity _activity;
         private readonly ICrate _crate;
 
-
+        
         
 
         public ProcessTemplate()
@@ -90,7 +90,7 @@ namespace Core.Services
             // return ptdo.Id;
         }
 
-
+        
 
         public void Delete(IUnitOfWork uow, int id)
         {
@@ -102,9 +102,9 @@ namespace Core.Services
             }
 
             _activity.Delete(uow, curProcessTemplate);
-                    }
+        }
 
-
+        
 
         public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
         {
@@ -119,7 +119,7 @@ namespace Core.Services
             }
         }
 
-
+        
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(ProcessTemplateDO curProcessTemplate, bool allowOnlyOneNoteTemplate = true)
         {
@@ -135,9 +135,9 @@ namespace Core.Services
                 firstNodeTemplate = false;
 
                 if (template.Activities != null)
-                    {
+                {
                     foreach (var activityDo in template.Activities.OfType<TActivity>())
-                        {
+                    {
                         yield return activityDo;
                     }
                 }
@@ -147,7 +147,7 @@ namespace Core.Services
         
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
-                            {
+        {
             if (curProcessTemplate.ProcessNodeTemplates == null)
             {
                 throw new ArgumentNullException("Parameter ProcessNodeTemplates is null.");
@@ -157,17 +157,17 @@ namespace Core.Services
 
             foreach (var curActionDO in EnumerateActivities<ActionDO>(curProcessTemplate))
             {
-                                try
-                                {
-                                    _action.Activate(curActionDO).Wait();
-                                    curActionDO.ActionState = ActionState.Active;
-                                    result = "success";
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new ApplicationException("Process template activation failed.", ex);
-                                }
-                            }
+                try
+                {
+                    _action.Activate(curActionDO).Wait();
+                    curActionDO.ActionState = ActionState.Active;
+                    result = "success";
+                }
+                catch (Exception ex)
+                {
+                    throw new ApplicationException("Process template activation failed.", ex);
+                }
+            }
 
             return result;
         }
@@ -180,17 +180,17 @@ namespace Core.Services
 
             foreach (var curActionDO in EnumerateActivities<ActionDO>(curProcessTemplate))
             {
-                        try
-                        {
-                            _action.Deactivate(curActionDO).Wait();
-                            curActionDO.ActionState = ActionState.Deactive;
-                            result = "success";
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ApplicationException("Process template Deactivation failed.", ex);
-                        }
-                    }
+                try
+                {
+                    _action.Deactivate(curActionDO).Wait();
+                    curActionDO.ActionState = ActionState.Deactive;
+                    result = "success";
+                }
+                catch (Exception ex)
+                {
+                    throw new ApplicationException("Process template Deactivation failed.", ex);
+                }
+            }
 
             return result;
         }
@@ -226,7 +226,7 @@ namespace Core.Services
 //
 //        }
 
-
+        
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -245,7 +245,7 @@ namespace Core.Services
             }
         }
 
-
+        
 
         public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
         {
@@ -317,12 +317,12 @@ namespace Core.Services
             }
         }
 
-
+        
 
         public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
-                {
+        {
             return EnumerateActivities<ActivityDO>(curProcessTemplate).OrderBy(a => a.Ordering).FirstOrDefault();
-                }
+        }
 
         public ProcessTemplateDO GetProcessTemplate(ActionDO action)
         {
@@ -336,11 +336,51 @@ namespace Core.Services
                 }
 
                 root = root.ParentActivity;
-        }
+            }
 
             return null;
         }
 
+        public IList<GeneralSearchDO> GetSearchResultsForUser(string objtype = "", string id = "", string idoperator = "", string idvalue = "", string createddate = "", string dateoperator = "", string datevalue = "")
+        {
+            List<GeneralSearchDO> list = new List<GeneralSearchDO>();
+            if (objtype == "")
+                throw new ApplicationException("Object Type must not be empty.");
+
+            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (objtype == "02")
+                {
+
+                    var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().ToList();
+                    for (var i = 0; i < queryableRepo.Count; i++)
+                    {
+                        GeneralSearchDO ob = new GeneralSearchDO();
+
+                        ob.Id = queryableRepo[i].Id;
+                        ob.Name = queryableRepo[i].Name;
+                        ob.CreatedDate = queryableRepo[i].CreateDate.Date;
+                        list.Add(ob);
+                    }
+                }
+                else
+                {
+                    var queryableRepo = unitOfWork.ActionRepository.GetQuery().ToList();
+                    for (var i = 0; i < queryableRepo.Count; i++)
+                    {
+                        GeneralSearchDO ob = new GeneralSearchDO();
+
+                        ob.Id = queryableRepo[i].Id;
+                        ob.Name = queryableRepo[i].Name;
+                        ob.CreatedDate = queryableRepo[i].CreateDate.Date;
+                        list.Add(ob);
+                    }
+
+                }
+
+                return list;
+            }
+        }
 
         /// <summary>
         /// The function add/removes items on the current collection 
