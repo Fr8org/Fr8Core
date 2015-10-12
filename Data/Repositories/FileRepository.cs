@@ -49,10 +49,10 @@ namespace Data.Repositories
             const string azureStorageDefaultConnectionString = "AzureStorageDefaultConnectionString";
             const string defaultAzureStorageContainer = "DefaultAzureStorageContainer";
 
-            string containerName = CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
+            string containerName = fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting(defaultAzureStorageContainer);
 
             CloudStorageAccount storageAccount =
-                CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
+                CloudStorageAccount.Parse(fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting(azureStorageDefaultConnectionString));
 
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
             

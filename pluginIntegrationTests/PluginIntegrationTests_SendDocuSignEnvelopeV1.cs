@@ -26,7 +26,7 @@ namespace pluginIntegrationTests
 		/// <summary>
 		/// Test Send_DocuSign_Envelope_v1 initial configuration.
 		/// </summary>
-		[Test]
+		[Test, Ignore]
 		public async Task PluginIntegration_SendDocuSignEnvelope_ConfigureInitial()
 		{
 			var curActionDTO = CreateEmptyAction(_sendDocuSignEnvelopeActivityTemplate);
@@ -35,7 +35,7 @@ namespace pluginIntegrationTests
 		/// <summary>
 		/// Test Send_DocuSign_Envelope_v1 follow-up configuration.
 		/// </summary>
-		[Test]
+		[Test, Ignore]
 		public async Task PluginIntegration_SendDocuSignEnvelopeV1_ConfigureFollowUp()
 		{
 			// Create blank WaitForDocuSignEventAction.
