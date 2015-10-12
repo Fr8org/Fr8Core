@@ -20,20 +20,20 @@ namespace Web.Controllers
     public class ProcessTemplateController : ApiController
     {
         private readonly IProcessTemplate _processTemplate;
-
+        
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IProcessTemplate>())
         {
         }
 
-
+        
 
         public ProcessTemplateController(IProcessTemplate processTemplate)
         {
             _processTemplate = processTemplate;
         }
 
-
+        
         [Route("full/{id:int}")]
         [ResponseType(typeof(ProcessTemplateDTO))]
         [HttpGet]
@@ -48,7 +48,7 @@ namespace Web.Controllers
             };
         }
 
-
+        
         // Manual mapping method to resolve DO-1164.
         private ProcessTemplateDTO MapProcessTemplateToDTO(ProcessTemplateDO curProcessTemplateDO, IUnitOfWork uow)
         {
@@ -63,23 +63,7 @@ namespace Web.Controllers
                     var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
 
                     pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
-
-                    //black voodoo magic to alow client works as if  actionlists are still present.
-                    foreach (var action in pntDTO.Actions)
-                    {
-                        action.ActionListId = pntDTO.Id;
-                    }
-
-                    // DO-1214. Emulate existance of one action list
-                    pntDTO.ActionLists = new[]
-                    {
-                        new
-                        {
-                            ActionListType = 1,
-                            Actions = pntDTO.Actions,
-                            Id = pntDTO.Id // send ProcessNodeTemaplate Id. We removed ActionListDO and now we need ProcessNodeTemaplate Id to edit actions.
-                        }
-                    };
+                    
                     return pntDTO;
                 }).ToList();
 
@@ -96,7 +80,7 @@ namespace Web.Controllers
             return result;
         }
 
-
+        
         [Route("getactive")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
@@ -104,13 +88,13 @@ namespace Web.Controllers
             var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id, status);
 
             if (curProcessTemplates.Any())
-            {
+            {               
                 return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
             }
             return Ok();
         }
 
-
+        
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
@@ -133,8 +117,8 @@ namespace Web.Controllers
             return Ok();
         }
 
-
-
+        
+        
         public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -168,7 +152,7 @@ namespace Web.Controllers
             }
         }
 
-
+        
         [HttpPost]
         [Route("action")]
         [ActionName("action")]
@@ -178,7 +162,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-
+        
 
         public IHttpActionResult Delete(int id)
         {
@@ -191,21 +175,21 @@ namespace Web.Controllers
             }
         }
 
-
+        
         [Route("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
         public IHttpActionResult GetTriggerSettings()
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
-
+        
         [Route("activate")]
         public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
         {
             return Ok(_processTemplate.Activate(curProcessTemplate));
         }
 
-
+        
         [Route("deactivate")]
         public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
         {
@@ -479,6 +463,6 @@ namespace Web.Controllers
             }
             return Ok();
         }
-
+        
     }
 }
