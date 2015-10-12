@@ -48,7 +48,7 @@ namespace Core.Services
 
         public async Task ProcessInboundEvents(CrateDTO curCrateStandardEventReport)
         {
-            EventReportMS eventReportMS = _crate.GetContents<EventReportMS>(curCrateStandardEventReport);
+            EventReportCM eventReportMS = _crate.GetContents<EventReportCM>(curCrateStandardEventReport);
 
 
             if (eventReportMS.EventPayload == null)

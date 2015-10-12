@@ -53,18 +53,6 @@ var dockyard;
                 return ProcessTemplateServiceMock;
             })();
             utils.ProcessTemplateServiceMock = ProcessTemplateServiceMock;
-            var ActionListServiceMock = (function () {
-                function ActionListServiceMock($q) {
-                    this.byProcessNodeTemplate = jasmine.createSpy('byProcessNodeTemplate').and.callFake(function () {
-                        /*var def: any = $q.defer();
-                        def.resolve(fixtures.ProcessBuilder.newActionListDTO);
-                        def.promise.$promise = def.promise;*/
-                        return utils.fixtures.ProcessBuilder.newActionListDTO;
-                    });
-                }
-                return ActionListServiceMock;
-            })();
-            utils.ActionListServiceMock = ActionListServiceMock;
             var ProcessBuilderServiceMock = (function () {
                 function ProcessBuilderServiceMock($q) {
                     this.save = jasmine.createSpy('save').and.callFake(function () {

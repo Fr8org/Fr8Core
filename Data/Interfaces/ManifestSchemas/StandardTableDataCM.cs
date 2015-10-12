@@ -3,9 +3,9 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardTableDataMS : ManifestSchema
+    public class StandardTableDataCM : Manifest
     {
-        public StandardTableDataMS()
+        public StandardTableDataCM()
 			  :base(Constants.MT.StandardTableData)
         {
             Table = new List<TableRowDTO>();

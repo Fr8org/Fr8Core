@@ -113,7 +113,7 @@ namespace pluginDocuSign.Actions
 
             if (fieldsCrate == null) return null;
 
-            var manifestSchema = JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(fieldsCrate.Contents);
+            var manifestSchema = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(fieldsCrate.Contents);
 
             if (manifestSchema == null
                 || manifestSchema.Fields == null
@@ -176,7 +176,7 @@ namespace pluginDocuSign.Actions
             foreach (var crate in upstreamCrates)
             {
                 var controlsMS = JsonConvert
-                    .DeserializeObject<StandardConfigurationControlsMS>(crate.Contents);
+                    .DeserializeObject<StandardConfigurationControlsCM>(crate.Contents);
 
                 var control = controlsMS.Controls
                     .FirstOrDefault(x => x.Name == "Selected_DocuSign_Template");

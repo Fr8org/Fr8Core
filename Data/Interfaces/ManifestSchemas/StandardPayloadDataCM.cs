@@ -3,9 +3,9 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardPayloadDataMS : ManifestSchema
+    public class StandardPayloadDataCM : Manifest
     {
-        public StandardPayloadDataMS()
+        public StandardPayloadDataCM()
 			  :base(Constants.MT.StandardPayloadData)
         {
             PayloadObjects = new List<PayloadObjectDTO>();
