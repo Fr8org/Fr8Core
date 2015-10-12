@@ -179,7 +179,7 @@ namespace pluginAzureSqlServer.Actions
             }
 
             var curConnectionStringFieldList =
-                JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
+                JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curCrates.CrateDTO.First(field => field.Contents.Contains("connection_string")).Contents);
 
             if (curConnectionStringFieldList == null)
             {

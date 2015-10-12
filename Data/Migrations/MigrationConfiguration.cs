@@ -87,7 +87,7 @@ namespace Data.Migrations
 
         private static CrateDTO GenerateInitialEventCrate()
         {
-            var docusignEventPayload = new EventReportMS
+            var docusignEventPayload = new EventReportCM
             {
                 EventNames = "DocuSign Envelope Sent",
                 ExternalAccountId = "docusign_developer@dockyard.company",

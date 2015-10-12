@@ -27,14 +27,14 @@ namespace Core.Interfaces
         Task<ActionDTO> Deactivate(ActionDO curActionDO);
         IEnumerable<CrateDTO> GetCratesByManifestType(string curManifestType, CrateStorageDTO curCrateStorageDTO);
         IEnumerable<CrateDTO> GetCratesByLabel(string curLabel, CrateStorageDTO curCrateStorageDTO);
-		StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO);
-        StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction);
+		StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO);
+        StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction);
         Task AuthenticateInternal(DockyardAccountDO user, PluginDO plugin, string username, string password);
         Task<ExternalAuthUrlDTO> GetExternalAuthUrl(DockyardAccountDO user, PluginDO plugin);
         Task AuthenticateExternal(PluginDO plugin, ExternalAuthenticationDTO externalAuthenticateDTO);
         
         void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO);
         void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO);
-        IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key);
+        IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key);
     }
 }

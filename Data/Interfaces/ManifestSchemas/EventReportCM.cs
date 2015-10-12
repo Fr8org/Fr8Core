@@ -3,7 +3,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class EventReportMS
+    public class EventReportCM
     {
         public string EventNames { get; set; }
         public string ProcessDOId { get; set; }
@@ -12,7 +12,7 @@ namespace Data.Interfaces.ManifestSchemas
 
         public string Source { get; set; }
 
-        public EventReportMS()
+        public EventReportCM()
         {
             EventPayload = new List<CrateDTO>();
         }

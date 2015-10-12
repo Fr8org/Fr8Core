@@ -252,7 +252,7 @@ namespace pluginDocuSign.Actions
                 fieldSelectDocusignTemplateDTO,
                 recipientSource
             };
-            var controls = new StandardConfigurationControlsMS()
+            var controls = new StandardConfigurationControlsCM()
             {
                 Controls = fieldsDTO
             };
@@ -263,7 +263,7 @@ namespace pluginDocuSign.Actions
         {
             var templatesDTO = template.GetTemplates(null);
             var fieldsDTO = templatesDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
-            var controls = new StandardDesignTimeFieldsMS()
+            var controls = new StandardDesignTimeFieldsCM()
             {
                 Fields = fieldsDTO,
             };

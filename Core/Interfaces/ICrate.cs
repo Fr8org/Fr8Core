@@ -13,7 +13,7 @@ namespace Core.Interfaces
     {
         CrateDTO Create(string label, string contents, string manifestType = "", int manifestId = 0);
         T GetContents<T>(CrateDTO crate);
-        StandardConfigurationControlsMS GetStandardConfigurationControls(CrateDTO crate);
+        StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate);
 
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
@@ -28,6 +28,6 @@ namespace Core.Interfaces
         void RemoveCrateByLabel(IList<CrateDTO> crates, string label);
 
         //StandardPayloadDataMS CreatePayloadDataCrate(string curObjectType);
-        CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataMS tableDataMS);
+        CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS);
     }
 }

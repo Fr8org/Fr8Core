@@ -35,7 +35,7 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("No controls crate found.");
             }
 
-            var curControlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            var curControlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curControlsCrate.Contents);
             var curMappingControl = curControlsMS.Controls
                 .FirstOrDefault(x => x.Name == "Selected_Mapping");
 
@@ -181,10 +181,10 @@ namespace pluginDockyardCore.Actions
 
             // Check if Upstream and Downstream ManifestSchemas contain empty set of fields.
             var upStreamFields = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsMS>(upStreamFieldsCrate.Contents);
+                .DeserializeObject<StandardDesignTimeFieldsCM>(upStreamFieldsCrate.Contents);
 
             var downStreamFields = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsMS>(downStreamFieldsCrate.Contents);
+                .DeserializeObject<StandardDesignTimeFieldsCM>(downStreamFieldsCrate.Contents);
 
             if (upStreamFields.Fields == null
                 || upStreamFields.Fields.Count == 0
@@ -226,7 +226,7 @@ namespace pluginDockyardCore.Actions
                 }
             };
 
-            var controls = new StandardConfigurationControlsMS()
+            var controls = new StandardConfigurationControlsCM()
             {
                 Controls = fields
             };

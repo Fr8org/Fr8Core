@@ -3,7 +3,7 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardFileHandleMS : ManifestSchema
+    public class StandardFileHandleMS : Manifest
     {
         public string DockyardStorageUrl { get; set; }
         public string Filename { get; set; }

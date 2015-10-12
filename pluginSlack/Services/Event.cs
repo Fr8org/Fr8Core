@@ -38,7 +38,7 @@ namespace pluginAzureSqlServer.Services
                 return;
             }
 
-            var eventReportContent = new EventReportMS
+            var eventReportContent = new EventReportCM
             {
                 EventNames = "Slack Outgoing Message",
                 ProcessDOId = "",
