@@ -274,15 +274,7 @@
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201510060951453_UpdatingToLatest.cs" />
-    <Compile Include="Migrations\201510060951453_UpdatingToLatest.Designer.cs">
-      <DependentUpon>201510060951453_UpdatingToLatest.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
-    <Compile Include="Migrations\201509290939599_UpdateToLatest.cs" />
-    <Compile Include="Migrations\201509290939599_UpdateToLatest.Designer.cs">
-      <DependentUpon>201509290939599_UpdateToLatest.cs</DependentUpon>
-    </Compile>
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
@@ -500,12 +492,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201510120408332_InitialMigration.resx">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509290939599_UpdateToLatest.resx">
-      <DependentUpon>201509290939599_UpdateToLatest.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510060951453_UpdatingToLatest.resx">
-      <DependentUpon>201510060951453_UpdatingToLatest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
