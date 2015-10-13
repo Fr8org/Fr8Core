@@ -282,6 +282,10 @@
     <Compile Include="Migrations\201510131526383_RemoveActionState.Designer.cs">
       <DependentUpon>201510131526383_RemoveActionState.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510131556091_MigrationConflict.cs" />
+    <Compile Include="Migrations\201510131556091_MigrationConflict.Designer.cs">
+      <DependentUpon>201510131556091_MigrationConflict.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -502,6 +506,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510131526383_RemoveActionState.resx">
       <DependentUpon>201510131526383_RemoveActionState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510131556091_MigrationConflict.resx">
+      <DependentUpon>201510131556091_MigrationConflict.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
