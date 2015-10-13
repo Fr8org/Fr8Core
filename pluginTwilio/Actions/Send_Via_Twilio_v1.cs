@@ -47,7 +47,7 @@ namespace pluginTwilio.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
             curActionDTO.CrateStorage.CrateDTO.Add(PackCrate_ConfigurationControls());
-            curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
+            curActionDTO.CrateStorage.CrateDTO.Add(GetAvailableDataFields(curActionDTO));
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
@@ -72,6 +72,10 @@ namespace pluginTwilio.Actions
             {
                 Label = "a value from Upstream Crate:",
                 Name = "upstream_crate",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Available SMS Number",
@@ -103,11 +107,20 @@ namespace pluginTwilio.Actions
             return PackControlsCrate(radioGroup, smsBody);
         }
 
-        private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
+        private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            CrateDTO crateDTO = null;
+            List<FieldDTO> phoneNumberFields = new List<FieldDTO>();
+
+            phoneNumberFields = _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
+
+            return phoneNumberFields;
+        }
+
+        private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
+        {
+            CrateDTO crateDTO = new CrateDTO();
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 
             if (curUpstreamFields.Length == 0)
             {
@@ -117,7 +130,7 @@ namespace pluginTwilio.Actions
             }
             else
             {
-                crateDTO = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+                crateDTO = _crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
             }
 
             return crateDTO;
