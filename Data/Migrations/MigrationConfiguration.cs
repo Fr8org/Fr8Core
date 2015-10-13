@@ -66,11 +66,11 @@ namespace Data.Migrations
             AddAdmins(uow);
             AddDockyardAccounts(uow);
             AddProfiles(uow); 
-            // commented out by yakov.gnusin as of DO-1064
-            // AddPlugins(uow);                     
+            
+             AddPlugins(uow);                     
             SeedMultiTenantTables(uow);
-            // commented out by yakov.gnusin as of DO-1064
-            // AddAuthorizationTokens(uow);
+             
+             AddAuthorizationTokens(uow);
             AddProcessDOForTestingApi(uow);
         }
 
@@ -87,7 +87,7 @@ namespace Data.Migrations
 
         private static CrateDTO GenerateInitialEventCrate()
         {
-            var docusignEventPayload = new EventReportMS
+            var docusignEventPayload = new EventReportCM
             {
                 EventNames = "DocuSign Envelope Sent",
                 ExternalAccountId = "docusign_developer@dockyard.company",
@@ -156,7 +156,12 @@ namespace Data.Migrations
 
         private static void AddAuthorizationTokens(IUnitOfWork uow)
         {
+            AddDocusignAuthToken(uow);
+            AddSalesforceAuthToken(uow);
+        }
 
+        private static void AddDocusignAuthToken(IUnitOfWork uow)
+        {
             // Check that plugin does not exist yet.
             var docusignAuthToken = uow.AuthorizationTokenRepository.GetQuery()
                 .Any(x => x.ExternalAccountId == "docusign_developer@dockyard.company");
@@ -177,11 +182,29 @@ namespace Data.Migrations
                 uow.SaveChanges();
 
             }
+        }
 
+        private static void AddSalesforceAuthToken(IUnitOfWork uow)
+        {
+            var salesforceAuthToken = uow.AuthorizationTokenRepository.GetQuery()
+             .Any(x => x.ExternalAccountId == "00561000000JECsAAO");
 
-           
+            // Add new plugin and subscription to repository, if plugin doesn't exist.
+            if (!salesforceAuthToken)
+            {
+                var token = new AuthorizationTokenDO();
+                token.ExternalAccountId = "00561000000JECsAAO";
+                token.Token = "";
+                token.UserDO = uow.UserRepository.GetOrCreateUser("alex@edelstein.org");
+                var salesforcePlugin = uow.PluginRepository.FindOne(p => p.Name == "pluginSalesforce");
+                token.Plugin = salesforcePlugin;
+                token.PluginID = salesforcePlugin.Id;
+                token.ExpiresAt = DateTime.Now.AddDays(10);
 
+                uow.AuthorizationTokenRepository.Add(token);
+                uow.SaveChanges();
 
+            }
         }
 
     //This method will automatically seed any constants file
@@ -440,15 +463,17 @@ namespace Data.Migrations
 
         private void AddPlugins(IUnitOfWork uow)
         {
-     // Create test DockYard account for plugin subscription.
-           // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
+            // Create test DockYard account for plugin subscription.
+            // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", false);
             uow.SaveChanges();
         }
 
-        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint, string version)
+        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+            string version, bool requiresAuthentication)
         {
             // Check that plugin does not exist yet.
             var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
@@ -463,12 +488,13 @@ namespace Data.Migrations
                     PluginStatus = PluginStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
+                    RequiresAuthentication = requiresAuthentication
                 };
 
                 uow.PluginRepository.Add(pluginDO);
-     
             }
         }
+
 
         private void AddActionTemplates(IUnitOfWork uow)
         {

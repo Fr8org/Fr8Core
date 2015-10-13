@@ -70,7 +70,7 @@ namespace UtilitiesTesting.Fixtures
 
             //create connection string value crates with a vald connection string
             var connectionStringCrate = FixtureData.TestCrateStorage();
-            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(connectionStringCrate.CrateDTO[0].Contents);
+            var connectionStringFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(connectionStringCrate.CrateDTO[0].Contents);
             connectionStringFields.Controls[0].Value =
                 @"Data Source=s79ifqsqga.database.windows.net;Initial Catalog=demodb_health;User ID=alexeddodb;Password=Thales89";
             connectionStringCrate.CrateDTO[0].Contents = JsonConvert.SerializeObject(connectionStringFields);

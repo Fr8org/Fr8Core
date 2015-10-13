@@ -39,7 +39,7 @@ namespace pluginExcel.Actions
         {
             var curActionDO = _action.MapFromDTO(curActionDTO);
 
-            StandardTableDataMS tableDataMS = await GetTargetTableData(curActionDO.Id, curActionDO.CrateStorageDTO());
+            StandardTableDataCM tableDataMS = await GetTargetTableData(curActionDO.Id, curActionDO.CrateStorageDTO());
             if (!tableDataMS.FirstRowHeaders)
                 throw new Exception("No headers found in the Standard Table Data Manifest.");
 
@@ -58,7 +58,7 @@ namespace pluginExcel.Actions
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private async Task<StandardTableDataMS> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
             var standardTableDataCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curCrateStorageDTO);
@@ -69,10 +69,10 @@ namespace pluginExcel.Actions
                 return await GetUpstreamTableData(actionId, curCrateStorageDTO);
             }
 
-            return JsonConvert.DeserializeObject<StandardTableDataMS>(standardTableDataCrates.First().Contents);
+            return JsonConvert.DeserializeObject<StandardTableDataCM>(standardTableDataCrates.First().Contents);
         }
 
-        private async Task<StandardTableDataMS> GetUpstreamTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
+        private async Task<StandardTableDataCM> GetUpstreamTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
         {
             var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(actionId);
 
@@ -88,7 +88,7 @@ namespace pluginExcel.Actions
             StandardFileHandleMS fileHandleMS = JsonConvert.DeserializeObject<StandardFileHandleMS>(upstreamFileHandleCrates.First().Contents);
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-            StandardTableDataMS tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
+            StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
 
             return tableDataMS;
         }
@@ -169,7 +169,7 @@ namespace pluginExcel.Actions
         /// </summary>
         public override ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
         {
-            return ReturnInitialUnlessExistsField(curActionDTO, "select_file", new ManifestSchema(Data.Constants.MT.StandardConfigurationControls));
+            return ReturnInitialUnlessExistsField(curActionDTO, "select_file", new Manifest(Data.Constants.MT.StandardConfigurationControls));
         }
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
@@ -177,7 +177,7 @@ namespace pluginExcel.Actions
         {
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-            var filePathsFromUserSelection = _action.FindKeysByCrateManifestType(curActionDO, new ManifestSchema(Data.Constants.MT.StandardConfigurationControls), "select_file")
+            var filePathsFromUserSelection = _action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file")
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();

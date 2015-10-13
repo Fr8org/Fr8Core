@@ -65,6 +65,7 @@ namespace Data.Entities
         
         public virtual PluginDO Plugin { get; set; }
 
+        [Required]
         public ActivityCategory Category { get; set; }
     }
 }

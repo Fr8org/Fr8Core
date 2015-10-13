@@ -11,7 +11,8 @@ module dockyard.controllers {
         processTemplateId: number;
         processNodeTemplates: Array<model.ProcessNodeTemplateDTO>;
         fields: Array<model.Field>;
-        immediateActionListVM: interfaces.IActionListVM;
+        currentProcessNodeTemplate: model.ProcessNodeTemplateDTO;
+
         // Identity of currently edited processNodeTemplate.
         //curNodeId: number;
         //// Flag, that indicates if currently edited processNodeTemplate has temporary identity.
@@ -114,10 +115,10 @@ module dockyard.controllers {
             var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
-                this.$scope.current.processTemplate = curProcessTemplate;
-                var actionLists = curProcessTemplate.processNodeTemplates[0].actionLists;
-                this.$scope.immediateActionListVM = this.$filter('filter')(actionLists, { actionListType: 1 }, true)[0];
+                debugger;
 
+                this.$scope.current.processTemplate = curProcessTemplate;
+                this.$scope.currentProcessNodeTemplate = curProcessTemplate.processNodeTemplates[0];
                 this.renderProcessTemplate(curProcessTemplate);
             });
         }
@@ -126,10 +127,8 @@ module dockyard.controllers {
             if (curProcessTemplate.processNodeTemplates.length == 0) return;
 
             for (var curProcessNodeTemplate of curProcessTemplate.processNodeTemplates) {
-                for (var curActionList of curProcessNodeTemplate.actionLists) {
-                    for (var curAction of curActionList.actions) {
-                        this.$scope.actions.push(curAction);
-        }
+                for (var curAction of curProcessNodeTemplate.actions) {
+                    this.$scope.actions.push(curAction);
                 }
             }
         }
@@ -178,7 +177,7 @@ module dockyard.controllers {
             var id = this.LocalIdentityGenerator.getNextId();                
 
             // Create new action object.
-            var action = new model.ActionDTO(null, id, true, this.$scope.immediateActionListVM.id);
+            var action = new model.ActionDTO(this.$scope.currentProcessNodeTemplate.id, id, true);
             action.name = activityTemplate.name;
 
             // Add action to Workflow Designer.
@@ -354,7 +353,7 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    processNodeTemplateId: 1,
+                    parentActivityId: 1,
                     activityTemplateId: 1,
                     id: 1,
                     isTempId: false,

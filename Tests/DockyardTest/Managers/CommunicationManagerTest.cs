@@ -1,16 +1,6 @@
-﻿using System;
-using System.Linq;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Core.Managers;
-using Core.Services;
-using Core.StructureMap;
-using Moq;
+﻿using Core.StructureMap;
 using NUnit.Framework;
-using StructureMap;
-using Utilities;
 using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Managers
 {

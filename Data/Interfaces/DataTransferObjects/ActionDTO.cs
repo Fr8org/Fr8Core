@@ -10,7 +10,7 @@ namespace Data.Interfaces.DataTransferObjects
             CrateStorage = new CrateStorageDTO();
         }
 
-        public int? ActionListId { get; set; }
+        public int? ParentActivityId { get; set; }
 
         public CrateStorageDTO CrateStorage { get; set; }
 

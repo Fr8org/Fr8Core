@@ -58,18 +58,6 @@
         public saveCurrent: any;
     }
 
-    export class ActionListServiceMock {
-        constructor($q: ng.IQService) {
-            this.byProcessNodeTemplate = jasmine.createSpy('byProcessNodeTemplate').and.callFake(() => {
-                /*var def: any = $q.defer();
-                def.resolve(fixtures.ProcessBuilder.newActionListDTO);
-                def.promise.$promise = def.promise;*/
-                return fixtures.ProcessBuilder.newActionListDTO;
-            });
-        }
-        public byProcessNodeTemplate: any;
-    }
-
     export class ProcessBuilderServiceMock {
         constructor($q: ng.IQService) {
             this.save = jasmine.createSpy('save').and.callFake(() => {

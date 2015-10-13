@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.WindowsAzure;
 
 namespace Utilities
 {
@@ -42,7 +41,7 @@ namespace Utilities
 
         private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
-            var stringValue = CloudConfigurationManager.GetSetting(key);
+            var stringValue = fr8.Microsoft.Azure.CloudConfigurationManager.GetSetting(key);
 
             if (String.IsNullOrEmpty(stringValue))
             {

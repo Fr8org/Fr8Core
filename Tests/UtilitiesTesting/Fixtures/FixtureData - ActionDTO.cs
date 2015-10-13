@@ -35,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
             curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
-            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curActionDTO.CrateStorage.CrateDTO[0].Contents);
+            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curActionDTO.CrateStorage.CrateDTO[0].Contents);
 
             curActionDTO.CrateStorage.CrateDTO.Add(CreateEventSubscriptionCrate(configurationFields));
 

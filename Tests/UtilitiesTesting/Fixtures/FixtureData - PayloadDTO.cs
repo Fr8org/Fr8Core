@@ -16,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
         {
             List<FieldDTO> curFields = new List<FieldDTO>() { new FieldDTO() { Key = "EnvelopeId", Value = "EnvelopeIdValue" } };
 
-            EventReportMS curEventReportMS = new EventReportMS();
+            EventReportCM curEventReportMS = new EventReportCM();
             curEventReportMS.EventNames = "DocuSign Envelope Sent";
             curEventReportMS.EventPayload.Add(new CrateDTO()
             {

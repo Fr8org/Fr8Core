@@ -22,7 +22,8 @@ using System.IO;
 using System.Net;
 using System.Xml;
 using System.Xml.Linq;
- 
+using fr8.Microsoft.Azure;
+
 namespace DocusignTutorial.Controllers 
 {
 	public class  StatusController : Controller
@@ -31,16 +32,15 @@ namespace DocusignTutorial.Controllers
 		{
 
 
-            var appSettings = ConfigurationManager.AppSettings;
-            string username = appSettings["username"] ?? "Not Found"; 			 
-            string password = appSettings["password"] ?? "Not Found"; 			 
-            string integratorKey = appSettings["IntegratorKey"] ?? "Not Found";			 
+            string username = CloudConfigurationManager.GetSetting("username") ?? "Not Found"; 			 
+            string password = CloudConfigurationManager.GetSetting("password") ?? "Not Found"; 			 
+            string integratorKey = CloudConfigurationManager.GetSetting("IntegratorKey") ?? "Not Found";			 
 			
             //string envelopeId = "***";			// valid envelopeId of an envelope in your account
 			//---------------------------------------------------------------------------------------------------
 			
 			// additional variable declarations
-            string baseURL = appSettings["BaseUrl"] ?? "Not Found"; ;			// - we will retrieve this through the Login API call
+            string baseURL = CloudConfigurationManager.GetSetting("BaseUrl") ?? "Not Found"; ;			// - we will retrieve this through the Login API call
  
 			try {
 				//============================================================================

@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
         getFull: (id: Object) => interfaces.IProcessTemplateVM;
+        execute: (id: {id: number}) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -27,10 +28,6 @@ module dockyard.services {
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
-    }
-
-    export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
-        byProcessNodeTemplate: (id: { id: number; actionListType: number; }) => interfaces.IActionListVM;
     }
 
     export interface ICriteriaServiceWrapper {
@@ -68,6 +65,14 @@ module dockyard.services {
                     method: 'GET',
                     isArray: false,
                     url: '/api/processTemplate/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                },
+                'execute': {
+                    method: 'POST',
+                    isArray: false,
+                    url: '/api/processes/launch?processTemplateId=:id',
                     params: {
                         id: '@id'
                     }
@@ -150,19 +155,6 @@ module dockyard.services {
                 'byProcessNodeTemplate': {
                     method: 'GET',
                     url: '/api/criteria/byProcessNodeTemplate'
-                }
-            })
-    ]);
-
-    /* 
-        ActionListDTO CRUD service.
-    */
-    app.factory('ActionListService', ['$resource', ($resource: ng.resource.IResourceService): IActionListService =>
-        <IActionListService>$resource('/api/actionList', null,
-            {
-                'byProcessNodeTemplate': {
-                    method: 'GET',
-                    url: '/api/actionList/byProcessNodeTemplate/'
                 }
             })
     ]);

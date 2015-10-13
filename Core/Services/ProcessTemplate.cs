@@ -247,7 +247,7 @@ namespace Core.Services
 
         
 
-        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
+        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportCM curEventReport)
         {
             List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();
             if (String.IsNullOrEmpty(userId))
@@ -269,7 +269,7 @@ namespace Core.Services
         
 
         public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
-            EventReportMS curEventReport)
+            EventReportCM curEventReport)
         {
             List<ProcessTemplateDO> subscribingProcessTemplates = new List<ProcessTemplateDO>();
             foreach (var curProcessTemplate in curProcessTemplates)
@@ -290,7 +290,7 @@ namespace Core.Services
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
-                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
+                        EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
 
                         bool hasEvents = subscriptionsList.Subscriptions.Any(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()));
 

@@ -1,9 +1,16 @@
-﻿using Core.Managers.APIManagers.Transmitters.Restful;
+﻿using Core.Interfaces;
+using Core.Managers.APIManagers.Transmitters.Restful;
 using Data.Crates.Helpers;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
+using StructureMap;
 using System;
 using System.Configuration;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using fr8.Microsoft.Azure;
 
 namespace PluginUtilities.Infrastructure
 {
@@ -12,8 +19,13 @@ namespace PluginUtilities.Infrastructure
         private readonly EventReportCrateFactory _eventReportCrateFactory;
         private readonly LoggingDataCrateFactory _loggingDataCrateFactory;
 
+        public delegate CrateDTO EventParser(string externalEventPayload);
+        private string eventWebServerUrl = string.Empty;
+
         public BasePluginEvent()
         {
+            //Regex used to fetch http://localhost:30643 
+            eventWebServerUrl = Regex.Match(ConfigurationManager.AppSettings["EventWebServerUrl"], @"(\w+://\w+:\d+)").Value + "/dockyard_events";
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
         }
@@ -28,7 +40,7 @@ namespace PluginUtilities.Infrastructure
             //make Post call
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
-            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
             {
                 ObjectId = pluginName,
@@ -57,7 +69,7 @@ namespace PluginUtilities.Infrastructure
             //prepare the REST client to make the POST to fr8's Event Controller
             var restClient = PrepareRestClient();
             const string eventWebServerUrl = "EventWebServerUrl";
-            string url = ConfigurationManager.AppSettings[eventWebServerUrl];
+            string url = CloudConfigurationManager.GetSetting(eventWebServerUrl);
 
             //create event logging data with required information
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingData
@@ -84,6 +96,17 @@ namespace PluginUtilities.Infrastructure
         {
             var restCall = new RestfulServiceClient();
             return restCall;
+        }
+
+        /// <summary>
+        /// Processsing the external event pay load received
+        /// </summary>
+        /// <param name="curExternalEventPayload">event pay load received</param>
+        /// <param name="parser">delegate method</param>
+        public async Task Process(string curExternalEventPayload,EventParser parser)
+        {
+            var eventReportCrateDTO = parser.Invoke(curExternalEventPayload);       
+            new HttpClient().PostAsJsonAsync(new Uri(eventWebServerUrl, UriKind.Absolute), eventReportCrateDTO);
         }
     }
 }

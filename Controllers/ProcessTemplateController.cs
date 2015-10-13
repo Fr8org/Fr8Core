@@ -62,23 +62,7 @@ namespace Web.Controllers
                     var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
 
                     pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
-                    
-                    //black voodoo magic to alow client works as if  actionlists are still present.
-                    foreach (var action in pntDTO.Actions)
-                    {
-                        action.ActionListId = pntDTO.Id;
-                    }
 
-                    // DO-1214. Emulate existance of one action list
-                    pntDTO.ActionLists = new[]
-                    {
-                        new
-                        {
-                            ActionListType = 1,
-                            Actions = pntDTO.Actions,
-                            Id = pntDTO.Id // send ProcessNodeTemaplate Id. We removed ActionListDO and now we need ProcessNodeTemaplate Id to edit actions.
-                        }
-                    };
                     return pntDTO;
                 }).ToList();
 
