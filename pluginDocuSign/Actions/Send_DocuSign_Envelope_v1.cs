@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using DocuSign.Integrations.Client;
 using PluginBase;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
@@ -78,8 +79,45 @@ namespace pluginDocuSign.Actions
 
             // User's choosen recipient is in recipientAddress. Someone needs to implement actual submission of the envelope. 
             //_docusignEnvelope.SendUsingTemplate(templateId, recipientAddress);
+
+            
+
+            var curEnvelope = new Envelope();
+            curEnvelope.Login = GetDocuSignAccount(curActionDTO);//need to set this to the right account
+
+            curEnvelope = AddTemplateData(curEnvelope);
+            curEnvelope.EmailSubject = "Test Message from Fr8";
+            curEnvelope.Status = "sent";
+            curEnvelope.Create();
             ;
             return null;
+        }
+
+
+        private Account GetDocuSignAccount(ActionDTO curActionDTO)
+        {
+            AuthTokenDTO curAuthToken = curActionDTO.AuthToken;
+            Account curAccount = new Account();
+            curAccount.Email = curAuthToken.ExternalAccountId;
+            return curAccount;
+        }
+
+        private Envelope AddTemplateData(Envelope curEnvelope)
+        {
+            var curTemplateId = ""; //need to fetch this
+
+
+            curEnvelope.TemplateId = curTemplateId;
+            curEnvelope.TemplateRoles = new TemplateRole[]
+            {
+                new TemplateRole()
+                {
+                    email = "recipientAddress",
+                    name = "",
+                    roleName = ""   //need to fetch this
+                },
+            };
+            return curEnvelope;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
