@@ -48,7 +48,14 @@ namespace pluginExcel.Actions
             var payloadDataCrate = _crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
             _action.AddCrate(curActionDO, payloadDataCrate);
 
-            return Mapper.Map<ActionDTO>(curActionDO);
+            // Commented ut by Naveed: This line fails giving an exception "Additional information: The ObjectContext instance has been disposed and can no longer be used for operations that require a connection."
+            // in class DataAutoMapperBootStrapper line # 28 (.ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));)
+            
+            // return Mapper.Map<ActionDTO>(curActionDO);
+
+            var curCrateStorageDTO = curActionDO.CrateStorageDTO();
+            curActionDTO.CrateStorage = curCrateStorageDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private async Task<StandardTableDataMS> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
@@ -112,11 +119,15 @@ namespace pluginExcel.Actions
         /// </summary>
         private CrateDTO CreateConfigurationControlsCrate()
         {
-            var fieldFilterPane = new ControlDefinitionDTO("filePicker")
+            var fieldFilterPane = new ControlDefinitionDTO(ControlTypes.FilePicker)
             {
                 Label = "Select Excel File",
                 Name = "select_file",
                 Required = true,
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                },
                 Source = new FieldSourceDTO
                 {
                     Label = "Select Excel File",
@@ -134,20 +145,16 @@ namespace pluginExcel.Actions
         {
             if (curActionDTO.Id > 0)
             {
-                //this conversion from actiondto to Action should be moved back to the controller edge
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+                ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
 
-                    //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                    CrateDTO upstreamFieldsCrate = await MergeUpstreamFields(curActionDO.Id, "Select Excel File");
+                //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+                CrateDTO upstreamFieldsCrate = await MergeUpstreamFields(curActionDO.Id, "Select Excel File");
 
-                    //build a controls crate to render the pane
-                    CrateDTO configurationControlsCrate = CreateConfigurationControlsCrate();
+                //build a controls crate to render the pane
+                CrateDTO configurationControlsCrate = CreateConfigurationControlsCrate();
 
-                    var crateStrorageDTO = AssembleCrateStorage(upstreamFieldsCrate, configurationControlsCrate);
-                    curActionDTO.CrateStorage = crateStrorageDTO;
-                }
+                var crateStrorageDTO = AssembleCrateStorage(upstreamFieldsCrate, configurationControlsCrate);
+                curActionDTO.CrateStorage = crateStrorageDTO;
             }
             else
             {
@@ -216,7 +223,9 @@ namespace pluginExcel.Actions
 
             CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
 
-            return Mapper.Map<ActionDTO>(curActionDO);
+            var curCrateStorageDTO = curActionDO.CrateStorageDTO();
+            curActionDTO.CrateStorage = curCrateStorageDTO;
+            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private void CreatePayloadCrate_ExcelRows(ActionDO curActionDO, byte[] fileAsByteArray, string[] headersArray, string extension)
