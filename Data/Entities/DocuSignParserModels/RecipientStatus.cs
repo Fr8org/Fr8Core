@@ -10,5 +10,14 @@ namespace Data.Entities.DocuSignParserModels
 
         [XmlElement("Status")]
         public string Status { get; set; }
+
+        [XmlElement("Email")]
+        public string Email { get; set; }
+
+        [XmlElement("Sent")]
+        public string SentDate { get; set; }
+
+        [XmlElement("Delivered")]
+        public string DeliveredDate { get; set; }
     }
 }
