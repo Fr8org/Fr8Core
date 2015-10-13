@@ -47,7 +47,8 @@ namespace pluginTwilio.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
             curActionDTO.CrateStorage.CrateDTO.Add(PackCrate_ConfigurationControls());
-            curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
+            //will implement the correct available data fields
+            //curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
