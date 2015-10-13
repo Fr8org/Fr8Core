@@ -137,39 +137,7 @@ namespace DockyardTest.Services
             }
         }
 
-        //[Test]
-        //public void CanParsePayload()
-        //{
-        //	 var envelope = new DocuSignEnvelope();
-        //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-        //	 var payloadMappings = FixtureData.ListFieldMappings;
 
-        //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
-
-        //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
-
-        //	 Assert.AreEqual("Johnson", result.Where(p => p.Key == "Doctor").Single().Value);
-        //	 Assert.AreEqual("Marthambles", result.Where(p => p.Key == "Condition").Single().Value);
-        //}
-
-        //[Test]
-        //public void CanLogIncidentWhenFieldIsMissing()
-        //{
-        //	 IncidentReporter incidentReporter = new IncidentReporter();
-        //	 incidentReporter.SubscribeToAlerts();
-
-        //	 var envelope = new DocuSignEnvelope();
-        //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-        //	 var payloadMappings = FixtureData.ListFieldMappings2; //Wrong mappings
-
-        //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
-        //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
-
-        //	 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //	 {
-        //		  Assert.IsTrue(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
-        //	 }
-        //}
 
         //[Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
         //public async void CanProcessDocuSignTemplate()
@@ -210,7 +178,7 @@ namespace DockyardTest.Services
 //            // TODO: Fix this line according to v2 changes
 //            PluginTransmitterMock.Verify();
         //}
-        
+
         // DO-1270
 //        [Test]
 //        public void Process_ActionNotUnstarted_ThrowException()
