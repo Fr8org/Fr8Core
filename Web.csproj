@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -201,8 +201,8 @@
       <HintPath>packages\NewRelic.Azure.WebSites.2.25.208.0\lib\NewRelic.Api.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -749,9 +749,6 @@
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
-    <Content Include="Views\AngularTemplate\GeneralSearch.cshtml" />
-    <Content Include="Views\AngularTemplate\GeneralSearchPage.cshtml" />
-    <Content Include="Views\AngularTemplate\GeneralSearchWidget.cshtml" />
     <None Include="Views\Home\docusign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
@@ -764,7 +761,6 @@
     <Content Include="Views\Sandbox\Index.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\SandboxController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\GeneralSearch.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
@@ -774,7 +770,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RadioButtonGroup.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilePicker.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\GeneralSearchWidget.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\ConfigurationControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
@@ -794,7 +789,6 @@
     <Content Include="Scripts\ProcessBuilder\pb-widget.js" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\GeneralSearchDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessNodeTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ProcessTemplate.ts" />
