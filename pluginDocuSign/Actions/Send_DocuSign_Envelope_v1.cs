@@ -26,14 +26,10 @@ namespace pluginDocuSign.Actions
     public class Send_DocuSign_Envelope_v1 : BasePluginAction
     {
  
-        // IDocuSignTemplate _template;
-        private IDocuSignEnvelope _docusignEnvelope;
-
         public Send_DocuSign_Envelope_v1()
         {
  
-            // _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-            _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
+
         }
 
         public object Configure(ActionDTO curActionDTO)
@@ -77,10 +73,7 @@ namespace pluginDocuSign.Actions
                     break;
             }
 
-            // User's choosen recipient is in recipientAddress. Someone needs to implement actual submission of the envelope. 
-            //_docusignEnvelope.SendUsingTemplate(templateId, recipientAddress);
-
-            
+         
 
             var curEnvelope = new Envelope();
             curEnvelope.Login = GetDocuSignAccount(curActionDTO);//need to set this to the right account
@@ -96,7 +89,8 @@ namespace pluginDocuSign.Actions
 
         private Account GetDocuSignAccount(ActionDTO curActionDTO)
         {
-            AuthTokenDTO curAuthToken = curActionDTO.AuthToken;
+            AuthTokenDTO curAuthToken = curActionDTO.AuthToken; //typical token: "{\"Email\":\"docusign_developer@dockyard.company\",\"ApiPassword\":\"fG8Deh/h2ExwNWdPBtYjdXwVZC8=\"}"
+
             Account curAccount = new Account();
             curAccount.Email = curAuthToken.ExternalAccountId;
             return curAccount;
