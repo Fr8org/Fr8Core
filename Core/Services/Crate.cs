@@ -71,6 +71,14 @@ namespace Core.Services
                 manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
         }
 
+        public CrateDTO CreateStandardEventReportCrate(string label, EventReportCM eventReport)
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(eventReport),
+                manifestType: CrateManifests.STANDARD_EVENT_REPORT_NAME,
+                manifestId: CrateManifests.STANDARD_EVENT_REPORT_ID);
+        }
+
         public CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
         {
             return Create(label,
