@@ -10,6 +10,8 @@ module dockyard.directives.filePicker {
         selectedFile: interfaces.IFileDescriptionDTO;
     }
 
+    import pca = dockyard.directives.paneConfigureAction;
+
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     class FilePicker implements ng.IDirective {
@@ -48,6 +50,8 @@ module dockyard.directives.filePicker {
         private OnFileUploadSuccess(fileDTO: interfaces.IFileDescriptionDTO) {
             this._$scope.selectedFile = fileDTO;
             this._$scope.$root.$broadcast("fp-success", fileDTO );
+            this._$scope.field.value = (<dockyard.model.FileDTO>fileDTO).cloudStorageUrl;
+            this._$scope.$root.$broadcast("onChange", new pca.ChangeEventArgs("select_file"));
         }
 
         private OnFileUploadFail(status: any) {
