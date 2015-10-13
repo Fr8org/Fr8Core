@@ -274,6 +274,10 @@
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510130637359_UpdateDocuSignEventDo.cs" />
+    <Compile Include="Migrations\201510130637359_UpdateDocuSignEventDo.Designer.cs">
+      <DependentUpon>201510130637359_UpdateDocuSignEventDo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -492,6 +496,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201510120408332_InitialMigration.resx">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510130637359_UpdateDocuSignEventDo.resx">
+      <DependentUpon>201510130637359_UpdateDocuSignEventDo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

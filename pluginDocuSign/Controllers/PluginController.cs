@@ -52,9 +52,9 @@ namespace pluginDocuSign.Controllers
                 Plugin = plugin
             };
 
-            var monitorAllDocuSignEvents = new ActivityTemplateDO
+            var recordDocuSignEvents = new ActivityTemplateDO
             {
-                Name = "Monitor_All_DocuSign_Events",
+                Name = "Record_DocuSign_Events",
                 Version = "1",
                 Category = ActivityCategory.fr8_Forwarder,
                 Plugin = plugin
@@ -65,7 +65,7 @@ namespace pluginDocuSign.Controllers
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
-                monitorAllDocuSignEvents
+                recordDocuSignEvents
             };
 
             return Ok(actionList);

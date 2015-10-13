@@ -466,13 +466,14 @@ namespace Data.Migrations
             // Create test DockYard account for plugin subscription.
             // var account = CreateDockyardAccount("diagnostics_monitor@dockyard.company", "testpassword", uow);
 
-            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1");
-            AddPlugins(uow, "pluginExcel", "localhost:47011", "1");
-            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1");
+            AddPlugins(uow, "pluginDocuSign", "localhost:53234", "1", true);
+            AddPlugins(uow, "pluginExcel", "localhost:47011", "1", false);
+            AddPlugins(uow, "pluginSalesforce", "localhost:51234", "1", false);
             uow.SaveChanges();
         }
 
-        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint, string version)
+        private static void AddPlugins(IUnitOfWork uow, string pluginName, string endPoint,
+            string version, bool requiresAuthentication)
         {
             // Check that plugin does not exist yet.
             var pluginExists = uow.PluginRepository.GetQuery().Any(x => x.Name == pluginName);
@@ -487,10 +488,10 @@ namespace Data.Migrations
                     PluginStatus = PluginStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
+                    RequiresAuthentication = requiresAuthentication
                 };
 
                 uow.PluginRepository.Add(pluginDO);
-     
             }
         }
 
