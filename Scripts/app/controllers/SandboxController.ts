@@ -73,7 +73,7 @@ module dockyard.controllers {
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
-            private ActionListService: services.IActionListService,
+            
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService
             ) {
@@ -194,7 +194,7 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    processNodeTemplateId: 1,
+                    parentActivityId: 1,
                     id: 1,
                     isTempId: false,
                     actionListId: 0,

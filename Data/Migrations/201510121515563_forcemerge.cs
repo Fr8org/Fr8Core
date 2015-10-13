@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class UpdatingToLatest : DbMigration
+    public partial class forcemerge : DbMigration
     {
         public override void Up()
         {

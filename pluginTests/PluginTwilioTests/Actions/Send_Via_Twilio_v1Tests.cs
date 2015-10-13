@@ -15,6 +15,7 @@ using UtilitiesTesting.Fixtures;
 using pluginTwilio;
 using StructureMap;
 using pluginTwilio.Services;
+using Core.Interfaces;
 
 namespace pluginTests.PluginTwilioTests.Actions
 {
@@ -22,6 +23,7 @@ namespace pluginTests.PluginTwilioTests.Actions
     public class Send_Via_Twilio_v1Tests : BaseTest
     {
         private Send_Via_Twilio_v1 _twilioAction;
+        private ICrate _crate;
 
         public override void SetUp()
         {
@@ -31,6 +33,7 @@ namespace pluginTests.PluginTwilioTests.Actions
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
+            _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
         [Test]
@@ -57,12 +60,9 @@ namespace pluginTests.PluginTwilioTests.Actions
             var actionResult = _twilioAction.Configure(curActionDTO).Result;
 
             var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
-            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var standardControls = _crate.GetStandardConfigurationControls(controlsCrate);
 
             Assert.IsNotNull(standardControls);
-
-            var smsNumberFields = standardControls.FindByName("SMS_Number");
-            var smsBodyFields = standardControls.FindByName("SMS_Body");
         }
 
         [Test]
@@ -75,14 +75,16 @@ namespace pluginTests.PluginTwilioTests.Actions
             var actionResult = _twilioAction.Configure(curActionDTO).Result;
 
             var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
-            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var standardControls = _crate.GetStandardConfigurationControls(controlsCrate);
 
 
-            var smsNumberFields = standardControls.FindByName("SMS_Number");
+            var smsNumberTextField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "SMS_Number").Count();
+            var smsNumberUpstreamField = ((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]).Radios.SelectMany(c => c.Controls).Where(s => s.Name == "upstream_crate").Count();
             var smsBodyFields = standardControls.FindByName("SMS_Body");
 
 
-            Assert.IsNotNull(smsNumberFields);
+            Assert.Greater(smsNumberTextField, 0);
+            Assert.Greater(smsNumberUpstreamField, 0);
             Assert.IsNotNull(smsBodyFields);
         }
     }

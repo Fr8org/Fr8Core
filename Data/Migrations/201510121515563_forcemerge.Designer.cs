@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class UpdatingToLatest : IMigrationMetadata
+    public sealed partial class forcemerge : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdatingToLatest));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(forcemerge));
         
         string IMigrationMetadata.Id
         {
-            get { return "201510060951453_UpdatingToLatest"; }
+            get { return "201510121515563_forcemerge"; }
         }
         
         string IMigrationMetadata.Source

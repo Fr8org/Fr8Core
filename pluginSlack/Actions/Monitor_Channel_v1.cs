@@ -69,7 +69,7 @@ namespace pluginSlack.Actions
                 throw new ApplicationException("EventReportCrate is empty.");
             }
 
-            var eventReportMS = JsonConvert.DeserializeObject<EventReportMS>(
+            var eventReportMS = JsonConvert.DeserializeObject<EventReportCM>(
                 eventReportCrate.Contents);
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)

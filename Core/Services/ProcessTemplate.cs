@@ -16,8 +16,8 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        
-        
+
+
         // private readonly IProcess _process;
         private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
@@ -26,7 +26,7 @@ namespace Core.Services
         private readonly ICrate _crate;
 
 
-        
+
 
         public ProcessTemplate()
         {
@@ -37,7 +37,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        
+
 
         public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
@@ -62,7 +62,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
         {
@@ -102,7 +102,7 @@ namespace Core.Services
             }
 
             _activity.Delete(uow, curProcessTemplate);
-                    }
+        }
 
 
 
@@ -135,19 +135,19 @@ namespace Core.Services
                 firstNodeTemplate = false;
 
                 if (template.Activities != null)
-                    {
+                {
                     foreach (var activityDo in template.Activities.OfType<TActivity>())
-                        {
+                    {
                         yield return activityDo;
                     }
                 }
             }
         }
 
-        
+
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
-                            {
+        {
             if (curProcessTemplate.ProcessNodeTemplates == null)
             {
                 throw new ArgumentNullException("Parameter ProcessNodeTemplates is null.");
@@ -157,22 +157,22 @@ namespace Core.Services
 
             foreach (var curActionDO in EnumerateActivities<ActionDO>(curProcessTemplate))
             {
-                                try
-                                {
-                                    _action.Activate(curActionDO).Wait();
-                                    curActionDO.ActionState = ActionState.Active;
-                                    result = "success";
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw new ApplicationException("Process template activation failed.", ex);
-                                }
-                            }
+                try
+                {
+                    _action.Activate(curActionDO).Wait();
+                    curActionDO.ActionState = ActionState.Active;
+                    result = "success";
+                }
+                catch (Exception ex)
+                {
+                    throw new ApplicationException("Process template activation failed.", ex);
+                }
+            }
 
             return result;
         }
 
-        
+
 
         public string Deactivate(ProcessTemplateDO curProcessTemplate)
         {
@@ -180,51 +180,51 @@ namespace Core.Services
 
             foreach (var curActionDO in EnumerateActivities<ActionDO>(curProcessTemplate))
             {
-                        try
-                        {
-                            _action.Deactivate(curActionDO).Wait();
-                            curActionDO.ActionState = ActionState.Deactive;
-                            result = "success";
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new ApplicationException("Process template Deactivation failed.", ex);
-                        }
-                    }
+                try
+                {
+                    _action.Deactivate(curActionDO).Wait();
+                    curActionDO.ActionState = ActionState.Deactive;
+                    result = "success";
+                }
+                catch (Exception ex)
+                {
+                    throw new ApplicationException("Process template Deactivation failed.", ex);
+                }
+            }
 
             return result;
         }
 
-        
+
         // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N Activities.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
-//        public ActionListDO GetActionList(IUnitOfWork uow, int id)
-//        {
-//            // Get action list by process template first 
-//            var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-//
-//            if (currentProcessTemplate.Length == 0)
-//            {
-//                return null;
-//            }
-//
-//            if (currentProcessTemplate.Length > 1)
-//            {
-//                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
-//            }
-//
-//            var startingProcessTemplate = currentProcessTemplate[0].StartingProcessNodeTemplate;
-//            if (startingProcessTemplate == null)
-//            {
-//                return null;
-//            }
-//
-//            // Get Activities related to the ProcessTemplate
-//            var curActionList = startingProcessTemplate.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-//            return curActionList;
-//
-//        }
+        //        public ActionListDO GetActionList(IUnitOfWork uow, int id)
+        //        {
+        //            // Get action list by process template first 
+        //            var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
+        //
+        //            if (currentProcessTemplate.Length == 0)
+        //            {
+        //                return null;
+        //            }
+        //
+        //            if (currentProcessTemplate.Length > 1)
+        //            {
+        //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
+        //            }
+        //
+        //            var startingProcessTemplate = currentProcessTemplate[0].StartingProcessNodeTemplate;
+        //            if (startingProcessTemplate == null)
+        //            {
+        //                return null;
+        //            }
+        //
+        //            // Get Activities related to the ProcessTemplate
+        //            var curActionList = startingProcessTemplate.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+        //            return curActionList;
+        //
+        //        }
 
 
         /// <summary>
@@ -247,7 +247,7 @@ namespace Core.Services
 
 
 
-        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport)
+        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportCM curEventReport)
         {
             List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();
             if (String.IsNullOrEmpty(userId))
@@ -266,10 +266,10 @@ namespace Core.Services
 
         }
 
-        
+
 
         public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
-            EventReportMS curEventReport)
+            EventReportCM curEventReport)
         {
             List<ProcessTemplateDO> subscribingProcessTemplates = new List<ProcessTemplateDO>();
             foreach (var curProcessTemplate in curProcessTemplates)
@@ -290,7 +290,7 @@ namespace Core.Services
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
-                        EventSubscriptionMS subscriptionsList = _crate.GetContents<EventSubscriptionMS>(curEventSubscription);
+                        EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
 
                         bool hasEvents = subscriptionsList.Subscriptions
                             .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
@@ -307,7 +307,7 @@ namespace Core.Services
 
         }
 
-        
+
 
         public ActivityDO GetFirstActivity(int curProcessTemplateId)
         {
@@ -320,9 +320,9 @@ namespace Core.Services
 
 
         public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
-                {
+        {
             return EnumerateActivities<ActivityDO>(curProcessTemplate).OrderBy(a => a.Ordering).FirstOrDefault();
-                }
+        }
 
         public ProcessTemplateDO GetProcessTemplate(ActionDO action)
         {
@@ -336,7 +336,7 @@ namespace Core.Services
                 }
 
                 root = root.ParentActivity;
-        }
+            }
 
             return null;
         }
