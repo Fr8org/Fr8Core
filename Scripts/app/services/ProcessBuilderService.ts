@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
         getFull: (id: Object) => interfaces.IProcessTemplateVM;
+        execute: (id: {id: number}) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -47,10 +48,6 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
-    export interface IGeneralSearchService extends ng.resource.IResourceClass<interfaces.IGeneralSearchVM> {
-
-        generalSearch: (id: { objtype: string; id: string, idoperator: string, idvalue: string, createddate: string, dateoperator: string, datevalue: string }) => interfaces.IGeneralSearchVM;
-    }
     /*
         ProcessTemplateDTO CRUD service.
     */
@@ -71,6 +68,14 @@ module dockyard.services {
                     params: {
                         id: '@id'
                     }
+                },
+                'execute': {
+                    method: 'POST',
+                    isArray: false,
+                    url: '/api/processes/launch?processTemplateId=:id',
+                    params: {
+                        id: '@id'
+                    }
                 }
             })
     ]);
@@ -87,18 +92,6 @@ module dockyard.services {
     */
     app.factory('DocuSignTriggerService', ['$resource', ($resource: ng.resource.IResourceService): IDocuSignTriggerService =>
         <IDocuSignTriggerService>$resource('/api/processtemplate/triggersettings')
-    ]);
-
-    app.factory('GeneralSearchService', ['$resource', ($resource: ng.resource.IResourceService): IGeneralSearchService =>
-        <IGeneralSearchService> $resource('/api/processTemplate/:id', { id: '@id' },
-            {
-                'generalSearch': {
-                    method: 'GET',
-                    isArray: true,
-                    url: '/api/processTemplate/generalSearch'
-                }
-
-            })
     ]);
 
     /* 

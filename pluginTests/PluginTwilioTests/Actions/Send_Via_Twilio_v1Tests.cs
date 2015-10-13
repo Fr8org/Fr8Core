@@ -57,7 +57,7 @@ namespace pluginTests.PluginTwilioTests.Actions
             var actionResult = _twilioAction.Configure(curActionDTO).Result;
 
             var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
-            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
 
             Assert.IsNotNull(standardControls);
 
@@ -75,7 +75,7 @@ namespace pluginTests.PluginTwilioTests.Actions
             var actionResult = _twilioAction.Configure(curActionDTO).Result;
 
             var controlsCrate = actionResult.CrateStorage.CrateDTO.FirstOrDefault();
-            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
 
 
             var smsNumberFields = standardControls.FindByName("SMS_Number");

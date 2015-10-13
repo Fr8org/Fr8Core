@@ -16,7 +16,7 @@ namespace UtilitiesTesting.Fixtures
         public static CrateDTO RawStandardEventReportFormat()
         {
             var serializer = new Utilities.Serializers.Json.JsonSerializer();
-            EventReportMS eventReportMS = new EventReportMS()
+            EventReportCM eventReportMS = new EventReportCM()
             {
                 EventNames = "DocuSign Envelope Sent"
             };
@@ -30,9 +30,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static EventReportMS StandardEventReportFormat()
+        public static EventReportCM StandardEventReportFormat()
         {
-            return new EventReportMS()
+            return new EventReportCM()
             {
                 EventNames = "DocuSign Envelope Sent"
             };

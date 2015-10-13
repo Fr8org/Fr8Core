@@ -3,9 +3,9 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardDesignTimeFieldsMS : ManifestSchema
+    public class StandardDesignTimeFieldsCM : Manifest
     {
-        public StandardDesignTimeFieldsMS()
+        public StandardDesignTimeFieldsCM()
 			  :base(Constants.MT.StandardDesignTimeFields)
         {
             Fields = new List<FieldDTO>();

@@ -147,7 +147,7 @@ namespace pluginExcel.Infrastructure
             return excelRows;
         }
 
-        public static StandardTableDataMS GetTableData(string selectedFilePath)
+        public static StandardTableDataCM GetTableData(string selectedFilePath)
         {
             // Check if the file is an Excel file.
             string ext = Path.GetExtension(selectedFilePath);
@@ -183,8 +183,8 @@ namespace pluginExcel.Infrastructure
             }
 
             var curStandardTableDataMS = (curExcelPayloadRowsCrateDTO != null) ?
-                JsonConvert.DeserializeObject<StandardTableDataMS>(curExcelPayloadRowsCrateDTO.Contents)
-                : new StandardTableDataMS();
+                JsonConvert.DeserializeObject<StandardTableDataCM>(curExcelPayloadRowsCrateDTO.Contents)
+                : new StandardTableDataCM();
 
             return curStandardTableDataMS;
         }

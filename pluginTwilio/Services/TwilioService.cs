@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using Core.ExternalServices;
-using Microsoft.WindowsAzure;
 using Twilio;
+using fr8.Microsoft.Azure;
 
 namespace pluginTwilio.Services
 {

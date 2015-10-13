@@ -148,7 +148,7 @@ namespace pluginTwilio.Actions
             if (controlsCrate == null)
                 return null;
         
-            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(controlsCrate.Contents);
+            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
             if (standardControls == null)
                 return null;
 

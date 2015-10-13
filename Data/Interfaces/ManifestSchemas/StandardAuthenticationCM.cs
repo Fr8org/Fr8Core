@@ -2,9 +2,9 @@
 
 namespace Data.Interfaces.ManifestSchemas
 {
-    public class StandardAuthenticationMS : ManifestSchema
+    public class StandardAuthenticationCM : Manifest
     {
-        public StandardAuthenticationMS()
+        public StandardAuthenticationCM()
             : base(MT.StandardAuthentication)
         {
         }

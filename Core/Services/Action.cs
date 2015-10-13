@@ -140,7 +140,7 @@ namespace Core.Services
             return tempActionDTO;
         }
 
-        public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
+        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
         {
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
@@ -148,7 +148,7 @@ namespace Core.Services
                 throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
             if (confControls.Count() == 0)
                 return null;
-            StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+            StandardConfigurationControlsCM standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
             return standardCfgControlsMs;
         }
 
@@ -489,7 +489,7 @@ namespace Core.Services
         }
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
-        public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
+        public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
 
             var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
@@ -503,7 +503,7 @@ namespace Core.Services
             }
 
 
-            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curControlsCrate.Contents);
 
         }
 
@@ -623,7 +623,7 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key)
+        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key)
         {
            var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");

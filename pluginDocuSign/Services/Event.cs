@@ -38,7 +38,7 @@ namespace pluginDocuSign.Services
 
             //prepare the content from the external event payload
             var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
-            var eventReportContent = new EventReportMS
+            var eventReportContent = new EventReportCM
             {
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ProcessDOId = "",

@@ -42,7 +42,7 @@ namespace DockyardTest.Entities
         {
             FixtureData.TestProcessTemplateWithSubscribeEvent();
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
+            EventReportCM curEventReport = FixtureData.StandardEventReportFormat();
 
             var result = curProcessTemplate.GetMatchingProcessTemplates("testuser1", curEventReport);
 
@@ -57,7 +57,7 @@ namespace DockyardTest.Entities
         {
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
 
-            curProcessTemplate.GetMatchingProcessTemplates("", new EventReportMS());
+            curProcessTemplate.GetMatchingProcessTemplates("", new EventReportCM());
         }
 
         [Test]

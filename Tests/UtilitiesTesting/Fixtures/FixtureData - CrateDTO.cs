@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = Guid.NewGuid().ToString(),
                 Label = "Available Templates",
-                Contents = JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() { Fields = fields }),
+                Contents = JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields }),
                 ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 ManifestId = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID
 
@@ -48,7 +48,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = Guid.NewGuid().ToString(),
                 Label = "DocuSignTemplateUserDefinedFields",
-                Contents = JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() { Fields = fields }),
+                Contents = JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields }),
                 ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 ManifestId = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID
 
@@ -124,7 +124,7 @@ namespace UtilitiesTesting.Fixtures
         private static CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
             return Create(label,
-                JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
+                JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
                 manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
@@ -145,7 +145,7 @@ namespace UtilitiesTesting.Fixtures
 
 
         private static CrateDTO CreateEventSubscriptionCrate(
-          StandardConfigurationControlsMS configurationFields)
+          StandardConfigurationControlsCM configurationFields)
         {
             var subscriptions = new List<string>();
 
@@ -169,7 +169,7 @@ namespace UtilitiesTesting.Fixtures
         private static CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
         {
             return Create(label,
-                JsonConvert.SerializeObject(new EventSubscriptionMS() { Subscriptions = subscriptions.ToList() }),
+                JsonConvert.SerializeObject(new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() }),
                 manifestType: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
                 manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
         }
