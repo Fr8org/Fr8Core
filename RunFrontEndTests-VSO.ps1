@@ -1,8 +1,5 @@
 ﻿# Create an IIS website to server test harness page
 
-# $directoryPath = "$env:SYSTEM_DEFAULTWORKINGDIRECTORY" 
-
-# cd $($directoryPath)
 
 # Locate Chutzpah
 $ChutzpahDir = get-childitem chutzpah.console.exe -recurse | select-object -first 1 | select -expand Directory
@@ -10,7 +7,7 @@ Write-host "$($ChutzpahDir)"
 
 # Run tests using Chutzpah and export results as JUnit format to chutzpah-results.xml
 
-$ChutzpahCmd = "$($ChutzpahDir)\chutzpah.console.exe $($directoryPath)\Scripts\tests\unit /junit .\chutzpah-results.xml"
+$ChutzpahCmd = "$($ChutzpahDir)\chutzpah.console.exe .\Scripts\tests\unit /junit .\chutzpah-results.xml"
 Write-Host $ChutzpahCmd
 Invoke-Expression $ChutzpahCmd
 
