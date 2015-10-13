@@ -36,34 +36,27 @@ namespace Core.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
-
         
-
-        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<ProcessTemplateDO> GetForUser(IUnitOfWork unitOfWork, string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
             if (userId == null)
                 throw new ApplicationException("UserId must not be null");
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not ProcessTemplates
+
+            if (isAdmin)
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not ProcessTemplates
-
-                if (isAdmin)
-                {
-                    queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
-                }
-
-                queryableRepo = (id == null
-                    ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
-                return (status == null
-                    ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
+                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
             }
+
+            queryableRepo = (id == null
+                ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
+                : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
+            return (status == null
+                ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
         }
-
         
-
         public void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
@@ -160,7 +153,6 @@ namespace Core.Services
                 try
                 {
                     _action.Activate(curActionDO).Wait();
-                    curActionDO.ActionState = ActionState.Active;
                     result = "success";
                 }
                 catch (Exception ex)
@@ -183,7 +175,6 @@ namespace Core.Services
                 try
                 {
                     _action.Deactivate(curActionDO).Wait();
-                    curActionDO.ActionState = ActionState.Deactive;
                     result = "success";
                 }
                 catch (Exception ex)

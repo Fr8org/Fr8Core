@@ -18,7 +18,7 @@ namespace Core.Interfaces
         ActionDO GetById(IUnitOfWork uow, int id);
         void Delete(int id);
         ActionDO MapFromDTO(ActionDTO curActionDTO);
-        Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow);
+        Task PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow);
         Task<PayloadDTO> Execute(ActionDO curActionDO, ProcessDO curProcessDO);
         string Authenticate(ActionDO curActionDO);
         void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists);

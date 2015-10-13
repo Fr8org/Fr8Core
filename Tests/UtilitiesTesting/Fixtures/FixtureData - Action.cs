@@ -23,7 +23,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Write to Sql Server",
                 CrateStorage = "",
                 Ordering = 1,
-                ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -132,7 +131,6 @@ namespace UtilitiesTesting.Fixtures
                 Id = 6,
                 ParentActivityId = 1,
                 Ordering = 2,
-                ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -147,7 +145,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Action 7",
                 ParentActivityId = 1,
                 Ordering = 3,
-                ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -162,7 +159,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Action 8",
                 ParentActivityId = 1,
                 Ordering = 4,
-                ActionState = ActionState.Unstarted,
                 ParentActivity = parentActivity,
 
                 ActivityTemplateId = actionTemplate.Id,
@@ -179,7 +175,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Action 5",
                 ParentActivityId = 1,
                 Ordering = 1,
-                ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -191,7 +186,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 2,
-                ActionState = ActionState.Error,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
@@ -237,7 +231,6 @@ namespace UtilitiesTesting.Fixtures
                 CrateStorage = "JSON Config Settings",
 
                 Ordering = 1,
-                ActionState = ActionState.Unstarted,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
 
@@ -287,7 +280,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 ParentActivity = processNodeTemplateDo,
                 ParentActivityId = 1,
-                ActionState = ActionState.Unstarted,
                 Name = "testaction",
 
                 Id = 1,
@@ -328,7 +320,6 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
 
-                ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 CrateStorage = "config settings",
                 ParentActivityId = 88,
@@ -371,7 +362,6 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDO
             {
                 Id = 1,
-                ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 ParentActivity = processTemplateDo,
 
@@ -432,7 +422,6 @@ namespace UtilitiesTesting.Fixtures
             curActionDO.ParentActivityId = processNodeTemplate.Id;
             curActionDO.ActivityTemplateId = 1;
             curActionDO.ActivityTemplate = curActivityTemplateDO;
-            curActionDO.ActionState = 1;
             curActionDO.Name = "testaction";
 
             processNodeTemplate.Activities.Add(curActionDO);
@@ -470,7 +459,6 @@ namespace UtilitiesTesting.Fixtures
             var actionDo = new ActionDO()
             {
 
-                ActionState = ActionState.Unstarted,
                 Name = "testaction",
 
                 Id = 1,
@@ -707,7 +695,6 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                ActionState = ActionState.Active,
             };
         }
 
@@ -721,7 +708,6 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                ActionState = ActionState.Deactive,
             };
         }
 
@@ -735,7 +721,6 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                ActionState = ActionState.Error,
             };
         }
 
@@ -749,7 +734,6 @@ namespace UtilitiesTesting.Fixtures
                 Ordering = 2,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                ActionState = ActionState.InProcess,
             };
         }
 
@@ -767,7 +751,6 @@ namespace UtilitiesTesting.Fixtures
            
             var actionDo = new ActionDO()
             {
-                ActionState = ActionState.Unstarted,
                 Name = "testaction",
                 Id = 57,
                 Ordering = 2,
@@ -1051,7 +1034,6 @@ CrateStorage=  crateStorage,
             {
                 Id = 1,
 
-                ActionState = ActionState.Unstarted,
                 Name = "Action 1",
                 CrateStorage = "config settings",
                 ParentActivityId = 1,

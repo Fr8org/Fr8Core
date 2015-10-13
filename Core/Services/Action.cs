@@ -200,47 +200,19 @@ namespace Core.Services
 //            return curAction;
 //        }
 
-        public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
+        public async Task PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
         {
-            //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
-            if (curAction.ActionState == ActionState.Unstarted || curAction.ActionState == ActionState.InProcess)
+            EventManager.ActionStarted(curAction);
+
+            var payload = await Execute(curAction, curProcessDO);
+
+            if (payload != null)
             {
-                curAction.ActionState = ActionState.InProcess;
-                uow.SaveChanges();
-
-                EventManager.ActionStarted(curAction);
-
-                var payload = await Execute(curAction, curProcessDO);
-                if (payload != null)
-                {
-                    curProcessDO.CrateStorage = payload.CrateStorage;
-                }
-
-                //this JSON error check is broken because it triggers on standard success messages, which look like this:
-                //"{\"success\": {\"ErrorCode\": \"0\", \"StatusCode\": \"200\", \"Description\": \"\"}}"
-
-
-                //check if the returned JSON is Error
-                //  if (jsonResult.ToLower().Contains("error"))
-                // {
-                //     curAction.ActionState = ActionState.Error;
-                //  }
-                //   else
-                //   {
-                curAction.ActionState = ActionState.Active;
-                //   }
-
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
+                curProcessDO.CrateStorage = payload.CrateStorage;
             }
-            else
-            {
-                curAction.ActionState = ActionState.Error;
-                uow.ActionRepository.Attach(curAction);
-                uow.SaveChanges();
-                throw new Exception(string.Format("Action ID: {0} status is {1}.", curAction.Id, curAction.ActionState));
-            }
-            return curAction.ActionState.Value;
+
+            uow.ActionRepository.Attach(curAction);
+            uow.SaveChanges();
         }
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned

@@ -84,36 +84,43 @@ namespace Web.Controllers
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curProcessTemplates = _processTemplate.GetForUser(uow, User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id, status);
 
-            if (curProcessTemplates.Any())
-            {               
-                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+                if (curProcessTemplates.Any())
+                {
+                    return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+                }
+
+                return Ok();
             }
-            return Ok();
         }
 
         
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
-
-            if (curProcessTemplates.Any())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // Return first record from curProcessTemplates, in case id parameter was provided.
-                // User intentionally wants to receive a single JSON object in response.
-                if (id.HasValue)
+                var curProcessTemplates = _processTemplate.GetForUser(uow, User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+
+                if (curProcessTemplates.Any())
                 {
-                    return Ok(Mapper.Map<ProcessTemplateOnlyDTO>(curProcessTemplates.First()));
+                    // Return first record from curProcessTemplates, in case id parameter was provided.
+                    // User intentionally wants to receive a single JSON object in response.
+                    if (id.HasValue)
+                    {
+                        return Ok(Mapper.Map<ProcessTemplateOnlyDTO>(curProcessTemplates.First()));
+                    }
+
+                    // Return JSON array of objects, in case no id parameter was provided.
+                    return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
                 }
 
-                // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+                //DO-840 Return empty view as having empty process templates are valid use case.
+                return Ok();
             }
-
-            //DO-840 Return empty view as having empty process templates are valid use case.
-            return Ok();
         }
 
         

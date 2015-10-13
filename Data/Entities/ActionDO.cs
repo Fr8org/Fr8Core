@@ -16,16 +16,10 @@ namespace Data.Entities
 
         public string CrateStorage { get; set; }
 
-        [ForeignKey("ActionStateTemplate")]
-        public int? ActionState { get; set; }
-
-        public virtual _ActionStateTemplate ActionStateTemplate { get; set; }
-
         [ForeignKey("ActivityTemplate")]
         public int? ActivityTemplateId { get; set; }
+
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
-       
-       
 
         [NotMapped]
         public bool IsTempId { get; set; }
