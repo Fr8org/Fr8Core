@@ -64,7 +64,7 @@ namespace pluginTests.PluginExcelTests
                 },
             };
 
-            var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+            var result = new Extract_Data_v1().ConfigurationEvaluator(curActionDTO);
 
             Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Initial);
         }
@@ -167,7 +167,7 @@ namespace pluginTests.PluginExcelTests
                 },
             };
 
-            var result = await new ExtractData_v1().Execute(curActionDTO);
+            var result = await new Extract_Data_v1().Execute(curActionDTO);
             var payloadCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
             var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 

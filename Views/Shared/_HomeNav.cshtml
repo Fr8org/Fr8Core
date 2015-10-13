@@ -3,11 +3,6 @@
 {
     using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = " " }))
     {
-
-        <ul class="pull-right welcomemsg">
-            <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "DockyardAccount", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
-        </ul>
-
         <ul class="nav navbar-nav">
             <li data-scroll="scrolling"><a href="/" class="home-welcome" title="Home">Home</a></li>
             <li data-scroll="scrolling" class="dropdown">
@@ -47,6 +42,6 @@ else
         </li>
         <li data-scroll="scrolling"><a href="/#aboutus" class="about-us" title="About Us">About Us</a></li>
         <li data-scroll="scrolling"><a href="/#contacts" title="Contact">Contact</a></li>
-        <li data-scroll="scrolling" class="visible-phone"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>
+        @*<li data-scroll="scrolling" class="visible-phone"><a href="/DockyardAccount" title="SignUp/Login">SignUp/Login</a></li>*@
     </ul>
 }
