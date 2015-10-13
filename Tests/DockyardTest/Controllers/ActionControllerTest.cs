@@ -39,7 +39,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        [Test,Ignore]
+        [Test]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -62,7 +62,7 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test,Ignore]
+        [Test]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -119,29 +119,6 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-
-        public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionDO = FixtureData.TestAction22();
-
-                var expectedResult = FixtureData.TestConfigurationSettings();
-                //CrateStorageDTO result = _action.Configure(curActionDO);
-                //Assert.GreaterOrEqual(1, result.CrateDTO.Count);
-            }
-        }
-
-        [Test, Ignore]
-
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionController_NULL_ActionTemplate()
-        {
-            var curAction = new ActionController();
-            var actionDO = curAction.Configure(CreateActionWithId(2));
-            Assert.IsNotNull(actionDO);
-        }
 
         [Test]
 
@@ -375,9 +352,8 @@ namespace DockyardTest.Controllers
             Assert.IsNotNull(okResult.Content);
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        [Test]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
@@ -391,9 +367,8 @@ namespace DockyardTest.Controllers
             Assert.IsNotNull(okResult.Content);
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        [Test]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();
