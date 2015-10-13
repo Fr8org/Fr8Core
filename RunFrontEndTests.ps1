@@ -1,7 +1,7 @@
 ﻿# Create an IIS website to server test harness page
 
-$directoryPath = "$env:APPVEYOR_BUILD_FOLDER" 
-
+$directoryPath = "$env:SYSTEM_DEFAULTWORKINGDIRECTORY" 
+write-host "$($directoryPath)"
 cd $($directoryPath)
 
 # Locate Chutzpah
@@ -26,13 +26,13 @@ foreach ($testsuite in $testsuites.testsuites.testsuite) {
         $time = $testsuite.time
         if ($testcase.time) { $time = $testcase.time }
         if ($failed) {
-            write-host "Failed   $($testcase.name) $($testcase.failure.message)"
-            Add-AppveyorTest $testcase.name -Outcome Failed -FileName $testsuite.name -ErrorMessage $testcase.failure.message -Duration $time
+            Write-host "Failed   $($testcase.name) $($testcase.failure.message)"
+            # Add-AppveyorTest $testcase.name -Outcome Failed -FileName $testsuite.name -ErrorMessage $testcase.failure.message -Duration $time
             $anyFailures = $TRUE
         }
         else {
-            write-host "Passed   $($testcase.name)"
-            Add-AppveyorTest $testcase.name -Outcome Passed -FileName $testsuite.name -Duration $time
+            Write-host "Passed   $($testcase.name)"
+            # Add-AppveyorTest $testcase.name -Outcome Passed -FileName $testsuite.name -Duration $time
         }
     }
 }
