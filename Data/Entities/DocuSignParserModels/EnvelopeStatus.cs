@@ -15,7 +15,18 @@ namespace Data.Entities.DocuSignParserModels
         public RecipientStatuses RecipientStatuses { get; set; }
 
         [XmlElement("Email")]
-        public string Email { get; set; }
+        public string ExternalAccountId { get; set; }
 
+        [XmlElement("Created")]
+        public string CreatedDate { get; set; }
+
+        [XmlElement("Sent")]
+        public string SentDate { get; set; }
+
+        [XmlElement("Delivered")]
+        public string DeliveredDate { get; set; }
+
+        [XmlElement("Completed")]
+        public string CompletedDate { get; set; }
     }
 }

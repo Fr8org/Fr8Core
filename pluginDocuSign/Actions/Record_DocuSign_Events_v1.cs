@@ -14,7 +14,7 @@ using Configuration = DocuSign.Integrations.Client.Configuration;
 
 namespace pluginDocuSign.Actions
 {
-    public class Monitor_All_DocuSign_Events_v1 : BasePluginAction
+    public class Record_DocuSign_Events_v1 : BasePluginAction
     {
         public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
@@ -47,10 +47,18 @@ namespace pluginDocuSign.Actions
             //create a Standard Event Subscription crate
             var curEventSubscriptionsCrate = _crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
 
+            //create Standard Design Time Fields for Available Run-Time Objects
+            var curAvailableRunTimeObjectsDesignTimeCrate =
+                _crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
+                {
+                    new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
+                    new FieldDTO {Key = "DocuSign Event"}
+                });
+
             //update crate storage with standard event subscription crate
             curActionDTO.CrateStorage = new CrateStorageDTO()
             {
-                CrateDTO = new List<CrateDTO> { curControlsCrate, curEventSubscriptionsCrate }
+                CrateDTO = new List<CrateDTO> { curControlsCrate, curEventSubscriptionsCrate, curAvailableRunTimeObjectsDesignTimeCrate }
             };
 
             /*
@@ -105,6 +113,17 @@ namespace pluginDocuSign.Actions
 
         public async Task<PayloadDTO> Execute(ActionDTO actionDto)
         {
+            if (IsEmptyAuthToken(actionDto))
+            {
+                throw new ApplicationException("No AuthToken provided.");
+            }
+
+            var processPayload = await GetProcessPayload(actionDto.ProcessId);
+
+            PayloadObjectDTO curPayload = new PayloadObjectDTO();
+
+            //TODO: Vas, Create DocuSign manifest objects on this execute method.
+            //Since the changes are with Sergey, I left this to-do with my name.
 
             return null;
         }
