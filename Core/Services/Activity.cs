@@ -34,8 +34,6 @@ namespace Core.Services
 	        return curList;
 	    }
 
-        
-
         public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
 		{
 			if (curActivityDO == null)

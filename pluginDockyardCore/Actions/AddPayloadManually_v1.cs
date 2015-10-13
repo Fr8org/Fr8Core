@@ -104,7 +104,7 @@ namespace pluginDockyardCore.Actions
 
         private CrateDTO CreateControlsCrate()
         {
-            var fieldFilterPane = new ControlDefinitionDTO(ControlTypes.FieldList)
+            var fieldFilterPane = new FieldListControlDefinitionDTO
             {
                 Label = "Fill the values for other actions",
                 Name = "Selected_Fields",

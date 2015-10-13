@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.UI;
 using AutoMapper;
+using Core.Enums;
 using Core.Interfaces;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
@@ -174,41 +175,28 @@ namespace Core.Services
                 {
                     throw new InvalidOperationException("Unknown action with id: "+ id);
                 }
+
                 var downStreamActivities = _activity.GetDownstreamActivities(uow, curAction).OfType<ActionDO>();
                 //we should clear values of configuration controls
 
                 foreach (var downStreamActivity in downStreamActivities)
                 {
-                    var wasCrateStorageModified = false;
                     var crateStorage = downStreamActivity.CrateStorageDTO();
-                    foreach (var crate in crateStorage.CrateDTO)
+                    var cratesToReset = GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME, crateStorage).ToList();
+                    foreach (var crateDTO in cratesToReset)
                     {
-                        if (crate.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)
+                        var configurationControls = _crate.GetStandardConfigurationControls(crateDTO);
+                        foreach (var controlDefinitionDTO in configurationControls.Controls)
                         {
-                            var configurationControls = _crate.GetStandardConfigurationControls(crate);
-                            foreach (var controlDefinitionDTO in configurationControls.Controls)
-                            {
-                                //TODO create an enum for this
-                                if (controlDefinitionDTO.Type == "FieldList")
-                                {
-                                    controlDefinitionDTO.Value = "[]";
-                                }
-                                else
-                                {
-                                    controlDefinitionDTO.Value = "";
-                                }
-
-                            }
-                            crate.Contents = JsonConvert.SerializeObject(configurationControls);
-                            wasCrateStorageModified = true;
+                            (controlDefinitionDTO as IResettable).Reset();
                         }
+                        crateDTO.Contents = JsonConvert.SerializeObject(configurationControls);
                     }
-                    
-                    if (wasCrateStorageModified)
+
+                    if (cratesToReset.Any())
                     {
                         downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
-                    }
-                    
+                    }                    
                 }
                 uow.ActivityRepository.Remove(curAction);
                 uow.SaveChanges();

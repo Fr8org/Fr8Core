@@ -49,7 +49,8 @@ module dockyard.controllers {
             'CrateHelper',
             '$filter',
             '$modal',
-            '$window'
+            '$window',
+            'UIHelperService'
         ];
 
         constructor(
@@ -64,7 +65,8 @@ module dockyard.controllers {
             private CrateHelper: services.CrateHelper,
             private $filter: ng.IFilterService,
             private $modal,
-            private $window: ng.IWindowService
+            private $window: ng.IWindowService,
+            private uiHelperService: services.IUIHelperService
             ) {
             this.$scope.processTemplateId = $state.params.id;
             this.$scope.current = new model.ProcessBuilderState();
@@ -175,9 +177,19 @@ module dockyard.controllers {
 
         private deleteAction(action: model.ActionDTO) {
             //TODO -> should we generate an event for delete event?
+            var self = this;
+            this.uiHelperService
+                .openConfirmationModal('Are you sure you want to delete this Action? You will have to reconfigure all downstream Actions.')
+                .then(() => {
 
-            //TODO -> ask user if he/she is sure
-            this.ActionService.deleteById({ id: action.id });
+                self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
+                    //lets reload process template
+                    self.$scope.actions = [];
+                    self.loadProcessTemplate();
+                });
+
+            });
+            
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
