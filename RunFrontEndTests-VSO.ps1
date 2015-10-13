@@ -1,6 +1,6 @@
 ﻿# Create an IIS website to server test harness page
 
-# $directoryPath = "$env:APPVEYOR_BUILD_FOLDER" 
+# $directoryPath = "$env:SYSTEM_DEFAULTWORKINGDIRECTORY" 
 
 # cd $($directoryPath)
 
