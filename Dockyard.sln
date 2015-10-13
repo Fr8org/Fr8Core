@@ -50,8 +50,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesTesting", "Tests\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginSalesforceTest", "pluginTests\pluginSalesforceTest\pluginSalesforceTest.csproj", "{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pluginTwilio", "pluginTwilio\pluginTwilio.csproj", "{14404298-4182-4D43-8098-5A199ED2FCAA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		alexlocal|Any CPU = alexlocal|Any CPU
@@ -233,15 +231,6 @@ Global
 		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|x86.ActiveCfg = Release|Any CPU
 		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B}.Release|x86.Build.0 = Release|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.alexlocal|Any CPU.Build.0 = Release|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.alexlocal|x86.ActiveCfg = Release|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{14404298-4182-4D43-8098-5A199ED2FCAA}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -259,6 +248,5 @@ Global
 		{57373D06-6B82-4EC6-AF62-ED25FE170C61} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 		{6B855C3F-07A9-4787-9FDE-29FA567C43E2} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{EBDC8ADC-C381-4AA5-9A92-4FAF6065C72B} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
-		{14404298-4182-4D43-8098-5A199ED2FCAA} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 	EndGlobalSection
 EndGlobal
