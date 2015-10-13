@@ -45,6 +45,9 @@ module dockyard.tests.controller {
         //    spyOn(_$scope, "$broadcast");
         //});
 
+        it("should just be true (for testing).", () => {
+            expect(true).toBeTruthy();
+        }
 
         //it("Get configuration settings from new action template", () => {
         //    var event = fx.ActionDesignDTO.PaneConfigureActionOnRender_Event;
