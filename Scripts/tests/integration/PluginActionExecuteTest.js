@@ -49,9 +49,9 @@ describe("plugins execute actions tests", function () {
         });
     }
     
-    /**********************************************************************************/
+    
     // Init
-    /**********************************************************************************/
+    
 
     beforeAll(function(done) {
         getDataFromApi(done, "/getIdsByName?name=TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}",
@@ -66,15 +66,15 @@ describe("plugins execute actions tests", function () {
             });
     });
     
-    /**********************************************************************************/
+    
     // Specs
-    /**********************************************************************************/
+    
 
-    it("Docusign plugin can execute action Wait_For_DocuSign_Event", function (done) {
+    it("Docusign plugin can execute action Monitor_DocuSign", function (done) {
 
         var actionDTO = {
             activityTemplate: {
-                Name: "Wait_For_DocuSign_Event",
+                Name: "Monitor_DocuSign",
                 Version: "1"
             },
             ProcessId: testProcessId1
@@ -126,7 +126,7 @@ describe("plugins execute actions tests", function () {
         });
     });
 
-    /**********************************************************************************/
+    
 
     it("Docusign plugin can execute action Extract_From_DocuSign_Envelope", function (done) {
 
@@ -202,7 +202,7 @@ describe("plugins execute actions tests", function () {
         });
     });
 
-    /**********************************************************************************/
+    
 });
 
 

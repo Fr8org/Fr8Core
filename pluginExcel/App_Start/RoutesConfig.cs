@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using Core.StructureMap;
 using StructureMap;
+using PluginUtilities.BaseClasses;
 
 namespace pluginExcel
 {
@@ -11,8 +12,7 @@ namespace pluginExcel
     {
         public static void Register(HttpConfiguration config)
         {
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+            BasePluginWebApiConfig.Register(config);            
 
             config.Routes.MapHttpRoute(
                 name: "PluginExcel",

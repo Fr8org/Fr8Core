@@ -14,23 +14,21 @@ namespace Data.Migrations
         private class ProcessTemplateBuilder
         {
             private readonly string _name;
-            /**********************************************************************************/
-            // Declarations
-            /**********************************************************************************/
+            
+            
 
             private readonly List<CrateDTO> _crates = new List<CrateDTO>();
             private int _ptId;
 
-            /**********************************************************************************/
-            // Functions
-            /**********************************************************************************/
+            
+            
 
             public ProcessTemplateBuilder(string name)
             {
                 _name = name;
             }
 
-            /**********************************************************************************/
+            
 
             public ProcessTemplateBuilder AddCrate(CrateDTO crateDto)
             {
@@ -38,7 +36,7 @@ namespace Data.Migrations
                 return this;
             }
 
-            /**********************************************************************************/
+            
 
             public void Store(IUnitOfWork uow)
             {
@@ -61,7 +59,7 @@ namespace Data.Migrations
                 }
             }
 
-            /**********************************************************************************/
+            
 
             private void StoreTemplate(IUnitOfWork uow)
             {
@@ -88,7 +86,7 @@ namespace Data.Migrations
                 _ptId = pt.Id;
             }
 
-            /**********************************************************************************/
+            
 
             private void ConfigureProcess(ProcessDO process)
             {
@@ -102,7 +100,7 @@ namespace Data.Migrations
                 });
             }
 
-            /**********************************************************************************/
+            
         }
     }
 }

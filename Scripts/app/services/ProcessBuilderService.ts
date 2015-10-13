@@ -7,6 +7,7 @@ module dockyard.services {
     export interface IProcessTemplateService extends ng.resource.IResourceClass<interfaces.IProcessTemplateVM> {
         getbystatus: (id: { id: number; status: number; }) => Array<interfaces.IProcessTemplateVM>;
         getFull: (id: Object) => interfaces.IProcessTemplateVM;
+        execute: (id: {id: number}) => void;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -29,10 +30,6 @@ module dockyard.services {
         byProcessNodeTemplate: (id: { id: number }) => interfaces.ICriteriaVM;
     }
 
-    export interface IActionListService extends ng.resource.IResourceClass<interfaces.IActionListVM> {
-        byProcessNodeTemplate: (id: { id: number; actionListType: number; }) => interfaces.IActionListVM;
-    }
-
     export interface ICriteriaServiceWrapper {
         load: (id: number) => ng.IPromise<model.ProcessNodeTemplateDTO>;
         add: (curProcessNodeTemplate: model.ProcessNodeTemplateDTO) => ng.IPromise<model.ProcessNodeTemplateDTO>;
@@ -47,7 +44,9 @@ module dockyard.services {
         saveCurrent(current: model.ProcessBuilderState): ng.IPromise<model.ProcessBuilderState>
     }
 
-    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> { }
+    export interface IActivityTemplateService extends ng.resource.IResourceClass<interfaces.IActivityTemplateVM> {
+        getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
+    }
 
     /*
         ProcessTemplateDTO CRUD service.
@@ -66,6 +65,14 @@ module dockyard.services {
                     method: 'GET',
                     isArray: false,
                     url: '/api/processTemplate/full/:id',
+                    params: {
+                        id: '@id'
+                    }
+                },
+                'execute': {
+                    method: 'POST',
+                    isArray: false,
+                    url: '/api/processes/launch?processTemplateId=:id',
                     params: {
                         id: '@id'
                     }
@@ -153,19 +160,6 @@ module dockyard.services {
     ]);
 
     /* 
-        ActionListDTO CRUD service.
-    */
-    app.factory('ActionListService', ['$resource', ($resource: ng.resource.IResourceService): IActionListService =>
-        <IActionListService>$resource('/api/actionList', null,
-            {
-                'byProcessNodeTemplate': {
-                    method: 'GET',
-                    url: '/api/actionList/byProcessNodeTemplate/'
-                }
-            })
-    ]);
-
-    /* 
         ProcessNodeTemplateDTO CRUD service.
         This service is not intended to be used by anything except CriteriaServiceWrapper,
         that's why its name starts with underscores. 
@@ -183,7 +177,14 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' })
+        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' }, 
+        {
+            'getAvailableActivities': {
+                method: 'GET',
+                url: '/activities/available/',
+                isArray: true
+            }
+        })
     ]);
 
     /*

@@ -14,13 +14,16 @@ module dockyard.interfaces {
     export interface IActionDTO {
         id: number,
         isTempId: boolean, 
-        processNodeTemplateId: number,
-        actionListId: number,
+        parentActivityId: number,
         name: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplateId: number;
-        activityTemplate: model.ActivityTemplate;
+    }
+
+    export interface IActivityCategoryDTO {
+        name: string;
+        activities: Array<IActivityTemplateVM>
     }
 
     export interface ICondition {

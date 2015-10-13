@@ -6,7 +6,6 @@ using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap.Configuration.DSL;
 using StructureMap;
-using pluginAzureSqlServer.Infrastructure;
 
 namespace pluginExcel
 {
@@ -19,7 +18,6 @@ namespace pluginExcel
                 For<IAction>().Use<Core.Services.Action>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
-                For<IDbProvider>().Use<SqlClientDbProvider>();
                 For<IActivity>().Use<Activity>();
             }
         }

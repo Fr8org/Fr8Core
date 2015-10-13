@@ -21,15 +21,14 @@ module dockyard.controllers {
         cancel: Function;
 
         //this is for demo only, should be deleted on production
-        radioDemoField: model.RadioButtonGroupField;
-        dropdownDemoField: model.DropDownListBoxField;
+        radioDemoField: model.RadioButtonGroupControlDefinitionDTO;
+        dropdownDemoField: model.DropDownListControlDefinitionDTO;
         textBlockDemoField: model.TextBlockField;
         routingControlGroup: model.RoutingControlGroup;
     }
 
     //Setup aliases
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    import psa = dockyard.directives.paneSelectAction;
     import pca = dockyard.directives.paneConfigureAction;
 
     class SandboxController {
@@ -74,7 +73,7 @@ module dockyard.controllers {
             private $timeout: ng.ITimeoutService,
             private CriteriaServiceWrapper: services.ICriteriaServiceWrapper,
             private ProcessBuilderService: services.IProcessBuilderService,
-            private ActionListService: services.IActionListService,
+            
             private CrateHelper: services.CrateHelper,
             private ActivityTemplateService: services.IActivityTemplateService
             ) {
@@ -87,27 +86,27 @@ module dockyard.controllers {
             this._scope.current = new model.ProcessBuilderState();
 
             //THIS IS FOR DEMO ONLY
-            var radioDemoField = new model.RadioButtonGroupField();
+            var radioDemoField = new model.RadioButtonGroupControlDefinitionDTO();
             radioDemoField.fieldLabel = 'Demo Label';
             radioDemoField.groupName = 'Demo Group Name';
             radioDemoField.type = 'radioButtonGroup';
-            var demoRadio1 = new model.RadioField();
+            var demoRadio1 = new model.RadioButtonOption();
             demoRadio1.value = "Selection 1";
             demoRadio1.selected = false;
-            var demoRadio2 = new model.RadioField();
+            var demoRadio2 = new model.RadioButtonOption();
             demoRadio2.value = "Selection 2";
             demoRadio2.selected = false;
-            var demoRadio3 = new model.RadioField();
+            var demoRadio3 = new model.RadioButtonOption();
             demoRadio3.value = "Selection 3";
             demoRadio3.selected = true;
-            var radios = new Array<model.RadioField>();
+            var radios = new Array<model.RadioButtonOption>();
             radios.push(demoRadio1);
             radios.push(demoRadio2);
             radios.push(demoRadio3);
             radioDemoField.radios = radios;
             this._scope.radioDemoField = radioDemoField;
 
-            var dropdownDemoField = new model.DropDownListBoxField();
+            var dropdownDemoField = new model.DropDownListControlDefinitionDTO();
             var demoSelectItem1 = new model.DropDownListItem();
 
             demoSelectItem1.Key = "Operation 1";
@@ -195,7 +194,7 @@ module dockyard.controllers {
                     name: "test action type",
                     configurationControls: new model.ControlsList(),
                     crateStorage: new model.CrateStorage(),
-                    processNodeTemplateId: 1,
+                    parentActivityId: 1,
                     id: 1,
                     isTempId: false,
                     actionListId: 0,

@@ -15,11 +15,11 @@ using PluginBase;
 using PluginBase.BaseClasses;
 using StructureMap;
 
-[assembly: OwinStartup(typeof(pluginExcel.Startup))]
+[assembly: OwinStartup("PluginExcelConfiguration", typeof(pluginExcel.StartupPluginExcel))]
 
 namespace pluginExcel
 {
-    public class Startup
+    public class StartupPluginExcel : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
@@ -28,58 +28,47 @@ namespace pluginExcel
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            HttpConfiguration configuration = new HttpConfiguration();
+            ConfigureProject(selfHost, PluginExcelStructureMapRegistries.LiveConfiguration);
+
+            RoutesConfig.Register(_configuration);
+
+            //if (selfHost)
+            //{
+            //    // Web API routes
+            //    _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), new PluginControllerTypeResolver());
+            //}
+
+            //DataAutoMapperBootStrapper.ConfigureAutoMapper();
+
+            ConfigureFormatters();
+
+            app.UseWebApi(_configuration);
 
             if (!selfHost)
             {
-                ObjectFactory.Initialize();
-                ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
-            }
-            ObjectFactory.Configure(PluginExcelStructureMapRegistries.LiveConfiguration);
-
-            RoutesConfig.Register(configuration);
-            if (selfHost)
-            {
-                // Web API routes
-                configuration.Services.Replace(
-                    typeof(IHttpControllerTypeResolver),
-                    new PluginControllerTypeResolver()
-                );
-            }
-
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
-
-            // Configure formatters
-            // Enable camelCasing in JSON responses
-            var formatters = configuration.Formatters;
-            var jsonFormatter = formatters.JsonFormatter;
-            var settings = jsonFormatter.SerializerSettings;
-            settings.Formatting = Formatting.Indented;
-            settings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
-            app.UseWebApi(configuration);
-
-            if (!selfHost)
-            {
-                Task.Run(() =>
-                {
-                    BasePluginController curController = new BasePluginController();
-                    curController.AfterStartup("plugin_azure_sql_server");
-                });
+                StartHosting("plugin_excel");
             }
         }
 
-        public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new Type[] {
+            return new Type[] {
                     typeof(Controllers.ActionController),
                     typeof(Controllers.EventController),
                     typeof(Controllers.PluginController)
                 };
-            }
         }
 
+        //public class PluginControllerTypeResolver : IHttpControllerTypeResolver
+        //{
+        //    public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        //    {
+        //        return new Type[] {
+        //            typeof(Controllers.ActionController),
+        //            typeof(Controllers.EventController),
+        //            typeof(Controllers.PluginController)
+        //        };
+        //    }
+        //}
     }
 }

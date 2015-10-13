@@ -109,7 +109,6 @@ namespace Core.StructureMap
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
-                For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
@@ -168,7 +167,6 @@ namespace Core.StructureMap
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
-                For<IActionList>().Use<ActionList>();
                 For<IFile>().Use<File>();
                 For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();

@@ -9,6 +9,11 @@ using pluginSalesforce.Infrastructure;
 using StructureMap;
 using pluginSalesforce.Services;
 using Core.StructureMap;
+using Data.Infrastructure;
+using Data.Interfaces;
+using Utilities;
+
+
 
 namespace pluginSalesforce
 {
@@ -33,16 +38,14 @@ namespace pluginSalesforce
              }
          }
 
-         public class LiveMode : Registry
+         public class LiveMode : StructureMapBootStrapper.LiveMode
          {
              public LiveMode()
              {
-                 For<IAction>().Use<Core.Services.Action>();
-                 For<ICrate>().Use<Crate>();
-                 For<IPlugin>().Use<Plugin>();
-                 For<ILead>().Use<pluginSalesforce.Services.Lead>();
-                 For<IConfiguration>().Use<pluginSalesforce.Services.Configuration>();                
+                   For<pluginSalesforce.Infrastructure.IEvent>().Use<pluginSalesforce.Services.Event>();     
+                   For<ILead>().Use<pluginSalesforce.Services.Lead>();
+                   For<IConfiguration>().Use<pluginSalesforce.Services.Configuration>();
              }
-         }
+         }       
     }
 }

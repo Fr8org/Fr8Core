@@ -25,11 +25,13 @@ namespace pluginSendGrid.Actions
     public class SendEmailViaSendGrid_v1 : BasePluginAction
     {
         protected IEmailPackager _emailPackager;//moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
-        protected override void SetupServices()
-        {
-            base.SetupServices();
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-        }
+
+        // protected override void SetupServices()
+        // {
+        //     base.SetupServices();
+        //     _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+        // }
+        
         //================================================================================
         //General Methods (every Action class has these)
 
@@ -65,28 +67,28 @@ namespace pluginSendGrid.Actions
 
         private CrateDTO CreateControlsCrate()
         {
-
-            ControlsDefinitionDTO[] controls = 
+            ControlDefinitionDTO[] controls = 
             {
-                new ControlsDefinitionDTO("textField")
+                new ControlDefinitionDTO(ControlTypes.TextBox)
                 {
-                        Label = "Recipient Email Address",
-                        Name = "Recipient_Email_Address",
-                        Required = false
+                    Label = "Recipient Email Address",
+                    Name = "Recipient_Email_Address",
+                    Required = false
                 },
-                new ControlsDefinitionDTO("textField")
+                new ControlDefinitionDTO(ControlTypes.TextBox)
                 {
-                        Label = "Email Subject",
-                        Name = "Email_Subject",
-                        Required = false
+                    Label = "Email Subject",
+                    Name = "Email_Subject",
+                    Required = false
                 },
-                new ControlsDefinitionDTO("textField")
+                new ControlDefinitionDTO(ControlTypes.TextBox)
                 {
-                        Label = "Email Body",
-                        Name = "Email_Body",
-                        Required = false
+                    Label = "Email Body",
+                    Name = "Email_Body",
+                    Required = false
                 }
             };
+
             return _crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 

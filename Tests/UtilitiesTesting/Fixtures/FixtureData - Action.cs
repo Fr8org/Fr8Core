@@ -153,7 +153,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActionDO TestAction8()
+        public static ActionDO TestAction8(ActivityDO parentActivity)
         {
             var actionTemplate = ActionTemplate();
             return new ActionDO
@@ -163,7 +163,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = 1,
                 Ordering = 4,
                 ActionState = ActionState.Unstarted,
-                ParentActivity = FixtureData.TestActionList6(),
+                ParentActivity = parentActivity,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -278,23 +278,14 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "C",
-                ParentTemplateId = processTemplateDo.Id,
-                ProcessTemplate = processTemplateDo
+                ParentActivityId = processTemplateDo.Id,
+                ParentActivity = processTemplateDo
             };
-
-            var actionListDo = new ActionListDO()
-            {
-                Process = processDo,
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplateID = processNodeTemplateDo.Id,
-                ProcessNodeTemplate = processNodeTemplateDo
-            };
+            
 
             var actionDo = new ActionDO()
             {
-                ParentActivity = actionListDo,
+                ParentActivity = processNodeTemplateDo,
                 ParentActivityId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
@@ -372,26 +363,17 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "C",
-                ParentTemplateId = processTemplateDo.Id,
-                ProcessTemplate = processTemplateDo
+                ParentActivityId = processTemplateDo.Id,
+                ParentActivity = processTemplateDo
             };
 
-            var actionListDo = new ActionListDO()
-            {
-                Process = processDo,
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate,
-                ProcessNodeTemplateID = processNodeTemplateDo.Id,
-                ProcessNodeTemplate = processNodeTemplateDo
-            };
 
             return new ActionDO
             {
                 Id = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
-                ParentActivity = actionListDo,
+                ParentActivity = processTemplateDo,
 
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
@@ -437,25 +419,23 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplate = curProcessTemplateDO
             };
 
-            var curActionListDO = new ActionListDO()
+
+            var processNodeTemplate = new ProcessNodeTemplateDO(true)
             {
-                ProcessID = ProcessState.Unstarted,
-                Id = 1,
-                ActionListType = ActionListType.Immediate,
-                Process = curProcessDO,
+                ParentActivity = curProcessTemplateDO,
+                ParentActivityId = curProcessTemplateDO.Id,
             };
 
-
-
-
             ActionDO curActionDO = new ActionDO();
-            curActionDO.Id = 1;
+            curActionDO.Id = 3;
+            curActionDO.ParentActivity = processNodeTemplate;
+            curActionDO.ParentActivityId = processNodeTemplate.Id;
             curActionDO.ActivityTemplateId = 1;
             curActionDO.ActivityTemplate = curActivityTemplateDO;
             curActionDO.ActionState = 1;
             curActionDO.Name = "testaction";
-            curActionDO.ParentActivityId = 1;
-            curActionDO.ParentActivity = curActionListDO;
+
+            processNodeTemplate.Activities.Add(curActionDO);
 
             //  curActionDO.ConfigurationSettings = "config settings";
             //  curActionDO.ParentActionListId = 1;
@@ -476,14 +456,14 @@ namespace UtilitiesTesting.Fixtures
             ICrate _crate = ObjectFactory.GetInstance<ICrate>();
             IAction _action = ObjectFactory.GetInstance<IAction>();
 
-            var fieldSelectDockusignTemplate = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDockusignTemplate = new DropDownListControlDefinitionDTO()
             {
                 Label = "Select DocuSign Template",
                 Name = "Selected_DocuSign_Template",
                 Required = true,
                 Value = templateId,
-                Events = new List<FieldEvent>() {
-                     new FieldEvent("onSelect", "requestConfiguration")
+                Events = new List<ControlEvent>() {
+                     new ControlEvent("onSelect", "requestConfiguration")
                 }
             };
 
@@ -498,7 +478,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate
             };
 
-            var fields = new List<ControlsDefinitionDTO>()
+            var fields = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDockusignTemplate
             };
@@ -557,6 +537,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 Ordering = 1,
                  CrateStorage=  crateStorage,
+                 
                 Activities = new List<ActivityDO>
                 {
                     new ActionDO
@@ -770,6 +751,313 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = actionTemplate,
                 ActionState = ActionState.InProcess,
             };
+        }
+
+        public static ActionDO ConfigureTestAction57()
+        {
+            var actionTemplate = ActionTemplate();
+
+            var processDo = new ProcessDO()
+            {
+                Id = 1,
+                CrateStorage = EnvelopeIdCrateJson(),
+                ProcessTemplateId = TestProcessTemplate2().Id,
+                ProcessState = 1
+            };
+           
+            var actionDo = new ActionDO()
+            {
+                ActionState = ActionState.Unstarted,
+                Name = "testaction",
+                Id = 57,
+                Ordering = 2,
+                ParentActivityId = 54,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = EnvelopeIdCrateJson()
+            };
+
+            return actionDo;
+        }
+
+        public static ActionDO ConfigureTestActionTree()
+        {
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+            crateStorageDTO.CrateDTO.Add(CreateStandardConfigurationControls());
+            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+
+
+            ActionDO curAction = new ActionDO()
+            {
+                Id = 1,
+                Ordering = 1,
+                CrateStorage = crateStorage,
+                Activities = new List<ActivityDO>
+                {
+                    new ActionDO
+                    {
+                        Id = 23,
+                        Ordering = 1,
+                        ParentActivityId = 1,
+                         CrateStorage=  crateStorage
+                    },
+                    new ActionDO
+                    {
+                        Id = 43,
+                        ParentActivityId = 1,
+                                        Ordering = 2,
+                         CrateStorage=  crateStorage,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 44,
+                                Ordering = 1,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                Id = 46,
+                                Ordering = 2,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 48,
+                                Ordering = 3,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage
+                            },
+
+                        }
+                    },
+                    new ActivityDO
+                    {
+                        Id = 52,
+                        Ordering = 3,
+                        ParentActivityId = 1,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 53,
+                                Ordering = 1,
+                                ParentActivityId = 52,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActivityDO
+                            {
+                                Id = 54,
+                                ParentActivityId = 52,
+                                Ordering = 2,
+
+                                Activities = new List<ActivityDO>
+                                {
+                                    new ActionDO
+                                    {
+                                        Id = 56,
+                                        ParentActivityId = 54,
+                                        Ordering = 1,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 57,
+                                        ParentActivityId = 54,
+                                        Ordering = 2
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 58,
+                                        ParentActivityId = 54,
+                                        Ordering = 3,
+                                CrateStorage=  crateStorage
+                                    },
+
+                                }
+                            },
+                            new ActionDO
+                            {
+                                Id = 55,
+                                ParentActivityId = 52,
+                                Ordering = 3,
+                                CrateStorage=  crateStorage
+                            },
+
+                        }
+                    },
+                    new ActionDO
+                    {
+                        Id = 59,
+                        Ordering = 4,
+                        ParentActivityId = 1,
+                         CrateStorage=  crateStorage,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 60,
+                                ParentActivityId = 59,
+                                Ordering = 1,
+                                CrateStorage=  crateStorage
+                            },
+                            new ActionDO
+                            {
+                                Id = 61,
+                                ParentActivityId = 59,
+                                Ordering = 2,
+                                CrateStorage=  crateStorage,
+                                Activities = new List<ActivityDO>
+                                {
+                                    new ActionDO
+                                    {
+                                        Id = 63,
+                                        ParentActivityId = 61,
+                                        Ordering = 1,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 64,
+                                        ParentActivityId = 61,
+                                        Ordering = 2,
+                                CrateStorage=  crateStorage
+                                    },
+                                    new ActionDO
+                                    {
+                                        Id = 65,
+                                        ParentActivityId = 61,
+                                        Ordering = 3,
+                                CrateStorage=  crateStorage
+                                    },
+                                }
+                            },
+
+                            new ActionDO
+                            {
+                                Id = 62,
+                                ParentActivityId = 59,
+                                Ordering = 3,
+                                CrateStorage=  crateStorage
+                            },
+                        },
+
+                    }
+                }
+            };
+
+            FixParentActivityReferences(curAction);
+
+            return curAction;
+        }
+        public static ActionDO TestActionTreeWithActionTemplates()
+        {
+            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO1();
+            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+            string crateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+            var curActionTemplate = FixtureData.ActionTemplate();
+
+            ActionDO curAction = new ActionDO()
+            {
+                Id = 1,
+                Ordering = 1,
+                CrateStorage = crateStorage,
+                ActivityTemplate = curActionTemplate,
+                Activities = new List<ActivityDO>
+                {
+                    new ActionDO
+                    {
+                        Id = 23,
+                        Ordering = 1,
+                        ParentActivityId = 1,
+                        CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                    },
+                    new ActionDO
+                    {
+                        Id = 43,
+                        ParentActivityId = 1,
+                        Ordering = 2,
+                        CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 44,
+                                Ordering = 1,
+                                ParentActivityId = 43,
+                                CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            },
+                            new ActionDO
+                            {
+                                Id = 46,
+                                Ordering = 2,
+                                ParentActivityId = 43,
+                               CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            }
+                        }
+                    },
+                    new ActivityDO
+                    {
+                        Id = 52,
+                        Ordering = 3,
+                        ParentActivityId = 1,
+
+
+                    },
+                    new ActionDO
+                    {
+                        Id = 59,
+                        Ordering = 4,
+                        ParentActivityId = 1,
+CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                        Activities = new List<ActivityDO>
+                        {
+                            new ActionDO
+                            {
+                                Id = 60,
+                                ParentActivityId = 59,
+                                Ordering = 1,
+CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            },
+                            new ActionDO
+                            {
+                                Id = 62,
+                                ParentActivityId = 59,
+                                Ordering = 3,
+CrateStorage=  crateStorage,
+                         ActivityTemplate = curActionTemplate,
+                            }
+                        }
+                    }
+                }
+            };
+
+            FixParentActivityReferences(curAction);
+            return curAction;
+        }
+
+        public static ActionDO TestActionProcess()
+        {
+            var actionDo = new ActionDO
+            {
+                Id = 1,
+
+                ActionState = ActionState.Unstarted,
+                Name = "Action 1",
+                CrateStorage = "config settings",
+                ParentActivityId = 1,
+                ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
+            };
+            return actionDo;
         }
     }
 }

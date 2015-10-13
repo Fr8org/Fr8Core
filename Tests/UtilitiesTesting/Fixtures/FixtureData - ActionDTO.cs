@@ -1,9 +1,7 @@
-﻿﻿using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -14,8 +12,42 @@ namespace UtilitiesTesting.Fixtures
             return new ActionDTO()
             {
                 Name = "test action type",
+                ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
+            };
+        }
+        public static ActionDTO TestActionDTO2()
+        {
+            ActionDTO curActionDTO = new ActionDTO()
+            {
+                Name = "test action type",
+                ActivityTemplate = FixtureData.TestActivityTemplateDTO1(),
+            };
+            curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
+
+            return curActionDTO;
+        }
+
+        public static ActionDTO TestActionDTO3()
+        {
+            ActionDTO curActionDTO = new ActionDTO()
+            {
+                Name = "test action type",
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
+            curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
+            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curActionDTO.CrateStorage.CrateDTO[0].Contents);
+
+            curActionDTO.CrateStorage.CrateDTO.Add(CreateEventSubscriptionCrate(configurationFields));
+
+            return curActionDTO;
+        }
+
+        public static ActionDTO CreateStandardDesignTimeFields()
+        {
+            ActionDTO curActionDTO = new ActionDTO();
+            List<CrateDTO> curCratesDTO = FixtureData.TestCrateDTO2();
+            curActionDTO.CrateStorage.CrateDTO.AddRange(curCratesDTO);
+            return curActionDTO;
         }
 
         public static ActionDTO TestActionDTOForSalesforce()

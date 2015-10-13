@@ -12,10 +12,10 @@ using Web.Controllers;
 namespace DockyardTest.Entities
 {
     [TestFixture]
+    [Category("ProcessTemplate")]
     public class ProcessTemplateTests : BaseTest
     {
         [Test]
-        [Category("ProcessTemplate")]
         public void ProcessTemplate_ShouldBeAssignedStartingProcessNodeTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -38,12 +38,11 @@ namespace DockyardTest.Entities
         }
 
         [Test]
-        [Category("ProcessTemplate")]
         public void GetStandardEventSubscribers_ReturnsProcessTemplates()
         {
             FixtureData.TestProcessTemplateWithSubscribeEvent();
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
-            EventReportMS curEventReport = FixtureData.StandardEventReportFormat();
+            EventReportCM curEventReport = FixtureData.StandardEventReportFormat();
 
             var result = curProcessTemplate.GetMatchingProcessTemplates("testuser1", curEventReport);
 
@@ -53,17 +52,15 @@ namespace DockyardTest.Entities
         }
 
         [Test]
-        [Category("ProcessTemplate")]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_UserIDEmpty_ThrowsException()
         {
             IProcessTemplate curProcessTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
 
-            curProcessTemplate.GetMatchingProcessTemplates("", new EventReportMS());
+            curProcessTemplate.GetMatchingProcessTemplates("", new EventReportCM());
         }
 
         [Test]
-        [Category("ProcessTemplate")]
         [ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
         public void GetStandardEventSubscribers_EventReportMSNULL_ThrowsException()
         {

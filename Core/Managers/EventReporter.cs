@@ -714,7 +714,8 @@ namespace Core.Managers
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                processInExecution = uow.ProcessRepository.GetQuery().SingleOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
+                processInExecution = uow.ProcessRepository.GetQuery()
+                    .FirstOrDefault(p => p.CurrentActivityId.Value == curAction.Id);
             }
 
             var fact = new FactDO
@@ -730,12 +731,12 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActionDispatched(ActionDTO curAction)
+        // Commented by Vladimir. DO-1214. If one action can have only one Process?
+        private void LogEventActionDispatched(ActionDO curAction, int processId)
         {
             ProcessDO processInExecution;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ActionListId).ProcessID;
                 processInExecution = uow.ProcessRepository.GetByKey(processId);
             }
 
@@ -750,7 +751,7 @@ namespace Core.Managers
             };
 
             SaveAndLogFact(fact);
-        }
+            }
 
         private void LogPluginEvent(LoggingData eventData)
         {
@@ -767,26 +768,27 @@ namespace Core.Managers
             SaveAndLogFact(fact);
         }
 
+        // Commented by Vladimir. DO-1214. If one action can have only one Process?
         private void PluginActionActivated(ActionDO curAction)
         {
-            ProcessDO processInExecution;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
-                processInExecution = uow.ProcessRepository.GetByKey(processId);
-            }
-
-            var fact = new FactDO
-            {
-                CustomerId = processInExecution.DockyardAccountId,
-                Data = processInExecution.Id.ToStr(),
-                ObjectId = curAction.Id.ToStr(),
-                PrimaryCategory = "Action",
-                SecondaryCategory = "Activation",
-                Activity = "Completed"
-            };
-
-            SaveAndLogFact(fact);
+//            ProcessDO processInExecution;
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                int? processId = uow.ActionListRepository.GetByKey(curAction.ParentActivityId).ProcessID;
+//                processInExecution = uow.ProcessRepository.GetByKey(processId);
+//            }
+//
+//            var fact = new FactDO
+//            {
+//                CustomerId = processInExecution.DockyardAccountId,
+//                Data = processInExecution.Id.ToStr(),
+//                ObjectId = curAction.Id.ToStr(),
+//                PrimaryCategory = "Action",
+//                SecondaryCategory = "Activation",
+//                Activity = "Completed"
+//            };
+//
+//            SaveAndLogFact(fact);
         }
 
         public enum EventType
@@ -794,6 +796,6 @@ namespace Core.Managers
             Info,
             Error,
             Warning
-        }
+        }     
     }
 }

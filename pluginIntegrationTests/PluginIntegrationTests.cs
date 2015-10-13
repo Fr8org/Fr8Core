@@ -26,6 +26,7 @@ using pluginDocuSign.Infrastructure.AutoMapper;
 namespace pluginIntegrationTests
 {
     [TestFixture]
+    [Category("PluginIntegrationTests")]
 	public partial class PluginIntegrationTests : BaseTest
     {
         private IDisposable _coreServer;
@@ -36,7 +37,7 @@ namespace pluginIntegrationTests
         private DockyardAccountDO _testUserAccount;
         private ProcessTemplateDO _processTemplateDO;
         private ProcessNodeTemplateDO _processNodeTemplateDO;
-        private ActionListDO _actionList;
+        //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
         private ActivityTemplateDO _filterUsingRunTimeDataActivityTemplate;
@@ -63,10 +64,11 @@ namespace pluginIntegrationTests
             _processTemplateDO.DockyardAccount = _testUserAccount;
 
             _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
-            _processNodeTemplateDO.ProcessTemplate = _processTemplateDO;
+            _processNodeTemplateDO.ParentActivity = _processTemplateDO;
 
-            _actionList = FixtureData.TestActionList_ImmediateActions();
-            _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
+            
+            //_actionList = FixtureData.TestActionList_ImmediateActions();
+           // _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -87,7 +89,7 @@ namespace pluginIntegrationTests
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.ActivityRepository.Add(_actionList);
+            //    uow.ActivityRepository.Add(_actionList);
                 uow.ActivityTemplateRepository.Add(_waitForDocuSignEventActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_filterUsingRunTimeDataActivityTemplate);
                 uow.ActivityTemplateRepository.Add(_writeToSqlServerActivityTemplate);
@@ -95,6 +97,11 @@ namespace pluginIntegrationTests
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
+                uow.ProcessTemplateRepository.Add(_processTemplateDO);
+                uow.ProcessNodeTemplateRepository.Add(_processNodeTemplateDO);
+                // This fix inability of MockDB to correctly resolve requests to collections of derived entites
+                uow.ActivityRepository.Add(_processNodeTemplateDO);
+                uow.ActivityRepository.Add(_processTemplateDO);
                 uow.SaveChanges();
             }
 
@@ -168,12 +175,11 @@ namespace pluginIntegrationTests
 					uow.ActivityTemplateRepository.Remove(sendDocuSignEnvelopeActivityTemplate);
 				}
 
-                var actionList = uow.ActivityRepository
-                    .GetByKey(_actionList.Id);
-                if (actionList != null)
-                {
-                    uow.ActivityRepository.Remove(actionList);
-                }
+//                var actionList = uow.ActivityRepository.GetByKey(_actionList.Id);
+//                if (actionList != null)
+//                {
+//                    uow.ActivityRepository.Remove(actionList);
+//                }
 
                 uow.SaveChanges();
             }
@@ -184,10 +190,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_actionList.Activities == null)
+            if (_processNodeTemplateDO.Activities == null)
             {
-                _actionList.Activities = new List<ActivityDO>();
-                _actionList.Activities.Add(curActionDO);
+                _processNodeTemplateDO.Activities = new List<ActivityDO>();
+                _processNodeTemplateDO.Activities.Add(curActionDO);
             }
 
             if (activityTemplate != null)
@@ -196,8 +202,8 @@ namespace pluginIntegrationTests
                 curActionDO.ActivityTemplateId = activityTemplate.Id;
             }
 
-            curActionDO.ParentActivity = _actionList;
-            curActionDO.ParentActivityId = _actionList.Id;
+            curActionDO.ParentActivity = _processNodeTemplateDO;
+            curActionDO.ParentActivityId = _processNodeTemplateDO.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
@@ -210,6 +216,7 @@ namespace pluginIntegrationTests
             Assert.AreEqual(result.Content.ActivityTemplateId, curActionDTO.ActivityTemplateId);
             Assert.AreEqual(result.Content.CrateStorage, curActionDTO.CrateStorage);
 
+            
             return result.Content;
         }
 
@@ -245,13 +252,27 @@ namespace pluginIntegrationTests
             Assert.NotNull(actionDTO);
             Assert.NotNull(actionDTO.Content);
             Assert.NotNull(actionDTO.Content.CrateStorage.CrateDTO);
-            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 2);
+            Assert.AreEqual(actionDTO.Content.CrateStorage.CrateDTO.Count, 3);
             Assert.True((actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME)));
             Assert.True(actionDTO.Content.CrateStorage.CrateDTO
                 .Any(x => x.Label == "Available Templates" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME));
 
+            FixActionNavProps(actionDTO.Content.Id);
+
             return actionDTO.Content.CrateStorage;
+        }
+
+        // navigational properties in MockDB are not so navigational... 
+        private void FixActionNavProps(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activity = uow.ActionRepository.GetByKey(id);
+
+                activity.ParentActivity = (ActivityDO)uow.ProcessNodeTemplateRepository.GetByKey(activity.ParentActivityId) ?? uow.ActionRepository.GetByKey(activity.ParentActivityId);
+                uow.SaveChanges();
+            }
         }
 
         private void WaitForDocuSignEvent_SelectFirstTemplate(CrateStorageDTO curCrateStorage)
@@ -260,14 +281,14 @@ namespace pluginIntegrationTests
             var availableTemplatesCrate = curCrateStorage.CrateDTO
                 .Single(x => x.Label == "Available Templates" && x.ManifestType == CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME);
 
-            var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsMS>(
+            var fieldsMS = JsonConvert.DeserializeObject<StandardDesignTimeFieldsCM>(
                 availableTemplatesCrate.Contents);
 
             // Fetch Configuration Controls crate and parse StandardConfigurationControlsMS
             var configurationControlsCrate = curCrateStorage.CrateDTO
                 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
@@ -348,7 +369,7 @@ namespace pluginIntegrationTests
             var configurationControlsCrate = curCrateStorage.CrateDTO
                 .Single(x => x.Label == "Configuration_Controls" && x.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(
+            var controlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(
                 configurationControlsCrate.Contents);
 
             // Modify value of Selected_DocuSign_Template field and push it back to crate,
@@ -425,17 +446,26 @@ namespace pluginIntegrationTests
             WaitForDocuSignEvent_SelectFirstTemplate(initWaitForDocuSignEventCS);
             waitForDocuSignEventAction.CrateStorage = initWaitForDocuSignEventCS;
 
+            FixActionNavProps(waitForDocuSignEventAction.Id);
+
             // Call Configure FollowUp for WaitForDocuSignEvent action.
             await WaitForDocuSignEvent_ConfigureFollowUp(waitForDocuSignEventAction);
+
+            FixActionNavProps(waitForDocuSignEventAction.Id);
 
             // Save WaitForDocuSignEvent action.
             SaveAction(waitForDocuSignEventAction);
 
+            FixActionNavProps(waitForDocuSignEventAction.Id);
+
             // Create blank FilterUsingRunTimeData action.
             var filterAction = CreateEmptyAction(_filterUsingRunTimeDataActivityTemplate);
+            
 
             // Call Configure Initial for FilterUsingRunTimeData action.
             await FilterUsingRunTimeData_ConfigureInitial(filterAction);
+
+            FixActionNavProps(filterAction.Id);
         }
 
         /// <summary>
@@ -466,6 +496,8 @@ namespace pluginIntegrationTests
             // Select first available DocuSign template.
             WriteToSqlServer_InputConnectionString(initCrateStorageDTO);
             savedActionDTO.CrateStorage = initCrateStorageDTO;
+
+            FixActionNavProps(savedActionDTO.Id);
 
             // Call Configure FollowUp for WaitForDocuSignEvent action.
             await WriteToSqlServer_ConfigureFollowUp(savedActionDTO);

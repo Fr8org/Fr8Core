@@ -16,10 +16,16 @@ using pluginTests.Fixtures;
 using pluginExcel.Actions;
 using Core.Interfaces;
 using Newtonsoft.Json;
+using pluginExcel.Infrastructure;
+using Moq;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Data.Repositories;
 
 namespace pluginTests.PluginExcelTests
 {
     [TestFixture]
+    [Category("pluginExcel")]
     public class ExtractDataTests : BaseTest
     {
         public const string ExcelTestServerUrl = "ExcelTestServerUrl";
@@ -44,19 +50,105 @@ namespace pluginTests.PluginExcelTests
         [TearDown]
         public void Cleanup()
         {
-            
+
         }
+
+        [Test]
+        public void ConfigEvaluatorInitialResponse_Test()
+        {
+            var curActionDTO = new ActionDTO()
+            {
+                CrateStorage = new CrateStorageDTO()
+                {
+                    CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+                },
+            };
+
+            var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+
+            Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Initial);
+        }
+
+        //[Test]
+        //[ExpectedException]
+        //public void ConfigEvaluatorFollowupResponseThrowsException_Test()
+        //{
+        //    var curActionDTO = new ActionDTO()
+        //    {
+        //        CrateStorage = new CrateStorageDTO()
+        //        {
+        //            CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+        //        },
+        //    };
+        //    StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
+        //    {
+        //        Controls = new List<ControlDefinitionDTO>()
+        //        {
+        //            new ControlDefinitionDTO("select_file", true, "1", "select file"),
+        //            new ControlDefinitionDTO("select_file", true, "2", "select file"),
+        //        },
+        //    };
+        //    curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
+        //    {
+        //        Contents = JsonConvert.SerializeObject(confControlsMS),
+        //        ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+        //    });
+        //    //Mock<ICrate> crateMock = new Mock<ICrate>();
+        //    //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
+
+        //    //ActionDO actionDO = new FixtureData(uow).TestAction3();
+        //    //var controller = new ActionController(crateMock.Object);
+
+
+        //    var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+
+        //    Assert.AreNotEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
+        //}
+
+        //[Test]
+        //public void ConfigEvaluatorFollowupResponse_Test()
+        //{
+        //    var curActionDTO = new ActionDTO()
+        //    {
+        //        CrateStorage = new CrateStorageDTO()
+        //        {
+        //            CrateDTO = new System.Collections.Generic.List<CrateDTO>(),
+        //        },
+        //    };
+        //    StandardConfigurationControlsMS confControlsMS = new StandardConfigurationControlsMS()
+        //    {
+        //        Controls = new List<ControlDefinitionDTO>()
+        //        {
+        //            new ControlDefinitionDTO("select_file", true, "1", "select file"),
+        //        },
+        //    };
+        //    curActionDTO.CrateStorage.CrateDTO.Add(new CrateDTO()
+        //        {
+        //            Contents = JsonConvert.SerializeObject(confControlsMS),
+        //            ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+        //        });
+        //    //Mock<ICrate> crateMock = new Mock<ICrate>();
+        //    //crateMock.Setup(a => a.GetElementByKey<int>(It.IsAny<IEnumerable<CrateDTO>>(), It.IsAny<int>(), It.IsAny<string>())).Returns(() => new List<JObject>() { new JObject(), new JObject() });
+
+        //    //ActionDO actionDO = new FixtureData(uow).TestAction3();
+        //    //var controller = new ActionController(crateMock.Object);
+
+
+        //    var result = new ExtractData_v1().ConfigurationEvaluator(curActionDTO);
+
+        //    Assert.AreEqual(result, PluginBase.Infrastructure.ConfigurationRequestType.Followup);
+        //}
 
         [Test]
         public async void CallExtractData_Execute()
         {
             var bytesFromExcel = PluginFixtureData.TestExcelData();
-            var columnHeaders = PluginFixtureData.TestColumnHeaders();
-            var excelRows = PluginFixtureData.TestRows();
-            var tableDataMS = new StandardTableDataMS()
+            var columnHeaders = ExcelUtils.GetColumnHeaders(bytesFromExcel, "xlsx");
+            var excelRows = ExcelUtils.GetTabularData(bytesFromExcel, "xlsx");
+            var tableDataMS = new StandardTableDataCM()
             {
                 FirstRowHeaders = true,
-                Table = new ExtractData_v1().ConvertRowsDictToListOfTableRowDTO(excelRows, columnHeaders),
+                Table = ExcelUtils.CreateTableCellPayloadObjects(excelRows, columnHeaders),
             };
 
             var curActionDTO = new ActionDTO()
@@ -77,7 +169,7 @@ namespace pluginTests.PluginExcelTests
 
             var result = await new ExtractData_v1().Execute(curActionDTO);
             var payloadCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, result.CrateStorage);
-            var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataMS>(payloadCrates.First().Contents);
+            var payloadDataMS = JsonConvert.DeserializeObject<StandardPayloadDataCM>(payloadCrates.First().Contents);
 
             Assert.IsNotNull(result.CrateStorage);
             Assert.IsNotNull(payloadCrates);
@@ -85,7 +177,6 @@ namespace pluginTests.PluginExcelTests
             Assert.AreEqual(payloadDataMS.PayloadObjects.Count, 3);
             Assert.AreEqual(payloadDataMS.PayloadObjects[0].PayloadObject[0].Key, "FirstName");
             Assert.AreEqual(payloadDataMS.PayloadObjects[0].PayloadObject[0].Value, "Alex");
-            
         }
     }
 }

@@ -13,15 +13,11 @@ using System.Threading.Tasks;
 
 namespace pluginSlack
 {
-    public class Startup
+    public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {
-            Task.Run(() =>
-            {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_slack");
-            });
+            StartHosting("plugin_slack");
         }
     }
 }

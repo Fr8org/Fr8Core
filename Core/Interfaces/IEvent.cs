@@ -21,5 +21,6 @@ namespace Core.Interfaces
         void HandlePluginEvent(LoggingData eventData);
 
         Task<string> RequestParsingFromPlugins(HttpRequestMessage result, string pluginName, string pluginVersion);
+        Task<string> RequestParsingFromPluginsDebug(HttpRequestMessage result, string pluginName, string pluginVersion);
     }
 }

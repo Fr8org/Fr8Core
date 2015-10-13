@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
+using DocuSign.Integrations.Client;
 using PluginBase;
 using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
@@ -24,18 +25,11 @@ namespace pluginDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BasePluginAction
     {
-        // TODO: remove this as of DO-1064.
-        // IDocuSignTemplate _template;
-        // IDocuSignEnvelope _docusignEnvelope;
-
         public Send_DocuSign_Envelope_v1()
         {
-            // TODO: remove this as of DO-1064.
-            // _template = ObjectFactory.GetInstance<IDocuSignTemplate>();
-            // _docusignEnvelope = ObjectFactory.GetInstance<IDocuSignEnvelope>();
         }
 
-        public object Configure(ActionDTO curActionDTO)
+        public async Task<ActionDTO> Configure(ActionDTO curActionDTO)
         {
             if (IsEmptyAuthToken(curActionDTO))
             {
@@ -45,17 +39,101 @@ namespace pluginDocuSign.Actions
 
             RemoveAuthenticationCrate(curActionDTO);
 
-            return ProcessConfigurationRequest(curActionDTO, actionDo => ConfigurationEvaluator(actionDo));
+            return await ProcessConfigurationRequest(curActionDTO, actionDTO => ConfigurationEvaluator(actionDTO));
         }
 
-        public object Activate(ActionDTO curDataPackage)
+        public object Activate(ActionDTO curActionDTO)
         {
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public object Execute(ActionDataPackageDTO curActionDataPackage)
+        public Task<PayloadDTO> Execute(ActionDTO curActionDTO)
         {
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
+
+            var curEnvelope = new Envelope();
+            curEnvelope.Login = new DocuSignPackager()
+                .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+
+            curEnvelope = AddTemplateData(curActionDTO, curEnvelope);
+            curEnvelope.EmailSubject = "Test Message from Fr8";
+            curEnvelope.Status = "sent";
+
+            var result = curEnvelope.Create();
+
             return null;
+        }
+
+        private string ExtractTemplateId(ActionDTO curActionDTO)
+        {
+            var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+
+            var controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
+
+            var templateDropDown = controls.SingleOrDefault(x => x.Name == "target_docusign_template");
+
+            if (templateDropDown == null)
+            {
+                throw new ApplicationException("Could not find target_docusign_template DropDownList control.");
+            }
+
+            var result = templateDropDown.Value;
+            return result;
+        }
+
+        private string ExtractRecipientAddress(ActionDTO curActionDTO)
+        {
+            var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+
+            var controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
+            var recipientSourceControl = controls.SingleOrDefault(c => c.Name == "Recipient") as RadioButtonGroupControlDefinitionDTO;
+
+            var recipientSourceRadio = recipientSourceControl.Radios.FirstOrDefault(x => x.Selected);
+            if (recipientSourceRadio == null)
+            {
+                throw new ApplicationException("recipientSourceRadio == null;");
+            }
+
+            var recipientAddress = string.Empty;
+
+            switch (recipientSourceRadio.Value)
+            {
+                case "This specific value":
+                    var recipientAddressField = recipientSourceControl.Radios[0].Controls[0];
+                    recipientAddress = recipientAddressField.Value;
+                    break;
+
+                case "A value from an Upstream Crate":
+                    var recipientField = recipientSourceControl.Radios[1].Controls[0];
+                    recipientAddress = recipientField.Value;
+                    break;
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
+
+            return recipientAddress;
+        }
+
+        private Envelope AddTemplateData(ActionDTO actionDTO, Envelope curEnvelope)
+        {
+            var curTemplateId = ExtractTemplateId(actionDTO);
+            var curRecipientAddress = ExtractRecipientAddress(actionDTO);
+
+            curEnvelope.TemplateId = curTemplateId;
+            curEnvelope.TemplateRoles = new TemplateRole[]
+            {
+                new TemplateRole()
+                {
+                    email = curRecipientAddress,
+                    name = curRecipientAddress,
+                    roleName = "Signer"   // need to fetch this
+                },
+            };
+
+            return curEnvelope;
         }
 
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDTO)
@@ -97,16 +175,32 @@ namespace pluginDocuSign.Actions
             // Only do it if no existing MT.StandardDesignTimeFields crate is present to avoid loss of existing settings
             // Two crates are created
             // One to hold the ui controls
-
             if (!curActionDTO.CrateStorage.CrateDTO.Any(c => c.ManifestId == (int)MT.StandardDesignTimeFields))
             {
-                var crateControlsDTO = CreateDocusignTemplateConfigurationControls();
+                var crateControlsDTO = CreateDocusignTemplateConfigurationControls(curActionDTO);
                 // and one to hold the available templates, which need to be requested from docusign
                 var crateDesignTimeFieldsDTO = CreateDocusignTemplateNameCrate(template);
                 curActionDTO.CrateStorage = AssembleCrateStorage(crateControlsDTO, crateDesignTimeFieldsDTO);
-                return await Task.FromResult<ActionDTO>(curActionDTO);
             }
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+
+            // Build a crate with the list of available upstream fields
+            var curUpstreamFieldsCrate = curActionDTO.CrateStorage.CrateDTO.SingleOrDefault(c =>
+                c.ManifestId == (int)MT.StandardDesignTimeFields
+                && c.Label == "Upstream Plugin-Provided Fields");
+
+            if (curUpstreamFieldsCrate != null)
+            {
+                curActionDTO.CrateStorage.CrateDTO.Remove(curUpstreamFieldsCrate);
+            }
+
+            var curUpstreamFields = (await GetDesignTimeFields(curActionDTO.Id, GetCrateDirection.Upstream))
+                .Fields
+                .ToArray();
+
+            curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            curActionDTO.CrateStorage.CrateDTO.Add(curUpstreamFieldsCrate);
+
+            return curActionDTO;
         }
 
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
@@ -114,49 +208,71 @@ namespace pluginDocuSign.Actions
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
             var curCrates = curActionDTO.CrateStorage.CrateDTO;
 
-            var template = new DocuSignTemplate();
-            template.Login = new DocuSignPackager()
-                .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
-
             if (curCrates == null || curCrates.Count == 0)
+            {
                 return curActionDTO;
+            }
+
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            // Try to find Configuration_Controls
+            
+            // Try to find Configuration_Controls.
             var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
+            {
                 return curActionDTO;
+            }
+            
+            // Try to find DocuSignTemplate drop-down.
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
+            {
                 return curActionDTO;
+            }
 
             // Get DocuSign Template Id
             var docusignTemplateId = dropdownControlDTO.Value;
+            
             // Get Template
-            var docuSignTemplateDTO = template.GetTemplateById(docusignTemplateId);
-            var docuSignUserFields = template.GetUserFields(docuSignTemplateDTO);
-            //	when we're in design mode, there are no values
-            // we just want the names of the fields
-            List<FieldDTO> userDefinedFields = new List<FieldDTO>();
-            docuSignUserFields.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = null, Value = x }));
-            //  we're in design mode, there are no values 
-            List<FieldDTO> standartFields = new List<FieldDTO>() { new FieldDTO() { Key = null, Value = "recipient" } };
-            var crateUserDefinedDTO = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", userDefinedFields.ToArray());
-            var crateStandardDTO = _crate.CreateDesignTimeFieldsCrate("DocuSignTemplateStandardFields", standartFields.ToArray());
+            var docuSignEnvelope = new DocuSignEnvelope(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
+            var envelopeDataDTO = docuSignEnvelope.GetEnvelopeDataByTemplate(docusignTemplateId).ToList();
 
-            curActionDTO.CrateStorage = AssembleCrateStorage(crateUserDefinedDTO, crateStandardDTO);
+            // when we're in design mode, there are no values
+            // we just want the names of the fields
+            var userDefinedFields = new List<FieldDTO>();
+            envelopeDataDTO.ForEach(x => userDefinedFields.Add(new FieldDTO() { Key = x.Name, Value = x.Name }));
+
+            // we're in design mode, there are no values 
+            var standartFields = new List<FieldDTO>()
+            {
+                new FieldDTO() { Key = "recipient", Value = "recipient" }
+            };
+            
+            var crateUserDefinedDTO = _crate.CreateDesignTimeFieldsCrate(
+                "DocuSignTemplateUserDefinedFields",
+                userDefinedFields.ToArray()
+            );
+            
+            var crateStandardDTO = _crate.CreateDesignTimeFieldsCrate(
+                "DocuSignTemplateStandardFields",
+                standartFields.ToArray()
+            );
+
+            curActionDTO.CrateStorage.CrateDTO.Add(crateUserDefinedDTO);
+            curActionDTO.CrateStorage.CrateDTO.Add(crateStandardDTO);
 
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        private CrateDTO CreateDocusignTemplateConfigurationControls()
+        private CrateDTO CreateDocusignTemplateConfigurationControls(ActionDTO curActionDTO)
         {
-            var fieldSelectDocusignTemplateDTO = new DropdownListFieldDefinitionDTO()
+            var fieldSelectDocusignTemplateDTO = new DropDownListControlDefinitionDTO()
             {
                 Label = "target_docusign_template",
                 Name = "target_docusign_template",
                 Required = true,
-                Events = new List<FieldEvent>() {
-                     new FieldEvent("onSelect", "requestConfig")
+                Events = new List<ControlEvent>()
+                {
+                     new ControlEvent("onChange", "requestConfig")
                 },
                 Source = new FieldSourceDTO
                 {
@@ -165,47 +281,56 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var radioButtonGroup = new RadioButtonGroupFieldDefinitionDTO()
+            var recipientSource = new RadioButtonGroupControlDefinitionDTO()
             {
-                Label = "Test RadioButtons",
-                GroupName = "Group1",
-                Name = "Group1",
-                Radios = new List<RadioButton>()
+                Label = "Recipient",
+                GroupName = "Recipient",
+                Name = "Recipient",
+                Radios = new List<RadioButtonOption>()
                 {
-                    new RadioButton()
+                    new RadioButtonOption()
                     {
                         Selected = true,
-                        Value ="Test 1"
+                        Name = "specific",
+                        Value ="This specific value"
                     },
-                    new RadioButton()
+                    new RadioButtonOption()
                     {
                         Selected = false,
-                        Value ="Test 2"
-                    },
-                    new RadioButton()
-                    {
-                        Selected = false,
-                        Value ="Test 3"
+                        Name = "crate",
+                        Value ="A value from an Upstream Crate"
                     }
                 }
             };
 
-            radioButtonGroup.Radios[0].Fields.Add(new TextFieldDefinitionDTO()
+            recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
             {
-                Label = "Test field",
-                Name = "Test field"
+                Label = "",
+                Name = "Address"
             });
 
+            recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
+            {
+                Label = "",
+                Name = "Select Upstream Crate",
+                Source = new FieldSourceDTO
+                {
+                    Label = "Upstream Plugin-Provided Fields",
+                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+                }
+            });
 
-            var fieldsDTO = new List<ControlsDefinitionDTO>()
-			{
-				fieldSelectDocusignTemplateDTO,
-                radioButtonGroup
-			};
-            var controls = new StandardConfigurationControlsMS()
+            var fieldsDTO = new List<ControlDefinitionDTO>()
+            {
+                fieldSelectDocusignTemplateDTO,
+                recipientSource
+            };
+
+            var controls = new StandardConfigurationControlsCM()
             {
                 Controls = fieldsDTO
             };
+
             return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
@@ -213,7 +338,7 @@ namespace pluginDocuSign.Actions
         {
             var templatesDTO = template.GetTemplates(null);
             var fieldsDTO = templatesDTO.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToList();
-            var controls = new StandardDesignTimeFieldsMS()
+            var controls = new StandardDesignTimeFieldsCM()
             {
                 Fields = fieldsDTO,
             };

@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using Data.Entities;
 using Data.States;
 
 namespace UtilitiesTesting.Fixtures
@@ -23,9 +24,10 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ProcessTemplateDO()
             {
+                Id=1000,
                 Name = "Test ProcessTemplate Name",
                 Description = "Test ProcessTemplate Description",
-                ProcessTemplateState = ProcessTemplateState.Active
+                ProcessTemplateState = ProcessTemplateState.Active,
             };
         }
 
@@ -33,16 +35,18 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ProcessNodeTemplateDO()
             {
+                Id = 1001,
                 Name = "Test ProcessNodeTemplate"
             };
         }
 
+        // DO-1214
         public static ActionListDO TestActionList_ImmediateActions()
         {
             return new ActionListDO()
             {
-                ActionListType = ActionListType.Immediate,
-                Name = "ImmediateActions"
+                //ActionListType = ActionListType.Immediate,
+                //Name = "ImmediateActions"
             };
         }
 
@@ -82,10 +86,17 @@ namespace UtilitiesTesting.Fixtures
 
         public static PluginDO TestPlugin_ExtractData()
         {
+            var pluginDO = TestPlugin_Excel();
+            pluginDO.Endpoint = TestPlugin_ExtractData_EndPoint;
+
+            return pluginDO;
+        }
+
+        public static PluginDO TestPlugin_Excel()
+        {
             return new PluginDO
             {
                 Name = "pluginExcel",
-                Endpoint = TestPlugin_ExtractData_EndPoint,
                 PluginStatus = PluginStatus.Active,
                 Version = "1"
             };
@@ -95,7 +106,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
-                Name = "Wait_For_DocuSign_Event",
+                Name = "Monitor_DocuSign",
                 Version = "1",
                 Plugin = TestPlugin_DocuSign()
             };

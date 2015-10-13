@@ -13,7 +13,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using PluginBase.BaseClasses;
 using pluginDocuSign.DataTransferObjects;
-
+using fr8.Microsoft.Azure;
 
 namespace pluginDocuSign.Controllers
 {    
@@ -47,12 +47,12 @@ namespace pluginDocuSign.Controllers
         }
 
         [HttpPost]
-        [Route("authenticate")]
+        [Route("authenticate_internal")]
         public async Task<AuthTokenDTO> Authenticate(CredentialsDTO curCredentials)
         {
             // Auth sequence according to https://www.docusign.com/p/RESTAPIGuide/RESTAPIGuide.htm#OAuth2/OAuth2%20Token%20Request.htm
 
-            var oauthToken = await ObtainOAuthToken(curCredentials, ConfigurationManager.AppSettings["endpoint"]);
+            var oauthToken = await ObtainOAuthToken(curCredentials, CloudConfigurationManager.GetSetting("endpoint"));
 
             var docuSignAuthDTO = new DocuSignAuthDTO()
             {
@@ -79,7 +79,7 @@ namespace pluginDocuSign.Controllers
                     new FormUrlEncodedContent(new[]
                     {
                         new KeyValuePair<string, string>("grant_type", "password"), 
-                        new KeyValuePair<string, string>("client_id", ConfigurationManager.AppSettings["DocuSignIntegratorKey"]), 
+                        new KeyValuePair<string, string>("client_id", CloudConfigurationManager.GetSetting("DocuSignIntegratorKey")), 
                         new KeyValuePair<string, string>("username", curCredentials.Username),
                         new KeyValuePair<string, string>("password", curCredentials.Password),
                         new KeyValuePair<string, string>("scope", "api"), 

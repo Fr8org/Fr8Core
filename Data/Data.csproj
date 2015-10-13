@@ -124,12 +124,8 @@
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\WindowsAzure.Storage.5.0.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+    <Reference Include="Microsoft.WindowsAzure.Storage, Version=5.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
@@ -137,7 +133,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -208,20 +204,27 @@
     <Compile Include="Infrastructure\AutoMapper\ProcessTemplateDOFullConverter.cs" />
     <Compile Include="Entities\ActivityTemplateDO.cs" />
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\IMT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_FieldType.cs" />
+    <Compile Include="Infrastructure\MultiTenant\IMT_Object.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Data.cs" />
     <Compile Include="Infrastructure\MultiTenant\MT_Field.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_FieldType.cs" />
+    <Compile Include="Infrastructure\MultiTenant\MT_Object.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionDTOBase.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActionPayloadDTO.cs" />
     <Compile Include="Entities\ActionDO.cs" />
-    <Compile Include="Entities\ActionListDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActionListDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PluginDiscoveryDTO.cs" />
@@ -237,7 +240,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldDefinitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FullProcessTemplateDTO.cs" />
@@ -246,113 +249,30 @@
     <Compile Include="Interfaces\DataTransferObjects\ProcessNodeTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ProcessTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\TextBlockDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
-    <Compile Include="Interfaces\IActionListChild.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\IMTDataRepository.cs" />
     <Compile Include="Interfaces\IMTFieldRepository.cs" />
+    <Compile Include="Interfaces\IMTFieldTypeRepository.cs" />
     <Compile Include="Interfaces\IMTObjectRepository.cs" />
     <Compile Include="Interfaces\IMTOrganizationRepository.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveMS.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\Manifest.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardAuthenticationCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardConfigurationControlsCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\ManifestSchemas\StandardFileHandle.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardTableDataMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\EventReportMS.cs" />
-    <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionMS.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardTableDataCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardPayloadDataCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\StandardDesignTimeFieldsCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\EventReportCM.cs" />
+    <Compile Include="Interfaces\ManifestSchemas\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\DocuSignEnvelopeStatusReportMTO.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\DocuSignRecipientStatusReportMTO.cs" />
     <Compile Include="Interfaces\MultiTenantObjects\MultiTenantObject.cs" />
-    <Compile Include="Migrations\201509150029523_Initial.cs" />
-    <Compile Include="Migrations\201509150029523_Initial.Designer.cs">
-      <DependentUpon>201509150029523_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509151219496_EmptyMigration.cs" />
-    <Compile Include="Migrations\201509151219496_EmptyMigration.Designer.cs">
-      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.cs" />
-    <Compile Include="Migrations\201509161527206_AddedVersionToPlugin.Designer.cs">
-      <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509182154282_UpdateFileDO.cs" />
-    <Compile Include="Migrations\201509182154282_UpdateFileDO.Designer.cs">
-      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs" />
-    <Compile Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.Designer.cs">
-      <DependentUpon>201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509221705426_EmptyMigration1.cs" />
-    <Compile Include="Migrations\201509221705426_EmptyMigration1.Designer.cs">
-      <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs" />
-    <Compile Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.Designer.cs">
-      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs" />
-    <Compile Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.Designer.cs">
-      <DependentUpon>201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509262037112_addExternalAccountId.cs" />
-    <Compile Include="Migrations\201509262037112_addExternalAccountId.Designer.cs">
-      <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.cs" />
-    <Compile Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.Designer.cs">
-      <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.cs" />
-    <Compile Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.Designer.cs">
-      <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.cs" />
-    <Compile Include="Migrations\201509261521578_UpdateActivityDOandActionList.Designer.cs">
-      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509270413022_EmptyMergeMigration.cs" />
-    <Compile Include="Migrations\201509270413022_EmptyMergeMigration.Designer.cs">
-      <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509272003530_RemovedExternalEventType.cs" />
-    <Compile Include="Migrations\201509272003530_RemovedExternalEventType.Designer.cs">
-      <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509291459441_RemoveEnvelopeDO.cs" />
-    <Compile Include="Migrations\201509291459441_RemoveEnvelopeDO.Designer.cs">
-      <DependentUpon>201509291459441_RemoveEnvelopeDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509291511124_RenameMailerToEnvelope.cs" />
-    <Compile Include="Migrations\201509291511124_RenameMailerToEnvelope.Designer.cs">
-      <DependentUpon>201509291511124_RenameMailerToEnvelope.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509291928009_forcemerge.cs" />
-    <Compile Include="Migrations\201509291928009_forcemerge.Designer.cs">
-      <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509301243507_Merge20150930.cs" />
-    <Compile Include="Migrations\201509301243507_Merge20150930.Designer.cs">
-      <DependentUpon>201509301243507_Merge20150930.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.cs" />
-    <Compile Include="Migrations\201509301545244_UpdatedDockyardDbContext.Designer.cs">
-      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.cs" />
-    <Compile Include="Migrations\201509301600207_UpdatedActivityDO_2.Designer.cs">
-      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201510010808502_Merge20151001.cs" />
-    <Compile Include="Migrations\201510010808502_Merge20151001.Designer.cs">
-      <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.cs" />
-    <Compile Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.Designer.cs">
-      <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
+    <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
+      <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201510041907362_forcemerge1.cs" />
     <Compile Include="Migrations\201510041907362_forcemerge1.Designer.cs">
@@ -363,8 +283,10 @@
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\MTDataRepository.cs" />
     <Compile Include="Repositories\MTFieldRepository.cs" />
+    <Compile Include="Repositories\MTFieldTypeRepository.cs" />
     <Compile Include="Repositories\MTObjectRepository.cs" />
     <Compile Include="Repositories\MTOrganizationRepository.cs" />
+    <Compile Include="Repositories\MultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\PluginRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="States\ActionListState.cs" />
@@ -409,7 +331,6 @@
     <Compile Include="Interfaces\ISubscriptionDO.cs" />
     <Compile Include="Migrations\DockyardDbMigration.cs" />
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
-    <Compile Include="Repositories\ActionListRepository.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\ActionRepository.cs" />
     <Compile Include="Repositories\CriteriaRepository.cs" />
@@ -446,8 +367,6 @@
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
-    <Compile Include="States\Templates\_ActionListStateTemplate.cs" />
-    <Compile Include="States\Templates\_ActionListTypeTemplate.cs" />
     <Compile Include="States\Templates\_ActionStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
@@ -559,6 +478,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Configuration\Configuration.csproj">
+      <Project>{d8f7f734-21ce-4277-a14f-ebdde71dff0c}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>
@@ -571,77 +494,8 @@
     <Folder Include="Wrappers\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201509150029523_Initial.resx">
-      <DependentUpon>201509150029523_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509151219496_EmptyMigration.resx">
-      <DependentUpon>201509151219496_EmptyMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509161527206_AddedVersionToPlugin.resx">
-      <DependentUpon>201509161527206_AddedVersionToPlugin.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509182154282_UpdateFileDO.resx">
-      <DependentUpon>201509182154282_UpdateFileDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.resx">
-      <DependentUpon>201509211747138_UpdatingLatestChangesAfterTheMergeWithDEV.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509221705426_EmptyMigration1.resx">
-      <DependentUpon>201509221705426_EmptyMigration1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.resx">
-      <DependentUpon>201509230457451_NewAddedCurrentViewtoActionDOandActionDTO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.resx">
-      <DependentUpon>201509252222273_UpdatedProcessTemplateDOandProcessTemplateNodeDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509262037112_addExternalAccountId.resx">
-      <DependentUpon>201509262037112_addExternalAccountId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509261710298_AddingCategoryToActivityTemplateDO.resx">
-      <DependentUpon>201509261710298_AddingCategoryToActivityTemplateDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509260057237_UpdateDockyardDbContextOnModelCreating.resx">
-      <DependentUpon>201509260057237_UpdateDockyardDbContextOnModelCreating.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509261521578_UpdateActivityDOandActionList.resx">
-      <DependentUpon>201509261521578_UpdateActivityDOandActionList.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509270413022_EmptyMergeMigration.resx">
-      <DependentUpon>201509270413022_EmptyMergeMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509272003530_RemovedExternalEventType.resx">
-      <DependentUpon>201509272003530_RemovedExternalEventType.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509272213417_EmptyMigration2.resx">
-      <DependentUpon>201509272213417_EmptyMigration2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509301406085_EmptyMigration3.resx">
-      <DependentUpon>201509301406085_EmptyMigration3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509301545244_UpdatedDockyardDbContext.resx">
-      <DependentUpon>201509301545244_UpdatedDockyardDbContext.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509301600207_UpdatedActivityDO_2.resx">
-      <DependentUpon>201509301600207_UpdatedActivityDO_2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509291459441_RemoveEnvelopeDO.resx">
-      <DependentUpon>201509291459441_RemoveEnvelopeDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509291511124_RenameMailerToEnvelope.resx">
-      <DependentUpon>201509291511124_RenameMailerToEnvelope.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509291928009_forcemerge.resx">
-      <DependentUpon>201509291928009_forcemerge.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201509301243507_Merge20150930.resx">
-      <DependentUpon>201509301243507_Merge20150930.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510010808502_Merge20151001.resx">
-      <DependentUpon>201510010808502_Merge20151001.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201510030526530_Plugin_RequiresAuthentication_Migration.resx">
-      <DependentUpon>201510030526530_Plugin_RequiresAuthentication_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201510120408332_InitialMigration.resx">
+      <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510041907362_forcemerge1.resx">
       <DependentUpon>201510041907362_forcemerge1.cs</DependentUpon>

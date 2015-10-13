@@ -9,24 +9,13 @@ var dockyard;
                 var onRender = function (eventArgs, scope) {
                     console.log('PaneWorkflowDesigner::onRender', eventArgs);
                 };
-                var onProcessNodeTemplateAdded = function (eventArgs, scope) {
-                    console.log('PaneWorkflowDesigner::onCriteriaAdded', eventArgs);
-                    scope.widget.addCriteria({
-                        id: eventArgs.id,
-                        isTempId: eventArgs.isTempId,
-                        name: eventArgs.name
-                    });
-                    scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_CriteriaSelected], new paneWorkflowDesigner.CriteriaSelectedEventArgs(eventArgs.id, eventArgs.isTempId));
-                };
-                var onProcessNodeTemplateRemoved = function (eventArgs, scope) {
-                    console.log('PaneWorkflowDesigner::onCriteriaRemoved', eventArgs);
-                    scope.widget.removeCriteria(eventArgs.id, eventArgs.isTempId);
-                };
                 var onActionAdded = function (eventArgs, scope) {
                     console.log('PaneWorkflowDesigner::onActionAdded', eventArgs);
                     var actionObj = eventArgs.action;
-                    scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, eventArgs.actionListType);
-                    scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, eventArgs.actionListType, 0));
+                    scope.widget.addAction(eventArgs.criteriaId, eventArgs.action, 1);
+                    if (eventArgs.doNotRaiseSelectedEvent)
+                        return;
+                    scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(eventArgs.criteriaId, eventArgs.action.id, 0));
                 };
                 var onActionRemoved = function (eventArgs, scope) {
                     console.log('PaneWorkflowDesigner::onActionRemove', eventArgs);
@@ -54,36 +43,19 @@ var dockyard;
                     link: function (scope, element, attrs) {
                         var factory = new ProcessBuilder.FabricJsFactory();
                         var widget = Core.create(ProcessBuilder.Widget, element.children()[0], factory, attrs.width, attrs.height);
-                        widget.on('startNode:click', function () {
-                            scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_TemplateSelected], new paneWorkflowDesigner.TemplateSelectedEventArgs());
-                            });
-                        });
-                        widget.on('addCriteriaNode:click', function () {
-                            scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ProcessNodeTemplateAdding], new paneWorkflowDesigner.CriteriaAddingEventArgs());
-                            });
-                        });
-                        widget.on('criteriaNode:click', function (e, criteriaId, isTempId) {
-                            scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_CriteriaSelected], new paneWorkflowDesigner.CriteriaSelectedEventArgs(criteriaId, isTempId));
-                            });
-                        });
                         widget.on('addActionNode:click', function (e, criteriaId, actionType) {
                             scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionAdding], new paneWorkflowDesigner.ActionAddingEventArgs(criteriaId, actionType));
+                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionAdding], new paneWorkflowDesigner.ActionAddingEventArgs(criteriaId));
                             });
                         });
                         widget.on('actionNode:click', function (e, criteriaId, actionId, actionType, activityTemplateId) {
                             scope.$apply(function () {
-                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(criteriaId, actionId, actionType, activityTemplateId));
+                                scope.$emit(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionSelected], new paneWorkflowDesigner.ActionSelectedEventArgs(criteriaId, actionId, activityTemplateId));
                             });
                         });
                         scope.widget = widget;
                         // Event handlers.
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_Render], function (event, eventArgs) { return onRender(eventArgs, scope); });
-                        scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_AddCriteria], function (event, eventArgs) { return onProcessNodeTemplateAdded(eventArgs, scope); });
-                        scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_RemoveCriteria], function (event, eventArgs) { return onProcessNodeTemplateRemoved(eventArgs, scope); });
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_AddAction], function (event, eventArgs) { return onActionAdded(eventArgs, scope); });
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ActionRemoved], function (event, eventArgs) { return onActionRemoved(eventArgs, scope); });
                         scope.$on(paneWorkflowDesigner.MessageType[paneWorkflowDesigner.MessageType.PaneWorkflowDesigner_ReplaceTempIdForProcessNodeTemplate], function (event, eventArgs) { return onProcessNodeTemplateTempIdReplaced(eventArgs, scope); });

@@ -1,4 +1,4 @@
-﻿namespace pluginAzureSqlServer.Services
+﻿namespace pluginExcel.Services
 {
     public interface IEvent
     {

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Transactions;
 using Data.Interfaces;
 using Data.Repositories;
+using StructureMap;
 
 namespace Data.Infrastructure
 {
@@ -414,14 +415,6 @@ namespace Data.Infrastructure
             }
         }
 
-	  private ActionListRepository _actionListRepository;
-	  public ActionListRepository ActionListRepository
-        {
-            get
-            {
-                return _actionListRepository ?? (_actionListRepository = new ActionListRepository(this));
-            }
-        }
 	  private ActivityRepository _activityRepository;
 	  public ActivityRepository ActivityRepository
 	  {
@@ -491,6 +484,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private MTFieldTypeRepository _mtFieldTypeRepository;
+
+        public IMTFieldTypeRepository MTFieldTypeRepository
+        {
+            get
+            {
+                return _mtFieldTypeRepository ?? (_mtFieldTypeRepository = new MTFieldTypeRepository(this));
+            }
+        }
+
         private MTObjectRepository _mtObjectdRepository;
 
         public IMTObjectRepository MTObjectRepository
@@ -518,6 +521,16 @@ namespace Data.Infrastructure
             get
             {
                 return _mtDataRepository ?? (_mtDataRepository = new MTDataRepository(this));
+            }
+        }
+
+        private MultiTenantObjectRepository _multiTenantObjectRepository;
+
+        public MultiTenantObjectRepository MultiTenantObjectRepository
+        {
+            get
+            {
+                return _multiTenantObjectRepository ?? (_multiTenantObjectRepository = new MultiTenantObjectRepository());
             }
         }
 

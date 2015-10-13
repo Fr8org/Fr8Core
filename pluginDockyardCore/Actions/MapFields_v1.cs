@@ -35,7 +35,7 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("No controls crate found.");
             }
 
-            var curControlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            var curControlsMS = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curControlsCrate.Contents);
             var curMappingControl = curControlsMS.Controls
                 .FirstOrDefault(x => x.Name == "Selected_Mapping");
 
@@ -92,7 +92,7 @@ namespace pluginDockyardCore.Actions
         /// </summary>
         private CrateDTO CreateStandardConfigurationControls()
         {
-            var fieldFilterPane = new ControlsDefinitionDTO("mappingPane")
+            var fieldFilterPane = new MappingPaneControlDefinitionDTO()
             {
                 Label = "Configure Mapping",
                 Name = "Selected_Mapping",
@@ -181,10 +181,10 @@ namespace pluginDockyardCore.Actions
 
             // Check if Upstream and Downstream ManifestSchemas contain empty set of fields.
             var upStreamFields = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsMS>(upStreamFieldsCrate.Contents);
+                .DeserializeObject<StandardDesignTimeFieldsCM>(upStreamFieldsCrate.Contents);
 
             var downStreamFields = JsonConvert
-                .DeserializeObject<StandardDesignTimeFieldsMS>(downStreamFieldsCrate.Contents);
+                .DeserializeObject<StandardDesignTimeFieldsCM>(downStreamFieldsCrate.Contents);
 
             if (upStreamFields.Fields == null
                 || upStreamFields.Fields.Count == 0
@@ -211,34 +211,6 @@ namespace pluginDockyardCore.Actions
             {
                 return ConfigurationRequestType.Followup;
             }
-        }
-
-        //Returning the crate with text field control 
-        private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
-        {
-            var fields = new List<ControlsDefinitionDTO>() 
-            {
-                new TextBlockFieldDTO()
-                {
-                    Label = fieldLabel,
-                    Value = errorMessage,
-                    cssClass = "well well-lg"
-                    
-                }
-            };
-
-            var controls = new StandardConfigurationControlsMS()
-            {
-                Controls = fields
-            };
-
-            var crateControls = _crate.Create(
-                        "Configuration_Controls",
-                        JsonConvert.SerializeObject(controls),
-                        "Standard Configuration Controls"
-                    );
-
-            return crateControls;
         }
     }
 }

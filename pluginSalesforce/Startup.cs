@@ -14,17 +14,13 @@ using pluginSalesforce;
 
 namespace pluginSalesforce
 {
-    public class Startup
+    public class Startup : BaseConfiguration
     {
         public void Configuration(IAppBuilder app)
         {            
             PluginSalesforceStructureMapBootstrapper.ConfigureDependencies(PluginSalesforceStructureMapBootstrapper.DependencyType.LIVE);
 
-            Task.Run(() =>
-            {
-                BasePluginController curController = new BasePluginController();
-                curController.AfterStartup("plugin_salesforce");
-            });
+            StartHosting("plugin_salesforce");
         }
     }
 }

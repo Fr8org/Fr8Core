@@ -118,4 +118,21 @@ app.directive('dropdownMenuHover', function () {
         }
     };
 });
+// Allows to configure bootstrap container type for an element in state config by setting "data: { containerFluid: true }". Default is simple container.
+app.directive('container', ['$state', function ($state) {
+        return {
+            link: function (scope, elem) {
+                scope.$watch(function () { return $state.current; }, function (newState) {
+                    if (newState.data && newState.data.noContainer) {
+                        elem.removeClass('container');
+                        elem.addClass('container-fluid');
+                    }
+                    else {
+                        elem.removeClass('container-fluid');
+                        elem.addClass('container');
+                    }
+                });
+            }
+        };
+    }]);
 //# sourceMappingURL=directives.js.map

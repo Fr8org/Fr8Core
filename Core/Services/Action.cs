@@ -18,21 +18,24 @@ using Data.Constants;
 using Newtonsoft.Json;
 using Data.Interfaces.ManifestSchemas;
 using Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace Core.Services
 {
     public class Action : IAction
     {
-        //private IAction _action;
+        private ICrate _crate;
         //private Task curAction;
         private IPlugin _plugin;
+        //private IProcessTemplate _processTemplate;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
         {
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
-
+            _crate= ObjectFactory.GetInstance<ICrate>();
+          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -137,7 +140,7 @@ namespace Core.Services
             return tempActionDTO;
         }
 
-        public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
+        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
         {
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
@@ -145,7 +148,7 @@ namespace Core.Services
                 throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
             if (confControls.Count() == 0)
                 return null;
-            StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+            StandardConfigurationControlsCM standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
             return standardCfgControlsMs;
         }
 
@@ -160,8 +163,8 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = UpdateCurrentActivity(id, uow);
-                if (curAction == null)
+                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
                     curAction = new ActivityDO { Id = id };
                     uow.ActivityRepository.Attach(curAction);
@@ -178,24 +181,24 @@ namespace Core.Services
         /// <param name="curActionId">Action Id</param>
         /// <param name="uow">Unit of Work</param>
         /// <returns>Returns the current action (if found) or null if not.</returns>
-        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
-        {
-            // Find an ActionList for which the action is set as CurrentActivity
-            // Also, get the whole list of actions for this Action List 
-            var curActionList = uow.ActionListRepository.GetQuery().Where(al => al.CurrentActivityID == curActionId).Include(al => al.Activities).SingleOrDefault();
-            if (curActionList == null) return null;
-
-            // Get current Action
-            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
-            if (curAction == null) return null; // Well, who knows...
-
-            // Get ordered list of next Activities 
-            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
-            
-            curActionList.CurrentActivity = activities.FirstOrDefault();
-
-            return curAction;
-        }
+//        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
+//        {
+//            // Find an ActionList for which the action is set as CurrentActivity
+//            // Also, get the whole list of actions for this Action List 
+//            var curActionList = uow.ActionRepository.GetQuery().Where(al => al.Id == curActionId).Include(al => al.Activities).SingleOrDefault();
+//            if (curActionList == null) return null;
+//
+//            // Get current Action
+//            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
+//            if (curAction == null) return null; // Well, who knows...
+//
+//            // Get ordered list of next Activities 
+//            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+//            
+//            curActionList.CurrentActivity = activities.FirstOrDefault();
+//
+//            return curAction;
+//        }
 
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
         {
@@ -248,11 +251,10 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
-                "Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
-            // EventManager.ActionDispatched(curActionDTO);
+            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
 
             return payloadDTO;
         }
@@ -285,7 +287,7 @@ namespace Core.Services
             }
         }
 
-        public async Task Authenticate(DockyardAccountDO account, PluginDO plugin,
+        public async Task AuthenticateInternal(DockyardAccountDO account, PluginDO plugin,
             string username, string password)
         {
             if (!plugin.RequiresAuthentication)
@@ -302,7 +304,7 @@ namespace Core.Services
             };
 
             var response = await restClient.PostAsync<CredentialsDTO>(
-                new Uri("http://" + plugin.Endpoint + "/actions/authenticate"),
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_internal"),
                 credentialsDTO
             );
 
@@ -339,6 +341,92 @@ namespace Core.Services
             }
         }
 
+        public async Task AuthenticateExternal(
+            PluginDO plugin,
+            ExternalAuthenticationDTO externalAuthDTO)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var response = await restClient.PostAsync<ExternalAuthenticationDTO>(
+                new Uri("http://" + plugin.Endpoint + "/actions/authenticate_external"),
+                externalAuthDTO
+            );
+
+            var authTokenDTO = JsonConvert.DeserializeObject<AuthTokenDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.ExternalStateToken == authTokenDTO.ExternalStateToken);
+
+                if (authToken == null)
+                {
+                    throw new ApplicationException("No AuthToken found with specified ExternalStateToken.");
+                }
+
+                authToken.Token = authTokenDTO.Token;
+                authToken.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                authToken.ExternalStateToken = null;
+
+                uow.SaveChanges();
+            }
+        }
+
+        public async Task<ExternalAuthUrlDTO> GetExternalAuthUrl(
+            DockyardAccountDO user, PluginDO plugin)
+        {
+            if (!plugin.RequiresAuthentication)
+            {
+                throw new ApplicationException("Plugin does not require authentication.");
+            }
+
+            var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var response = await restClient.PostAsync(
+                new Uri("http://" + plugin.Endpoint + "/actions/auth_url")
+            );
+
+            var externalAuthUrlDTO = JsonConvert.DeserializeObject<ExternalAuthUrlDTO>(response);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindOne(x => x.Plugin.Id == plugin.Id
+                        && x.UserDO.Id == user.Id);
+
+                if (authToken == null)
+                {
+                    var curPlugin = uow.PluginRepository.GetByKey(plugin.Id);
+                    var curAccount = uow.UserRepository.GetByKey(user.Id);
+
+                    authToken = new AuthorizationTokenDO()
+                    {
+                        UserDO = curAccount,
+                        Plugin = curPlugin,
+                        ExpiresAt = DateTime.Today.AddMonths(1),
+                        ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
+                    };
+
+                    uow.AuthorizationTokenRepository.Add(authToken);
+                }
+                else
+                {
+                    authToken.ExternalAccountId = null;
+                    authToken.Token = null;
+                    authToken.ExternalStateToken = externalAuthUrlDTO.ExternalStateToken;
+                }
+
+                uow.SaveChanges();
+            }
+
+            return externalAuthUrlDTO;
+        }
+
         /// <summary>
         /// Retrieve account
         /// </summary>
@@ -346,21 +434,19 @@ namespace Core.Services
         /// <returns></returns>
         public DockyardAccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null
-                && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
-
-                return curActionListDO
-                    .Process
-                    .ProcessTemplate
-                    .DockyardAccount;
+                // Can't follow guideline to init services inside constructor. 
+                // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                // Initialization of services in constructor will cause stack overflow
+                var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(curActionDO);
+                return processTemplate != null ? processTemplate.DockyardAccount : null;
             }
 
             return null;
 
         }
-
+        
         public void AddCrate(ActionDO curActionDO, List<CrateDTO> curCrateDTOLists)
         {
             if (curCrateDTOLists == null)
@@ -395,15 +481,15 @@ namespace Core.Services
             if (curCrateStorageDTO == null)
                 throw new ArgumentNullException("Parameter CrateStorageDTO is null.");
 
-            IEnumerable<CrateDTO> crateDTO = null;
+            IEnumerable<CrateDTO> crateDTOList = null;
 
-            crateDTO = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
+            crateDTOList = curCrateStorageDTO.CrateDTO.Where(crate => crate.Label == curLabel);
 
-            return crateDTO;
+            return crateDTOList;
         }
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
-        public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
+        public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
 
             var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
@@ -417,10 +503,9 @@ namespace Core.Services
             }
 
 
-            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curControlsCrate.Contents);
 
         }
-
 
         public async Task<ActionDTO> Activate(ActionDO curActionDO)
         {
@@ -472,10 +557,13 @@ namespace Core.Services
                 // Try to find AuthToken if plugin requires authentication.
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
-                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
-                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
-                    var dockyardAccount = actionList.ProcessNodeTemplate
-                        .ProcessTemplate.DockyardAccount;
+                    // Try to get owner's account for Action -> ProcessTemplate.
+                    // Can't follow guideline to init services inside constructor. 
+                    // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                    // Initialization of services in constructor will cause stack overflow
+                    var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(action);
+                    var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
+                    
                     if (dockyardAccount == null)
                     {
                         throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
@@ -511,6 +599,35 @@ namespace Core.Services
 
             return ObjectFactory.GetInstance<IPluginTransmitter>()
                 .CallActionAsync<TResult>(actionName, dto);
+        }
+
+        public void AddCrate(ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            AddCrate(curActionDO, new List<CrateDTO>() { curCrateDTO });
+        }
+
+        public void AddOrReplaceCrate(string label, ActionDO curActionDO, CrateDTO curCrateDTO)
+        {
+            var existingCratesWithLabelInActionDO = GetCratesByLabel(label, curActionDO.CrateStorageDTO());
+            if (!existingCratesWithLabelInActionDO.Any()) // no existing crates with user provided label found, then add the crate
+            {
+                AddCrate(curActionDO, curCrateDTO);
+            }
+            else
+            {
+                // Remove the existing crate for this label
+                _crate.RemoveCrateByLabel(curActionDO.CrateStorageDTO().CrateDTO, label);
+
+                // Add the newly created crate for this label to action's crate storage
+                AddCrate(curActionDO, curCrateDTO);
+            }
+        }
+
+        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key)
+        {
+           var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
+           var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");
+           return keys;
         }
     }
 }

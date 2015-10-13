@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using Data.Entities;
 using Data.States;
 
 namespace UtilitiesTesting.Fixtures
@@ -34,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.Id = 51;
             processNode.ParentProcessId = 49;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO1();
-            processNode.ProcessNodeTemplate.ActionLists.Add(TestActionList5());
+            processNode.ProcessNodeTemplate.Activities.AddRange(TestActionList5());
 
             return processNode;
         }
@@ -45,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
             processNode.Id = 51;
             processNode.ParentProcessId = 49;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO2();
-            processNode.ProcessNodeTemplate.ActionLists.Add(TestActionList5());
+            processNode.ProcessNodeTemplate.Activities.AddRange(TestActionList5());
 
             return processNode;
         }
@@ -58,9 +59,21 @@ namespace UtilitiesTesting.Fixtures
             processNode.ParentProcessId = 49;
             processNode.ProcessNodeTemplateId = 50;
             processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO3();
-            processNode.ProcessNodeTemplate.ActionLists.Add(TestActionList6());
+            processNode.ProcessNodeTemplate.Activities.AddRange(TestActionList6());
 
             return processNode;
+        }
+    }
+}
+
+
+public static class ListHelper
+{
+    public static void AddRange<T>(this IList<T> that, IEnumerable<T> items)
+    {
+        foreach (var item in items)
+        {
+            that.Add(item);
         }
     }
 }

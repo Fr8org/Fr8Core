@@ -19,12 +19,6 @@ namespace pluginExcel.Controllers
         public IHttpActionResult DiscoverPlugins()
         {
             var result = new List<ActivityTemplateDO>();
-            
-            var template = new ActivityTemplateDO
-            {
-                Name = "Extract_Data",
-                Version = "1"
-            };
 
             var plugin = new PluginDO
             {
@@ -33,8 +27,16 @@ namespace pluginExcel.Controllers
                 Name = "pluginExcel",
                 Version = "1"
             };
-            
-            template.Plugin = plugin;
+
+            var template = new ActivityTemplateDO
+            {
+                Name = "Extract_Data",
+                Version = "1",
+                Category = ActivityCategory.fr8_Receiver,
+                Plugin = plugin
+            };
+
+           
 
             result.Add(template);
 

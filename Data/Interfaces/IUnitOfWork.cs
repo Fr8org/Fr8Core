@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Repositories;
+using StructureMap;
 
 namespace Data.Interfaces
 {
@@ -47,7 +48,6 @@ namespace Data.Interfaces
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-        ActionListRepository ActionListRepository { get; }
 		  ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
@@ -60,9 +60,13 @@ namespace Data.Interfaces
 
         IMTObjectRepository MTObjectRepository { get; }
 
-        IMTOrganizationRepository MTOrganizationRepository  { get; }
+        IMTOrganizationRepository MTOrganizationRepository { get; }
+
+        IMTFieldTypeRepository MTFieldTypeRepository { get; }
 
         IMTDataRepository MTDataRepository { get; }
+
+        MultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
         IPluginRepository PluginRepository { get; }
         ISubscriptionRepository SubscriptionRepository { get; }
