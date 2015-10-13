@@ -84,11 +84,6 @@ namespace Core.Services
             return JsonConvert.DeserializeObject<T>(crate.Contents);
         }
 
-        public void UpdateStandardConfigurationControls(CrateDTO crate, StandardConfigurationControlsCM configurationControls)
-        {
-            crate.Contents = JsonConvert.SerializeObject(configurationControls);
-        }
-
         public StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate)
         {
             return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(crate.Contents, new ControlDefinitionDTOConverter());

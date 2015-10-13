@@ -179,6 +179,7 @@ namespace Core.Services
 
                 foreach (var downStreamActivity in downStreamActivities)
                 {
+                    var wasCrateStorageModified = false;
                     var crateStorage = downStreamActivity.CrateStorageDTO();
                     foreach (var crate in crateStorage.CrateDTO)
                     {
@@ -187,13 +188,27 @@ namespace Core.Services
                             var configurationControls = _crate.GetStandardConfigurationControls(crate);
                             foreach (var controlDefinitionDTO in configurationControls.Controls)
                             {
-                                controlDefinitionDTO.Value = "";
-                            }
+                                //TODO create an enum for this
+                                if (controlDefinitionDTO.Type == "FieldList")
+                                {
+                                    controlDefinitionDTO.Value = "[]";
+                                }
+                                else
+                                {
+                                    controlDefinitionDTO.Value = "";
+                                }
 
-                            _crate.UpdateStandardConfigurationControls(crate, configurationControls);
+                            }
+                            crate.Contents = JsonConvert.SerializeObject(configurationControls);
+                            wasCrateStorageModified = true;
                         }
                     }
-                    downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                    
+                    if (wasCrateStorageModified)
+                    {
+                        downStreamActivity.CrateStorage = JsonConvert.SerializeObject(crateStorage);
+                    }
+                    
                 }
                 uow.ActivityRepository.Remove(curAction);
                 uow.SaveChanges();

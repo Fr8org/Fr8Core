@@ -15,8 +15,6 @@ namespace Core.Interfaces
         T GetContents<T>(CrateDTO crate);
         StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate);
 
-        void UpdateStandardConfigurationControls(CrateDTO crate, StandardConfigurationControlsCM configurationControls);
-
         IEnumerable<JObject> GetElementByKey<TKey>(IEnumerable<CrateDTO> searchCrates, TKey key, string keyFieldName);
         CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
