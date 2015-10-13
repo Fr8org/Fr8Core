@@ -134,19 +134,26 @@ namespace Data.Interfaces.DataTransferObjects
         {
             if (fieldNames != null)
             {
-                //TODO implement this by searching at key value pairs in value
+                //key-value pairs are immutable, we need to crate a new List
+                var newList = new List<KeyValuePair<string, string>>();
                 var keyValuePairs = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(Value);
                 foreach (var keyValuePair in keyValuePairs)
                 {
                     if (fieldNames.Any(n => n == keyValuePair.Key))
                     {
-                        //keyValuePair.Value = "";
+                        newList.Add(new KeyValuePair<string, string>(keyValuePair.Key, ""));
+                    }
+                    else
+                    {
+                        newList.Add(keyValuePair);
                     }
                 }
-                throw new NotImplementedException();
+                Value = JsonConvert.SerializeObject(newList);
             }
-
-            Value = "[]";
+            else
+            {
+                Value = "[]";
+            }
         }
     }
 
