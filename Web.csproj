@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -201,8 +201,8 @@
       <HintPath>packages\NewRelic.Azure.WebSites.2.25.208.0\lib\NewRelic.Api.Agent.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -749,7 +749,7 @@
     <Content Include="Views\ExternalAuth\AuthSuccess.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
-    <None Include="Views\Home\docusign.cshtml" />
+    <None Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageFileListController.ts" />
