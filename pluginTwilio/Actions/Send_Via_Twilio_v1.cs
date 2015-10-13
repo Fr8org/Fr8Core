@@ -78,7 +78,7 @@ namespace pluginTwilio.Actions
                 },
                 Source = new FieldSourceDTO
                 {
-                    Label = "Available SMS Number",
+                    Label = "Available Fields",
                     ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                 }
             };
