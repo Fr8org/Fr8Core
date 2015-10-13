@@ -19,7 +19,6 @@ var dockyard;
                         field: '='
                     };
                     this.restrict = 'E';
-                    debugger;
                     FilePicker.prototype.link = function (scope, element, attrs) {
                         //Link function goes here
                     };
@@ -34,18 +33,15 @@ var dockyard;
                     };
                 }
                 FilePicker.prototype.OnFileUploadSuccess = function (fileDTO) {
-                    debugger;
                     this._$scope.selectedFile = fileDTO;
                     this._$scope.$root.$broadcast("fp-success", fileDTO);
                     this._$scope.field.value = fileDTO.cloudStorageUrl;
                     this._$scope.$root.$broadcast("onChange", new pca.ChangeEventArgs("select_file"));
                 };
                 FilePicker.prototype.OnFileUploadFail = function (status) {
-                    debugger;
                     alert('sorry file upload failed with status: ' + status);
                 };
                 FilePicker.prototype.OnFileSelect = function ($file) {
-                    debugger;
                     var onFileUploadSuccess = angular.bind(this, this.OnFileUploadSuccess);
                     var onFileUploadFail = angular.bind(this, this.OnFileUploadFail);
                     this.FileService.uploadFile($file).then(onFileUploadSuccess, onFileUploadFail);
