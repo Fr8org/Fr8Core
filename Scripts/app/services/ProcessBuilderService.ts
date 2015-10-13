@@ -48,10 +48,13 @@ module dockyard.services {
         getAvailableActivities: () => ng.resource.IResource<Array<interfaces.IActivityCategoryDTO>>;
     }
 
+    export interface IContainerService extends ng.resource.IResourceClass<interfaces.IContainerVM> {
+        getAll: (id: { id: number; }) => Array<interfaces.IContainerVM>;
+    }
+
     /*
         ProcessTemplateDTO CRUD service.
     */
-
 
     app.factory('ProcessTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IProcessTemplateService =>
         <IProcessTemplateService>$resource('/api/processTemplate/:id', { id: '@id' },
@@ -424,4 +427,17 @@ module dockyard.services {
         (CriteriaService, ProcessNodeTemplateService, $q) => {
             return new CriteriaServiceWrapper(CriteriaService, ProcessNodeTemplateService, $q)
         }]);
+
+    // Container Read service
+
+    app.factory('ContainerService', ['$resource', ($resource: ng.resource.IResourceService): IContainerService =>
+        <IContainerService>$resource('/api/processes/:id', { id: '@id' },
+            {
+                'getAll': {
+                    method: 'GET',
+                    isArray: true,
+                    url: '/api/processes/getall'
+                }
+            })
+    ]);
 }

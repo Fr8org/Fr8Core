@@ -5,7 +5,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States.Templates;
 using Data.Validations;
 using FluentValidation;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using System;
 
@@ -46,6 +45,8 @@ namespace Data.Entities
         public virtual ActivityDO NextActivity { get; set; }
 
         public string CrateStorage { get; set; }
+
+        //public virtual DockyardAccountDO DockyardAccount { get; set; }
 
         public CrateStorageDTO CrateStorageDTO()
         {

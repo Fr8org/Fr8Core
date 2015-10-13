@@ -84,6 +84,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ConvertUsing<StringToJSONConverter<CrateStorageDTO>>();
             Mapper.CreateMap<FileDO, FileDTO>();
 
+            Mapper.CreateMap<ProcessDO, ProcessDTO>();
         }
     }   
 }

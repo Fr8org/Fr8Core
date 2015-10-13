@@ -17,9 +17,12 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
 {
+    [Authorize]
     [RoutePrefix("api/processes")]
     public class ProcessController : ApiController
     {
@@ -70,6 +73,21 @@ namespace Web.Controllers
                 return Ok();
             }
         }
+
+        // TODO:: Implement the migration for the DockyardAccountID
+        [Route("getall")]
+        [HttpGet]
+        public IHttpActionResult GetAll(int? id = null, int? status = null)
+        {
+            var curProcess = _process.GetProcessOfAccount(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id, status);
+
+            if (curProcess.Any())
+            {
+                return Json(curProcess.Select(Mapper.Map<ProcessDTO>));
+            }
+            return Ok();
+        }
+
 
        //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
        //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.

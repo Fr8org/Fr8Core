@@ -4,6 +4,8 @@ module dockyard.interfaces {
 
     export interface IProcessTemplateVM extends ng.resource.IResource<model.ProcessTemplateDTO>, model.ProcessTemplateDTO { }
 
+    export interface IContainerVM extends ng.resource.IResource<model.ContainerDTO>, model.ContainerDTO { }
+
     export interface IReportFactVM extends ng.resource.IResource<model.FactDTO>, model.FactDTO { }
 
     export interface IReportIncidentVM extends ng.resource.IResource<model.IncidentDTO>, model.IncidentDTO { }
