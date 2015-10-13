@@ -1,6 +1,6 @@
 ﻿# Create an IIS website to server test harness page
 
-$directoryPath = "$env:SYSTEM_DEFAULTWORKINGDIRECTORY" 
+$directoryPath = "." 
 write-host "$($directoryPath)"
 cd $($directoryPath)
 
@@ -20,7 +20,7 @@ $testsuites = [xml](get-content .\chutzpah-results.xml)
  
 $anyFailures = $FALSE
 foreach ($testsuite in $testsuites.testsuites.testsuite) {
-    write-host " $($testsuite.name)"
+    Write-host " $($testsuite.name)"
     foreach ($testcase in $testsuite.testcase){
         $failed = $testcase.failure
         $time = $testsuite.time
