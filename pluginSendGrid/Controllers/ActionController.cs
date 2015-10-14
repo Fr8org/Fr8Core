@@ -25,9 +25,9 @@ namespace pluginSendGrid.Controllers
 
         [HttpPost]
         [Route("execute")]
-        public async Task<ActionDTO> Execute(ActionDataPackageDTO curActionDataPackage)
+        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
         {
-            return await (Task<ActionDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDataPackage.ActionDTO, curActionDataPackage);
+            return await (Task<PayloadDTO>)_basePluginController.HandleDockyardRequest(curPlugin, "Execute", curActionDTO);
         }
     }
 }
