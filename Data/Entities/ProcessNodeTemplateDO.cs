@@ -39,9 +39,9 @@ namespace Data.Entities
         public virtual List<ProcessNodeDO> ProcessNode { get; set; }
 
         [NotMapped]
-        public ProcessTemplateDO ProcessTemplate
+        public RouteDO Route
         {
-            get { return (ProcessTemplateDO) ParentActivity; }
+            get { return (RouteDO) ParentActivity; }
         }
 
         public override string ToString()
@@ -54,8 +54,8 @@ namespace Data.Entities
             base.BeforeSave();
 
             // TODO: commented out.
-            // TODO: Currently crashes on ProcessTemplate creation.
-            //       When ProcessTemplate is created, empty StartProcessNodeTemplate is created and assigned to ProcessTemplate.
+            // TODO: Currently crashes on Route creation.
+            //       When Route is created, empty StartProcessNodeTemplate is created and assigned to Route.
             //       Need to create another issue to fix that.
             // ProcessNodeTemplatetValidator curValidator = new ProcessNodeTemplatetValidator();
             // curValidator.ValidateAndThrow(this);

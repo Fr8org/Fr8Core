@@ -55,12 +55,12 @@ namespace DockyardTest.Controllers
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                //Add a template
-//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                var curRoute = FixtureData.TestRoute1();
+//                uow.RouteRepository.Add(curRoute);
 //                uow.SaveChanges();
 //
 //                _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-//                _curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+//                _curProcessNodeTemplate.ParentTemplateId = curRoute.Id;
 //                uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
 //                uow.SaveChanges();
 //

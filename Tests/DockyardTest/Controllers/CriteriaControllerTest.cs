@@ -44,17 +44,17 @@ namespace DockyardTest.Controllers
             {
 
                 //Add a template
-                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+                var curRoute = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(curRoute);
                 uow.SaveChanges();
 
                 //Add a template
-                var processTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute1();
+                uow.RouteRepository.Add(route);
                 uow.SaveChanges();
                 //Add a processnodetemplate to processtemplate 
                 _curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                _curProcessNodeTemplate.ParentActivityId = processTemplate.Id;
+                _curProcessNodeTemplate.ParentActivityId = route.Id;
                 uow.ProcessNodeTemplateRepository.Add(_curProcessNodeTemplate);
                 uow.SaveChanges();
 

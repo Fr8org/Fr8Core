@@ -12,15 +12,15 @@ namespace Data.Validations
             // Commented out by yakov.gnusin. Breaks when process is saved for the first time.
             // RuleFor(processDO => processDO.Id).GreaterThan(0).WithMessage("Id must be a positive int");
 
-            RuleFor(processDO => processDO.ProcessTemplateId).NotEmpty()
+            RuleFor(processDO => processDO.RouteId).NotEmpty()
                 .GreaterThan(0)
                 .Must(id => {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        return uow.ProcessTemplateRepository.GetByKey(id) != null;
+                        return uow.RouteRepository.GetByKey(id) != null;
                     }
                 })
-                .WithMessage("ProcessTemplateId must be a required foreign key for ProcessTemplate");
+                .WithMessage("RouteId must be a required foreign key for Route");
         }
     }
 }

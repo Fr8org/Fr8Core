@@ -25,9 +25,9 @@ namespace Data.Entities
         public string DockyardAccountId { get; set; }
 
         [Required]
-        [ForeignKey("ProcessTemplate")]
-        public int ProcessTemplateId { get; set; }
-        public virtual ProcessTemplateDO ProcessTemplate { get; set; }
+        [ForeignKey("Route")]
+        public int RouteId { get; set; }
+        public virtual RouteDO Route { get; set; }
 
         public virtual ICollection<ProcessNodeDO> ProcessNodes { get; set; }
             

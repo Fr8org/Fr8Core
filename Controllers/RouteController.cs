@@ -16,32 +16,32 @@ namespace Web.Controllers
 {
     [Authorize]
     [RoutePrefix("api/processTemplate")]
-    public class ProcessTemplateController : ApiController
+    public class RouteController : ApiController
     {
-        private readonly IProcessTemplate _processTemplate;
+        private readonly IRoute _route;
         
-        public ProcessTemplateController()
-            : this(ObjectFactory.GetInstance<IProcessTemplate>())
+        public RouteController()
+            : this(ObjectFactory.GetInstance<IRoute>())
         {
         }
 
         
 
-        public ProcessTemplateController(IProcessTemplate processTemplate)
+        public RouteController(IRoute route)
         {
-            _processTemplate = processTemplate;
+            _route = route;
         }
 
         
         [Route("full/{id:int}")]
-        [ResponseType(typeof(ProcessTemplateDTO))]
+        [ResponseType(typeof(RouteDTO))]
         [HttpGet]
-        public IHttpActionResult GetFullProcessTemplate(int id)
+        public IHttpActionResult GetFullRoute(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = uow.ProcessTemplateRepository.GetByKey(id);
-                var result = MapProcessTemplateToDTO(processTemplate, uow);
+                var route = uow.RouteRepository.GetByKey(id);
+                var result = MapRouteToDTO(route, uow);
 
                 return Ok(result);
             };
@@ -49,12 +49,12 @@ namespace Web.Controllers
 
         
         // Manual mapping method to resolve DO-1164.
-        private ProcessTemplateDTO MapProcessTemplateToDTO(ProcessTemplateDO curProcessTemplateDO, IUnitOfWork uow)
+        private RouteDTO MapRouteToDTO(RouteDO curRouteDO, IUnitOfWork uow)
         {
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
                 .Include(x => x.Activities)
-                .Where(x => x.ParentActivityId == curProcessTemplateDO.Id)
+                .Where(x => x.ParentActivityId == curRouteDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((ProcessNodeTemplateDO x) =>
@@ -66,13 +66,13 @@ namespace Web.Controllers
                     return pntDTO;
                 }).ToList();
 
-            ProcessTemplateDTO result = new ProcessTemplateDTO()
+            RouteDTO result = new RouteDTO()
             {
-                Description = curProcessTemplateDO.Description,
-                Id = curProcessTemplateDO.Id,
-                Name = curProcessTemplateDO.Name,
-                ProcessTemplateState = curProcessTemplateDO.ProcessTemplateState,
-                StartingProcessNodeTemplateId = curProcessTemplateDO.StartingProcessNodeTemplateId,
+                Description = curRouteDO.Description,
+                Id = curRouteDO.Id,
+                Name = curRouteDO.Name,
+                RouteState = curRouteDO.RouteState,
+                StartingProcessNodeTemplateId = curRouteDO.StartingProcessNodeTemplateId,
                 ProcessNodeTemplates = processNodeTemplateDTOList
             };
 
@@ -84,11 +84,11 @@ namespace Web.Controllers
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
+            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
 
-            if (curProcessTemplates.Any())
+            if (curRoutes.Any())
             {               
-                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
             }
             return Ok();
         }
@@ -97,19 +97,19 @@ namespace Web.Controllers
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curProcessTemplates = _processTemplate.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
+            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
 
-            if (curProcessTemplates.Any())
+            if (curRoutes.Any())
             {
-                // Return first record from curProcessTemplates, in case id parameter was provided.
+                // Return first record from curRoutes, in case id parameter was provided.
                 // User intentionally wants to receive a single JSON object in response.
                 if (id.HasValue)
                 {
-                    return Ok(Mapper.Map<ProcessTemplateOnlyDTO>(curProcessTemplates.First()));
+                    return Ok(Mapper.Map<RouteOnlyDTO>(curRoutes.First()));
                 }
 
                 // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curProcessTemplates.Select(Mapper.Map<ProcessTemplateOnlyDTO>));
+                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
             }
 
             //DO-840 Return empty view as having empty process templates are valid use case.
@@ -118,7 +118,7 @@ namespace Web.Controllers
 
         
         
-        public IHttpActionResult Post(ProcessTemplateOnlyDTO processTemplateDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(RouteOnlyDTO processTemplateDto, bool updateRegistrations = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -132,21 +132,21 @@ namespace Web.Controllers
                     return BadRequest("Some of the request data is invalid");
                 }
 
-                var curProcessTemplateDO = Mapper.Map<ProcessTemplateOnlyDTO, ProcessTemplateDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
+                var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = User.Identity.GetUserId();
-                curProcessTemplateDO.DockyardAccount = uow.UserRepository
+                curRouteDO.DockyardAccount = uow.UserRepository
                     .GetQuery()
                     .Single(x => x.Id == curUserId);
 
 
                 //this will return 0 on create operation because of not saved changes
-                _processTemplate.CreateOrUpdate(uow, curProcessTemplateDO, updateRegistrations);
+                _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
                 uow.SaveChanges();
-                processTemplateDto.Id = curProcessTemplateDO.Id;
+                processTemplateDto.Id = curRouteDO.Id;
                 //what a mess lets try this
-                /*curProcessTemplateDO.StartingProcessNodeTemplate.ProcessTemplate = curProcessTemplateDO;
+                /*curRouteDO.StartingProcessNodeTemplate.Route = curRouteDO;
                 uow.SaveChanges();
-                processTemplateDto.Id = curProcessTemplateDO.Id;*/
+                processTemplateDto.Id = curRouteDO.Id;*/
                 return Ok(processTemplateDto);
             }
         }
@@ -167,7 +167,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _processTemplate.Delete(uow, id);
+                _route.Delete(uow, id);
 
                 uow.SaveChanges();
                 return Ok(id);
@@ -183,16 +183,16 @@ namespace Web.Controllers
 
         
         [Route("activate")]
-        public IHttpActionResult Activate(ProcessTemplateDO curProcessTemplate)
+        public IHttpActionResult Activate(RouteDO curRoute)
         {
-            return Ok(_processTemplate.Activate(curProcessTemplate));
+            return Ok(_route.Activate(curRoute));
         }
 
         
         [Route("deactivate")]
-        public IHttpActionResult Deactivate(ProcessTemplateDO curProcessTemplate)
+        public IHttpActionResult Deactivate(RouteDO curRoute)
         {
-            return Ok(_processTemplate.Deactivate(curProcessTemplate));
+            return Ok(_route.Deactivate(curRoute));
         }
 
         

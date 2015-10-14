@@ -26,12 +26,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = FixtureData.TestProcessTemplate2();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestProcessNodeTemplateDO2();
-                sampleNodeTemplate.ParentActivityId = processTemplate.Id;
+                sampleNodeTemplate.ParentActivityId = route.Id;
 
                 // Create
                 _processNodeTemplate.Create(uow, sampleNodeTemplate);
@@ -49,12 +49,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = FixtureData.TestProcessTemplate2();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestProcessNodeTemplateDO2();
-                sampleNodeTemplate.ParentActivityId = processTemplate.Id;
+                sampleNodeTemplate.ParentActivityId = route.Id;
 
 
                 // Create
@@ -82,12 +82,12 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplate = FixtureData.TestProcessTemplate2();
-                uow.ProcessTemplateRepository.Add(processTemplate);
+                var route = FixtureData.TestRoute2();
+                uow.RouteRepository.Add(route);
 
                 //add processnode to process
                 var sampleNodeTemplate = FixtureData.TestProcessNodeTemplateDO2();
-                sampleNodeTemplate.ParentActivityId = processTemplate.Id;
+                sampleNodeTemplate.ParentActivityId = route.Id;
 
                 // Create
                 _processNodeTemplate.Create(uow, sampleNodeTemplate);

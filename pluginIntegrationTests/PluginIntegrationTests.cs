@@ -35,7 +35,7 @@ namespace pluginIntegrationTests
         private IDisposable _azureSqlServerServer;
 
         private DockyardAccountDO _testUserAccount;
-        private ProcessTemplateDO _processTemplateDO;
+        private RouteDO _processTemplateDO;
         private ProcessNodeTemplateDO _processNodeTemplateDO;
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
@@ -60,7 +60,7 @@ namespace pluginIntegrationTests
 
             _testUserAccount = FixtureData.TestUser1();
 
-            _processTemplateDO = FixtureData.ProcessTemplate_PluginIntegration();
+            _processTemplateDO = FixtureData.Route_PluginIntegration();
             _processTemplateDO.DockyardAccount = _testUserAccount;
 
             _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
@@ -97,7 +97,7 @@ namespace pluginIntegrationTests
                 uow.UserRepository.Add(_testUserAccount);
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
-                uow.ProcessTemplateRepository.Add(_processTemplateDO);
+                uow.RouteRepository.Add(_processTemplateDO);
                 uow.ProcessNodeTemplateRepository.Add(_processNodeTemplateDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
                 uow.ActivityRepository.Add(_processNodeTemplateDO);

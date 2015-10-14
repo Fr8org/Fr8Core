@@ -38,7 +38,7 @@ namespace DockyardTest.Integration
                 uow.SaveChanges();
 
                 //create a process template linked to that account
-             //   var healthProcessTemplate = CreateProcessTemplate_healthdemo(uow, registeredAccount);
+             //   var healthRoute = CreateRoute_healthdemo(uow, registeredAccount);
                 uow.SaveChanges();
 
                 string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
@@ -59,24 +59,24 @@ namespace DockyardTest.Integration
 
         //commented out because it was breaking the build.
 
-        //public ProcessTemplateDO CreateProcessTemplate_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
+        //public RouteDO CreateRoute_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
         //{
         //    var jsonSerializer = new global::Utilities.Serializers.Json.JsonSerializer();
 
-        //    var healthProcessTemplate = FixtureData.TestProcessTemplateHealthDemo();
-        //    healthProcessTemplate.DockyardAccount = registeredAccount;
-        //    uow.ProcessTemplateRepository.Add(healthProcessTemplate);
+        //    var healthRoute = FixtureData.TestRouteHealthDemo();
+        //    healthRoute.DockyardAccount = registeredAccount;
+        //    uow.RouteRepository.Add(healthRoute);
         //    uow.SaveChanges();
         //   healthProcessNodeTemplateDO.StartingProcessNodeTemplate = true;
-        //  healthProcessTemplate.ProcessNodeTemplates.Add(healthProcessNodeTemplateDO);
+        //  healthRoute.ProcessNodeTemplates.Add(healthProcessNodeTemplateDO);
 
         //    //add processnode to process
         //    var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
-        //    healthProcessNodeTemplateDO.ParentTemplateId = healthProcessTemplate.Id;
+        //    healthProcessNodeTemplateDO.ParentTemplateId = healthRoute.Id;
         //    uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
 
         //    //specify that this process node is the starting process node of the template
-        //    healthProcessTemplate.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+        //    healthRoute.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
 
         //    //add criteria to processnode
         //    var healthCriteria = FixtureData.TestCriteriaHealthDemo();
@@ -105,7 +105,7 @@ namespace DockyardTest.Integration
         //    healthWriteAction.CrateStorage = JsonConvert.SerializeObject(configuration_settings);
         //    uow.ActionRepository.Add(healthWriteAction);
 
-        //    return healthProcessTemplate;
+        //    return healthRoute;
         //}
     }
 }

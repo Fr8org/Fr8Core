@@ -211,7 +211,7 @@
     <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
-    <Compile Include="Interfaces\IProcessTemplate.cs" />
+    <Compile Include="Interfaces\IRoute.cs" />
     <Compile Include="Interfaces\ISubscription.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -288,7 +288,7 @@
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Process.cs" />
     <Compile Include="Services\ProcessNodeTemplate.cs" />
-    <Compile Include="Services\ProcessTemplate.cs" />
+    <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />

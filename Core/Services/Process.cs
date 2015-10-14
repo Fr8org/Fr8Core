@@ -22,7 +22,7 @@ namespace Core.Services
 
         private readonly IProcessNode _processNode;
         private readonly IActivity _activity;
-        private readonly IProcessTemplate _processTemplate;
+        private readonly IRoute _route;
 
         
         
@@ -31,7 +31,7 @@ namespace Core.Services
         {
             _processNode = ObjectFactory.GetInstance<IProcessNode>();
             _activity = ObjectFactory.GetInstance<IActivity>();
-            _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+            _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         
@@ -46,12 +46,12 @@ namespace Core.Services
         {
             var curProcessDO = ObjectFactory.GetInstance<ProcessDO>();
 
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
-                if (curProcessTemplate == null)
+                var curRoute = uow.RouteRepository.GetByKey(processTemplateId);
+                if (curRoute == null)
                     throw new ArgumentNullException("processTemplateId");
-                curProcessDO.ProcessTemplate = curProcessTemplate;
+                curProcessDO.Route = curRoute;
 
-                curProcessDO.Name = curProcessTemplate.Name;
+                curProcessDO.Name = curRoute.Name;
                 curProcessDO.ProcessState = ProcessState.Unstarted;
 
                 var crates = new List<CrateDTO>();
@@ -61,13 +61,13 @@ namespace Core.Services
                 }
                 curProcessDO.UpdateCrateStorageDTO(crates);
 
-            curProcessDO.CurrentActivity = _processTemplate.GetInitialActivity(uow, curProcessTemplate);
+            curProcessDO.CurrentActivity = _route.GetInitialActivity(uow, curRoute);
 
                 uow.ProcessRepository.Add(curProcessDO);
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.ProcessTemplate.StartingProcessNodeTemplate.Id;
+                var processNodeTemplateId = curProcessDO.Route.StartingProcessNodeTemplate.Id;
                 
             var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
@@ -79,11 +79,11 @@ namespace Core.Services
 
         
 
-        public async Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent)
+        public async Task Launch(RouteDO curRoute, CrateDTO curEvent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessDO = Create(uow, curProcessTemplate.Id, curEvent);
+                var curProcessDO = Create(uow, curRoute.Id, curEvent);
 
             if (curProcessDO.ProcessState == ProcessState.Failed || curProcessDO.ProcessState == ProcessState.Completed)
                 {

@@ -64,7 +64,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var processTemplateDO = uow.ProcessTemplateRepository.GetByKey(processTemplateId);
+                var processTemplateDO = uow.RouteRepository.GetByKey(processTemplateId);
                 await _process.Launch(processTemplateDO, null);
 
                 return Ok();

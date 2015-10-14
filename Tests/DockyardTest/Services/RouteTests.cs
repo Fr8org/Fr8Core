@@ -16,51 +16,51 @@ using System;
 namespace DockyardTest.Services
 {
     [TestFixture]
-    [Category("ProcessTemplate")]
-    public class ProcessTemplateTests : BaseTest
+    [Category("Route")]
+    public class RouteTests : BaseTest
     {
-        private IProcessTemplate _processTemplateService;
+        private IRoute _processTemplateService;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
+            _processTemplateService = ObjectFactory.GetInstance<IRoute>();
         }
 
 
 
         [Test]
-        public void ProcessTemplateService_GetProcessNodeTemplates()
+        public void RouteService_GetProcessNodeTemplates()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessTemplateDO = FixtureData.TestProcessTemplateWithProcessNodeTemplates();
-                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                var curRouteDO = FixtureData.TestRouteWithProcessNodeTemplates();
+                uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
 
-                var curProcessNodeTemplates = _processTemplateService.GetProcessNodeTemplates(curProcessTemplateDO);
+                var curProcessNodeTemplates = _processTemplateService.GetProcessNodeTemplates(curRouteDO);
 
                 Assert.IsNotNull(curProcessNodeTemplates);
-                Assert.AreEqual(curProcessTemplateDO.ProcessNodeTemplates.Count(), curProcessNodeTemplates.Count);
+                Assert.AreEqual(curRouteDO.ProcessNodeTemplates.Count(), curProcessNodeTemplates.Count);
             }
         }
 
         // MockDB has boken logic when working with collections of objects of derived types
-        // We add object to ProcessTemplateRepository but Delete logic recusively traverse Activity repository.
+        // We add object to RouteRepository but Delete logic recusively traverse Activity repository.
         [Ignore("MockDB behavior is incorrect")]
         [Test]
-        public void ProcessTemplateService_CanCreate()
+        public void RouteService_CanCreate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessTemplateDO = FixtureData.TestProcessTemplate_CanCreate();
+                var curRouteDO = FixtureData.TestRoute_CanCreate();
                 var curUserAccount = FixtureData.TestDockyardAccount1();
-                curProcessTemplateDO.DockyardAccount = curUserAccount;
-                _processTemplateService.CreateOrUpdate(uow, curProcessTemplateDO, false);
+                curRouteDO.DockyardAccount = curUserAccount;
+                _processTemplateService.CreateOrUpdate(uow, curRouteDO, false);
                 uow.SaveChanges();
 
-                var result = uow.ProcessTemplateRepository.GetByKey(curProcessTemplateDO.Id);
+                var result = uow.RouteRepository.GetByKey(curRouteDO.Id);
                 Assert.NotNull(result);
                 Assert.AreNotEqual(result.Id, 0);
                 Assert.NotNull(result.StartingProcessNodeTemplate);
@@ -70,19 +70,19 @@ namespace DockyardTest.Services
         }
 
         [Test]
-        public void ProcessTemplateService_CanDelete()
+        public void RouteService_CanDelete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curProcessTemplateDO = FixtureData.TestProcessTemplateWithStartingProcessNodeTemplates_ID0();
-                uow.ProcessTemplateRepository.Add(curProcessTemplateDO);
+                var curRouteDO = FixtureData.TestRouteWithStartingProcessNodeTemplates_ID0();
+                uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
 
-                Assert.AreNotEqual(curProcessTemplateDO.Id, 0);
+                Assert.AreNotEqual(curRouteDO.Id, 0);
 
-                var currProcessTemplateDOId = curProcessTemplateDO.Id;
-                _processTemplateService.Delete(uow, curProcessTemplateDO.Id);
-                var result = uow.ProcessTemplateRepository.GetByKey(currProcessTemplateDOId);
+                var currRouteDOId = curRouteDO.Id;
+                _processTemplateService.Delete(uow, curRouteDO.Id);
+                var result = uow.RouteRepository.GetByKey(currRouteDOId);
 
                 Assert.NotNull(result);
             }
@@ -93,19 +93,19 @@ namespace DockyardTest.Services
         [Ignore("ActionState will be removed and is not used")]
         public void Activate_HasParentActivity_SetActionStateActive()
         {
-            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
+            var curRouteDO = FixtureData.TestRoute3();
             var _action = new Mock<IAction>();
             _action
                 .Setup(c => c.Activate(It.IsAny<ActionDO>()))
                 .Returns(Task.FromResult(new ActionDTO()));
             ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(_action.Object));
-            _processTemplateService = ObjectFactory.GetInstance<IProcessTemplate>();
+            _processTemplateService = ObjectFactory.GetInstance<IRoute>();
 
-            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            string result = _processTemplateService.Activate(curRouteDO);
 
 
             Assert.AreEqual(result, "success");
-            var activities = curProcessTemplateDO.ProcessNodeTemplates.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
+            var activities = curRouteDO.ProcessNodeTemplates.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
             foreach (ActionDO curActionDO in activities)
             {
                 Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
@@ -116,19 +116,19 @@ namespace DockyardTest.Services
 //        [ExpectedException(typeof(ArgumentNullException))]
 //        public void Activate_ProcessNodeTemplatesIsNULL_ThrowsArgumentNULLException()
 //        {
-//            var curProcessTemplateDO = FixtureData.TestProcessTemplate3();
-//            curProcessTemplateDO.ProcessNodeTemplates = null;
+//            var curRouteDO = FixtureData.TestRoute3();
+//            curRouteDO.ProcessNodeTemplates = null;
 //
-//            string result = _processTemplateService.Activate(curProcessTemplateDO);
+//            string result = _processTemplateService.Activate(curRouteDO);
 //        }
 
         [Test]
         [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
         public void Activate_NoMatchingParentActivityId_ReturnsNoAction()
         {
-            var curProcessTemplateDO = FixtureData.TestProcessTemplateNoMatchingParentActivity();
+            var curRouteDO = FixtureData.TestRouteNoMatchingParentActivity();
             
-            string result = _processTemplateService.Activate(curProcessTemplateDO);
+            string result = _processTemplateService.Activate(curRouteDO);
 
             Assert.AreEqual(result, "no action");
         }

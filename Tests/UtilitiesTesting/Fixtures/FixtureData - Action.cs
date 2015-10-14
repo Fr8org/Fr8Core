@@ -263,15 +263,15 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
 
 
-            var processTemplateDo = TestProcessTemplate2();
+            var processTemplateDo = TestRoute2();
 
             var processDo = new ProcessDO()
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
                 ProcessState = 1,
-                ProcessTemplateId = processTemplateDo.Id,
-                ProcessTemplate = processTemplateDo
+                RouteId = processTemplateDo.Id,
+                Route = processTemplateDo
             };
 
             var processNodeTemplateDo = new ProcessNodeTemplateDO()
@@ -342,12 +342,12 @@ namespace UtilitiesTesting.Fixtures
             var actionTemplate = ActionTemplate();
             //string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
 
-            var processTemplateDo = new ProcessTemplateDO()
+            var processTemplateDo = new RouteDO()
             {
                 Id = 1,
                 Name = "A",
                 Description = "B",
-                ProcessTemplateState = ProcessTemplateState.Active
+                RouteState = RouteState.Active
             };
 
             var processDo = new ProcessDO()
@@ -355,8 +355,8 @@ namespace UtilitiesTesting.Fixtures
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
                 ProcessState = 1,
-                ProcessTemplateId = processTemplateDo.Id,
-                ProcessTemplate = processTemplateDo
+                RouteId = processTemplateDo.Id,
+                Route = processTemplateDo
             };
 
             var processNodeTemplateDo = new ProcessNodeTemplateDO()
@@ -403,27 +403,27 @@ namespace UtilitiesTesting.Fixtures
 
 
 
-            var curProcessTemplateDO = new ProcessTemplateDO
+            var curRouteDO = new RouteDO
             {
                 Id = 1,
                 Description = "descr 1",
                 Name = "template1",
-                ProcessTemplateState = ProcessTemplateState.Active,
+                RouteState = RouteState.Active,
                 DockyardAccount = FixtureData.TestDockyardAccount1()
             };
 
             var curProcessDO = new ProcessDO()
             {
                 Id = 1,
-                ProcessTemplateId = 1,
-                ProcessTemplate = curProcessTemplateDO
+                RouteId = 1,
+                Route = curRouteDO
             };
 
 
             var processNodeTemplate = new ProcessNodeTemplateDO(true)
             {
-                ParentActivity = curProcessTemplateDO,
-                ParentActivityId = curProcessTemplateDO.Id,
+                ParentActivity = curRouteDO,
+                ParentActivityId = curRouteDO.Id,
             };
 
             ActionDO curActionDO = new ActionDO();
@@ -761,7 +761,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 CrateStorage = EnvelopeIdCrateJson(),
-                ProcessTemplateId = TestProcessTemplate2().Id,
+                RouteId = TestRoute2().Id,
                 ProcessState = 1
             };
 

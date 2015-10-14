@@ -326,7 +326,7 @@
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
     <Compile Include="Controllers\ProcessNodeTemplateController.cs" />
-    <Compile Include="Controllers\ProcessTemplateController.cs" />
+    <Compile Include="Controllers\RouteController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\External\DocuSign\DocusignAuthCallbackController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />

@@ -17,8 +17,8 @@ namespace Data.Entities
         public int? ProcessNodeTemplateId { get; set; }
 
         /// <summary>
-        /// Reference to parent ProcessTemplateNode.
-        /// Every Criteria must belong to a single ProcessTemplateNode.
+        /// Reference to parent RouteNode.
+        /// Every Criteria must belong to a single RouteNode.
         /// </summary>
         public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
         

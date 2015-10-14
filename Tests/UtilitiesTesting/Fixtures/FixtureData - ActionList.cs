@@ -87,7 +87,7 @@ namespace UtilitiesTesting.Fixtures
                 CrateStorage = EnvelopeIdCrateJson(),
                 ProcessState = 1,
                 Name = "test name",
-                ProcessTemplateId = TestProcessTemplateHealthDemo().Id
+                RouteId = TestRouteHealthDemo().Id
             };
 //
             return new ActionListDO

@@ -56,22 +56,22 @@ namespace Data.Infrastructure.AutoMapper
 //                .ForMember(x => x.ActionListType, opts => opts.ResolveUsing(x => x.ActionListType))
 //                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name));
 
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateOnlyDTO>();
+            Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
 
             Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
-                .ForMember(x => x.ParentActivityId, opts => opts.ResolveUsing(x => x.ProcessTemplateId));
+                .ForMember(x => x.ParentActivityId, opts => opts.ResolveUsing(x => x.RouteId));
             Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
-                .ForMember(x => x.ProcessTemplateId, opts => opts.ResolveUsing(x => x.ParentActivityId));
+                .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentActivityId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
                 .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<ProcessTemplateDO, ProcessTemplateDTO>()
-                .ConvertUsing<ProcessTemplateDOFullConverter>();
+            Mapper.CreateMap<RouteDO, RouteDTO>()
+                .ConvertUsing<RouteDOFullConverter>();
 
-            Mapper.CreateMap<ProcessTemplateOnlyDTO, ProcessTemplateDTO>();
+            Mapper.CreateMap<RouteOnlyDTO, RouteDTO>();
           //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
             Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
 

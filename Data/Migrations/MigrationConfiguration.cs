@@ -81,7 +81,7 @@ namespace Data.Migrations
             SeedInstructions(uow);
         }
 
-        private static void AddProcessTemplate(IUnitOfWork uow)
+        private static void AddRoute(IUnitOfWork uow)
         {
         }
 
@@ -135,8 +135,8 @@ namespace Data.Migrations
 
         private static void AddProcessDOForTestingApi(IUnitOfWork uow)
         {
-            new ProcessTemplateBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
-            new ProcessTemplateBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
+            new RouteBuilder("TestTemplate{0B6944E1-3CC5-45BA-AF78-728FFBE57358}").AddCrate(GenerateInitialEventCrate()).Store(uow);
+            new RouteBuilder("TestTemplate{77D78B4E-111F-4F62-8AC6-6B77459042CB}")
                 .AddCrate(GenerateInitialEventCrate())
                 .AddCrate(new CrateDTO
                 {
