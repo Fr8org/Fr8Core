@@ -294,6 +294,27 @@ namespace PluginBase.BaseClasses
             {
                 return ConfigurationRequestType.Followup;
             }
+
+        }
+
+        protected CrateDTO PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
+        {
+            ControlDefinitionDTO[] controls =  
+            {
+                new TextBlockControlDefinitionDTO()
+                {
+                    Label = fieldLabel,
+                    Value = errorMessage,
+                    CssClass = "well well-lg"
+                    
+                }
+            };
+
+            var crateControls = _crate.CreateStandardConfigurationControlsCrate(
+                        "Configuration_Controls", controls
+                    );
+
+            return crateControls;
         }
 
         /// <summary>

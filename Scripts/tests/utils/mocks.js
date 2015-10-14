@@ -24,13 +24,17 @@ var dockyard;
             */
             var ActionServiceMock = (function () {
                 function ActionServiceMock($q) {
-                    this.save = jasmine.createSpy('save').and.callFake(function () {
-                        var def = $q.defer();
-                        def.resolve();
-                        def.promise.$promise = def.promise;
-                        return def.promise;
-                    });
                     this.get = jasmine.createSpy('get');
+                    this.save = jasmine.createSpy('save');
+                    this.configure = jasmine.createSpy('configure');
+                    if ($q) {
+                        this.save.and.callFake(function () {
+                            var def = $q.defer();
+                            def.resolve();
+                            def.promise.$promise = def.promise;
+                            return def.promise;
+                        });
+                    }
                 }
                 return ActionServiceMock;
             })();

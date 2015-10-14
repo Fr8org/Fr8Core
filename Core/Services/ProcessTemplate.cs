@@ -16,8 +16,8 @@ namespace Core.Services
 {
     public class ProcessTemplate : IProcessTemplate
     {
-        
-        
+
+
         // private readonly IProcess _process;
         private readonly IProcessNodeTemplate _processNodeTemplate;
         private readonly DockyardAccount _dockyardAccount;
@@ -25,8 +25,8 @@ namespace Core.Services
         private readonly IActivity _activity;
         private readonly ICrate _crate;
 
-        
-        
+
+
 
         public ProcessTemplate()
         {
@@ -37,7 +37,7 @@ namespace Core.Services
             _crate = ObjectFactory.GetInstance<ICrate>();
         }
 
-        
+
 
         public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
@@ -62,7 +62,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
         {
@@ -90,7 +90,7 @@ namespace Core.Services
             // return ptdo.Id;
         }
 
-        
+
 
         public void Delete(IUnitOfWork uow, int id)
         {
@@ -104,7 +104,7 @@ namespace Core.Services
             _activity.Delete(uow, curProcessTemplate);
         }
 
-        
+
 
         public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
         {
@@ -119,7 +119,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         private IEnumerable<TActivity> EnumerateActivities<TActivity>(ProcessTemplateDO curProcessTemplate, bool allowOnlyOneNoteTemplate = true)
         {
@@ -144,7 +144,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public string Activate(ProcessTemplateDO curProcessTemplate)
         {
@@ -172,7 +172,7 @@ namespace Core.Services
             return result;
         }
 
-        
+
 
         public string Deactivate(ProcessTemplateDO curProcessTemplate)
         {
@@ -195,38 +195,38 @@ namespace Core.Services
             return result;
         }
 
-        
+
         // TODO: like some other methods, this assumes that there is only 1 action list in use. This is dangerous 
         //because the database allows N Activities.
         //we're waiting to reconcile this until we get some visibility into how the product is used by users
-//        public ActionListDO GetActionList(IUnitOfWork uow, int id)
-//        {
-//            // Get action list by process template first 
-//            var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
-//
-//            if (currentProcessTemplate.Length == 0)
-//            {
-//                return null;
-//            }
-//
-//            if (currentProcessTemplate.Length > 1)
-//            {
-//                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
-//            }
-//
-//            var startingProcessTemplate = currentProcessTemplate[0].StartingProcessNodeTemplate;
-//            if (startingProcessTemplate == null)
-//            {
-//                return null;
-//            }
-//
-//            // Get Activities related to the ProcessTemplate
-//            var curActionList = startingProcessTemplate.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
-//            return curActionList;
-//
-//        }
+        //        public ActionListDO GetActionList(IUnitOfWork uow, int id)
+        //        {
+        //            // Get action list by process template first 
+        //            var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
+        //
+        //            if (currentProcessTemplate.Length == 0)
+        //            {
+        //                return null;
+        //            }
+        //
+        //            if (currentProcessTemplate.Length > 1)
+        //            {
+        //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
+        //            }
+        //
+        //            var startingProcessTemplate = currentProcessTemplate[0].StartingProcessNodeTemplate;
+        //            if (startingProcessTemplate == null)
+        //            {
+        //                return null;
+        //            }
+        //
+        //            // Get Activities related to the ProcessTemplate
+        //            var curActionList = startingProcessTemplate.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+        //            return curActionList;
+        //
+        //        }
 
-        
+
         /// <summary>
         /// Returns all actions created within a Process Template.
         /// </summary>
@@ -245,7 +245,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportCM curEventReport)
         {
@@ -266,7 +266,7 @@ namespace Core.Services
 
         }
 
-        
+
 
         public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
             EventReportCM curEventReport)
@@ -292,7 +292,9 @@ namespace Core.Services
                         //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
                         EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
 
-                        bool hasEvents = subscriptionsList.Subscriptions.Any(events => curEventReport.EventNames.ToUpper().Trim().Contains(events.ToUpper()));
+                        bool hasEvents = subscriptionsList.Subscriptions
+                            .Where(events => curEventReport.EventNames.ToUpper().Trim().Replace(" ", "").Contains(events.ToUpper().Trim().Replace(" ", "")))
+                            .Any();
 
                         if (hasEvents)
                         {
@@ -305,7 +307,7 @@ namespace Core.Services
 
         }
 
-        
+
 
         public ActivityDO GetFirstActivity(int curProcessTemplateId)
         {
@@ -315,7 +317,7 @@ namespace Core.Services
             }
         }
 
-        
+
 
         public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
         {

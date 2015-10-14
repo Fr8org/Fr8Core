@@ -142,6 +142,12 @@ namespace Data.Infrastructure
 
         public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
         public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
+
+        public delegate void EventTwilioSMSSentHandler(string number, string message);
+        public static event EventTwilioSMSSentHandler EventTwilioSMSSent;
+
+        public delegate void IncidentTwilioSMSSendFailureHandler(string number, string message, string errorMsg);
+        public static event IncidentTwilioSMSSendFailureHandler IncidentTwilioSMSSendFailure;
         #region Method
 
 
@@ -431,6 +437,17 @@ namespace Data.Infrastructure
             if (handler != null) handler(process);
         }
 
+        public static void TwilioSMSSent(string number, string message)
+        {
+            var handler = EventTwilioSMSSent;
+            if (handler != null) handler(number, message);
+        }
+
+        public static void TwilioSMSSendFailure(string number, string message, string errorMsg)
+        {
+            var handler = IncidentTwilioSMSSendFailure;
+            if (handler != null) handler(number, message, errorMsg);
+        }
         #endregion
 
         

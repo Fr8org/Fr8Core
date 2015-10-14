@@ -153,6 +153,7 @@
     <Compile Include="pluginDocuSign\Infrastructure\DocusignConnectParserTests.cs" />
     <Compile Include="pluginDocuSign\Infrastructure\DocuSignTemplateTests.cs" />
     <Compile Include="pluginDocuSign\Services\EnvelopeServiceTests.cs" />
+    <Compile Include="PluginTwilioTests\Actions\Send_Via_Twilio_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PluginAzureSqlServerTests\TestDbHelper.cs" />
     <Compile Include="BaseTest.cs" />
@@ -182,13 +183,13 @@
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>pluginDocuSign</Name>
     </ProjectReference>
-    <ProjectReference Include="..\pluginSalesforce\pluginSalesforce.csproj">
-      <Project>{85cb0215-96df-4c38-a022-1be6c952813b}</Project>
-      <Name>pluginSalesforce</Name>
-    </ProjectReference>
     <ProjectReference Include="..\pluginExcel\pluginExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>pluginExcel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pluginTwilio\pluginTwilio.csproj">
+      <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
+      <Name>pluginTwilio</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tests\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>

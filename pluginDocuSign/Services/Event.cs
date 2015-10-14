@@ -43,7 +43,7 @@ namespace pluginDocuSign.Services
                 EventNames = "Envelope" + curDocuSignEnvelopeInfo.EnvelopeStatus.Status,
                 ProcessDOId = "",
                 EventPayload = ExtractEventPayload(curExternalEvents).ToList(),
-                ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
+                ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
             };
 
             //prepare the event report
@@ -86,10 +86,17 @@ namespace pluginDocuSign.Services
                 curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
                 curEvents.Add(new DocuSignEventDO
                 {
-                    ExternalEventType =
-                        DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
+                    ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
                     EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
-                    RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id
+                    RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
+                    DocuSignObject = "Envelope",
+                    Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
+                    CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
+                    SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
+                    DeliveredDate = docuSignEnvelopeInformation.EnvelopeStatus.DeliveredDate,
+                    CompletedDate = docuSignEnvelopeInformation.EnvelopeStatus.CompletedDate,
+                    Email = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
+                    EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString()
                 });
             }
             catch (ArgumentException)
@@ -119,6 +126,17 @@ namespace pluginDocuSign.Services
             returnList.Add(new KeyValuePair<string,string>("EnvelopeId",curEvent.EnvelopeId));
             returnList.Add(new KeyValuePair<string,string>("ExternalEventType",curEvent.ExternalEventType.ToString()));
             returnList.Add(new KeyValuePair<string,string>("RecipientId",curEvent.RecipientId));
+
+            returnList.Add(new KeyValuePair<string, string>("Object", curEvent.DocuSignObject));
+            returnList.Add(new KeyValuePair<string, string>("Status", curEvent.Status));
+            returnList.Add(new KeyValuePair<string, string>("CreateDate", curEvent.CreateDate));
+            returnList.Add(new KeyValuePair<string, string>("SentDate", curEvent.SentDate));
+
+            returnList.Add(new KeyValuePair<string, string>("DeliveredDate", curEvent.DeliveredDate));
+            returnList.Add(new KeyValuePair<string, string>("CompletedDate", curEvent.CompletedDate));
+            returnList.Add(new KeyValuePair<string, string>("Email", curEvent.Email));
+            returnList.Add(new KeyValuePair<string, string>("EventId", curEvent.EventId));
+
             return returnList;
             }
 
