@@ -260,7 +260,6 @@
     <Compile Include="Services\DockyardAccountTest.cs" />
     <Compile Include="Services\ActionDTO.cs" />
     <Compile Include="Services\ActionServiceTests.cs" />
-    <Compile Include="Services\CriteriaServiceTests.cs" />
     <Compile Include="Services\DockyardEventTests.cs" />
     <Compile Include="Services\IPluginClient.cs" />
     <Compile Include="Services\FileTests.cs" />

@@ -24,6 +24,10 @@ module dockyard.tests.controller {
             _$http: ng.IHttpService,
             _urlPrefix: string;
 
+        it("should just be true (for testing).", () => {
+            expect(true).toBeTruthy();
+        });
+
         //TODO
         //beforeEach(() => {
         //    inject(($controller, $rootScope, $q, $http) => {

@@ -272,15 +272,7 @@ namespace DockyardTest.Controllers
                 Assert.AreEqual(processTemplateDto.SubscribedExternalEvents, externalEventList);
             }
         }
-
-        [Test, Ignore("Ignored as part of External Event Type removal. This is handled in V2 Event Handling mechanism.")]
-        public void ProcessController_CanGetExternalEventList()
-        {
-            ProcessTemplateController ptc = CreateProcessTemplateController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var triggerSettings = ptc.GetTriggerSettings() as OkNegotiatedContentResult<List<ExternalEventDTO>>;
-            Assert.AreEqual(4, triggerSettings.Content.Count);
-        }
-
+     
         [Test]
         public void ShouldGetFullProcessTemplate()
         {
