@@ -233,7 +233,7 @@
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
-    <Compile Include="Controllers\ProcessTemplateControllerTests.cs" />
+    <Compile Include="Controllers\RouteControllerTests.cs" />
     <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
@@ -266,7 +266,7 @@
     <Compile Include="Services\ProcessNodeTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
     <Compile Include="Services\ProcessNodeTemplateTests.cs" />
-    <Compile Include="Services\ProcessTemplateTests.cs" />
+    <Compile Include="Services\RouteTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />

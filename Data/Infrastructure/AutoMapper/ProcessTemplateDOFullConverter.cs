@@ -8,20 +8,20 @@ using Data.Interfaces.DataTransferObjects;
 namespace Data.Infrastructure.AutoMapper
 {
     /// <summary>
-    /// AutoMapper converter to convert ProcessTemplateDO to FullProcessTemplateDTO.
+    /// AutoMapper converter to convert RouteDO to FullRouteDTO.
     /// </summary>
-    public class ProcessTemplateDOFullConverter
-        : ITypeConverter<ProcessTemplateDO, ProcessTemplateDTO>
+    public class RouteDOFullConverter
+        : ITypeConverter<RouteDO, RouteDTO>
     {
         public const string UnitOfWork_OptionsKey = "UnitOfWork";
 
 
-        public ProcessTemplateDTO Convert(ResolutionContext context)
+        public RouteDTO Convert(ResolutionContext context)
         {
-            var processTemplate = (ProcessTemplateDO)context.SourceValue;
+            var route = (RouteDO)context.SourceValue;
             var uow = (IUnitOfWork)context.Options.Items[UnitOfWork_OptionsKey];
 
-            if (processTemplate == null)
+            if (route == null)
             {
                 return null;
             }
@@ -29,7 +29,7 @@ namespace Data.Infrastructure.AutoMapper
             var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
                 .GetQuery()
                 .Include(x => x.Activities)
-                .Where(x => x.ParentActivityId == processTemplate.Id)
+                .Where(x => x.ParentActivityId == route.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
                 .Select((ProcessNodeTemplateDO x) =>
@@ -39,7 +39,7 @@ namespace Data.Infrastructure.AutoMapper
                     return pntDTO;
                 }).ToList();
 
-            var result = Mapper.Map<ProcessTemplateDTO>(Mapper.Map<ProcessTemplateOnlyDTO>(processTemplate));
+            var result = Mapper.Map<RouteDTO>(Mapper.Map<RouteOnlyDTO>(route));
             result.ProcessNodeTemplates = processNodeTemplateDTOList;
 
             return result;

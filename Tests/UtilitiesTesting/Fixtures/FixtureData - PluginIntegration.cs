@@ -20,14 +20,14 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ProcessTemplateDO ProcessTemplate_PluginIntegration()
+        public static RouteDO Route_PluginIntegration()
         {
-            return new ProcessTemplateDO()
+            return new RouteDO()
             {
                 Id=1000,
-                Name = "Test ProcessTemplate Name",
-                Description = "Test ProcessTemplate Description",
-                ProcessTemplateState = ProcessTemplateState.Active,
+                Name = "Test Route Name",
+                Description = "Test Route Description",
+                RouteState = RouteState.Active,
             };
         }
 

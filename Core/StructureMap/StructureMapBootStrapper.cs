@@ -95,7 +95,7 @@ namespace Core.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
+                For<IRoute>().Use<Route>();
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
                 For<IAction>().Use<Action>();
@@ -150,7 +150,7 @@ namespace Core.StructureMap
 					 For<IActivity>().Use<Activity>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                For<IProcessTemplate>().Use<ProcessTemplate>();
+                For<IRoute>().Use<Route>();
                 For<IProcessNodeTemplate>().Use<ProcessNodeTemplate>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));

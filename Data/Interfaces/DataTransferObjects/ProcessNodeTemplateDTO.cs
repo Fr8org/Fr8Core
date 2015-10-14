@@ -10,7 +10,7 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public int Id { get; set; }
 
-        public int? ProcessTemplateId { get; set; }
+        public int? RouteId { get; set; }
 
         public string Name { get; set; }
 

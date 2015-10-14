@@ -14,7 +14,7 @@ using StructureMap;
 
 namespace Core.Services
 {
-    public class ProcessTemplate : IProcessTemplate
+    public class Route : IRoute
     {
 
 
@@ -28,7 +28,7 @@ namespace Core.Services
 
 
 
-        public ProcessTemplate()
+        public Route()
         {
             _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
@@ -39,51 +39,51 @@ namespace Core.Services
 
 
 
-        public IList<ProcessTemplateDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<RouteDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
         {
             if (userId == null)
                 throw new ApplicationException("UserId must not be null");
 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not ProcessTemplates
+                var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not Routes
 
                 if (isAdmin)
                 {
                     queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
+                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
                 }
 
                 queryableRepo = (id == null
                     ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
                     : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
                 return (status == null
-                    ? queryableRepo : queryableRepo.Where(pt => pt.ProcessTemplateState == status)).ToList();
+                    ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
             }
         }
 
 
 
-        public void CreateOrUpdate(IUnitOfWork uow, ProcessTemplateDO ptdo, bool updateChildEntities)
+        public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
             if (creating)
             {
-                ptdo.ProcessTemplateState = ProcessTemplateState.Inactive;
+                ptdo.RouteState = RouteState.Inactive;
                 var processNodeTemplate = new ProcessNodeTemplateDO(true);
                 processNodeTemplate.ParentActivity = ptdo;
                 ptdo.Activities.Add(processNodeTemplate);
 
-                uow.ProcessTemplateRepository.Add(ptdo);
+                uow.RouteRepository.Add(ptdo);
                 _processNodeTemplate.Create(uow, ptdo.StartingProcessNodeTemplate);
             }
             else
             {
-                var curProcessTemplate = uow.ProcessTemplateRepository.GetByKey(ptdo.Id);
-                if (curProcessTemplate == null)
+                var curRoute = uow.RouteRepository.GetByKey(ptdo.Id);
+                if (curRoute == null)
                     throw new EntityNotFoundException();
-                curProcessTemplate.Name = ptdo.Name;
-                curProcessTemplate.Description = ptdo.Description;
+                curRoute.Name = ptdo.Name;
+                curRoute.Description = ptdo.Description;
                 // ChildEntities update code has been deleted by demel 09/28/2015
             }
             //uow.SaveChanges(); we don't want to save changes here. we want the calling method to get to decide when this uow should be saved as a group
@@ -94,38 +94,38 @@ namespace Core.Services
 
         public void Delete(IUnitOfWork uow, int id)
         {
-            var curProcessTemplate = uow.ProcessTemplateRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
+            var curRoute = uow.RouteRepository.GetQuery().SingleOrDefault(pt => pt.Id == id);
 
-            if (curProcessTemplate == null)
+            if (curRoute == null)
             {
-                throw new EntityNotFoundException<ProcessTemplateDO>(id);
+                throw new EntityNotFoundException<RouteDO>(id);
             }
 
-            _activity.Delete(uow, curProcessTemplate);
+            _activity.Delete(uow, curRoute);
         }
 
 
 
-        public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO)
+        public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(RouteDO curRouteDO)
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var queryableRepo = unitOfWork.ProcessTemplateRepository.GetQuery()
+                var queryableRepo = unitOfWork.RouteRepository.GetQuery()
                     .Include("ProcessNodeTemplates")
-                    .Where(x => x.Id == curProcessTemplateDO.Id);
+                    .Where(x => x.Id == curRouteDO.Id);
 
-                return queryableRepo.SelectMany<ProcessTemplateDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
+                return queryableRepo.SelectMany<RouteDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
                     .ToList();
             }
         }
 
 
 
-        private IEnumerable<TActivity> EnumerateActivities<TActivity>(ProcessTemplateDO curProcessTemplate, bool allowOnlyOneNoteTemplate = true)
+        private IEnumerable<TActivity> EnumerateActivities<TActivity>(RouteDO curRoute, bool allowOnlyOneNoteTemplate = true)
         {
             bool firstNodeTemplate = true;
 
-            foreach (ProcessNodeTemplateDO template in curProcessTemplate.ProcessNodeTemplates)
+            foreach (ProcessNodeTemplateDO template in curRoute.ProcessNodeTemplates)
             {
                 if (allowOnlyOneNoteTemplate && !firstNodeTemplate)
                 {
@@ -146,16 +146,16 @@ namespace Core.Services
 
 
 
-        public string Activate(ProcessTemplateDO curProcessTemplate)
+        public string Activate(RouteDO curRoute)
         {
-            if (curProcessTemplate.ProcessNodeTemplates == null)
+            if (curRoute.ProcessNodeTemplates == null)
             {
                 throw new ArgumentNullException("Parameter ProcessNodeTemplates is null.");
             }
 
             string result = "no action";
 
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curProcessTemplate))
+            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
             {
                 try
                 {
@@ -174,11 +174,11 @@ namespace Core.Services
 
 
 
-        public string Deactivate(ProcessTemplateDO curProcessTemplate)
+        public string Deactivate(RouteDO curRoute)
         {
             string result = "no action";
 
-            foreach (var curActionDO in EnumerateActivities<ActionDO>(curProcessTemplate))
+            foreach (var curActionDO in EnumerateActivities<ActionDO>(curRoute))
             {
                 try
                 {
@@ -202,26 +202,26 @@ namespace Core.Services
         //        public ActionListDO GetActionList(IUnitOfWork uow, int id)
         //        {
         //            // Get action list by process template first 
-        //            var currentProcessTemplate = uow.ProcessTemplateRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
+        //            var currentRoute = uow.RouteRepository.GetQuery().Where(pt => pt.Id == id).ToArray();
         //
-        //            if (currentProcessTemplate.Length == 0)
+        //            if (currentRoute.Length == 0)
         //            {
         //                return null;
         //            }
         //
-        //            if (currentProcessTemplate.Length > 1)
+        //            if (currentRoute.Length > 1)
         //            {
         //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
         //            }
         //
-        //            var startingProcessTemplate = currentProcessTemplate[0].StartingProcessNodeTemplate;
-        //            if (startingProcessTemplate == null)
+        //            var startingRoute = currentRoute[0].StartingProcessNodeTemplate;
+        //            if (startingRoute == null)
         //            {
         //                return null;
         //            }
         //
-        //            // Get Activities related to the ProcessTemplate
-        //            var curActionList = startingProcessTemplate.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
+        //            // Get Activities related to the Route
+        //            var curActionList = startingRoute.Activities.SingleOrDefault(al => al.ActionListType == ActionListType.Immediate);
         //            return curActionList;
         //
         //        }
@@ -241,41 +241,41 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<ActionDO>(uow.ProcessTemplateRepository.GetByKey(id), false).ToArray();
+                return EnumerateActivities<ActionDO>(uow.RouteRepository.GetByKey(id), false).ToArray();
             }
         }
 
 
 
-        public IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportCM curEventReport)
+        public IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport)
         {
-            List<ProcessTemplateDO> processTemplateSubscribers = new List<ProcessTemplateDO>();
+            List<RouteDO> processTemplateSubscribers = new List<RouteDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
 
-            //1. Query all ProcessTemplateDO that are Active
+            //1. Query all RouteDO that are Active
             //2. are associated with the determined DockyardAccount
             //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
             //in the Crate of Class "Standard Event Reports" which was passed in.
-            var curProcessTemplates = _dockyardAccount.GetActiveProcessTemplates(userId).ToList();
+            var curRoutes = _dockyardAccount.GetActiveRoutes(userId).ToList();
 
-            return MatchEvents(curProcessTemplates, curEventReport);
+            return MatchEvents(curRoutes, curEventReport);
             //3. Get ActivityDO
 
         }
 
 
 
-        public List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
+        public List<RouteDO> MatchEvents(List<RouteDO> curRoutes,
             EventReportCM curEventReport)
         {
-            List<ProcessTemplateDO> subscribingProcessTemplates = new List<ProcessTemplateDO>();
-            foreach (var curProcessTemplate in curProcessTemplates)
+            List<RouteDO> subscribingRoutes = new List<RouteDO>();
+            foreach (var curRoute in curRoutes)
             {
                 //get the 1st activity
-                var actionDO = GetFirstActivity(curProcessTemplate.Id) as ActionDO;
+                var actionDO = GetFirstActivity(curRoute.Id) as ActionDO;
 
                 //Get the CrateStorage
                 if (actionDO != null && !string.IsNullOrEmpty(actionDO.CrateStorage))
@@ -289,7 +289,7 @@ namespace Core.Services
 
                     foreach (var curEventSubscription in eventSubscriptionCrates)
                     {
-                        //Parse CrateDTO to EventReportMS and compare Event name then add the ProcessTemplate to the results
+                        //Parse CrateDTO to EventReportMS and compare Event name then add the Route to the results
                         EventSubscriptionCM subscriptionsList = _crate.GetContents<EventSubscriptionCM>(curEventSubscription);
 
                         bool hasEvents = subscriptionsList.Subscriptions
@@ -298,41 +298,41 @@ namespace Core.Services
 
                         if (hasEvents)
                         {
-                            subscribingProcessTemplates.Add(curProcessTemplate);
+                            subscribingRoutes.Add(curRoute);
                         }
                     }
                 }
             }
-            return subscribingProcessTemplates;
+            return subscribingRoutes;
 
         }
 
 
 
-        public ActivityDO GetFirstActivity(int curProcessTemplateId)
+        public ActivityDO GetFirstActivity(int curRouteId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return EnumerateActivities<ActivityDO>(uow.ProcessTemplateRepository.GetByKey(curProcessTemplateId)).FirstOrDefault();
+                return EnumerateActivities<ActivityDO>(uow.RouteRepository.GetByKey(curRouteId)).FirstOrDefault();
             }
         }
 
 
 
-        public ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate)
+        public ActivityDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute)
         {
-            return EnumerateActivities<ActivityDO>(curProcessTemplate).OrderBy(a => a.Ordering).FirstOrDefault();
+            return EnumerateActivities<ActivityDO>(curRoute).OrderBy(a => a.Ordering).FirstOrDefault();
         }
 
-        public ProcessTemplateDO GetProcessTemplate(ActionDO action)
+        public RouteDO GetRoute(ActionDO action)
         {
             var root = action.ParentActivity;
 
             while (root != null)
             {
-                if (root is ProcessTemplateDO)
+                if (root is RouteDO)
                 {
-                    return (ProcessTemplateDO)root;
+                    return (RouteDO)root;
                 }
 
                 root = root.ParentActivity;

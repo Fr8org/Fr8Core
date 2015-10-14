@@ -10,9 +10,9 @@ using System.Linq.Expressions;
 
 namespace Data.Entities
 {
-    public class ProcessTemplateDO : ActivityDO
+    public class RouteDO : ActivityDO
     {
-        public ProcessTemplateDO()
+        public RouteDO()
         {
             
             //ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
@@ -70,14 +70,14 @@ namespace Data.Entities
         }
 
         [Required]
-        [ForeignKey("ProcessTemplateStateTemplate")]
-        public int ProcessTemplateState { get; set; }
+        [ForeignKey("RouteStateTemplate")]
+        public int RouteState { get; set; }
 
-        public virtual _ProcessTemplateStateTemplate ProcessTemplateStateTemplate { get; set; }
+        public virtual _RouteStateTemplate RouteStateTemplate { get; set; }
 
         public virtual DockyardAccountDO DockyardAccount { get; set; }
 
-        [InverseProperty("ProcessTemplate")]
+        [InverseProperty("Route")]
         public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
 
         [NotMapped]

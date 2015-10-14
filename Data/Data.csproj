@@ -278,6 +278,10 @@
     <Compile Include="Migrations\201510130637359_UpdateDocuSignEventDo.Designer.cs">
       <DependentUpon>201510130637359_UpdateDocuSignEventDo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201510141403432_Change ProcessTemplate to Route.cs" />
+    <Compile Include="Migrations\201510141403432_Change ProcessTemplate to Route.Designer.cs">
+      <DependentUpon>201510141403432_Change ProcessTemplate to Route.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Repositories\ActivityRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
@@ -307,7 +311,7 @@
     <Compile Include="Entities\PluginDO.cs" />
     <Compile Include="Entities\ProcessDO.cs" />
     <Compile Include="Entities\ProcessNodeDO.cs" />
-    <Compile Include="Entities\ProcessTemplateDO.cs" />
+    <Compile Include="Entities\RouteDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
@@ -338,7 +342,7 @@
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\ProcessNodeTemplateRepository.cs" />
-    <Compile Include="Repositories\ProcessTemplateRepository.cs" />
+    <Compile Include="Repositories\RouteRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
     <Compile Include="Repositories\ProcessRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
@@ -363,7 +367,7 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
-    <Compile Include="States\ProcessTemplateState.cs" />
+    <Compile Include="States\RouteState.cs" />
     <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
@@ -386,7 +390,7 @@
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
     <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
-    <Compile Include="States\Templates\_ProcessTemplateStateTemplate.cs" />
+    <Compile Include="States\Templates\_RouteStateTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
     <Compile Include="States\AnswerState.cs" />
@@ -499,6 +503,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201510130637359_UpdateDocuSignEventDo.resx">
       <DependentUpon>201510130637359_UpdateDocuSignEventDo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510141403432_Change ProcessTemplate to Route.resx">
+      <DependentUpon>201510141403432_Change ProcessTemplate to Route.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

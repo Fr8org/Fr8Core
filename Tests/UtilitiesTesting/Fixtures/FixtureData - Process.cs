@@ -13,7 +13,7 @@ namespace UtilitiesTesting.Fixtures
 		{
 			var process = new ProcessDO();
 			process.Id = 49;
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.RouteId = TestRoute2().Id;
 			process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
 			return process;
@@ -23,7 +23,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.RouteId = TestRoute2().Id;
             process.ProcessState = ProcessState.Executing;
             process.ProcessNodes.Add(TestProcessNode1());
             return process;
@@ -32,12 +32,12 @@ namespace UtilitiesTesting.Fixtures
         public static IList<ProcessDO> GetProcesses()
 		{
 			IList<ProcessDO> processList = new List<ProcessDO>();
-            var processTemplateId = TestProcessTemplate2().Id;
+            var processTemplateId = TestRoute2().Id;
 			processList.Add(new ProcessDO()
 			{
 				Id = 1,
 				Name = "Process 1",
-                ProcessTemplateId = processTemplateId,
+                RouteId = processTemplateId,
 				DockyardAccountId = "testuser",
 				ProcessState = ProcessState.Executing
 			});
@@ -46,7 +46,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 2,
 				Name = "Process 2",
-                ProcessTemplateId = processTemplateId,
+                RouteId = processTemplateId,
 				DockyardAccountId = "testuser",
 				ProcessState = ProcessState.Executing
 			});
@@ -55,7 +55,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 3,
 				Name = "Process 3",
-                ProcessTemplateId = processTemplateId,
+                RouteId = processTemplateId,
 				DockyardAccountId = "testuser",
 				ProcessState = ProcessState.Unstarted
 			});
@@ -64,7 +64,7 @@ namespace UtilitiesTesting.Fixtures
 			{
 				Id = 4,
 				Name = "Process 4",
-                ProcessTemplateId = processTemplateId,
+                RouteId = processTemplateId,
 				DockyardAccountId = "anotheruser",
 				ProcessState = ProcessState.Unstarted
 			});
@@ -108,8 +108,8 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
-				process.ProcessTemplate = TestProcessTemplate2();
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+				process.Route = TestRoute2();
+            process.RouteId = TestRoute2().Id;
             process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
             process.CurrentActivity = FixtureData.TestAction7();
@@ -121,7 +121,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.RouteId = TestRoute2().Id;
             process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
             process.CurrentActivity = null;
@@ -132,7 +132,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.RouteId = TestRoute2().Id;
             process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
             process.CurrentActivity = FixtureData.TestAction7();
@@ -144,7 +144,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.RouteId = TestRoute2().Id;
             process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
             process.CurrentActivity = FixtureData.TestAction7();
@@ -156,7 +156,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var process = new ProcessDO();
             process.Id = 49;
-            process.ProcessTemplateId = TestProcessTemplate2().Id;
+            process.RouteId = TestRoute2().Id;
             process.ProcessState = 1;
             process.ProcessNodes.Add(TestProcessNode1());
             process.CurrentActivity = FixtureData.TestAction8(null);
@@ -168,8 +168,8 @@ namespace UtilitiesTesting.Fixtures
         {
             var processDO = new ProcessDO();
             processDO.Id = 49;
-            processDO.ProcessTemplate = FixtureData.TestProcessTemplate2();
-            processDO.ProcessTemplateId = processDO.ProcessTemplate.Id;
+            processDO.Route = FixtureData.TestRoute2();
+            processDO.RouteId = processDO.Route.Id;
             processDO.ProcessState = 1;
             processDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
             return processDO;

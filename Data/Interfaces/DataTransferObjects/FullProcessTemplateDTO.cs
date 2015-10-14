@@ -3,10 +3,10 @@
 namespace Data.Interfaces.DataTransferObjects
 {
     /// <summary>
-    /// ProcessTemplate DTO that contains full graph of other DTO objects
+    /// Route DTO that contains full graph of other DTO objects
     /// Specifically used in Workflow Designer to draw entire process.
     /// </summary>
-    public class ProcessTemplateDTO : ProcessTemplateOnlyDTO
+    public class RouteDTO : RouteOnlyDTO
     {
         /// <summary>
         /// List of ProcessNodeTemplate DTOs.

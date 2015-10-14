@@ -27,7 +27,7 @@ namespace Core.Services
         private ICrate _crate;
         //private Task curAction;
         private IPlugin _plugin;
-        //private IProcessTemplate _processTemplate;
+        //private IRoute _route;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
@@ -35,7 +35,7 @@ namespace Core.Services
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _crate= ObjectFactory.GetInstance<ICrate>();
-          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
+          //  _route = ObjectFactory.GetInstance<IRoute>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -437,10 +437,10 @@ namespace Core.Services
             if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
                 // Can't follow guideline to init services inside constructor. 
-                // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                // Current implementation of Route and Action services are not good and are depedant on each other.
                 // Initialization of services in constructor will cause stack overflow
-                var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(curActionDO);
-                return processTemplate != null ? processTemplate.DockyardAccount : null;
+                var route = ObjectFactory.GetInstance<IRoute>().GetRoute(curActionDO);
+                return route != null ? route.DockyardAccount : null;
             }
 
             return null;
@@ -557,16 +557,16 @@ namespace Core.Services
                 // Try to find AuthToken if plugin requires authentication.
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
-                    // Try to get owner's account for Action -> ProcessTemplate.
+                    // Try to get owner's account for Action -> Route.
                     // Can't follow guideline to init services inside constructor. 
-                    // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                    // Current implementation of Route and Action services are not good and are depedant on each other.
                     // Initialization of services in constructor will cause stack overflow
-                    var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(action);
-                    var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
+                    var route = ObjectFactory.GetInstance<IRoute>().GetRoute(action);
+                    var dockyardAccount =  route != null ? route.DockyardAccount : null;
                     
                     if (dockyardAccount == null)
                     {
-                        throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
+                        throw new ApplicationException("Could not find DockyardAccount for Action's Route.");
                     }
 
                     var accountId = dockyardAccount.Id;
