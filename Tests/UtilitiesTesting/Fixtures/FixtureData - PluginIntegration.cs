@@ -102,7 +102,7 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDO TestActivityTemplateDO_WaitForDocuSignEvent()
+        public static ActivityTemplateDO TestActivityTemplateDO_MonitorDocuSignEvent()
         {
             return new ActivityTemplateDO()
             {

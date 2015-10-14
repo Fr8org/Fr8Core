@@ -331,7 +331,7 @@ namespace UtilitiesTesting.Fixtures
                   Id = 1,
                   Version = "1",
                   Plugin = FixtureData.PluginFive(),
-                  Name = "Monitor_DocuSign"
+                  Name = "Monitor_DocuSign_Event"
               };
            ActionListDO al_1 = new ActionListDO()
            {
@@ -360,7 +360,7 @@ namespace UtilitiesTesting.Fixtures
                   Id = 1,
                   Version = "1",
                   Plugin = FixtureData.PluginFive(),
-                  Name = "Monitor_DocuSign"
+                  Name = "Monitor_DocuSign_Event"
               };
              ActionListDO al_1 = new ActionListDO() { ParentActivityId = 12 };
              ActionDO a_23 = new ActionDO()
