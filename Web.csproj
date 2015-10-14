@@ -16,7 +16,7 @@
     <AssemblyName>Web</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort>44301</IISExpressSSLPort>
     <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
     <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
@@ -749,6 +749,7 @@
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
     <Content Include="RunFrontEndTests-VSO.ps1" />
+    <Content Include="Views\DockyardAccount\_HeaderPartial.cshtml" />
     <None Include="Views\Home\DocuSign.cshtml" />
     <Content Include="Views\Shared\_HomePage.cshtml" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
