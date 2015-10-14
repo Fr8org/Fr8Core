@@ -5,16 +5,16 @@ using StructureMap;
 using System.IO;
 using Utilities;
 using System.Linq;
-using pluginExcel.Infrastructure;
 using Data.Repositories;
 using Data.Infrastructure;
 using Data.Interfaces;
-
+using UtilitiesTesting;
 using Microsoft.WindowsAzure;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using pluginExcel.Infrastructure;
 
-namespace UtilitiesTesting
+namespace DockyardTest
 {
     [TestFixture,Ignore]
     [Category("ExcelUtils")]
