@@ -1,7 +1,5 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginTwilio.Services;
 using StructureMap;
@@ -9,9 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
-using Data.Interfaces.ManifestSchemas;
 using Core.Interfaces;
 using Data.Infrastructure;
+using PluginUtilities.BaseClasses;
+
 namespace pluginTwilio.Actions
 {
     public class Send_Via_Twilio_v1 : BasePluginAction
@@ -119,7 +118,7 @@ namespace pluginTwilio.Actions
         private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
         {
             CrateDTO crateDTO = new CrateDTO();
-            ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
+            ActionDO curActionDO = Action.MapFromDTO(curActionDTO);
             var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 
             if (curUpstreamFields.Length == 0)
@@ -130,7 +129,7 @@ namespace pluginTwilio.Actions
             }
             else
             {
-                crateDTO = _crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
+                crateDTO = Crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
             }
 
             return crateDTO;
@@ -195,7 +194,7 @@ namespace pluginTwilio.Actions
         {
             KeyValuePair<string, string> smsInfo;
 
-            var standardControls = _crate.GetStandardConfigurationControls(crateDTO);
+            var standardControls = Crate.GetStandardConfigurationControls(crateDTO);
             if (standardControls == null)
                 throw new ArgumentException("CrateDTO is not a standard configuration controls");
 
