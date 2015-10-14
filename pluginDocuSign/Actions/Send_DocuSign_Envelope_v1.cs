@@ -47,21 +47,28 @@ namespace pluginDocuSign.Actions
             return "Activate Request"; // Will be changed when implementation is plumbed in.
         }
 
-        public Task<PayloadDTO> Execute(ActionDTO curActionDTO)
+        public async Task<PayloadDTO> Execute(ActionDTO curActionDTO)
         {
+            if (curActionDTO.AuthToken == null)
+            {
+                throw new ApplicationException("No auth token provided.");
+            }
+
+            var processPayload = await GetProcessPayload(curActionDTO.ProcessId);
+
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthDTO>(curActionDTO.AuthToken.Token);
 
             var curEnvelope = new Envelope();
             curEnvelope.Login = new DocuSignPackager()
                 .Login(docuSignAuthDTO.Email, docuSignAuthDTO.ApiPassword);
 
-            curEnvelope = AddTemplateData(curActionDTO, curEnvelope);
+            curEnvelope = AddTemplateData(curActionDTO, processPayload, curEnvelope);
             curEnvelope.EmailSubject = "Test Message from Fr8";
             curEnvelope.Status = "sent";
 
             var result = curEnvelope.Create();
 
-            return null;
+            return processPayload;
         }
 
         private string ExtractTemplateId(ActionDTO curActionDTO)
@@ -82,45 +89,14 @@ namespace pluginDocuSign.Actions
             return result;
         }
 
-        private string ExtractRecipientAddress(ActionDTO curActionDTO)
-        {
-            var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
-                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
-
-            var controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
-            var recipientSourceControl = controls.SingleOrDefault(c => c.Name == "Recipient") as RadioButtonGroupControlDefinitionDTO;
-
-            var recipientSourceRadio = recipientSourceControl.Radios.FirstOrDefault(x => x.Selected);
-            if (recipientSourceRadio == null)
-            {
-                throw new ApplicationException("recipientSourceRadio == null;");
-            }
-
-            var recipientAddress = string.Empty;
-
-            switch (recipientSourceRadio.Value)
-            {
-                case "This specific value":
-                    var recipientAddressField = recipientSourceControl.Radios[0].Controls[0];
-                    recipientAddress = recipientAddressField.Value;
-                    break;
-
-                case "A value from an Upstream Crate":
-                    var recipientField = recipientSourceControl.Radios[1].Controls[0];
-                    recipientAddress = recipientField.Value;
-                    break;
-
-                default:
-                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
-            }
-
-            return recipientAddress;
-        }
-
-        private Envelope AddTemplateData(ActionDTO actionDTO, Envelope curEnvelope)
+        private Envelope AddTemplateData(ActionDTO actionDTO, PayloadDTO processPayload, Envelope curEnvelope)
         {
             var curTemplateId = ExtractTemplateId(actionDTO);
-            var curRecipientAddress = ExtractRecipientAddress(actionDTO);
+            var curRecipientAddress = ExtractSpecificOrUpstreamValue(
+                actionDTO.CrateStorage,
+                processPayload.CrateStorageDTO(),
+                "Recipient"
+            );
 
             curEnvelope.TemplateId = curTemplateId;
             curEnvelope.TemplateRoles = new TemplateRole[]
@@ -141,20 +117,30 @@ namespace pluginDocuSign.Actions
             CrateStorageDTO curCrates = curActionDTO.CrateStorage;
             // Do we have any crate? If no, it means that it's Initial configuration
             if (!curCrates.CrateDTO.Any())
+            {
                 return ConfigurationRequestType.Initial;
+            }
+
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             // Try to find Configuration_Controls
             var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
+            {
                 return ConfigurationRequestType.Initial;
+            }
+
             // Try to get DropdownListField
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
             if (dropdownControlDTO == null)
+            {
                 return ConfigurationRequestType.Initial;
+            }
 
             var docusignTemplateId = dropdownControlDTO.Value;
             if (string.IsNullOrEmpty(docusignTemplateId))
+            {
                 return ConfigurationRequestType.Initial;
+            }
 
             return ConfigurationRequestType.Followup;
         }
@@ -280,50 +266,51 @@ namespace pluginDocuSign.Actions
                     ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
                 }
             };
-
-            var recipientSource = new RadioButtonGroupControlDefinitionDTO()
-            {
-                Label = "Recipient",
-                GroupName = "Recipient",
-                Name = "Recipient",
-                Radios = new List<RadioButtonOption>()
-                {
-                    new RadioButtonOption()
-                    {
-                        Selected = true,
-                        Name = "specific",
-                        Value ="This specific value"
-                    },
-                    new RadioButtonOption()
-                    {
-                        Selected = false,
-                        Name = "crate",
-                        Value ="A value from an Upstream Crate"
-                    }
-                }
-            };
-
-            recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
-            {
-                Label = "",
-                Name = "Address"
-            });
-
-            recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
-            {
-                Label = "",
-                Name = "Select Upstream Crate",
-                Source = new FieldSourceDTO
-                {
-                    Label = "Upstream Plugin-Provided Fields",
-                    ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
-                }
-            });
+            
+            // var recipientSource = new RadioButtonGroupControlDefinitionDTO()
+            // {
+            //     Label = "Recipient",
+            //     GroupName = "Recipient",
+            //     Name = "Recipient",
+            //     Radios = new List<RadioButtonOption>()
+            //     {
+            //         new RadioButtonOption()
+            //         {
+            //             Selected = true,
+            //             Name = "specific",
+            //             Value ="This specific value"
+            //         },
+            //         new RadioButtonOption()
+            //         {
+            //             Selected = false,
+            //             Name = "crate",
+            //             Value ="A value from an Upstream Crate"
+            //         }
+            //     }
+            // };
+            // 
+            // recipientSource.Radios[0].Controls.Add(new TextBoxControlDefinitionDTO()
+            // {
+            //     Label = "",
+            //     Name = "Address"
+            // });
+            // 
+            // recipientSource.Radios[1].Controls.Add(new DropDownListControlDefinitionDTO()
+            // {
+            //     Label = "",
+            //     Name = "Select Upstream Crate",
+            //     Source = new FieldSourceDTO
+            //     {
+            //         Label = "Upstream Plugin-Provided Fields",
+            //         ManifestType = MT.StandardDesignTimeFields.GetEnumDisplayName()
+            //     }
+            // });
+            
 
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
-                recipientSource
+                CreateSpecificOrUpstreamValueChooser("Recipient", "Recipient", "Upstream Plugin-Provided Fields")
             };
 
             var controls = new StandardConfigurationControlsCM()

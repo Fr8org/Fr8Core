@@ -91,6 +91,7 @@ namespace pluginDockyardCore.Actions
 
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+            userDefinedPayload.ForEach(x => x.Value = x.Key);
 
             curActionDTO.CrateStorage.CrateDTO.Add(
                 _crate.CreateDesignTimeFieldsCrate(

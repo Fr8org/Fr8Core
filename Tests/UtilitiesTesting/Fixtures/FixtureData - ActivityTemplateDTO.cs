@@ -31,6 +31,16 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO TestActivityTemplateSendGrid()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "SendEmailViaSendGrid",
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDO TwilioActionTemplateDTO()
         {
             return new ActivityTemplateDO
