@@ -19,14 +19,14 @@ namespace Web.Controllers
     /// Subroute web api controller to handle CRUD operations from frontend.
     /// </summary>
     [RoutePrefix("api/processNodeTemplate")]
-    public class SubrouteController : ApiController
+    public class ProcessNodeTemplateController : ApiController
     {
         /// <summary>
         /// Instance of Subroute service.
         /// </summary>
         private readonly ISubroute _subroute;
 
-        public SubrouteController()
+        public ProcessNodeTemplateController()
         {
             _subroute = ObjectFactory.GetInstance<ISubroute>();
         }

@@ -16,18 +16,18 @@ namespace Web.Controllers
 {
     [Authorize]
     [RoutePrefix("api/processTemplate")]
-    public class RouteController : ApiController
+    public class ProcessTemplateController : ApiController
     {
         private readonly IRoute _route;
         
-        public RouteController()
+        public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IRoute>())
         {
         }
 
         
 
-        public RouteController(IRoute route)
+        public ProcessTemplateController(IRoute route)
         {
             _route = route;
         }

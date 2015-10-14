@@ -58,7 +58,7 @@ namespace DockyardTest.Controllers
             var processTemplateDto = FixtureData.CreateTestRouteDTO();
 
             //Act
-            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            ProcessTemplateController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(processTemplateDto);
 
             //Assert
@@ -82,7 +82,7 @@ namespace DockyardTest.Controllers
             processTemplateDto.Name = String.Empty;
 
             //Act
-            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
+            ProcessTemplateController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address); ;
             var response = ptc.Post(processTemplateDto);
 
             //Assert
@@ -95,7 +95,7 @@ namespace DockyardTest.Controllers
         public void RouteController_Will_ReturnEmptyOkResult_If_No_Route_Found()
         {
             //Act
-            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            ProcessTemplateController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
             //Assert
             var postResult = processTemplateController.Get(55);
@@ -162,7 +162,7 @@ namespace DockyardTest.Controllers
             //Arrange 
             var processTemplateDto = FixtureData.CreateTestRouteDTO();
 
-            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            ProcessTemplateController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var postResult = processTemplateController.Post(processTemplateDto) as OkNegotiatedContentResult<RouteOnlyDTO>;
 
             Assert.NotNull(postResult);
@@ -188,7 +188,7 @@ namespace DockyardTest.Controllers
             processTemplateDto.Name = String.Empty;
 
             //Act
-            RouteController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            ProcessTemplateController processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             processTemplateController.Post(processTemplateDto);
 
             //Assert
@@ -250,7 +250,7 @@ namespace DockyardTest.Controllers
             externalEventList.AddRange(new int?[] { 1, 3 });
 
             //Act: first add a process template, then modify it. 
-            RouteController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
+            ProcessTemplateController ptc = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(processTemplateDto);
             processTemplateDto.Name = "updated";
             processTemplateDto.SubscribedDocuSignTemplates = docuSignTemplateList;
@@ -276,7 +276,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ShouldGetFullRoute()
         {
-            var curRouteController = new RouteController();
+            var curRouteController = new ProcessTemplateController();
             var curRouteDO = FixtureData.TestRoute3();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -296,7 +296,7 @@ namespace DockyardTest.Controllers
         }
 
 
-        private static RouteController CreateRouteController(string userId, string email)
+        private static ProcessTemplateController CreateRouteController(string userId, string email)
         {
             var claims = new List<Claim>();
             claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
@@ -305,7 +305,7 @@ namespace DockyardTest.Controllers
 
             var identity = new ClaimsIdentity(claims);
 
-            var ptc = new RouteController
+            var ptc = new ProcessTemplateController
             {
                 User = new GenericPrincipal(identity, new[] { "Users" })
             };
