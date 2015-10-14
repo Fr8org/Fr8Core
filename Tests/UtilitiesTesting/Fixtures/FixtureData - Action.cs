@@ -1060,20 +1060,20 @@ CrateStorage=  crateStorage,
             return actionDo;
         }
 
-        public static ActionDTO ConfigureTwilioAction()
+        public static ActionDO ConfigureTwilioAction()
         {
             var actionTemplate = FixtureData.TwilioActionTemplateDTO();
 
-            var actionDTO = new ActionDTO()
+            var actionDO = new ActionDO()
             {
                 Name = "testaction",
                 Id = 57,
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = new CrateStorageDTO()
+                CrateStorage = "",
             };
 
-            return actionDTO;
+            return actionDO;
         }
     }
 }
