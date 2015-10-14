@@ -2,24 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using Core.Enums;
 using Newtonsoft.Json;
-using StructureMap;
 using Core.Interfaces;
 using Data.Constants;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using DocuSign.Integrations.Client;
-using PluginBase;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using Utilities;
 using pluginDocuSign.DataTransferObjects;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Interfaces;
 using pluginDocuSign.Services;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -76,7 +73,7 @@ namespace pluginDocuSign.Actions
             var confCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault(
                 c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
 
-            var controls = _crate.GetStandardConfigurationControls(confCrate).Controls;
+            var controls = Crate.GetStandardConfigurationControls(confCrate).Controls;
 
             var templateDropDown = controls.SingleOrDefault(x => x.Name == "target_docusign_template");
 
@@ -123,7 +120,7 @@ namespace pluginDocuSign.Actions
 
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             // Try to find Configuration_Controls
-            var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return ConfigurationRequestType.Initial;
@@ -183,7 +180,7 @@ namespace pluginDocuSign.Actions
                 .Fields
                 .ToArray();
 
-            curUpstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+            curUpstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
             curActionDTO.CrateStorage.CrateDTO.Add(curUpstreamFieldsCrate);
 
             return curActionDTO;
@@ -202,7 +199,7 @@ namespace pluginDocuSign.Actions
             var curActionDO = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             
             // Try to find Configuration_Controls.
-            var stdCfgControlMS = _action.GetConfigurationControls(curActionDO);
+            var stdCfgControlMS = Action.GetConfigurationControls(curActionDO);
             if (stdCfgControlMS == null)
             {
                 return curActionDTO;
@@ -233,12 +230,12 @@ namespace pluginDocuSign.Actions
                 new FieldDTO() { Key = "recipient", Value = "recipient" }
             };
             
-            var crateUserDefinedDTO = _crate.CreateDesignTimeFieldsCrate(
+            var crateUserDefinedDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
                 userDefinedFields.ToArray()
             );
             
-            var crateStandardDTO = _crate.CreateDesignTimeFieldsCrate(
+            var crateStandardDTO = Crate.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateStandardFields",
                 standartFields.ToArray()
             );
@@ -318,7 +315,7 @@ namespace pluginDocuSign.Actions
                 Controls = fieldsDTO
             };
 
-            return _crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+            return Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
 
         private CrateDTO CreateDocusignTemplateNameCrate(IDocuSignTemplate template)
@@ -329,7 +326,7 @@ namespace pluginDocuSign.Actions
             {
                 Fields = fieldsDTO,
             };
-            return _crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
+            return Crate.CreateDesignTimeFieldsCrate("Available Templates", fieldsDTO.ToArray());
         }
     }
 }
