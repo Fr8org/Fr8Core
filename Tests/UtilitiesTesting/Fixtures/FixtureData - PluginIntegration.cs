@@ -102,11 +102,11 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDO TestActivityTemplateDO_WaitForDocuSignEvent()
+        public static ActivityTemplateDO TestActivityTemplateDO_MonitorDocuSignEvent()
         {
             return new ActivityTemplateDO()
             {
-                Name = "Monitor_DocuSign_Event",
+                Name = "Monitor_DocuSign",
                 Version = "1",
                 Plugin = TestPlugin_DocuSign()
             };
