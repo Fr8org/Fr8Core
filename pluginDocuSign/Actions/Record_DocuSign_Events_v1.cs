@@ -6,11 +6,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using DocuSign.Integrations.Client;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginDocuSign.Infrastructure;
-using Configuration = DocuSign.Integrations.Client.Configuration;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -45,11 +43,11 @@ namespace pluginDocuSign.Actions
             var curControlsCrate = PackControlsCrate(textBlock);
 
             //create a Standard Event Subscription crate
-            var curEventSubscriptionsCrate = _crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
+            var curEventSubscriptionsCrate = Crate.CreateStandardEventSubscriptionsCrate("Standard Event Subscription", DocuSignEventNames.GetAllEventNames());
 
             //create Standard Design Time Fields for Available Run-Time Objects
             var curAvailableRunTimeObjectsDesignTimeCrate =
-                _crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
+                Crate.CreateDesignTimeFieldsCrate("Available Run-Time Objects", new FieldDTO[]
                 {
                     new FieldDTO {Key = "DocuSign Envelope", Value = string.Empty},
                     new FieldDTO {Key = "DocuSign Event"}

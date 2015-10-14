@@ -1,25 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Core.Enums;
 using StructureMap;
-using Core.Interfaces;
-using Core.Services;
-using Core.StructureMap;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
 using Data.States;
-using Data.States.Templates;
-using PluginBase;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginSendGrid.Infrastructure;
-using pluginSendGrid.Services;
+using PluginUtilities.BaseClasses;
 using Utilities;
 
 namespace pluginSendGrid.Actions
@@ -133,7 +121,7 @@ namespace pluginSendGrid.Actions
                 CreateEmailBodyRadioButtonGroup()
             };
 
-            return _crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
+            return Crate.CreateStandardConfigurationControlsCrate("Send Grid", controls);
         }
 
         private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
@@ -143,7 +131,7 @@ namespace pluginSendGrid.Actions
                     .Fields
                     .ToArray();
 
-            var crateDTO = _crate.CreateDesignTimeFieldsCrate(
+            var crateDTO = Crate.CreateDesignTimeFieldsCrate(
                 "Upstream Plugin-Provided Fields",
                 curUpstreamFields
             );
