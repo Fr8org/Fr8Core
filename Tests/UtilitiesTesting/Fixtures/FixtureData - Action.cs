@@ -281,7 +281,7 @@ namespace UtilitiesTesting.Fixtures
                 ParentActivityId = processTemplateDo.Id,
                 ParentActivity = processTemplateDo
             };
-            
+
 
             var actionDo = new ActionDO()
             {
@@ -764,7 +764,7 @@ namespace UtilitiesTesting.Fixtures
                 ProcessTemplateId = TestProcessTemplate2().Id,
                 ProcessState = 1
             };
-           
+
             var actionDo = new ActionDO()
             {
                 ActionState = ActionState.Unstarted,
@@ -1058,6 +1058,22 @@ CrateStorage=  crateStorage,
                 ActivityTemplateId = FixtureData.TestActivityTemplate1().Id
             };
             return actionDo;
+        }
+
+        public static ActionDTO ConfigureTwilioAction()
+        {
+            var actionTemplate = FixtureData.TwilioActionTemplateDTO();
+
+            var actionDTO = new ActionDTO()
+            {
+                Name = "testaction",
+                Id = 57,
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = new CrateStorageDTO()
+            };
+
+            return actionDTO;
         }
     }
 }

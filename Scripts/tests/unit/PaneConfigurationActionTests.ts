@@ -112,7 +112,7 @@ module dockyard.tests.controller {
                 _$scope.processConfiguration();
                 _$scope.$digest();
                 _$timeout.flush();
-                
+
                 expect(_$scope.$emit).not.toHaveBeenCalled();
                 expect(_$scope.$watch).toHaveBeenCalledWith(jasmine.any(Function), _$scope.onConfigurationChanged, true);
             });
