@@ -144,7 +144,7 @@ namespace DockyardTest.Services
         //{
             // Test.
 //            Action action = new Action();
-//            var processTemplate = FixtureData.TestProcessTemplate2();
+//            var route = FixtureData.TestRoute2();
 //            var payloadMappings = FixtureData.FieldMappings;
 //            var actionDo = FixtureData.IntegrationTestAction();
 //            actionDo.ActivityTemplate.Plugin.Endpoint = "localhost:53234";
@@ -158,7 +158,7 @@ namespace DockyardTest.Services
 //
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
-//                uow.ProcessTemplateRepository.Add(processTemplate);
+//                uow.RouteRepository.Add(route);
 //                uow.ActionRepository.Add(actionDo);
 //                uow.ActionListRepository.Add((ActionListDO)actionDo.ParentActivity);
 //                uow.ProcessRepository.Add(((ActionListDO)actionDo.ParentActivity).Process);
@@ -276,7 +276,7 @@ namespace DockyardTest.Services
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
             curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((ProcessNodeTemplateDO)(curActionDO.ParentActivity)).ProcessTemplate.DockyardAccount;
+            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentActivity)).Route.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
@@ -293,7 +293,7 @@ namespace DockyardTest.Services
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
             curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((ProcessNodeTemplateDO)(curActionDO.ParentActivity)).ProcessTemplate.DockyardAccount;
+            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentActivity)).Route.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
@@ -459,10 +459,10 @@ namespace DockyardTest.Services
 //            _uow.ActivityTemplateRepository.Add(curActionDo.ActivityTemplate);
 //            _uow.SaveChanges();
 //
-//            _uow.ProcessTemplateRepository.Add(FixtureData.TestProcessTemplate1());
+//            _uow.RouteRepository.Add(FixtureData.TestRoute1());
 //
 //            ActionListDO parentActivity = (ActionListDO)curActionDo.ParentActivity;
-//            parentActivity.Process.ProcessTemplateId = 33;
+//            parentActivity.Process.RouteId = 33;
 //            _uow.ProcessRepository.Add(parentActivity.Process);
 //            _uow.SaveChanges();
 //

@@ -6,18 +6,14 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using pluginAzureSqlServer.Infrastructure;
 using pluginAzureSqlServer.Services;
 using PluginBase.Infrastructure;
 using StructureMap;
 using PluginBase;
-using PluginBase.BaseClasses;
 using Core.Interfaces;
-using Core.Services;
-using Core.StructureMap;
-using Data.States.Templates;
 using Data.Interfaces.ManifestSchemas;
+using PluginUtilities.BaseClasses;
 
 namespace pluginAzureSqlServer.Actions
 {
@@ -45,9 +41,9 @@ namespace pluginAzureSqlServer.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
-            var connectionStrings = _crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
+            var connectionStrings = Crate.GetElementByKey(controlsCrates, key: "connection_string", keyFieldName: "name")
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -104,7 +100,7 @@ namespace pluginAzureSqlServer.Actions
                 //this needs to be updated to hold Crates instead of FieldDefinitionDTO
                 CrateDTO = new List<CrateDTO>
                 {
-                    _crate.CreateDesignTimeFieldsCrate(
+                    Crate.CreateDesignTimeFieldsCrate(
                         "Sql Table Columns",
                         contentsList.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         )
@@ -116,14 +112,14 @@ namespace pluginAzureSqlServer.Actions
             int foundSameCrateDTOAtIndex = curActionDO.CrateStorageDTO().CrateDTO.FindIndex(m => m.Label == "Sql Table Columns");
             if (foundSameCrateDTOAtIndex == -1)
             {
-                _action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+                Action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
             else
             {
                 CrateStorageDTO localList = curActionDO.CrateStorageDTO();
                 localList.CrateDTO.RemoveAt(foundSameCrateDTOAtIndex);
                 curActionDO.CrateStorage = JsonConvert.SerializeObject(localList);
-                _action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
+                Action.AddCrate(curActionDO, curCrateStorageDTO.CrateDTO.ToList());
             }
 
             curCrateStorageDTO = curActionDO.CrateStorageDTO();

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.States
 {
-    public class ProcessTemplateType
+    public class RouteType
     {
         public const int Standard = 1;
         public const int MailMerge = 2;

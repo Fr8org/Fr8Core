@@ -1,25 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Core.Enums;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using fr8.Microsoft.Azure;
+using Newtonsoft.Json;
 using StructureMap;
 
 namespace Core.Services
 {
 	public class Activity : IActivity
 	{
-        
-        
+        #region Fields
 
-		public Activity()
+        private readonly IAction _action;
+
+        #endregion
+
+        public Activity()
 		{
+            _action = ObjectFactory.GetInstance<IAction>();
 		}
-
         
         //This builds a list of an activity and all of its descendants, over multiple levels
 	    public List<ActivityDO> GetActivityTree(IUnitOfWork uow, ActivityDO curActivity)
@@ -33,8 +40,6 @@ namespace Core.Services
 	        }
 	        return curList;
 	    }
-
-        
 
         public List<ActivityDO> GetUpstreamActivities(IUnitOfWork uow, ActivityDO curActivityDO)
 		{
@@ -75,8 +80,6 @@ namespace Core.Services
             return upstreamActivities; //should never actually get here, but the compiler insists
 		}
 
-	    
-
 	    public List<ActivityDO> GetDownstreamActivities(IUnitOfWork uow, ActivityDO curActivity)
 	    {
 	        if (curActivity == null)
@@ -112,14 +115,10 @@ namespace Core.Services
 	        return downstreamList;
 	    }
 
-        
-
         public ActivityDO GetNextActivity(ActivityDO currentActivity, ActivityDO root)
 		{
 	        return GetNextActivity(currentActivity, true, root);
 	    }
-
-	    
 
         private ActivityDO GetNextActivity(ActivityDO currentActivity, bool depthFirst, ActivityDO root)
 		    {
@@ -162,8 +161,6 @@ namespace Core.Services
             return nextCandidate;
         }
 
-        
-
         public void Delete (IUnitOfWork uow, ActivityDO activity)
         {
             var activities = new List<ActivityDO>();
@@ -175,9 +172,9 @@ namespace Core.Services
                 // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
                 // But we have to support correct deletion of any activity types and any level of hierarchy
                 // May be other services should register some kind of callback to get notifed when activity is being deleted.
-                if (x is ProcessNodeTemplateDO)
+                if (x is SubrouteDO)
                 {
-                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.ProcessNodeTemplateId == x.Id).ToArray())
+                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubrouteId == x.Id).ToArray())
                 {
                         uow.CriteriaRepository.Remove(criteria);
                 }
@@ -187,16 +184,12 @@ namespace Core.Services
             });
             }
 
-        
-
         private static void TraverseActivity(ActivityDO parent, Action<ActivityDO> visitAction)
         {
             visitAction(parent);
             foreach (ActivityDO child in parent.Activities)
                 TraverseActivity(child, visitAction);
         }
-
-        
 
 	    private IEnumerable<ActivityDO> GetChildren(IUnitOfWork uow, ActivityDO currActivity)
         {
@@ -206,8 +199,6 @@ namespace Core.Services
                 .OrderBy(z => z.Ordering);
                 return orderedActivities;
             }
-
-	    
 
         public async Task Process(int curActivityId, ProcessDO processDO)
         {
@@ -229,8 +220,6 @@ namespace Core.Services
         }
         }
 
-        
-
         public IEnumerable<ActivityTemplateDO> GetAvailableActivities(IUnitOfWork uow, IDockyardAccountDO curAccount)
         {
             List<ActivityTemplateDO> curActivityTemplates;
@@ -249,8 +238,6 @@ namespace Core.Services
 
             return curActivityTemplates;
         }
-
-        
 
 	    public IEnumerable<ActivityTemplateCategoryDTO> GetAvailableActivitiyGroups(IDockyardAccountDO curAccount)
 	    {
@@ -275,6 +262,34 @@ namespace Core.Services
             return curActivityTemplates;
 	    }
 
-        
+        public async Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
+        {
+            var httpClient = new HttpClient();
+
+            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
+            var directionSuffix = (direction == GetCrateDirection.Upstream)
+                ? "upstream_actions/"
+                : "downstream_actions/";
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                + "activities/"
+                + directionSuffix
+                + "?id=" + activityId;
+
+            using (var response = await httpClient.GetAsync(url))
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
+
+                var curCrates = new List<CrateDTO>();
+
+                foreach (var curAction in curActions)
+                {
+                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
+                }
+
+                return curCrates;
+            }
+        }
     }
 }

@@ -1,22 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AutoMapper;
+using Core.Enums;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.ManifestSchemas;
+using fr8.Microsoft.Azure;
+using Newtonsoft.Json;
 using PluginBase.Infrastructure;
 using StructureMap;
-using AutoMapper;
-using Data.Interfaces.ManifestSchemas;
-using Data.States.Templates;
-using Newtonsoft.Json;
-using fr8.Microsoft.Azure;
 
-namespace PluginBase.BaseClasses
+namespace PluginUtilities.BaseClasses
 {
     //this method allows a specific Action to inject its own evaluation function into the 
     //standard ProcessConfigurationRequest
@@ -24,19 +23,19 @@ namespace PluginBase.BaseClasses
 
     public class BasePluginAction
     {
-        public enum GetCrateDirection
-        {
-            Upstream,
-            Downstream
-        }
+        #region Fields
 
-        protected IAction _action;
-        protected ICrate _crate;
+        protected IAction Action;
+        protected ICrate Crate;
+        protected IActivity Activity;
+
+        #endregion
 
         public BasePluginAction()
         {
-            _crate = ObjectFactory.GetInstance<ICrate>();
-            _action = ObjectFactory.GetInstance<IAction>();
+            Crate = ObjectFactory.GetInstance<ICrate>();
+            Action = ObjectFactory.GetInstance<IAction>();
+            Activity = ObjectFactory.GetInstance<IActivity>();
         }
 
         protected bool IsEmptyAuthToken(ActionDTO actionDTO)
@@ -79,7 +78,7 @@ namespace PluginBase.BaseClasses
             }
 
             actionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
+                Crate.CreateAuthenticationCrate("RequiresAuthentication", mode)
             );
         }
 
@@ -145,35 +144,10 @@ namespace PluginBase.BaseClasses
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
-        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId,
-            string manifestType, GetCrateDirection direction)
+        //wrapper for support test method
+        protected async virtual Task<List<CrateDTO>> GetCratesByDirection(int activityId, string manifestType, GetCrateDirection direction)
         {
-            var httpClient = new HttpClient();
-
-            // TODO: after DO-1214 this must target to "ustream" and "downstream" accordingly.
-            var directionSuffix = (direction == GetCrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
-
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "activities/"
-                + directionSuffix
-                + "?id=" + activityId.ToString();
-
-            using (var response = await httpClient.GetAsync(url))
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                var curActions = JsonConvert.DeserializeObject<List<ActionDTO>>(content);
-
-                var curCrates = new List<CrateDTO>();
-
-                foreach (var curAction in curActions)
-                {
-                    curCrates.AddRange(_action.GetCratesByManifestType(manifestType, curAction.CrateStorage).ToList());
-                }
-
-                return curCrates;
-            }
+            return await Activity.GetCratesByDirection(activityId, manifestType, direction);
         }
 
         public async Task<StandardDesignTimeFieldsCM> GetDesignTimeFields(
@@ -183,7 +157,7 @@ namespace PluginBase.BaseClasses
             //1) Build a merged list of the upstream design fields to go into our drop down list boxes
             StandardDesignTimeFieldsCM mergedFields = new StandardDesignTimeFieldsCM();
 
-            List<CrateDTO> curCrates = await GetCratesByDirection(
+            List<CrateDTO> curCrates = await Activity.GetCratesByDirection(
                 activityId,
                 CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME,
                 direction);
@@ -219,7 +193,7 @@ namespace PluginBase.BaseClasses
 
         protected CrateDTO PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
-            var controlsCrate = _crate.CreateStandardConfigurationControlsCrate(
+            var controlsCrate = Crate.CreateStandardConfigurationControlsCrate(
                 "Configuration_Controls", controlsList);
 
             return controlsCrate;
@@ -255,13 +229,13 @@ namespace PluginBase.BaseClasses
 
         protected async virtual Task<List<CrateDTO>> GetUpstreamFileHandleCrates(int curActionId)
         {
-            return await GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
+            return await Activity.GetCratesByDirection(curActionId, CrateManifests.STANDARD_FILE_HANDLE_MANIFEST_NAME, GetCrateDirection.Upstream);
         }
 
         protected async Task<CrateDTO> MergeUpstreamFields(int curActionDOId, string label)
         {
             var curUpstreamFields = (await GetDesignTimeFields(curActionDOId, GetCrateDirection.Upstream)).Fields.ToArray();
-            CrateDTO upstreamFieldsCrate = _crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+            CrateDTO upstreamFieldsCrate = Crate.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
         }
@@ -279,7 +253,7 @@ namespace PluginBase.BaseClasses
             //look for a text field name select_file with a value
             Manifest manifestSchema = new Manifest(Data.Constants.MT.StandardConfigurationControls);
 
-            var keys = _action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
+            var keys = Action.FindKeysByCrateManifestType(curActionDO, manifestSchema, fieldName)
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -294,6 +268,184 @@ namespace PluginBase.BaseClasses
             {
                 return ConfigurationRequestType.Followup;
             }
+
+        }
+
+        protected CrateDTO PackCrate_ErrorTextBox(string fieldLabel, string errorMessage)
+        {
+            ControlDefinitionDTO[] controls =
+            {
+                new TextBlockControlDefinitionDTO()
+                {
+                    Label = fieldLabel,
+                    Value = errorMessage,
+                    CssClass = "well well-lg"
+
+                }
+            };
+
+            var crateControls = Crate.CreateStandardConfigurationControlsCrate(
+                        "Configuration_Controls", controls
+                    );
+
+            return crateControls;
+        }
+
+        /// <summary>
+        /// Returning the crate with text field control 
+        /// </summary>
+        protected CrateDTO GetTextBoxControlForDisplayingError(
+            string fieldLabel, string errorMessage)
+        {
+            var fields = new List<ControlDefinitionDTO>()
+            {
+                new TextBlockControlDefinitionDTO()
+                {
+                    Label = fieldLabel,
+                    Value = errorMessage,
+                    CssClass = "well well-lg"
+                }
+            };
+
+            var controls = new StandardConfigurationControlsCM()
+            {
+                Controls = fields
+            };
+
+            var crateControls = Crate.Create(
+                "Configuration_Controls",
+                JsonConvert.SerializeObject(controls),
+                CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
+            );
+
+            return crateControls;
+        }
+
+        /// <summary>
+        /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
+        /// </summary>
+        protected ControlDefinitionDTO CreateSpecificOrUpstreamValueChooser(
+            string label, string controlName, string upstreamSourceLabel)
+        {
+            var control = new RadioButtonGroupControlDefinitionDTO()
+            {
+                Label = label,
+                GroupName = controlName,
+                Name = controlName,
+                Radios = new List<RadioButtonOption>()
+                {
+                    new RadioButtonOption()
+                    {
+                        Selected = true,
+                        Name = "specific",
+                        Value = "this specific value",
+                        Controls = new List<ControlDefinitionDTO>()
+                        {
+                            new TextBoxControlDefinitionDTO()
+                            {
+                                Label = "",
+                                Name = "SpecificValue"
+                            }
+                        }
+                    },
+
+                    new RadioButtonOption()
+                    {
+                        Selected = false,
+                        Name = "upstream",
+                        Value = "a value from an Upstream Crate",
+                        Controls = new List<ControlDefinitionDTO>()
+                        {
+                            new DropDownListControlDefinitionDTO()
+                            {
+                                Label = "",
+                                Name = "UpstreamCrate",
+                                Source = new FieldSourceDTO
+                                {
+                                    Label = upstreamSourceLabel,
+                                    ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            return control;
+        }
+
+        /// <summary>
+        /// Extract value from RadioButtonGroup where specific value or upstream field was specified.
+        /// </summary>
+        protected string ExtractSpecificOrUpstreamValue(
+            CrateStorageDTO designTimeCrateStorage,
+            CrateStorageDTO runTimeCrateStorage,
+            string controlName)
+        {
+            var controlsCrate = designTimeCrateStorage.CrateDTO.FirstOrDefault(
+                c => c.ManifestType == CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+
+            var controls = Crate.GetStandardConfigurationControls(controlsCrate).Controls;
+            var radioButtonGroupControl = controls
+                .SingleOrDefault(c => c.Name == controlName) as RadioButtonGroupControlDefinitionDTO;
+
+            if (radioButtonGroupControl == null)
+            {
+                throw new ApplicationException("No Radio ButtonGroupControl found.");
+            }
+
+            var radioButton = radioButtonGroupControl
+                .Radios
+                .FirstOrDefault(x => x.Selected);
+
+            if (radioButton == null)
+            {
+                throw new ApplicationException("radioButton == null;");
+            }
+
+            var returnValue = string.Empty;
+
+            switch (radioButton.Name)
+            {
+                case "specific":
+                    returnValue = radioButton.Controls[0].Value;
+                    break;
+
+                case "upstream":
+                    var recipientField = radioButton.Controls[0];
+                    returnValue = ExtractDesignTimeFieldValue(runTimeCrateStorage, radioButton.Controls[0].Value);
+                    break;
+
+                default:
+                    throw new ApplicationException("Could not extract recipient, unknown recipient mode.");
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Extracts crate with specified label and ManifestType = Standard Design Time,
+        /// then extracts field with specified fieldKey.
+        /// </summary>
+        protected string ExtractDesignTimeFieldValue(
+            CrateStorageDTO crateStorage,
+            string fieldKey)
+        {
+            var crates = Action.GetCratesByManifestType(
+                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME, crateStorage);
+
+            foreach (var crate in crates)
+            {
+                var allFields = JsonConvert.DeserializeObject<List<FieldDTO>>(crate.Contents);
+                var searchField = allFields.FirstOrDefault(x => x.Key == fieldKey);
+
+                if (searchField != null)
+                {
+                    return searchField.Value;
+                }
+            }
+
+            throw new ApplicationException("No field found with specified key.");
         }
     }
 }

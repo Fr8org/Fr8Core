@@ -11,8 +11,8 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 50;
             processNode.ParentProcessId = 49;
-            processNode.ProcessNodeTemplateId = 50;
-            processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO1();
+            processNode.SubrouteId = 50;
+            processNode.Subroute = TestSubrouteDO1();
             processNode.ProcessNodeState = ProcessNodeState.Unstarted;
             processNode.ParentProcess = TestProcess1();
 
@@ -34,8 +34,8 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 51;
             processNode.ParentProcessId = 49;
-            processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO1();
-            processNode.ProcessNodeTemplate.Activities.AddRange(TestActionList5());
+            processNode.Subroute = TestSubrouteDO1();
+            processNode.Subroute.Activities.AddRange(TestActionList5());
 
             return processNode;
         }
@@ -45,8 +45,8 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 51;
             processNode.ParentProcessId = 49;
-            processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO2();
-            processNode.ProcessNodeTemplate.Activities.AddRange(TestActionList5());
+            processNode.Subroute = TestSubrouteDO2();
+            processNode.Subroute.Activities.AddRange(TestActionList5());
 
             return processNode;
         }
@@ -57,9 +57,9 @@ namespace UtilitiesTesting.Fixtures
             var processNode = new ProcessNodeDO();
             processNode.Id = 1;
             processNode.ParentProcessId = 49;
-            processNode.ProcessNodeTemplateId = 50;
-            processNode.ProcessNodeTemplate = TestProcessNodeTemplateDO3();
-            processNode.ProcessNodeTemplate.Activities.AddRange(TestActionList6());
+            processNode.SubrouteId = 50;
+            processNode.Subroute = TestSubrouteDO3();
+            processNode.Subroute.Activities.AddRange(TestActionList6());
 
             return processNode;
         }

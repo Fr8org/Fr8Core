@@ -44,14 +44,14 @@ namespace Data.Interfaces
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-        IProcessTemplateRepository ProcessTemplateRepository { get; }
+        IRouteRepository RouteRepository { get; }
         SlipRepository SlipRepository { get; }
         ActionRepository ActionRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
 		  ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
-        IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
+        ISubrouteRepository SubrouteRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }

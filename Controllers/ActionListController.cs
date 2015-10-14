@@ -18,20 +18,20 @@ namespace Web.Controllers
 	public class ActionListController: ApiController
 	{
         /// <summary>
-        /// Retrieve ActionList by specifying ProcessNodeTemplate.Id and ActionListType.
+        /// Retrieve ActionList by specifying Subroute.Id and ActionListType.
         /// </summary>
-        /// <param name="id">ProcessNodeTemplate.Id</param>
+        /// <param name="id">Subroute.Id</param>
         /// <param name="actionListType">ActionListType</param>
         /// <returns></returns>
         //[ResponseType(typeof(ActionListDTO))]
-        [Route("byProcessNodeTemplate")]
+        [Route("bySubroute")]
         [HttpGet]
-        public IHttpActionResult GetByProcessNodeTemplateId(int id, int actionListType)
+        public IHttpActionResult GetBySubrouteId(int id, int actionListType)
         {
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                var curActionList = uow..GetQuery()
-//                    .SingleOrDefault(x => x.ProcessNodeTemplateID == id && x.ActionListType == actionListType);
+//                    .SingleOrDefault(x => x.SubrouteID == id && x.ActionListType == actionListType);
 //
 //                return Ok(Mapper.Map<ActionListDTO>(curActionList));
 //            }

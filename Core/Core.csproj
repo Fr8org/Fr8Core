@@ -119,9 +119,6 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.7\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp">
-      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
-    </Reference>
     <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\S22.Imap.dll</HintPath>
@@ -187,15 +184,12 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Twilio.Api, Version=3.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Twilio.3.6.11\lib\3.5\Twilio.Api.dll</HintPath>
-    </Reference>
     <Reference Include="Zlib.Portable">
       <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\GetCrateDirection.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
@@ -214,10 +208,10 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IProcess.cs" />
-    <Compile Include="Interfaces\IProcessNodeTemplate.cs" />
+    <Compile Include="Interfaces\ISubroute.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
-    <Compile Include="Interfaces\IProcessTemplate.cs" />
+    <Compile Include="Interfaces\IRoute.cs" />
     <Compile Include="Interfaces\ISubscription.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -225,10 +219,8 @@
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
     <Compile Include="ExternalServices\ISmtpClient.cs" />
-    <Compile Include="ExternalServices\ITwilioRestClient.cs" />
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
-    <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Plugin\IPluginTransmitter.cs" />
@@ -257,8 +249,6 @@
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\ISMSPackager.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Twilio\TwilioPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\UnknownEmailPackagerException.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
     <Compile Include="Managers\IncidentReporter.cs" />
@@ -297,14 +287,17 @@
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Process.cs" />
-    <Compile Include="Services\ProcessNodeTemplate.cs" />
-    <Compile Include="Services\ProcessTemplate.cs" />
+    <Compile Include="Services\Subroute.cs" />
+    <Compile Include="Services\Route.cs" />
     <Compile Include="Services\Report.cs" />
-    <Compile Include="Services\SMSMessage.cs" />
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Configuration\Configuration.csproj">
+      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>

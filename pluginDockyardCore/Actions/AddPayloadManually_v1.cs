@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Newtonsoft.Json;
 using Core.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDockyardCore.Actions
 {
@@ -37,7 +36,7 @@ namespace pluginDockyardCore.Actions
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
 
-            var cratePayload = _crate.Create(
+            var cratePayload = Crate.Create(
                 "Manual Payload Data",
                 JsonConvert.SerializeObject(userDefinedPayload),
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
@@ -84,16 +83,17 @@ namespace pluginDockyardCore.Actions
                 throw new ApplicationException("Could not find FieldListControl.");
             }
 
-            _crate.RemoveCrateByLabel(
+            Crate.RemoveCrateByLabel(
                 curActionDTO.CrateStorage.CrateDTO,
                 "ManuallyAddedPayload"
                 );
 
 
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
+            userDefinedPayload.ForEach(x => x.Value = x.Key);
 
             curActionDTO.CrateStorage.CrateDTO.Add(
-                _crate.CreateDesignTimeFieldsCrate(
+                Crate.CreateDesignTimeFieldsCrate(
                     "ManuallyAddedPayload",
                     userDefinedPayload.ToArray()
                     )
