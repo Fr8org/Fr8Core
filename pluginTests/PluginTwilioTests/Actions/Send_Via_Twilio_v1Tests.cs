@@ -16,6 +16,7 @@ using pluginTwilio;
 using StructureMap;
 using pluginTwilio.Services;
 using Core.Interfaces;
+using Moq;
 
 namespace pluginTests.PluginTwilioTests.Actions
 {
@@ -34,6 +35,21 @@ namespace pluginTests.PluginTwilioTests.Actions
             StructureMapBootStrapper.ConfigureDependencies(dependencyType).ConfigureTwilioDependencies(dependencyType);
             ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(new TwilioService()));
             _crate = ObjectFactory.GetInstance<ICrate>();
+
+            var twilioService = new Mock<ITwilioService>();
+            twilioService
+                .Setup(c => c.GetRegisteredSenderNumbers())
+                .Returns(new List<string>() { "+15005550006" });
+            ObjectFactory.Configure(cfg => cfg.For<ITwilioService>().Use(twilioService.Object));
+
+            var actionDO = FixtureData.ConfigureTwilioAction();
+            var actionService = new Mock<IAction>();
+            actionService
+                .Setup(c => c.MapFromDTO(It.IsAny<ActionDTO>()))
+                .Returns(actionDO);
+            ObjectFactory.Configure(cfg => cfg.For<IAction>().Use(actionService.Object));
+
+            var action = FixtureData.ConfigureTwilioAction();
         }
 
         [Test]
@@ -86,6 +102,17 @@ namespace pluginTests.PluginTwilioTests.Actions
             Assert.Greater(smsNumberTextField, 0);
             Assert.Greater(smsNumberUpstreamField, 0);
             Assert.IsNotNull(smsBodyFields);
+        }
+
+        [Test]
+        public void ParseSMSNumberAndMsg_ReturnsSMSNumberAndBody()
+        {
+            var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
+
+            var smsINfo = _twilioAction.ParseSMSNumberAndMsg(crateDTO);
+
+            Assert.AreEqual(smsINfo.Key, "+15005550006");
+            Assert.AreEqual(smsINfo.Value, "DocuSign Sent");
         }
     }
 }

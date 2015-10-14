@@ -47,8 +47,7 @@ namespace pluginTwilio.Actions
                 curActionDTO.CrateStorage = new CrateStorageDTO();
             }
             curActionDTO.CrateStorage.CrateDTO.Add(PackCrate_ConfigurationControls());
-            //will implement the correct available data fields
-            //curActionDTO.CrateStorage.CrateDTO.Add(await GetAvailableDataFields(curActionDTO));
+            curActionDTO.CrateStorage.CrateDTO.Add(GetAvailableDataFields(curActionDTO));
             return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
@@ -73,9 +72,13 @@ namespace pluginTwilio.Actions
             {
                 Label = "a value from Upstream Crate:",
                 Name = "upstream_crate",
+                Events = new List<ControlEvent>()
+                {
+                    new ControlEvent("onChange", "requestConfig")
+                },
                 Source = new FieldSourceDTO
                 {
-                    Label = "Available SMS Number",
+                    Label = "Available Fields",
                     ManifestType = CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME
                 }
             };
@@ -104,11 +107,20 @@ namespace pluginTwilio.Actions
             return PackControlsCrate(radioGroup, smsBody);
         }
 
-        private async Task<CrateDTO> GetAvailableDataFields(ActionDTO curActionDTO)
+        private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            CrateDTO crateDTO = null;
+            List<FieldDTO> phoneNumberFields = new List<FieldDTO>();
+
+            phoneNumberFields = _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
+
+            return phoneNumberFields;
+        }
+
+        private CrateDTO GetAvailableDataFields(ActionDTO curActionDTO)
+        {
+            CrateDTO crateDTO = new CrateDTO();
             ActionDO curActionDO = _action.MapFromDTO(curActionDTO);
-            var curUpstreamFields = (await GetDesignTimeFields(curActionDO.Id, GetCrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = GetRegisteredSenderNumbersData().ToArray();
 
             if (curUpstreamFields.Length == 0)
             {
@@ -118,7 +130,7 @@ namespace pluginTwilio.Actions
             }
             else
             {
-                crateDTO = _crate.CreateDesignTimeFieldsCrate("Upstream Plugin-Provided Fields", curUpstreamFields);
+                crateDTO = _crate.CreateDesignTimeFieldsCrate("Available Fields", curUpstreamFields);
             }
 
             return crateDTO;
@@ -148,16 +160,13 @@ namespace pluginTwilio.Actions
             var controlsCrate = curActionDTO.CrateStorage.CrateDTO.FirstOrDefault();
             if (controlsCrate == null)
                 return null;
-        
-            var standardControls = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(controlsCrate.Contents);
-            if (standardControls == null)
-                return null;
 
-            var smsNumberFields = standardControls.FindByName("SMS_Number");
-            var smsBodyFields = standardControls.FindByName("SMS_Body");
-            
-            if((smsNumberFields == null && smsBodyFields == null) &&
-                (String.IsNullOrEmpty(smsNumberFields.Value)))
+            var smsInfo = ParseSMSNumberAndMsg(controlsCrate);
+
+            string smsNumber = smsInfo.Key;
+            string smsBody = smsInfo.Value;
+
+            if (String.IsNullOrEmpty(smsNumber))
             {
                 return null;
             }
@@ -165,16 +174,56 @@ namespace pluginTwilio.Actions
             {
                 try
                 {
-                    _twilio.SendSms(smsNumberFields.Value, smsBodyFields.Value);
-                    EventManager.TwilioSMSSent(smsNumberFields.Value, smsBodyFields.Value);
+                    _twilio.SendSms(smsNumber, smsBody);
+                    EventManager.TwilioSMSSent(smsNumber, smsBody);
                 }
                 catch (Exception ex)
                 {
-                    EventManager.TwilioSMSSendFailure(smsNumberFields.Value, smsBodyFields.Value, ex.Message);
+                    EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
                 }
             }
 
             return processPayload;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="crateDTO"></param>
+        /// <returns>Key = SMS Number; Value = SMS Body</returns>
+        public KeyValuePair<string, string> ParseSMSNumberAndMsg(CrateDTO crateDTO)
+        {
+            KeyValuePair<string, string> smsInfo;
+
+            var standardControls = _crate.GetStandardConfigurationControls(crateDTO);
+            if (standardControls == null)
+                throw new ArgumentException("CrateDTO is not a standard configuration controls");
+
+            var smsBodyFields = standardControls.FindByName("SMS_Body");
+
+            var smsNumber = GetSMSNumber((RadioButtonGroupControlDefinitionDTO)standardControls.Controls[0]);
+
+            smsInfo = new KeyValuePair<string, string>(smsNumber, smsBodyFields.Value);
+
+            return smsInfo;
+        }
+
+        private string GetSMSNumber(RadioButtonGroupControlDefinitionDTO radioButtonGroupControl)
+        {
+            string smsNumber = "";
+
+            var radioOptionSpecific = radioButtonGroupControl.Radios.Where(r => r.Controls.Where(c => c.Name == "SMS_Number").Count() > 0).FirstOrDefault();
+
+            if (radioOptionSpecific.Selected) 
+            {
+                smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "SMS_Number").Select(v => v.Value).FirstOrDefault();
+            }
+            else
+            {
+                smsNumber = radioButtonGroupControl.Radios.SelectMany(s => s.Controls).Where(c => c.Name == "upstream_crate").Select(v => v.Value).FirstOrDefault();
+            }
+
+            return smsNumber;
         }
     }
 }

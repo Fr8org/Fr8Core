@@ -31,9 +31,9 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ActivityTemplateDTO TwilioActionTemplateDTO()
+        public static ActivityTemplateDO TwilioActionTemplateDTO()
         {
-            return new ActivityTemplateDTO
+            return new ActivityTemplateDO
             {
                 Id = 1,
                 Name = "Send_Via_Twilio",

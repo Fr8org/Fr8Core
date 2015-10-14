@@ -3,6 +3,8 @@ using System.Diagnostics;
 using Core.ExternalServices;
 using Twilio;
 using fr8.Microsoft.Azure;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace pluginTwilio.Services
 {
@@ -45,6 +47,28 @@ namespace pluginTwilio.Services
 
             _serviceManager = new ServiceManager<TwilioService>("Twilio Service", "SMS");
             _internalClient = new TwilioRestClient(accountSid, accountAuthKey);
+        }
+
+        public IEnumerable<string> GetRegisteredSenderNumbers()
+        {
+            List<string> senderNumbers = new List<string>();
+            
+            var incomingPhoneNumbers = _internalClient.ListIncomingPhoneNumbers(null, null, null, null);
+            if (incomingPhoneNumbers.IncomingPhoneNumbers != null)
+            {
+                var phoneNumbers = incomingPhoneNumbers.IncomingPhoneNumbers;
+                foreach (var number in phoneNumbers)
+                {
+                    senderNumbers.Add(number.PhoneNumber);
+                }
+            }
+            else 
+            { 
+                //test account will not return available FROM numbers
+                senderNumbers.Add(_twilioFromNumber);
+            }
+
+            return senderNumbers;
         }
 
         /**********************************************************************************/
