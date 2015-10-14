@@ -74,20 +74,24 @@ namespace Web.Controllers
             }
         }
 
-        // TODO:: Implement the migration for the DockyardAccountID
-        [Route("getall")]
+        // Return the Processes accordingly to ID given 
+        [Route("get/{id:int?}")]
         [HttpGet]
-        public IHttpActionResult GetAll(int? id = null, int? status = null)
+        public IHttpActionResult Get(int? id = null)
         {
-            var curProcess = _process.GetProcessOfAccount(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id, status);
+            var curProcess = _process.GetProcessOfAccount(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
 
             if (curProcess.Any())
             {
-                return Json(curProcess.Select(Mapper.Map<ProcessDTO>));
+                if (id.HasValue)
+                {
+                    return Ok(Mapper.Map<ProcessDTO>(curProcess.First()));
+                }
+
+                return Ok(curProcess.Select(Mapper.Map<ProcessDTO>));
             }
             return Ok();
         }
-
 
        //NOTE: IF AND WHEN THIS CLASS GETS USED, IT NEEDS TO BE FIXED TO USE OUR 
        //STANDARD UOW APPROACH, AND NOT CONTACT THE DATABASE TABLE DIRECTLY.

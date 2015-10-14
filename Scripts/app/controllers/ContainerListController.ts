@@ -10,6 +10,7 @@ module dockyard.controllers {
          dtOptionsBuilder: any;
          dtColumnDefs: any;
          currentAccountContainers: Array<interfaces.IContainerVM>;
+         goToContainerDetailsPage: (container: interfaces.IContainerVM) => void;
     }
 
     /*
@@ -46,6 +47,12 @@ module dockyard.controllers {
             $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10);   
             $scope.dtColumnDefs = this.getColumnDefs(); 
             $scope.currentAccountContainers = ContainerService.getAll({ id: null });
+            $scope.goToContainerDetailsPage = <(container: interfaces.IContainerVM) => void> angular.bind(this, this.goToContainerDetailsPage);
+
+        }
+
+        private goToContainerDetailsPage(containerId) {
+            this.$state.go('containerDetails', { id: containerId });
         }
 
         private getColumnDefs() {

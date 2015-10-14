@@ -50,6 +50,7 @@ module dockyard.services {
 
     export interface IContainerService extends ng.resource.IResourceClass<interfaces.IContainerVM> {
         getAll: (id: { id: number; }) => Array<interfaces.IContainerVM>;
+        getSingle: (id: { id: number; }) => interfaces.IContainerVM;
     }
 
     /*
@@ -431,13 +432,19 @@ module dockyard.services {
     // Container Read service
 
     app.factory('ContainerService', ['$resource', ($resource: ng.resource.IResourceService): IContainerService =>
-        <IContainerService>$resource('/api/processes/:id', { id: '@id' },
+        <IContainerService>$resource('/api/processes/get/:id', { id: '@id' },
             {
                 'getAll': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/processes/getall'
+                    url: '/api/processes/get'
+                },
+                'getSingle': {
+                    method: 'GET',
+                    isArray: false,
+                    url: '/api/processes/get/:id'
                 }
-            })
+            }
+            )
     ]);
 }

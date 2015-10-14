@@ -154,10 +154,8 @@ namespace Core.Services
         }
 
         // Return the Processes of current Account
-        // TODO:: Implement the migration and the write the remaining logic 
-        public IList<ProcessDO> GetProcessOfAccount(string userId, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<ProcessDO> GetProcessOfAccount(string userId, bool isAdmin = false, int? id = null)
         {
-
             if (userId == null)
                 throw new ApplicationException("UserId must not be null");
 
@@ -165,11 +163,16 @@ namespace Core.Services
             {
                 var queryableRepository = unitOfWork.ProcessRepository.GetQuery();
 
-                //queryableRepo = (id == null
-                //    ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                //    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
-                return (status == null
-                    ? queryableRepository : queryableRepository.Where(pt => pt.ProcessState == status)).ToList();
+                if (isAdmin)
+                {
+                    return (id == null
+                   ? queryableRepository
+                   : queryableRepository.Where(ctn => ctn.Id == id)).ToList();
+                }
+
+                return (id == null
+                   ? queryableRepository.Where(ctn => ctn.ProcessTemplate.DockyardAccount.Id == userId)
+                   : queryableRepository.Where(ctn => ctn.Id == id && ctn.ProcessTemplate.DockyardAccount.Id == userId)).ToList();
             }
         }
 

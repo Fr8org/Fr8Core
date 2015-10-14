@@ -38,11 +38,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="container in currentAccountContainers">
-                                    <td>{{ container.Id }}</td>
-                                    <td>{{ container.Name }}</td>
-                                    <td>{{ container.ProcessTemplateId }}</td>
-                                    <td>{{ container.CurrentActivityId }}</td>
+                                <tr ng-repeat="container in currentAccountContainers" ng-click="goToContainerDetailsPage(container.id)">
+                                    <td>{{ container.id }}</td>
+                                    <td>{{ container.name }}</td>
+                                    <td>{{ container.processTemplateId }}</td>
+                                    <td>{{ container.currentActivityId }}</td>
                                     <td>
                                         <div>
                                             <button type="button" class="btn btn-sm red">Execute</button>

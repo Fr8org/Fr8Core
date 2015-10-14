@@ -115,7 +115,6 @@ module dockyard.controllers {
             var processTemplatePromise = this.ProcessTemplateService.getFull({ id: this.$scope.processTemplateId });
 
             processTemplatePromise.$promise.then((curProcessTemplate: interfaces.IProcessTemplateVM) => {
-                debugger;
 
                 this.$scope.current.processTemplate = curProcessTemplate;
                 this.$scope.currentProcessNodeTemplate = curProcessTemplate.processNodeTemplates[0];

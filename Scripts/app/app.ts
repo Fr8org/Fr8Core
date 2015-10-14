@@ -143,6 +143,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Account Details', pageSubTitle: '' }
         })
 
+        .state('containerDetails', {
+            url: "/container/{id}/details",
+            templateUrl: "/AngularTemplate/containerDetails",
+            data: { pageTitle: 'Container  Details', pageSubTitle: '' }
+        })
         .state('containers', {
             url: "/containers",
             templateUrl: "/AngularTemplate/ContainerList",

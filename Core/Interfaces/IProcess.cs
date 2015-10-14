@@ -12,7 +12,7 @@ namespace Core.Interfaces
         Task Launch(ProcessTemplateDO curProcessTemplate, CrateDTO curEvent);
         Task Execute(IUnitOfWork uow, ProcessDO curProcessDO);
 
-        IList<ProcessDO> GetProcessOfAccount(string userId, bool isAdmin = false, int? id = null, int? status = null);
+        IList<ProcessDO> GetProcessOfAccount(string userId, bool isAdmin = false, int? id = null);
 
         //void SetProcessNextActivity(ProcessDO curProcessDO);
     }

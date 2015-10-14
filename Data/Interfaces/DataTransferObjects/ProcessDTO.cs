@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
-using Data.States;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -15,7 +14,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int Id { get; set; }
         public string Name { get; set; }
         public int ProcessTemplateId { get; set; }
-        public int processState;
+        public int ProcessState;
 
         public int? CurrentActivityId { get; set; }
         public int? NextActivityId { get; set; }
