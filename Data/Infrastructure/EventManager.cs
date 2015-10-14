@@ -22,7 +22,7 @@ namespace Data.Infrastructure
         public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
         public static event EntityStateChangedHandler AlertEntityStateChanged;
 
-        public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO);
+        public delegate void IncidentPluginConfigurePOSTFailureHandler(string pluginUrl, string curActionDTO, string errorMessage);
         public static event IncidentPluginConfigurePOSTFailureHandler IncidentPluginConfigureFailed;
 
         public delegate void IncidentPluginActionActivationPOSTFailureHandler(string pluginUrl, string curActionDTO);
@@ -34,15 +34,9 @@ namespace Data.Infrastructure
 
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
-
-        //public delegate void PostResolutionNegotiationResponseReceivedHandler(int negotiationId);
-        //public static event PostResolutionNegotiationResponseReceivedHandler AlertPostResolutionNegotiationResponseReceived;
-
+   
         public delegate void CustomerCreatedHandler(DockyardAccountDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
-
-        //public delegate void BookingRequestCreatedHandler(int bookingRequestId);
-        //public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
 
         public delegate void EmailReceivedHandler(int emailId, string customerId);
         public static event EmailReceivedHandler AlertEmailReceived;
@@ -56,32 +50,11 @@ namespace Data.Infrastructure
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
-        //public delegate void BookingRequestTimeoutStateChangeHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestTimeoutStateChangeHandler AlertBookingRequestProcessingTimeout;
-
-        //public delegate void BookingRequestReservedHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestReservedHandler AlertBookingRequestReserved;
-
-        //public delegate void BookingRequestReservationTimeoutHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestReservationTimeoutHandler AlertBookingRequestReservationTimeout;
-
-        //public delegate void StaleBookingRequestsDetectedHandler(BookingRequestDO[] oldBookingRequests);
-        //public static event StaleBookingRequestsDetectedHandler AlertStaleBookingRequestsDetected;
-
         public delegate void UserRegistrationHandler(DockyardAccountDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
         public delegate void UserRegistrationErrorHandler(Exception ex);
         public static event UserRegistrationErrorHandler AlertUserRegistrationError;
-
-        //public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
-
-        //public delegate void BookingRequestMarkedProcessedHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestMarkedProcessedHandler AlertBookingRequestMarkedProcessed;
-
-        //public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
-        //public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
 
         public delegate void Error_EmailSendFailureHandler(int emailId, string message);
         public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
@@ -151,10 +124,10 @@ namespace Data.Infrastructure
         #region Method
 
 
-        public static void PluginConfigureFailed(string pluginUrl, string actionDTO)
+        public static void PluginConfigureFailed(string pluginUrl, string actionDTO, string errorMessage)
         {
             IncidentPluginConfigurePOSTFailureHandler handler = IncidentPluginConfigureFailed;
-            if (handler != null) handler(pluginUrl, actionDTO);
+            if (handler != null) handler(pluginUrl, actionDTO, errorMessage);
         }
 
         public static void PluginActionActivationFailed(string pluginUrl, string actionDTO)
