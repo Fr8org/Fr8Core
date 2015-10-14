@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -11,10 +12,10 @@ namespace Data.Interfaces.DataTransferObjects
 
     public class ErrorDTO
     {
-        public string Message { get; set; }
-        public string ErrorCode { get; set; }
-        public string Type { get; protected set; }
-        public object Details { get; set; }
+        [JsonProperty("message")]   public string Message { get; set; }
+        [JsonProperty("errorCode")] public string ErrorCode { get; set; }
+        [JsonProperty("type")]      public string Type { get; protected set; }
+        [JsonProperty("details")]   public object Details { get; set; }
 
         protected ErrorDTO(string type)
         {

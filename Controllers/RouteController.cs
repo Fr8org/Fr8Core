@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
+using Core.Exceptions;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
@@ -32,6 +33,7 @@ namespace Web.Controllers
         public ProcessTemplateController(IRoute route)
         {
             _route = route;
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         
@@ -136,10 +138,19 @@ namespace Web.Controllers
 
                 var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
                 var curUserId = _security.GetCurrentUser();
-                curRouteDO.DockyardAccount = uow.UserRepository
-                    .GetQuery()
-                    .Single(x => x.Id == curUserId);
 
+                if (string.IsNullOrWhiteSpace(curUserId))
+                {
+                    throw new AuthenticationExeception("Unable to resolve current user id.");
+                }
+
+                var fr8User = uow.UserRepository.GetQuery().FirstOrDefault(x => x.Id == curUserId);
+                if (fr8User == null)
+                {
+                    throw new AuthenticationExeception("Unable to find fr8 user for current user id");
+                }
+
+                curRouteDO.DockyardAccount = fr8User;
 
                 //this will return 0 on create operation because of not saved changes
                 _route.CreateOrUpdate(uow, curRouteDO, updateRegistrations);
