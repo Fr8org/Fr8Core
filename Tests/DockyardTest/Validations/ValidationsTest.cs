@@ -9,7 +9,7 @@ namespace DockyardTest.Validations
     [Category("Validations")]
     public class ValidationsTest :  BaseTest
     {
-        [Test, Ignore("They fail on VSO and don't bring in much value")]
+        [Test]
         public void Validations_ValidateDTOWithValidString()
         {
             const string availableActions = "{'type_name':'write to azure sql server','version':4.3}";
@@ -18,7 +18,7 @@ namespace DockyardTest.Validations
             Assert.IsTrue(result);
         }
 
-        [Test, Ignore("They fail on VSO and don't bring in much value")]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void Validations_ValidateDTOWithInvalidString()
         {
