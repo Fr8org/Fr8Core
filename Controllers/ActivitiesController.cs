@@ -10,6 +10,7 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using Core.Managers;
+using Data.Infrastructure.StructureMap;
 using Microsoft.AspNet.Identity;
 
 namespace Web.Controllers
@@ -18,10 +19,12 @@ namespace Web.Controllers
 	public class ActivitiesController : ApiController
 	{
       	private readonly IActivity _activity;
+      	private readonly ISecurityServices _security;
 
 		public ActivitiesController()
 		{
 			_activity = ObjectFactory.GetInstance<IActivity>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
 		}
 
 		[Route("upstream")]
@@ -84,15 +87,14 @@ namespace Web.Controllers
 			}
 		}
 
-        [DockyardAuthorize]
+        [fr8ApiAuthorize]
         [Route("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         public IHttpActionResult GetAvailableActivities()
         {
-            var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curDockyardAccount = uow.UserRepository.GetByKey(userId);
+                var curDockyardAccount = _security.GetCurrentAccount(uow);
                 var categoriesWithActivities = _activity.GetAvailableActivitiyGroups(curDockyardAccount);
                 return Ok(categoriesWithActivities);
             }

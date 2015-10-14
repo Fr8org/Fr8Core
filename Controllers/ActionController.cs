@@ -13,6 +13,7 @@ using Core.Interfaces;
 using Core.Managers;
 using Core.Services;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 
@@ -22,12 +23,14 @@ namespace Web.Controllers
     public class ActionController : ApiController
     {
         private readonly IAction _action;
+        private readonly ISecurityServices _security;
         private readonly IActivityTemplate _activityTemplate;
 
         public ActionController()
         {
             _action = ObjectFactory.GetInstance<IAction>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         public ActionController(IAction service)
@@ -52,6 +55,7 @@ namespace Web.Controllers
 
 
         [HttpGet]
+        [fr8ApiAuthorize]
         [Route("auth_url")]
         public async Task<IHttpActionResult> GetExternalAuthUrl(
             [FromUri(Name = "id")] int activityTemplateId)
@@ -71,13 +75,7 @@ namespace Web.Controllers
 
                 plugin = activityTemplate.Plugin;
 
-                var accountId = User.Identity.GetUserId();
-                account = uow.UserRepository.FindOne(x => x.Id == accountId);
-
-                if (account == null)
-                {
-                    throw new ApplicationException("User was not found.");
-                }
+                account = _security.GetCurrentAccount(uow);
             }
 
             var externalAuthUrlDTO = await _action.GetExternalAuthUrl(account, plugin);
@@ -85,6 +83,7 @@ namespace Web.Controllers
         }
 
         [HttpPost]
+        [fr8ApiAuthorize]
         [Route("authenticate")]
         public async Task<IHttpActionResult> Authenticate(CredentialsDTO credentials)
         {
@@ -102,15 +101,7 @@ namespace Web.Controllers
                 }
 
                 plugin = activityTemplate.Plugin;
-
-
-                var accountId = User.Identity.GetUserId();
-                account = uow.UserRepository.FindOne(x => x.Id == accountId);
-                
-                if (account == null)
-                {
-                    throw new ApplicationException("User was not found.");
-                }
+                account = _security.GetCurrentAccount(uow);
             }
 
             await _action.AuthenticateInternal(

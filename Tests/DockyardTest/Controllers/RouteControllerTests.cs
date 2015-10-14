@@ -10,6 +10,7 @@ using StructureMap;
 using StructureMap.AutoMocking;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting;
@@ -35,6 +36,8 @@ namespace DockyardTest.Controllers
             {
                 uow.UserRepository.Add(_testUserAccount);
                 uow.SaveChanges();
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
             }
         }
 
@@ -45,6 +48,8 @@ namespace DockyardTest.Controllers
             {
                 var curUser = uow.UserRepository.GetQuery()
                     .SingleOrDefault(x => x.Id == _testUserAccount.Id);
+
+                ObjectFactory.GetInstance<ISecurityServices>().Logout();
 
                 uow.UserRepository.Remove(curUser);
                 uow.SaveChanges();
@@ -295,22 +300,10 @@ namespace DockyardTest.Controllers
 
         }
 
-
+        // Current user shoud be resolved using mocked ISecurityServices.
         private static ProcessTemplateController CreateRouteController(string userId, string email)
         {
-            var claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.NameIdentifier, userId));
-            claims.Add(new Claim(ClaimTypes.Name, email));
-            claims.Add(new Claim(ClaimTypes.Email, email));
-
-            var identity = new ClaimsIdentity(claims);
-
-            var ptc = new ProcessTemplateController
-            {
-                User = new GenericPrincipal(identity, new[] { "Users" })
-            };
-
-            return ptc;
+            return new ProcessTemplateController();
         }
     }
 }

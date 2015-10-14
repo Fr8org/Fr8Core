@@ -16,7 +16,7 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [fr8Authorize]
+    [fr8ApiAuthorize]
     [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
@@ -83,37 +83,44 @@ namespace Web.Controllers
             return result;
         }
 
-        
+
         [Route("getactive")]
         [HttpGet]
         public IHttpActionResult GetByStatus(int? id = null, int? status = null)
         {
-            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id,status);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), id, status);
 
-            if (curRoutes.Any())
-            {               
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                if (curRoutes.Any())
+                {
+                    return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                }
             }
+
             return Ok();
         }
 
-        
+
         // GET api/<controller>
         public IHttpActionResult Get(int? id = null)
         {
-            var curRoutes = _route.GetForUser(User.Identity.GetUserId(), User.IsInRole(Roles.Admin), id);
-
-            if (curRoutes.Any())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // Return first record from curRoutes, in case id parameter was provided.
-                // User intentionally wants to receive a single JSON object in response.
-                if (id.HasValue)
-                {
-                    return Ok(Mapper.Map<RouteOnlyDTO>(curRoutes.First()));
-                }
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), id);
 
-                // Return JSON array of objects, in case no id parameter was provided.
-                return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                if (curRoutes.Any())
+                {
+                    // Return first record from curRoutes, in case id parameter was provided.
+                    // User intentionally wants to receive a single JSON object in response.
+                    if (id.HasValue)
+                    {
+                        return Ok(Mapper.Map<RouteOnlyDTO>(curRoutes.First()));
+                    }
+
+                    // Return JSON array of objects, in case no id parameter was provided.
+                    return Ok(curRoutes.Select(Mapper.Map<RouteOnlyDTO>));
+                }
             }
 
             //DO-840 Return empty view as having empty process templates are valid use case.

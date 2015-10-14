@@ -15,7 +15,7 @@ using System.Net.Http.Headers;
 
 namespace Web.Controllers
 {
-    [fr8Authorize]
+    [fr8ApiAuthorize]
     public class FilesController : ApiController
     {
         private readonly IFile _fileService;

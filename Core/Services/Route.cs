@@ -6,10 +6,12 @@ using System.Runtime.InteropServices;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Exceptions;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using Data.States;
+using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 
 namespace Core.Services
@@ -24,7 +26,7 @@ namespace Core.Services
         private readonly IAction _action;
         private readonly IActivity _activity;
         private readonly ICrate _crate;
-
+        private readonly ISecurityServices _security;
 
 
 
@@ -35,35 +37,30 @@ namespace Core.Services
             _action = ObjectFactory.GetInstance<IAction>();
             _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrate>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
 
 
-        public IList<RouteDO> GetForUser(string userId, bool isAdmin = false, int? id = null, int? status = null)
+        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, DockyardAccountDO account, int? id = null, int? status = null)
         {
-            if (userId == null)
-                throw new ApplicationException("UserId must not be null");
+            var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not Routes
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
             {
-                var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not Routes
-
-                if (isAdmin)
-                {
-                    queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
-                    return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
-                }
-
-                queryableRepo = (id == null
-                    ? queryableRepo.Where(pt => pt.DockyardAccount.Id == userId)
-                    : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == userId));
-                return (status == null
-                    ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+                queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
+                return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
             }
+
+            queryableRepo = (id == null
+                ? queryableRepo.Where(pt => pt.DockyardAccount.Id == account.Id)
+                : queryableRepo.Where(pt => pt.Id == id && pt.DockyardAccount.Id == account.Id));
+
+            return (status == null
+                ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
+
         }
-
-
-
+        
         public void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool updateChildEntities)
         {
             var creating = ptdo.Id == 0;
