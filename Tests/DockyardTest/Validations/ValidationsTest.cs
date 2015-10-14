@@ -1,14 +1,15 @@
 ﻿using System;
 using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
+using UtilitiesTesting;
 
-namespace UtilitiesTesting.Validations
+namespace DockyardTest.Validations
 {
     [TestFixture]
     [Category("Validations")]
-    public class ValidationsTest : BaseTest
+    public class ValidationsTest :  BaseTest
     {
-        [Test, Ignore("They fail on VSO and don't bring in much value")]
+        [Test]
         public void Validations_ValidateDTOWithValidString()
         {
             const string availableActions = "{'type_name':'write to azure sql server','version':4.3}";
@@ -17,7 +18,7 @@ namespace UtilitiesTesting.Validations
             Assert.IsTrue(result);
         }
 
-        [Test, Ignore("They fail on VSO and don't bring in much value")]
+        [Test]
         [ExpectedException(typeof(ArgumentException))]
         public void Validations_ValidateDTOWithInvalidString()
         {
