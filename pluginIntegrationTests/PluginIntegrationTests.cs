@@ -484,7 +484,8 @@ namespace pluginIntegrationTests
         /// <summary>
         /// Test WriteToSqlServer follow-up configuration.
         /// </summary>
-        [Test]
+        [Test, Ignore] //this is failing because it uses a password to connect to an azure sql server, and we changed that password for security reasons
+            // we probably should replace this test with one that doesn't require that kind of access, or we need to set up a separate db server just for testing.
         public async Task PluginIntegration_WriteToSqlServer_ConfigureFollowUp()
         {
             // Create blank WaitForDocuSignEventAction.

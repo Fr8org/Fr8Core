@@ -119,14 +119,14 @@ namespace Core.Services
             {
                 tempActionDTO = await CallPluginActionAsync<ActionDTO>("configure", curActionDO);
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO));
+                EventManager.PluginConfigureFailed("<no plugin url>", JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO));
+                EventManager.PluginConfigureFailed(curActionDO.ActivityTemplate.Plugin.Endpoint, JsonConvert.SerializeObject(curActionDO), e.Message);
                 throw;
             }
 
