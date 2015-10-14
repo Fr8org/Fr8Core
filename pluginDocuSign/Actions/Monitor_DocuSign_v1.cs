@@ -1,23 +1,18 @@
-﻿using Data.Entities;
-using PluginBase.Infrastructure;
+﻿using PluginBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using StructureMap;
 using Newtonsoft.Json;
 using Core.Interfaces;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
 using PluginBase;
-using PluginBase.BaseClasses;
 using DocuSign.Integrations.Client;
 using pluginDocuSign.DataTransferObjects;
-using pluginDocuSign.Interfaces;
 using pluginDocuSign.Infrastructure;
 using pluginDocuSign.Services;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDocuSign.Actions
 {
@@ -49,9 +44,9 @@ namespace pluginDocuSign.Actions
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
-            var controlsCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
+            var controlsCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 curActionDTO.CrateStorage);
-            var curDocuSignTemplateId = _crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "name")
+            var curDocuSignTemplateId = Crate.GetElementByKey(controlsCrates, key: "Selected_DocuSign_Template", keyFieldName: "name")
                 .Select(e => (string)e["value"])
                 .FirstOrDefault(s => !string.IsNullOrEmpty(s));
 
@@ -119,7 +114,7 @@ namespace pluginDocuSign.Actions
                 }
             };
 
-            var cratePayload = _crate.Create(
+            var cratePayload = Crate.Create(
                 "DocuSign Envelope Payload Data",
                 JsonConvert.SerializeObject(fields),
                 CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
@@ -186,7 +181,7 @@ namespace pluginDocuSign.Actions
             }
 
             // Remove previously added crate of "Standard Event Subscriptions" schema
-            _crate.RemoveCrateByManifestType(
+            Crate.RemoveCrateByManifestType(
                 curActionDTO.CrateStorage.CrateDTO,
                 CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME
                 );
@@ -218,7 +213,7 @@ namespace pluginDocuSign.Actions
                 }
             }
 
-            return _crate.CreateStandardEventSubscriptionsCrate(
+            return Crate.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 subscriptions.ToArray()
                 );
@@ -296,7 +291,7 @@ namespace pluginDocuSign.Actions
 
             var templates = template.GetTemplates(authDTO.Email, authDTO.ApiPassword);
             var fields = templates.Select(x => new FieldDTO() { Key = x.Name, Value = x.Id }).ToArray();
-            var createDesignTimeFields = _crate.CreateDesignTimeFieldsCrate(
+            var createDesignTimeFields = Crate.CreateDesignTimeFieldsCrate(
                 "Available Templates",
                 fields);
             return createDesignTimeFields;

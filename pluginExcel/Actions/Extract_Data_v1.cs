@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using AutoMapper;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.ManifestSchemas;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
-using Utilities;
 using System.IO;
-using Utilities.Interfaces;
-using Data.Interfaces;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Configuration;
 using pluginExcel.Infrastructure;
 using Core.Exceptions;
+using PluginUtilities.BaseClasses;
+using AutoMapper;
 
 namespace pluginExcel.Actions
 {
@@ -45,17 +37,17 @@ namespace pluginExcel.Actions
 
             // Create a crate of payload data by using Standard Table Data manifest and use its contents to tranform into a Payload Data manifest.
             // Add a crate of PayloadData to action's crate storage
-            var payloadDataCrate = _crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
-            _action.AddCrate(curActionDO, payloadDataCrate);
+            var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
+            Action.AddCrate(curActionDO, payloadDataCrate);
 
            return Mapper.Map<ActionDTO>(curActionDO);
-                        
+            
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
         {
             // Find crates of manifest type Standard Table Data
-            var standardTableDataCrates = _action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curCrateStorageDTO);
+            var standardTableDataCrates = Action.GetCratesByManifestType(CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME, curCrateStorageDTO);
 
             // If no crate of manifest type "Standard Table Data" found, try to find upstream for a crate of type "Standard File Handle"
             if (!standardTableDataCrates.Any())
@@ -185,7 +177,7 @@ namespace pluginExcel.Actions
         {
             ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
-            var filePathsFromUserSelection = _action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file")
+            var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file")
                 .Select(e => (string)e["value"])
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -194,7 +186,7 @@ namespace pluginExcel.Actions
                 throw new AmbiguityException();
 
             // RFemove previously created configuration control crate
-            _crate.RemoveCrateByManifestType(curActionDTO.CrateStorage.CrateDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            Crate.RemoveCrateByManifestType(curActionDTO.CrateStorage.CrateDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
             // Creating configuration control crate with a file picker and textblock
             var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
             curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);
@@ -228,11 +220,11 @@ namespace pluginExcel.Actions
             if (headersArray != null)
             {
                 var headers = headersArray.ToList();
-                var curCrateDTO = _crate.CreateDesignTimeFieldsCrate(
+                var curCrateDTO = Crate.CreateDesignTimeFieldsCrate(
                             "Spreadsheet Column Headers",
                             headers.Select(col => new FieldDTO() { Key = col, Value = col }).ToArray()
                         );
-                _action.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
+                Action.AddOrReplaceCrate("Spreadsheet Column Headers", curActionDO, curCrateDTO);
             }
 
             CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
@@ -253,10 +245,10 @@ namespace pluginExcel.Actions
                     {
                         CrateDTO = new List<CrateDTO>
                         {
-                            _crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()),
+                            Crate.CreateStandardTableDataCrate("Excel Payload Rows", true, rows.ToArray()),
                         }
                     };
-                    _action.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
+                    Action.AddCrate(curActionDO, curExcelPayloadRowsCrateStorageDTO.CrateDTO.ToList());
                 }
             }
         }

@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Core.Enums;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
 using Core.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.ManifestSchemas;
-using Data.States;
-using Data.States.Templates;
-using PluginBase.BaseClasses;
 using PluginBase.Infrastructure;
 using pluginDockyardCore.Interfaces;
+using PluginUtilities.BaseClasses;
 
 namespace pluginDockyardCore.Actions
 {
@@ -35,7 +30,7 @@ namespace pluginDockyardCore.Actions
             var curPayloadDTO = await GetProcessPayload(curActionDTO.ProcessId);
 
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
-            var controlsMS = _action.GetControlsManifest(curAction);
+            var controlsMS = Action.GetControlsManifest(curAction);
             
             ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
@@ -217,7 +212,7 @@ namespace pluginDockyardCore.Actions
                     .ToArray();
 
                 //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-                CrateDTO queryFieldsCrate = _crate.CreateDesignTimeFieldsCrate(
+                CrateDTO queryFieldsCrate = Crate.CreateDesignTimeFieldsCrate(
                     "Queryable Criteria", curUpstreamFields);
                     
                 //build a controls crate to render the pane
