@@ -35,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = FixtureData.TestActivityTemplateDTO1()
             };
             curActionDTO.CrateStorage.CrateDTO.Add(CreateStandardConfigurationControls());
-            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curActionDTO.CrateStorage.CrateDTO[0].Contents);
+            var configurationFields = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curActionDTO.CrateStorage.CrateDTO[0].Contents);
 
             curActionDTO.CrateStorage.CrateDTO.Add(CreateEventSubscriptionCrate(configurationFields));
 
@@ -56,6 +56,15 @@ namespace UtilitiesTesting.Fixtures
             {
                 Name = "test salesforce action",
                 ActivityTemplate = FixtureData.TestActivityTemplateSalesforce()
+            };
+        }
+
+        public static ActionDTO TestActionDTOForSendGrid()
+        {
+            return new ActionDTO()
+            {
+                Name = "SendEmailViaSendGrid",
+                ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
             };
         }
     }

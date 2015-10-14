@@ -33,12 +33,13 @@ namespace DockyardTest.Controllers
         {
             base.SetUp();
             _action = ObjectFactory.GetInstance<IAction>();
-            CreateEmptyActionList();
+            // DO-1214
+            //CreateEmptyActionList();
             CreateActionTemplate();
         }
 
 
-        [Test,Ignore]
+        [Test]
         public void ActionController_Save_WithEmptyActions_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -61,7 +62,7 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test,Ignore]
+        [Test]
         public void ActionController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -118,29 +119,6 @@ namespace DockyardTest.Controllers
             }
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-
-        public void ActionController_GetConfigurationSettings_CanGetCorrectJson()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curActionDO = FixtureData.TestAction22();
-
-                var expectedResult = FixtureData.TestConfigurationSettings();
-                //CrateStorageDTO result = _action.Configure(curActionDO);
-                //Assert.GreaterOrEqual(1, result.CrateDTO.Count);
-            }
-        }
-
-        [Test, Ignore]
-
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
-        public void ActionController_NULL_ActionTemplate()
-        {
-            var curAction = new ActionController();
-            var actionDO = curAction.Configure(CreateActionWithId(2));
-            Assert.IsNotNull(actionDO);
-        }
 
         [Test]
 
@@ -291,30 +269,31 @@ namespace DockyardTest.Controllers
         /// <summary>
         /// Creates one empty action list
         /// </summary>
-        private void CreateEmptyActionList()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // 
-                var curProcessTemplate = FixtureData.TestProcessTemplate1();
-                uow.ProcessTemplateRepository.Add(curProcessTemplate);
-                uow.SaveChanges();
-                //Add a processnodetemplate to processtemplate 
-                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
-                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
-
-                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
-                uow.SaveChanges();
-                
-                var actionList = FixtureData.TestEmptyActionList();
-                actionList.Id = 1;
-                actionList.ActionListType = 1;
-                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
-
-                uow.ActionListRepository.Add(actionList);
-                uow.SaveChanges();
-            }
-        }
+        // DO-1214
+//        private void CreateEmptyActionList()
+//        {
+//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+//            {
+//                // 
+//                var curProcessTemplate = FixtureData.TestProcessTemplate1();
+//                uow.ProcessTemplateRepository.Add(curProcessTemplate);
+//                uow.SaveChanges();
+//                //Add a processnodetemplate to processtemplate 
+//                var curProcessNodeTemplate = FixtureData.TestProcessNodeTemplateDO1();
+//                curProcessNodeTemplate.ParentTemplateId = curProcessTemplate.Id;
+//
+//                uow.ProcessNodeTemplateRepository.Add(curProcessNodeTemplate);
+//                uow.SaveChanges();
+//                
+//                var actionList = FixtureData.TestEmptyActionList();
+//                actionList.Id = 1;
+//                actionList.ActionListType = 1;
+//                actionList.ProcessNodeTemplateID = curProcessNodeTemplate.Id;
+//
+//                uow.ActionListRepository.Add(actionList);
+//                uow.SaveChanges();
+//            }
+//        }
 
         private void CreateActionTemplate()
         {
@@ -334,7 +313,6 @@ namespace DockyardTest.Controllers
             {
                 Id = actionId,
                 Name = "WriteToAzureSql",
-                ActionListId = 1,
                 CrateStorage = new CrateStorageDTO(),
                 ActivityTemplateId = 1,
                 ActivityTemplate = FixtureData.TestActionTemplateDTOV2()
@@ -374,9 +352,8 @@ namespace DockyardTest.Controllers
             Assert.IsNotNull(okResult.Content);
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        [Test]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActionController();
@@ -390,9 +367,8 @@ namespace DockyardTest.Controllers
             Assert.IsNotNull(okResult.Content);
         }
 
-        [Test, Ignore("Vas Ignored as part of V2 Changes")]
-
-        [ExpectedException(ExpectedException = typeof(ArgumentNullException))]
+        [Test]
+        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
         public async void ActionController_GetConfigurationSettings_ActionTemplateIdIsMissing()
         {
             var controller = new ActionController();

@@ -123,11 +123,13 @@ AppPackages/
 Scripts/app/**/*.js
 Scripts/app/**/**/*.js
 Scripts/app/directives/**/*.js
+Scripts/app/directives/PaneConfigureAction/*.js
 Scripts/tests/mocks/*.js
 Scripts/tests/unit/*.js
 Scripts/tests/utils/*.js
 Scripts/tests/integration/*.js
 Scripts/tests/integration/DockyardAccountControllerTests/*.js
+
 *.js.map
 
  

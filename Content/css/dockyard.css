@@ -94,7 +94,7 @@
 }
 
 .action-arrow {
-    background-image: url('https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_arrow_forward_48px-512.png');
+    background-image: url('/Content/img/site/arrow_blue_ic_arrow_forward_48px-512.png');
     background-size: contain;
     display: inline-block;
     height: 50px;
@@ -204,6 +204,13 @@
 .query-builder-delete-button {
     cursor: pointer;
     margin-top: 4px;
+}
+
+.table-delete-button {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    margin-top: 10px;
 }
 
 form.internal-authenticate-form {

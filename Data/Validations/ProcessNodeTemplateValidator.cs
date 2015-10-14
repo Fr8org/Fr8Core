@@ -17,7 +17,7 @@ namespace Data.Validations
             // Commented out, since NodeTransitions is not used in other parts of code.
             // RuleFor(pntDO => pntDO.NodeTransitions).NotEmpty().WithMessage("NodeTransitions is Required");
 
-            RuleFor(pntDO => pntDO.ParentTemplateId).GreaterThan(0)
+            RuleFor(pntDO => pntDO.ParentActivityId).GreaterThan(0)
                 .Must(id =>
                 {
                     // We should create internal UnitOfWork.
@@ -34,7 +34,7 @@ namespace Data.Validations
                 .Must(lst => lst.Count > 0)
                 .WithMessage("Must have at least one child Criteria");
 
-            RuleFor(pntDO => pntDO.ActionLists).NotNull()
+            RuleFor(pntDO => pntDO.Activities).NotNull()
                 .Must(lst => lst.Count > 0)
                 .WithMessage("Must have at least one child ActionList");
         }

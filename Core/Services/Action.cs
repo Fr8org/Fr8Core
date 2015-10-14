@@ -27,6 +27,7 @@ namespace Core.Services
         private ICrate _crate;
         //private Task curAction;
         private IPlugin _plugin;
+        //private IProcessTemplate _processTemplate;
         private readonly AuthorizationToken _authorizationToken;
 
         public Action()
@@ -34,6 +35,7 @@ namespace Core.Services
             _authorizationToken = new AuthorizationToken();
             _plugin = ObjectFactory.GetInstance<IPlugin>();
             _crate= ObjectFactory.GetInstance<ICrate>();
+          //  _processTemplate = ObjectFactory.GetInstance<IProcessTemplate>();
         }
 
         public IEnumerable<TViewModel> GetAllActions<TViewModel>()
@@ -138,7 +140,7 @@ namespace Core.Services
             return tempActionDTO;
         }
 
-        public StandardConfigurationControlsMS GetConfigurationControls(ActionDO curActionDO)
+        public StandardConfigurationControlsCM GetConfigurationControls(ActionDO curActionDO)
         {
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
             var confControls = GetCratesByManifestType(MT.StandardConfigurationControls.GetEnumDisplayName(), curActionDTO.CrateStorage);
@@ -146,7 +148,7 @@ namespace Core.Services
                 throw new ArgumentException("Expected number of CrateDTO is 0 or 1. But got '{0}'".format(confControls.Count()));
             if (confControls.Count() == 0)
                 return null;
-            StandardConfigurationControlsMS standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(confControls.First().Contents);
+            StandardConfigurationControlsCM standardCfgControlsMs = JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(confControls.First().Contents);
             return standardCfgControlsMs;
         }
 
@@ -161,8 +163,8 @@ namespace Core.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curAction = UpdateCurrentActivity(id, uow);
-                if (curAction == null)
+                var curAction = uow.ActivityRepository.GetQuery().FirstOrDefault(al => al.Id == id);
+                if (curAction == null) // Why we add something in Delete method?!!! (Vladimir)
                 {
                     curAction = new ActivityDO { Id = id };
                     uow.ActivityRepository.Attach(curAction);
@@ -179,25 +181,25 @@ namespace Core.Services
         /// <param name="curActionId">Action Id</param>
         /// <param name="uow">Unit of Work</param>
         /// <returns>Returns the current action (if found) or null if not.</returns>
-        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
-        {
-            // Find an ActionList for which the action is set as CurrentActivity
-            // Also, get the whole list of actions for this Action List 
-            var curActionList = uow.ActionListRepository.GetQuery().Where(al => al.CurrentActivityID == curActionId).Include(al => al.Activities).SingleOrDefault();
-            if (curActionList == null) return null;
-
-            // Get current Action
-            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
-            if (curAction == null) return null; // Well, who knows...
-
-            // Get ordered list of next Activities 
-            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+//        public ActivityDO UpdateCurrentActivity(int curActionId, IUnitOfWork uow)
+//        {
+//            // Find an ActionList for which the action is set as CurrentActivity
+//            // Also, get the whole list of actions for this Action List 
+//            var curActionList = uow.ActionRepository.GetQuery().Where(al => al.Id == curActionId).Include(al => al.Activities).SingleOrDefault();
+//            if (curActionList == null) return null;
+//
+//            // Get current Action
+//            var curAction = curActionList.Activities.SingleOrDefault(a => a.Id == curActionId);
+//            if (curAction == null) return null; // Well, who knows...
+//
+//            // Get ordered list of next Activities 
+//            var activities = curActionList.Activities.Where(a => a.Ordering > curAction.Ordering).OrderBy(a => a.Ordering);
+//            
+//            curActionList.CurrentActivity = activities.FirstOrDefault();
+//
+//            return curAction;
+//        }
             
-            curActionList.CurrentActivity = activities.FirstOrDefault();
-
-            return curAction;
-        }
-
         public async Task<int> PrepareToExecute(ActionDO curAction, ProcessDO curProcessDO, IUnitOfWork uow)
         {
             //if status is unstarted, change it to in-process. If status is completed or error, throw an exception.
@@ -249,11 +251,10 @@ namespace Core.Services
                 throw new ArgumentNullException("curActionDO");
             }
 
-            var payloadDTO = await CallPluginActionAsync<PayloadDTO>(
-                "Execute", curActionDO, curProcessDO.Id);
+            var payloadDTO = await CallPluginActionAsync<PayloadDTO>("Execute", curActionDO, curProcessDO.Id);
             
             // Temporarily commented out by yakov.gnusin.
-            // EventManager.ActionDispatched(curActionDTO);
+            EventManager.ActionDispatched(curActionDO, curProcessDO.Id);
 
             return payloadDTO;
         }
@@ -433,15 +434,13 @@ namespace Core.Services
         /// <returns></returns>
         public DockyardAccountDO GetAccount(ActionDO curActionDO)
         {
-            if (curActionDO.ParentActivity != null
-                && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
+            if (curActionDO.ParentActivity != null && curActionDO.ActivityTemplate.AuthenticationType == "OAuth")
             {
-                ActionListDO curActionListDO = (ActionListDO)curActionDO.ParentActivity;
-
-                return curActionListDO
-                    .Process
-                    .ProcessTemplate
-                    .DockyardAccount;
+                // Can't follow guideline to init services inside constructor. 
+                // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                // Initialization of services in constructor will cause stack overflow
+                var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(curActionDO);
+                return processTemplate != null ? processTemplate.DockyardAccount : null;
             }
 
             return null;
@@ -490,7 +489,7 @@ namespace Core.Services
         }
 
         //looks for the Conifiguration Controls Crate and Extracts the ManifestSchema
-        public StandardConfigurationControlsMS GetControlsManifest(ActionDO curAction)
+        public StandardConfigurationControlsCM GetControlsManifest(ActionDO curAction)
         {
 
             var curCrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curAction.CrateStorage);
@@ -504,7 +503,7 @@ namespace Core.Services
             }
 
 
-            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(curControlsCrate.Contents);
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(curControlsCrate.Contents);
 
         }
 
@@ -558,10 +557,13 @@ namespace Core.Services
                 // Try to find AuthToken if plugin requires authentication.
                 if (activityTemplate.Plugin.RequiresAuthentication)
                 {
-                    // Try to get owner's account for Action -> ActionList -> ProcessTemplate.
-                    var actionList = (ActionListDO)uow.ActivityRepository.GetByKey(action.ParentActivityId);
-                    var dockyardAccount = actionList.ProcessNodeTemplate
-                        .ProcessTemplate.DockyardAccount;
+                    // Try to get owner's account for Action -> ProcessTemplate.
+                    // Can't follow guideline to init services inside constructor. 
+                    // Current implementation of ProcessTemplate and Action services are not good and are depedant on each other.
+                    // Initialization of services in constructor will cause stack overflow
+                    var processTemplate = ObjectFactory.GetInstance<IProcessTemplate>().GetProcessTemplate(action);
+                    var dockyardAccount =  processTemplate != null ? processTemplate.DockyardAccount : null;
+                    
                     if (dockyardAccount == null)
                     {
                         throw new ApplicationException("Could not find DockyardAccount for Action's ProcessTemplate.");
@@ -621,7 +623,7 @@ namespace Core.Services
             }
         }
 
-        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, ManifestSchema curSchema, string key)
+        public IEnumerable<JObject> FindKeysByCrateManifestType(ActionDO curActionDO, Manifest curSchema, string key)
         {
            var controlsCrates = GetCratesByManifestType(curSchema.ManifestName, curActionDO.CrateStorageDTO());
            var keys = _crate.GetElementByKey(controlsCrates, key: key, keyFieldName: "name");

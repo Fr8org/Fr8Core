@@ -11,26 +11,6 @@
             startingProcessNodeTemplateId: 1
         };
 
-        public static newActionListDTO = <model.ActionListDTO>{
-            id: 9,
-            actionListType: 1,
-            name: "MockImmediate",
-            actions: [
-                <model.ActionDTO>{
-                    id: 1,
-                    name: 'Action 1',
-                    activityTemplateId: 1,
-                    processNodeTemplateId: 1
-                },
-                <model.ActionDTO>{
-                    id: 2,
-                    name: 'Action 2',
-                    activityTemplateId: 1,
-                    processNodeTemplateId: 1
-                }
-            ]
-        };
-
         public static processBuilderState = new model.ProcessBuilderState();
 
         public static updatedProcessTemplate = <interfaces.IProcessTemplateVM> {
@@ -50,8 +30,19 @@
                     id: 1,
                     isTempId: false,
                     name: 'Processnode Template 1',
-                    actionLists: [
-                        ProcessBuilder.newActionListDTO
+                    actions: [
+                        <model.ActionDTO> {
+                            id: 1,
+                            name: 'Action 1',
+                            activityTemplateId: 1,
+                            parentActivityId: 1
+                        },
+                        <model.ActionDTO>{
+                            id: 2,
+                            name: 'Action 2',
+                            activityTemplateId: 1,
+                            parentActivityId: 1
+                        }
                     ]
                 }]
         }

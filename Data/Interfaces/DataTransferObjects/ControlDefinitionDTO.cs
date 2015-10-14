@@ -27,6 +27,7 @@ namespace Data.Interfaces.DataTransferObjects
         public const string TextBlock = "TextBlock";
         public const string FilePicker = "FilePicker";
         public const string Routing = "Routing";
+        public const string FieldList = "FieldList";
     }
 
     public class CheckBoxControlDefinitionDTO : ControlDefinitionDTO

@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using Data.Entities;
 using Data.States;
 
 namespace UtilitiesTesting.Fixtures
@@ -23,9 +24,10 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ProcessTemplateDO()
             {
+                Id=1000,
                 Name = "Test ProcessTemplate Name",
                 Description = "Test ProcessTemplate Description",
-                ProcessTemplateState = ProcessTemplateState.Active
+                ProcessTemplateState = ProcessTemplateState.Active,
             };
         }
 
@@ -33,16 +35,18 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ProcessNodeTemplateDO()
             {
+                Id = 1001,
                 Name = "Test ProcessNodeTemplate"
             };
         }
 
+        // DO-1214
         public static ActionListDO TestActionList_ImmediateActions()
         {
             return new ActionListDO()
             {
-                ActionListType = ActionListType.Immediate,
-                Name = "ImmediateActions"
+                //ActionListType = ActionListType.Immediate,
+                //Name = "ImmediateActions"
             };
         }
 

@@ -8,6 +8,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Newtonsoft.Json.Linq;
 using SendGrid;
+using StructureMap;
+using Utilities;
+using Core.Managers.APIManagers.Packagers;
 
 namespace Core.Managers.APIManagers.Packagers.SendGrid
 {
@@ -15,12 +18,11 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
     {
         private readonly ITransport _transport;
 
-        public SendGridPackager(ITransport transport)
+        public SendGridPackager() 
         {
-            if (transport == null)
-                throw new ArgumentNullException("transport");
-            _transport = transport;
+            _transport = TransportFactory.CreateWeb(ObjectFactory.GetInstance<IConfigRepository>());
         }
+
 
         public delegate void EmailSuccessArgs(int emailID);
 
@@ -52,46 +54,40 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
             if (handler != null) handler(errorCode, name, message, emailID);
         }
 
-        public async void Send(EnvelopeDO envelope)
+        public async void Send(IMailerDO mailer)
         {
-            if (envelope == null)
-                throw new ArgumentNullException("envelope");
-            if (!string.Equals(envelope.Handler, EnvelopeDO.MailHandler, StringComparison.OrdinalIgnoreCase))
-                throw new ArgumentException(@"This envelope should not be handled with Gmail.", "envelope");
-            if (envelope.Email == null)
-                throw new ArgumentException(@"This envelope has no Email.", "envelope");
-            if (envelope.Email.Recipients.Count == 0)
-                throw new ArgumentException(@"This envelope has no recipients.", "envelope");
+            if (mailer == null)
+                throw new ArgumentNullException("mailer");
+            if (mailer.Email == null)
+                throw new ArgumentException(@"This envelope has no Email.", "mailer");
+            if (mailer.Email.To.Count() == 0)
+                throw new ArgumentException(@"This envelope has no recipients.", "mailer");
 
-            var email = envelope.Email;
-            if (email == null)
-                throw new ArgumentException(@"Envelope email is null", "envelope");
+            var email = mailer.Email;
 
             try
             {
-                var fromName = !String.IsNullOrWhiteSpace(email.FromName) ? email.FromName : email.From.Name;
+                var fromName = email.From.Name;
 
-                var mailMessage = new SendGridMessage {From = new MailAddress(email.From.Address, fromName)};
+                var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
 
-                if (!String.IsNullOrWhiteSpace(email.ReplyToAddress))
+                if (!String.IsNullOrWhiteSpace(email.From.Address))
                 {
-                    mailMessage.ReplyTo = new[] {new MailAddress(email.ReplyToAddress, email.ReplyToName)};
+                    mailMessage.ReplyTo = new[] { new MailAddress(email.From.Address, fromName) };
                 }
 
                 mailMessage.To =
                     email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.NameOrAddress())).ToArray();
-                mailMessage.Bcc = email.BCC.Select(bcc => new MailAddress(bcc.Address, bcc.NameOrAddress())).ToArray();
-                mailMessage.Cc = email.CC.Select(cc => new MailAddress(cc.Address, cc.NameOrAddress())).ToArray();
 
                 mailMessage.Subject = email.Subject;
 
-                if ((email.PlainText == null || email.HTMLText == null) && string.IsNullOrEmpty(envelope.TemplateName))
+                if ((email.HTMLText == null) && string.IsNullOrEmpty(mailer.TemplateName))
                 {
                     throw new ArgumentException(
                         "Trying to send an email that doesn't have both an HTML and plain text body");
                 }
 
-                if (email.PlainText == null || email.HTMLText == null)
+                if (email.HTMLText == null)
                 {
                     mailMessage.Html = "<html></html>";
                     mailMessage.Text = "";
@@ -99,28 +95,18 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
                 else
                 {
                     mailMessage.Html = email.HTMLText;
-                    mailMessage.Text = email.PlainText;
                 }
 
                 var headers = new Dictionary<String, String>();
-                if (!String.IsNullOrEmpty(email.MessageID))
-                    headers.Add("Message-ID", email.MessageID);
-                if (!String.IsNullOrEmpty(email.References))
-                    headers.Add("References", email.References);
 
                 if (headers.Any())
                     mailMessage.AddHeaders(headers);
 
-                foreach (var attachment in email.Attachments)
+                if (!string.IsNullOrEmpty(mailer.TemplateName))
                 {
-                    mailMessage.AddAttachment(attachment.GetData(), attachment.OriginalName);
-                }
-
-                if (!string.IsNullOrEmpty(envelope.TemplateName))
-                {
-                    mailMessage.EnableTemplateEngine(envelope.TemplateName);
-                        //Now TemplateName will be TemplateId on Sendgrid.
-                    if (envelope.MergeData != null)
+                    mailMessage.EnableTemplateEngine(mailer.TemplateName);
+                    //Now TemplateName will be TemplateId on Sendgrid.
+                    if (mailer.MergeData != null)
                     {
                         //Now, we need to do some magic.
                         //Basically - we need the length of each substitution to match the length of recipients
@@ -128,7 +114,7 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
                         //To make it easier to use, we attempt to pad out the substition arrays if they lengths don't match
                         //We only do that if we're given a string value. In any other case, we allow sengrid to fail.
                         var subs = new Dictionary<String, List<String>>();
-                        foreach (var pair in envelope.MergeData)
+                        foreach (var pair in mailer.MergeData)
                         {
 
                             var arrayType = pair.Value as JArray;
@@ -140,7 +126,7 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
                             else
                             {
                                 listVal = new List<string>();
-                                for (var i = 0; i < email.Recipients.Count(); i++) //Pad out the substitution
+                                for (var i = 0; i < email.To.Count(); i++) //Pad out the substitution
                                     listVal.Add(pair.Value == null ? String.Empty : pair.Value.ToString());
                             }
                             subs.Add(pair.Key, listVal);

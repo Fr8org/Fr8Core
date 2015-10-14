@@ -37,7 +37,7 @@ namespace pluginDockyardCore.Actions
             ActionDO curAction = AutoMapper.Mapper.Map<ActionDO>(curActionDTO);
             var controlsMS = _action.GetControlsManifest(curAction);
             
-            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == "filterPane");
+            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
                 throw new ApplicationException("No control found with Type == \"filterPane\"");
@@ -57,7 +57,7 @@ namespace pluginDockyardCore.Actions
                 curValues.AddRange(singleCrateValues);
             }
 
-            // Prepare envelope data.            
+            // Prepare envelope data.
 
             // Evaluate criteria using Contents json body of found Crate.
             var result = Evaluate(filterPaneControl.Value, curPayloadDTO.ProcessId, curValues);
@@ -235,10 +235,6 @@ namespace pluginDockyardCore.Actions
             return curActionDTO;
         }
 
-        /// <summary>
-        /// ConfigurationEvaluator always returns Initial,
-        /// since Initial and FollowUp phases are the same for current action.
-        /// </summary>
         private ConfigurationRequestType ConfigurationEvaluator(ActionDTO curActionDataPackageDTO)
         {
             if (curActionDataPackageDTO.CrateStorage == null

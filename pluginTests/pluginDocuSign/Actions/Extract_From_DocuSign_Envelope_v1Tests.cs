@@ -92,7 +92,7 @@ namespace pluginTests.pluginDocuSign.Actions
             Assert.AreEqual("Condition", result[3].Key);
         }
 
-        [Test,Ignore]
+        [Test]
         public void CreateActionPayload_ReturnsFieldsValue()
         {
             //Arrange
@@ -100,15 +100,13 @@ namespace pluginTests.pluginDocuSign.Actions
             curActionDTO.AuthToken = new AuthTokenDTO() { Token = JsonConvert.SerializeObject(PluginFixtureData.TestDocuSignAuthDTO1()) };
 
             //Act
-            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "f02c3d55-f6ef-4b2b-b0a0-02bf64ca1e09");
+            var result = _extract_From_DocuSign_Envelope_v1.CreateActionPayload(curActionDTO, "8fcb42d3-1572-44eb-acb1-0fffa4ca65de");
 
             //Assert
-            Assert.AreEqual(4, result.Count);
-            Assert.AreEqual("Smathers", result[0].Value);
-            Assert.AreEqual("Golden Oriole", result[1].Value);
-            Assert.AreEqual("Johnson", result[2].Value);
-            Assert.AreEqual("Marthambles", result[3].Value);
-
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual("Dohemann", result.FirstOrDefault(x => x.Key == "Doctor").Value);
+            Assert.AreEqual("Gout", result.FirstOrDefault(x => x.Key == "Condition").Value);
+            Assert.AreEqual("test", result.FirstOrDefault(x => x.Key == "Text 5").Value);
         }
 
     }

@@ -14,13 +14,13 @@ namespace Core.Interfaces
 	    ActivityDO GetInitialActivity(IUnitOfWork uow, ProcessTemplateDO curProcessTemplate);
 
         IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(ProcessTemplateDO curProcessTemplateDO);
-        IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportMS curEventReport);
+        IList<ProcessTemplateDO> GetMatchingProcessTemplates(string userId, EventReportCM curEventReport);
         ActivityDO GetFirstActivity(int curProcessTemplateId);
         string Activate(ProcessTemplateDO curProcessTemplate);
         string Deactivate(ProcessTemplateDO curProcessTemplate);
         IEnumerable<ActionDO> GetActions(int id);
-	    ActionListDO GetActionList(IUnitOfWork uow, int id);
-        List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates,
-	        EventReportMS curEventReport);
+	    ProcessTemplateDO GetProcessTemplate(ActionDO action);
+	  //  ActionListDO GetActionList(IUnitOfWork uow, int id);
+        List<ProcessTemplateDO> MatchEvents(List<ProcessTemplateDO> curProcessTemplates, EventReportCM curEventReport);
 	}
 }

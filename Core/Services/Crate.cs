@@ -35,7 +35,7 @@ namespace Core.Services
 
         public CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode)
         {
-            var manifestSchema = new StandardAuthenticationMS()
+            var manifestSchema = new StandardAuthenticationCM()
             {
                 Mode = mode
             };
@@ -50,7 +50,7 @@ namespace Core.Services
         public CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields)
         {    
             return Create(label, 
-                JsonConvert.SerializeObject(new StandardDesignTimeFieldsMS() { Fields = fields.ToList() }),
+                JsonConvert.SerializeObject(new StandardDesignTimeFieldsCM() { Fields = fields.ToList() }),
                 manifestType: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_NAME, 
                 manifestId: CrateManifests.DESIGNTIME_FIELDS_MANIFEST_ID);
         }
@@ -58,7 +58,7 @@ namespace Core.Services
         public CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls)
         {
             return Create(label, 
-                JsonConvert.SerializeObject(new StandardConfigurationControlsMS() { Controls = controls.ToList() }),
+                JsonConvert.SerializeObject(new StandardConfigurationControlsCM() { Controls = controls.ToList() }),
                 manifestType: CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_CONF_CONTROLS_MANIFEST_ID);
         }
@@ -66,15 +66,23 @@ namespace Core.Services
         public CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions)
         {
             return Create(label,
-                JsonConvert.SerializeObject(new EventSubscriptionMS() { Subscriptions = subscriptions.ToList() }),
+                JsonConvert.SerializeObject(new EventSubscriptionCM() { Subscriptions = subscriptions.ToList() }),
                 manifestType: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_NAME,
                 manifestId: CrateManifests.STANDARD_EVENT_SUBSCRIPTIONS_ID);
+        }
+
+        public CrateDTO CreateStandardEventReportCrate(string label, EventReportCM eventReport)
+        {
+            return Create(label,
+                JsonConvert.SerializeObject(eventReport),
+                manifestType: CrateManifests.STANDARD_EVENT_REPORT_NAME,
+                manifestId: CrateManifests.STANDARD_EVENT_REPORT_ID);
         }
 
         public CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table)
         {
             return Create(label,
-                JsonConvert.SerializeObject(new StandardTableDataMS() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
+                JsonConvert.SerializeObject(new StandardTableDataCM() { Table = table.ToList(), FirstRowHeaders = firstRowHeaders }),
                 manifestType: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_NAME,
                 manifestId: CrateManifests.STANDARD_TABLE_DATA_MANIFEST_ID);
         }
@@ -84,9 +92,9 @@ namespace Core.Services
             return JsonConvert.DeserializeObject<T>(crate.Contents);
         }
 
-        public StandardConfigurationControlsMS GetStandardConfigurationControls(CrateDTO crate)
+        public StandardConfigurationControlsCM GetStandardConfigurationControls(CrateDTO crate)
         {
-            return JsonConvert.DeserializeObject<StandardConfigurationControlsMS>(crate.Contents, new ControlDefinitionDTOConverter());
+            return JsonConvert.DeserializeObject<StandardConfigurationControlsCM>(crate.Contents, new ControlDefinitionDTOConverter());
         }
 
         /// <summary>
@@ -154,17 +162,27 @@ namespace Core.Services
             }
         }
 
-        public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataMS tableDataMS)
+        public CrateDTO CreatePayloadDataCrate(string payloadDataObjectType, string crateLabel, StandardTableDataCM tableDataMS)
         {
             return Create(crateLabel,
                             JsonConvert.SerializeObject(TransformStandardTableDataToStandardPayloadData(payloadDataObjectType, tableDataMS)),
                             manifestType: CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
                             manifestId: CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID);
-            }
+        }
 
-        private StandardPayloadDataMS TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataMS tableDataMS)
+        public CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string,string>> curFields)
+        {            
+            List<FieldDTO> crateFields = new List<FieldDTO>();
+            foreach(var field in curFields)
+            {
+                crateFields.Add(new FieldDTO() { Key = field.Key, Value = field.Value });             
+            }
+            return Create("Payload Data", JsonConvert.SerializeObject(crateFields));            
+        }
+
+        private StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS)
         {
-            var payloadDataMS = new StandardPayloadDataMS()
+            var payloadDataMS = new StandardPayloadDataCM()
             {
                 PayloadObjects = new List<PayloadObjectDTO>(),
                 ObjectType = curObjectType,

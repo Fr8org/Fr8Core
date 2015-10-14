@@ -12,18 +12,16 @@ namespace Data.Entities
     {
         [Key]
         public int Id { get; set; }
-
-        [Required]
+        
         [ForeignKey("ProcessNodeTemplate")]
-        public int ProcessNodeTemplateId { get; set; }
+        public int? ProcessNodeTemplateId { get; set; }
 
         /// <summary>
         /// Reference to parent ProcessTemplateNode.
         /// Every Criteria must belong to a single ProcessTemplateNode.
         /// </summary>
         public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
-
-
+        
 
         //the criteria execution type reflects the radio button choice: apply criteria? or execute without worrying about the criteria?
         [Required]
