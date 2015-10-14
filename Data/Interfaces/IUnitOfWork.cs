@@ -51,7 +51,7 @@ namespace Data.Interfaces
 		  ActivityRepository ActivityRepository { get; }
         ProcessNodeRepository ProcessNodeRepository { get; }
 
-        IProcessNodeTemplateRepository ProcessNodeTemplateRepository { get; }
+        ISubrouteRepository SubrouteRepository { get; }
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }

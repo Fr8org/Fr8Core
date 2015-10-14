@@ -5,9 +5,9 @@ using Data.Interfaces;
 using System.Collections.Generic;
 namespace Data.Validations
 {
-    public class ProcessNodeTemplatetValidator : AbstractValidator<ProcessNodeTemplateDO>
+    public class SubroutetValidator : AbstractValidator<SubrouteDO>
     {
-        public ProcessNodeTemplatetValidator()
+        public SubroutetValidator()
         {
             // Commented out. See https://maginot.atlassian.net/browse/DO-940 for more description.
             // RuleFor(pntDO => pntDO.Id).GreaterThan(0).WithMessage("Id must be a positive int");

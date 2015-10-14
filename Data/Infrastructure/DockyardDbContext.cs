@@ -265,7 +265,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RouteDO>().ToTable("Routes");
             modelBuilder.Entity<ActionDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
-            modelBuilder.Entity<ProcessNodeTemplateDO>().ToTable("ProcessNodeTemplates");
+            modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
             modelBuilder.Entity<DocuSignEventDO>().ToTable("DocuSignEvents");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
@@ -326,9 +326,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
             
-//            modelBuilder.Entity<ProcessNodeTemplateDO>()
+//            modelBuilder.Entity<SubrouteDO>()
 //               .HasMany<CriteriaDO>(c => c.Criteria)
-//               .WithOptional(x => x.ProcessNodeTemplate)
+//               .WithOptional(x => x.Subroute)
 //               .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<AuthorizationTokenDO>()

@@ -54,25 +54,25 @@ namespace UtilitiesTesting.Fixtures
             return healthRoute;
         }
 
-        public static RouteDO TestRouteWithProcessNodeTemplates()
+        public static RouteDO TestRouteWithSubroutes()
         {
             var curRouteDO = new RouteDO
             {
                 Id = 1,
                 Description = "DO-982 Process Node Template Test",
-                Name = "RouteWithProcessNodeTemplates",
+                Name = "RouteWithSubroutes",
                 RouteState = RouteState.Active,
             };
 
             for (int i = 1; i <= 4; ++i)
             {
-                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                var curSubrouteDO = new SubrouteDO()
                 {
                     Id = i,
-                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    Name = string.Format("curSubrouteDO-{0}", i),
                     ParentActivity = curRouteDO,
                 };
-                curRouteDO.Activities.Add(curProcessNodeTemplateDO);
+                curRouteDO.Activities.Add(curSubrouteDO);
             }
 
             return curRouteDO;
@@ -109,14 +109,14 @@ namespace UtilitiesTesting.Fixtures
 
 
 
-                ProcessNodeTemplateDO processNodeTemplateDO = new ProcessNodeTemplateDO()
+                SubrouteDO subrouteDO = new SubrouteDO()
                 {
                     ParentActivity = processTemplateDO,
-                    StartingProcessNodeTemplate = true
+                    StartingSubroute = true
                 };
-                uow.ProcessNodeTemplateRepository.Add(processNodeTemplateDO);
-                processTemplateDO.Activities = new List<ActivityDO> {processNodeTemplateDO};
-                processTemplateDO.StartingProcessNodeTemplate = processNodeTemplateDO;
+                uow.SubrouteRepository.Add(subrouteDO);
+                processTemplateDO.Activities = new List<ActivityDO> {subrouteDO};
+                processTemplateDO.StartingSubroute = subrouteDO;
 
 
                 var actionDo = new ActionDO()
@@ -145,7 +145,7 @@ namespace UtilitiesTesting.Fixtures
                 actionDo.UpdateCrateStorageDTO(new List<CrateDTO>() { crateDTO });
 
                 uow.ActionRepository.Add(actionDo);
-                processNodeTemplateDO.Activities.Add(actionDo);
+                subrouteDO.Activities.Add(actionDo);
 
                 uow.SaveChanges();
             }
@@ -165,14 +165,14 @@ namespace UtilitiesTesting.Fixtures
 
             for (int i = 1; i <= 2; ++i)
             {
-                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                var curSubrouteDO = new SubrouteDO()
                 {
                     Id = i,
-                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    Name = string.Format("curSubrouteDO-{0}", i),
                     ParentActivity = curRouteDO,
                     Activities = FixtureData.TestActionList1(),
                 };
-                curRouteDO.Activities.Add(curProcessNodeTemplateDO);
+                curRouteDO.Activities.Add(curSubrouteDO);
             }
 
             return curRouteDO;
@@ -190,37 +190,37 @@ namespace UtilitiesTesting.Fixtures
 
             for (int i = 1; i <= 2; ++i)
             {
-                var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+                var curSubrouteDO = new SubrouteDO()
                 {
                     Id = i,
-                    Name = string.Format("curProcessNodeTemplateDO-{0}", i),
+                    Name = string.Format("curSubrouteDO-{0}", i),
                     ParentActivity = curRouteDO,
                     Activities = FixtureData.TestActionListParentActivityID12()
                 };
-                curRouteDO.Activities.Add(curProcessNodeTemplateDO);
+                curRouteDO.Activities.Add(curSubrouteDO);
             }
 
             return curRouteDO;
         }
 
-        public static RouteDO TestRouteWithStartingProcessNodeTemplate()
+        public static RouteDO TestRouteWithStartingSubroute()
         {
             var curRouteDO = new RouteDO
             {
                 Id = 1,
                 Description = "DO-1124 Proper  deletion of Route",
-                Name = "TestRouteWithStartingProcessNodeTemplates",
+                Name = "TestRouteWithStartingSubroutes",
                 RouteState = RouteState.Active,
             };
 
-            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            var curSubrouteDO = new SubrouteDO()
             {
                 Id = 1,
-                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentActivity = curRouteDO,
-                StartingProcessNodeTemplate = true
+                StartingSubroute = true
             };
-            curRouteDO.Activities.Add(curProcessNodeTemplateDO);
+            curRouteDO.Activities.Add(curSubrouteDO);
 
             //FixtureData.TestActionList1 .TestActionList_ImmediateActions();
     
@@ -228,49 +228,49 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-        public static RouteDO TestRouteWithStartingProcessNodeTemplateAndActionList()
+        public static RouteDO TestRouteWithStartingSubrouteAndActionList()
         {
             var curRouteDO = new RouteDO
             {
                 Id = 1,
                 Description = "DO-1124 Proper  deletion of Route",
-                Name = "TestRouteWithStartingProcessNodeTemplates",
+                Name = "TestRouteWithStartingSubroutes",
                 RouteState = RouteState.Active,
             };
 
-            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            var curSubrouteDO = new SubrouteDO()
             {
                 Id = 1,
-                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentActivity = curRouteDO,
-                StartingProcessNodeTemplate = true
+                StartingSubroute = true
             };
-            curRouteDO.Activities.Add(curProcessNodeTemplateDO);
+            curRouteDO.Activities.Add(curSubrouteDO);
 
             var curImmediateActionList = FixtureData.TestActionList_ImmediateActions();
             
-            curProcessNodeTemplateDO.Activities.AddRange(curImmediateActionList);
+            curSubrouteDO.Activities.AddRange(curImmediateActionList);
 
             return curRouteDO;
         }
 
 
-        public static RouteDO TestRouteWithStartingProcessNodeTemplates_ID0()
+        public static RouteDO TestRouteWithStartingSubroutes_ID0()
             {
             var curRouteDO = new RouteDO
             {
                 Description = "DO-1124 Proper  deletion of Route",
-                Name = "TestRouteWithStartingProcessNodeTemplates_ID0",
+                Name = "TestRouteWithStartingSubroutes_ID0",
                 RouteState = RouteState.Active,
             };
 
-            var curProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            var curSubrouteDO = new SubrouteDO()
             {
-                Name = string.Format("curProcessNodeTemplateDO-{0}", 1),
+                Name = string.Format("curSubrouteDO-{0}", 1),
                 ParentActivity = curRouteDO,
-                StartingProcessNodeTemplate = true
+                StartingSubroute = true
             };
-            curRouteDO.Activities.Add(curProcessNodeTemplateDO);
+            curRouteDO.Activities.Add(curSubrouteDO);
 
 
             return curRouteDO;
@@ -283,7 +283,7 @@ namespace UtilitiesTesting.Fixtures
                 Description = "DO-1217 Unit Tests for Process#Create",
                 Name = "DO-1217",
                 RouteState = RouteState.Active,
-                //ProcessNodeTemplates = new List<ProcessNodeTemplateDO>(),
+                //Subroutes = new List<SubrouteDO>(),
             };
             return curRouteDO;
         }

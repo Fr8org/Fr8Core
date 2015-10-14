@@ -31,18 +31,18 @@ namespace DockyardTest.Services
 
 
         [Test]
-        public void RouteService_GetProcessNodeTemplates()
+        public void RouteService_GetSubroutes()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRouteDO = FixtureData.TestRouteWithProcessNodeTemplates();
+                var curRouteDO = FixtureData.TestRouteWithSubroutes();
                 uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
 
-                var curProcessNodeTemplates = _processTemplateService.GetProcessNodeTemplates(curRouteDO);
+                var curSubroutes = _processTemplateService.GetSubroutes(curRouteDO);
 
-                Assert.IsNotNull(curProcessNodeTemplates);
-                Assert.AreEqual(curRouteDO.ProcessNodeTemplates.Count(), curProcessNodeTemplates.Count);
+                Assert.IsNotNull(curSubroutes);
+                Assert.AreEqual(curRouteDO.Subroutes.Count(), curSubroutes.Count);
             }
         }
 
@@ -63,9 +63,9 @@ namespace DockyardTest.Services
                 var result = uow.RouteRepository.GetByKey(curRouteDO.Id);
                 Assert.NotNull(result);
                 Assert.AreNotEqual(result.Id, 0);
-                Assert.NotNull(result.StartingProcessNodeTemplate);
-                Assert.AreEqual(result.ProcessNodeTemplates.Count(), 1);
-                Assert.AreEqual(result.StartingProcessNodeTemplate.Activities.Count, 2);
+                Assert.NotNull(result.StartingSubroute);
+                Assert.AreEqual(result.Subroutes.Count(), 1);
+                Assert.AreEqual(result.StartingSubroute.Activities.Count, 2);
             }
         }
 
@@ -74,7 +74,7 @@ namespace DockyardTest.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRouteDO = FixtureData.TestRouteWithStartingProcessNodeTemplates_ID0();
+                var curRouteDO = FixtureData.TestRouteWithStartingSubroutes_ID0();
                 uow.RouteRepository.Add(curRouteDO);
                 uow.SaveChanges();
 
@@ -105,7 +105,7 @@ namespace DockyardTest.Services
 
 
             Assert.AreEqual(result, "success");
-            var activities = curRouteDO.ProcessNodeTemplates.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
+            var activities = curRouteDO.Subroutes.SelectMany(s => s.Activities).SelectMany(s => s.Activities);
             foreach (ActionDO curActionDO in activities)
             {
                 Assert.AreEqual(curActionDO.ActionState, ActionState.Active);
@@ -114,10 +114,10 @@ namespace DockyardTest.Services
 
 //        [Test]
 //        [ExpectedException(typeof(ArgumentNullException))]
-//        public void Activate_ProcessNodeTemplatesIsNULL_ThrowsArgumentNULLException()
+//        public void Activate_SubroutesIsNULL_ThrowsArgumentNULLException()
 //        {
 //            var curRouteDO = FixtureData.TestRoute3();
-//            curRouteDO.ProcessNodeTemplates = null;
+//            curRouteDO.Subroutes = null;
 //
 //            string result = _processTemplateService.Activate(curRouteDO);
 //        }

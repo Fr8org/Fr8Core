@@ -443,13 +443,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProcessNodeTemplateRepository _processNodeTemplateRepository;
+        private SubrouteRepository _subrouteRepository;
 
-        public IProcessNodeTemplateRepository ProcessNodeTemplateRepository
+        public ISubrouteRepository SubrouteRepository
         {
             get
             {
-                return _processNodeTemplateRepository ?? (_processNodeTemplateRepository = new ProcessNodeTemplateRepository(this));
+                return _subrouteRepository ?? (_subrouteRepository = new SubrouteRepository(this));
             }
         }
 

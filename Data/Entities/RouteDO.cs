@@ -15,10 +15,10 @@ namespace Data.Entities
         public RouteDO()
         {
             
-            //ProcessNodeTemplates = new List<ProcessNodeTemplateDO>();
-            /*var startingProcessNodeTemplate = new ProcessNodeTemplateDO();
-            startingProcessNodeTemplate.StartingProcessNodeTemplate = true;
-            ProcessNodeTemplates.Add(startingProcessNodeTemplate);*/
+            //Subroutes = new List<SubrouteDO>();
+            /*var startingSubroute = new SubrouteDO();
+            startingSubroute.StartingSubroute = true;
+            Subroutes.Add(startingSubroute);*/
         }
        
      
@@ -27,43 +27,43 @@ namespace Data.Entities
 
         public string Description { get; set; }
 
-        /*[ForeignKey("StartingProcessNodeTemplate")]
-        public int StartingProcessNodeTemplateId { get; set; }
+        /*[ForeignKey("StartingSubroute")]
+        public int StartingSubrouteId { get; set; }
 
-        public virtual ProcessNodeTemplateDO StartingProcessNodeTemplate { get; set; }*/
+        public virtual SubrouteDO StartingSubroute { get; set; }*/
 
         [NotMapped]
-        public int StartingProcessNodeTemplateId
+        public int StartingSubrouteId
         {
             get
             {
-                var startingProcessNodeTemplate = Activities.OfType<ProcessNodeTemplateDO>().SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
-                if (null != startingProcessNodeTemplate)
-                    return startingProcessNodeTemplate.Id;
+                var startingSubroute = Activities.OfType<SubrouteDO>().SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                if (null != startingSubroute)
+                    return startingSubroute.Id;
                 else
                 {
                     return 0;
-                    //throw new ApplicationException("Starting ProcessNodeTemplate doesn't exist.");
+                    //throw new ApplicationException("Starting Subroute doesn't exist.");
                 }
             }
         }
 
         [NotMapped]
-        public ProcessNodeTemplateDO StartingProcessNodeTemplate
+        public SubrouteDO StartingSubroute
         {
             get
             {
-                return ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
+                return Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
             }
 
             set {
-                var startingProcessNodeTemplate = ProcessNodeTemplates.SingleOrDefault(pnt => pnt.StartingProcessNodeTemplate == true);
-                if (null != startingProcessNodeTemplate)
-                    startingProcessNodeTemplate = value;
+                var startingSubroute = Subroutes.SingleOrDefault(pnt => pnt.StartingSubroute == true);
+                if (null != startingSubroute)
+                    startingSubroute = value;
                 else
                 {
-                    ProcessNodeTemplates.ToList().ForEach(pnt => pnt.StartingProcessNodeTemplate = false);
-                    value.StartingProcessNodeTemplate = true;
+                    Subroutes.ToList().ForEach(pnt => pnt.StartingSubroute = false);
+                    value.StartingSubroute = true;
                     Activities.Add(value);
                 }
             }
@@ -81,11 +81,11 @@ namespace Data.Entities
         public virtual ICollection<ProcessDO> ChildProcesses { get; set; }
 
         [NotMapped]
-        public IEnumerable<ProcessNodeTemplateDO> ProcessNodeTemplates
+        public IEnumerable<SubrouteDO> Subroutes
         {
             get
             {
-                return Activities.OfType<ProcessNodeTemplateDO>();
+                return Activities.OfType<SubrouteDO>();
             }
         }
         

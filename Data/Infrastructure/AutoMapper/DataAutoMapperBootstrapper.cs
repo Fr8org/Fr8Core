@@ -58,9 +58,9 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<RouteDO, RouteOnlyDTO>();
 
-            Mapper.CreateMap<ProcessNodeTemplateDTO, ProcessNodeTemplateDO>()
+            Mapper.CreateMap<SubrouteDTO, SubrouteDO>()
                 .ForMember(x => x.ParentActivityId, opts => opts.ResolveUsing(x => x.RouteId));
-            Mapper.CreateMap<ProcessNodeTemplateDO, ProcessNodeTemplateDTO>()
+            Mapper.CreateMap<SubrouteDO, SubrouteDTO>()
                 .ForMember(x => x.RouteId, opts => opts.ResolveUsing(x => x.ParentActivityId));
 
             Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
@@ -73,7 +73,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<RouteOnlyDTO, RouteDTO>();
           //  Mapper.CreateMap<ActionListDO, FullActionListDTO>();
-            Mapper.CreateMap<ProcessNodeTemplateDO, FullProcessNodeTemplateDTO>();
+            Mapper.CreateMap<SubrouteDO, FullSubrouteDTO>();
 
             //Mapper.CreateMap<Account, DocuSignAccount>();
             Mapper.CreateMap<FileDO, FileDescriptionDTO>();

@@ -67,9 +67,9 @@ namespace Core.Services
                 uow.SaveChanges();
 
                 //then create process node
-                var processNodeTemplateId = curProcessDO.Route.StartingProcessNodeTemplate.Id;
+                var subrouteId = curProcessDO.Route.StartingSubroute.Id;
                 
-            var curProcessNode = _processNode.Create(uow, curProcessDO.Id, processNodeTemplateId, "process node");
+            var curProcessNode = _processNode.Create(uow, curProcessDO.Id, subrouteId, "process node");
                 curProcessDO.ProcessNodes.Add(curProcessNode);
 
                 uow.SaveChanges();

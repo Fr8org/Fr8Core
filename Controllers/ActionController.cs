@@ -160,7 +160,7 @@ namespace Web.Controllers
                
                 if (curActionDTO.IsTempId)
                 {
-                    ObjectFactory.GetInstance<IProcessNodeTemplate>().AddAction(uow, resultActionDO); // append action to the ProcessNodeTemplate
+                    ObjectFactory.GetInstance<ISubroute>().AddAction(uow, resultActionDO); // append action to the Subroute
                 }
 
                 var resultActionDTO = Mapper.Map<ActionDTO>(resultActionDO);

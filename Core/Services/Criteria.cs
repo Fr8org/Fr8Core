@@ -38,7 +38,7 @@ namespace Core.Services
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
 			    var cq = uow.CriteriaRepository.GetAll().ToList();
-				var curCriteria = uow.CriteriaRepository.FindOne(c => c.ProcessNodeTemplateId == curProcessNode.ProcessNodeTemplateId);
+				var curCriteria = uow.CriteriaRepository.FindOne(c => c.SubrouteId == curProcessNode.SubrouteId);
 				if (curCriteria == null)
 					throw new ApplicationException("failed to find expected CriteriaDO while evaluating ProcessNode");
 				if (curCriteria.CriteriaExecutionType == CriteriaExecutionType.WithoutConditions)

@@ -6,21 +6,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Data.Entities
 {
     /// <summary>
-    /// Criteria object for ProcessNodeTemplate.
+    /// Criteria object for Subroute.
     /// </summary>
     public class CriteriaDO : BaseDO
     {
         [Key]
         public int Id { get; set; }
         
-        [ForeignKey("ProcessNodeTemplate")]
-        public int? ProcessNodeTemplateId { get; set; }
+        [ForeignKey("Subroute")]
+        public int? SubrouteId { get; set; }
 
         /// <summary>
         /// Reference to parent RouteNode.
         /// Every Criteria must belong to a single RouteNode.
         /// </summary>
-        public virtual ProcessNodeTemplateDO ProcessNodeTemplate { get; set; }
+        public virtual SubrouteDO Subroute { get; set; }
         
 
         //the criteria execution type reflects the radio button choice: apply criteria? or execute without worrying about the criteria?

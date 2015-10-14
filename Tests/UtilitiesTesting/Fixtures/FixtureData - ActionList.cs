@@ -43,7 +43,7 @@ namespace UtilitiesTesting.Fixtures
         }
 
 
-        internal int? ProcessNodeTemplateId
+        internal int? SubrouteId
         {
             get
             {
@@ -95,7 +95,7 @@ namespace UtilitiesTesting.Fixtures
 //               Id = 88,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate,
-//               ProcessNodeTemplateID = 50,
+//               SubrouteID = 50,
 //               CurrentActivity = TestActionHealth1(),
 //               Process = processDo
             };
@@ -106,7 +106,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
 //               Id = 1,
-//               ProcessNodeTemplateID = 1,
+//               SubrouteID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
@@ -135,7 +135,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
 //               Id = 4,
-//               ProcessNodeTemplateID = 1,
+//               SubrouteID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate
             };
@@ -147,7 +147,7 @@ namespace UtilitiesTesting.Fixtures
             var curActionListDO = new ActionListDO
             {
 //               Id = 4,
-//               ProcessNodeTemplateID = 1,
+//               SubrouteID = 1,
 //               Name = "list1",
 //               ActionListType = ActionListType.Immediate,                    
             };

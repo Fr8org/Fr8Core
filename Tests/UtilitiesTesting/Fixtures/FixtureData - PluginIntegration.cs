@@ -31,12 +31,12 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static ProcessNodeTemplateDO ProcessNodeTemplate_PluginIntegration()
+        public static SubrouteDO Subroute_PluginIntegration()
         {
-            return new ProcessNodeTemplateDO()
+            return new SubrouteDO()
             {
                 Id = 1001,
-                Name = "Test ProcessNodeTemplate"
+                Name = "Test Subroute"
             };
         }
 

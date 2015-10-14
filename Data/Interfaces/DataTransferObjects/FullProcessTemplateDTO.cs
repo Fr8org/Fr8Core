@@ -9,15 +9,15 @@ namespace Data.Interfaces.DataTransferObjects
     public class RouteDTO : RouteOnlyDTO
     {
         /// <summary>
-        /// List of ProcessNodeTemplate DTOs.
+        /// List of Subroute DTOs.
         /// </summary>
-        public IEnumerable<FullProcessNodeTemplateDTO> ProcessNodeTemplates { get; set; }
+        public IEnumerable<FullSubrouteDTO> Subroutes { get; set; }
     }
     
     /// <summary>
-    /// ProcessNodeTemplate DTO that contains full graph of other DTO objects.
+    /// Subroute DTO that contains full graph of other DTO objects.
     /// </summary>
-    public class FullProcessNodeTemplateDTO : ProcessNodeTemplateDTO
+    public class FullSubrouteDTO : SubrouteDTO
     {
         /// <summary>
         /// List of ActionList DTOs.

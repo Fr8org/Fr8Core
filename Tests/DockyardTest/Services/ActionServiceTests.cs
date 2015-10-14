@@ -258,7 +258,7 @@ namespace DockyardTest.Services
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate2();
             curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((ProcessNodeTemplateDO)(curActionDO.ParentActivity)).Route.DockyardAccount;
+            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentActivity)).Route.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);
@@ -275,7 +275,7 @@ namespace DockyardTest.Services
 
             AuthorizationTokenDO curAuthorizationTokenDO = FixtureData.TestActionAuthenticate3();
             curAuthorizationTokenDO.Plugin = curActionDO.ActivityTemplate.Plugin;
-            curAuthorizationTokenDO.UserDO = ((ProcessNodeTemplateDO)(curActionDO.ParentActivity)).Route.DockyardAccount;
+            curAuthorizationTokenDO.UserDO = ((SubrouteDO)(curActionDO.ParentActivity)).Route.DockyardAccount;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.AuthorizationTokenRepository.Add(curAuthorizationTokenDO);

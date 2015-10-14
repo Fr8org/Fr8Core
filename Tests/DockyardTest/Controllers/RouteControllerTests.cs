@@ -203,7 +203,7 @@ namespace DockyardTest.Controllers
             var processTemplateDto = FixtureData.CreateTestRouteDTO();
             var processTemplateController = CreateRouteController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
 
-            var tPT = FixtureData.TestRouteWithStartingProcessNodeTemplates_ID0();
+            var tPT = FixtureData.TestRouteWithStartingSubroutes_ID0();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.RouteRepository.Add(tPT);
@@ -290,8 +290,8 @@ namespace DockyardTest.Controllers
 
             Assert.AreEqual(curRouteDO.Name, curRouteDTO.Name);
             Assert.AreEqual(curRouteDO.Description, curRouteDTO.Description);
-            Assert.AreEqual(curRouteDO.ProcessNodeTemplates.Count(), 2);
-            Assert.AreEqual(curRouteDO.ProcessNodeTemplates.First().Activities.Count, 1);
+            Assert.AreEqual(curRouteDO.Subroutes.Count(), 2);
+            Assert.AreEqual(curRouteDO.Subroutes.First().Activities.Count, 1);
 
         }
 

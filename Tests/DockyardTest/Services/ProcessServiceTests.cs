@@ -75,7 +75,7 @@ namespace DockyardTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var envelopeCrate = FixtureData.EnvelopeIdCrateJson();
-                var route = FixtureData.TestRouteWithStartingProcessNodeTemplateAndActionList();
+                var route = FixtureData.TestRouteWithStartingSubrouteAndActionList();
 
                 uow.RouteRepository.Add(route);
                 uow.SaveChanges();
@@ -95,7 +95,7 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var route = FixtureData.TestRouteWithStartingProcessNodeTemplates();
+                var route = FixtureData.TestRouteWithStartingSubroutes();
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.RouteRepository.Add(route);
