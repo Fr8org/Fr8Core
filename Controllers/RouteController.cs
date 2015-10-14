@@ -6,6 +6,7 @@ using System.Web.Http.Description;
 using AutoMapper;
 using Core.Interfaces;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
@@ -14,12 +15,13 @@ using StructureMap;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [fr8Authorize]
     [RoutePrefix("api/processTemplate")]
     public class ProcessTemplateController : ApiController
     {
         private readonly IRoute _route;
-        
+        private readonly ISecurityServices _security;
+
         public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IRoute>())
         {
@@ -133,7 +135,7 @@ namespace Web.Controllers
                 }
 
                 var curRouteDO = Mapper.Map<RouteOnlyDTO, RouteDO>(processTemplateDto, opts => opts.Items.Add("ptid", processTemplateDto.Id));
-                var curUserId = User.Identity.GetUserId();
+                var curUserId = _security.GetCurrentUser();
                 curRouteDO.DockyardAccount = uow.UserRepository
                     .GetQuery()
                     .Single(x => x.Id == curUserId);

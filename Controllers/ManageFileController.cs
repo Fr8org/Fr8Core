@@ -13,7 +13,7 @@ using AutoMapper;
 
 namespace Web.Controllers
 {
-    [Authorize]
+    [fr8Authorize]
     [RoutePrefix("api/manageFile")]
     public class ManageFileController : ApiController
     {
