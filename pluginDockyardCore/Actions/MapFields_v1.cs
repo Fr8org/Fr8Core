@@ -212,32 +212,5 @@ namespace pluginDockyardCore.Actions
                 return ConfigurationRequestType.Followup;
             }
         }
-
-        //Returning the crate with text field control 
-        private CrateDTO GetTextBoxControlForDisplayingError(string fieldLabel, string errorMessage)
-        {
-            var fields = new List<ControlDefinitionDTO>() 
-            {
-                new TextBlockControlDefinitionDTO()
-                {
-                    Label = fieldLabel,
-                    Value = errorMessage,
-                    CssClass = "well well-lg"                    
-                }
-            };
-
-            var controls = new StandardConfigurationControlsCM()
-            {
-                Controls = fields
-            };
-
-            var crateControls = _crate.Create(
-                        "Configuration_Controls",
-                        JsonConvert.SerializeObject(controls),
-                        "Standard Configuration Controls"
-                    );
-
-            return crateControls;
-        }
     }
 }

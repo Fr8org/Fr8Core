@@ -19,19 +19,24 @@
     */
     export class ActionServiceMock {
         constructor($q: ng.IQService) {
-            this.save = jasmine.createSpy('save').and.callFake(() => {
-                var def: any = $q.defer();
-                def.resolve();
-
-                def.promise.$promise = def.promise;
-
-                return def.promise;
-            });
-
             this.get = jasmine.createSpy('get');
+            this.save = jasmine.createSpy('save');
+            this.configure = jasmine.createSpy('configure');
+
+            if ($q) {
+                this.save.and.callFake(() => {
+                    var def: any = $q.defer();
+                    def.resolve();
+
+                    def.promise.$promise = def.promise;
+
+                    return def.promise;
+                });
+            }
         }
         public save: any;
         public get: any;
+        public configure: any;
         
     }
 

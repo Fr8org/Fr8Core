@@ -19,6 +19,7 @@ namespace Core.Interfaces
         CrateDTO CreateAuthenticationCrate(string label, AuthenticationMode mode);
         CrateDTO CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);
         CrateDTO CreateStandardConfigurationControlsCrate(string label, params ControlDefinitionDTO[] controls);
+        CrateDTO CreateStandardEventReportCrate(string label, EventReportCM eventReport);
         CrateDTO CreateStandardEventSubscriptionsCrate(string label, params string[] subscriptions);
         CrateDTO CreatePayloadDataCrate(List<KeyValuePair<string, string>> curFields);
         CrateDTO CreateStandardTableDataCrate(string label, bool firstRowHeaders, params TableRowDTO[] table);

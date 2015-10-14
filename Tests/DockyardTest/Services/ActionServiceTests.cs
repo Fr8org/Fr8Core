@@ -137,39 +137,7 @@ namespace DockyardTest.Services
             }
         }
 
-        //[Test]
-        //public void CanParsePayload()
-        //{
-        //	 var envelope = new DocuSignEnvelope();
-        //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-        //	 var payloadMappings = FixtureData.ListFieldMappings;
 
-        //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
-
-        //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
-
-        //	 Assert.AreEqual("Johnson", result.Where(p => p.Key == "Doctor").Single().Value);
-        //	 Assert.AreEqual("Marthambles", result.Where(p => p.Key == "Condition").Single().Value);
-        //}
-
-        //[Test]
-        //public void CanLogIncidentWhenFieldIsMissing()
-        //{
-        //	 IncidentReporter incidentReporter = new IncidentReporter();
-        //	 incidentReporter.SubscribeToAlerts();
-
-        //	 var envelope = new DocuSignEnvelope();
-        //	 string envelopeId = "F02C3D55-F6EF-4B2B-B0A0-02BF64CA1E09";
-        //	 var payloadMappings = FixtureData.ListFieldMappings2; //Wrong mappings
-
-        //	 List<EnvelopeDataDTO> envelopeData = FixtureData.TestEnvelopeDataList2(envelopeId);
-        //	 var result = envelope.ExtractPayload(payloadMappings, envelopeId, envelopeData);
-
-        //	 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //	 {
-        //		  Assert.IsTrue(uow.IncidentRepository.GetAll().Any(i => i.PrimaryCategory == "Envelope"));
-        //	 }
-        //}
 
         //[Test,Ignore("plugin transmitter in v2 doesn't allow anything except ActioDTO as input param")]
         //public async void CanProcessDocuSignTemplate()
@@ -224,23 +192,6 @@ namespace DockyardTest.Services
             }
         }
 
-        [Test, Ignore("Ignored execution related tests. Refactoring is going on")]
-        public void Process_ReturnJSONDispatchError_ActionStateError()
-        {
-            ActionDO actionDO = FixtureData.IntegrationTestAction();
-            ProcessDO procesDo = FixtureData.TestProcess1();
-            var pluginClientMock = new Mock<IPluginTransmitter>();
-            pluginClientMock.Setup(s => s.CallActionAsync<ActionDTO>(It.IsAny<string>(), It.IsAny<ActionDTO>())).ThrowsAsync(new RestfulServiceException());
-            ObjectFactory.Configure(cfg => cfg.For<IPluginTransmitter>().Use(pluginClientMock.Object));
-            //_action = ObjectFactory.GetInstance<IAction>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _action.PrepareToExecute(actionDO, procesDo, uow);
-            }
-
-            Assert.AreEqual(ActionState.Error, actionDO.ActionState);
-        }
 
         [Test]
         public void Process_ReturnJSONDispatchNotError_ActionStateCompleted()

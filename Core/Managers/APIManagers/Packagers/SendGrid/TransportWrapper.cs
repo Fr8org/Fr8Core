@@ -21,12 +21,12 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
             _serviceManager = new ServiceManager<TransportWrapper>("SendGrid Service", "Email Services");
         }
 
-        public void Deliver(ISendGrid message)
+        public async Task DeliverAsync(ISendGrid message)
         {
             _serviceManager.LogEvent("Sending an email...");
             try
             {
-                _transport.Deliver(message);
+                await _transport.DeliverAsync(message);
                 _serviceManager.LogSucessful("Email sent.");
             }
             catch (Exception ex)
@@ -36,12 +36,12 @@ namespace Core.Managers.APIManagers.Packagers.SendGrid
             }
         }
 
-        public async Task DeliverAsync(ISendGrid message)
+        public void Deliver(ISendGrid message)
         {
             _serviceManager.LogEvent("Sending an email...");
             try
             {
-                await _transport.DeliverAsync(message);
+                _transport.Deliver(message);
                 _serviceManager.LogSucessful("Email sent.");
             }
             catch (Exception ex)

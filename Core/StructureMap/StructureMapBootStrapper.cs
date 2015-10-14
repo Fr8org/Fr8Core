@@ -8,8 +8,6 @@ using Core.Managers.APIManagers.Authorizers.Docusign;
 using Core.Managers.APIManagers.Authorizers.Google;
 using Core.Managers.APIManagers.Packagers;
 using Core.Managers.APIManagers.Packagers.SegmentIO;
-using Core.Managers.APIManagers.Packagers.SendGrid;
-using Core.Managers.APIManagers.Packagers.Twilio;
 using Core.Managers.APIManagers.Transmitters.Plugin;
 using Core.Managers.APIManagers.Transmitters.Restful;
 using Core.Security;
@@ -79,9 +77,7 @@ namespace Core.StructureMap
             public LiveMode()
             {
                 For<IConfigRepository>().Use<ConfigRepository>();
-                For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
@@ -95,11 +91,10 @@ namespace Core.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
-                For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Use<RestfulServiceClient>();
                 For<IPluginTransmitter>().Use<PluginTransmitter>();
-                For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
                 For<IProcessTemplate>().Use<ProcessTemplate>();
                 For<IProcess>().Use<Process>();
                 For<ICriteria>().Use<Criteria>();
@@ -112,7 +107,6 @@ namespace Core.StructureMap
                 For<IEvent>().Use<Event>();
                 For<IActivityTemplate>().Use<ActivityTemplate>();
                 For<IFile>().Use<File>();
-                For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
                 For<IDockyardEvent>().Use<DockyardEvent>();
@@ -126,9 +120,7 @@ namespace Core.StructureMap
             {
               
                 For<IConfigRepository>().Use<MockedConfigRepository>();
-                For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.MailHandler);
 
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Core.Services.Notification>();
@@ -171,7 +163,6 @@ namespace Core.StructureMap
                 For<IEvent>().Use<Event>();
                 //For<ITemplate>().Use<Services.Template>();
                 For<IFile>().Use<File>();
-                For<ISMSMessage>().Use<SMSMessage>();
                 For<IPlugin>().Use<Plugin>();
                 For<ICrate>().Use<Crate>();
                 For<IDockyardEvent>().Use<DockyardEvent>();

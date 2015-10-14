@@ -58,5 +58,14 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplate = FixtureData.TestActivityTemplateSalesforce()
             };
         }
+
+        public static ActionDTO TestActionDTOForSendGrid()
+        {
+            return new ActionDTO()
+            {
+                Name = "SendEmailViaSendGrid",
+                ActivityTemplate = FixtureData.TestActivityTemplateSendGrid()
+            };
+        }
     }
 }
