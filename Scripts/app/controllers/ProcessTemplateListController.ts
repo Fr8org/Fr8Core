@@ -73,8 +73,9 @@ module dockyard.controllers {
             this.$state.go('processBuilder', { id: processTemplateId });
         }
 
-        private deleteProcessTemplate(processTemplateId) {
+        private deleteProcessTemplate(processTemplateId: number, isActive: boolean) {
             //to save closure of our controller
+            var self = this;
             this.$modal.open({
                 animation: true,
                 templateUrl: 'modalDeleteConfirmation',
@@ -82,11 +83,12 @@ module dockyard.controllers {
 
             }).result.then(() => {
                 //Deletion confirmed
-                this.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(function () {
+                this.ProcessTemplateService.delete({ id: processTemplateId }).$promise.then(() => {
+                    var procTemplates = isActive ? self.$scope.activeProcessTemplates : self.$scope.inActiveProcessTemplates;
                     //now loop through our existing templates and remove from local memory
-                    for (var i = 0; i < this.$scope.processTemplates.length; i++) {
-                        if (this.$scope.processTemplates[i].id === processTemplateId) {
-                            this.$scope.processTemplates.splice(i, 1);
+                    for (var i = 0; i < procTemplates.length; i++) {
+                        if (procTemplates[i].id === processTemplateId) {
+                            procTemplates.splice(i, 1);
                             break;
                         }
                     }
