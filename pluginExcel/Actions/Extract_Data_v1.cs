@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using pluginExcel.Infrastructure;
 using Core.Exceptions;
 using PluginUtilities.BaseClasses;
+using AutoMapper;
 
 namespace pluginExcel.Actions
 {
@@ -28,7 +29,7 @@ namespace pluginExcel.Actions
 
         private async Task<ActionDTO> CreateStandardPayloadDataFromStandardTableData(ActionDTO curActionDTO)
         {
-            var curActionDO = Action.MapFromDTO(curActionDTO);
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             StandardTableDataCM tableDataMS = await GetTargetTableData(curActionDO.Id, curActionDO.CrateStorageDTO());
             if (!tableDataMS.FirstRowHeaders)
@@ -39,14 +40,8 @@ namespace pluginExcel.Actions
             var payloadDataCrate = Crate.CreatePayloadDataCrate("ExcelTableRow", "Excel Data", tableDataMS);
             Action.AddCrate(curActionDO, payloadDataCrate);
 
-            // Commented ut by Naveed: This line fails giving an exception "Additional information: The ObjectContext instance has been disposed and can no longer be used for operations that require a connection."
-            // in class DataAutoMapperBootStrapper line # 28 (.ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate));)
+           return Mapper.Map<ActionDTO>(curActionDO);
             
-            // return Mapper.Map<ActionDTO>(curActionDO);
-
-            var curCrateStorageDTO = curActionDO.CrateStorageDTO();
-            curActionDTO.CrateStorage = curCrateStorageDTO;
-            return await Task.FromResult<ActionDTO>(curActionDTO);
         }
 
         private async Task<StandardTableDataCM> GetTargetTableData(int actionId, CrateStorageDTO curCrateStorageDTO)
@@ -108,9 +103,11 @@ namespace pluginExcel.Actions
         /// <summary>
         /// Create configuration controls crate.
         /// </summary>
-        private CrateDTO CreateConfigurationControlsCrate()
+        private CrateDTO CreateConfigurationControlsCrate(bool includeTextBlockControl = false)
         {
-            var fieldFilterPane = new ControlDefinitionDTO(ControlTypes.FilePicker)
+            var controlList = new List<ControlDefinitionDTO>();
+
+            var filePickerControl = new ControlDefinitionDTO(ControlTypes.FilePicker)
             {
                 Label = "Select Excel File",
                 Name = "select_file",
@@ -125,8 +122,20 @@ namespace pluginExcel.Actions
                     ManifestType = CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME
                 },
             };
+            controlList.Add(filePickerControl);
 
-            return PackControlsCrate(fieldFilterPane);
+            if (includeTextBlockControl)
+            {
+                var textBlockControl = new TextBlockControlDefinitionDTO()
+                    {
+                        Label = "",
+                        Value = "File successfully uploaded.",
+                        CssClass = "well well-lg"
+                    };
+                controlList.Add(textBlockControl);
+            }
+
+            return PackControlsCrate(controlList.ToArray());
         }
 
         /// <summary>
@@ -136,7 +145,7 @@ namespace pluginExcel.Actions
         {
             if (curActionDTO.Id > 0)
             {
-                ActionDO curActionDO = Action.MapFromDTO(curActionDTO);
+                ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
                 //Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
                 CrateDTO upstreamFieldsCrate = await MergeUpstreamFields(curActionDO.Id, "Select Excel File");
@@ -166,7 +175,7 @@ namespace pluginExcel.Actions
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
         protected override async Task<ActionDTO> FollowupConfigurationResponse(ActionDTO curActionDTO)
         {
-            ActionDO curActionDO = Action.MapFromDTO(curActionDTO);
+            ActionDO curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             var filePathsFromUserSelection = Action.FindKeysByCrateManifestType(curActionDO, new Manifest(Data.Constants.MT.StandardConfigurationControls), "select_file")
                 .Select(e => (string)e["value"])
@@ -176,6 +185,12 @@ namespace pluginExcel.Actions
             if (filePathsFromUserSelection.Length > 1)
                 throw new AmbiguityException();
 
+            // RFemove previously created configuration control crate
+            Crate.RemoveCrateByManifestType(curActionDTO.CrateStorage.CrateDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
+            // Creating configuration control crate with a file picker and textblock
+            var configControlsCrateDTO = CreateConfigurationControlsCrate(true);
+            curActionDTO.CrateStorage.CrateDTO.Add(configControlsCrateDTO);
+            
             var selectedFilePath = filePathsFromUserSelection[0];
 
             return await TransformExcelFileDataToStandardTableDataCrate(curActionDTO, selectedFilePath);
@@ -183,7 +198,7 @@ namespace pluginExcel.Actions
 
         private async Task<ActionDTO> TransformExcelFileDataToStandardTableDataCrate(ActionDTO curActionDTO, string selectedFilePath)
         {
-            var curActionDO = Action.MapFromDTO(curActionDTO);
+            var curActionDO = Mapper.Map<ActionDO>(curActionDTO);
 
             // Check if the file is an Excel file.
             string ext = Path.GetExtension(selectedFilePath);
@@ -214,9 +229,7 @@ namespace pluginExcel.Actions
 
             CreatePayloadCrate_ExcelRows(curActionDO, fileAsByteArray, headersArray, ext);
 
-            var curCrateStorageDTO = curActionDO.CrateStorageDTO();
-            curActionDTO.CrateStorage = curCrateStorageDTO;
-            return await Task.FromResult<ActionDTO>(curActionDTO);
+            return AutoMapper.Mapper.Map<ActionDTO>(curActionDO);
         }
 
         private void CreatePayloadCrate_ExcelRows(ActionDO curActionDO, byte[] fileAsByteArray, string[] headersArray, string extension)

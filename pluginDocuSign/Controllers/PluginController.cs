@@ -31,7 +31,7 @@ namespace pluginDocuSign.Controllers
             var waitForDocusignEventActionTemplate = new ActivityTemplateDO()
             {
                 Version = "1",
-                Name = "Monitor_DocuSign",
+                Name = "Monitor_DocuSign_Event",
                 Category = ActivityCategory.fr8_Monitor,
                 Plugin = plugin
             };
