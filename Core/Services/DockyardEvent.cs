@@ -37,11 +37,11 @@ namespace Core.Services
         //    IList<RouteDO> matchingRoutes = _route.GetMatchingRoutes(userID, curEventReport);
         //    using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
         //    {
-        //        foreach (var processNodeTemplate in matchingRoutes)
+        //        foreach (var subroute in matchingRoutes)
         //        {
         //            //4. When there's a match, it means that it's time to launch a new Process based on this Route, 
         //            //so make the existing call to Route#LaunchProcess.
-        //            _route.LaunchProcess(unitOfWork, processNodeTemplate);
+        //            _route.LaunchProcess(unitOfWork, subroute);
         //        }
         //    }
         //}

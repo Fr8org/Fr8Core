@@ -19,7 +19,7 @@ namespace Core.Services
 
 
         // private readonly IProcess _process;
-        private readonly IProcessNodeTemplate _processNodeTemplate;
+        private readonly ISubroute _subroute;
         private readonly DockyardAccount _dockyardAccount;
         private readonly IAction _action;
         private readonly IActivity _activity;
@@ -30,7 +30,7 @@ namespace Core.Services
 
         public Route()
         {
-            _processNodeTemplate = ObjectFactory.GetInstance<IProcessNodeTemplate>();
+            _subroute = ObjectFactory.GetInstance<ISubroute>();
             _dockyardAccount = ObjectFactory.GetInstance<DockyardAccount>();
             _action = ObjectFactory.GetInstance<IAction>();
             _activity = ObjectFactory.GetInstance<IActivity>();
@@ -70,12 +70,12 @@ namespace Core.Services
             if (creating)
             {
                 ptdo.RouteState = RouteState.Inactive;
-                var processNodeTemplate = new ProcessNodeTemplateDO(true);
-                processNodeTemplate.ParentActivity = ptdo;
-                ptdo.Activities.Add(processNodeTemplate);
+                var subroute = new SubrouteDO(true);
+                subroute.ParentActivity = ptdo;
+                ptdo.Activities.Add(subroute);
 
                 uow.RouteRepository.Add(ptdo);
-                _processNodeTemplate.Create(uow, ptdo.StartingProcessNodeTemplate);
+                _subroute.Create(uow, ptdo.StartingSubroute);
             }
             else
             {
@@ -106,15 +106,15 @@ namespace Core.Services
 
 
 
-        public IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(RouteDO curRouteDO)
+        public IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO)
         {
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var queryableRepo = unitOfWork.RouteRepository.GetQuery()
-                    .Include("ProcessNodeTemplates")
+                    .Include("Subroutes")
                     .Where(x => x.Id == curRouteDO.Id);
 
-                return queryableRepo.SelectMany<RouteDO, ProcessNodeTemplateDO>(x => x.ProcessNodeTemplates)
+                return queryableRepo.SelectMany<RouteDO, SubrouteDO>(x => x.Subroutes)
                     .ToList();
             }
         }
@@ -125,7 +125,7 @@ namespace Core.Services
         {
             bool firstNodeTemplate = true;
 
-            foreach (ProcessNodeTemplateDO template in curRoute.ProcessNodeTemplates)
+            foreach (SubrouteDO template in curRoute.Subroutes)
             {
                 if (allowOnlyOneNoteTemplate && !firstNodeTemplate)
                 {
@@ -148,9 +148,9 @@ namespace Core.Services
 
         public string Activate(RouteDO curRoute)
         {
-            if (curRoute.ProcessNodeTemplates == null)
+            if (curRoute.Subroutes == null)
             {
-                throw new ArgumentNullException("Parameter ProcessNodeTemplates is null.");
+                throw new ArgumentNullException("Parameter Subroutes is null.");
             }
 
             string result = "no action";
@@ -214,7 +214,7 @@ namespace Core.Services
         //                throw new Exception(string.Format("More than one action list exists in processtemplate {0}", id));
         //            }
         //
-        //            var startingRoute = currentRoute[0].StartingProcessNodeTemplate;
+        //            var startingRoute = currentRoute[0].StartingSubroute;
         //            if (startingRoute == null)
         //            {
         //                return null;

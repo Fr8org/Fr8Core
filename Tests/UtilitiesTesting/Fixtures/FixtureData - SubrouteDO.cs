@@ -4,62 +4,62 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static ProcessNodeTemplateDO TestProcessNodeTemplateDO1()
+        public static SubrouteDO TestSubrouteDO1()
         {
-            var ProcessNodeTemplateDO = new ProcessNodeTemplateDO
+            var SubrouteDO = new SubrouteDO
             {
                 Id = 50,
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]"
             };
-            return ProcessNodeTemplateDO;
+            return SubrouteDO;
         }
 
-        public static ProcessNodeTemplateDO TestProcessNodeTemplateHealthDemo()
+        public static SubrouteDO TestSubrouteHealthDemo()
         {
-            var ProcessNodeTemplateDO = new ProcessNodeTemplateDO
+            var SubrouteDO = new SubrouteDO
             {
                 Id = 50,
                 ParentActivityId = 23,
                 NodeTransitions = "[{'TransitionKey':'true','ProcessNodeId':'2'}]"
             };
-            return ProcessNodeTemplateDO;
+            return SubrouteDO;
         }
 
-        public static ProcessNodeTemplateDO TestProcessNodeTemplateDO2()
+        public static SubrouteDO TestSubrouteDO2()
         {
-            ProcessNodeTemplateDO ProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            SubrouteDO SubrouteDO = new SubrouteDO()
             {
                 Id = 50,
                 Name = "TestName",
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'1'},{'TransitionKey':'false','ProcessNodeId':'2'}]",
                 ParentActivityId = 50,
-                StartingProcessNodeTemplate = true
+                StartingSubroute = true
             };
-            return ProcessNodeTemplateDO;
+            return SubrouteDO;
         }
 
-        public static ProcessNodeTemplateDO TestProcessNodeTemplateDO3()
+        public static SubrouteDO TestSubrouteDO3()
         {
-            ProcessNodeTemplateDO ProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            SubrouteDO SubrouteDO = new SubrouteDO()
             {
                 Id = 50,
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
-            return ProcessNodeTemplateDO;
+            return SubrouteDO;
         }
 
-        public static ProcessNodeTemplateDO TestProcessNodeTemplateDO4()
+        public static SubrouteDO TestSubrouteDO4()
         {
-            ProcessNodeTemplateDO ProcessNodeTemplateDO = new ProcessNodeTemplateDO()
+            SubrouteDO SubrouteDO = new SubrouteDO()
             {
                 Id = 1,
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
-            return ProcessNodeTemplateDO;
+            return SubrouteDO;
         }
     }
 }

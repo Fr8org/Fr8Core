@@ -16,24 +16,24 @@ namespace DockyardTest.Entities
     public class RouteTests : BaseTest
     {
         [Test]
-        public void Route_ShouldBeAssignedStartingProcessNodeTemplate()
+        public void Route_ShouldBeAssignedStartingSubroute()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var route = FixtureData.TestRoute2();
                 uow.RouteRepository.Add(route);
 
-                var processNodeTemplate = FixtureData.TestProcessNodeTemplateDO2();
-                uow.ProcessNodeTemplateRepository.Add(processNodeTemplate);
-                route.StartingProcessNodeTemplate = processNodeTemplate;
+                var subroute = FixtureData.TestSubrouteDO2();
+                uow.SubrouteRepository.Add(subroute);
+                route.StartingSubroute = subroute;
 
                 uow.SaveChanges();
 
                 var result = uow.RouteRepository.GetQuery()
-                    .SingleOrDefault(pt => pt.StartingProcessNodeTemplateId == processNodeTemplate.Id);
+                    .SingleOrDefault(pt => pt.StartingSubrouteId == subroute.Id);
 
-                Assert.AreEqual(processNodeTemplate.Id, result.StartingProcessNodeTemplate.Id);
-                Assert.AreEqual(processNodeTemplate.Name, result.StartingProcessNodeTemplate.Name);
+                Assert.AreEqual(subroute.Id, result.StartingSubroute.Id);
+                Assert.AreEqual(subroute.Name, result.StartingSubroute.Name);
             }
         }
 

@@ -102,7 +102,7 @@ namespace DockyardTest.Services
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                uow.RouteRepository.Add(route);
-//                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
+//                uow.SubrouteRepository.Add(processNodeDO.Subroute);
 //                uow.SaveChanges();
 //            }
 //
@@ -135,7 +135,7 @@ namespace DockyardTest.Services
 //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 //            {
 //                uow.RouteRepository.Add(route);
-//                uow.ProcessNodeTemplateRepository.Add(processNodeDO.ProcessNodeTemplate);
+//                uow.SubrouteRepository.Add(processNodeDO.Subroute);
 //                uow.SaveChanges();
 //
 //            string nextTransitionKey = _processNode.Execute(docusignEventDO, processNodeDO);

@@ -182,7 +182,7 @@
     <Compile Include="Fixtures\FixtureData - PluginIntegration.cs" />
     <Compile Include="Fixtures\FixtureData - Process.cs" />
     <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
-    <Compile Include="Fixtures\FixtureData - ProcessNodeTemplateDO.cs" />
+    <Compile Include="Fixtures\FixtureData - SubrouteDO.cs" />
     <Compile Include="Fixtures\FixtureData - Route.cs" />
     <Compile Include="Fixtures\FixtureData - RouteDTO.cs" />
     <Compile Include="Fixtures\FixtureData - RestSettings.cs" />

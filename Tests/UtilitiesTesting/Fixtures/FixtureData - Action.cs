@@ -274,7 +274,7 @@ namespace UtilitiesTesting.Fixtures
                 Route = processTemplateDo
             };
 
-            var processNodeTemplateDo = new ProcessNodeTemplateDO()
+            var subrouteDo = new SubrouteDO()
             {
                 Id = 1,
                 Name = "C",
@@ -285,7 +285,7 @@ namespace UtilitiesTesting.Fixtures
 
             var actionDo = new ActionDO()
             {
-                ParentActivity = processNodeTemplateDo,
+                ParentActivity = subrouteDo,
                 ParentActivityId = 1,
                 ActionState = ActionState.Unstarted,
                 Name = "testaction",
@@ -359,7 +359,7 @@ namespace UtilitiesTesting.Fixtures
                 Route = processTemplateDo
             };
 
-            var processNodeTemplateDo = new ProcessNodeTemplateDO()
+            var subrouteDo = new SubrouteDO()
             {
                 Id = 1,
                 Name = "C",
@@ -420,7 +420,7 @@ namespace UtilitiesTesting.Fixtures
             };
 
 
-            var processNodeTemplate = new ProcessNodeTemplateDO(true)
+            var subroute = new SubrouteDO(true)
             {
                 ParentActivity = curRouteDO,
                 ParentActivityId = curRouteDO.Id,
@@ -428,14 +428,14 @@ namespace UtilitiesTesting.Fixtures
 
             ActionDO curActionDO = new ActionDO();
             curActionDO.Id = 3;
-            curActionDO.ParentActivity = processNodeTemplate;
-            curActionDO.ParentActivityId = processNodeTemplate.Id;
+            curActionDO.ParentActivity = subroute;
+            curActionDO.ParentActivityId = subroute.Id;
             curActionDO.ActivityTemplateId = 1;
             curActionDO.ActivityTemplate = curActivityTemplateDO;
             curActionDO.ActionState = 1;
             curActionDO.Name = "testaction";
 
-            processNodeTemplate.Activities.Add(curActionDO);
+            subroute.Activities.Add(curActionDO);
 
             //  curActionDO.ConfigurationSettings = "config settings";
             //  curActionDO.ParentActionListId = 1;

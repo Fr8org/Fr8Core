@@ -265,7 +265,7 @@
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ProcessNodeTests.cs" />
     <Compile Include="Services\ProcessServiceTests.cs" />
-    <Compile Include="Services\ProcessNodeTemplateTests.cs" />
+    <Compile Include="Services\SubrouteTests.cs" />
     <Compile Include="Services\RouteTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />

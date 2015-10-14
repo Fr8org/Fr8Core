@@ -13,7 +13,7 @@ namespace Core.Interfaces
 		void Delete(IUnitOfWork uow, int id);
 	    ActivityDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute);
 
-        IList<ProcessNodeTemplateDO> GetProcessNodeTemplates(RouteDO curRouteDO);
+        IList<SubrouteDO> GetSubroutes(RouteDO curRouteDO);
         IList<RouteDO> GetMatchingRoutes(string userId, EventReportCM curEventReport);
         ActivityDO GetFirstActivity(int curRouteId);
         string Activate(RouteDO curRoute);

@@ -16,18 +16,18 @@ namespace Web.Controllers
 {
     [Authorize]
     [RoutePrefix("api/processTemplate")]
-    public class RouteController : ApiController
+    public class ProcessTemplateController : ApiController
     {
         private readonly IRoute _route;
         
-        public RouteController()
+        public ProcessTemplateController()
             : this(ObjectFactory.GetInstance<IRoute>())
         {
         }
 
         
 
-        public RouteController(IRoute route)
+        public ProcessTemplateController(IRoute route)
         {
             _route = route;
         }
@@ -51,15 +51,15 @@ namespace Web.Controllers
         // Manual mapping method to resolve DO-1164.
         private RouteDTO MapRouteToDTO(RouteDO curRouteDO, IUnitOfWork uow)
         {
-            var processNodeTemplateDTOList = uow.ProcessNodeTemplateRepository
+            var subrouteDTOList = uow.SubrouteRepository
                 .GetQuery()
                 .Include(x => x.Activities)
                 .Where(x => x.ParentActivityId == curRouteDO.Id)
                 .OrderBy(x => x.Id)
                 .ToList()
-                .Select((ProcessNodeTemplateDO x) =>
+                .Select((SubrouteDO x) =>
                 {
-                    var pntDTO = Mapper.Map<FullProcessNodeTemplateDTO>(x);
+                    var pntDTO = Mapper.Map<FullSubrouteDTO>(x);
 
                     pntDTO.Actions = Enumerable.ToList(x.Activities.Select(Mapper.Map<ActionDTO>));
 
@@ -72,8 +72,8 @@ namespace Web.Controllers
                 Id = curRouteDO.Id,
                 Name = curRouteDO.Name,
                 RouteState = curRouteDO.RouteState,
-                StartingProcessNodeTemplateId = curRouteDO.StartingProcessNodeTemplateId,
-                ProcessNodeTemplates = processNodeTemplateDTOList
+                StartingSubrouteId = curRouteDO.StartingSubrouteId,
+                Subroutes = subrouteDTOList
             };
 
             return result;
@@ -144,7 +144,7 @@ namespace Web.Controllers
                 uow.SaveChanges();
                 processTemplateDto.Id = curRouteDO.Id;
                 //what a mess lets try this
-                /*curRouteDO.StartingProcessNodeTemplate.Route = curRouteDO;
+                /*curRouteDO.StartingSubroute.Route = curRouteDO;
                 uow.SaveChanges();
                 processTemplateDto.Id = curRouteDO.Id;*/
                 return Ok(processTemplateDto);

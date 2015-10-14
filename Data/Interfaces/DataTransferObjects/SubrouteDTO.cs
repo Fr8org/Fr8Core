@@ -4,9 +4,9 @@ using Newtonsoft.Json.Linq;
 namespace Data.Interfaces.DataTransferObjects
 {
     /// <summary>
-    /// Data transfer object for ProcessNodeTemplateDO entity.
+    /// Data transfer object for SubrouteDO entity.
     /// </summary>
-    public class ProcessNodeTemplateDTO
+    public class SubrouteDTO
     {
         public int Id { get; set; }
 

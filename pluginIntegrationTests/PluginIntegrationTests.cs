@@ -36,7 +36,7 @@ namespace pluginIntegrationTests
 
         private DockyardAccountDO _testUserAccount;
         private RouteDO _processTemplateDO;
-        private ProcessNodeTemplateDO _processNodeTemplateDO;
+        private SubrouteDO _subrouteDO;
         //private ActionListDO _actionList;
         private AuthorizationTokenDO _authToken;
         private ActivityTemplateDO _waitForDocuSignEventActivityTemplate;
@@ -63,12 +63,12 @@ namespace pluginIntegrationTests
             _processTemplateDO = FixtureData.Route_PluginIntegration();
             _processTemplateDO.DockyardAccount = _testUserAccount;
 
-            _processNodeTemplateDO = FixtureData.ProcessNodeTemplate_PluginIntegration();
-            _processNodeTemplateDO.ParentActivity = _processTemplateDO;
+            _subrouteDO = FixtureData.Subroute_PluginIntegration();
+            _subrouteDO.ParentActivity = _processTemplateDO;
 
             
             //_actionList = FixtureData.TestActionList_ImmediateActions();
-           // _actionList.ProcessNodeTemplate = _processNodeTemplateDO;
+           // _actionList.Subroute = _subrouteDO;
 
             _waitForDocuSignEventActivityTemplate =
                 FixtureData.TestActivityTemplateDO_WaitForDocuSignEvent();
@@ -98,9 +98,9 @@ namespace pluginIntegrationTests
                 uow.AuthorizationTokenRepository.Add(_authToken);
 
                 uow.RouteRepository.Add(_processTemplateDO);
-                uow.ProcessNodeTemplateRepository.Add(_processNodeTemplateDO);
+                uow.SubrouteRepository.Add(_subrouteDO);
                 // This fix inability of MockDB to correctly resolve requests to collections of derived entites
-                uow.ActivityRepository.Add(_processNodeTemplateDO);
+                uow.ActivityRepository.Add(_subrouteDO);
                 uow.ActivityRepository.Add(_processTemplateDO);
                 uow.SaveChanges();
             }
@@ -190,10 +190,10 @@ namespace pluginIntegrationTests
             var curActionController = CreateActionController();
             var curActionDO = FixtureData.TestAction_Blank();
 
-            if (_processNodeTemplateDO.Activities == null)
+            if (_subrouteDO.Activities == null)
             {
-                _processNodeTemplateDO.Activities = new List<ActivityDO>();
-                _processNodeTemplateDO.Activities.Add(curActionDO);
+                _subrouteDO.Activities = new List<ActivityDO>();
+                _subrouteDO.Activities.Add(curActionDO);
             }
 
             if (activityTemplate != null)
@@ -202,8 +202,8 @@ namespace pluginIntegrationTests
                 curActionDO.ActivityTemplateId = activityTemplate.Id;
             }
 
-            curActionDO.ParentActivity = _processNodeTemplateDO;
-            curActionDO.ParentActivityId = _processNodeTemplateDO.Id;
+            curActionDO.ParentActivity = _subrouteDO;
+            curActionDO.ParentActivityId = _subrouteDO.Id;
 
             var curActionDTO = Mapper.Map<ActionDTO>(curActionDO);
 
@@ -270,7 +270,7 @@ namespace pluginIntegrationTests
             {
                 var activity = uow.ActionRepository.GetByKey(id);
 
-                activity.ParentActivity = (ActivityDO)uow.ProcessNodeTemplateRepository.GetByKey(activity.ParentActivityId) ?? uow.ActionRepository.GetByKey(activity.ParentActivityId);
+                activity.ParentActivity = (ActivityDO)uow.SubrouteRepository.GetByKey(activity.ParentActivityId) ?? uow.ActionRepository.GetByKey(activity.ParentActivityId);
                 uow.SaveChanges();
             }
         }

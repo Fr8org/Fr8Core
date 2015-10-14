@@ -67,25 +67,25 @@ namespace DockyardTest.Integration
         //    healthRoute.DockyardAccount = registeredAccount;
         //    uow.RouteRepository.Add(healthRoute);
         //    uow.SaveChanges();
-        //   healthProcessNodeTemplateDO.StartingProcessNodeTemplate = true;
-        //  healthRoute.ProcessNodeTemplates.Add(healthProcessNodeTemplateDO);
+        //   healthSubrouteDO.StartingSubroute = true;
+        //  healthRoute.Subroutes.Add(healthSubrouteDO);
 
         //    //add processnode to process
-        //    var healthProcessNodeTemplateDO = FixtureData.TestProcessNodeTemplateHealthDemo();
-        //    healthProcessNodeTemplateDO.ParentTemplateId = healthRoute.Id;
-        //    uow.ProcessNodeTemplateRepository.Add(healthProcessNodeTemplateDO);
+        //    var healthSubrouteDO = FixtureData.TestSubrouteHealthDemo();
+        //    healthSubrouteDO.ParentTemplateId = healthRoute.Id;
+        //    uow.SubrouteRepository.Add(healthSubrouteDO);
 
         //    //specify that this process node is the starting process node of the template
-        //    healthRoute.StartingProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+        //    healthRoute.StartingSubrouteId = healthSubrouteDO.Id;
 
         //    //add criteria to processnode
         //    var healthCriteria = FixtureData.TestCriteriaHealthDemo();
-        //    healthCriteria.ProcessNodeTemplateId = healthProcessNodeTemplateDO.Id;
+        //    healthCriteria.SubrouteId = healthSubrouteDO.Id;
         //    uow.CriteriaRepository.Add(healthCriteria);
 
         //    //add actionlist to processnode
         //    var healthActionList = FixtureData.TestActionListHealth1();
-        //    healthActionList.ProcessNodeTemplateID = healthProcessNodeTemplateDO.Id;
+        //    healthActionList.SubrouteID = healthSubrouteDO.Id;
         //    uow.ActionListRepository.Add(healthActionList);
 
         //   // var healthAction = FixtureData.TestActionHealth1();

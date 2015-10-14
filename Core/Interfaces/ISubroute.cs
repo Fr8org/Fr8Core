@@ -5,12 +5,12 @@ using Data.Interfaces;
 namespace Core.Interfaces
 {
     /// <summary>
-    /// ProcessNodeTemplate service.
+    /// Subroute service.
     /// </summary>
-    public interface IProcessNodeTemplate
+    public interface ISubroute
     {
-        void Create(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate);
-        void Update(IUnitOfWork uow, ProcessNodeTemplateDO processNodeTemplate);
+        void Create(IUnitOfWork uow, SubrouteDO subroute);
+        void Update(IUnitOfWork uow, SubrouteDO subroute);
         void Delete(IUnitOfWork uow, int id);
         void AddAction(IUnitOfWork uow, ActionDO resultActionDo);
     }
