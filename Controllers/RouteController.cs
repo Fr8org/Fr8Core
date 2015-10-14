@@ -90,7 +90,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), id, status);
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id, status);
 
                 if (curRoutes.Any())
                 {
@@ -107,7 +107,7 @@ namespace Web.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), id);
+                var curRoutes = _route.GetForUser(uow, _security.GetCurrentAccount(uow), _security.IsCurrentUserHasRole(Roles.Admin), id);
 
                 if (curRoutes.Any())
                 {

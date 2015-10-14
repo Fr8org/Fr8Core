@@ -8,7 +8,7 @@ namespace Core.Interfaces
 {
 	public interface IRoute
 	{
-		IList<RouteDO> GetForUser(IUnitOfWork uow, DockyardAccountDO account, int? id = null,int?status=null);
+		IList<RouteDO> GetForUser(IUnitOfWork uow, DockyardAccountDO account, bool isAdmin, int? id = null, int? status=null);
 		void CreateOrUpdate(IUnitOfWork uow, RouteDO ptdo, bool withTemplate);
 		void Delete(IUnitOfWork uow, int id);
 	    ActivityDO GetInitialActivity(IUnitOfWork uow, RouteDO curRoute);

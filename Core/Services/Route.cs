@@ -26,9 +26,6 @@ namespace Core.Services
         private readonly IAction _action;
         private readonly IActivity _activity;
         private readonly ICrate _crate;
-        private readonly ISecurityServices _security;
-
-
 
         public Route()
         {
@@ -37,16 +34,13 @@ namespace Core.Services
             _action = ObjectFactory.GetInstance<IAction>();
             _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrate>();
-            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
-
-
-        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, DockyardAccountDO account, int? id = null, int? status = null)
+        public IList<RouteDO> GetForUser(IUnitOfWork unitOfWork, DockyardAccountDO account, bool isAdmin = false, int? id = null, int? status = null)
         {
             var queryableRepo = unitOfWork.RouteRepository.GetQuery().Include(pt => pt.Activities); // whe have to include Activities as it is a real navigational property. Not Routes
 
-            if (_security.IsCurrentUserHasRole(Roles.Admin))
+            if (isAdmin)
             {
                 queryableRepo = (id == null ? queryableRepo : queryableRepo.Where(pt => pt.Id == id));
                 return (status == null ? queryableRepo : queryableRepo.Where(pt => pt.RouteState == status)).ToList();
